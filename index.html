@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Lega degli Eroi</title>
+
+  <link rel="stylesheet" href="navbar.css">
+
+  <link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0b3d91">
+
+  <style>
+    *{
+      box-sizing:border-box;
+    }
+
+    html, body{
+      margin:0;
+      padding:0;
+      overflow-x:hidden;
+    }
+
+    body{
+      font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      color:#222;
+      background:
+        radial-gradient(900px 500px at 15% 0%, rgba(0,116,217,.25), transparent 60%),
+        radial-gradient(900px 500px at 85% 15%, rgba(255,204,0,.10), transparent 55%),
+        #001f3f;
+    }
+
+    a{
+      text-decoration:none;
+    }
+
+    .home-wrap{
+      overflow-x:hidden;
+      max-width:1200px;
+      margin:0 auto;
+      padding:20px 16px 30px;
+      background:transparent;
+    }
+
+    @media (min-width:1200px){
+      .home-wrap{
+        max-width:none;
+        width:100%;
+        margin:0;
+        padding:20px 12px 30px;
+      }
+    }
+
+    .gazzetta-frame{
+      width:100%;
+      max-width:100%;
+      border:0;
+      border-radius:14px;
+      background:transparent;
+      box-shadow:none;
+      overflow:hidden;
+      display:block;
+    }
+
+    @media (max-width:900px){
+      .home-wrap{
+        padding:14px 10px 20px;
+      }
+
+      .gazzetta-frame{
+        height:88vh;
+        border-radius:12px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <nav class="site-nav">
+    <div class="nav-inner">
+      <div class="nav-left">
+        <span id="hamburger" class="hamburger">☰</span>
+        <a href="index.html" class="brand-home" aria-label="Home">🏠</a>
+      </div>
+
+      <ul class="navbar" id="mainMenu">
+        <li><a href="rose.html">Rose</a></li>
+
+        <li class="dropdown">
+          <a href="#" class="toggle-submenu">
+            Draft <span class="caret">▾</span>
+          </a>
+          <ul class="submenu">
+            <li><a href="draft_championship.html">🟦 Conf. Championship</a></li>
+            <li><a href="draft_conference.html">🟨 Conf. League</a></li>
+            <li><a href="dinamico-draft.html">🧑‍💼 Draft 2026</a></li>
+          </ul>
+        </li>
+
+        <li class="dropdown competizioni">
+          <a href="#" class="toggle-submenu">
+            Competizioni <span class="caret">▾</span>
+          </a>
+          <ul class="submenu">
+            <li><a href="classifica.html">📊 Classifiche</a></li>
+            <li><a href="playoff.html">🏆 Playoff</a></li>
+            <li><a href="arena.html">🏟️ Highlander</a></li>
+            <li><a href="crashoutcup.html">💥 Crash Out Cup</a></li>
+            <li><a href="crashoutplayoff.html">💥 Crash Out Cup - Playoff</a></li>
+            <li><a href="supercoppa.html">⭐ Supercoppa</a></li>
+            <li><a href="statistiche.html">🔎 Statistiche</a></li>
+          </ul>
+        </li>
+
+        <li><a href="svincolati.html">Svincolati</a></li>
+        <li><a href="chiamate.html">Waiver Wire</a></li>
+
+        <li class="dropdown">
+          <a href="#" class="toggle-submenu">
+            Hall of Fame <span class="caret">▾</span>
+          </a>
+          <ul class="submenu">
+            <li><a href="medagliere.html">👑 Albo d'Oro</a></li>
+            <li><a href="albo.html">🏅 Medagliere</a></li>
+          </ul>
+        </li>
+
+        <li><a href="regolamento.html">Regolamento</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <main class="home-wrap">
+    <iframe
+      id="gazzettaFrame"
+      class="gazzetta-frame"
+      src="giornale.html"
+      title="La Gazzetta degli Eroi"
+      scrolling="no">
+    </iframe>
+  </main>
+
+  <script>
+    function resizeGazzetta(){
+      const iframe = document.getElementById("gazzettaFrame");
+      if (!iframe) return;
+
+      try{
+        const doc = iframe.contentDocument || iframe.contentWindow.document;
+        const h = Math.max(
+          doc.body.scrollHeight,
+          doc.documentElement.scrollHeight
+        );
+        iframe.style.height = (h + 20) + "px";
+      }catch(e){
+        console.warn("Impossibile auto-resize iframe:", e);
+      }
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      const iframe = document.getElementById("gazzettaFrame");
+
+      if (iframe) {
+        iframe.addEventListener("load", () => {
+          resizeGazzetta();
+          setTimeout(resizeGazzetta, 400);
+          setTimeout(resizeGazzetta, 1200);
+          setTimeout(resizeGazzetta, 2500);
+        });
+      }
+
+      window.addEventListener("resize", resizeGazzetta);
+    });
+  </script>
+
+<script>
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", function () {
+    navigator.serviceWorker.register("./sw.js")
+      .then(function () {
+        console.log("SW registrato");
+      })
+      .catch(function (err) {
+        console.log("Errore SW:", err);
+      });
+  });
+}
+</script>
+
+  <script src="navbar.js"></script>
+</body>
+</html>

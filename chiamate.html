@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Waiver Wire</title>
+  <link rel="stylesheet" href="navbar.css?v=2">
+
+  <style>
+    body{
+      margin:0;
+      font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background:#f4f6f9;
+      color:#1f2937;
+    }
+
+    .titolo-pagina{
+      text-align:center;
+      color:#001f3f;
+      font-size:2.3rem;
+      margin:34px 0 10px;
+      font-weight:800;
+      text-shadow:1px 1px 4px rgba(255, 204, 0, 0.55);
+      letter-spacing:.2px;
+    }
+
+    .sottotitolo-pagina{
+      text-align:center;
+      color:#5b6472;
+      font-size:1rem;
+      margin:0 0 28px;
+    }
+
+    .page-shell{
+      max-width:1100px;
+      margin:0 auto;
+      padding:0 18px 40px;
+    }
+
+    .waiver-hero{
+      max-width:760px;
+      margin:0 auto 24px;
+      background:#fff;
+      border:1px solid rgba(0, 31, 63, 0.08);
+      border-radius:18px;
+      box-shadow:0 14px 34px rgba(0, 31, 63, 0.08);
+      padding:24px 22px 22px;
+    }
+
+    .waiver-hero__title{
+      text-align:center;
+      color:#001f3f;
+      font-size:1.2rem;
+      font-weight:800;
+      margin:0 0 8px;
+    }
+
+    .waiver-hero__desc{
+      text-align:center;
+      color:#6b7280;
+      font-size:.96rem;
+      margin:0 0 22px;
+      line-height:1.45;
+    }
+
+    .switcher{
+      display:grid;
+      grid-template-columns:1fr;
+      gap:14px;
+    }
+
+    .switcher button{
+      border:none;
+      border-radius:12px;
+      cursor:pointer;
+      padding:15px 18px;
+      font-weight:800;
+      font-size:1rem;
+      text-align:center;
+      color:#fff;
+      transition:transform .12s ease, box-shadow .18s ease, background .18s ease;
+      box-shadow:0 8px 18px rgba(0,0,0,.10);
+    }
+
+    .switcher button:hover{
+      transform:translateY(-1px);
+    }
+
+    .switcher button:active{
+      transform:translateY(0);
+    }
+
+    .btn-roundrobin{
+      background:linear-gradient(135deg, #ff8f1f 0%, #ff7a00 100%);
+    }
+
+    .btn-roundrobin:hover{
+      background:linear-gradient(135deg, #f38212 0%, #ea6d00 100%);
+    }
+
+    .btn-league{
+      background:linear-gradient(135deg, #1b7ddd 0%, #0f67bf 100%);
+    }
+
+    .btn-league:hover{
+      background:linear-gradient(135deg, #1873cc 0%, #0d5cad 100%);
+    }
+
+    .btn-champ{
+      background:linear-gradient(135deg, #0b5fc2 0%, #084b99 100%);
+    }
+
+    .btn-champ:hover{
+      background:linear-gradient(135deg, #0a56af 0%, #073f81 100%);
+    }
+
+    .btn-playoff{
+      background:linear-gradient(135deg, #6d28d9 0%, #4c1d95 100%);
+    }
+
+    .btn-playoff:hover{
+      background:linear-gradient(135deg, #5f22c0 0%, #421982 100%);
+    }
+
+    .coming-soon{
+      text-align:center;
+      color:#8b95a7;
+      font-size:.92rem;
+      margin-top:14px;
+      font-style:italic;
+    }
+
+    #chiamate-container{
+      max-width:1100px;
+      margin:0 auto;
+      background:#fff;
+      border:1px solid rgba(0, 31, 63, 0.08);
+      border-radius:18px;
+      box-shadow:0 14px 34px rgba(0, 31, 63, 0.08);
+      padding:22px 18px;
+      min-height:120px;
+      font-size:.96rem;
+    }
+
+    #chiamate-container p{
+      margin:0;
+      text-align:center;
+      color:#4b5563;
+      font-size:1rem;
+    }
+
+    #chiamate-container table{
+      width:100%;
+      border-collapse:separate;
+      border-spacing:0;
+      margin-top:10px;
+      overflow:hidden;
+    }
+
+    #chiamate-container thead{
+      background:#001f3f;
+      color:#fff;
+    }
+
+    #chiamate-container th,
+    #chiamate-container td{
+      padding:11px 10px;
+      text-align:center;
+      border-bottom:1px solid #e5e7eb;
+    }
+
+    #chiamate-container th:first-child{
+      border-top-left-radius:10px;
+    }
+
+    #chiamate-container th:last-child{
+      border-top-right-radius:10px;
+    }
+
+    #chiamate-container tbody tr:nth-child(even){
+      background:#f9fbfd;
+    }
+
+    #chiamate-container tbody tr:hover{
+      background:#eef4ff;
+    }
+
+    @media (max-width: 900px){
+      nav.site-nav{
+        position:static;
+        top:auto;
+      }
+
+      nav.site-nav,
+      nav.site-nav *,
+      nav.site-nav *::before,
+      nav.site-nav *::after{
+        box-sizing:border-box;
+      }
+
+      nav.site-nav #mainMenu.navbar > li > a{
+        width:100%;
+        display:flex;
+        align-items:center;
+        justify-content:space-between;
+        gap:12px;
+        padding:11px 13px;
+      }
+
+      nav.site-nav #mainMenu.navbar > li > a .caret{
+        margin-left:auto;
+        flex:0 0 auto;
+        display:inline-block;
+      }
+
+      .titolo-pagina{
+        font-size:2rem;
+        margin:28px 0 8px;
+      }
+
+      .sottotitolo-pagina{
+        font-size:.95rem;
+        margin-bottom:22px;
+        padding:0 10px;
+      }
+
+      .page-shell{
+        padding:0 12px 26px;
+      }
+
+      .waiver-hero{
+        padding:18px 14px 16px;
+        border-radius:16px;
+      }
+
+      .switcher button{
+        padding:14px 14px;
+        font-size:.96rem;
+      }
+
+      #chiamate-container{
+        padding:14px 10px;
+        border-radius:16px;
+        overflow-x:auto;
+      }
+
+      #chiamate-container th,
+      #chiamate-container td{
+        padding:9px 8px;
+        font-size:.92rem;
+        white-space:nowrap;
+      }
+    }
+  </style>
+</head>
+
+<body class="pagina-chiamate">
+
+  <nav class="site-nav">
+    <div class="nav-inner">
+      <div class="nav-left">
+        <span id="hamburger" class="hamburger">☰</span>
+        <a href="index.html" class="brand-home" aria-label="Home">🏠</a>
+      </div>
+
+      <ul class="navbar" id="mainMenu">
+        <li><a href="rose.html">Rose</a></li>
+
+        <li class="dropdown">
+          <a href="#" class="toggle-submenu">
+            Draft <span class="caret">▾</span>
+          </a>
+          <ul class="submenu">
+            <li><a href="draft_championship.html">🟦 Conf. Championship</a></li>
+            <li><a href="draft_conference.html">🟨 Conf. League</a></li>
+            <li><a href="dinamico-draft.html">🧑‍💼 Draft 2026</a></li>
+          </ul>
+        </li>
+
+        <li class="dropdown competizioni">
+          <a href="#" class="toggle-submenu">
+            Competizioni <span class="caret">▾</span>
+          </a>
+          <ul class="submenu">
+            <li><a href="classifica.html">📊 Classifiche</a></li>
+            <li><a href="playoff.html">🏆 Playoff</a></li>
+            <li><a href="arena.html">🏟️ Highlander</a></li>
+            <li><a href="crashoutcup.html">💥 Crash Out Cup</a></li>
+            <li><a href="crashoutplayoff.html">💥 Crash Out Cup - Playoff</a></li>
+            <li><a href="supercoppa.html">⭐ Supercoppa</a></li>
+            <li><a href="statistiche.html">🔎 Statistiche</a></li>
+          </ul>
+        </li>
+
+        <li><a href="svincolati.html">Svincolati</a></li>
+        <li><a href="chiamate.html">Waiver Wire</a></li>
+
+        <li class="dropdown">
+          <a href="#" class="toggle-submenu">
+            Hall of Fame <span class="caret">▾</span>
+          </a>
+          <ul class="submenu">
+            <li><a href="medagliere.html">👑 Albo d'Oro</a></li>
+            <li><a href="albo.html">🏅 Medagliere</a></li>
+          </ul>
+        </li>
+
+        <li><a href="regolamento.html">Regolamento</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <div class="page-shell">
+    <h1 class="titolo-pagina">Waiver Wire</h1>
+    <p class="sottotitolo-pagina">Seleziona la sezione da visualizzare per consultare le chiamate della settimana.</p>
+
+    <section class="waiver-hero">
+      <h2 class="waiver-hero__title">Centro consultazione chiamate</h2>
+      <p class="waiver-hero__desc">
+        Scegli la competizione che vuoi controllare. La sezione Playoff potrà essere aggiunta qui senza cambiare il layout.
+      </p>
+
+      <div class="switcher">
+        <button class="btn-league" onclick="caricaChiamate('league')">
+          📘 Visualizza Conference League
+        </button>
+
+        <button class="btn-champ" onclick="caricaChiamate('champ')">
+          🏆 Visualizza Conference Championship
+        </button>
+
+           <button class="btn-roundrobin" onclick="caricaChiamate('round')">
+          🔥 Visualizza Chiamate Round Robin
+        </button>
+
+        <button class="btn-playoff" onclick="caricaChiamate('playoff')">
+          ⭐ Visualizza Chiamate Playoff
+        </button>
+     
+
+      </div>
+
+    </section>
+
+    <div id="chiamate-container">
+      <p>⏳ Seleziona una modalità per visualizzare le chiamate.</p>
+    </div>
+  </div>
+
+  <script src="chiamate.js"></script>
+  <script src="navbar.js"></script>
+</body>
+</html>

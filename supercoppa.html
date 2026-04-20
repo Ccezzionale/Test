@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Lega degli Eroi – Supercoppa</title>
+
+  <!-- CSS della pagina -->
+  <link rel="stylesheet" href="navbar.css">
+  <link rel="stylesheet" href="supercoppa.css">
+</head>
+<body>
+<nav class="site-nav">
+    <div class="nav-inner">
+      <div class="nav-left">
+        <span id="hamburger" class="hamburger" onclick="document.getElementById('mainMenu').classList.toggle('show')">☰</span>
+        <a href="index.html" class="brand-home" aria-label="Home">🏠</a>
+      </div>
+
+      <ul class="navbar" id="mainMenu">
+        <li><a href="rose.html">Rose</a></li>
+
+        <li class="dropdown">
+        <a href="#" class="toggle-submenu" onclick="if(window.innerWidth<=900){event.preventDefault(); this.parentElement.classList.toggle('show');}">
+  Draft <span class="caret">▾</span>
+</a>
+          <ul class="submenu">
+            <li><a href="draft_championship.html">🟦 Conf. Championship</a></li>
+            <li><a href="draft_conference.html">🟨 Conf. League</a></li>
+            <li><a href="dinamico-draft.html">🧑‍💼 Draft 2026</a></li>
+          </ul>
+        </li>
+
+        <li class="dropdown competizioni">
+      <a href="#" class="toggle-submenu" onclick="if(window.innerWidth<=900){event.preventDefault(); this.parentElement.classList.toggle('show');}">
+  Competizioni <span class="caret">▾</span>
+</a>
+          <ul class="submenu">
+            <li><a href="classifica.html">📊 Classifiche</a></li>
+            <li><a href="playoff.html">🏆 Playoff</a></li>
+            <li><a href="arena.html">🏟️ Highlander</a></li>
+            <li><a href="crashoutcup.html">💥 Crash Out Cup</a></li>
+            <li><a href="crashoutplayoff.html">💥 Crash Out Cup - Playoff</a></li>
+            <li><a href="supercoppa.html">⭐ Supercoppa</a></li>
+            <li><a href="statistiche.html">🔎 Statistiche</a></li>
+          </ul>
+        </li>
+
+        <li><a href="svincolati.html">Svincolati</a></li>
+        <li><a href="chiamate.html">Waiver Wire</a></li>
+
+<li class="dropdown">
+   <a href="#" class="toggle-submenu" onclick="if(window.innerWidth<=900){event.preventDefault(); this.parentElement.classList.toggle('show');}">
+  Hall of Fame <span class="caret">▾</span>
+</a>
+          <ul class="submenu">
+            <li><a href="medagliere.html">👑 Albo d'Oro</a></li>
+            <li><a href="albo.html">🏅 Medagliere</a></li>
+          </ul>
+        </li>
+
+        <li><a href="regolamento.html">Regolamento</a></li>
+      </ul>
+    </div>
+  </nav>
+     <!-- ===== HEADER PAGINA ===== -->
+<header class="page-header">
+  <h1>Supercoppa degli Eroi</h1>
+  <p>I vincitori delle grandi competizioni si sfidano per la corona finale della Lega.</p>
+</header>
+
+  <!-- ===== BRACKET SUPERCOPPA (4 squadre) ===== -->
+  <main class="supercup-main">
+    <section class="supercup-bracket">
+
+      <!-- SEMIFINALE 1 -->
+      <article class="match-card" data-match="sf1">
+        <h2 class="match-title">Semifinale 1</h2>
+        <div class="match-body">
+          <div class="team-row">
+            <div class="team-logo-wrap">
+              <!-- CAMBIA QUI NOME FILE LOGO + ALT -->
+              <img src="img/Team Bartowski.png" alt="Team Bartowski" class="team-logo">
+            </div>
+            <div class="team-info">
+              <div class="team-name">Team Bartowski</div>
+              <div class="team-seed">Campione Highlander Cup &amp; Conf. League</div>
+            </div>
+            <div class="score-box" contenteditable="true" data-placeholder="1"></div>
+          </div>
+
+          <div class="vs-line">vs</div>
+
+          <div class="team-row">
+            <div class="team-logo-wrap">
+              <img src="img/Rubinkebab.png" alt="Rubinkebab" class="team-logo">
+            </div>
+            <div class="team-info">
+              <div class="team-name">Rubinkebab</div>
+              <div class="team-seed">Campione Conf. Championship</div>
+            </div>
+            <div class="score-box" contenteditable="true" data-placeholder="2"></div>
+          </div>
+        </div>
+      </article>
+
+   <!-- FINALE (auto dalle semifinali) -->
+<article class="match-card final" id="final-match" data-match="final">
+  <h2 class="match-title">Finale Supercoppa</h2>
+  <div class="final-trophy" aria-hidden="true"></div>
+  <div class="match-body">
+    <div class="team-row" data-final-slot="sf1">
+      <div class="team-logo-wrap">
+        <img src="" alt="" class="team-logo" id="final-logo-sf1">
+      </div>
+      <div class="team-info">
+        <div class="team-name" id="final-name-sf1">Vincente Semifinale 1</div>
+        <div class="team-seed" id="final-seed-sf1">—</div>
+      </div>
+      <div class="score-box" contenteditable="true" data-placeholder="2"></div>
+    </div>
+
+    <div class="vs-line">vs</div>
+
+    <div class="team-row" data-final-slot="sf2">
+      <div class="team-logo-wrap">
+        <img src="" alt="" class="team-logo" id="final-logo-sf2">
+      </div>
+      <div class="team-info">
+        <div class="team-name" id="final-name-sf2">Vincente Semifinale 2</div>
+        <div class="team-seed" id="final-seed-sf2">—</div>
+      </div>
+      <div class="score-box" contenteditable="true" data-placeholder="0"></div>
+    </div>
+  </div>
+</article>
+
+
+      <!-- SEMIFINALE 2 -->
+      <article class="match-card" data-match="sf2">
+        <h2 class="match-title">Semifinale 2</h2>
+        <div class="match-body">
+          <div class="team-row">
+            <div class="team-logo-wrap">
+              <img src="img/Bayern Christiansen.png" alt="Bayern Christiansen" class="team-logo">
+            </div>
+            <div class="team-info">
+              <div class="team-name">Bayern Christiansen</div>
+              <div class="team-seed">Campione Lega degli Eroi</div>
+            </div>
+            <div class="score-box" contenteditable="true" data-placeholder="6"></div>
+          </div>
+
+          <div class="vs-line">vs</div>
+
+          <div class="team-row">
+            <div class="team-logo-wrap">
+              <img src="img/Golden Knights.png" alt="Golden Knights" class="team-logo">
+            </div>
+            <div class="team-info">
+              <div class="team-name">Golden Knights</div>
+              <div class="team-seed">Vice-campione Lega degli Eroi</div>
+            </div>
+           <div class="score-box" contenteditable="true" data-placeholder="2"></div>
+
+          </div>
+        </div>
+      </article>
+
+        </section>
+
+  <!-- CARD CAMPIONE SUPERCOPPA -->
+  <section class="supercup-winner" id="supercup-winner" hidden>
+    <article class="winner-card">
+      <div class="winner-trophy"></div>
+      <div class="winner-content">
+        <div class="winner-title">Campione Supercoppa</div>
+
+        <div class="winner-logos">
+  <div class="winner-logo-wrap">
+    <img alt="" class="winner-logo" id="champion-logo">
+  </div>
+
+  <div class="winner-cup-wrap">
+    <!-- puoi usare anche un'altra immagine, es. cup_small.png -->
+    <img src="img/Supercoppacup.png" alt="Supercoppa degli Eroi" class="winner-cup">
+  </div>
+</div>
+
+
+        <div class="winner-name" id="champion-name">—</div>
+<div class="winner-sub" id="champion-sub">
+  In attesa della squadra che solleverà la Supercoppa
+</div>
+      </div>
+    </article>
+  </section>
+</main>
+
+
+  <!-- JS per navbar (e in futuro eventuali extra) -->
+  <script src="supercoppa.js" defer></script>
+   <script src="navbar.js"></script>
+</body>
+</html>

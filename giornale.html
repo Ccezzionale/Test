@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>La Gazzetta degli Eroi</title>
+  <link rel="stylesheet" href="giornale.css" />
+</head>
+
+<body>
+  <div class="wrap">
+    <div class="mast-shell">
+      <div class="page-title">
+        <h1>Benvenuto nella Lega degli Eroi</h1>
+        <p>La prima pagina della tua lega, tra verdetti, crolli e colpi di scena.</p>
+      </div>
+
+      <div class="masthead">
+        <div class="mast-top">
+          <div class="brand">
+            <div class="eyebrow">Edizione Ufficiale</div>
+            <div class="name">La Gazzetta degli Eroi</div>
+            <div class="tagline">Cronache, sentenze e caos organizzato della Lega</div>
+          </div>
+
+          <div class="meta">
+            <div class="chip" id="chipDate">Data</div>
+            <div class="chip" id="chipGW">GW</div>
+          </div>
+        </div>
+
+        <div class="toolbar">
+          <div class="toolbar-left">
+            <span class="badge blue">Edizione</span>
+
+            <label for="gwSelect">Giornata</label>
+            <select id="gwSelect"></select>
+
+            <button id="btnReload">Aggiorna</button>
+          </div>
+
+          <div class="toolbar-right">
+            <span id="status"></span>
+          </div>
+        </div>
+
+        <div id="output" class="paper">
+          Caricamento…
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="giornale.js"></script>
+</body>
+</html>
