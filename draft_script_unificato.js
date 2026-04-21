@@ -142,11 +142,18 @@ function renderPicks(dati) {
   corpoTabella.innerHTML = "";
   giocatoriScelti.clear();
 
-  let prossima = null, prossimaIndex = -1;
+  let prossima = null;
+  let prossimaIndex = -1;
+
+  const currentPick = currentDraftState?.current_pick || null;
 
   dati.forEach((riga, index) => {
     const nome = riga["Giocatore"]?.trim() || "";
-    if (!nome && prossimaIndex === -1) {
+    const pick = parseInt(riga["Pick"]);
+
+    if (nome) giocatoriScelti.add(normalize(nome));
+
+    if (currentPick !== null && pick === currentPick) {
       prossimaIndex = index;
       prossima = { fantaTeam: riga["Fanta Team"], pick: riga["Pick"] };
     }
@@ -157,7 +164,7 @@ function renderPicks(dati) {
     const nome = riga["Giocatore"]?.trim() || "";
     const fantaTeam = riga["Fanta Team"];
     const pick = riga["Pick"];
-    if (nome) giocatoriScelti.add(normalize(nome));
+
     tr.innerHTML = `<td>${pick}</td><td>${fantaTeam}</td><td>${nome}</td>`;
 
     if (i === prossimaIndex) {
@@ -168,6 +175,7 @@ function renderPicks(dati) {
       tr.style.backgroundColor = "white";
       tr.style.fontWeight = "bold";
     }
+
     corpoTabella.appendChild(tr);
   });
 
@@ -193,7 +201,6 @@ function renderPicks(dati) {
     ? `🎯 È il turno di: ${prossima.fantaTeam} (Pick ${prossima.pick})`
     : "✅ Draft completato!";
 }
-
 // ========== caricaPick con Retry + Abort + Spinner + Fallback ==========
 async function caricaPick() {
   showSpinner(true);
