@@ -566,13 +566,14 @@ function filtraLista() {
   if (el) el.addEventListener("input", debounce(filtraLista, 150));
 });
 
-window.addEventListener("DOMContentLoaded", function () {
-  caricaGiocatori().then(() =>
-    caricaPick().then(() => {
-      popolaListaDisponibili();
-      aggiornaChiamatePerSquadra();
-    })
-  );
+window.addEventListener("DOMContentLoaded", async function () {
+  const ok = await caricaUtenteLoggato();
+  if (!ok) return;
+
+  await caricaGiocatori();
+  await caricaPick();
+  popolaListaDisponibili();
+  aggiornaChiamatePerSquadra();
 });
 
 function mappaIndiceAssolutoPerTeam() {
