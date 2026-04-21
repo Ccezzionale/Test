@@ -276,7 +276,7 @@ function avviaAutoRefresh() {
     } catch (err) {
       console.warn("Auto refresh fallito:", err);
     }
-  }, 3000);
+  }, 5000);
 }
 
 // CSV con cache locale (TTL 24h) + delega al fetch
