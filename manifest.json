@@ -1,6 +1,6 @@
 {
   "name": "Lega degli Eroi",
-  "short_name": "Eroi",
+  "short_name": "Eroi Test",
   "start_url": "/LegadegliEroi/",
   "scope": "/LegadegliEroi/",
   "display": "standalone",
