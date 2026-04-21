@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Login</title>
+</head>
+<body>
+
+<h2>Login Lega degli Eroi</h2>
+
+<input type="email" id="email" placeholder="Email">
+<input type="password" id="password" placeholder="Password">
+<button onclick="login()">Login</button>
+
+<p id="status"></p>
+
+<script type="module">
+import { supabase } from './supabase.js'
+
+window.login = async () => {
+  const email = document.getElementById('email').value
+  const password = document.getElementById('password').value
+
+  const { data, error } = await supabase.auth.signInWithPassword({
+    email,
+    password
+  })
+
+  if (error) {
+    document.getElementById('status').innerText = error.message
+  } else {
+    window.location.href = 'draft.html'
+  }
+}
+</script>
+
+</body>
+</html>
