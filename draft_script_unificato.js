@@ -312,29 +312,92 @@ function parseGiocatoriCSV(csv) {
   });
 }
 
-function inviaPickAlFoglio(pick, fantaTeam, nome, ruolo, squadra, quotazione, options = {}) {
-  const dati = new URLSearchParams();
-  dati.append("tab", tab);
-  dati.append("pick", pick || "");
-  dati.append("fantaTeam", fantaTeam || "");
-  dati.append("giocatore", nome || "");
-  dati.append("ruolo", ruolo || "");
-  dati.append("squadra", squadra || "");
-  dati.append("quotazione", quotazione || "");
-  if (options.targetPick) dati.append("targetPick", options.targetPick);
-  if (typeof options.locked !== "undefined") dati.append("locked", options.locked ? "TRUE" : "FALSE");
+async function inviaPickAlFoglio(pick, fantaTeam, nome, ruolo, squadra, quotazione, options = {}) {
+  try {
+    const pickNum = parseInt(pick);
 
-  fetch(endpoint, { method: "POST", body: dati, cache: "no-store" })
-    .then(r => r.text())
-    .then(txt => {
-      console.log("✅ Risposta POST:", txt);
-      // ricarico le pick e aggiorno UI
-      return caricaPick().then(() => { popolaListaDisponibili(); aggiornaChiamatePerSquadra(); });
-    })
-    .catch(err => {
-      console.error("❌ ERRORE invio pick:", err);
-      alert("❌ Errore nell'invio della pick. Riprova.");
-    });
+    const { data: stateRows, error: stateError } = await supabase
+      .from('draft_state')
+      .select('*')
+      .eq('draft_name', tab);
+
+    if (stateError) throw stateError;
+
+    const state = stateRows?.[0];
+
+    if (!state) {
+      alert('Stato draft non trovato.');
+      return;
+    }
+
+    if (state.current_pick !== pickNum) {
+      alert('Non è più questa la pick corrente.');
+      await caricaPick();
+      return;
+    }
+
+    const { data: orderRows, error: orderError } = await supabase
+      .from('draft_order')
+      .select('*')
+      .eq('draft_name', tab)
+      .eq('pick_number', pickNum);
+
+    if (orderError) throw orderError;
+
+    const currentTurn = orderRows?.[0];
+
+    if (!currentTurn) {
+      alert('Turno corrente non trovato.');
+      return;
+    }
+
+    if (currentTurn.team_id !== currentTeamId) {
+      alert('Non è il tuo turno.');
+      return;
+    }
+
+    const { data: existingRows, error: existingError } = await supabase
+      .from('draft_picks')
+      .select('*')
+      .eq('draft_name', tab)
+      .eq('pick_number', pickNum);
+
+    if (existingError) throw existingError;
+
+    if (existingRows && existingRows.length > 0) {
+      alert('Questa pick è già stata effettuata.');
+      await caricaPick();
+      return;
+    }
+
+    const { error: insertError } = await supabase
+      .from('draft_picks')
+      .insert([{
+        draft_name: tab,
+        pick_number: pickNum,
+        team_id: currentTeamId,
+        player_name: nome,
+        user_id: currentUser.id
+      }]);
+
+    if (insertError) throw insertError;
+
+    const { error: updateError } = await supabase
+      .from('draft_state')
+      .update({ current_pick: pickNum + 1 })
+      .eq('id', state.id);
+
+    if (updateError) throw updateError;
+
+    console.log("✅ Pick salvata su Supabase");
+    await caricaPick();
+    popolaListaDisponibili();
+    aggiornaChiamatePerSquadra();
+
+  } catch (err) {
+    console.error("❌ ERRORE invio pick:", err);
+    alert("❌ Errore nell'invio della pick. Riprova.");
+  }
 }
 
 function popolaListaDisponibili() {
