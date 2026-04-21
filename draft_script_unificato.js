@@ -250,7 +250,6 @@ async function caricaPick() {
   } finally {
     showSpinner(false);
   }
-}finally(() => showSpinner(false));
 }
 
 // CSV con cache locale (TTL 24h) + delega al fetch
