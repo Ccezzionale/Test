@@ -1,3 +1,5 @@
+import { supabase } from './supabase.js';
+
 // ========== Helper & Global ==========
 const tabella = document.querySelector("#tabella-pick tbody");
 const listaGiocatori = document.getElementById("lista-giocatori");
@@ -10,6 +12,11 @@ const cercaRuolo = document.getElementById("cercaRuolo");
 const mappaGiocatori = {};
 let ruoli = new Set();
 let squadre = new Set();
+let currentUser = null;
+let currentProfile = null;
+let currentTeamId = null;
+let currentTeamName = null;
+let currentDraftState = null;
 
 function normalize(nome) { return nome.trim().toLowerCase(); }
 
