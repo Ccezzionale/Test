@@ -190,41 +190,67 @@ function renderPicks(dati) {
 }
 
 // ========== caricaPick con Retry + Abort + Spinner + Fallback ==========
-function caricaPick() {
+async function caricaPick() {
   showSpinner(true);
-  return abortAndFetch(
-    "pick",
-    `${endpoint}?tab=${encodeURIComponent(tab)}`,
-    4,     // tries
-    1200,  // baseDelay
-    25000  // timeout per tentativo
-  )
-    .then(res => res.text())
-    .then(txt => {
-      if (!txt.trim().startsWith("[")) {
-        console.error("❌ Risposta non JSON dal server:", txt);
-        throw new Error("Risposta non JSON (doGet). Controlla il tab passato.");
-      }
-      localStorage.setItem("last_picks_json", txt); // cache ultimo stato buono
-      renderPicks(JSON.parse(txt));
-    })
-    .catch(err => {
-      console.error("❌ Errore/timeout caricaPick:", err, "URL:", `${endpoint}?tab=${encodeURIComponent(tab)}`);
-      const el = document.getElementById("turno-attuale");
-      const cached = localStorage.getItem("last_picks_json");
-      if (cached) {
-        try {
-          renderPicks(JSON.parse(cached));
-          if (el) el.textContent = "⚠️ Mostro ultimo stato salvato (rete lenta). Riprovo...";
-        } catch {
-          if (el) el.textContent = "⚠️ Problema di rete nel caricare le pick. Riprova.";
-        }
-      } else {
-        if (el) el.textContent = "⚠️ Problema di rete nel caricare le pick. Riprova.";
-      }
-      setTimeout(() => caricaPick(), 5000); // auto-retry soft
-    })
-    .finally(() => showSpinner(false));
+
+  try {
+    const { data: teams, error: teamsError } = await supabase
+      .from('teams')
+      .select('*');
+
+    if (teamsError) throw teamsError;
+
+    const { data: orderRows, error: orderError } = await supabase
+      .from('draft_order')
+      .select('*')
+      .eq('draft_name', tab)
+      .order('pick_number', { ascending: true });
+
+    if (orderError) throw orderError;
+
+    const { data: pickRows, error: picksError } = await supabase
+      .from('draft_picks')
+      .select('*')
+      .eq('draft_name', tab)
+      .order('pick_number', { ascending: true });
+
+    if (picksError) throw picksError;
+
+    const { data: stateRows, error: stateError } = await supabase
+      .from('draft_state')
+      .select('*')
+      .eq('draft_name', tab);
+
+    if (stateError) throw stateError;
+
+    currentDraftState = stateRows?.[0] || null;
+
+    const picksMap = {};
+    pickRows.forEach(p => {
+      picksMap[p.pick_number] = p;
+    });
+
+    const dati = orderRows.map(r => {
+      const team = teams.find(t => t.id === r.team_id);
+      const pick = picksMap[r.pick_number];
+
+      return {
+        "Pick": r.pick_number,
+        "Fanta Team": team ? team.name : "",
+        "Giocatore": pick ? pick.player_name : ""
+      };
+    });
+
+    renderPicks(dati);
+
+  } catch (err) {
+    console.error("❌ Errore caricaPick da Supabase:", err);
+    const el = document.getElementById("turno-attuale");
+    if (el) el.textContent = "⚠️ Problema nel caricamento del draft.";
+  } finally {
+    showSpinner(false);
+  }
+}finally(() => showSpinner(false));
 }
 
 // CSV con cache locale (TTL 24h) + delega al fetch
