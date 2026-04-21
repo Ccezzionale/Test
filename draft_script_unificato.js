@@ -451,17 +451,31 @@ function popolaListaDisponibili() {
 const conferma = confirm(`Vuoi selezionare ${nome} per la squadra al turno?`);
 if (!conferma) return;
 
+if (!currentDraftState) {
+  alert("Stato draft non disponibile.");
+  return;
+}
+
+const pick = currentDraftState.current_pick;
+
 const righe = document.querySelectorAll("#tabella-pick tbody tr");
+let fantaTeam = "";
+
 for (let r of righe) {
   const celle = r.querySelectorAll("td");
-  if (celle.length >= 3 && !celle[2].textContent.trim()) {
-    const pick = celle[0]?.textContent || "";
-    const fantaTeam = celle[1]?.textContent || "";
-
-    inviaPickAlFoglio(pick, fantaTeam, nome, ruolo, squadra, quotazione);
+  const pickCella = parseInt(celle[0]?.textContent || "0");
+  if (pickCella === pick) {
+    fantaTeam = celle[1]?.textContent || "";
     break;
   }
 }
+
+if (!fantaTeam) {
+  alert("Squadra del turno non trovata.");
+  return;
+}
+
+inviaPickAlFoglio(pick, fantaTeam, nome, ruolo, squadra, quotazione);
     });
     listaGiocatori.dataset.bound = "1"; // evita di aggiungere più volte il listener
   }
