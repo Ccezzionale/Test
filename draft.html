@@ -61,11 +61,13 @@ const team = teamList?.find(t => t.id === profile.team_id)
 
   document.getElementById('userInfo').innerText = 'Sei: ' + team.name
 
-  const { data: state, error: stateError } = await supabase
-    .from('draft_state')
-    .select('*')
-    .eq('id', 1)
-    .single()
+const { data: stateList, error: stateError } = await supabase
+  .from('draft_state')
+  .select('*')
+
+console.log("STATE LIST:", stateList)
+
+const state = stateList?.find(s => s.id === 1)
 
   if (stateError || !state) {
     document.getElementById('turnInfo').innerText = 'Stato draft non trovato'
