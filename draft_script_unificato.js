@@ -448,33 +448,20 @@ function popolaListaDisponibili() {
       const squadra = tr.children[2].textContent;
       const quotazione = tr.children[3].textContent;
 
-      const conferma = confirm(`Vuoi selezionare ${nome} per la squadra al turno?`);
-      if (!conferma) return;
+const conferma = confirm(`Vuoi selezionare ${nome} per la squadra al turno?`);
+if (!conferma) return;
 
-      const righe = document.querySelectorAll("#tabella-pick tbody tr");
-      for (let r of righe) {
-        const celle = r.querySelectorAll("td");
-        if (celle.length >= 3 && !celle[2].textContent.trim()) {
-          const pick = celle[0]?.textContent || "";
-          const fantaTeam = celle[1]?.textContent || "";
+const righe = document.querySelectorAll("#tabella-pick tbody tr");
+for (let r of righe) {
+  const celle = r.querySelectorAll("td");
+  if (celle.length >= 3 && !celle[2].textContent.trim()) {
+    const pick = celle[0]?.textContent || "";
+    const fantaTeam = celle[1]?.textContent || "";
 
-          while (r.children.length > 3) r.removeChild(r.lastChild);
-          r.children[2].textContent = nome;
-
-          r.style.fontWeight = "bold";
-          r.classList.remove("next-pick");
-
-          document.getElementById("turno-attuale").textContent = `✅ ${nome} selezionato!`;
-
-          inviaPickAlFoglio(pick, fantaTeam, nome, ruolo, squadra, quotazione);
-
-          alert(`✅ Pick confermata!\n${nome} assegnato a ${fantaTeam}`);
-
-          applicaColoriPickSpeciali();
-          popolaListaDisponibili(); // ricostruisci la lista aggiornata
-          break;
-        }
-      }
+    inviaPickAlFoglio(pick, fantaTeam, nome, ruolo, squadra, quotazione);
+    break;
+  }
+}
     });
     listaGiocatori.dataset.bound = "1"; // evita di aggiungere più volte il listener
   }
