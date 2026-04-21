@@ -20,6 +20,11 @@ let currentDraftState = null;
 
 function normalize(nome) { return nome.trim().toLowerCase(); }
 
+async function logoutUtente() {
+  await supabase.auth.signOut();
+  window.location.href = 'login.html';
+}
+
 async function caricaUtenteLoggato() {
   const { data: { user } } = await supabase.auth.getUser();
 
@@ -567,6 +572,11 @@ function filtraLista() {
 window.addEventListener("DOMContentLoaded", async function () {
   const ok = await caricaUtenteLoggato();
   if (!ok) return;
+
+  const logoutBtn = document.getElementById("logout-btn");
+  if (logoutBtn) {
+    logoutBtn.addEventListener("click", logoutUtente);
+  }
 
   await caricaGiocatori();
   await caricaPick();
