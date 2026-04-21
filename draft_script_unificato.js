@@ -18,6 +18,7 @@ let currentTeamId = null;
 let currentTeamName = null;
 let currentDraftState = null;
 let autoRefreshInterval = null;
+let lastPickNotificata = null;
 
 function normalize(nome) { return nome.trim().toLowerCase(); }
 
@@ -256,6 +257,7 @@ async function caricaPick() {
 
     renderPicks(dati);
     aggiornaStatoInterattivoLista();
+    controllaNotificaTurno();
 
   } catch (err) {
     console.error("❌ Errore caricaPick da Supabase:", err);
@@ -308,6 +310,45 @@ function aggiornaStatoInterattivoLista() {
   } else {
     listaGiocatori.style.opacity = "0.6";
     listaGiocatori.style.pointerEvents = "none";
+  }
+}
+
+function controllaNotificaTurno() {
+  if (!currentDraftState) return;
+
+  const pickCorrente = currentDraftState.current_pick;
+
+  if (lastPickNotificata === pickCorrente) return;
+
+  const mioTurno = isMioTurno();
+
+  if (mioTurno) {
+    lastPickNotificata = pickCorrente;
+
+    // alert base (poi lo miglioriamo)
+    function controllaNotificaTurno() {
+  if (!currentDraftState) return;
+
+  const pickCorrente = currentDraftState.current_pick;
+
+  if (lastPickNotificata === pickCorrente) return;
+
+  const mioTurno = isMioTurno();
+
+  if (mioTurno) {
+    lastPickNotificata = pickCorrente;
+
+    const turnoEl = document.getElementById("turno-attuale");
+    if (turnoEl) {
+      turnoEl.style.background = "#ffcc00";
+      turnoEl.style.transform = "scale(1.05)";
+      turnoEl.style.transition = "all 0.3s ease";
+      turnoEl.textContent = `🔥 È il tuo turno! (${currentTeamName})`;
+
+      setTimeout(() => {
+        turnoEl.style.transform = "scale(1)";
+      }, 800);
+    }
   }
 }
 
