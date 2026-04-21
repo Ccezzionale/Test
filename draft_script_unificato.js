@@ -17,6 +17,7 @@ let currentProfile = null;
 let currentTeamId = null;
 let currentTeamName = null;
 let currentDraftState = null;
+let autoRefreshInterval = null;
 
 function normalize(nome) { return nome.trim().toLowerCase(); }
 
@@ -262,6 +263,20 @@ async function caricaPick() {
   } finally {
     showSpinner(false);
   }
+}
+
+function avviaAutoRefresh() {
+  if (autoRefreshInterval) clearInterval(autoRefreshInterval);
+
+  autoRefreshInterval = setInterval(async () => {
+    try {
+      await caricaPick();
+      popolaListaDisponibili();
+      aggiornaChiamatePerSquadra();
+    } catch (err) {
+      console.warn("Auto refresh fallito:", err);
+    }
+  }, 3000);
 }
 
 // CSV con cache locale (TTL 24h) + delega al fetch
@@ -590,6 +605,7 @@ window.addEventListener("DOMContentLoaded", async function () {
   await caricaPick();
   popolaListaDisponibili();
   aggiornaChiamatePerSquadra();
+  avviaAutoRefresh();
 });
 
 function mappaIndiceAssolutoPerTeam() {
