@@ -254,22 +254,21 @@ async function caricaPick() {
 
 // CSV con cache locale (TTL 24h) + delega al fetch
 function caricaGiocatori() {
-  const KEY = "giocatori_csv_cache_v3";
-  const TTL = 24 * 60 * 60 * 1000; // 24h
+  const KEY = "giocatori_championship_cache";
+  const TTL = 24 * 60 * 60 * 1000;
   const now = Date.now();
 
   try {
     const cache = JSON.parse(localStorage.getItem(KEY) || "null");
     if (cache && (now - cache.time) < TTL && cache.csv) {
       parseGiocatoriCSV(cache.csv);
-      return Promise.resolve(); // così il then() dopo funziona
+      return Promise.resolve();
     }
   } catch (err) {
     console.warn("Cache CSV non disponibile, vado di fetch:", err);
   }
 
-  // niente cache valida → fetch
-  return fetchAndParseGiocatori(KEY, now);
+  return fetchAndParseGiocatoriGeneric(KEY, now, "giocatori_completo_finale.csv");
 }
 
 // ========== CSV Giocatori con Abort + Spinner ==========
@@ -745,6 +744,8 @@ function ordinaLista(colonnaIndex, numerico = false) {
       return asc ? aText.localeCompare(bText) : bText.localeCompare(aText);
     }
   });
+
+
 
   
   tbody.innerHTML = "";
