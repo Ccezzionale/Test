@@ -33,17 +33,31 @@ const loadDraft = async () => {
 
   const { data: profile, error: profileError } = await supabase
     .from('profiles')
-    .select('*, teams(name)')
+    .select('*')
     .eq('id', user.id)
     .single()
 
   if (profileError || !profile) {
     document.getElementById('userInfo').innerText = 'Profilo non trovato'
+    console.error('Errore profilo:', profileError)
     return
   }
 
   currentProfile = profile
-  document.getElementById('userInfo').innerText = 'Sei: ' + profile.teams.name
+
+  const { data: team, error: teamError } = await supabase
+    .from('teams')
+    .select('id, name')
+    .eq('id', profile.team_id)
+    .single()
+
+  if (teamError || !team) {
+    document.getElementById('userInfo').innerText = 'Squadra non trovata'
+    console.error('Errore team:', teamError, 'team_id:', profile.team_id)
+    return
+  }
+
+  document.getElementById('userInfo').innerText = 'Sei: ' + team.name
 
   const { data: state, error: stateError } = await supabase
     .from('draft_state')
@@ -53,6 +67,7 @@ const loadDraft = async () => {
 
   if (stateError || !state) {
     document.getElementById('turnInfo').innerText = 'Stato draft non trovato'
+    console.error('Errore stato:', stateError)
     return
   }
 
@@ -60,17 +75,30 @@ const loadDraft = async () => {
 
   const { data: currentTurn, error: turnError } = await supabase
     .from('draft_order')
-    .select('pick_number, team_id, teams(name)')
+    .select('*')
     .eq('pick_number', currentPickNumber)
     .single()
 
   if (turnError || !currentTurn) {
     document.getElementById('turnInfo').innerText = 'Turno corrente non trovato'
+    console.error('Errore turno:', turnError)
+    return
+  }
+
+  const { data: turnTeam, error: turnTeamError } = await supabase
+    .from('teams')
+    .select('id, name')
+    .eq('id', currentTurn.team_id)
+    .single()
+
+  if (turnTeamError || !turnTeam) {
+    document.getElementById('turnInfo').innerText = 'Squadra del turno non trovata'
+    console.error('Errore team turno:', turnTeamError)
     return
   }
 
   document.getElementById('turnInfo').innerText =
-    'Pick corrente: #' + currentPickNumber + ' - Tocca a: ' + currentTurn.teams.name
+    'Pick corrente: #' + currentPickNumber + ' - Tocca a: ' + turnTeam.name
 
   const isMyTurn = currentTurn.team_id === currentProfile.team_id
 
@@ -93,7 +121,7 @@ document.getElementById('pickBtn').addEventListener('click', async () => {
 
   const { data: currentTurn } = await supabase
     .from('draft_order')
-    .select('pick_number, team_id')
+    .select('*')
     .eq('pick_number', currentPickNumber)
     .single()
 
@@ -113,6 +141,7 @@ document.getElementById('pickBtn').addEventListener('click', async () => {
 
   if (insertError) {
     document.getElementById('status').innerText = 'Errore salvataggio pick'
+    console.error('Errore insert:', insertError)
     return
   }
 
@@ -123,6 +152,7 @@ document.getElementById('pickBtn').addEventListener('click', async () => {
 
   if (updateError) {
     document.getElementById('status').innerText = 'Pick salvata ma errore aggiornamento turno'
+    console.error('Errore update stato:', updateError)
     return
   }
 
