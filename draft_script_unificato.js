@@ -172,7 +172,6 @@ function renderPicks(dati) {
     if (i === prossimaIndex) {
       tr.classList.add("next-pick");
       tr.style.backgroundColor = "#ffcc00";
-      setTimeout(() => tr.scrollIntoView({ behavior: "smooth", block: "center" }), 300);
     } else if (nome) {
       tr.style.backgroundColor = "white";
       tr.style.fontWeight = "bold";
@@ -279,7 +278,7 @@ function avviaAutoRefresh() {
     } catch (err) {
       console.warn("Auto refresh fallito:", err);
     }
-  }, 35000);
+  }, 5000);
 }
 
 function isMioTurno() {
