@@ -20,6 +20,56 @@ let currentDraftState = null;
 
 function normalize(nome) { return nome.trim().toLowerCase(); }
 
+async function caricaUtenteLoggato() {
+  const { data: { user } } = await supabase.auth.getUser();
+
+  if (!user) {
+    window.location.href = 'login.html';
+    return false;
+  }
+
+  currentUser = user;
+
+  const { data: profile, error: profileError } = await supabase
+    .from('profiles')
+    .select('*')
+    .eq('id', user.id)
+    .single();
+
+  if (profileError || !profile) {
+    console.error('Profilo non trovato:', profileError);
+    alert('Profilo utente non trovato.');
+    return false;
+  }
+
+  currentProfile = profile;
+  currentTeamId = profile.team_id;
+
+  const { data: teams, error: teamsError } = await supabase
+    .from('teams')
+    .select('*');
+
+  if (teamsError || !teams) {
+    console.error('Errore caricamento squadre:', teamsError);
+    alert('Errore nel caricamento squadre.');
+    return false;
+  }
+
+  const myTeam = teams.find(t => t.id === currentTeamId);
+
+  if (!myTeam) {
+    alert('Squadra associata non trovata.');
+    return false;
+  }
+
+  currentTeamName = myTeam.name;
+
+  const elUser = document.getElementById("utente-loggato");
+  if (elUser) elUser.textContent = `👤 Sei: ${currentTeamName}`;
+
+  return true;
+}
+
 // Spinner
 function showSpinner(show = true) {
   const s = document.getElementById("spinner");
