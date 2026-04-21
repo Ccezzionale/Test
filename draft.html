@@ -6,12 +6,22 @@
 <body>
 
 <h2>Draft Room</h2>
-<p id="userInfo">Caricamento...</p>
+<p id="userInfo">Caricamento utente...</p>
+<p id="turnInfo">Caricamento turno...</p>
+
+<input type="text" id="playerName" placeholder="Nome giocatore">
+<button id="pickBtn" disabled>Fai Pick</button>
+
+<p id="status"></p>
 
 <script type="module">
 import { supabase } from './supabase.js'
 
-const loadUser = async () => {
+let currentUser = null
+let currentProfile = null
+let currentPickNumber = null
+
+const loadDraft = async () => {
   const { data: { user } } = await supabase.auth.getUser()
 
   if (!user) {
@@ -19,17 +29,110 @@ const loadUser = async () => {
     return
   }
 
-  const { data: profile } = await supabase
+  currentUser = user
+
+  const { data: profile, error: profileError } = await supabase
     .from('profiles')
     .select('*, teams(name)')
     .eq('id', user.id)
     .single()
 
-  document.getElementById('userInfo').innerText =
-    "Sei: " + profile.teams.name
+  if (profileError || !profile) {
+    document.getElementById('userInfo').innerText = 'Profilo non trovato'
+    return
+  }
+
+  currentProfile = profile
+  document.getElementById('userInfo').innerText = 'Sei: ' + profile.teams.name
+
+  const { data: state, error: stateError } = await supabase
+    .from('draft_state')
+    .select('*')
+    .eq('id', 1)
+    .single()
+
+  if (stateError || !state) {
+    document.getElementById('turnInfo').innerText = 'Stato draft non trovato'
+    return
+  }
+
+  currentPickNumber = state.current_pick
+
+  const { data: currentTurn, error: turnError } = await supabase
+    .from('draft_order')
+    .select('pick_number, team_id, teams(name)')
+    .eq('pick_number', currentPickNumber)
+    .single()
+
+  if (turnError || !currentTurn) {
+    document.getElementById('turnInfo').innerText = 'Turno corrente non trovato'
+    return
+  }
+
+  document.getElementById('turnInfo').innerText =
+    'Pick corrente: #' + currentPickNumber + ' - Tocca a: ' + currentTurn.teams.name
+
+  const isMyTurn = currentTurn.team_id === currentProfile.team_id
+
+  if (isMyTurn) {
+    document.getElementById('status').innerText = 'È il tuo turno'
+    document.getElementById('pickBtn').disabled = false
+  } else {
+    document.getElementById('status').innerText = 'Non è il tuo turno'
+    document.getElementById('pickBtn').disabled = true
+  }
 }
 
-loadUser()
+document.getElementById('pickBtn').addEventListener('click', async () => {
+  const playerName = document.getElementById('playerName').value.trim()
+
+  if (!playerName) {
+    document.getElementById('status').innerText = 'Inserisci un giocatore'
+    return
+  }
+
+  const { data: currentTurn } = await supabase
+    .from('draft_order')
+    .select('pick_number, team_id')
+    .eq('pick_number', currentPickNumber)
+    .single()
+
+  if (!currentTurn || currentTurn.team_id !== currentProfile.team_id) {
+    document.getElementById('status').innerText = 'Non puoi chiamare ora'
+    return
+  }
+
+  const { error: insertError } = await supabase
+    .from('draft_picks')
+    .insert([{
+      pick_number: currentPickNumber,
+      team_id: currentProfile.team_id,
+      player_name: playerName,
+      user_id: currentUser.id
+    }])
+
+  if (insertError) {
+    document.getElementById('status').innerText = 'Errore salvataggio pick'
+    return
+  }
+
+  const { error: updateError } = await supabase
+    .from('draft_state')
+    .update({ current_pick: currentPickNumber + 1 })
+    .eq('id', 1)
+
+  if (updateError) {
+    document.getElementById('status').innerText = 'Pick salvata ma errore aggiornamento turno'
+    return
+  }
+
+  document.getElementById('status').innerText = 'Pick salvata!'
+  document.getElementById('playerName').value = ''
+
+  loadDraft()
+})
+
+loadDraft()
 </script>
 
 </body>
