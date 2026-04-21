@@ -325,19 +325,6 @@ function controllaNotificaTurno() {
   if (mioTurno) {
     lastPickNotificata = pickCorrente;
 
-    // alert base (poi lo miglioriamo)
-    function controllaNotificaTurno() {
-  if (!currentDraftState) return;
-
-  const pickCorrente = currentDraftState.current_pick;
-
-  if (lastPickNotificata === pickCorrente) return;
-
-  const mioTurno = isMioTurno();
-
-  if (mioTurno) {
-    lastPickNotificata = pickCorrente;
-
     const turnoEl = document.getElementById("turno-attuale");
     if (turnoEl) {
       turnoEl.style.background = "#ffcc00";
