@@ -45,11 +45,13 @@ const loadDraft = async () => {
 
   currentProfile = profile
 
-  const { data: team, error: teamError } = await supabase
-    .from('teams')
-    .select('id, name')
-    .eq('id', profile.team_id)
-    .single()
+const { data: teamList, error: teamError } = await supabase
+  .from('teams')
+  .select('*')
+
+console.log("TEAM LIST:", teamList)
+
+const team = teamList?.find(t => t.id === profile.team_id)
 
   if (teamError || !team) {
     document.getElementById('userInfo').innerText = 'Squadra non trovata'
