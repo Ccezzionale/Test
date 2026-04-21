@@ -279,7 +279,7 @@ function avviaAutoRefresh() {
     } catch (err) {
       console.warn("Auto refresh fallito:", err);
     }
-  }, 5000);
+  }, 35000);
 }
 
 function isMioTurno() {
