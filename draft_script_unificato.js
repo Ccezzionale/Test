@@ -255,6 +255,7 @@ async function caricaPick() {
     });
 
     renderPicks(dati);
+    aggiornaStatoInterattivoLista();
 
   } catch (err) {
     console.error("❌ Errore caricaPick da Supabase:", err);
@@ -277,6 +278,37 @@ function avviaAutoRefresh() {
       console.warn("Auto refresh fallito:", err);
     }
   }, 5000);
+}
+
+function isMioTurno() {
+  if (!currentDraftState) return false;
+
+  const pickCorrente = currentDraftState.current_pick;
+  const righe = document.querySelectorAll("#tabella-pick tbody tr");
+
+  for (let r of righe) {
+    const celle = r.querySelectorAll("td");
+    const pick = parseInt(celle[0]?.textContent || "0");
+    const squadra = (celle[1]?.textContent || "").trim();
+
+    if (pick === pickCorrente) {
+      return squadra === currentTeamName;
+    }
+  }
+
+  return false;
+}
+
+function aggiornaStatoInterattivoLista() {
+  const mioTurno = isMioTurno();
+
+  if (mioTurno) {
+    listaGiocatori.style.opacity = "1";
+    listaGiocatori.style.pointerEvents = "auto";
+  } else {
+    listaGiocatori.style.opacity = "0.6";
+    listaGiocatori.style.pointerEvents = "none";
+  }
 }
 
 // CSV con cache locale (TTL 24h) + delega al fetch
@@ -464,6 +496,10 @@ function popolaListaDisponibili() {
     listaGiocatori.addEventListener("click", (e) => {
       const tr = e.target.closest("tr");
       if (!tr) return;
+      if (!isMioTurno()) {
+  alert("Non è il tuo turno.");
+  return;
+}
 
       const nome = tr.children[0].textContent;
       const ruolo = tr.children[1].textContent;
@@ -605,6 +641,7 @@ window.addEventListener("DOMContentLoaded", async function () {
   await caricaPick();
   popolaListaDisponibili();
   aggiornaChiamatePerSquadra();
+  aggiornaStatoInterattivoLista();
   avviaAutoRefresh();
 });
 
