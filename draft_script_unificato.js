@@ -313,6 +313,80 @@ function aggiornaStatoInterattivoLista() {
   }
 }
 
+function urlBase64ToUint8Array(base64String) {
+  const padding = '='.repeat((4 - (base64String.length % 4)) % 4);
+  const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/');
+  const rawData = atob(base64);
+  return Uint8Array.from([...rawData].map((char) => char.charCodeAt(0)));
+}
+
+async function attivaNotifichePush() {
+  try {
+    if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
+      alert('Questo dispositivo non supporta le notifiche push.');
+      return;
+    }
+
+    if (!currentUser) {
+      alert('Utente non loggato.');
+      return;
+    }
+
+    const permission = await Notification.requestPermission();
+    if (permission !== 'granted') {
+      alert('Permesso notifiche negato.');
+      return;
+    }
+
+    const registration = await navigator.serviceWorker.ready;
+
+    const VAPID_PUBLIC_KEY = 'METTI_QUI_LA_TUA_VAPID_PUBLIC_KEY';
+
+    let subscription = await registration.pushManager.getSubscription();
+
+    if (!subscription) {
+      subscription = await registration.pushManager.subscribe({
+        userVisibleOnly: true,
+        applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY),
+      });
+    }
+
+    const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
+
+    if (sessionError || !sessionData?.session?.access_token) {
+      alert('Sessione non valida. Fai di nuovo login.');
+      return;
+    }
+
+    const response = await fetch(
+      `${supabaseUrl}/functions/v1/save-push-subscription`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${sessionData.session.access_token}`,
+          'apikey': supabaseKey
+        },
+        body: JSON.stringify({ subscription })
+      }
+    );
+
+    const result = await response.json();
+
+    if (!response.ok) {
+      console.error('Errore save-push-subscription:', result);
+      alert(result?.error || 'Errore nel salvataggio notifiche.');
+      return;
+    }
+
+    console.log('✅ Notifiche attivate:', result);
+    alert('Notifiche attivate con successo.');
+  } catch (err) {
+    console.error('❌ Errore attivazione notifiche:', err);
+    alert('Errore durante l’attivazione delle notifiche.');
+  }
+}
+
 function controllaNotificaTurno() {
   if (!currentDraftState) return;
 
@@ -634,6 +708,11 @@ window.addEventListener("DOMContentLoaded", async function () {
   const logoutBtn = document.getElementById("logout-btn");
   if (logoutBtn) {
     logoutBtn.addEventListener("click", logoutUtente);
+  }
+
+    const notifBtn = document.getElementById("attiva-notifiche-btn");
+  if (notifBtn) {
+    notifBtn.addEventListener("click", attivaNotifichePush);
   }
 
   await caricaGiocatori();
