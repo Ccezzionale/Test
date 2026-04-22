@@ -1,4 +1,5 @@
-import { supabase } from './supabase.js';
+import { supabase, supabaseUrl, supabaseKey } from './supabase.js';
+
 
 // ========== Helper & Global ==========
 const tabella = document.querySelector("#tabella-pick tbody");
