@@ -425,7 +425,7 @@ async function inviaPickAlFoglio(pick, fantaTeam, nome, ruolo, squadra, quotazio
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${accessToken}`,
-          'apikey': 'LA_TUA_SUPABASE_ANON_KEY'
+        'apikey': supabaseKey
         },
         body: JSON.stringify({
           draft_name: tab,
@@ -813,6 +813,8 @@ function ordinaLista(colonnaIndex, numerico = false) {
       return asc ? aText.localeCompare(bText) : bText.localeCompare(aText);
     }
   });
+
+
   
   tbody.innerHTML = "";
   righe.forEach(r => tbody.appendChild(r));
