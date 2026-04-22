@@ -398,82 +398,32 @@ function parseGiocatoriCSV(csv) {
 
 async function inviaPickAlFoglio(pick, fantaTeam, nome, ruolo, squadra, quotazione, options = {}) {
   try {
-    const pickNum = parseInt(pick);
-
-    const { data: stateRows, error: stateError } = await supabase
-      .from('draft_state')
-      .select('*')
-      .eq('draft_name', tab);
-
-    if (stateError) throw stateError;
-
-    const state = stateRows?.[0];
-
-    if (!state) {
-      alert('Stato draft non trovato.');
+    if (!currentDraftState) {
+      alert("Stato draft non disponibile.");
       return;
     }
 
-    if (state.current_pick !== pickNum) {
-      alert('Non è più questa la pick corrente.');
-      await caricaPick();
+    if (!isMioTurno()) {
+      alert("Non è il tuo turno.");
       return;
     }
 
-    const { data: orderRows, error: orderError } = await supabase
-      .from('draft_order')
-      .select('*')
-      .eq('draft_name', tab)
-      .eq('pick_number', pickNum);
-
-    if (orderError) throw orderError;
-
-    const currentTurn = orderRows?.[0];
-
-    if (!currentTurn) {
-      alert('Turno corrente non trovato.');
-      return;
-    }
-
-    if (currentTurn.team_id !== currentTeamId) {
-      alert('Non è il tuo turno.');
-      return;
-    }
-
-    const { data: existingRows, error: existingError } = await supabase
-      .from('draft_picks')
-      .select('*')
-      .eq('draft_name', tab)
-      .eq('pick_number', pickNum);
-
-    if (existingError) throw existingError;
-
-    if (existingRows && existingRows.length > 0) {
-      alert('Questa pick è già stata effettuata.');
-      await caricaPick();
-      return;
-    }
-
-    const { error: insertError } = await supabase
-      .from('draft_picks')
-      .insert([{
+    const { data, error } = await supabase.functions.invoke('submit-pick', {
+      body: {
         draft_name: tab,
-        pick_number: pickNum,
-        team_id: currentTeamId,
-        player_name: nome,
-        user_id: currentUser.id
-      }]);
+        player_name: nome
+      }
+    });
 
-    if (insertError) throw insertError;
+    if (error) {
+      console.error("❌ ERRORE submit-pick:", error);
+      alert(error.message || "Errore nell'invio della pick.");
+      await caricaPick();
+      return;
+    }
 
-    const { error: updateError } = await supabase
-      .from('draft_state')
-      .update({ current_pick: pickNum + 1 })
-      .eq('id', state.id);
+    console.log("✅ submit-pick OK:", data);
 
-    if (updateError) throw updateError;
-
-    console.log("✅ Pick salvata su Supabase");
     await caricaPick();
     popolaListaDisponibili();
     aggiornaChiamatePerSquadra();
