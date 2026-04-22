@@ -408,21 +408,42 @@ async function inviaPickAlFoglio(pick, fantaTeam, nome, ruolo, squadra, quotazio
       return;
     }
 
-    const { data, error } = await supabase.functions.invoke('submit-pick', {
-      body: {
-        draft_name: tab,
-        player_name: nome
-      }
-    });
+    const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
 
-    if (error) {
-      console.error("❌ ERRORE submit-pick:", error);
-      alert(error.message || "Errore nell'invio della pick.");
+    if (sessionError || !sessionData?.session?.access_token) {
+      console.error("❌ Sessione non trovata:", sessionError);
+      alert("Sessione utente non valida. Fai di nuovo login.");
+      return;
+    }
+
+    const accessToken = sessionData.session.access_token;
+
+    const response = await fetch(
+      'https://vfzadnfpwsbzfiyzbpvx.supabase.co/functions/v1/submit-pick',
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${accessToken}`,
+          'apikey': 'LA_TUA_SUPABASE_ANON_KEY'
+        },
+        body: JSON.stringify({
+          draft_name: tab,
+          player_name: nome
+        })
+      }
+    );
+
+    const result = await response.json();
+
+    if (!response.ok) {
+      console.error("❌ ERRORE submit-pick:", result);
+      alert(result?.error || "Errore nell'invio della pick.");
       await caricaPick();
       return;
     }
 
-    console.log("✅ submit-pick OK:", data);
+    console.log("✅ submit-pick OK:", result);
 
     await caricaPick();
     popolaListaDisponibili();
@@ -792,9 +813,6 @@ function ordinaLista(colonnaIndex, numerico = false) {
       return asc ? aText.localeCompare(bText) : bText.localeCompare(aText);
     }
   });
-
-
-
   
   tbody.innerHTML = "";
   righe.forEach(r => tbody.appendChild(r));
