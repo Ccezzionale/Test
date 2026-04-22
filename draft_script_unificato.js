@@ -340,7 +340,7 @@ async function attivaNotifichePush() {
 
     const registration = await navigator.serviceWorker.ready;
 
-    const VAPID_PUBLIC_KEY = 'METTI_QUI_LA_TUA_VAPID_PUBLIC_KEY';
+    const VAPID_PUBLIC_KEY = 'BLVVpSFZr0IUiuc4B-7eYQjFMnYvWlvHgxaaSyAo5LOvOD3wrypSJRDuVKMKucCpgMD8Sz9X7nTwFrYtCHsJWcc';
 
     let subscription = await registration.pushManager.getSubscription();
 
