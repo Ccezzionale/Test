@@ -679,6 +679,77 @@ async function adminCancelPick() {
   }
 }
 
+async function adminEditPick() {
+  const statusEl = document.getElementById("admin-status");
+  const pickInput = document.getElementById("admin-pick-number");
+  const newPlayerInput = document.getElementById("admin-new-player");
+
+  if (!isAdmin) {
+    alert("Solo admin.");
+    return;
+  }
+
+  const pickNumber = parseInt(pickInput?.value || "0");
+  const newPlayerName = (newPlayerInput?.value || "").trim();
+
+  if (!pickNumber) {
+    statusEl.textContent = "Inserisci un numero pick valido.";
+    return;
+  }
+
+  if (!newPlayerName) {
+    statusEl.textContent = "Inserisci il nuovo nome del giocatore.";
+    return;
+  }
+
+  const conferma = confirm(`Vuoi modificare la pick #${pickNumber} con "${newPlayerName}"?`);
+  if (!conferma) return;
+
+  statusEl.textContent = "⏳ Modifica pick in corso...";
+
+  try {
+    const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
+
+    if (sessionError || !sessionData?.session?.access_token) {
+      statusEl.textContent = "Sessione non valida.";
+      return;
+    }
+
+    const response = await fetch(
+      `${supabaseUrl}/functions/v1/admin-edit-pick`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${sessionData.session.access_token}`,
+          'apikey': supabaseKey
+        },
+        body: JSON.stringify({
+          draft_name: tab,
+          pick_number: pickNumber,
+          new_player_name: newPlayerName
+        })
+      }
+    );
+
+    const result = await response.json();
+
+    if (!response.ok) {
+      statusEl.textContent = `❌ ${result?.error || 'Errore modifica pick'}`;
+      return;
+    }
+
+    statusEl.textContent = `✅ ${result.message}`;
+    await caricaPick();
+    popolaListaDisponibili();
+    aggiornaChiamatePerSquadra();
+    aggiornaStatoInterattivoLista();
+  } catch (err) {
+    console.error(err);
+    statusEl.textContent = "❌ Errore durante la modifica.";
+  }
+}
+
 function popolaListaDisponibili() {
   // svuota tabella una volta sola
   listaGiocatori.innerHTML = "";
@@ -858,6 +929,11 @@ window.addEventListener("DOMContentLoaded", async function () {
   const adminCancelBtn = document.getElementById("admin-cancel-pick-btn");
 if (adminCancelBtn) {
   adminCancelBtn.addEventListener("click", adminCancelPick);
+}
+
+  const adminEditBtn = document.getElementById("admin-edit-pick-btn");
+if (adminEditBtn) {
+  adminEditBtn.addEventListener("click", adminEditPick);
 }
 
   const logoutBtn = document.getElementById("logout-btn");
