@@ -741,6 +741,77 @@ async function adminSetCurrentPick() {
   }
 }
 
+async function adminForcePick() {
+  const statusEl = document.getElementById("admin-status");
+  const pickInput = document.getElementById("admin-pick-number");
+  const newPlayerInput = document.getElementById("admin-new-player");
+
+  if (!isAdmin) {
+    alert("Solo admin.");
+    return;
+  }
+
+  const pickNumber = parseInt(pickInput?.value || "0");
+  const playerName = (newPlayerInput?.value || "").trim();
+
+  if (!pickNumber) {
+    statusEl.textContent = "Inserisci un numero pick valido.";
+    return;
+  }
+
+  if (!playerName) {
+    statusEl.textContent = "Inserisci il nome del giocatore.";
+    return;
+  }
+
+  const conferma = confirm(`Vuoi forzare la pick #${pickNumber} con "${playerName}"?`);
+  if (!conferma) return;
+
+  statusEl.textContent = "⏳ Forzatura pick in corso...";
+
+  try {
+    const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
+
+    if (sessionError || !sessionData?.session?.access_token) {
+      statusEl.textContent = "Sessione non valida.";
+      return;
+    }
+
+    const response = await fetch(
+      `${supabaseUrl}/functions/v1/admin-force-pick`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${sessionData.session.access_token}`,
+          'apikey': supabaseKey
+        },
+        body: JSON.stringify({
+          draft_name: tab,
+          pick_number: pickNumber,
+          player_name: playerName
+        })
+      }
+    );
+
+    const result = await response.json();
+
+    if (!response.ok) {
+      statusEl.textContent = `❌ ${result?.error || 'Errore forza pick'}`;
+      return;
+    }
+
+    statusEl.textContent = `✅ ${result.message}`;
+    await caricaPick();
+    popolaListaDisponibili();
+    aggiornaChiamatePerSquadra();
+    aggiornaStatoInterattivoLista();
+  } catch (err) {
+    console.error(err);
+    statusEl.textContent = "❌ Errore durante la forza pick.";
+  }
+}
+
 async function adminEditPick() {
   const statusEl = document.getElementById("admin-status");
   const pickInput = document.getElementById("admin-pick-number");
@@ -996,6 +1067,11 @@ if (adminCancelBtn) {
   const adminEditBtn = document.getElementById("admin-edit-pick-btn");
 if (adminEditBtn) {
   adminEditBtn.addEventListener("click", adminEditPick);
+}
+
+  const adminForceBtn = document.getElementById("admin-force-pick-btn");
+if (adminForceBtn) {
+  adminForceBtn.addEventListener("click", adminForcePick);
 }
 
   const adminSetPickBtn = document.getElementById("admin-set-pick-btn");
