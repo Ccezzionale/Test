@@ -17,6 +17,10 @@ const CONFIG = {
   PICK_OWNER_COL: "team_id",
   DRAFT_NAME_COL: "draft_name",
 
+  PICKS_TABLE: "draft_picks",
+  PICKS_DRAFT_NAME_COL: "draft_name",
+  PICKS_PICK_NUMBER_COL: "pick_number",
+
   TEAM_TABLE: "teams",
   TEAM_ID_COL: "id",
   TEAM_NAME_COL: "name",
@@ -32,6 +36,7 @@ let currentTeamName = null;
 
 let allPicks = [];
 let allTeams = [];
+let usedPickNumbers = new Set();
 
 /* ========= ELEMENTI ========= */
 
@@ -177,19 +182,37 @@ async function loadTeams() {
 }
 
 async function loadPicks() {
-  const { data, error } = await supabase
+  const { data: orderData, error: orderError } = await supabase
     .from(CONFIG.DRAFT_TABLE)
     .select("*")
     .eq(CONFIG.DRAFT_NAME_COL, CONFIG.DRAFT_NAME)
     .order(CONFIG.PICK_NUMBER_COL, { ascending: true });
 
-  if (error) {
-    console.error(error);
+  if (orderError) {
+    console.error(orderError);
     myPicksBox.textContent = "Errore nel caricamento delle pick.";
     return;
   }
 
-  allPicks = data || [];
+  const { data: usedData, error: usedError } = await supabase
+    .from(CONFIG.PICKS_TABLE)
+    .select(CONFIG.PICKS_PICK_NUMBER_COL)
+    .eq(CONFIG.PICKS_DRAFT_NAME_COL, CONFIG.DRAFT_NAME);
+
+  if (usedError) {
+    console.error(usedError);
+    myPicksBox.textContent = "Errore nel controllo delle pick già usate.";
+    return;
+  }
+
+  usedPickNumbers = new Set(
+    (usedData || []).map(row => Number(row[CONFIG.PICKS_PICK_NUMBER_COL]))
+  );
+
+  allPicks = (orderData || []).filter(pick => {
+    const pickNumber = Number(pick[CONFIG.PICK_NUMBER_COL]);
+    return !usedPickNumbers.has(pickNumber);
+  });
 }
 
 /* ========= RENDER FORM ========= */
@@ -548,12 +571,30 @@ async function acceptTrade(proposalId) {
 
     if (assetsError) throw assetsError;
 
-    await loadPicks();
+await loadPicks();
 
-    const fromAssets = assets.filter(a => a.side === "from" && a.asset_type === "pick");
-    const toAssets = assets.filter(a => a.side === "to" && a.asset_type === "pick");
+const allTradeAssets = assets.filter(a => a.asset_type === "pick");
 
-    const ownershipOk = checkOwnershipBeforeTrade(proposal, fromAssets, toAssets);
+const hasUsedPick = allTradeAssets.some(asset =>
+  usedPickNumbers.has(Number(asset.asset_id))
+);
+
+if (hasUsedPick) {
+  alert("Trade bloccata: una o più pick sono già state usate nel draft.");
+
+  await supabase
+    .from("trade_proposals")
+    .update({ status: "cancelled" })
+    .eq("id", proposalId);
+
+  await refreshAll();
+  return;
+}
+
+const fromAssets = assets.filter(a => a.side === "from" && a.asset_type === "pick");
+const toAssets = assets.filter(a => a.side === "to" && a.asset_type === "pick");
+
+const ownershipOk = checkOwnershipBeforeTrade(proposal, fromAssets, toAssets);
 
     if (!ownershipOk) {
       alert("Trade bloccata: una o più pick non appartengono più alla squadra prevista.");
