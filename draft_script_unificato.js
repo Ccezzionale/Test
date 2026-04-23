@@ -381,10 +381,58 @@ async function attivaNotifichePush() {
     }
 
     console.log('✅ Notifiche attivate:', result);
-    alert('Notifiche attivate con successo.');
+alert('Notifiche attivate con successo.');
+await aggiornaBottoneNotifiche();
   } catch (err) {
     console.error('❌ Errore attivazione notifiche:', err);
     alert('Errore durante l’attivazione delle notifiche.');
+  }
+}
+
+async function aggiornaBottoneNotifiche() {
+  const notifBtn = document.getElementById("attiva-notifiche-btn");
+  if (!notifBtn) return;
+
+  if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
+    notifBtn.style.display = "none";
+    return;
+  }
+
+  try {
+    const registration = await navigator.serviceWorker.ready;
+    const subscription = await registration.pushManager.getSubscription();
+
+    if (subscription) {
+      notifBtn.textContent = "Disattiva notifiche";
+      notifBtn.dataset.attive = "true";
+    } else {
+      notifBtn.textContent = "Attiva notifiche";
+      notifBtn.dataset.attive = "false";
+    }
+  } catch (err) {
+    console.error("Errore controllo stato notifiche:", err);
+    notifBtn.textContent = "Attiva notifiche";
+    notifBtn.dataset.attive = "false";
+  }
+}
+
+async function disattivaNotifichePush() {
+  try {
+    const registration = await navigator.serviceWorker.ready;
+    const subscription = await registration.pushManager.getSubscription();
+
+    if (!subscription) {
+      await aggiornaBottoneNotifiche();
+      return;
+    }
+
+    await subscription.unsubscribe();
+
+    alert("Notifiche disattivate.");
+    await aggiornaBottoneNotifiche();
+  } catch (err) {
+    console.error("Errore disattivazione notifiche:", err);
+    alert("Errore durante la disattivazione delle notifiche.");
   }
 }
 
@@ -736,10 +784,16 @@ window.addEventListener("DOMContentLoaded", async function () {
     logoutBtn.addEventListener("click", logoutUtente);
   }
 
-    const notifBtn = document.getElementById("attiva-notifiche-btn");
-  if (notifBtn) {
-    notifBtn.addEventListener("click", attivaNotifichePush);
-  }
+const notifBtn = document.getElementById("attiva-notifiche-btn");
+if (notifBtn) {
+  notifBtn.addEventListener("click", async () => {
+    if (notifBtn.dataset.attive === "true") {
+      await disattivaNotifichePush();
+    } else {
+      await attivaNotifichePush();
+    }
+  });
+}
 
   await caricaGiocatori();
   await caricaPick();
