@@ -617,6 +617,68 @@ async function inviaPickAlFoglio(pick, fantaTeam, nome, ruolo, squadra, quotazio
   }
 }
 
+async function adminCancelPick() {
+  const statusEl = document.getElementById("admin-status");
+  const pickInput = document.getElementById("admin-pick-number");
+
+  if (!isAdmin) {
+    alert("Solo admin.");
+    return;
+  }
+
+  const pickNumber = parseInt(pickInput?.value || "0");
+  if (!pickNumber) {
+    statusEl.textContent = "Inserisci un numero pick valido.";
+    return;
+  }
+
+  const conferma = confirm(`Vuoi annullare la pick #${pickNumber}?`);
+  if (!conferma) return;
+
+  statusEl.textContent = "⏳ Annullamento in corso...";
+
+  try {
+    const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
+
+    if (sessionError || !sessionData?.session?.access_token) {
+      statusEl.textContent = "Sessione non valida.";
+      return;
+    }
+
+    const response = await fetch(
+      `${supabaseUrl}/functions/v1/admin-cancel-pick`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${sessionData.session.access_token}`,
+          'apikey': supabaseKey
+        },
+        body: JSON.stringify({
+          draft_name: tab,
+          pick_number: pickNumber
+        })
+      }
+    );
+
+    const result = await response.json();
+
+    if (!response.ok) {
+      statusEl.textContent = `❌ ${result?.error || 'Errore annullamento pick'}`;
+      return;
+    }
+
+    statusEl.textContent = `✅ ${result.message}`;
+    await caricaPick();
+    popolaListaDisponibili();
+    aggiornaChiamatePerSquadra();
+    aggiornaStatoInterattivoLista();
+  } catch (err) {
+    console.error(err);
+    statusEl.textContent = "❌ Errore durante l'annullamento.";
+  }
+}
+
 function popolaListaDisponibili() {
   // svuota tabella una volta sola
   listaGiocatori.innerHTML = "";
@@ -792,6 +854,11 @@ window.addEventListener("DOMContentLoaded", async function () {
   const ok = await caricaUtenteLoggato();
   if (!ok) return;
   aggiornaAdminPanel();
+
+  const adminCancelBtn = document.getElementById("admin-cancel-pick-btn");
+if (adminCancelBtn) {
+  adminCancelBtn.addEventListener("click", adminCancelPick);
+}
 
   const logoutBtn = document.getElementById("logout-btn");
   if (logoutBtn) {
