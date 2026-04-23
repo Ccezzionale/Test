@@ -113,33 +113,7 @@
             </table>
           </div>
         </div>
-      <section id="admin-trade-panel" class="panel" style="display:none; margin-top:20px;">
-  <div class="panel-header">
-    <div class="panel-title-wrap">
-      <h2 class="panel-title">🔁 Admin Trade Picks</h2>
-      <p class="panel-subtitle">Scambio pick libere tra squadre</p>
-    </div>
-  </div>
-
-  <div style="padding:16px; display:grid; gap:12px; max-width:560px;">
-    <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
-      <div>
-        <label for="trade-pick-a"><strong>Pick A</strong></label><br>
-        <input id="trade-pick-a" type="number" min="1" placeholder="Es. 7" style="width:100%; padding:8px; margin-top:6px;">
-      </div>
-
-      <div>
-        <label for="trade-pick-b"><strong>Pick B</strong></label><br>
-        <input id="trade-pick-b" type="number" min="1" placeholder="Es. 12" style="width:100%; padding:8px; margin-top:6px;">
-      </div>
-    </div>
-
-    <div style="display:flex; gap:10px; flex-wrap:wrap;">
-      <button id="admin-swap-picks-btn" type="button">🔁 Scambia picks</button>
-    </div>
-
-    <p id="admin-trade-status" style="margin:0; font-weight:600;"></p>
-  </div>
+      
 </section>
 
       <aside class="panel lista-container">
@@ -230,6 +204,34 @@
       </div>
     </section>
 
+    <section id="admin-trade-panel" class="panel" style="display:none; margin-top:20px;">
+  <div class="panel-header">
+    <div class="panel-title-wrap">
+      <h2 class="panel-title">🔁 Admin Trade Picks</h2>
+      <p class="panel-subtitle">Scambio pick libere tra squadre</p>
+    </div>
+  </div>
+
+  <div style="padding:16px; display:grid; gap:12px; max-width:560px;">
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+      <div>
+        <label for="trade-pick-a"><strong>Pick A</strong></label><br>
+        <input id="trade-pick-a" type="number" min="1" placeholder="Es. 7" style="width:100%; padding:8px; margin-top:6px;">
+      </div>
+
+      <div>
+        <label for="trade-pick-b"><strong>Pick B</strong></label><br>
+        <input id="trade-pick-b" type="number" min="1" placeholder="Es. 12" style="width:100%; padding:8px; margin-top:6px;">
+      </div>
+    </div>
+
+    <div style="display:flex; gap:10px; flex-wrap:wrap;">
+      <button id="admin-swap-picks-btn" type="button">🔁 Scambia picks</button>
+    </div>
+
+    <p id="admin-trade-status" style="margin:0; font-weight:600;"></p>
+  </div>
+</section>
     <section class="summary-section">
       <div class="summary-topbar">
         <div class="summary-title-wrap">
