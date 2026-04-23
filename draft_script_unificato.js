@@ -974,7 +974,6 @@ function ordinaLista(colonnaIndex, numerico = false) {
     }
   });
 
-
   
   tbody.innerHTML = "";
   righe.forEach(r => tbody.appendChild(r));
