@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Trade Room</title>
+
+  <link rel="stylesheet" href="navbar.css" />
+  <link rel="stylesheet" href="draft.css" />
+</head>
+
+<body>
+  <nav class="site-nav">
+    <div class="nav-inner">
+      <div class="nav-left">
+        <span id="hamburger" class="hamburger">☰</span>
+        <a href="index.html" class="brand-home" aria-label="Home">🏠</a>
+      </div>
+
+      <ul class="navbar" id="mainMenu">
+        <li><a href="rose.html">Rose</a></li>
+        <li><a href="classifica.html">Classifica</a></li>
+        <li><a href="draft.html">Draft Room</a></li>
+        <li><a href="trade-room.html" class="active">Trade Room</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <main class="draft-page">
+    <section class="draft-header">
+      <h1>Trade Room</h1>
+      <p>Proponi, ricevi e accetta scambi di pick tra squadre.</p>
+    </section>
+
+    <section class="draft-card">
+      <p id="userInfo">Controllo accesso...</p>
+      <button id="logoutBtn" type="button">Logout</button>
+    </section>
+
+    <section id="tradeApp" style="display:none;">
+      <section class="draft-card">
+        <h2>Proponi una trade</h2>
+
+        <p>
+          La tua squadra:
+          <strong id="myTeamLabel">-</strong>
+        </p>
+
+        <div class="form-row">
+          <label for="toTeamSelect">Proponi a</label>
+          <select id="toTeamSelect">
+            <option value="">Seleziona squadra...</option>
+          </select>
+        </div>
+
+        <div class="form-row">
+          <label>Le pick che offri</label>
+          <div id="myPicksBox">Caricamento...</div>
+        </div>
+
+        <div class="form-row">
+          <label>Le pick che chiedi</label>
+          <div id="theirPicksBox">Seleziona prima una squadra...</div>
+        </div>
+
+        <div class="form-row">
+          <label for="tradeMessageInput">Messaggio opzionale</label>
+          <textarea id="tradeMessageInput" rows="3" placeholder="Es. Ti interessa questo scambio?"></textarea>
+        </div>
+
+        <button id="sendTradeBtn" type="button">
+          Invia proposta
+        </button>
+
+        <p id="tradeMessage"></p>
+      </section>
+
+      <section class="draft-card">
+        <h2>Proposte ricevute</h2>
+        <div id="receivedTradesBox">Caricamento...</div>
+      </section>
+
+      <section class="draft-card">
+        <h2>Proposte inviate</h2>
+        <div id="sentTradesBox">Caricamento...</div>
+      </section>
+
+      <section class="draft-card">
+        <h2>Storico trade concluse</h2>
+        <div id="completedTradesBox">Caricamento...</div>
+      </section>
+    </section>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <!-- Usa lo stesso config già usato nella Draft Room -->
+  <script src="supabase-config.js"></script>
+  <script src="trade-room.js"></script>
+</body>
+</html>
