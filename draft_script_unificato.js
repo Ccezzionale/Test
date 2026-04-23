@@ -97,6 +97,8 @@ function aggiornaAdminPanel() {
   }
 }
 
+
+
 // Spinner
 function showSpinner(show = true) {
   const s = document.getElementById("spinner");
@@ -451,6 +453,77 @@ async function disattivaNotifichePush() {
   } catch (err) {
     console.error("Errore disattivazione notifiche:", err);
     alert("Errore durante la disattivazione delle notifiche.");
+  }
+}
+
+async function adminSwapPicks() {
+  const statusEl = document.getElementById("admin-trade-status");
+  const pickAInput = document.getElementById("trade-pick-a");
+  const pickBInput = document.getElementById("trade-pick-b");
+
+  if (!isAdmin) {
+    alert("Solo admin.");
+    return;
+  }
+
+  const pickA = parseInt(pickAInput?.value || "0");
+  const pickB = parseInt(pickBInput?.value || "0");
+
+  if (!pickA || !pickB) {
+    statusEl.textContent = "Inserisci due pick valide.";
+    return;
+  }
+
+  if (pickA === pickB) {
+    statusEl.textContent = "Le due pick devono essere diverse.";
+    return;
+  }
+
+  const conferma = confirm(`Vuoi scambiare la pick #${pickA} con la pick #${pickB}?`);
+  if (!conferma) return;
+
+  statusEl.textContent = "⏳ Scambio pick in corso...";
+
+  try {
+    const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
+
+    if (sessionError || !sessionData?.session?.access_token) {
+      statusEl.textContent = "Sessione non valida.";
+      return;
+    }
+
+    const response = await fetch(
+      `${supabaseUrl}/functions/v1/admin-swap-picks`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${sessionData.session.access_token}`,
+          'apikey': supabaseKey
+        },
+        body: JSON.stringify({
+          draft_name: tab,
+          pick_a: pickA,
+          pick_b: pickB
+        })
+      }
+    );
+
+    const result = await response.json();
+
+    if (!response.ok) {
+      statusEl.textContent = `❌ ${result?.error || 'Errore scambio picks'}`;
+      return;
+    }
+
+    statusEl.textContent = `✅ ${result.message}`;
+    await caricaPick();
+    popolaListaDisponibili();
+    aggiornaChiamatePerSquadra();
+    aggiornaStatoInterattivoLista();
+  } catch (err) {
+    console.error(err);
+    statusEl.textContent = "❌ Errore durante lo scambio picks.";
   }
 }
 
@@ -1067,6 +1140,11 @@ window.addEventListener("DOMContentLoaded", async function () {
   const adminCancelBtn = document.getElementById("admin-cancel-pick-btn");
 if (adminCancelBtn) {
   adminCancelBtn.addEventListener("click", adminCancelPick);
+}
+
+  const adminSwapBtn = document.getElementById("admin-swap-picks-btn");
+if (adminSwapBtn) {
+  adminSwapBtn.addEventListener("click", adminSwapPicks);
 }
 
   const adminEditBtn = document.getElementById("admin-edit-pick-btn");
