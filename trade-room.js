@@ -1,28 +1,33 @@
 /* ===============================
    TRADE ROOM - LEGA DEGLI EROI
    Versione 1: scambio pick tra squadre
+   Struttura Supabase:
+   - draft_order: draft_name, pick_number, team_id
+   - teams: id, name
+   - profiles: email, team_id
 ================================ */
 
-/*
-  Se nella tua tabella draft_order i nomi sono diversi,
-  cambia SOLO questi valori.
-*/
 const CONFIG = {
   DRAFT_TABLE: "draft_order",
+  DRAFT_NAME: "Draft Championship",
 
-  PICK_ID_COL: "id",
   PICK_NUMBER_COL: "pick_number",
-  PICK_ROUND_COL: "round",
-  PICK_OWNER_COL: "owner_team",
+  PICK_OWNER_COL: "team_id",
+  DRAFT_NAME_COL: "draft_name",
+
+  TEAM_TABLE: "teams",
+  TEAM_ID_COL: "id",
+  TEAM_NAME_COL: "name",
 
   PROFILE_TABLE: "profiles",
   PROFILE_EMAIL_COL: "email",
-  PROFILE_TEAM_COL: "team_name",
-  PROFILE_ROLE_COL: "role"
+  PROFILE_TEAM_COL: "team_id"
 };
 
 let currentUser = null;
-let currentTeam = null;
+let currentTeamId = null;
+let currentTeamName = null;
+
 let allPicks = [];
 let allTeams = [];
 
@@ -53,13 +58,14 @@ async function initTradeRoom() {
   setupEvents();
 
   const ok = await checkUser();
-
   if (!ok) return;
 
-  await loadPicks();
   await loadTeams();
+  await loadPicks();
+
   renderTeamSelect();
   renderMyPicks();
+
   await loadTrades();
 
   tradeApp.style.display = "block";
@@ -105,7 +111,6 @@ async function checkUser() {
   }
 
   currentUser = data.user;
-
   const email = currentUser.email;
 
   const { data: profile, error: profileError } = await supabase
@@ -115,19 +120,34 @@ async function checkUser() {
     .maybeSingle();
 
   if (profileError || !profile) {
+    console.error(profileError);
     userInfo.textContent = "Profilo non trovato. Controlla la tabella profiles.";
     return false;
   }
 
-  currentTeam = profile[CONFIG.PROFILE_TEAM_COL];
+  currentTeamId = profile[CONFIG.PROFILE_TEAM_COL];
 
-  if (!currentTeam) {
+  if (!currentTeamId) {
     userInfo.textContent = "Nessuna squadra collegata a questo utente.";
     return false;
   }
 
+  const { data: team, error: teamError } = await supabase
+    .from(CONFIG.TEAM_TABLE)
+    .select("*")
+    .eq(CONFIG.TEAM_ID_COL, currentTeamId)
+    .maybeSingle();
+
+  if (teamError || !team) {
+    console.error(teamError);
+    userInfo.textContent = "Squadra non trovata nella tabella teams.";
+    return false;
+  }
+
+  currentTeamName = team[CONFIG.TEAM_NAME_COL];
+
   userInfo.textContent = `Accesso effettuato come ${email}`;
-  myTeamLabel.textContent = currentTeam;
+  myTeamLabel.textContent = currentTeamName;
 
   return true;
 }
@@ -137,12 +157,28 @@ async function logout() {
   window.location.href = "draft.html";
 }
 
-/* ========= DATI PICK ========= */
+/* ========= DATI ========= */
+
+async function loadTeams() {
+  const { data, error } = await supabase
+    .from(CONFIG.TEAM_TABLE)
+    .select("*")
+    .order(CONFIG.TEAM_NAME_COL, { ascending: true });
+
+  if (error) {
+    console.error(error);
+    allTeams = [];
+    return;
+  }
+
+  allTeams = data || [];
+}
 
 async function loadPicks() {
   const { data, error } = await supabase
     .from(CONFIG.DRAFT_TABLE)
     .select("*")
+    .eq(CONFIG.DRAFT_NAME_COL, CONFIG.DRAFT_NAME)
     .order(CONFIG.PICK_NUMBER_COL, { ascending: true });
 
   if (error) {
@@ -154,30 +190,24 @@ async function loadPicks() {
   allPicks = data || [];
 }
 
-async function loadTeams() {
-  const teamsFromPicks = allPicks
-    .map(pick => pick[CONFIG.PICK_OWNER_COL])
-    .filter(Boolean);
-
-  allTeams = [...new Set(teamsFromPicks)].sort();
-}
+/* ========= RENDER FORM ========= */
 
 function renderTeamSelect() {
   toTeamSelect.innerHTML = `<option value="">Seleziona squadra...</option>`;
 
   allTeams
-    .filter(team => team !== currentTeam)
+    .filter(team => team[CONFIG.TEAM_ID_COL] !== currentTeamId)
     .forEach(team => {
       const option = document.createElement("option");
-      option.value = team;
-      option.textContent = team;
+      option.value = team[CONFIG.TEAM_ID_COL];
+      option.textContent = team[CONFIG.TEAM_NAME_COL];
       toTeamSelect.appendChild(option);
     });
 }
 
 function renderMyPicks() {
   const myPicks = allPicks.filter(
-    pick => pick[CONFIG.PICK_OWNER_COL] === currentTeam
+    pick => pick[CONFIG.PICK_OWNER_COL] === currentTeamId
   );
 
   if (!myPicks.length) {
@@ -188,10 +218,10 @@ function renderMyPicks() {
   myPicksBox.innerHTML = myPicks.map(pick => {
     return `
       <label class="pick-choice">
-        <input 
-          type="checkbox" 
+        <input
+          type="checkbox"
           class="my-pick-checkbox"
-          value="${pick[CONFIG.PICK_ID_COL]}"
+          value="${pick[CONFIG.PICK_NUMBER_COL]}"
         />
         ${formatPickLabel(pick)}
       </label>
@@ -200,29 +230,31 @@ function renderMyPicks() {
 }
 
 function renderTheirPicks() {
-  const selectedTeam = toTeamSelect.value;
+  const selectedTeamId = toTeamSelect.value;
 
-  if (!selectedTeam) {
+  if (!selectedTeamId) {
     theirPicksBox.innerHTML = "Seleziona prima una squadra...";
     return;
   }
 
   const theirPicks = allPicks.filter(
-    pick => pick[CONFIG.PICK_OWNER_COL] === selectedTeam
+    pick => pick[CONFIG.PICK_OWNER_COL] === selectedTeamId
   );
 
+  const selectedTeamName = getTeamName(selectedTeamId);
+
   if (!theirPicks.length) {
-    theirPicksBox.innerHTML = `<p>Nessuna pick disponibile per ${selectedTeam}.</p>`;
+    theirPicksBox.innerHTML = `<p>Nessuna pick disponibile per ${selectedTeamName}.</p>`;
     return;
   }
 
   theirPicksBox.innerHTML = theirPicks.map(pick => {
     return `
       <label class="pick-choice">
-        <input 
-          type="checkbox" 
+        <input
+          type="checkbox"
           class="their-pick-checkbox"
-          value="${pick[CONFIG.PICK_ID_COL]}"
+          value="${pick[CONFIG.PICK_NUMBER_COL]}"
         />
         ${formatPickLabel(pick)}
       </label>
@@ -231,14 +263,12 @@ function renderTheirPicks() {
 }
 
 function formatPickLabel(pick) {
-  const pickNumber = pick[CONFIG.PICK_NUMBER_COL];
-  const round = pick[CONFIG.PICK_ROUND_COL];
+  return `Pick ${pick[CONFIG.PICK_NUMBER_COL]}`;
+}
 
-  if (round) {
-    return `Pick ${pickNumber} - Round ${round}`;
-  }
-
-  return `Pick ${pickNumber}`;
+function getTeamName(teamId) {
+  const team = allTeams.find(t => t[CONFIG.TEAM_ID_COL] === teamId);
+  return team ? team[CONFIG.TEAM_NAME_COL] : teamId;
 }
 
 /* ========= INVIO PROPOSTA ========= */
@@ -246,17 +276,17 @@ function formatPickLabel(pick) {
 async function sendTradeProposal() {
   clearMessage();
 
-  const toTeam = toTeamSelect.value;
+  const toTeamId = toTeamSelect.value;
 
-  if (!toTeam) {
+  if (!toTeamId) {
     showMessage("Seleziona una squadra a cui proporre la trade.", "error");
     return;
   }
 
-  const mySelectedPickIds = getCheckedValues(".my-pick-checkbox");
-  const theirSelectedPickIds = getCheckedValues(".their-pick-checkbox");
+  const mySelectedPickNumbers = getCheckedValues(".my-pick-checkbox");
+  const theirSelectedPickNumbers = getCheckedValues(".their-pick-checkbox");
 
-  if (!mySelectedPickIds.length && !theirSelectedPickIds.length) {
+  if (!mySelectedPickNumbers.length && !theirSelectedPickNumbers.length) {
     showMessage("Seleziona almeno una pick da offrire o da chiedere.", "error");
     return;
   }
@@ -270,8 +300,8 @@ async function sendTradeProposal() {
     const { data: proposal, error: proposalError } = await supabase
       .from("trade_proposals")
       .insert({
-        from_team: currentTeam,
-        to_team: toTeam,
+        from_team: currentTeamId,
+        to_team: toTeamId,
         status: "pending",
         message
       })
@@ -282,33 +312,43 @@ async function sendTradeProposal() {
 
     const assets = [];
 
-    mySelectedPickIds.forEach(pickId => {
-      const pick = allPicks.find(p => String(p[CONFIG.PICK_ID_COL]) === String(pickId));
+    mySelectedPickNumbers.forEach(pickNumber => {
+      const pick = allPicks.find(p =>
+        String(p[CONFIG.PICK_NUMBER_COL]) === String(pickNumber) &&
+        p[CONFIG.PICK_OWNER_COL] === currentTeamId
+      );
 
       if (pick) {
         assets.push({
           proposal_id: proposal.id,
           side: "from",
           asset_type: "pick",
-          asset_id: String(pick[CONFIG.PICK_ID_COL]),
+          asset_id: String(pick[CONFIG.PICK_NUMBER_COL]),
           asset_label: formatPickLabel(pick)
         });
       }
     });
 
-    theirSelectedPickIds.forEach(pickId => {
-      const pick = allPicks.find(p => String(p[CONFIG.PICK_ID_COL]) === String(pickId));
+    theirSelectedPickNumbers.forEach(pickNumber => {
+      const pick = allPicks.find(p =>
+        String(p[CONFIG.PICK_NUMBER_COL]) === String(pickNumber) &&
+        p[CONFIG.PICK_OWNER_COL] === toTeamId
+      );
 
       if (pick) {
         assets.push({
           proposal_id: proposal.id,
           side: "to",
           asset_type: "pick",
-          asset_id: String(pick[CONFIG.PICK_ID_COL]),
+          asset_id: String(pick[CONFIG.PICK_NUMBER_COL]),
           asset_label: formatPickLabel(pick)
         });
       }
     });
+
+    if (!assets.length) {
+      throw new Error("Nessun asset valido trovato.");
+    }
 
     const { error: assetsError } = await supabase
       .from("trade_assets")
@@ -348,7 +388,7 @@ async function loadReceivedTrades() {
   const { data, error } = await supabase
     .from("trade_proposals")
     .select("*")
-    .eq("to_team", currentTeam)
+    .eq("to_team", currentTeamId)
     .eq("status", "pending")
     .order("created_at", { ascending: false });
 
@@ -358,14 +398,14 @@ async function loadReceivedTrades() {
     return;
   }
 
-  renderTrades(receivedTradesBox, data || [], "received");
+  await renderTrades(receivedTradesBox, data || [], "received");
 }
 
 async function loadSentTrades() {
   const { data, error } = await supabase
     .from("trade_proposals")
     .select("*")
-    .eq("from_team", currentTeam)
+    .eq("from_team", currentTeamId)
     .eq("status", "pending")
     .order("created_at", { ascending: false });
 
@@ -375,7 +415,7 @@ async function loadSentTrades() {
     return;
   }
 
-  renderTrades(sentTradesBox, data || [], "sent");
+  await renderTrades(sentTradesBox, data || [], "sent");
 }
 
 async function loadCompletedTrades() {
@@ -383,7 +423,7 @@ async function loadCompletedTrades() {
     .from("trade_proposals")
     .select("*")
     .in("status", ["accepted", "rejected", "cancelled"])
-    .or(`from_team.eq.${currentTeam},to_team.eq.${currentTeam}`)
+    .or(`from_team.eq.${currentTeamId},to_team.eq.${currentTeamId}`)
     .order("created_at", { ascending: false })
     .limit(20);
 
@@ -393,7 +433,7 @@ async function loadCompletedTrades() {
     return;
   }
 
-  renderTrades(completedTradesBox, data || [], "completed");
+  await renderTrades(completedTradesBox, data || [], "completed");
 }
 
 async function renderTrades(container, trades, mode) {
@@ -420,12 +460,12 @@ async function renderTrades(container, trades, mode) {
 
     const fromAssets = tradeAssets
       .filter(a => a.side === "from")
-      .map(a => `<li>${a.asset_label}</li>`)
+      .map(a => `<li>${escapeHtml(a.asset_label)}</li>`)
       .join("");
 
     const toAssets = tradeAssets
       .filter(a => a.side === "to")
-      .map(a => `<li>${a.asset_label}</li>`)
+      .map(a => `<li>${escapeHtml(a.asset_label)}</li>`)
       .join("");
 
     let actions = "";
@@ -443,23 +483,26 @@ async function renderTrades(container, trades, mode) {
       `;
     }
 
+    const fromName = getTeamName(trade.from_team);
+    const toName = getTeamName(trade.to_team);
+
     return `
       <div class="trade-card">
-        <h3>${trade.from_team} → ${trade.to_team}</h3>
+        <h3>${escapeHtml(fromName)} → ${escapeHtml(toName)}</h3>
 
         <div>
-          <strong>${trade.from_team} offre:</strong>
+          <strong>${escapeHtml(fromName)} offre:</strong>
           <ul>${fromAssets || "<li>Nessuna pick</li>"}</ul>
         </div>
 
         <div>
-          <strong>${trade.to_team} offre:</strong>
+          <strong>${escapeHtml(toName)} offre:</strong>
           <ul>${toAssets || "<li>Nessuna pick</li>"}</ul>
         </div>
 
         ${trade.message ? `<p><em>${escapeHtml(trade.message)}</em></p>` : ""}
 
-        <p>Stato: <strong>${trade.status}</strong></p>
+        <p>Stato: <strong>${escapeHtml(trade.status)}</strong></p>
 
         <div class="trade-actions">
           ${actions}
@@ -473,7 +516,6 @@ async function renderTrades(container, trades, mode) {
 
 async function acceptTrade(proposalId) {
   const ok = confirm("Confermi di voler accettare questa trade?");
-
   if (!ok) return;
 
   try {
@@ -492,7 +534,7 @@ async function acceptTrade(proposalId) {
       return;
     }
 
-    if (proposal.to_team !== currentTeam) {
+    if (proposal.to_team !== currentTeamId) {
       alert("Puoi accettare solo le trade ricevute dalla tua squadra.");
       return;
     }
@@ -513,6 +555,7 @@ async function acceptTrade(proposalId) {
 
     if (!ownershipOk) {
       alert("Trade bloccata: una o più pick non appartengono più alla squadra prevista.");
+
       await supabase
         .from("trade_proposals")
         .update({ status: "cancelled" })
@@ -526,7 +569,8 @@ async function acceptTrade(proposalId) {
       const { error } = await supabase
         .from(CONFIG.DRAFT_TABLE)
         .update({ [CONFIG.PICK_OWNER_COL]: proposal.to_team })
-        .eq(CONFIG.PICK_ID_COL, asset.asset_id);
+        .eq(CONFIG.DRAFT_NAME_COL, CONFIG.DRAFT_NAME)
+        .eq(CONFIG.PICK_NUMBER_COL, Number(asset.asset_id));
 
       if (error) throw error;
     }
@@ -535,7 +579,8 @@ async function acceptTrade(proposalId) {
       const { error } = await supabase
         .from(CONFIG.DRAFT_TABLE)
         .update({ [CONFIG.PICK_OWNER_COL]: proposal.from_team })
-        .eq(CONFIG.PICK_ID_COL, asset.asset_id);
+        .eq(CONFIG.DRAFT_NAME_COL, CONFIG.DRAFT_NAME)
+        .eq(CONFIG.PICK_NUMBER_COL, Number(asset.asset_id));
 
       if (error) throw error;
     }
@@ -561,7 +606,9 @@ async function acceptTrade(proposalId) {
 
 function checkOwnershipBeforeTrade(proposal, fromAssets, toAssets) {
   for (const asset of fromAssets) {
-    const pick = allPicks.find(p => String(p[CONFIG.PICK_ID_COL]) === String(asset.asset_id));
+    const pick = allPicks.find(p =>
+      String(p[CONFIG.PICK_NUMBER_COL]) === String(asset.asset_id)
+    );
 
     if (!pick || pick[CONFIG.PICK_OWNER_COL] !== proposal.from_team) {
       return false;
@@ -569,7 +616,9 @@ function checkOwnershipBeforeTrade(proposal, fromAssets, toAssets) {
   }
 
   for (const asset of toAssets) {
-    const pick = allPicks.find(p => String(p[CONFIG.PICK_ID_COL]) === String(asset.asset_id));
+    const pick = allPicks.find(p =>
+      String(p[CONFIG.PICK_NUMBER_COL]) === String(asset.asset_id)
+    );
 
     if (!pick || pick[CONFIG.PICK_OWNER_COL] !== proposal.to_team) {
       return false;
@@ -581,14 +630,13 @@ function checkOwnershipBeforeTrade(proposal, fromAssets, toAssets) {
 
 async function rejectTrade(proposalId) {
   const ok = confirm("Vuoi rifiutare questa proposta?");
-
   if (!ok) return;
 
   const { error } = await supabase
     .from("trade_proposals")
     .update({ status: "rejected" })
     .eq("id", proposalId)
-    .eq("to_team", currentTeam)
+    .eq("to_team", currentTeamId)
     .eq("status", "pending");
 
   if (error) {
@@ -602,14 +650,13 @@ async function rejectTrade(proposalId) {
 
 async function cancelTrade(proposalId) {
   const ok = confirm("Vuoi annullare questa proposta?");
-
   if (!ok) return;
 
   const { error } = await supabase
     .from("trade_proposals")
     .update({ status: "cancelled" })
     .eq("id", proposalId)
-    .eq("from_team", currentTeam)
+    .eq("from_team", currentTeamId)
     .eq("status", "pending");
 
   if (error) {
