@@ -1012,4 +1012,14 @@ h1, h2, h3, h4, p{
     flex: 0 0 auto;
     display: inline-block;
   }
+
+  @media (max-width: 768px){
+  .hero-actions{
+    width: 100%;
+  }
+
+  .btn-hero{
+    flex: 1 1 100%;
+    justify-content: center;
+  }
 }
