@@ -77,6 +77,7 @@
           <div class="status-card">
             <div class="status-label">Stato draft</div>
             <div id="turno-attuale">⏳ Caricamento turno in corso...</div>
+            <div id="utente-loggato">👤 Caricamento utente...</div>
             <div id="spinner" class="spinner" style="display:none"></div>
           </div>
 
@@ -172,6 +173,36 @@
       </aside>
     </section>
 
+    <section id="admin-panel" class="panel" style="display:none; margin-top:20px;">
+      <div class="panel-header">
+        <div class="panel-title-wrap">
+          <h2 class="panel-title">🛠️ Admin Panel</h2>
+          <p class="panel-subtitle">Strumenti di correzione draft</p>
+        </div>
+      </div>
+
+      <div style="padding:16px; display:grid; gap:12px; max-width:500px;">
+        <div>
+          <label for="admin-pick-number"><strong>Pick number</strong></label><br>
+          <input id="admin-pick-number" type="number" min="1" placeholder="Es. 17" style="width:100%; padding:8px; margin-top:6px;">
+        </div>
+
+        <div>
+          <label for="admin-new-player"><strong>Nuovo giocatore</strong> (solo per modifica)</label><br>
+          <input id="admin-new-player" type="text" placeholder="Nome giocatore" style="width:100%; padding:8px; margin-top:6px;">
+        </div>
+
+        <div style="display:flex; gap:10px; flex-wrap:wrap;">
+          <button id="admin-cancel-pick-btn" type="button">❌ Annulla pick</button>
+          <button id="admin-edit-pick-btn" type="button">✏️ Modifica pick</button>
+          <button id="admin-force-pick-btn" type="button">➕ Forza pick</button>
+          <button id="admin-set-pick-btn" type="button">⏭️ Vai a questa pick</button>
+        </div>
+
+        <p id="admin-status" style="margin:0; font-weight:600;"></p>
+      </div>
+    </section>
+
     <section class="summary-section">
       <div class="summary-topbar">
         <div class="summary-title-wrap">
@@ -188,11 +219,10 @@
     </section>
   </main>
 
-  <script src="draft_script_unificato.js"></script>
+  <script type="module" src="draft_script_unificato.js"></script>
   <script src="navbar.js"></script>
 
   <script>
-    // Override per la pagina Conference League
     function caricaGiocatori() {
       const KEY = "giocatori_conference_cache";
       const now = Date.now();
