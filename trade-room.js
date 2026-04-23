@@ -1,3 +1,5 @@
+import { supabase } from './supabase-config.js';
+
 /* ===============================
    TRADE ROOM - LEGA DEGLI EROI
    Versione 1: scambio pick tra squadre
