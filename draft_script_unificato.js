@@ -20,6 +20,7 @@ let currentTeamName = null;
 let currentDraftState = null;
 let autoRefreshInterval = null;
 let lastPickNotificata = null;
+let pickInInvio = false;
 
 function normalize(nome) { return nome.trim().toLowerCase(); }
 
@@ -472,6 +473,11 @@ function parseGiocatoriCSV(csv) {
 }
 
 async function inviaPickAlFoglio(pick, fantaTeam, nome, ruolo, squadra, quotazione, options = {}) {
+  if (pickInInvio) return;
+
+  const bottoneNotifiche = document.getElementById("attiva-notifiche-btn");
+  const turnoEl = document.getElementById("turno-attuale");
+
   try {
     if (!currentDraftState) {
       alert("Stato draft non disponibile.");
@@ -483,11 +489,24 @@ async function inviaPickAlFoglio(pick, fantaTeam, nome, ruolo, squadra, quotazio
       return;
     }
 
+    pickInInvio = true;
+
+    if (listaGiocatori) {
+      listaGiocatori.style.pointerEvents = "none";
+      listaGiocatori.style.opacity = "0.6";
+    }
+
+    if (turnoEl) {
+      turnoEl.textContent = `⏳ Invio pick in corso: ${nome}...`;
+    }
+
     const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
 
     if (sessionError || !sessionData?.session?.access_token) {
       console.error("❌ Sessione non trovata:", sessionError);
       alert("Sessione utente non valida. Fai di nuovo login.");
+      pickInInvio = false;
+      aggiornaStatoInterattivoLista();
       return;
     }
 
@@ -500,7 +519,7 @@ async function inviaPickAlFoglio(pick, fantaTeam, nome, ruolo, squadra, quotazio
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${accessToken}`,
-        'apikey': supabaseKey
+          'apikey': supabaseKey
         },
         body: JSON.stringify({
           draft_name: tab,
@@ -514,7 +533,9 @@ async function inviaPickAlFoglio(pick, fantaTeam, nome, ruolo, squadra, quotazio
     if (!response.ok) {
       console.error("❌ ERRORE submit-pick:", result);
       alert(result?.error || "Errore nell'invio della pick.");
+      pickInInvio = false;
       await caricaPick();
+      aggiornaStatoInterattivoLista();
       return;
     }
 
@@ -524,9 +545,14 @@ async function inviaPickAlFoglio(pick, fantaTeam, nome, ruolo, squadra, quotazio
     popolaListaDisponibili();
     aggiornaChiamatePerSquadra();
 
+    pickInInvio = false;
+    aggiornaStatoInterattivoLista();
+
   } catch (err) {
     console.error("❌ ERRORE invio pick:", err);
     alert("❌ Errore nell'invio della pick. Riprova.");
+    pickInInvio = false;
+    aggiornaStatoInterattivoLista();
   }
 }
 
