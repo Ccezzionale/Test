@@ -679,6 +679,68 @@ async function adminCancelPick() {
   }
 }
 
+async function adminSetCurrentPick() {
+  const statusEl = document.getElementById("admin-status");
+  const pickInput = document.getElementById("admin-pick-number");
+
+  if (!isAdmin) {
+    alert("Solo admin.");
+    return;
+  }
+
+  const pickNumber = parseInt(pickInput?.value || "0");
+  if (!pickNumber) {
+    statusEl.textContent = "Inserisci un numero pick valido.";
+    return;
+  }
+
+  const conferma = confirm(`Vuoi spostare il turno alla pick #${pickNumber}?`);
+  if (!conferma) return;
+
+  statusEl.textContent = "⏳ Aggiornamento turno in corso...";
+
+  try {
+    const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
+
+    if (sessionError || !sessionData?.session?.access_token) {
+      statusEl.textContent = "Sessione non valida.";
+      return;
+    }
+
+    const response = await fetch(
+      `${supabaseUrl}/functions/v1/admin-set-current-pick`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${sessionData.session.access_token}`,
+          'apikey': supabaseKey
+        },
+        body: JSON.stringify({
+          draft_name: tab,
+          pick_number: pickNumber
+        })
+      }
+    );
+
+    const result = await response.json();
+
+    if (!response.ok) {
+      statusEl.textContent = `❌ ${result?.error || 'Errore aggiornamento turno'}`;
+      return;
+    }
+
+    statusEl.textContent = `✅ ${result.message}`;
+    await caricaPick();
+    popolaListaDisponibili();
+    aggiornaChiamatePerSquadra();
+    aggiornaStatoInterattivoLista();
+  } catch (err) {
+    console.error(err);
+    statusEl.textContent = "❌ Errore durante l'aggiornamento del turno.";
+  }
+}
+
 async function adminEditPick() {
   const statusEl = document.getElementById("admin-status");
   const pickInput = document.getElementById("admin-pick-number");
@@ -934,6 +996,11 @@ if (adminCancelBtn) {
   const adminEditBtn = document.getElementById("admin-edit-pick-btn");
 if (adminEditBtn) {
   adminEditBtn.addEventListener("click", adminEditPick);
+}
+
+  const adminSetPickBtn = document.getElementById("admin-set-pick-btn");
+if (adminSetPickBtn) {
+  adminSetPickBtn.addEventListener("click", adminSetCurrentPick);
 }
 
   const logoutBtn = document.getElementById("logout-btn");
