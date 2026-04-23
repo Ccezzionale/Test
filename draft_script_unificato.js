@@ -21,6 +21,7 @@ let currentDraftState = null;
 let autoRefreshInterval = null;
 let lastPickNotificata = null;
 let pickInInvio = false;
+let isAdmin = false;
 
 function normalize(nome) { return nome.trim().toLowerCase(); }
 
@@ -52,7 +53,8 @@ async function caricaUtenteLoggato() {
   }
 
   currentProfile = profile;
-  currentTeamId = profile.team_id;
+currentTeamId = profile.team_id;
+isAdmin = profile.role === 'admin';
 
   const { data: teams, error: teamsError } = await supabase
     .from('teams')
@@ -73,10 +75,21 @@ async function caricaUtenteLoggato() {
 
   currentTeamName = myTeam.name;
 
-  const elUser = document.getElementById("utente-loggato");
-  if (elUser) elUser.textContent = `👤 Sei: ${currentTeamName}`;
+ const elUser = document.getElementById("utente-loggato");
+if (elUser) {
+  elUser.textContent = isAdmin
+    ? `👤 Sei: ${currentTeamName} · Admin`
+    : `👤 Sei: ${currentTeamName}`;
+}
 
   return true;
+}
+
+function aggiornaAdminPanel() {
+  const panel = document.getElementById("admin-panel");
+  if (!panel) return;
+
+  panel.style.display = isAdmin ? "block" : "none";
 }
 
 // Spinner
@@ -778,6 +791,7 @@ function filtraLista() {
 window.addEventListener("DOMContentLoaded", async function () {
   const ok = await caricaUtenteLoggato();
   if (!ok) return;
+  aggiornaAdminPanel();
 
   const logoutBtn = document.getElementById("logout-btn");
   if (logoutBtn) {
