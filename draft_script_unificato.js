@@ -784,16 +784,18 @@ window.addEventListener("DOMContentLoaded", async function () {
     logoutBtn.addEventListener("click", logoutUtente);
   }
 
-const notifBtn = document.getElementById("attiva-notifiche-btn");
-if (notifBtn) {
-  notifBtn.addEventListener("click", async () => {
-    if (notifBtn.dataset.attive === "true") {
-      await disattivaNotifichePush();
-    } else {
-      await attivaNotifichePush();
-    }
-  });
-}
+  const notifBtn = document.getElementById("attiva-notifiche-btn");
+  if (notifBtn) {
+    notifBtn.addEventListener("click", async () => {
+      if (notifBtn.dataset.attive === "true") {
+        await disattivaNotifichePush();
+      } else {
+        await attivaNotifichePush();
+      }
+    });
+  }
+
+  await aggiornaBottoneNotifiche();
 
   await caricaGiocatori();
   await caricaPick();
@@ -802,6 +804,7 @@ if (notifBtn) {
   aggiornaStatoInterattivoLista();
   avviaAutoRefresh();
 });
+
 
 function mappaIndiceAssolutoPerTeam() {
   const righe = document.querySelectorAll("#tabella-pick tbody tr");
