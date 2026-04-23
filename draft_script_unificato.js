@@ -87,9 +87,14 @@ if (elUser) {
 
 function aggiornaAdminPanel() {
   const panel = document.getElementById("admin-panel");
-  if (!panel) return;
+  if (panel) {
+    panel.style.display = isAdmin ? "block" : "none";
+  }
 
-  panel.style.display = isAdmin ? "block" : "none";
+  const tradePanel = document.getElementById("admin-trade-panel");
+  if (tradePanel) {
+    tradePanel.style.display = isAdmin ? "block" : "none";
+  }
 }
 
 // Spinner
