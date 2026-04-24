@@ -796,10 +796,12 @@ function formatDateTime(value) {
 
 async function sendTradeNotification(toTeamId) {
   try {
+    console.log("📣 Invio notifica trade a team:", toTeamId);
+
     const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
 
     if (sessionError || !sessionData?.session?.access_token) {
-      console.warn("Sessione non valida per inviare la notifica trade.");
+      console.warn("Sessione non valida per inviare la notifica trade.", sessionError);
       return;
     }
 
@@ -819,11 +821,20 @@ async function sendTradeNotification(toTeamId) {
       }
     );
 
-    const result = await response.json();
+    let result = null;
+
+    try {
+      result = await response.json();
+    } catch (jsonError) {
+      result = { error: "Risposta non JSON", details: String(jsonError) };
+    }
+
+    console.log("📬 Risposta send-trade-notification:", response.status, result);
 
     if (!response.ok) {
       console.warn("Notifica trade non inviata:", result);
     }
+
   } catch (err) {
     console.warn("Errore notifica trade:", err);
   }
