@@ -79,12 +79,13 @@ initWaiverRoom();
 
 async function loadFreeAgents() {
   try {
-    const response = await fetch("./Svincolati - Svincolati.csv");
+    const response = await fetch("./svincolati.csv");
     const text = await response.text();
 
     const rows = text.split("\n").slice(1); // skip header
 
     const tableBody = document.querySelector("#freeAgentsTable tbody");
+    
 
     tableBody.innerHTML = "";
 
