@@ -155,9 +155,37 @@ saveCallBtn.addEventListener("click", async () => {
     status: "pending"
   };
 
-  const { error } = await supabase
+ const { data: existingCall } = await supabase
+  .from("waiver_calls")
+  .select("id")
+  .eq("team_id", currentTeam.id)
+  .eq("week", currentSettings.active_week)
+  .eq("phase", currentSettings.active_phase)
+  .eq("slot", "1")
+  .maybeSingle();
+
+let error;
+
+if (existingCall) {
+  const result = await supabase
+    .from("waiver_calls")
+    .update({
+      player_in: playerIn,
+      player_out: playerOut,
+      conference: currentTeam.conference,
+      status: "pending",
+      updated_at: new Date().toISOString()
+    })
+    .eq("id", existingCall.id);
+
+  error = result.error;
+} else {
+  const result = await supabase
     .from("waiver_calls")
     .insert(payload);
+
+  error = result.error;
+}
 
   if (error) {
     console.error("Errore salvataggio chiamata:", error);
