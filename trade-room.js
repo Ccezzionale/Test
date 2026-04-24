@@ -1,4 +1,4 @@
-import { supabase } from './supabase-config.js';
+import { supabase, supabaseUrl, supabaseKey } from './supabase.js';
 
 /* ===============================
    TRADE ROOM - LEGA DEGLI EROI
@@ -379,6 +379,8 @@ async function sendTradeProposal() {
       .insert(assets);
 
     if (assetsError) throw assetsError;
+
+     await sendTradeNotification(toTeamId);
 
     showMessage("Proposta inviata correttamente.", "success");
 
@@ -790,6 +792,41 @@ function formatDateTime(value) {
     hour: "2-digit",
     minute: "2-digit"
   });
+}
+
+async function sendTradeNotification(toTeamId) {
+  try {
+    const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
+
+    if (sessionError || !sessionData?.session?.access_token) {
+      console.warn("Sessione non valida per inviare la notifica trade.");
+      return;
+    }
+
+    const response = await fetch(
+      `${supabaseUrl}/functions/v1/send-trade-notification`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${sessionData.session.access_token}`,
+          "apikey": supabaseKey
+        },
+        body: JSON.stringify({
+          to_team: toTeamId,
+          from_team_name: currentTeamName
+        })
+      }
+    );
+
+    const result = await response.json();
+
+    if (!response.ok) {
+      console.warn("Notifica trade non inviata:", result);
+    }
+  } catch (err) {
+    console.warn("Errore notifica trade:", err);
+  }
 }
 
 function escapeHtml(str) {
