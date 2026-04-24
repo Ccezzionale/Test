@@ -295,12 +295,11 @@ function avviaAutoRefresh() {
   autoRefreshInterval = setInterval(async () => {
     try {
       await caricaPick();
-      popolaListaDisponibili();
       aggiornaChiamatePerSquadra();
     } catch (err) {
       console.warn("Auto refresh fallito:", err);
     }
-  }, 5000);
+  }, 30000);
 }
 
 function isMioTurno() {
