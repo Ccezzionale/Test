@@ -730,89 +730,18 @@ async function acceptTrade(proposalId) {
   if (!ok) return;
 
   try {
-    const { data: proposal, error: proposalError } = await supabase
-      .from("trade_proposals")
-      .select("*")
-      .eq("id", proposalId)
-      .eq("status", "pending")
-      .maybeSingle();
+    const { error } = await supabase.rpc("accept_trade", {
+      p_proposal_id: proposalId
+    });
 
-    if (proposalError) throw proposalError;
-
-    if (!proposal) {
-      alert("La proposta non è più disponibile.");
-      await refreshAll();
-      return;
-    }
-
-    if (proposal.to_team !== currentTeamId) {
-      alert("Puoi accettare solo le trade ricevute dalla tua squadra.");
-      return;
-    }
-
-    const { data: assets, error: assetsError } = await supabase
-      .from("trade_assets")
-      .select("*")
-      .eq("proposal_id", proposalId);
-
-    if (assetsError) throw assetsError;
-
-    const fromAssets = (assets || []).filter(a => a.side === "from");
-    const toAssets = (assets || []).filter(a => a.side === "to");
-
-    if (!fromAssets.length || !toAssets.length || fromAssets.length !== toAssets.length) {
-      alert("Trade bloccata: la proposta non è bilanciata.");
-      await cancelProposalBySystem(proposalId);
-      await refreshAll();
-      return;
-    }
-
-    await loadAssetsForTrade();
-
-    const allPickAssets = (assets || []).filter(a => a.asset_type === "pick");
-    const hasUsedPick = allPickAssets.some(asset =>
-      usedPickNumbers.has(Number(asset.asset_id))
-    );
-
-    if (hasUsedPick) {
-      alert("Trade bloccata: una o più pick sono già state usate nel draft.");
-      await cancelProposalBySystem(proposalId);
-      await refreshAll();
-      return;
-    }
-
-    const ownershipOk = checkOwnershipBeforeTrade(proposal, fromAssets, toAssets);
-
-    if (!ownershipOk) {
-      alert("Trade bloccata: uno o più asset non appartengono più alla squadra prevista.");
-      await cancelProposalBySystem(proposalId);
-      await refreshAll();
-      return;
-    }
-
-    for (const asset of fromAssets) {
-      await moveAssetToTeam(asset, proposal.to_team, proposal.draft_name || currentDraftName);
-    }
-
-    for (const asset of toAssets) {
-      await moveAssetToTeam(asset, proposal.from_team, proposal.draft_name || currentDraftName);
-    }
-
-    const { error: updateError } = await supabase
-      .from("trade_proposals")
-      .update({
-        status: "accepted",
-        accepted_at: new Date().toISOString()
-      })
-      .eq("id", proposalId);
-
-    if (updateError) throw updateError;
+    if (error) throw error;
 
     alert("Trade accettata. Pick e giocatori sono stati aggiornati.");
     await refreshAll();
+
   } catch (err) {
     console.error(err);
-    alert("Errore durante l’accettazione della trade.");
+    alert(err.message || "Errore durante l’accettazione della trade.");
   }
 }
 
