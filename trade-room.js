@@ -81,14 +81,7 @@ async function initTradeRoom() {
 /* ========= NAVBAR MOBILE ========= */
 
 function setupNavbar() {
-  const hamburger = document.getElementById("hamburger");
-  const mainMenu = document.getElementById("mainMenu");
-
-  if (!hamburger || !mainMenu) return;
-
-  hamburger.addEventListener("click", () => {
-    mainMenu.classList.toggle("open");
-  });
+  // Navbar gestita da navbar.js
 }
 
 /* ========= EVENTI ========= */
