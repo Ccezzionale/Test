@@ -11,7 +11,7 @@ import { supabase, supabaseUrl, supabaseKey } from './supabase.js';
 
 const CONFIG = {
   DRAFT_TABLE: "draft_order",
-  DRAFT_NAME: "Draft Championship",
+ DEFAULT_DRAFT_NAME: "Draft Championship",
 
   PICK_NUMBER_COL: "pick_number",
   PICK_OWNER_COL: "team_id",
@@ -33,6 +33,8 @@ const CONFIG = {
 let currentUser = null;
 let currentTeamId = null;
 let currentTeamName = null;
+let currentTeamConference = null;
+let currentDraftName = CONFIG.DEFAULT_DRAFT_NAME;
 
 let allPicks = [];
 let allTeams = [];
@@ -52,6 +54,7 @@ const sendTradeBtn = document.getElementById("sendTradeBtn");
 const tradeMessage = document.getElementById("tradeMessage");
 const myPicksSummary = document.getElementById("myPicksSummary");
 const theirPicksSummary = document.getElementById("theirPicksSummary");
+const activeDraftLabel = document.getElementById("activeDraftLabel");
 
 const receivedTradesBox = document.getElementById("receivedTradesBox");
 const sentTradesBox = document.getElementById("sentTradesBox");
@@ -153,10 +156,21 @@ async function checkUser() {
     return false;
   }
 
-  currentTeamName = team[CONFIG.TEAM_NAME_COL];
+currentTeamName = team[CONFIG.TEAM_NAME_COL];
+currentTeamConference = team.conference;
 
-  userInfo.textContent = `Accesso effettuato come ${email}`;
-  myTeamLabel.textContent = currentTeamName;
+if (currentTeamConference === "Conference League") {
+  currentDraftName = "Draft Conference";
+} else {
+  currentDraftName = "Draft Championship";
+}
+
+userInfo.textContent = `Accesso effettuato come ${email}`;
+myTeamLabel.textContent = currentTeamName;
+
+if (activeDraftLabel) {
+  activeDraftLabel.textContent = currentDraftName;
+};
 
   return true;
 }
@@ -182,7 +196,7 @@ async function loadPicks() {
   const { data: orderData, error: orderError } = await supabase
     .from(CONFIG.DRAFT_TABLE)
     .select("*")
-    .eq(CONFIG.DRAFT_NAME_COL, CONFIG.DRAFT_NAME)
+    .eq(CONFIG.DRAFT_NAME_COL, currentDraftName)
     .order(CONFIG.PICK_NUMBER_COL, { ascending: true });
 
   if (orderError) {
@@ -194,7 +208,7 @@ async function loadPicks() {
   const { data: usedData, error: usedError } = await supabase
     .from(CONFIG.PICKS_TABLE)
     .select(CONFIG.PICKS_PICK_NUMBER_COL)
-    .eq(CONFIG.PICKS_DRAFT_NAME_COL, CONFIG.DRAFT_NAME);
+    .eq(CONFIG.PICKS_DRAFT_NAME_COL, currentDraftName);
 
   if (usedError) {
     console.error(usedError);
@@ -217,9 +231,10 @@ async function loadPicks() {
 function renderTeamSelect() {
   toTeamSelect.innerHTML = `<option value="">Seleziona squadra...</option>`;
 
-  allTeams
-    .filter(team => team[CONFIG.TEAM_ID_COL] !== currentTeamId)
-    .forEach(team => {
+allTeams
+  .filter(team => team[CONFIG.TEAM_ID_COL] !== currentTeamId)
+  .filter(team => team.conference === currentTeamConference)
+  .forEach(team => {
       const option = document.createElement("option");
       option.value = team[CONFIG.TEAM_ID_COL];
       option.textContent = team[CONFIG.TEAM_NAME_COL];
@@ -260,6 +275,7 @@ function renderTheirPicks() {
     theirPicksBox.innerHTML = "Seleziona prima una squadra...";
     return;
   }
+   updatePickSummaries();
 
   const theirPicks = allPicks.filter(
     pick => pick[CONFIG.PICK_OWNER_COL] === selectedTeamId
@@ -271,6 +287,7 @@ function renderTheirPicks() {
     theirPicksBox.innerHTML = `<p>Nessuna pick disponibile per ${selectedTeamName}.</p>`;
     return;
   }
+    updatePickSummaries();
 
   theirPicksBox.innerHTML = theirPicks.map(pick => {
     return `
@@ -323,12 +340,13 @@ async function sendTradeProposal() {
   try {
     const { data: proposal, error: proposalError } = await supabase
       .from("trade_proposals")
-      .insert({
-        from_team: currentTeamId,
-        to_team: toTeamId,
-        status: "pending",
-        message
-      })
+.insert({
+  from_team: currentTeamId,
+  to_team: toTeamId,
+  draft_name: currentDraftName,
+  status: "pending",
+  message
+})
       .select()
       .single();
 
@@ -416,6 +434,7 @@ async function loadReceivedTrades() {
     .select("*")
     .eq("to_team", currentTeamId)
     .eq("status", "pending")
+   .eq("draft_name", currentDraftName)
     .order("created_at", { ascending: false });
 
   if (error) {
@@ -433,6 +452,7 @@ async function loadSentTrades() {
     .select("*")
     .eq("from_team", currentTeamId)
     .eq("status", "pending")
+     .eq("draft_name", currentDraftName)
     .order("created_at", { ascending: false });
 
   if (error) {
@@ -449,6 +469,7 @@ async function loadCompletedTrades() {
     .from("trade_proposals")
     .select("*")
     .eq("status", "accepted")
+     .eq("draft_name", currentDraftName)
     .or(`from_team.eq.${currentTeamId},to_team.eq.${currentTeamId}`)
     .order("accepted_at", { ascending: false })
     .limit(30);
@@ -635,7 +656,7 @@ const ownershipOk = checkOwnershipBeforeTrade(proposal, fromAssets, toAssets);
       const { error } = await supabase
         .from(CONFIG.DRAFT_TABLE)
         .update({ [CONFIG.PICK_OWNER_COL]: proposal.to_team })
-        .eq(CONFIG.DRAFT_NAME_COL, CONFIG.DRAFT_NAME)
+        .eq(CONFIG.DRAFT_NAME_COL, currentDraftName)
         .eq(CONFIG.PICK_NUMBER_COL, Number(asset.asset_id));
 
       if (error) throw error;
@@ -645,7 +666,7 @@ const ownershipOk = checkOwnershipBeforeTrade(proposal, fromAssets, toAssets);
       const { error } = await supabase
         .from(CONFIG.DRAFT_TABLE)
         .update({ [CONFIG.PICK_OWNER_COL]: proposal.from_team })
-        .eq(CONFIG.DRAFT_NAME_COL, CONFIG.DRAFT_NAME)
+        .eq(CONFIG.DRAFT_NAME_COL, currentDraftName)
         .eq(CONFIG.PICK_NUMBER_COL, Number(asset.asset_id));
 
       if (error) throw error;
