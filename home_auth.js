@@ -97,6 +97,58 @@ async function disattivaNotifichePush() {
   }
 }
 
+async function aggiornaBadgeTrade() {
+  const badge = document.getElementById('trade-badge');
+  if (!badge) return;
+
+  try {
+    const { data: { user }, error: userError } = await supabase.auth.getUser();
+
+    if (userError || !user) {
+      badge.style.display = 'none';
+      return;
+    }
+
+    const { data: profile, error: profileError } = await supabase
+      .from('profiles')
+      .select('team_id')
+      .eq('email', user.email)
+      .maybeSingle();
+
+    if (profileError || !profile?.team_id) {
+      console.error(profileError);
+      badge.style.display = 'none';
+      return;
+    }
+
+    const { count, error: countError } = await supabase
+      .from('trade_proposals')
+      .select('*', { count: 'exact', head: true })
+      .eq('to_team', profile.team_id)
+      .eq('status', 'pending');
+
+    if (countError) {
+      console.error(countError);
+      badge.style.display = 'none';
+      return;
+    }
+
+    if (count && count > 0) {
+      badge.style.display = 'inline-flex';
+      badge.textContent = `🤝 ${count} proposta${count > 1 ? 'e' : ''} trade`;
+      badge.classList.add('has-trades');
+    } else {
+      badge.style.display = 'inline-flex';
+      badge.textContent = '🤝 Trade Room';
+      badge.classList.remove('has-trades');
+    }
+
+  } catch (err) {
+    console.error(err);
+    badge.style.display = 'none';
+  }
+}
+
 async function aggiornaBottoneNotifiche() {
   const notifBtn = document.getElementById('attiva-notifiche-btn');
   if (!notifBtn) return;
@@ -142,4 +194,6 @@ window.addEventListener('DOMContentLoaded', async () => {
   }
 
   await aggiornaBottoneNotifiche();
+  await aggiornaBadgeTrade();
 });
+
