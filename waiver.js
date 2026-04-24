@@ -48,15 +48,14 @@ async function getWaiverSettings() {
     .from("waiver_settings")
     .select("*")
     .order("id", { ascending: false })
-    .limit(1)
-    .single();
+    .limit(1);
 
-  if (error || !data) {
+  if (error || !data || data.length === 0) {
     console.error("Impostazioni waiver non trovate:", error);
     return null;
   }
 
-  return data;
+  return data[0];
 }
 
 async function initWaiverRoom() {
