@@ -71,6 +71,8 @@ async function initWaiverRoom() {
     activePhaseEl.textContent = settings.active_phase || "Non impostata";
     activeWeekEl.textContent = settings.active_week || "-";
   }
+
+  await loadFreeAgents();
 }
 
 initWaiverRoom();
