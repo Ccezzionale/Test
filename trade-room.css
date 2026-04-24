@@ -1,0 +1,425 @@
+:root{
+  --navy:#001f3f;
+  --navy-2:#003366;
+  --navy-3:#0a4d8f;
+  --gold:#ffcc00;
+  --gold-soft:rgba(255,204,0,.16);
+  --paper:#fbfcff;
+  --white:#ffffff;
+  --ink:#14213d;
+  --muted:#64748b;
+  --line:rgba(15,23,42,.10);
+  --glass:rgba(255,255,255,.92);
+  --shadow:0 18px 48px rgba(0,0,0,.24);
+  --shadow-soft:0 10px 28px rgba(0,0,0,.14);
+  --radius:22px;
+}
+
+*{
+  box-sizing:border-box;
+}
+
+html, body{
+  margin:0;
+  padding:0;
+  min-height:100%;
+  overflow-x:hidden;
+}
+
+body{
+  font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color:var(--ink);
+  background:
+    radial-gradient(900px 500px at 10% 0%, rgba(0,116,217,.30), transparent 62%),
+    radial-gradient(800px 520px at 90% 12%, rgba(255,204,0,.14), transparent 58%),
+    linear-gradient(180deg, #001f3f 0%, #082b52 45%, #eef4ff 100%);
+}
+
+/* evidenzia link attivo nella navbar */
+.site-nav .navbar a.active{
+  color:var(--gold);
+  background:rgba(255,255,255,.10);
+}
+
+.site-nav .submenu a.active{
+  color:var(--gold);
+  background:rgba(255,255,255,.10);
+}
+
+/* =========================
+   LAYOUT
+   ========================= */
+
+.draft-page{
+  width:100%;
+  max-width:1180px;
+  margin:0 auto;
+  padding:28px 16px 46px;
+}
+
+.draft-header{
+  position:relative;
+  overflow:hidden;
+  border-radius:28px;
+  padding:34px 30px;
+  margin:0 0 22px;
+  color:#fff;
+  background:
+    linear-gradient(135deg, rgba(0,31,63,.96), rgba(10,77,143,.88)),
+    radial-gradient(500px 260px at 90% 10%, rgba(255,204,0,.28), transparent 60%);
+  box-shadow:var(--shadow);
+  border:1px solid rgba(255,255,255,.12);
+}
+
+.draft-header::before{
+  content:"";
+  position:absolute;
+  inset:-80px -80px auto auto;
+  width:260px;
+  height:260px;
+  border-radius:999px;
+  background:rgba(255,204,0,.18);
+  filter:blur(4px);
+}
+
+.draft-header::after{
+  content:"TRADE ROOM";
+  position:absolute;
+  right:22px;
+  bottom:12px;
+  font-size:clamp(2.4rem, 8vw, 6.5rem);
+  line-height:.8;
+  font-weight:900;
+  letter-spacing:.08em;
+  color:rgba(255,255,255,.055);
+  pointer-events:none;
+}
+
+.draft-header h1{
+  position:relative;
+  margin:0 0 8px;
+  font-size:clamp(2rem, 5vw, 4rem);
+  line-height:.95;
+  font-weight:900;
+  letter-spacing:-.04em;
+}
+
+.draft-header p{
+  position:relative;
+  max-width:720px;
+  margin:0;
+  color:rgba(255,255,255,.82);
+  font-size:1.04rem;
+  line-height:1.55;
+}
+
+/* =========================
+   CARDS
+   ========================= */
+
+.draft-card{
+  background:var(--glass);
+  border:1px solid rgba(255,255,255,.65);
+  border-radius:var(--radius);
+  padding:22px;
+  margin:0 0 18px;
+  box-shadow:var(--shadow-soft);
+  backdrop-filter:blur(10px);
+}
+
+.draft-card h2{
+  margin:0 0 16px;
+  color:var(--navy);
+  font-size:1.35rem;
+  letter-spacing:-.02em;
+}
+
+.draft-card p{
+  line-height:1.5;
+}
+
+#userInfo{
+  margin:0 0 14px;
+  color:var(--muted);
+  font-weight:600;
+}
+
+#myTeamLabel{
+  display:inline-flex;
+  align-items:center;
+  padding:5px 10px;
+  border-radius:999px;
+  color:var(--navy);
+  background:var(--gold-soft);
+  border:1px solid rgba(255,204,0,.32);
+}
+
+/* =========================
+   FORM
+   ========================= */
+
+.form-row{
+  margin:16px 0;
+}
+
+.form-row label{
+  display:block;
+  margin:0 0 8px;
+  font-weight:800;
+  color:var(--navy);
+}
+
+select,
+textarea{
+  width:100%;
+  border:1px solid rgba(15,23,42,.14);
+  border-radius:14px;
+  padding:12px 13px;
+  background:#fff;
+  color:var(--ink);
+  font:inherit;
+  outline:none;
+  transition:border-color .18s ease, box-shadow .18s ease, transform .18s ease;
+}
+
+select:focus,
+textarea:focus{
+  border-color:rgba(10,77,143,.65);
+  box-shadow:0 0 0 4px rgba(10,77,143,.13);
+}
+
+textarea{
+  resize:vertical;
+  min-height:96px;
+}
+
+button{
+  border:0;
+  border-radius:14px;
+  padding:11px 15px;
+  font:inherit;
+  font-weight:800;
+  cursor:pointer;
+  color:#fff;
+  background:linear-gradient(135deg, var(--navy-3), var(--navy-2));
+  box-shadow:0 10px 18px rgba(0,31,63,.18);
+  transition:transform .18s ease, box-shadow .18s ease, opacity .18s ease;
+}
+
+button:hover{
+  transform:translateY(-1px);
+  box-shadow:0 14px 24px rgba(0,31,63,.24);
+}
+
+button:disabled{
+  opacity:.65;
+  cursor:not-allowed;
+  transform:none;
+}
+
+#logoutBtn{
+  background:linear-gradient(135deg, #334155, #0f172a);
+}
+
+#sendTradeBtn{
+  width:100%;
+  margin-top:6px;
+  background:linear-gradient(135deg, #ffcc00, #f59e0b);
+  color:#11203b;
+}
+
+/* =========================
+   PICK CHECKBOXES
+   ========================= */
+
+#myPicksBox,
+#theirPicksBox{
+  display:grid;
+  grid-template-columns:repeat(auto-fit, minmax(135px, 1fr));
+  gap:10px;
+}
+
+.pick-choice{
+  display:flex !important;
+  align-items:center;
+  gap:9px;
+  padding:11px 12px;
+  border:1px solid rgba(15,23,42,.10);
+  border-radius:14px;
+  background:#fff;
+  color:var(--ink);
+  font-weight:800 !important;
+  box-shadow:0 6px 14px rgba(15,23,42,.05);
+  cursor:pointer;
+  transition:transform .16s ease, border-color .16s ease, background .16s ease;
+}
+
+.pick-choice:hover{
+  transform:translateY(-1px);
+  border-color:rgba(255,204,0,.75);
+  background:#fffdf0;
+}
+
+.pick-choice input{
+  width:18px;
+  height:18px;
+  accent-color:var(--gold);
+  flex:0 0 auto;
+}
+
+/* =========================
+   TRADE LIST
+   ========================= */
+
+.trade-card{
+  position:relative;
+  overflow:hidden;
+  padding:18px;
+  margin:14px 0;
+  border-radius:20px;
+  background:
+    linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+  border:1px solid rgba(15,23,42,.10);
+  box-shadow:0 10px 24px rgba(15,23,42,.08);
+}
+
+.trade-card::before{
+  content:"";
+  position:absolute;
+  left:0;
+  top:0;
+  bottom:0;
+  width:6px;
+  background:linear-gradient(180deg, var(--gold), var(--navy-3));
+}
+
+.trade-card h3{
+  margin:0 0 14px;
+  padding-left:8px;
+  font-size:1.08rem;
+  color:var(--navy);
+}
+
+.trade-card strong{
+  color:var(--navy-2);
+}
+
+.trade-card ul{
+  margin:8px 0 14px;
+  padding-left:22px;
+}
+
+.trade-card li{
+  margin:4px 0;
+  font-weight:700;
+}
+
+.trade-card em{
+  display:block;
+  padding:11px 12px;
+  border-radius:14px;
+  background:rgba(0,31,63,.04);
+  color:#334155;
+}
+
+.trade-actions{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+  margin-top:12px;
+}
+
+.trade-actions button:nth-child(1){
+  background:linear-gradient(135deg, #16a34a, #15803d);
+}
+
+.trade-actions button:nth-child(2){
+  background:linear-gradient(135deg, #dc2626, #991b1b);
+}
+
+#sentTradesBox .trade-actions button{
+  background:linear-gradient(135deg, #f97316, #c2410c);
+}
+
+/* =========================
+   MESSAGES
+   ========================= */
+
+.success-message,
+.error-message{
+  margin-top:14px;
+  padding:12px 14px;
+  border-radius:14px;
+  font-weight:800;
+}
+
+.success-message{
+  color:#14532d;
+  background:#dcfce7;
+  border:1px solid #86efac;
+}
+
+.error-message{
+  color:#7f1d1d;
+  background:#fee2e2;
+  border:1px solid #fecaca;
+}
+
+/* =========================
+   RESPONSIVE
+   ========================= */
+
+@media (min-width: 900px){
+  #tradeApp{
+    display:grid;
+    grid-template-columns:1.05fr .95fr;
+    gap:18px;
+    align-items:start;
+  }
+
+  #tradeApp .draft-card:first-child{
+    grid-row:span 3;
+    position:sticky;
+    top:92px;
+  }
+}
+
+@media (max-width: 900px){
+  .draft-page{
+    padding:18px 10px 34px;
+  }
+
+  .draft-header{
+    padding:26px 20px;
+    border-radius:22px;
+  }
+
+  .draft-card{
+    padding:18px;
+    border-radius:18px;
+  }
+
+  #myPicksBox,
+  #theirPicksBox{
+    grid-template-columns:repeat(2, minmax(0, 1fr));
+  }
+
+  button{
+    width:100%;
+  }
+
+  .trade-actions{
+    flex-direction:column;
+  }
+}
+
+@media (max-width: 480px){
+  #myPicksBox,
+  #theirPicksBox{
+    grid-template-columns:1fr;
+  }
+
+  .draft-header h1{
+    font-size:2.1rem;
+  }
+}
