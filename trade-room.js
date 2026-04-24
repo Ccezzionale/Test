@@ -818,30 +818,41 @@ async function acceptTrade(proposalId) {
 
 async function moveAssetToTeam(asset, newTeamId, draftName) {
   if (asset.asset_type === "pick") {
-    const { error } = await supabase
+    const { data, error } = await supabase
       .from(CONFIG.DRAFT_TABLE)
       .update({ [CONFIG.PICK_OWNER_COL]: newTeamId })
       .eq(CONFIG.DRAFT_NAME_COL, draftName)
-      .eq(CONFIG.PICK_NUMBER_COL, Number(asset.asset_id));
+      .eq(CONFIG.PICK_NUMBER_COL, Number(asset.asset_id))
+      .select();
 
     if (error) throw error;
+
+    if (!data || data.length === 0) {
+      throw new Error(`Nessuna pick aggiornata: ${asset.asset_label}`);
+    }
+
     return;
   }
 
   if (asset.asset_type === "player") {
-    const { error } = await supabase
+    const { data, error } = await supabase
       .from(CONFIG.PICKS_TABLE)
-      .update({ [CONFIG.PICKS_OWNER_COL]: newTeamId })
-      .eq(CONFIG.PICKS_ID_COL, asset.asset_id)
-      .eq(CONFIG.PICKS_DRAFT_NAME_COL, draftName);
+      .update({ [CONFIG.PICK_OWNER_COL]: newTeamId })
+      .eq("id", asset.asset_id)
+      .eq(CONFIG.PICKS_DRAFT_NAME_COL, draftName)
+      .select();
 
     if (error) throw error;
+
+    if (!data || data.length === 0) {
+      throw new Error(`Nessun giocatore aggiornato: ${asset.asset_label}`);
+    }
+
     return;
   }
 
   throw new Error(`Asset type non gestito: ${asset.asset_type}`);
 }
-
 function checkOwnershipBeforeTrade(proposal, fromAssets, toAssets) {
   return fromAssets.every(asset => assetBelongsToTeam(asset, proposal.from_team)) &&
     toAssets.every(asset => assetBelongsToTeam(asset, proposal.to_team));
