@@ -41,3 +41,27 @@ body {
   margin-top: 0;
   color: #071f49;
 }
+
+#searchInput {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 12px;
+  border-radius: 10px;
+  border: 1px solid #ccc;
+}
+
+#freeAgentsTable {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+#freeAgentsTable th,
+#freeAgentsTable td {
+  padding: 10px;
+  border-bottom: 1px solid #eee;
+  text-align: left;
+}
+
+#freeAgentsTable th {
+  background: #f0f4fa;
+}
