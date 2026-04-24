@@ -835,17 +835,46 @@ async function moveAssetToTeam(asset, newTeamId, draftName) {
   }
 
   if (asset.asset_type === "player") {
-    const { data, error } = await supabase
+    // 1. Recupero la pick originale del giocatore
+    const { data: playerPick, error: readError } = await supabase
+      .from(CONFIG.PICKS_TABLE)
+      .select("id, draft_name, pick_number, team_id, player_name")
+      .eq("id", asset.asset_id)
+      .eq(CONFIG.PICKS_DRAFT_NAME_COL, draftName)
+      .maybeSingle();
+
+    if (readError) throw readError;
+
+    if (!playerPick) {
+      throw new Error(`Giocatore non trovato: ${asset.asset_label}`);
+    }
+
+    // 2. Sposto il giocatore in draft_picks
+    const { data: updatedPlayer, error: playerError } = await supabase
       .from(CONFIG.PICKS_TABLE)
       .update({ [CONFIG.PICK_OWNER_COL]: newTeamId })
       .eq("id", asset.asset_id)
       .eq(CONFIG.PICKS_DRAFT_NAME_COL, draftName)
       .select();
 
-    if (error) throw error;
+    if (playerError) throw playerError;
 
-    if (!data || data.length === 0) {
+    if (!updatedPlayer || updatedPlayer.length === 0) {
       throw new Error(`Nessun giocatore aggiornato: ${asset.asset_label}`);
+    }
+
+    // 3. Sposto anche la riga della pick originale in draft_order
+    const { data: updatedOrder, error: orderError } = await supabase
+      .from(CONFIG.DRAFT_TABLE)
+      .update({ [CONFIG.PICK_OWNER_COL]: newTeamId })
+      .eq(CONFIG.DRAFT_NAME_COL, draftName)
+      .eq(CONFIG.PICK_NUMBER_COL, Number(playerPick.pick_number))
+      .select();
+
+    if (orderError) throw orderError;
+
+    if (!updatedOrder || updatedOrder.length === 0) {
+      throw new Error(`Draft order non aggiornato per ${asset.asset_label}`);
     }
 
     return;
@@ -853,6 +882,8 @@ async function moveAssetToTeam(asset, newTeamId, draftName) {
 
   throw new Error(`Asset type non gestito: ${asset.asset_type}`);
 }
+
+
 function checkOwnershipBeforeTrade(proposal, fromAssets, toAssets) {
   return fromAssets.every(asset => assetBelongsToTeam(asset, proposal.from_team)) &&
     toAssets.every(asset => assetBelongsToTeam(asset, proposal.to_team));
