@@ -74,3 +74,36 @@ async function initWaiverRoom() {
 }
 
 initWaiverRoom();
+
+async function loadFreeAgents() {
+  try {
+    const response = await fetch("./Svincolati - Svincolati.csv");
+    const text = await response.text();
+
+    const rows = text.split("\n").slice(1); // skip header
+
+    const tableBody = document.querySelector("#freeAgentsTable tbody");
+
+    tableBody.innerHTML = "";
+
+    rows.forEach(row => {
+      const cols = row.split(",");
+
+      if (cols.length < 4) return;
+
+      const tr = document.createElement("tr");
+
+      tr.innerHTML = `
+        <td>${cols[0]}</td>
+        <td>${cols[1]}</td>
+        <td>${cols[2]}</td>
+        <td>${cols[3]}</td>
+      `;
+
+      tableBody.appendChild(tr);
+    });
+
+  } catch (err) {
+    console.error("Errore caricamento svincolati:", err);
+  }
+}
