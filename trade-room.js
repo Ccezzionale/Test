@@ -86,10 +86,6 @@ function setupNavbar() {
 /* ========= EVENTI ========= */
 
 function setupEvents() {
-  if (logoutBtn) {
-    logoutBtn.addEventListener("click", logout);
-  }
-
   if (toTeamSelect) {
     toTeamSelect.addEventListener("change", renderTheirPicks);
   }
