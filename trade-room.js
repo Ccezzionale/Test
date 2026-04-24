@@ -41,7 +41,6 @@ let usedPickNumbers = new Set();
 /* ========= ELEMENTI ========= */
 
 const userInfo = document.getElementById("userInfo");
-const logoutBtn = document.getElementById("logoutBtn");
 const tradeApp = document.getElementById("tradeApp");
 
 const myTeamLabel = document.getElementById("myTeamLabel");
@@ -150,11 +149,6 @@ async function checkUser() {
   myTeamLabel.textContent = currentTeamName;
 
   return true;
-}
-
-async function logout() {
-  await supabase.auth.signOut();
-  window.location.href = "draft.html";
 }
 
 /* ========= DATI ========= */
