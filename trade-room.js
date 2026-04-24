@@ -1,25 +1,31 @@
-import { supabase, supabaseUrl, supabaseKey } from './supabase.js';
+mport { supabase, supabaseUrl, supabaseKey } from './supabase.js';
 
 /* ===============================
    TRADE ROOM - LEGA DEGLI EROI
-   Versione 1: scambio pick tra squadre
+   Versione 2: scambio pick + giocatori già chiamati
    Struttura Supabase:
    - draft_order: draft_name, pick_number, team_id
+   - draft_picks: id, draft_name, pick_number, team_id, player_name
    - teams: id, name
    - profiles: email, team_id
+   - trade_proposals: from_team, to_team, status, message, draft_name
+   - trade_assets: proposal_id, side, asset_type, asset_id, asset_label
 ================================ */
 
 const CONFIG = {
   DRAFT_TABLE: "draft_order",
- DEFAULT_DRAFT_NAME: "Draft Championship",
+  DEFAULT_DRAFT_NAME: "Draft Championship",
 
   PICK_NUMBER_COL: "pick_number",
   PICK_OWNER_COL: "team_id",
   DRAFT_NAME_COL: "draft_name",
 
   PICKS_TABLE: "draft_picks",
+  PICKS_ID_COL: "id",
   PICKS_DRAFT_NAME_COL: "draft_name",
   PICKS_PICK_NUMBER_COL: "pick_number",
+  PICKS_OWNER_COL: "team_id",
+  PICKS_PLAYER_NAME_COL: "player_name",
 
   TEAM_TABLE: "teams",
   TEAM_ID_COL: "id",
@@ -37,6 +43,7 @@ let currentTeamConference = null;
 let currentDraftName = CONFIG.DEFAULT_DRAFT_NAME;
 
 let allPicks = [];
+let allPickedPlayers = [];
 let allTeams = [];
 let usedPickNumbers = new Set();
 
@@ -72,10 +79,10 @@ async function initTradeRoom() {
   if (!ok) return;
 
   await loadTeams();
-  await loadPicks();
+  await loadAssetsForTrade();
 
   renderTeamSelect();
-  renderMyPicks();
+  renderMyAssets();
 
   await loadTrades();
 
@@ -93,8 +100,8 @@ function setupNavbar() {
 function setupEvents() {
   if (toTeamSelect) {
     toTeamSelect.addEventListener("change", () => {
-      renderTheirPicks();
-      updatePickSummaries();
+      renderTheirAssets();
+      updateAssetSummaries();
     });
   }
 
@@ -105,9 +112,11 @@ function setupEvents() {
   document.addEventListener("change", (e) => {
     if (
       e.target.classList.contains("my-pick-checkbox") ||
-      e.target.classList.contains("their-pick-checkbox")
+      e.target.classList.contains("their-pick-checkbox") ||
+      e.target.classList.contains("my-player-checkbox") ||
+      e.target.classList.contains("their-player-checkbox")
     ) {
-      updatePickSummaries();
+      updateAssetSummaries();
     }
   });
 }
@@ -156,21 +165,21 @@ async function checkUser() {
     return false;
   }
 
-currentTeamName = team[CONFIG.TEAM_NAME_COL];
-currentTeamConference = team.conference;
+  currentTeamName = team[CONFIG.TEAM_NAME_COL];
+  currentTeamConference = team.conference;
 
-if (currentTeamConference === "Conference League") {
-  currentDraftName = "Draft Conference";
-} else {
-  currentDraftName = "Draft Championship";
-}
+  if (currentTeamConference === "Conference League") {
+    currentDraftName = "Draft Conference";
+  } else {
+    currentDraftName = "Draft Championship";
+  }
 
-userInfo.textContent = `Accesso effettuato come ${email}`;
-myTeamLabel.textContent = currentTeamName;
+  userInfo.textContent = `Accesso effettuato come ${email}`;
+  myTeamLabel.textContent = currentTeamName;
 
-if (activeDraftLabel) {
-  activeDraftLabel.textContent = currentDraftName;
-};
+  if (activeDraftLabel) {
+    activeDraftLabel.textContent = currentDraftName;
+  }
 
   return true;
 }
@@ -190,6 +199,13 @@ async function loadTeams() {
   }
 
   allTeams = data || [];
+}
+
+async function loadAssetsForTrade() {
+  await Promise.all([
+    loadPicks(),
+    loadPickedPlayers()
+  ]);
 }
 
 async function loadPicks() {
@@ -220,10 +236,28 @@ async function loadPicks() {
     (usedData || []).map(row => Number(row[CONFIG.PICKS_PICK_NUMBER_COL]))
   );
 
+  // Sono scambiabili solo le pick non ancora usate.
   allPicks = (orderData || []).filter(pick => {
     const pickNumber = Number(pick[CONFIG.PICK_NUMBER_COL]);
     return !usedPickNumbers.has(pickNumber);
   });
+}
+
+async function loadPickedPlayers() {
+  const { data, error } = await supabase
+    .from(CONFIG.PICKS_TABLE)
+    .select("*")
+    .eq(CONFIG.PICKS_DRAFT_NAME_COL, currentDraftName)
+    .order(CONFIG.PICKS_PICK_NUMBER_COL, { ascending: true });
+
+  if (error) {
+    console.error(error);
+    allPickedPlayers = [];
+    return;
+  }
+
+  // Sono scambiabili solo i giocatori già chiamati.
+  allPickedPlayers = data || [];
 }
 
 /* ========= RENDER FORM ========= */
@@ -231,10 +265,10 @@ async function loadPicks() {
 function renderTeamSelect() {
   toTeamSelect.innerHTML = `<option value="">Seleziona squadra...</option>`;
 
-allTeams
-  .filter(team => team[CONFIG.TEAM_ID_COL] !== currentTeamId)
-  .filter(team => team.conference === currentTeamConference)
-  .forEach(team => {
+  allTeams
+    .filter(team => team[CONFIG.TEAM_ID_COL] !== currentTeamId)
+    .filter(team => team.conference === currentTeamConference)
+    .forEach(team => {
       const option = document.createElement("option");
       option.value = team[CONFIG.TEAM_ID_COL];
       option.textContent = team[CONFIG.TEAM_NAME_COL];
@@ -242,69 +276,105 @@ allTeams
     });
 }
 
-function renderMyPicks() {
+function renderMyAssets() {
   const myPicks = allPicks.filter(
     pick => pick[CONFIG.PICK_OWNER_COL] === currentTeamId
   );
 
-  if (!myPicks.length) {
-    myPicksBox.innerHTML = `<p>Nessuna pick disponibile.</p>`;
-    return;
-  }
+  const myPlayers = allPickedPlayers.filter(
+    player => player[CONFIG.PICKS_OWNER_COL] === currentTeamId
+  );
 
-  myPicksBox.innerHTML = myPicks.map(pick => {
-    return `
-      <label class="pick-choice">
-        <input
-          type="checkbox"
-          class="my-pick-checkbox"
-          value="${pick[CONFIG.PICK_NUMBER_COL]}"
-        />
-        ${formatPickLabel(pick)}
-      </label>
-    `;
-  }).join("");
-   
-  updatePickSummaries();
+  myPicksBox.innerHTML = renderAssetGroup({
+    title: "Pick disponibili",
+    emptyText: "Nessuna pick disponibile.",
+    items: myPicks,
+    inputClass: "my-pick-checkbox",
+    getValue: pick => pick[CONFIG.PICK_NUMBER_COL],
+    getLabel: formatPickLabel
+  }) + renderAssetGroup({
+    title: "Giocatori già chiamati",
+    emptyText: "Nessun giocatore ancora chiamato.",
+    items: myPlayers,
+    inputClass: "my-player-checkbox",
+    getValue: player => player[CONFIG.PICKS_ID_COL],
+    getLabel: formatPlayerLabel
+  });
+
+  updateAssetSummaries();
 }
 
-function renderTheirPicks() {
+function renderTheirAssets() {
   const selectedTeamId = toTeamSelect.value;
 
   if (!selectedTeamId) {
     theirPicksBox.innerHTML = "Seleziona prima una squadra...";
+    updateAssetSummaries();
     return;
   }
-   updatePickSummaries();
+
+  const selectedTeamName = getTeamName(selectedTeamId);
 
   const theirPicks = allPicks.filter(
     pick => pick[CONFIG.PICK_OWNER_COL] === selectedTeamId
   );
 
-  const selectedTeamName = getTeamName(selectedTeamId);
+  const theirPlayers = allPickedPlayers.filter(
+    player => player[CONFIG.PICKS_OWNER_COL] === selectedTeamId
+  );
 
-  if (!theirPicks.length) {
-    theirPicksBox.innerHTML = `<p>Nessuna pick disponibile per ${selectedTeamName}.</p>`;
-    return;
-  }
-    updatePickSummaries();
+  theirPicksBox.innerHTML = renderAssetGroup({
+    title: `Pick disponibili di ${selectedTeamName}`,
+    emptyText: `Nessuna pick disponibile per ${selectedTeamName}.`,
+    items: theirPicks,
+    inputClass: "their-pick-checkbox",
+    getValue: pick => pick[CONFIG.PICK_NUMBER_COL],
+    getLabel: formatPickLabel
+  }) + renderAssetGroup({
+    title: `Giocatori già chiamati di ${selectedTeamName}`,
+    emptyText: `Nessun giocatore ancora chiamato da ${selectedTeamName}.`,
+    items: theirPlayers,
+    inputClass: "their-player-checkbox",
+    getValue: player => player[CONFIG.PICKS_ID_COL],
+    getLabel: formatPlayerLabel
+  });
 
-  theirPicksBox.innerHTML = theirPicks.map(pick => {
-    return `
-      <label class="pick-choice">
-        <input
-          type="checkbox"
-          class="their-pick-checkbox"
-          value="${pick[CONFIG.PICK_NUMBER_COL]}"
-        />
-        ${formatPickLabel(pick)}
-      </label>
-    `;
-  }).join("");
+  updateAssetSummaries();
+}
+
+function renderAssetGroup({ title, emptyText, items, inputClass, getValue, getLabel }) {
+  const list = items.length
+    ? items.map(item => `
+        <label class="pick-choice trade-asset-choice">
+          <input
+            type="checkbox"
+            class="${inputClass}"
+            value="${escapeHtml(getValue(item))}"
+          />
+          ${escapeHtml(getLabel(item))}
+        </label>
+      `).join("")
+    : `<p>${escapeHtml(emptyText)}</p>`;
+
+  return `
+    <div class="trade-asset-group">
+      <h4>${escapeHtml(title)}</h4>
+      ${list}
+    </div>
+  `;
 }
 
 function formatPickLabel(pick) {
   return `Pick ${pick[CONFIG.PICK_NUMBER_COL]}`;
+}
+
+function formatPlayerLabel(player) {
+  const pickNumber = player[CONFIG.PICKS_PICK_NUMBER_COL];
+  const playerName = player[CONFIG.PICKS_PLAYER_NAME_COL] || "Giocatore senza nome";
+
+  return pickNumber
+    ? `${playerName} (pick ${pickNumber})`
+    : playerName;
 }
 
 function getTeamName(teamId) {
@@ -326,9 +396,19 @@ async function sendTradeProposal() {
 
   const mySelectedPickNumbers = getCheckedValues(".my-pick-checkbox");
   const theirSelectedPickNumbers = getCheckedValues(".their-pick-checkbox");
+  const mySelectedPlayerIds = getCheckedValues(".my-player-checkbox");
+  const theirSelectedPlayerIds = getCheckedValues(".their-player-checkbox");
 
-  if (!mySelectedPickNumbers.length && !theirSelectedPickNumbers.length) {
-    showMessage("Seleziona almeno una pick da offrire o da chiedere.", "error");
+  const myAssetCount = mySelectedPickNumbers.length + mySelectedPlayerIds.length;
+  const theirAssetCount = theirSelectedPickNumbers.length + theirSelectedPlayerIds.length;
+
+  if (!myAssetCount || !theirAssetCount) {
+    showMessage("La trade deve contenere almeno un asset per entrambe le squadre.", "error");
+    return;
+  }
+
+  if (myAssetCount !== theirAssetCount) {
+    showMessage("Trade non valida: il numero di asset deve essere uguale per entrambe le squadre.", "error");
     return;
   }
 
@@ -338,59 +418,43 @@ async function sendTradeProposal() {
   sendTradeBtn.textContent = "Invio in corso...";
 
   try {
+    await loadAssetsForTrade();
+
+    const assetsToInsert = buildTradeAssets({
+      proposalId: null,
+      toTeamId,
+      mySelectedPickNumbers,
+      theirSelectedPickNumbers,
+      mySelectedPlayerIds,
+      theirSelectedPlayerIds
+    });
+
+    const fromAssets = assetsToInsert.filter(asset => asset.side === "from");
+    const toAssets = assetsToInsert.filter(asset => asset.side === "to");
+
+    if (fromAssets.length !== myAssetCount || toAssets.length !== theirAssetCount) {
+      showMessage("Trade bloccata: uno o più asset non sono più disponibili.", "error");
+      return;
+    }
+
     const { data: proposal, error: proposalError } = await supabase
       .from("trade_proposals")
-.insert({
-  from_team: currentTeamId,
-  to_team: toTeamId,
-  draft_name: currentDraftName,
-  status: "pending",
-  message
-})
+      .insert({
+        from_team: currentTeamId,
+        to_team: toTeamId,
+        draft_name: currentDraftName,
+        status: "pending",
+        message
+      })
       .select()
       .single();
 
     if (proposalError) throw proposalError;
 
-    const assets = [];
-
-    mySelectedPickNumbers.forEach(pickNumber => {
-      const pick = allPicks.find(p =>
-        String(p[CONFIG.PICK_NUMBER_COL]) === String(pickNumber) &&
-        p[CONFIG.PICK_OWNER_COL] === currentTeamId
-      );
-
-      if (pick) {
-        assets.push({
-          proposal_id: proposal.id,
-          side: "from",
-          asset_type: "pick",
-          asset_id: String(pick[CONFIG.PICK_NUMBER_COL]),
-          asset_label: formatPickLabel(pick)
-        });
-      }
-    });
-
-    theirSelectedPickNumbers.forEach(pickNumber => {
-      const pick = allPicks.find(p =>
-        String(p[CONFIG.PICK_NUMBER_COL]) === String(pickNumber) &&
-        p[CONFIG.PICK_OWNER_COL] === toTeamId
-      );
-
-      if (pick) {
-        assets.push({
-          proposal_id: proposal.id,
-          side: "to",
-          asset_type: "pick",
-          asset_id: String(pick[CONFIG.PICK_NUMBER_COL]),
-          asset_label: formatPickLabel(pick)
-        });
-      }
-    });
-
-    if (!assets.length) {
-      throw new Error("Nessun asset valido trovato.");
-    }
+    const assets = assetsToInsert.map(asset => ({
+      ...asset,
+      proposal_id: proposal.id
+    }));
 
     const { error: assetsError } = await supabase
       .from("trade_assets")
@@ -398,17 +462,14 @@ async function sendTradeProposal() {
 
     if (assetsError) throw assetsError;
 
-     await sendTradeNotification(toTeamId);
+    await sendTradeNotification(toTeamId);
 
     showMessage("Proposta inviata correttamente.", "success");
 
     tradeMessageInput.value = "";
     toTeamSelect.value = "";
-    renderMyPicks();
-    renderTheirPicks();
 
-    await loadTrades();
-
+    await refreshAll();
   } catch (err) {
     console.error(err);
     showMessage("Errore durante l’invio della proposta.", "error");
@@ -416,6 +477,87 @@ async function sendTradeProposal() {
     sendTradeBtn.disabled = false;
     sendTradeBtn.textContent = "Invia proposta";
   }
+}
+
+function buildTradeAssets({
+  proposalId,
+  toTeamId,
+  mySelectedPickNumbers,
+  theirSelectedPickNumbers,
+  mySelectedPlayerIds,
+  theirSelectedPlayerIds
+}) {
+  const assets = [];
+
+  mySelectedPickNumbers.forEach(pickNumber => {
+    const pick = allPicks.find(p =>
+      String(p[CONFIG.PICK_NUMBER_COL]) === String(pickNumber) &&
+      p[CONFIG.PICK_OWNER_COL] === currentTeamId
+    );
+
+    if (pick) {
+      assets.push({
+        proposal_id: proposalId,
+        side: "from",
+        asset_type: "pick",
+        asset_id: String(pick[CONFIG.PICK_NUMBER_COL]),
+        asset_label: formatPickLabel(pick)
+      });
+    }
+  });
+
+  mySelectedPlayerIds.forEach(playerId => {
+    const player = allPickedPlayers.find(p =>
+      String(p[CONFIG.PICKS_ID_COL]) === String(playerId) &&
+      p[CONFIG.PICKS_OWNER_COL] === currentTeamId
+    );
+
+    if (player) {
+      assets.push({
+        proposal_id: proposalId,
+        side: "from",
+        asset_type: "player",
+        asset_id: String(player[CONFIG.PICKS_ID_COL]),
+        asset_label: formatPlayerLabel(player)
+      });
+    }
+  });
+
+  theirSelectedPickNumbers.forEach(pickNumber => {
+    const pick = allPicks.find(p =>
+      String(p[CONFIG.PICK_NUMBER_COL]) === String(pickNumber) &&
+      p[CONFIG.PICK_OWNER_COL] === toTeamId
+    );
+
+    if (pick) {
+      assets.push({
+        proposal_id: proposalId,
+        side: "to",
+        asset_type: "pick",
+        asset_id: String(pick[CONFIG.PICK_NUMBER_COL]),
+        asset_label: formatPickLabel(pick)
+      });
+    }
+  });
+
+  theirSelectedPlayerIds.forEach(playerId => {
+    const player = allPickedPlayers.find(p =>
+      String(p[CONFIG.PICKS_ID_COL]) === String(playerId) &&
+      p[CONFIG.PICKS_OWNER_COL] === toTeamId
+    );
+
+    if (player) {
+      assets.push({
+        proposal_id: proposalId,
+        side: "to",
+        asset_type: "player",
+        asset_id: String(player[CONFIG.PICKS_ID_COL]),
+        asset_label: formatPlayerLabel(player)
+      });
+    }
+  });
+
+  return assets;
 }
 
 /* ========= CARICAMENTO TRADE ========= */
@@ -434,7 +576,7 @@ async function loadReceivedTrades() {
     .select("*")
     .eq("to_team", currentTeamId)
     .eq("status", "pending")
-   .eq("draft_name", currentDraftName)
+    .eq("draft_name", currentDraftName)
     .order("created_at", { ascending: false });
 
   if (error) {
@@ -452,7 +594,7 @@ async function loadSentTrades() {
     .select("*")
     .eq("from_team", currentTeamId)
     .eq("status", "pending")
-     .eq("draft_name", currentDraftName)
+    .eq("draft_name", currentDraftName)
     .order("created_at", { ascending: false });
 
   if (error) {
@@ -469,7 +611,7 @@ async function loadCompletedTrades() {
     .from("trade_proposals")
     .select("*")
     .eq("status", "accepted")
-     .eq("draft_name", currentDraftName)
+    .eq("draft_name", currentDraftName)
     .or(`from_team.eq.${currentTeamId},to_team.eq.${currentTeamId}`)
     .order("accepted_at", { ascending: false })
     .limit(30);
@@ -539,15 +681,15 @@ async function renderTrades(container, trades, mode) {
       `;
     }
 
-     let statusLabel = trade.status;
+    let statusLabel = trade.status;
 
-if (trade.status === "accepted") statusLabel = "Affare concluso";
-if (trade.status === "rejected") statusLabel = "Rifiutata";
-if (trade.status === "cancelled") statusLabel = "Annullata";
+    if (trade.status === "accepted") statusLabel = "Affare concluso";
+    if (trade.status === "rejected") statusLabel = "Rifiutata";
+    if (trade.status === "cancelled") statusLabel = "Annullata";
 
-const dateLabel = trade.accepted_at
-  ? formatDateTime(trade.accepted_at)
-  : formatDateTime(trade.created_at);
+    const dateLabel = trade.accepted_at
+      ? formatDateTime(trade.accepted_at)
+      : formatDateTime(trade.created_at);
 
     const fromName = getTeamName(trade.from_team);
     const toName = getTeamName(trade.to_team);
@@ -558,20 +700,20 @@ const dateLabel = trade.accepted_at
 
         <div>
           <strong>${escapeHtml(fromName)} offre:</strong>
-          <ul>${fromAssets || "<li>Nessuna pick</li>"}</ul>
+          <ul>${fromAssets || "<li>Nessun asset</li>"}</ul>
         </div>
 
         <div>
           <strong>${escapeHtml(toName)} offre:</strong>
-          <ul>${toAssets || "<li>Nessuna pick</li>"}</ul>
+          <ul>${toAssets || "<li>Nessun asset</li>"}</ul>
         </div>
 
         ${trade.message ? `<p><em>${escapeHtml(trade.message)}</em></p>` : ""}
 
-    <p class="trade-status ${escapeHtml(trade.status)}">
-  ${escapeHtml(statusLabel)}
-  ${mode === "completed" ? ` · ${escapeHtml(dateLabel)}` : ""}
-</p>
+        <p class="trade-status ${escapeHtml(trade.status)}">
+          ${escapeHtml(statusLabel)}
+          ${mode === "completed" ? ` · ${escapeHtml(dateLabel)}` : ""}
+        </p>
 
         <div class="trade-actions">
           ${actions}
@@ -615,61 +757,45 @@ async function acceptTrade(proposalId) {
 
     if (assetsError) throw assetsError;
 
-await loadPicks();
+    const fromAssets = (assets || []).filter(a => a.side === "from");
+    const toAssets = (assets || []).filter(a => a.side === "to");
 
-const allTradeAssets = assets.filter(a => a.asset_type === "pick");
+    if (!fromAssets.length || !toAssets.length || fromAssets.length !== toAssets.length) {
+      alert("Trade bloccata: la proposta non è bilanciata.");
+      await cancelProposalBySystem(proposalId);
+      await refreshAll();
+      return;
+    }
 
-const hasUsedPick = allTradeAssets.some(asset =>
-  usedPickNumbers.has(Number(asset.asset_id))
-);
+    await loadAssetsForTrade();
 
-if (hasUsedPick) {
-  alert("Trade bloccata: una o più pick sono già state usate nel draft.");
+    const allPickAssets = (assets || []).filter(a => a.asset_type === "pick");
+    const hasUsedPick = allPickAssets.some(asset =>
+      usedPickNumbers.has(Number(asset.asset_id))
+    );
 
-  await supabase
-    .from("trade_proposals")
-    .update({ status: "cancelled" })
-    .eq("id", proposalId);
+    if (hasUsedPick) {
+      alert("Trade bloccata: una o più pick sono già state usate nel draft.");
+      await cancelProposalBySystem(proposalId);
+      await refreshAll();
+      return;
+    }
 
-  await refreshAll();
-  return;
-}
-
-const fromAssets = assets.filter(a => a.side === "from" && a.asset_type === "pick");
-const toAssets = assets.filter(a => a.side === "to" && a.asset_type === "pick");
-
-const ownershipOk = checkOwnershipBeforeTrade(proposal, fromAssets, toAssets);
+    const ownershipOk = checkOwnershipBeforeTrade(proposal, fromAssets, toAssets);
 
     if (!ownershipOk) {
-      alert("Trade bloccata: una o più pick non appartengono più alla squadra prevista.");
-
-      await supabase
-        .from("trade_proposals")
-        .update({ status: "cancelled" })
-        .eq("id", proposalId);
-
+      alert("Trade bloccata: uno o più asset non appartengono più alla squadra prevista.");
+      await cancelProposalBySystem(proposalId);
       await refreshAll();
       return;
     }
 
     for (const asset of fromAssets) {
-      const { error } = await supabase
-        .from(CONFIG.DRAFT_TABLE)
-        .update({ [CONFIG.PICK_OWNER_COL]: proposal.to_team })
-        .eq(CONFIG.DRAFT_NAME_COL, currentDraftName)
-        .eq(CONFIG.PICK_NUMBER_COL, Number(asset.asset_id));
-
-      if (error) throw error;
+      await moveAssetToTeam(asset, proposal.to_team, proposal.draft_name || currentDraftName);
     }
 
     for (const asset of toAssets) {
-      const { error } = await supabase
-        .from(CONFIG.DRAFT_TABLE)
-        .update({ [CONFIG.PICK_OWNER_COL]: proposal.from_team })
-        .eq(CONFIG.DRAFT_NAME_COL, currentDraftName)
-        .eq(CONFIG.PICK_NUMBER_COL, Number(asset.asset_id));
-
-      if (error) throw error;
+      await moveAssetToTeam(asset, proposal.from_team, proposal.draft_name || currentDraftName);
     }
 
     const { error: updateError } = await supabase
@@ -682,37 +808,72 @@ const ownershipOk = checkOwnershipBeforeTrade(proposal, fromAssets, toAssets);
 
     if (updateError) throw updateError;
 
-    alert("Trade accettata. Le pick sono state aggiornate.");
+    alert("Trade accettata. Pick e giocatori sono stati aggiornati.");
     await refreshAll();
-
   } catch (err) {
     console.error(err);
     alert("Errore durante l’accettazione della trade.");
   }
 }
 
+async function moveAssetToTeam(asset, newTeamId, draftName) {
+  if (asset.asset_type === "pick") {
+    const { error } = await supabase
+      .from(CONFIG.DRAFT_TABLE)
+      .update({ [CONFIG.PICK_OWNER_COL]: newTeamId })
+      .eq(CONFIG.DRAFT_NAME_COL, draftName)
+      .eq(CONFIG.PICK_NUMBER_COL, Number(asset.asset_id));
+
+    if (error) throw error;
+    return;
+  }
+
+  if (asset.asset_type === "player") {
+    const { error } = await supabase
+      .from(CONFIG.PICKS_TABLE)
+      .update({ [CONFIG.PICKS_OWNER_COL]: newTeamId })
+      .eq(CONFIG.PICKS_ID_COL, asset.asset_id)
+      .eq(CONFIG.PICKS_DRAFT_NAME_COL, draftName);
+
+    if (error) throw error;
+    return;
+  }
+
+  throw new Error(`Asset type non gestito: ${asset.asset_type}`);
+}
+
 function checkOwnershipBeforeTrade(proposal, fromAssets, toAssets) {
-  for (const asset of fromAssets) {
+  return fromAssets.every(asset => assetBelongsToTeam(asset, proposal.from_team)) &&
+    toAssets.every(asset => assetBelongsToTeam(asset, proposal.to_team));
+}
+
+function assetBelongsToTeam(asset, teamId) {
+  if (asset.asset_type === "pick") {
     const pick = allPicks.find(p =>
       String(p[CONFIG.PICK_NUMBER_COL]) === String(asset.asset_id)
     );
 
-    if (!pick || pick[CONFIG.PICK_OWNER_COL] !== proposal.from_team) {
-      return false;
-    }
+    return Boolean(pick && pick[CONFIG.PICK_OWNER_COL] === teamId);
   }
 
-  for (const asset of toAssets) {
-    const pick = allPicks.find(p =>
-      String(p[CONFIG.PICK_NUMBER_COL]) === String(asset.asset_id)
+  if (asset.asset_type === "player") {
+    const player = allPickedPlayers.find(p =>
+      String(p[CONFIG.PICKS_ID_COL]) === String(asset.asset_id)
     );
 
-    if (!pick || pick[CONFIG.PICK_OWNER_COL] !== proposal.to_team) {
-      return false;
-    }
+    return Boolean(player && player[CONFIG.PICKS_OWNER_COL] === teamId);
   }
 
-  return true;
+  return false;
+}
+
+async function cancelProposalBySystem(proposalId) {
+  const { error } = await supabase
+    .from("trade_proposals")
+    .update({ status: "cancelled" })
+    .eq("id", proposalId);
+
+  if (error) throw error;
 }
 
 async function rejectTrade(proposalId) {
@@ -756,14 +917,20 @@ async function cancelTrade(proposalId) {
 }
 
 /* ========= UTILS ========= */
-function updatePickSummaries() {
-  const myCount = getCheckedValues(".my-pick-checkbox").length;
-  const theirCount = getCheckedValues(".their-pick-checkbox").length;
+
+function updateAssetSummaries() {
+  const myPickCount = getCheckedValues(".my-pick-checkbox").length;
+  const theirPickCount = getCheckedValues(".their-pick-checkbox").length;
+  const myPlayerCount = getCheckedValues(".my-player-checkbox").length;
+  const theirPlayerCount = getCheckedValues(".their-player-checkbox").length;
+
+  const myCount = myPickCount + myPlayerCount;
+  const theirCount = theirPickCount + theirPlayerCount;
 
   if (myPicksSummary) {
     myPicksSummary.textContent = myCount
-      ? `${myCount} pick selezionata${myCount > 1 ? "e" : ""}`
-      : "Seleziona le tue pick";
+      ? `${myCount} asset selezionat${myCount > 1 ? "i" : "o"} (${myPickCount} pick, ${myPlayerCount} giocatori)`
+      : "Seleziona i tuoi asset";
   }
 
   if (theirPicksSummary) {
@@ -771,17 +938,17 @@ function updatePickSummaries() {
     const selectedTeamName = selectedTeamId ? getTeamName(selectedTeamId) : "";
 
     theirPicksSummary.textContent = theirCount
-      ? `${theirCount} pick selezionata${theirCount > 1 ? "e" : ""}`
+      ? `${theirCount} asset selezionat${theirCount > 1 ? "i" : "o"} (${theirPickCount} pick, ${theirPlayerCount} giocatori)`
       : selectedTeamId
-        ? `Pick disponibili di ${selectedTeamName}`
+        ? `Asset disponibili di ${selectedTeamName}`
         : "Seleziona prima una squadra";
   }
 }
 
 async function refreshAll() {
-  await loadPicks();
-  renderMyPicks();
-  renderTheirPicks();
+  await loadAssetsForTrade();
+  renderMyAssets();
+  renderTheirAssets();
   await loadTrades();
 }
 
@@ -855,7 +1022,6 @@ async function sendTradeNotification(toTeamId) {
     if (!response.ok) {
       console.warn("Notifica trade non inviata:", result);
     }
-
   } catch (err) {
     console.warn("Errore notifica trade:", err);
   }
