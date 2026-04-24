@@ -264,6 +264,66 @@ nav.site-nav{
   background: linear-gradient(180deg, #ffefae 0%, #ffd54a 100%);
 }
 
+.nav-right.hero-actions{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  flex-shrink:0;
+}
+
+.btn-hero{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:7px;
+  min-height:40px;
+  padding:10px 13px;
+  border:0;
+  border-radius:12px;
+  background:rgba(255,255,255,.10);
+  color:#fff;
+  font-weight:800;
+  font-size:.92rem;
+  cursor:pointer;
+  text-decoration:none;
+  white-space:nowrap;
+  transition:background .18s ease, color .18s ease, transform .18s ease, box-shadow .18s ease;
+}
+
+.btn-hero:hover{
+  background:rgba(255,255,255,.16);
+  color:var(--gold);
+  transform:translateY(-1px);
+}
+
+.btn-hero.warning{
+  background:rgba(255,204,0,.16);
+  color:#fff4b0;
+}
+
+.btn-hero.trade-badge{
+  background:rgba(255,255,255,.10);
+}
+
+.btn-hero.trade-badge.has-trades{
+  background:linear-gradient(135deg, #ffcc00, #f59e0b);
+  color:#10213d;
+  box-shadow:0 8px 18px rgba(255,204,0,.25);
+}
+
+@media (max-width:900px){
+  .nav-right.hero-actions{
+    margin-top:10px;
+    display:grid;
+    grid-template-columns:1fr;
+    gap:8px;
+  }
+
+  .btn-hero{
+    width:100%;
+  }
+}
+
 @media (max-width: 768px){
   .hero-actions{
     width: 100%;
