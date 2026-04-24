@@ -412,6 +412,97 @@ button:disabled{
   margin:0;
 }
 
+.history-card{
+  padding:0;
+  overflow:hidden;
+}
+
+.history-dropdown{
+  width:100%;
+}
+
+.history-dropdown summary{
+  list-style:none;
+  cursor:pointer;
+  padding:18px 22px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:14px;
+  font-weight:900;
+  color:var(--navy);
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.98), rgba(248,251,255,.98));
+}
+
+.history-dropdown summary::-webkit-details-marker{
+  display:none;
+}
+
+.history-dropdown summary::after{
+  content:"▾";
+  color:var(--navy-3);
+  transition:transform .18s ease;
+}
+
+.history-dropdown[open] summary::after{
+  transform:rotate(180deg);
+}
+
+.history-summary-note{
+  margin-left:auto;
+  padding:5px 10px;
+  border-radius:999px;
+  background:rgba(0,31,63,.06);
+  color:var(--muted);
+  font-size:.82rem;
+  white-space:nowrap;
+}
+
+.history-list{
+  padding:0 18px 18px;
+}
+
+.trade-status{
+  display:inline-flex;
+  align-items:center;
+  width:auto;
+  margin:8px 0 0;
+  padding:6px 10px;
+  border-radius:999px;
+  font-weight:900;
+  font-size:.86rem;
+}
+
+.trade-status.accepted{
+  color:#14532d;
+  background:#dcfce7;
+  border:1px solid #86efac;
+}
+
+.trade-status.rejected{
+  color:#7f1d1d;
+  background:#fee2e2;
+  border:1px solid #fecaca;
+}
+
+.trade-status.cancelled{
+  color:#334155;
+  background:#e2e8f0;
+  border:1px solid #cbd5e1;
+}
+
+@media (max-width:600px){
+  .history-dropdown summary{
+    align-items:flex-start;
+    flex-direction:column;
+  }
+
+  .history-summary-note{
+    margin-left:0;
+  }
+}
+
 /* =========================
    RESPONSIVE
    ========================= */
