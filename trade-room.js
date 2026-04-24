@@ -50,6 +50,8 @@ const theirPicksBox = document.getElementById("theirPicksBox");
 const tradeMessageInput = document.getElementById("tradeMessageInput");
 const sendTradeBtn = document.getElementById("sendTradeBtn");
 const tradeMessage = document.getElementById("tradeMessage");
+const myPicksSummary = document.getElementById("myPicksSummary");
+const theirPicksSummary = document.getElementById("theirPicksSummary");
 
 const receivedTradesBox = document.getElementById("receivedTradesBox");
 const sentTradesBox = document.getElementById("sentTradesBox");
@@ -87,12 +89,24 @@ function setupNavbar() {
 
 function setupEvents() {
   if (toTeamSelect) {
-    toTeamSelect.addEventListener("change", renderTheirPicks);
+    toTeamSelect.addEventListener("change", () => {
+      renderTheirPicks();
+      updatePickSummaries();
+    });
   }
 
   if (sendTradeBtn) {
     sendTradeBtn.addEventListener("click", sendTradeProposal);
   }
+
+  document.addEventListener("change", (e) => {
+    if (
+      e.target.classList.contains("my-pick-checkbox") ||
+      e.target.classList.contains("their-pick-checkbox")
+    ) {
+      updatePickSummaries();
+    }
+  });
 }
 
 /* ========= AUTH ========= */
@@ -695,6 +709,27 @@ async function cancelTrade(proposalId) {
 }
 
 /* ========= UTILS ========= */
+function updatePickSummaries() {
+  const myCount = getCheckedValues(".my-pick-checkbox").length;
+  const theirCount = getCheckedValues(".their-pick-checkbox").length;
+
+  if (myPicksSummary) {
+    myPicksSummary.textContent = myCount
+      ? `${myCount} pick selezionata${myCount > 1 ? "e" : ""}`
+      : "Seleziona le tue pick";
+  }
+
+  if (theirPicksSummary) {
+    const selectedTeamId = toTeamSelect.value;
+    const selectedTeamName = selectedTeamId ? getTeamName(selectedTeamId) : "";
+
+    theirPicksSummary.textContent = theirCount
+      ? `${theirCount} pick selezionata${theirCount > 1 ? "e" : ""}`
+      : selectedTeamId
+        ? `Pick disponibili di ${selectedTeamName}`
+        : "Seleziona prima una squadra";
+  }
+}
 
 async function refreshAll() {
   await loadPicks();
