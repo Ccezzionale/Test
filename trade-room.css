@@ -365,6 +365,14 @@ button:disabled{
   border:1px solid #fecaca;
 }
 
+.user-card{
+  padding:16px 20px;
+}
+
+.user-card #userInfo{
+  margin:0;
+}
+
 /* =========================
    RESPONSIVE
    ========================= */
