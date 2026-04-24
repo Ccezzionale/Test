@@ -249,6 +249,8 @@ function renderMyPicks() {
       </label>
     `;
   }).join("");
+   
+  updatePickSummaries();
 }
 
 function renderTheirPicks() {
