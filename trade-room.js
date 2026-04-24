@@ -874,7 +874,8 @@ if (asset.asset_type === "player") {
 
   return;
 }
-
+  throw new Error(`Asset type non gestito: ${asset.asset_type}`);
+}
 
 function checkOwnershipBeforeTrade(proposal, fromAssets, toAssets) {
   return fromAssets.every(asset => assetBelongsToTeam(asset, proposal.from_team)) &&
