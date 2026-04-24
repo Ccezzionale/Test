@@ -1,4 +1,4 @@
-mport { supabase, supabaseUrl, supabaseKey } from './supabase.js';
+import { supabase, supabaseUrl, supabaseKey } from './supabase.js';
 
 /* ===============================
    TRADE ROOM - LEGA DEGLI EROI
