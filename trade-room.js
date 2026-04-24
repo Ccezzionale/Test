@@ -446,15 +446,24 @@ async function loadCompletedTrades() {
   const { data, error } = await supabase
     .from("trade_proposals")
     .select("*")
-    .in("status", ["accepted", "rejected", "cancelled"])
+    .eq("status", "accepted")
     .or(`from_team.eq.${currentTeamId},to_team.eq.${currentTeamId}`)
-    .order("created_at", { ascending: false })
-    .limit(20);
+    .order("accepted_at", { ascending: false })
+    .limit(30);
 
   if (error) {
     console.error(error);
     completedTradesBox.textContent = "Errore nel caricamento dello storico.";
     return;
+  }
+
+  const note = document.getElementById("historySummaryNote");
+
+  if (note) {
+    const count = data?.length || 0;
+    note.textContent = count
+      ? `${count} trade conclusa${count > 1 ? "e" : ""}`
+      : "Nessuna trade conclusa";
   }
 
   await renderTrades(completedTradesBox, data || [], "completed");
@@ -507,6 +516,16 @@ async function renderTrades(container, trades, mode) {
       `;
     }
 
+     let statusLabel = trade.status;
+
+if (trade.status === "accepted") statusLabel = "Affare concluso";
+if (trade.status === "rejected") statusLabel = "Rifiutata";
+if (trade.status === "cancelled") statusLabel = "Annullata";
+
+const dateLabel = trade.accepted_at
+  ? formatDateTime(trade.accepted_at)
+  : formatDateTime(trade.created_at);
+
     const fromName = getTeamName(trade.from_team);
     const toName = getTeamName(trade.to_team);
 
@@ -526,7 +545,10 @@ async function renderTrades(container, trades, mode) {
 
         ${trade.message ? `<p><em>${escapeHtml(trade.message)}</em></p>` : ""}
 
-        <p>Stato: <strong>${escapeHtml(trade.status)}</strong></p>
+    <p class="trade-status ${escapeHtml(trade.status)}">
+  ${escapeHtml(statusLabel)}
+  ${mode === "completed" ? ` · ${escapeHtml(dateLabel)}` : ""}
+</p>
 
         <div class="trade-actions">
           ${actions}
@@ -754,6 +776,20 @@ function showMessage(text, type) {
 function clearMessage() {
   tradeMessage.textContent = "";
   tradeMessage.className = "";
+}
+
+function formatDateTime(value) {
+  if (!value) return "";
+
+  const date = new Date(value);
+
+  return date.toLocaleString("it-IT", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit"
+  });
 }
 
 function escapeHtml(str) {
