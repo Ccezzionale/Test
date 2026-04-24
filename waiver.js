@@ -5,6 +5,14 @@ const teamConferenceEl = document.getElementById("teamConference");
 const activePhaseEl = document.getElementById("activePhase");
 const activeWeekEl = document.getElementById("activeWeek");
 
+let currentTeam = null;
+let currentSettings = null;
+
+const playerInEl = document.getElementById("playerIn");
+const playerOutEl = document.getElementById("playerOut");
+const saveCallBtn = document.getElementById("saveCallBtn");
+const callMessageEl = document.getElementById("callMessage");
+
 async function getMyTeam() {
   const { data: authData, error: authError } = await supabase.auth.getUser();
 
@@ -61,6 +69,8 @@ async function getWaiverSettings() {
 async function initWaiverRoom() {
   const team = await getMyTeam();
   const settings = await getWaiverSettings();
+  currentTeam = team;
+currentSettings = settings;
 
   if (team) {
     teamNameEl.textContent = team.name;
@@ -103,10 +113,57 @@ async function loadFreeAgents() {
         <td>${cols[3]}</td>
       `;
 
-      tableBody.appendChild(tr);
+      tr.addEventListener("click", () => {
+  playerInEl.value = cols[0].trim();
+});
+
+tableBody.appendChild(tr);
     });
 
   } catch (err) {
     console.error("Errore caricamento svincolati:", err);
   }
 }
+
+saveCallBtn.addEventListener("click", async () => {
+  if (!currentTeam || !currentSettings) {
+    callMessageEl.textContent = "Errore: squadra o impostazioni non caricate.";
+    return;
+  }
+
+  const playerIn = playerInEl.value.trim();
+  const playerOut = playerOutEl.value.trim();
+
+  if (!playerIn) {
+    callMessageEl.textContent = "Seleziona prima un giocatore dalla lista svincolati.";
+    return;
+  }
+
+  if (!playerOut) {
+    callMessageEl.textContent = "Inserisci il giocatore da svincolare.";
+    return;
+  }
+
+  const payload = {
+    team_id: currentTeam.id,
+    week: currentSettings.active_week,
+    phase: currentSettings.active_phase,
+    conference: currentTeam.conference,
+    slot: "1",
+    player_in: playerIn,
+    player_out: playerOut,
+    status: "pending"
+  };
+
+  const { error } = await supabase
+    .from("waiver_calls")
+    .insert(payload);
+
+  if (error) {
+    console.error("Errore salvataggio chiamata:", error);
+    callMessageEl.textContent = "Errore nel salvataggio della chiamata.";
+    return;
+  }
+
+  callMessageEl.textContent = "Chiamata salvata correttamente.";
+});
