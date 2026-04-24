@@ -65,3 +65,46 @@ body {
 #freeAgentsTable th {
   background: #f0f4fa;
 }
+
+.waiver-card label {
+  display: block;
+  font-weight: 700;
+  margin: 14px 0 6px;
+}
+
+.waiver-card input {
+  width: 100%;
+  padding: 11px;
+  border: 1px solid #ccd6e0;
+  border-radius: 10px;
+  font-size: 15px;
+  box-sizing: border-box;
+}
+
+#saveCallBtn {
+  margin-top: 16px;
+  background: #071f49;
+  color: white;
+  border: 0;
+  padding: 12px 18px;
+  border-radius: 12px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+#saveCallBtn:hover {
+  background: #0f4c81;
+}
+
+#callMessage {
+  margin-top: 12px;
+  font-weight: 700;
+}
+
+#freeAgentsTable tbody tr {
+  cursor: pointer;
+}
+
+#freeAgentsTable tbody tr:hover {
+  background: #f3f7ff;
+}
