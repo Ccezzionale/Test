@@ -834,53 +834,45 @@ async function moveAssetToTeam(asset, newTeamId, draftName) {
     return;
   }
 
-  if (asset.asset_type === "player") {
-    // 1. Recupero la pick originale del giocatore
-    const { data: playerPick, error: readError } = await supabase
-      .from(CONFIG.PICKS_TABLE)
-      .select("id, draft_name, pick_number, team_id, player_name")
-      .eq("id", asset.asset_id)
-      .eq(CONFIG.PICKS_DRAFT_NAME_COL, draftName)
-      .maybeSingle();
+if (asset.asset_type === "player") {
+  const { data: playerPick, error: readError } = await supabase
+    .from(CONFIG.PICKS_TABLE)
+    .select("id, draft_name, pick_number, team_id, player_name")
+    .eq("id", asset.asset_id)
+    .maybeSingle();
 
-    if (readError) throw readError;
+  if (readError) throw readError;
 
-    if (!playerPick) {
-      throw new Error(`Giocatore non trovato: ${asset.asset_label}`);
-    }
-
-    // 2. Sposto il giocatore in draft_picks
-    const { data: updatedPlayer, error: playerError } = await supabase
-      .from(CONFIG.PICKS_TABLE)
-      .update({ [CONFIG.PICK_OWNER_COL]: newTeamId })
-      .eq("id", asset.asset_id)
-      .eq(CONFIG.PICKS_DRAFT_NAME_COL, draftName)
-      .select();
-
-    if (playerError) throw playerError;
-
-    if (!updatedPlayer || updatedPlayer.length === 0) {
-      throw new Error(`Nessun giocatore aggiornato: ${asset.asset_label}`);
-    }
-
-    // 3. Sposto anche la riga della pick originale in draft_order
-    const { data: updatedOrder, error: orderError } = await supabase
-      .from(CONFIG.DRAFT_TABLE)
-      .update({ [CONFIG.PICK_OWNER_COL]: newTeamId })
-      .eq(CONFIG.DRAFT_NAME_COL, draftName)
-      .eq(CONFIG.PICK_NUMBER_COL, Number(playerPick.pick_number))
-      .select();
-
-    if (orderError) throw orderError;
-
-    if (!updatedOrder || updatedOrder.length === 0) {
-      throw new Error(`Draft order non aggiornato per ${asset.asset_label}`);
-    }
-
-    return;
+  if (!playerPick) {
+    throw new Error(`Giocatore non trovato: ${asset.asset_label}`);
   }
 
-  throw new Error(`Asset type non gestito: ${asset.asset_type}`);
+  const { data: updatedPlayer, error: playerError } = await supabase
+    .from(CONFIG.PICKS_TABLE)
+    .update({ [CONFIG.PICK_OWNER_COL]: newTeamId })
+    .eq("id", asset.asset_id)
+    .select();
+
+  if (playerError) throw playerError;
+
+  if (!updatedPlayer || updatedPlayer.length === 0) {
+    throw new Error(`Nessun giocatore aggiornato: ${asset.asset_label}`);
+  }
+
+  const { data: updatedOrder, error: orderError } = await supabase
+    .from(CONFIG.DRAFT_TABLE)
+    .update({ [CONFIG.PICK_OWNER_COL]: newTeamId })
+    .eq(CONFIG.DRAFT_NAME_COL, playerPick.draft_name)
+    .eq(CONFIG.PICK_NUMBER_COL, Number(playerPick.pick_number))
+    .select();
+
+  if (orderError) throw orderError;
+
+  if (!updatedOrder || updatedOrder.length === 0) {
+    throw new Error(`Draft order non aggiornato per ${asset.asset_label}`);
+  }
+
+  return;
 }
 
 
