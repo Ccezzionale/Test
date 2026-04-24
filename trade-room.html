@@ -93,15 +93,35 @@
           </select>
         </div>
 
-        <div class="form-row">
-          <label>Le pick che offri</label>
-          <div id="myPicksBox">Caricamento...</div>
-        </div>
+<div class="form-row">
+  <label>Le pick che offri</label>
 
-        <div class="form-row">
-          <label>Le pick che chiedi</label>
-          <div id="theirPicksBox">Seleziona prima una squadra...</div>
-        </div>
+  <details class="pick-dropdown" open>
+    <summary>
+      <span id="myPicksSummary">Seleziona le tue pick</span>
+      <span class="dropdown-arrow">▾</span>
+    </summary>
+
+    <div id="myPicksBox" class="pick-list">
+      Caricamento...
+    </div>
+  </details>
+</div>
+
+<div class="form-row">
+  <label>Le pick che chiedi</label>
+
+  <details class="pick-dropdown">
+    <summary>
+      <span id="theirPicksSummary">Seleziona prima una squadra</span>
+      <span class="dropdown-arrow">▾</span>
+    </summary>
+
+    <div id="theirPicksBox" class="pick-list">
+      Seleziona prima una squadra...
+    </div>
+  </details>
+</div>
 
         <div class="form-row">
           <label for="tradeMessageInput">Messaggio opzionale</label>
