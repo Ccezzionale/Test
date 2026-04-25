@@ -474,6 +474,38 @@ button {
     linear-gradient(180deg, rgba(255,255,255,.98), rgba(255,251,235,.96));
 }
 
+.priority-group {
+  margin-top: 14px;
+  padding: 12px;
+  border-radius: 16px;
+  background: rgba(0,31,63,.035);
+  border: 1px solid rgba(0,31,63,.08);
+}
+
+.priority-group-title {
+  margin: 0 0 10px;
+  color: #001f3f;
+  font-size: .98rem;
+  font-weight: 900;
+}
+
+.priority-group-list {
+  display: grid;
+  gap: 8px;
+}
+
+.priority-team-name {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.priority-team-name small {
+  color: #64748b;
+  font-size: .74rem;
+  font-weight: 800;
+}
+
 @media (max-width: 1050px) {
   .waiver-grid-main {
     grid-template-columns: 1fr;
