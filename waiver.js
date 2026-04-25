@@ -17,6 +17,37 @@ const playerOutEl2 = document.getElementById("playerOut2");
 const saveCallBtn2 = document.getElementById("saveCallBtn2");
 const callMessageEl2 = document.getElementById("callMessage2");
 
+function isSlotOpen(openAt, closeAt) {
+  const now = new Date();
+
+  if (!openAt || !closeAt) return true;
+
+  return now >= new Date(openAt) && now < new Date(closeAt);
+}
+
+function applySlotAvailability() {
+  if (!currentSettings) return;
+
+  const slot1Open = isSlotOpen(currentSettings.slot1_open_at, currentSettings.slot1_close_at);
+  const slot2Open = isSlotOpen(currentSettings.slot2_open_at, currentSettings.slot2_close_at);
+
+  playerInEl.disabled = !slot1Open;
+  playerOutEl.disabled = !slot1Open;
+  saveCallBtn.disabled = !slot1Open;
+
+  playerInEl2.disabled = !slot2Open;
+  playerOutEl2.disabled = !slot2Open;
+  saveCallBtn2.disabled = !slot2Open;
+
+  if (!slot1Open) {
+    callMessageEl.textContent = "Prima chiamata chiusa.";
+  }
+
+  if (!slot2Open) {
+    callMessageEl2.textContent = "Seconda chiamata non disponibile in questo momento.";
+  }
+}
+
 async function getMyTeam() {
   const { data: authData, error: authError } = await supabase.auth.getUser();
 
@@ -117,6 +148,7 @@ async function initWaiverRoom() {
 
   await loadFreeAgents();
   await loadMySavedCall();
+  applySlotAvailability();
 }
 
 async function loadFreeAgents() {
