@@ -441,13 +441,20 @@ function renderWaiverOrderAdmin() {
       rowDiv.className = "waiver-admin-row";
       rowDiv.dataset.orderId = row.id;
 
-      const selectOptions = teamsCache
-        .map(team => `
-          <option value="${team.id}" ${String(team.id) === String(row.owner_team_id) ? "selected" : ""}>
-            ${team.name}
-          </option>
-        `)
-        .join("");
+const selectOptions = `
+  <option value="" ${!row.owner_team_id ? "selected" : ""}>
+    Nessuna
+  </option>
+  ${
+    teamsCache
+      .map(team => `
+        <option value="${team.id}" ${String(team.id) === String(row.owner_team_id) ? "selected" : ""}>
+          ${team.name}
+        </option>
+      `)
+      .join("")
+  }
+`;
 
       rowDiv.innerHTML = `
         <span class="priority-rank">${row.priority_number}</span>
@@ -465,7 +472,7 @@ function renderWaiverOrderAdmin() {
       const select = rowDiv.querySelector(".waiver-owner-select");
 
       select.addEventListener("change", event => {
-        const newOwnerId = event.target.value;
+        const newOwnerId = event.target.value || null;
 
         waiverOrderRows = waiverOrderRows.map(item => {
           if (String(item.id) === String(row.id)) {
@@ -478,11 +485,13 @@ function renderWaiverOrderAdmin() {
           return item;
         });
 
-        const newOwner = teamMap[newOwnerId];
+const newOwner = newOwnerId ? teamMap[newOwnerId] : null;
 
-        setAdminMessage(
-          `Modifica pronta: ${originalTeam?.name || "chiamata"} ora appartiene a ${newOwner?.name || "nuovo proprietario"}. Ricordati di salvare.`
-        );
+setAdminMessage(
+  newOwner
+    ? `Modifica pronta: ${originalTeam?.name || "chiamata"} ora appartiene a ${newOwner.name}. Ricordati di salvare.`
+    : `Modifica pronta: ${originalTeam?.name || "chiamata"} non appartiene a nessuno. Ricordati di salvare.`
+);
       });
 
       groupDiv.appendChild(rowDiv);
