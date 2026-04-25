@@ -20,79 +20,83 @@ const playerInEl2 = document.getElementById("playerIn2");
 const playerOutEl2 = document.getElementById("playerOut2");
 const saveCallBtn2 = document.getElementById("saveCallBtn2");
 const callMessageEl2 = document.getElementById("callMessage2");
+const resetCallBtn1 = document.getElementById("resetCallBtn1");
+const resetCallBtn2 = document.getElementById("resetCallBtn2");
 
-function selectPlayer(player, rowElement = null) {
-  selectedPlayer = player;
+const selectedPlayerBox1 = document.getElementById("selectedPlayerBox1");
+const selectedPlayerName1 = document.getElementById("selectedPlayerName1");
+const selectedPlayerRole1 = document.getElementById("selectedPlayerRole1");
 
-  const playerInput = document.getElementById("playerName");
-  const selectedBox = document.getElementById("selectedPlayerBox");
-  const selectedName = document.getElementById("selectedPlayerName");
-  const selectedRole = document.getElementById("selectedPlayerRole");
+const selectedPlayerBox2 = document.getElementById("selectedPlayerBox2");
+const selectedPlayerName2 = document.getElementById("selectedPlayerName2");
+const selectedPlayerRole2 = document.getElementById("selectedPlayerRole2");
 
-  if (playerInput) {
-    playerInput.value = player.name || player.player_name || player.giocatore || "";
-  }
-
-  if (selectedBox && selectedName) {
-    selectedBox.classList.remove("hidden");
-    selectedName.textContent = player.name || player.player_name || player.giocatore || "";
-  }
-
-  if (selectedRole) {
-    selectedRole.textContent = player.role || player.ruolo || "";
-    selectedRole.style.display = selectedRole.textContent ? "inline-flex" : "none";
-  }
-
+function clearSelectedRows() {
   document
-    .querySelectorAll(".available-row.selected, .player-row.selected, tr.selected-player")
+    .querySelectorAll("#freeAgentsTable tbody tr.selected-player")
     .forEach(row => {
-      row.classList.remove("selected");
       row.classList.remove("selected-player");
     });
+}
+
+function updateSelectedPlayerBox(slot, playerName, role) {
+  const box = slot === "1" ? selectedPlayerBox1 : selectedPlayerBox2;
+  const nameEl = slot === "1" ? selectedPlayerName1 : selectedPlayerName2;
+  const roleEl = slot === "1" ? selectedPlayerRole1 : selectedPlayerRole2;
+
+  if (!box || !nameEl || !roleEl) return;
+
+  box.classList.remove("hidden");
+  nameEl.textContent = playerName;
+  roleEl.textContent = role || "";
+  roleEl.style.display = role ? "inline-flex" : "none";
+}
+
+function selectPlayerForSlot(slot, player, rowElement = null) {
+  const playerName = player.name || "";
+  const role = player.role || "";
+
+  const value = role ? `${playerName} (${role})` : playerName;
+
+  if (slot === "1") {
+    playerInEl.value = value;
+    updateSelectedPlayerBox("1", playerName, role);
+  }
+
+  if (slot === "2") {
+    playerInEl2.value = value;
+    updateSelectedPlayerBox("2", playerName, role);
+  }
+
+  clearSelectedRows();
 
   if (rowElement) {
     rowElement.classList.add("selected-player");
   }
 }
 
-function resetCallForm() {
-  selectedPlayer = null;
+function resetCallForm(slot) {
+  if (slot === "1") {
+    playerInEl.value = "";
+    playerOutEl.value = "";
+    callMessageEl.textContent = "";
 
-  const fieldsToReset = [
-    "playerName",
-    "releasedPlayer",
-    "callType",
-    "slot",
-    "role",
-    "serieATeam",
-    "quotation"
-  ];
+    if (selectedPlayerBox1) selectedPlayerBox1.classList.add("hidden");
+    if (selectedPlayerName1) selectedPlayerName1.textContent = "";
+    if (selectedPlayerRole1) selectedPlayerRole1.textContent = "";
+  }
 
-  fieldsToReset.forEach(id => {
-    const el = document.getElementById(id);
-    if (!el) return;
+  if (slot === "2") {
+    playerInEl2.value = "";
+    playerOutEl2.value = "";
+    callMessageEl2.textContent = "";
 
-    if (el.tagName === "SELECT") {
-      el.selectedIndex = 0;
-    } else {
-      el.value = "";
-    }
-  });
+    if (selectedPlayerBox2) selectedPlayerBox2.classList.add("hidden");
+    if (selectedPlayerName2) selectedPlayerName2.textContent = "";
+    if (selectedPlayerRole2) selectedPlayerRole2.textContent = "";
+  }
 
-  const selectedBox = document.getElementById("selectedPlayerBox");
-  const selectedName = document.getElementById("selectedPlayerName");
-  const selectedRole = document.getElementById("selectedPlayerRole");
-
-  if (selectedBox) selectedBox.classList.add("hidden");
-  if (selectedName) selectedName.textContent = "";
-  if (selectedRole) selectedRole.textContent = "";
-
-  document
-    .querySelectorAll(".available-row.selected, .player-row.selected, tr.selected-player")
-    .forEach(row => {
-      row.classList.remove("selected");
-      row.classList.remove("selected-player");
-    });
+  clearSelectedRows();
 }
 
 function isSlotOpen(openAt, closeAt) {
@@ -406,18 +410,31 @@ async function loadFreeAgents() {
         <td>${cols[3]}</td>
       `;
 
-   tr.addEventListener("click", () => {
-  const name = cols[0].trim();
-  const role = cols[1].trim();
-  const selectedPlayer = `${name} (${role})`;
+tr.addEventListener("click", () => {
+  const player = {
+    name: cols[0].trim(),
+    role: cols[1].trim(),
+    serieATeam: cols[2].trim(),
+    quotation: cols[3].trim()
+  };
+
+  if (!playerInEl.disabled && !playerInEl.value) {
+    selectPlayerForSlot("1", player, tr);
+    return;
+  }
+
+  if (!playerInEl2.disabled && !playerInEl2.value) {
+    selectPlayerForSlot("2", player, tr);
+    return;
+  }
 
   if (!playerInEl.disabled) {
-    playerInEl.value = selectedPlayer;
+    selectPlayerForSlot("1", player, tr);
     return;
   }
 
   if (!playerInEl2.disabled) {
-    playerInEl2.value = selectedPlayer;
+    selectPlayerForSlot("2", player, tr);
     return;
   }
 
@@ -605,6 +622,14 @@ saveCallBtn.addEventListener("click", () => {
 
 saveCallBtn2.addEventListener("click", () => {
   saveCall("2", playerInEl2, playerOutEl2, callMessageEl2);
+});
+
+resetCallBtn1?.addEventListener("click", () => {
+  resetCallForm("1");
+});
+
+resetCallBtn2?.addEventListener("click", () => {
+  resetCallForm("2");
 });
 
 
