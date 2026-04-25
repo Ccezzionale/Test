@@ -1554,17 +1554,34 @@ function fillStandardFridaySettings() {
 function fillPlayoffFridaySettings() {
   const friday = getNextFriday();
 
+  // Slot 1: da martedì 00:00 a venerdì 15:00
   const slot1Open = new Date(friday);
-  const slot1Close = addMinutes(slot1Open, 30);
+  slot1Open.setDate(friday.getDate() - 3);
+  slot1Open.setHours(0, 0, 0, 0);
 
-  const slot1SOpen = new Date(slot1Close);
-  const slot1SClose = addMinutes(slot1SOpen, 30);
+  const slot1Close = new Date(friday);
+  slot1Close.setHours(15, 0, 0, 0);
 
-  const slot2Open = new Date(slot1SClose);
-  const slot2Close = addMinutes(slot2Open, 30);
+  // Slot 1S: venerdì 15:01 - 15:30
+  const slot1SOpen = new Date(friday);
+  slot1SOpen.setHours(15, 1, 0, 0);
 
-  const slot2SOpen = new Date(slot2Close);
-  const slot2SClose = addMinutes(slot2SOpen, 30);
+  const slot1SClose = new Date(friday);
+  slot1SClose.setHours(15, 30, 0, 0);
+
+  // Slot 2: venerdì 15:31 - 16:00
+  const slot2Open = new Date(friday);
+  slot2Open.setHours(15, 31, 0, 0);
+
+  const slot2Close = new Date(friday);
+  slot2Close.setHours(16, 0, 0, 0);
+
+  // Slot 2S: venerdì 16:01 - 16:30
+  const slot2SOpen = new Date(friday);
+  slot2SOpen.setHours(16, 1, 0, 0);
+
+  const slot2SClose = new Date(friday);
+  slot2SClose.setHours(16, 30, 0, 0);
 
   if (activePhaseSelect) activePhaseSelect.value = "playoff";
 
@@ -1580,7 +1597,9 @@ function fillPlayoffFridaySettings() {
   setInputDateTime(slot2SOpenInput, slot2SOpen);
   setInputDateTime(slot2SCloseInput, slot2SClose);
 
-  setSettingsMessage("Venerdì playoff impostato: 15:00, 15:30, 16:00, 16:30. Ricordati di salvare.");
+  setSettingsMessage(
+    "Venerdì playoff impostato: Slot 1 da martedì 00:00 a venerdì 15:00; Slot 1S 15:01-15:30; Slot 2 15:31-16:00; Slot 2S 16:01-16:30. Ricordati di salvare."
+  );
 }
 
 async function saveWaiverSettings() {
