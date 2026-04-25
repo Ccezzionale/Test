@@ -167,7 +167,7 @@ body {
 }
 
 .selected-player-box {
-  margin-top: 12px;
+  margin-bottom: 14px;
   padding: 12px 14px;
   border-radius: 12px;
   background: #eef6ff;
@@ -183,16 +183,11 @@ body {
 }
 
 .selected-label {
-  font-size: 0.8rem;
+  font-size: 0.75rem;
   text-transform: uppercase;
   color: #64748b;
   font-weight: 700;
   letter-spacing: 0.04em;
-}
-
-#selectedPlayerName {
-  color: #0f172a;
-  font-size: 1rem;
 }
 
 .role-badge {
@@ -208,16 +203,12 @@ body {
   font-weight: 800;
 }
 
-.available-row.selected,
-.player-row.selected,
-tr.selected-player {
+#freeAgentsTable tbody tr {
+  cursor: pointer;
+}
+
+#freeAgentsTable tbody tr.selected-player {
   background: #dbeafe !important;
   outline: 2px solid #2563eb;
   outline-offset: -2px;
-}
-
-.available-row,
-.player-row,
-#playersTable tbody tr {
-  cursor: pointer;
 }
