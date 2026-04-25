@@ -1066,7 +1066,7 @@ async function loadPublicCalls() {
 
   getGeneratedSlots().forEach(slot => {
     if (isSlotPublic(slot)) {
-      visibleSlots.push(slot);
+      visibleSlots.push(normalizeSlot(slot));
     }
   });
 
@@ -1088,6 +1088,7 @@ async function loadPublicCalls() {
 
   if (error) {
     console.error("Errore caricamento chiamate pubbliche:", error);
+    publicCallsEl.innerHTML = "<p>Errore nel caricamento delle chiamate pubblicate.</p>";
     return;
   }
 
@@ -1098,28 +1099,60 @@ async function loadPublicCalls() {
 
   calls.forEach(call => {
     const owner = teamMap[call.owner_team_id] || teamMap[call.team_id];
-    const playerName = call.player_in || "-";
+    const original = teamMap[call.original_team_id];
 
-    let resultText = "⏳ In attesa";
-    let resultClass = "pending";
+    const ownerName = owner?.name || "Squadra";
+    const originalName = original?.name || "";
+    const playerName = call.player_in || "-";
+    const slotLabel = normalizeSlot(call.slot);
+    const priorityLabel = call.priority_number || "-";
+
+    const isVia =
+      original &&
+      owner &&
+      String(original.id) !== String(owner.id);
+
+    let statusIcon = "⏳";
+    let statusLabel = "In attesa";
+    let actionText = `${ownerName} chiama ${playerName}`;
+    let statusClass = "pending";
 
     if (call.status === "won") {
-      resultText = `🟢 ${owner?.name || "Squadra"} prende ${playerName}`;
-      resultClass = "won";
+      statusIcon = "🟢";
+      statusLabel = "Presa";
+      actionText = `${ownerName} prende ${playerName}`;
+      statusClass = "won";
     }
 
     if (call.status === "lost") {
-      resultText = `🔴 ${owner?.name || "Squadra"} perde ${playerName}`;
-      resultClass = "lost";
+      statusIcon = "🔴";
+      statusLabel = "Persa";
+      actionText = `${ownerName} perde ${playerName}`;
+      statusClass = "lost";
     }
 
     const div = document.createElement("div");
-    div.className = "public-call-row";
+    div.className = `public-result-card ${statusClass}`;
 
     div.innerHTML = `
-      <div class="public-call-main ${resultClass}">
-        <strong>${resultText}</strong>
-        <span>Slot ${normalizeSlot(call.slot)} - #${call.priority_number || "-"}</span>
+      <div class="public-result-status">
+        <span class="public-result-icon">${statusIcon}</span>
+        <span class="public-result-label">${statusLabel}</span>
+      </div>
+
+      <div class="public-result-body">
+        <strong>${actionText}</strong>
+
+        <div class="public-result-meta">
+          <span>Slot ${slotLabel}</span>
+          <span>Priorità #${priorityLabel}</span>
+        </div>
+
+        ${
+          isVia
+            ? `<div class="public-result-via">via ${originalName}</div>`
+            : ""
+        }
       </div>
     `;
 
