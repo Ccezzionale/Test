@@ -5,6 +5,7 @@ const teamConferenceEl = document.getElementById("teamConference");
 const activePhaseEl = document.getElementById("activePhase");
 const activeWeekEl = document.getElementById("activeWeek");
 const calculateSlot1Btn = document.getElementById("calculateSlot1Btn");
+const calculateSlot2Btn = document.getElementById("calculateSlot2Btn");
 
 let currentTeam = null;
 let currentSettings = null;
@@ -343,6 +344,10 @@ function normalizePlayerName(name) {
 
 calculateSlot1Btn.addEventListener("click", () => {
   calculateResultsForSlot("1");
+});
+
+calculateSlot2Btn.addEventListener("click", () => {
+  calculateResultsForSlot("2");
 });
 
 async function saveCall(slot, playerInElRef, playerOutElRef, messageEl) {
