@@ -506,6 +506,164 @@ button {
   font-weight: 800;
 }
 
+.card-subtitle {
+  margin: 6px 0 0;
+  color: #64748b;
+  font-size: .9rem;
+  line-height: 1.35;
+}
+
+.my-waiver-calls {
+  display: grid;
+  gap: 16px;
+}
+
+.waiver-slot-block {
+  display: grid;
+  gap: 10px;
+}
+
+.waiver-slot-title {
+  margin: 4px 0 2px;
+  color: #001f3f;
+  font-size: 1rem;
+  font-weight: 900;
+}
+
+.dynamic-call-card {
+  border: 1px solid rgba(0,31,63,.10);
+  background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+  border-radius: 16px;
+  padding: 14px;
+  box-shadow: 0 8px 18px rgba(0,31,63,.07);
+}
+
+.dynamic-call-card.active-call-target {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 4px rgba(37,99,235,.10), 0 12px 24px rgba(0,31,63,.10);
+}
+
+.dynamic-call-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.dynamic-call-title {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.dynamic-call-title strong {
+  color: #001f3f;
+  font-size: .98rem;
+}
+
+.dynamic-call-title span {
+  color: #64748b;
+  font-size: .82rem;
+  font-weight: 800;
+}
+
+.via-badge {
+  display: inline-flex;
+  width: fit-content;
+  padding: 4px 8px;
+  border-radius: 999px;
+  background: rgba(255,204,0,.20);
+  color: #725300;
+  font-size: .75rem;
+  font-weight: 900;
+}
+
+.order-position-pill {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 38px;
+  height: 32px;
+  padding: 0 10px;
+  border-radius: 999px;
+  background: #001f3f;
+  color: #ffcc00;
+  font-weight: 900;
+}
+
+.waiver-order-admin {
+  display: grid;
+  gap: 16px;
+}
+
+.waiver-admin-group {
+  padding: 12px;
+  border-radius: 16px;
+  background: rgba(0,31,63,.035);
+  border: 1px solid rgba(0,31,63,.08);
+}
+
+.waiver-admin-group h4 {
+  margin: 0 0 10px;
+  color: #001f3f;
+  font-weight: 900;
+}
+
+.waiver-admin-row {
+  display: grid;
+  grid-template-columns: 52px 1fr 1fr;
+  gap: 10px;
+  align-items: center;
+  padding: 10px;
+  border-radius: 13px;
+  background: #fff;
+  border: 1px solid rgba(0,31,63,.08);
+  margin-bottom: 8px;
+}
+
+.waiver-admin-original {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.waiver-admin-original strong {
+  color: #0f172a;
+}
+
+.waiver-admin-original span {
+  color: #64748b;
+  font-size: .78rem;
+  font-weight: 800;
+}
+
+.waiver-owner-select {
+  width: 100%;
+  min-height: 40px;
+  border: 1px solid rgba(0,31,63,.14);
+  border-radius: 11px;
+  padding: 8px 10px;
+  background: #fff;
+  color: #111827;
+  font-weight: 800;
+}
+
+@media (max-width: 700px) {
+  .waiver-admin-row {
+    grid-template-columns: 42px 1fr;
+  }
+
+  .waiver-owner-select {
+    grid-column: 1 / -1;
+  }
+
+  .dynamic-call-header {
+    flex-direction: column;
+  }
+}
+
 @media (max-width: 1050px) {
   .waiver-grid-main {
     grid-template-columns: 1fr;
