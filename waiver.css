@@ -108,3 +108,39 @@ body {
 #freeAgentsTable tbody tr:hover {
   background: #f3f7ff;
 }
+
+.public-call-row {
+  margin-bottom: 10px;
+}
+
+.public-call-main {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: center;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: #f4f7fb;
+  border-left: 5px solid #ccd6e0;
+}
+
+.public-call-main.won {
+  background: #edf9f1;
+  border-left-color: #1f9d55;
+}
+
+.public-call-main.lost {
+  background: #fff0f0;
+  border-left-color: #d64545;
+}
+
+.public-call-main.pending {
+  background: #fff8e6;
+  border-left-color: #d99a00;
+}
+
+.public-call-main span {
+  font-size: 13px;
+  font-weight: 800;
+  opacity: 0.75;
+}
