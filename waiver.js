@@ -51,6 +51,10 @@ function isConferencePhase() {
   return (currentSettings?.active_phase || "").toLowerCase() === "conference";
 }
 
+function isPlayoffPhase() {
+  return (currentSettings?.active_phase || "").toLowerCase() === "playoff";
+}
+
 function normalizePlayerName(name) {
   return (name || "")
     .toLowerCase()
@@ -329,22 +333,54 @@ async function generateWaiverOrder() {
 
   const rows = [];
 
-  Object.keys(groups).forEach(groupKey => {
-    ["1", "2"].forEach(slot => {
-      groups[groupKey].forEach((team, index) => {
-rows.push({
-  week: currentSettings.active_week,
-  phase: currentSettings.active_phase,
-  conference: groupKey,
-  slot,
-  priority_number: index + 1,
-  original_team_id: team.id,
-  owner_team_id: slot === "1" ? team.id : null,
-  updated_at: new Date().toISOString()
-});
+Object.keys(groups).forEach(groupKey => {
+  if (isPlayoffPhase()) {
+    const playoffTeams = groups[groupKey];
+
+    playoffTeams.forEach((team, index) => {
+      rows.push({
+        week: currentSettings.active_week,
+        phase: currentSettings.active_phase,
+        conference: groupKey,
+        slot: "1",
+        priority_number: index + 1,
+        original_team_id: team.id,
+        owner_team_id: team.id,
+        updated_at: new Date().toISOString()
+      });
+    });
+
+    playoffTeams.forEach((team, index) => {
+      rows.push({
+        week: currentSettings.active_week,
+        phase: currentSettings.active_phase,
+        conference: groupKey,
+        slot: "1",
+        priority_number: playoffTeams.length + index + 1,
+        original_team_id: team.id,
+        owner_team_id: team.id,
+        updated_at: new Date().toISOString()
+      });
+    });
+
+    return;
+  }
+
+  ["1", "2"].forEach(slot => {
+    groups[groupKey].forEach((team, index) => {
+      rows.push({
+        week: currentSettings.active_week,
+        phase: currentSettings.active_phase,
+        conference: groupKey,
+        slot,
+        priority_number: index + 1,
+        original_team_id: team.id,
+        owner_team_id: slot === "1" ? team.id : null,
+        updated_at: new Date().toISOString()
       });
     });
   });
+});
 
   const { error } = await supabase
     .from("waiver_order")
