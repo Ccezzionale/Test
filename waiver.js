@@ -1518,11 +1518,20 @@ function addMinutes(date, minutes) {
 function fillStandardFridaySettings() {
   const friday = getNextFriday();
 
+  // Slot 1: da martedì 00:00 a venerdì 15:00
   const slot1Open = new Date(friday);
-  const slot1Close = addMinutes(slot1Open, 60);
+  slot1Open.setDate(friday.getDate() - 3);
+  slot1Open.setHours(0, 0, 0, 0);
 
-  const slot2Open = new Date(slot1Close);
-  const slot2Close = addMinutes(slot2Open, 60);
+  const slot1Close = new Date(friday);
+  slot1Close.setHours(15, 0, 0, 0);
+
+  // Slot 2: da venerdì 15:01 a venerdì 16:00
+  const slot2Open = new Date(friday);
+  slot2Open.setHours(15, 1, 0, 0);
+
+  const slot2Close = new Date(friday);
+  slot2Close.setHours(16, 0, 0, 0);
 
   if (activePhaseSelect) activePhaseSelect.value = "round_robin";
 
@@ -1537,7 +1546,9 @@ function fillStandardFridaySettings() {
   if (slot2SOpenInput) slot2SOpenInput.value = "";
   if (slot2SCloseInput) slot2SCloseInput.value = "";
 
-  setSettingsMessage("Venerdì standard impostato: slot 1 alle 15:00, slot 2 alle 16:00. Ricordati di salvare.");
+  setSettingsMessage(
+    "Venerdì standard impostato: Slot 1 da martedì 00:00 a venerdì 15:00; Slot 2 da venerdì 15:01 a venerdì 16:00. Ricordati di salvare."
+  );
 }
 
 function fillPlayoffFridaySettings() {
