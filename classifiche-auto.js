@@ -411,6 +411,65 @@ function renderMobile(standings, competitionName) {
 
 let allRows = [];
 
+function mergeStandings(...standingsLists) {
+  const merged = new Map();
+
+  standingsLists.flat().forEach(r => {
+    const key = teamKey(r.squadra);
+
+    if (!merged.has(key)) {
+      merged.set(key, {
+        squadra: r.squadra,
+        g: 0,
+        v: 0,
+        n: 0,
+        p: 0,
+        gf: 0,
+        gs: 0,
+        pt: 0,
+        mp: 0
+      });
+    }
+
+    const rec = merged.get(key);
+
+    rec.g += r.g;
+    rec.v += r.v;
+    rec.n += r.n;
+    rec.p += r.p;
+    rec.gf += r.gf;
+    rec.gs += r.gs;
+    rec.pt += r.pt;
+    rec.mp += r.mp;
+  });
+
+  return Array.from(merged.values()).sort((a, b) => {
+    return (
+      b.pt - a.pt ||
+      b.mp - a.mp ||
+      b.gf - a.gf ||
+      (a.gs - b.gs) ||
+      a.squadra.localeCompare(b.squadra)
+    );
+  });
+}
+
+function buildTotalStandings() {
+  const confLeagueRows = getRowsForCompetition(allRows, "Conf.League");
+  const confChampionshipRows = getRowsForCompetition(allRows, "Conf. Championship");
+  const roundRobinRows = getRowsForCompetition(allRows, "Round Robin");
+
+  const confLeagueStandings = buildStandings(confLeagueRows);
+  const confChampionshipStandings = buildStandings(confChampionshipRows);
+  const roundRobinStandings = buildStandings(roundRobinRows);
+
+  return mergeStandings(
+    confLeagueStandings,
+    confChampionshipStandings,
+    roundRobinStandings
+  );
+}
+
 async function caricaClassifica(competitionName = "Conf.League") {
   const config = COMPETITIONS[competitionName];
   if (!config) return;
@@ -421,11 +480,17 @@ async function caricaClassifica(competitionName = "Conf.League") {
   resetClassificaDOM();
   renderHeader();
 
-  const rows = getRowsForCompetition(allRows, competitionName);
-  const standings = buildStandings(rows);
+let standings;
 
-  renderDesktop(standings, competitionName);
-  renderMobile(standings, competitionName);
+if (competitionName === "Totale") {
+  standings = buildTotalStandings();
+} else {
+  const rows = getRowsForCompetition(allRows, competitionName);
+  standings = buildStandings(rows);
+}
+
+renderDesktop(standings, competitionName);
+renderMobile(standings, competitionName);
 }
 
 function gestisciSwitcher() {
