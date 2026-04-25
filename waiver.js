@@ -301,6 +301,8 @@ console.log("CALLS:", calls);
   container.appendChild(div);
 });
 
+  }
+
 async function loadFreeAgents() {
   try {
     const response = await fetch("./svincolati.csv");
