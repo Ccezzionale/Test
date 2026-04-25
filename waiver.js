@@ -50,6 +50,8 @@ let mySavedCalls = [];
 let freeAgents = [];
 
 let activeWaiverOrderId = null;
+let draggedAdminOrderId = null;
+let draggedAdminGroupKey = null;
 
 /* ===============================
    HELPERS
@@ -171,6 +173,10 @@ function setActiveCallCard(orderId) {
 
 function getCallByOrderId(orderId) {
   return mySavedCalls.find(call => String(call.waiver_order_id) === String(orderId));
+}
+
+function getAdminOrderGroupKey(row) {
+  return `${row.conference || "Totale"}__slot_${normalizeSlot(row.slot)}`;
 }
 
 function groupRowsByConferenceAndSlot(rows) {
@@ -433,28 +439,45 @@ async function saveWaiverOrderAdmin() {
 
   setAdminMessage("Salvataggio ordine waiver in corso...");
 
-  const rows = waiverOrderRows.map(row => ({
-    id: row.id,
-    week: row.week,
-    phase: row.phase,
-    conference: row.conference,
-    slot: normalizeSlot(row.slot),
-    priority_number: row.priority_number,
-    original_team_id: row.original_team_id,
-    owner_team_id: row.owner_team_id,
-    updated_at: new Date().toISOString()
-  }));
+  // Prima fase: sposta temporaneamente i priority_number in negativo
+  // per evitare conflitti tipo #1 ↔ #2 durante il salvataggio.
+  for (const row of waiverOrderRows) {
+    const { error } = await supabase
+      .from("waiver_order")
+      .update({
+        priority_number: -Math.abs(row.priority_number),
+        updated_at: new Date().toISOString()
+      })
+      .eq("id", row.id);
 
-  const { error } = await supabase
-    .from("waiver_order")
-    .upsert(rows, {
-      onConflict: "id"
-    });
+    if (error) {
+      console.error("Errore salvataggio temporaneo ordine waiver:", error);
+      setAdminMessage("Errore salvataggio ordine waiver: " + error.message, true);
+      return;
+    }
+  }
 
-  if (error) {
-    console.error("Errore salvataggio ordine waiver:", error);
-    setAdminMessage("Errore salvataggio ordine waiver: " + error.message, true);
-    return;
+  // Seconda fase: salva valori definitivi
+  for (const row of waiverOrderRows) {
+    const { error } = await supabase
+      .from("waiver_order")
+      .update({
+        week: row.week,
+        phase: row.phase,
+        conference: row.conference,
+        slot: normalizeSlot(row.slot),
+        priority_number: row.priority_number,
+        original_team_id: row.original_team_id,
+        owner_team_id: row.owner_team_id,
+        updated_at: new Date().toISOString()
+      })
+      .eq("id", row.id);
+
+    if (error) {
+      console.error("Errore salvataggio ordine waiver:", error);
+      setAdminMessage("Errore salvataggio ordine waiver: " + error.message, true);
+      return;
+    }
   }
 
   setAdminMessage("Ordine waiver salvato correttamente.");
@@ -467,6 +490,33 @@ async function saveWaiverOrderAdmin() {
 /* ===============================
    ADMIN ORDER UI
 ================================ */
+
+function reorderAdminWaiverOrder(groupKey, draggedId, targetId) {
+  const groupRows = waiverOrderRows
+    .filter(row => getAdminOrderGroupKey(row) === groupKey)
+    .sort((a, b) => a.priority_number - b.priority_number);
+
+  const draggedIndex = groupRows.findIndex(row => String(row.id) === String(draggedId));
+  const targetIndex = groupRows.findIndex(row => String(row.id) === String(targetId));
+
+  if (draggedIndex === -1 || targetIndex === -1) return;
+
+  const [draggedRow] = groupRows.splice(draggedIndex, 1);
+  groupRows.splice(targetIndex, 0, draggedRow);
+
+  groupRows.forEach((row, index) => {
+    row.priority_number = index + 1;
+  });
+
+  waiverOrderRows = waiverOrderRows.map(row => {
+    const updatedRow = groupRows.find(item => String(item.id) === String(row.id));
+    return updatedRow || row;
+  });
+
+  renderWaiverOrderAdmin();
+
+  setAdminMessage("Ordine modificato. Ricordati di premere Salva ordine waiver.");
+}
 
 function renderWaiverOrderAdmin() {
   if (!waiverOrderAdminEl) return;
@@ -496,9 +546,11 @@ function renderWaiverOrderAdmin() {
     group.rows.forEach(row => {
       const originalTeam = teamMap[row.original_team_id];
 
-      const rowDiv = document.createElement("div");
-      rowDiv.className = "waiver-admin-row";
-      rowDiv.dataset.orderId = row.id;
+const rowDiv = document.createElement("div");
+rowDiv.className = "waiver-admin-row";
+rowDiv.dataset.orderId = row.id;
+rowDiv.dataset.groupKey = key;
+rowDiv.draggable = true;
 
       const selectOptions = `
         <option value="" ${!row.owner_team_id ? "selected" : ""}>
@@ -530,35 +582,64 @@ function renderWaiverOrderAdmin() {
 
       const select = rowDiv.querySelector(".waiver-owner-select");
 
-      select.addEventListener("change", event => {
-        const newOwnerId = event.target.value || null;
+select.addEventListener("change", event => {
+  const newOwnerId = event.target.value || null;
 
-        waiverOrderRows = waiverOrderRows.map(item => {
-          if (String(item.id) === String(row.id)) {
-            return {
-              ...item,
-              owner_team_id: newOwnerId
-            };
-          }
+  waiverOrderRows = waiverOrderRows.map(item => {
+    if (String(item.id) === String(row.id)) {
+      return {
+        ...item,
+        owner_team_id: newOwnerId
+      };
+    }
 
-          return item;
-        });
-
-        const newOwner = newOwnerId ? teamMap[newOwnerId] : null;
-
-        setAdminMessage(
-          newOwner
-            ? `Modifica pronta: ${originalTeam?.name || "chiamata"} ora appartiene a ${newOwner.name}. Ricordati di salvare.`
-            : `Modifica pronta: ${originalTeam?.name || "chiamata"} non appartiene a nessuno. Ricordati di salvare.`
-        );
-      });
-
-      groupDiv.appendChild(rowDiv);
-    });
-
-    waiverOrderAdminEl.appendChild(groupDiv);
+    return item;
   });
-}
+
+  const newOwner = newOwnerId ? teamMap[newOwnerId] : null;
+
+  setAdminMessage(
+    newOwner
+      ? `Modifica pronta: ${originalTeam?.name || "chiamata"} ora appartiene a ${newOwner.name}. Ricordati di salvare.`
+      : `Modifica pronta: ${originalTeam?.name || "chiamata"} non appartiene a nessuno. Ricordati di salvare.`
+  );
+});
+
+rowDiv.addEventListener("dragstart", () => {
+  draggedAdminOrderId = String(row.id);
+  draggedAdminGroupKey = key;
+  rowDiv.classList.add("dragging");
+});
+
+rowDiv.addEventListener("dragend", () => {
+  draggedAdminOrderId = null;
+  draggedAdminGroupKey = null;
+  rowDiv.classList.remove("dragging");
+});
+
+rowDiv.addEventListener("dragover", event => {
+  event.preventDefault();
+});
+
+rowDiv.addEventListener("drop", event => {
+  event.preventDefault();
+
+  const targetOrderId = String(row.id);
+  const targetGroupKey = key;
+
+  if (!draggedAdminOrderId || !draggedAdminGroupKey) return;
+
+  if (draggedAdminGroupKey !== targetGroupKey) {
+    setAdminMessage("Puoi riordinare solo dentro lo stesso slot.", true);
+    return;
+  }
+
+  if (draggedAdminOrderId === targetOrderId) return;
+
+  reorderAdminWaiverOrder(targetGroupKey, draggedAdminOrderId, targetOrderId);
+});
+
+groupDiv.appendChild(rowDiv);
 
 /* ===============================
    LE MIE CHIAMATE DINAMICHE
