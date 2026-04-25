@@ -89,10 +89,11 @@ async function loadAllCalls() {
     const div = document.createElement("div");
     div.style.marginBottom = "8px";
 
-    div.innerHTML = `
-      <strong>${teamMap[call.team_id] || call.team_id}</strong>
-      → ${call.player_in} (slot ${call.slot})
-    `;
+div.innerHTML = `
+  <strong>${teamMap[call.team_id] || call.team_id}</strong>
+  → ${call.player_in} (slot ${call.slot}) 
+  <strong>${call.status || "pending"}</strong>
+`;
 
     container.appendChild(div);
   });
