@@ -138,8 +138,11 @@ async function loadFreeAgents() {
         <td>${cols[3]}</td>
       `;
 
-      tr.addEventListener("click", () => {
-  playerInEl.value = cols[0].trim();
+tr.addEventListener("click", () => {
+  const name = cols[0].trim();
+  const role = cols[1].trim();
+
+  playerInEl.value = `${name} (${role})`;
 });
 
 tableBody.appendChild(tr);
