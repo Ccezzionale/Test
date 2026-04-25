@@ -272,19 +272,34 @@ console.log("CALLS:", calls);
   }
 
   calls.forEach(call => {
-    const div = document.createElement("div");
-    div.style.marginBottom = "8px";
+  const div = document.createElement("div");
+  div.className = "public-call-row";
 
-    div.innerHTML = `
-      <strong>${teamMap[call.team_id] || call.team_id}</strong>
-      → ${call.player_in}
-      <span>(slot ${call.slot})</span>
-      <strong>${call.status || "pending"}</strong>
-    `;
+  const teamName = teamMap[call.team_id] || call.team_id;
+  const playerName = call.player_in || "-";
 
-    container.appendChild(div);
-  });
-}
+  let resultText = "⏳ In attesa";
+  let resultClass = "pending";
+
+  if (call.status === "won") {
+    resultText = `🟢 ${teamName} prende ${playerName}`;
+    resultClass = "won";
+  }
+
+  if (call.status === "lost") {
+    resultText = `🔴 ${teamName} perde ${playerName}`;
+    resultClass = "lost";
+  }
+
+  div.innerHTML = `
+    <div class="public-call-main ${resultClass}">
+      <strong>${resultText}</strong>
+      <span>Slot ${call.slot}</span>
+    </div>
+  `;
+
+  container.appendChild(div);
+});
 
 async function loadFreeAgents() {
   try {
