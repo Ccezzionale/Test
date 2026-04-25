@@ -51,44 +51,47 @@ function applySlotAvailability() {
 async function loadAllCalls() {
   if (!currentSettings) return;
 
-const { data, error } = await supabase
-  .from("waiver_calls")
-  .select(`
-    *,
-    teams (
-      name
-    )
-  `)
-  .eq("week", currentSettings.active_week)
-  .eq("phase", currentSettings.active_phase);
+  const { data: calls, error: callsError } = await supabase
+    .from("waiver_calls")
+    .select("*")
+    .eq("week", currentSettings.active_week)
+    .eq("phase", currentSettings.active_phase);
 
-  if (error) {
-    console.error("Errore caricamento chiamate:", error);
+  if (callsError) {
+    console.error("Errore caricamento chiamate:", callsError);
     return;
   }
+
+  const { data: teams, error: teamsError } = await supabase
+    .from("teams")
+    .select("id, name");
+
+  if (teamsError) {
+    console.error("Errore caricamento squadre:", teamsError);
+    return;
+  }
+
+  const teamMap = {};
+  teams.forEach(team => {
+    teamMap[team.id] = team.name;
+  });
 
   const container = document.getElementById("allCalls");
-
-  if (!container) {
-    console.error("Elemento allCalls non trovato");
-    return;
-  }
-
   container.innerHTML = "";
 
-  if (!data || data.length === 0) {
+  if (!calls || calls.length === 0) {
     container.innerHTML = "<p>Nessuna chiamata ancora.</p>";
     return;
   }
 
-  data.forEach(call => {
+  calls.forEach(call => {
     const div = document.createElement("div");
-
     div.style.marginBottom = "8px";
 
-div.innerHTML = `
-  <strong>${call.teams?.name || call.team_id}</strong> → ${call.player_in} (slot ${call.slot})
-`;
+    div.innerHTML = `
+      <strong>${teamMap[call.team_id] || call.team_id}</strong>
+      → ${call.player_in} (slot ${call.slot})
+    `;
 
     container.appendChild(div);
   });
