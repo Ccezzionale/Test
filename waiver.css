@@ -144,3 +144,80 @@ body {
   font-weight: 800;
   opacity: 0.75;
 }
+
+.call-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 14px;
+}
+
+.btn-reset-call {
+  border: 1px solid #cbd5e1;
+  background: #ffffff;
+  color: #1e293b;
+  padding: 10px 14px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.btn-reset-call:hover {
+  background: #f1f5f9;
+}
+
+.selected-player-box {
+  margin-top: 12px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: #eef6ff;
+  border: 1px solid #bfdbfe;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.selected-player-box.hidden {
+  display: none;
+}
+
+.selected-label {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  color: #64748b;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+#selectedPlayerName {
+  color: #0f172a;
+  font-size: 1rem;
+}
+
+.role-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 28px;
+  padding: 4px 8px;
+  border-radius: 999px;
+  background: #1d4ed8;
+  color: white;
+  font-size: 0.78rem;
+  font-weight: 800;
+}
+
+.available-row.selected,
+.player-row.selected,
+tr.selected-player {
+  background: #dbeafe !important;
+  outline: 2px solid #2563eb;
+  outline-offset: -2px;
+}
+
+.available-row,
+.player-row,
+#playersTable tbody tr {
+  cursor: pointer;
+}
