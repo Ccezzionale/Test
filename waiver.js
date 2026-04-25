@@ -48,6 +48,22 @@ function applySlotAvailability() {
   }
 }
 
+async function loadAllCalls() {
+  const { data, error } = await supabase
+    .from("waiver_calls")
+    .select("*")
+    .eq("week", currentSettings.active_week)
+    .eq("phase", currentSettings.active_phase)
+    .order("created_at", { ascending: true });
+
+  if (error) {
+    console.error("Errore caricamento chiamate:", error);
+    return;
+  }
+
+  console.log("ALL CALLS:", data);
+}
+
 async function getMyTeam() {
   const { data: authData, error: authError } = await supabase.auth.getUser();
 
@@ -149,6 +165,7 @@ async function initWaiverRoom() {
   await loadFreeAgents();
   await loadMySavedCall();
   applySlotAvailability();
+  await loadAllCalls();
 }
 
 async function loadFreeAgents() {
