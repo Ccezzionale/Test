@@ -30,6 +30,10 @@ const waiverOrderAdminEl = document.getElementById("waiverOrderAdmin");
 const searchInput = document.getElementById("searchInput");
 const freeAgentsTableBody = document.querySelector("#freeAgentsTable tbody");
 
+const activePhaseSelect = document.getElementById("activePhaseSelect");
+const savePhaseBtn = document.getElementById("savePhaseBtn");
+const phaseMessageEl = document.getElementById("phaseMessage");
+
 /* ===============================
    STATO APP
 ================================ */
@@ -1217,6 +1221,63 @@ async function calculateResultsForSlot(slot) {
   await loadMyWaiverCalls();
 }
 
+function setPhaseMessage(text, isError = false) {
+  if (!phaseMessageEl) return;
+
+  phaseMessageEl.textContent = text || "";
+  phaseMessageEl.style.color = isError ? "#dc2626" : "#334155";
+}
+
+function syncPhaseSelect() {
+  if (!activePhaseSelect || !currentSettings) return;
+
+  activePhaseSelect.value = currentSettings.active_phase || "conference";
+}
+
+async function saveActivePhase() {
+  if (!currentSettings || !activePhaseSelect) return;
+
+  const newPhase = activePhaseSelect.value;
+
+  setPhaseMessage("Salvataggio fase in corso...");
+
+  const { error } = await supabase
+    .from("waiver_settings")
+    .update({
+      active_phase: newPhase,
+      updated_at: new Date().toISOString()
+    })
+    .eq("id", currentSettings.id);
+
+  if (error) {
+    console.error("Errore salvataggio fase:", error);
+    setPhaseMessage("Errore salvataggio fase: " + error.message, true);
+    return;
+  }
+
+  currentSettings.active_phase = newPhase;
+  activePhaseEl.textContent = newPhase;
+
+  activeWaiverOrderId = null;
+  waiverOrderRows = [];
+  myOrderRows = [];
+  mySavedCalls = [];
+
+  await loadWaiverOrder();
+
+  if (currentUserEmail === "tringali0511@gmail.com") {
+    renderWaiverOrderAdmin();
+    await loadAllCalls();
+  }
+
+  await loadMyWaiverCalls();
+  await loadPublicCalls();
+
+  setPhaseMessage(
+    `Fase aggiornata a ${newPhase}. Se l'ordine è vuoto, premi Genera ordine waiver.`
+  );
+}
+
 /* ===============================
    INIT
 ================================ */
@@ -1237,6 +1298,7 @@ async function initWaiverRoom() {
     activePhaseEl.textContent = settings.active_phase || "Non impostata";
     activeWeekEl.textContent = settings.active_week || "-";
   }
+   syncPhaseSelect();
 
   await loadTeams();
   await loadWaiverOrder();
@@ -1282,6 +1344,10 @@ calculateSlot2SBtn?.addEventListener("click", () => {
 
 searchInput?.addEventListener("input", () => {
   renderFreeAgents();
+});
+
+savePhaseBtn?.addEventListener("click", () => {
+  saveActivePhase();
 });
 
 initWaiverRoom();
