@@ -18,8 +18,12 @@ const allCallsEl = document.getElementById("allCalls");
 const adminPanel = document.getElementById("adminPanel");
 const generateWaiverOrderBtn = document.getElementById("generateWaiverOrderBtn");
 const saveWaiverOrderBtn = document.getElementById("saveWaiverOrderBtn");
+
 const calculateSlot1Btn = document.getElementById("calculateSlot1Btn");
+const calculateSlot1SBtn = document.getElementById("calculateSlot1SBtn");
 const calculateSlot2Btn = document.getElementById("calculateSlot2Btn");
+const calculateSlot2SBtn = document.getElementById("calculateSlot2SBtn");
+
 const waiverOrderMessageEl = document.getElementById("waiverOrderMessage");
 const waiverOrderAdminEl = document.getElementById("waiverOrderAdmin");
 
@@ -55,6 +59,10 @@ function isPlayoffPhase() {
   return (currentSettings?.active_phase || "").toLowerCase() === "playoff";
 }
 
+function normalizeSlot(slot) {
+  return String(slot || "").toUpperCase();
+}
+
 function normalizePlayerName(name) {
   return (name || "")
     .toLowerCase()
@@ -70,20 +78,44 @@ function getPriorityGroupForTeam(team) {
   return "Totale";
 }
 
+function getGeneratedSlots() {
+  if (isPlayoffPhase()) {
+    return ["1", "1S", "2", "2S"];
+  }
+
+  return ["1", "2"];
+}
+
 function getSlotTimes(slot) {
   if (!currentSettings) return { openAt: null, closeAt: null };
 
-  if (String(slot) === "1") {
+  const normalizedSlot = normalizeSlot(slot);
+
+  if (normalizedSlot === "1") {
     return {
       openAt: currentSettings.slot1_open_at,
       closeAt: currentSettings.slot1_close_at
     };
   }
 
-  if (String(slot) === "2") {
+  if (normalizedSlot === "1S") {
+    return {
+      openAt: currentSettings.slot1s_open_at,
+      closeAt: currentSettings.slot1s_close_at
+    };
+  }
+
+  if (normalizedSlot === "2") {
     return {
       openAt: currentSettings.slot2_open_at,
       closeAt: currentSettings.slot2_close_at
+    };
+  }
+
+  if (normalizedSlot === "2S") {
+    return {
+      openAt: currentSettings.slot2s_open_at,
+      closeAt: currentSettings.slot2s_close_at
     };
   }
 
@@ -142,7 +174,7 @@ function groupRowsByConferenceAndSlot(rows) {
 
   rows.forEach(row => {
     const conference = row.conference || "Totale";
-    const slot = String(row.slot || "");
+    const slot = normalizeSlot(row.slot);
     const key = `${conference}__slot_${slot}`;
 
     if (!groups[key]) {
@@ -167,11 +199,17 @@ function sortGroupKeys(keys) {
   return keys.sort((a, b) => {
     const order = [
       "Conference League__slot_1",
+      "Conference League__slot_1S",
       "Conference League__slot_2",
+      "Conference League__slot_2S",
       "Conference Championship__slot_1",
+      "Conference Championship__slot_1S",
       "Conference Championship__slot_2",
+      "Conference Championship__slot_2S",
       "Totale__slot_1",
-      "Totale__slot_2"
+      "Totale__slot_1S",
+      "Totale__slot_2",
+      "Totale__slot_2S"
     ];
 
     const indexA = order.indexOf(a);
@@ -332,62 +370,44 @@ async function generateWaiverOrder() {
   });
 
   const rows = [];
+  const slots = getGeneratedSlots();
 
-Object.keys(groups).forEach(groupKey => {
-  if (isPlayoffPhase()) {
-    const playoffTeams = groups[groupKey];
+  Object.keys(groups).forEach(groupKey => {
+    slots.forEach(slot => {
+      groups[groupKey].forEach((team, index) => {
+        const normalizedSlot = normalizeSlot(slot);
 
-    playoffTeams.forEach((team, index) => {
-      rows.push({
-        week: currentSettings.active_week,
-        phase: currentSettings.active_phase,
-        conference: groupKey,
-        slot: "1",
-        priority_number: index + 1,
-        original_team_id: team.id,
-        owner_team_id: team.id,
-        updated_at: new Date().toISOString()
-      });
-    });
+        let ownerTeamId = null;
 
-    playoffTeams.forEach((team, index) => {
-      rows.push({
-        week: currentSettings.active_week,
-        phase: currentSettings.active_phase,
-        conference: groupKey,
-        slot: "1",
-        priority_number: playoffTeams.length + index + 1,
-        original_team_id: team.id,
-        owner_team_id: team.id,
-        updated_at: new Date().toISOString()
-      });
-    });
+        if (isPlayoffPhase()) {
+          ownerTeamId =
+            normalizedSlot === "1" || normalizedSlot === "2"
+              ? team.id
+              : null;
+        } else {
+          ownerTeamId = normalizedSlot === "1" ? team.id : null;
+        }
 
-    return;
-  }
-
-  ["1", "2"].forEach(slot => {
-    groups[groupKey].forEach((team, index) => {
-      rows.push({
-        week: currentSettings.active_week,
-        phase: currentSettings.active_phase,
-        conference: groupKey,
-        slot,
-        priority_number: index + 1,
-        original_team_id: team.id,
-        owner_team_id: slot === "1" ? team.id : null,
-        updated_at: new Date().toISOString()
+        rows.push({
+          week: currentSettings.active_week,
+          phase: currentSettings.active_phase,
+          conference: groupKey,
+          slot: normalizedSlot,
+          priority_number: index + 1,
+          original_team_id: team.id,
+          owner_team_id: ownerTeamId,
+          updated_at: new Date().toISOString()
+        });
       });
     });
   });
-});
 
-const { error } = await supabase
-  .from("waiver_order")
-  .upsert(rows, {
-    onConflict: "week,phase,conference,slot,priority_number"
-  });
-   
+  const { error } = await supabase
+    .from("waiver_order")
+    .upsert(rows, {
+      onConflict: "week,phase,conference,slot,priority_number"
+    });
+
   if (error) {
     console.error("Errore generazione ordine waiver:", error);
     setAdminMessage("Errore generazione ordine waiver: " + error.message, true);
@@ -414,7 +434,7 @@ async function saveWaiverOrderAdmin() {
     week: row.week,
     phase: row.phase,
     conference: row.conference,
-    slot: row.slot,
+    slot: normalizeSlot(row.slot),
     priority_number: row.priority_number,
     original_team_id: row.original_team_id,
     owner_team_id: row.owner_team_id,
@@ -471,26 +491,25 @@ function renderWaiverOrderAdmin() {
 
     group.rows.forEach(row => {
       const originalTeam = teamMap[row.original_team_id];
-      const ownerTeam = teamMap[row.owner_team_id];
 
       const rowDiv = document.createElement("div");
       rowDiv.className = "waiver-admin-row";
       rowDiv.dataset.orderId = row.id;
 
-const selectOptions = `
-  <option value="" ${!row.owner_team_id ? "selected" : ""}>
-    Nessuna
-  </option>
-  ${
-    teamsCache
-      .map(team => `
-        <option value="${team.id}" ${String(team.id) === String(row.owner_team_id) ? "selected" : ""}>
-          ${team.name}
+      const selectOptions = `
+        <option value="" ${!row.owner_team_id ? "selected" : ""}>
+          Nessuna
         </option>
-      `)
-      .join("")
-  }
-`;
+        ${
+          teamsCache
+            .map(team => `
+              <option value="${team.id}" ${String(team.id) === String(row.owner_team_id) ? "selected" : ""}>
+                ${team.name}
+              </option>
+            `)
+            .join("")
+        }
+      `;
 
       rowDiv.innerHTML = `
         <span class="priority-rank">${row.priority_number}</span>
@@ -521,13 +540,13 @@ const selectOptions = `
           return item;
         });
 
-const newOwner = newOwnerId ? teamMap[newOwnerId] : null;
+        const newOwner = newOwnerId ? teamMap[newOwnerId] : null;
 
-setAdminMessage(
-  newOwner
-    ? `Modifica pronta: ${originalTeam?.name || "chiamata"} ora appartiene a ${newOwner.name}. Ricordati di salvare.`
-    : `Modifica pronta: ${originalTeam?.name || "chiamata"} non appartiene a nessuno. Ricordati di salvare.`
-);
+        setAdminMessage(
+          newOwner
+            ? `Modifica pronta: ${originalTeam?.name || "chiamata"} ora appartiene a ${newOwner.name}. Ricordati di salvare.`
+            : `Modifica pronta: ${originalTeam?.name || "chiamata"} non appartiene a nessuno. Ricordati di salvare.`
+        );
       });
 
       groupDiv.appendChild(rowDiv);
@@ -622,7 +641,7 @@ function renderMyWaiverCalls() {
       card.innerHTML = `
         <div class="dynamic-call-header">
           <div class="dynamic-call-title">
-            <strong>Chiamata #${orderRow.priority_number} - Slot ${orderRow.slot}</strong>
+            <strong>Chiamata #${orderRow.priority_number} - Slot ${normalizeSlot(orderRow.slot)}</strong>
             <span>${group.conference}</span>
             ${isVia ? `<span class="via-badge">via ${originalTeam?.name || "squadra originale"}</span>` : ""}
           </div>
@@ -684,7 +703,7 @@ function renderMyWaiverCalls() {
           ${
             slotOpen
               ? "Disponibile ora."
-              : `Slot ${orderRow.slot} chiuso o non disponibile.`
+              : `Slot ${normalizeSlot(orderRow.slot)} chiuso o non disponibile.`
           }
         </p>
       `;
@@ -811,7 +830,7 @@ async function saveDynamicCall(orderId) {
     week: currentSettings.active_week,
     phase: currentSettings.active_phase,
     conference: orderRow.conference,
-    slot: orderRow.slot,
+    slot: normalizeSlot(orderRow.slot),
     player_in: playerIn,
     player_out: playerOut,
     status: "pending",
@@ -823,7 +842,7 @@ async function saveDynamicCall(orderId) {
     .select("id")
     .eq("week", currentSettings.active_week)
     .eq("phase", currentSettings.active_phase)
-    .eq("slot", orderRow.slot)
+    .eq("slot", normalizeSlot(orderRow.slot))
     .eq("waiver_order_id", orderRow.id)
     .maybeSingle();
 
@@ -933,7 +952,7 @@ async function loadAllCalls() {
     div.innerHTML = `
       <strong>${owner?.name || call.owner_team_id || call.team_id}</strong>
       → ${call.player_in}
-      <span>(slot ${call.slot}, #${call.priority_number || "-"})</span>
+      <span>(slot ${normalizeSlot(call.slot)}, #${call.priority_number || "-"})</span>
       ${
         original && String(original.id) !== String(owner?.id)
           ? `<span>via ${original.name}</span>`
@@ -955,8 +974,11 @@ async function loadPublicCalls() {
 
   const visibleSlots = [];
 
-  if (isSlotPublic("1")) visibleSlots.push("1");
-  if (isSlotPublic("2")) visibleSlots.push("2");
+  getGeneratedSlots().forEach(slot => {
+    if (isSlotPublic(slot)) {
+      visibleSlots.push(slot);
+    }
+  });
 
   publicCallsEl.innerHTML = "";
 
@@ -1007,7 +1029,7 @@ async function loadPublicCalls() {
     div.innerHTML = `
       <div class="public-call-main ${resultClass}">
         <strong>${resultText}</strong>
-        <span>Slot ${call.slot} - #${call.priority_number || "-"}</span>
+        <span>Slot ${normalizeSlot(call.slot)} - #${call.priority_number || "-"}</span>
       </div>
     `;
 
@@ -1103,12 +1125,14 @@ function renderFreeAgents() {
 async function calculateResultsForSlot(slot) {
   if (!currentSettings) return;
 
+  const normalizedSlot = normalizeSlot(slot);
+
   const { data: calls, error: callsError } = await supabase
     .from("waiver_calls")
     .select("*")
     .eq("week", currentSettings.active_week)
     .eq("phase", currentSettings.active_phase)
-    .eq("slot", String(slot));
+    .eq("slot", normalizedSlot);
 
   if (callsError) {
     console.error("Errore caricamento chiamate:", callsError);
@@ -1117,7 +1141,7 @@ async function calculateResultsForSlot(slot) {
   }
 
   if (!calls || calls.length === 0) {
-    alert("Nessuna chiamata da calcolare.");
+    alert(`Nessuna chiamata da calcolare per lo slot ${normalizedSlot}.`);
     return;
   }
 
@@ -1186,7 +1210,7 @@ async function calculateResultsForSlot(slot) {
     }
   }
 
-  alert(`Risultati slot ${slot} calcolati.`);
+  alert(`Risultati slot ${normalizedSlot} calcolati.`);
 
   await loadAllCalls();
   await loadPublicCalls();
@@ -1244,14 +1268,20 @@ calculateSlot1Btn?.addEventListener("click", () => {
   calculateResultsForSlot("1");
 });
 
+calculateSlot1SBtn?.addEventListener("click", () => {
+  calculateResultsForSlot("1S");
+});
+
 calculateSlot2Btn?.addEventListener("click", () => {
   calculateResultsForSlot("2");
 });
 
+calculateSlot2SBtn?.addEventListener("click", () => {
+  calculateResultsForSlot("2S");
+});
 
 searchInput?.addEventListener("input", () => {
   renderFreeAgents();
 });
-
 
 initWaiverRoom();
