@@ -236,12 +236,23 @@ async function loadFreeAgents() {
         const name = cols[0].trim();
         const role = cols[1].trim();
 
-        if (!playerInEl.value) {
-          playerInEl.value = `${name} (${role})`;
-        } else {
-          playerInEl2.value = `${name} (${role})`;
-        }
-      });
+tr.addEventListener("click", () => {
+  const name = cols[0].trim();
+  const role = cols[1].trim();
+  const selectedPlayer = `${name} (${role})`;
+
+  if (!playerInEl.disabled) {
+    playerInEl.value = selectedPlayer;
+    return;
+  }
+
+  if (!playerInEl2.disabled) {
+    playerInEl2.value = selectedPlayer;
+    return;
+  }
+
+  alert("Nessuna finestra di chiamata è aperta in questo momento.");
+});
 
       tableBody.appendChild(tr);
     });
