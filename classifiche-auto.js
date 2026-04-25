@@ -19,11 +19,12 @@ const COMPETITIONS = {
     conference: "Conf B",
     highlight: "top1"
   },
-  "Round Robin": {
-    title: "Classifica Round Robin",
-    conference: "Unificata",
-    highlight: "top1"
-  },
+"Round Robin": {
+  title: "Classifica Round Robin",
+  conference: "Unificata",
+  onlyUnifiedCalendar: true,
+  highlight: "top1"
+},
   "Totale": {
     title: "Classifica Totale",
     conference: "ALL",
@@ -160,16 +161,21 @@ function getRowsForCompetition(rows, competitionName) {
     const pf = parseNumber(r.PointsFor);
     const pa = parseNumber(r.PointsAgainst);
     const conference = String(r.Conference || "").trim();
+    const phase = String(r.Phase || "").trim();
 
     if (!team || !opponent) return false;
     if (!Number.isFinite(pf) || !Number.isFinite(pa)) return false;
     if (pf === 0 && pa === 0) return false;
 
-    if (config.conference === "ALL") {
-      return ["Conf A", "Conf B", "Unificata"].includes(conference);
+    if (competitionName === "Round Robin") {
+      return conference === "Unificata" && phase === "Regular";
     }
 
-    return conference === config.conference;
+    if (competitionName === "Totale") {
+      return false;
+    }
+
+    return conference === config.conference && phase === "Regular";
   });
 }
 
