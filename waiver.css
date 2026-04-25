@@ -650,6 +650,42 @@ button {
   font-weight: 800;
 }
 
+.admin-settings-panel {
+  margin-bottom: 18px;
+  padding: 14px;
+  border-radius: 16px;
+  background: rgba(0,31,63,.035);
+  border: 1px solid rgba(0,31,63,.08);
+}
+
+.admin-settings-panel h3 {
+  margin: 0 0 12px;
+  color: #001f3f;
+  font-size: 1rem;
+  font-weight: 900;
+}
+
+.admin-settings-row {
+  display: grid;
+  grid-template-columns: 120px minmax(180px, 1fr) auto;
+  gap: 10px;
+  align-items: center;
+}
+
+.admin-settings-row label {
+  margin: 0;
+}
+
+@media (max-width: 700px) {
+  .admin-settings-row {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-settings-row button {
+    width: 100%;
+  }
+}
+
 @media (max-width: 700px) {
   .waiver-admin-row {
     grid-template-columns: 42px 1fr;
