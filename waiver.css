@@ -676,6 +676,24 @@ button {
   margin: 0;
 }
 
+.waiver-admin-row {
+  cursor: grab;
+}
+
+.waiver-admin-row:hover {
+  background: #f8fbff;
+  box-shadow: 0 8px 18px rgba(0,31,63,.08);
+}
+
+.waiver-admin-row.dragging {
+  opacity: .45;
+  cursor: grabbing;
+}
+
+.waiver-admin-row select {
+  cursor: pointer;
+}
+
 @media (max-width: 700px) {
   .admin-settings-row {
     grid-template-columns: 1fr;
