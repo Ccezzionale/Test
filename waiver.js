@@ -202,6 +202,78 @@ async function initWaiverRoom() {
   await loadMySavedCall();
   applySlotAvailability();
   await loadAllCalls();
+  await loadPublicCalls();
+}
+
+async function loadPublicCalls() {
+  if (!currentSettings) return;
+
+  const now = new Date();
+
+  const showSlot1 = currentSettings.slot1_close_at
+    ? now >= new Date(currentSettings.slot1_close_at)
+    : false;
+
+  const showSlot2 = currentSettings.slot2_close_at
+    ? now >= new Date(currentSettings.slot2_close_at)
+    : false;
+
+  const visibleSlots = [];
+
+  if (showSlot1) visibleSlots.push("1");
+  if (showSlot2) visibleSlots.push("2");
+
+  const container = document.getElementById("publicCalls");
+
+  if (!container) return;
+
+  container.innerHTML = "";
+
+  if (visibleSlots.length === 0) {
+    container.innerHTML = "<p>Le chiamate non sono ancora pubbliche.</p>";
+    return;
+  }
+
+  const { data: calls, error } = await supabase
+    .from("waiver_calls")
+    .select("*")
+    .eq("week", currentSettings.active_week)
+    .eq("phase", currentSettings.active_phase)
+    .in("slot", visibleSlots)
+    .order("slot", { ascending: true });
+
+  if (error) {
+    console.error("Errore caricamento chiamate pubbliche:", error);
+    return;
+  }
+
+  const { data: teams } = await supabase
+    .from("teams")
+    .select("id, name");
+
+  const teamMap = {};
+  teams?.forEach(team => {
+    teamMap[team.id] = team.name;
+  });
+
+  if (!calls || calls.length === 0) {
+    container.innerHTML = "<p>Nessuna chiamata pubblicata.</p>";
+    return;
+  }
+
+  calls.forEach(call => {
+    const div = document.createElement("div");
+    div.style.marginBottom = "8px";
+
+    div.innerHTML = `
+      <strong>${teamMap[call.team_id] || call.team_id}</strong>
+      → ${call.player_in}
+      <span>(slot ${call.slot})</span>
+      <strong>${call.status || "pending"}</strong>
+    `;
+
+    container.appendChild(div);
+  });
 }
 
 async function loadFreeAgents() {
