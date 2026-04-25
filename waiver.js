@@ -4,6 +4,7 @@ const teamNameEl = document.getElementById("teamName");
 const teamConferenceEl = document.getElementById("teamConference");
 const activePhaseEl = document.getElementById("activePhase");
 const activeWeekEl = document.getElementById("activeWeek");
+const calculateSlot1Btn = document.getElementById("calculateSlot1Btn");
 
 let currentTeam = null;
 let currentSettings = null;
@@ -247,6 +248,95 @@ async function loadFreeAgents() {
     console.error("Errore caricamento svincolati:", err);
   }
 }
+
+async function calculateResultsForSlot(slot) {
+  if (!currentSettings) return;
+
+  const { data: calls, error: callsError } = await supabase
+    .from("waiver_calls")
+    .select("*")
+    .eq("week", currentSettings.active_week)
+    .eq("phase", currentSettings.active_phase)
+    .eq("slot", slot);
+
+  if (callsError) {
+    console.error("Errore caricamento chiamate:", callsError);
+    return;
+  }
+
+  if (!calls || calls.length === 0) {
+    alert("Nessuna chiamata da calcolare.");
+    return;
+  }
+
+  const { data: priorities, error: priorityError } = await supabase
+    .from("waiver_priority")
+    .select("*")
+    .eq("week", currentSettings.active_week)
+    .eq("phase", currentSettings.active_phase);
+
+  if (priorityError) {
+    console.error("Errore caricamento priorità:", priorityError);
+    return;
+  }
+
+  const priorityMap = {};
+
+  priorities.forEach(row => {
+    priorityMap[row.team_id] = row.priority_number;
+  });
+
+  const callsByPlayer = {};
+
+  calls.forEach(call => {
+    const playerKey = normalizePlayerName(call.player_in);
+
+    if (!callsByPlayer[playerKey]) {
+      callsByPlayer[playerKey] = [];
+    }
+
+    callsByPlayer[playerKey].push(call);
+  });
+
+  for (const playerKey in callsByPlayer) {
+    const playerCalls = callsByPlayer[playerKey];
+
+    playerCalls.sort((a, b) => {
+      const priorityA = priorityMap[a.team_id] ?? 9999;
+      const priorityB = priorityMap[b.team_id] ?? 9999;
+      return priorityA - priorityB;
+    });
+
+    const winner = playerCalls[0];
+    const losers = playerCalls.slice(1);
+
+    await supabase
+      .from("waiver_calls")
+      .update({ status: "won" })
+      .eq("id", winner.id);
+
+    for (const loser of losers) {
+      await supabase
+        .from("waiver_calls")
+        .update({ status: "lost" })
+        .eq("id", loser.id);
+    }
+  }
+
+  alert(`Risultati slot ${slot} calcolati.`);
+  await loadAllCalls();
+}
+
+function normalizePlayerName(name) {
+  return (name || "")
+    .toLowerCase()
+    .replace(/\s*\([^)]*\)/g, "")
+    .trim();
+}
+
+calculateSlot1Btn.addEventListener("click", () => {
+  calculateResultsForSlot("1");
+});
 
 async function saveCall(slot, playerInElRef, playerOutElRef, messageEl) {
   if (!currentTeam || !currentSettings) {
