@@ -546,11 +546,11 @@ function renderWaiverOrderAdmin() {
     group.rows.forEach(row => {
       const originalTeam = teamMap[row.original_team_id];
 
-const rowDiv = document.createElement("div");
-rowDiv.className = "waiver-admin-row";
-rowDiv.dataset.orderId = row.id;
-rowDiv.dataset.groupKey = key;
-rowDiv.draggable = true;
+      const rowDiv = document.createElement("div");
+      rowDiv.className = "waiver-admin-row";
+      rowDiv.dataset.orderId = row.id;
+      rowDiv.dataset.groupKey = key;
+      rowDiv.draggable = true;
 
       const selectOptions = `
         <option value="" ${!row.owner_team_id ? "selected" : ""}>
@@ -582,64 +582,69 @@ rowDiv.draggable = true;
 
       const select = rowDiv.querySelector(".waiver-owner-select");
 
-select.addEventListener("change", event => {
-  const newOwnerId = event.target.value || null;
+      select.addEventListener("change", event => {
+        const newOwnerId = event.target.value || null;
 
-  waiverOrderRows = waiverOrderRows.map(item => {
-    if (String(item.id) === String(row.id)) {
-      return {
-        ...item,
-        owner_team_id: newOwnerId
-      };
-    }
+        waiverOrderRows = waiverOrderRows.map(item => {
+          if (String(item.id) === String(row.id)) {
+            return {
+              ...item,
+              owner_team_id: newOwnerId
+            };
+          }
 
-    return item;
+          return item;
+        });
+
+        const newOwner = newOwnerId ? teamMap[newOwnerId] : null;
+
+        setAdminMessage(
+          newOwner
+            ? `Modifica pronta: ${originalTeam?.name || "chiamata"} ora appartiene a ${newOwner.name}. Ricordati di salvare.`
+            : `Modifica pronta: ${originalTeam?.name || "chiamata"} non appartiene a nessuno. Ricordati di salvare.`
+        );
+      });
+
+      rowDiv.addEventListener("dragstart", () => {
+        draggedAdminOrderId = String(row.id);
+        draggedAdminGroupKey = key;
+        rowDiv.classList.add("dragging");
+      });
+
+      rowDiv.addEventListener("dragend", () => {
+        draggedAdminOrderId = null;
+        draggedAdminGroupKey = null;
+        rowDiv.classList.remove("dragging");
+      });
+
+      rowDiv.addEventListener("dragover", event => {
+        event.preventDefault();
+      });
+
+      rowDiv.addEventListener("drop", event => {
+        event.preventDefault();
+
+        const targetOrderId = String(row.id);
+        const targetGroupKey = key;
+
+        if (!draggedAdminOrderId || !draggedAdminGroupKey) return;
+
+        if (draggedAdminGroupKey !== targetGroupKey) {
+          setAdminMessage("Puoi riordinare solo dentro lo stesso slot.", true);
+          return;
+        }
+
+        if (draggedAdminOrderId === targetOrderId) return;
+
+        reorderAdminWaiverOrder(targetGroupKey, draggedAdminOrderId, targetOrderId);
+      });
+
+      groupDiv.appendChild(rowDiv);
+    });
+
+    waiverOrderAdminEl.appendChild(groupDiv);
   });
-
-  const newOwner = newOwnerId ? teamMap[newOwnerId] : null;
-
-  setAdminMessage(
-    newOwner
-      ? `Modifica pronta: ${originalTeam?.name || "chiamata"} ora appartiene a ${newOwner.name}. Ricordati di salvare.`
-      : `Modifica pronta: ${originalTeam?.name || "chiamata"} non appartiene a nessuno. Ricordati di salvare.`
-  );
-});
-
-rowDiv.addEventListener("dragstart", () => {
-  draggedAdminOrderId = String(row.id);
-  draggedAdminGroupKey = key;
-  rowDiv.classList.add("dragging");
-});
-
-rowDiv.addEventListener("dragend", () => {
-  draggedAdminOrderId = null;
-  draggedAdminGroupKey = null;
-  rowDiv.classList.remove("dragging");
-});
-
-rowDiv.addEventListener("dragover", event => {
-  event.preventDefault();
-});
-
-rowDiv.addEventListener("drop", event => {
-  event.preventDefault();
-
-  const targetOrderId = String(row.id);
-  const targetGroupKey = key;
-
-  if (!draggedAdminOrderId || !draggedAdminGroupKey) return;
-
-  if (draggedAdminGroupKey !== targetGroupKey) {
-    setAdminMessage("Puoi riordinare solo dentro lo stesso slot.", true);
-    return;
-  }
-
-  if (draggedAdminOrderId === targetOrderId) return;
-
-  reorderAdminWaiverOrder(targetGroupKey, draggedAdminOrderId, targetOrderId);
-});
-
-groupDiv.appendChild(rowDiv);
+}
 
 /* ===============================
    LE MIE CHIAMATE DINAMICHE
