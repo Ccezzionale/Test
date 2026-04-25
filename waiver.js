@@ -34,6 +34,26 @@ const activePhaseSelect = document.getElementById("activePhaseSelect");
 const savePhaseBtn = document.getElementById("savePhaseBtn");
 const phaseMessageEl = document.getElementById("phaseMessage");
 
+const activePhaseSelect = document.getElementById("activePhaseSelect");
+const activeWeekInput = document.getElementById("activeWeekInput");
+
+const slot1OpenInput = document.getElementById("slot1OpenInput");
+const slot1CloseInput = document.getElementById("slot1CloseInput");
+
+const slot1SOpenInput = document.getElementById("slot1SOpenInput");
+const slot1SCloseInput = document.getElementById("slot1SCloseInput");
+
+const slot2OpenInput = document.getElementById("slot2OpenInput");
+const slot2CloseInput = document.getElementById("slot2CloseInput");
+
+const slot2SOpenInput = document.getElementById("slot2SOpenInput");
+const slot2SCloseInput = document.getElementById("slot2SCloseInput");
+
+const setStandardFridayBtn = document.getElementById("setStandardFridayBtn");
+const setPlayoffFridayBtn = document.getElementById("setPlayoffFridayBtn");
+const saveWaiverSettingsBtn = document.getElementById("saveWaiverSettingsBtn");
+const settingsMessageEl = document.getElementById("settingsMessage");
+
 /* ===============================
    STATO APP
 ================================ */
@@ -1397,6 +1417,232 @@ async function saveActivePhase() {
   );
 }
 
+function setSettingsMessage(text, isError = false) {
+  if (!settingsMessageEl) return;
+
+  settingsMessageEl.textContent = text || "";
+  settingsMessageEl.style.color = isError ? "#dc2626" : "#334155";
+}
+
+function toDateTimeLocalValue(dateValue) {
+  if (!dateValue) return "";
+
+  const date = new Date(dateValue);
+
+  if (Number.isNaN(date.getTime())) return "";
+
+  const pad = number => String(number).padStart(2, "0");
+
+  const year = date.getFullYear();
+  const month = pad(date.getMonth() + 1);
+  const day = pad(date.getDate());
+  const hours = pad(date.getHours());
+  const minutes = pad(date.getMinutes());
+
+  return `${year}-${month}-${day}T${hours}:${minutes}`;
+}
+
+function fromDateTimeLocalValue(value) {
+  if (!value) return null;
+
+  const date = new Date(value);
+
+  if (Number.isNaN(date.getTime())) return null;
+
+  return date.toISOString();
+}
+
+function syncSettingsPanel() {
+  if (!currentSettings) return;
+
+  if (activePhaseSelect) {
+    activePhaseSelect.value = currentSettings.active_phase || "conference";
+  }
+
+  if (activeWeekInput) {
+    activeWeekInput.value = currentSettings.active_week || "";
+  }
+
+  if (slot1OpenInput) {
+    slot1OpenInput.value = toDateTimeLocalValue(currentSettings.slot1_open_at);
+  }
+
+  if (slot1CloseInput) {
+    slot1CloseInput.value = toDateTimeLocalValue(currentSettings.slot1_close_at);
+  }
+
+  if (slot1SOpenInput) {
+    slot1SOpenInput.value = toDateTimeLocalValue(currentSettings.slot1s_open_at);
+  }
+
+  if (slot1SCloseInput) {
+    slot1SCloseInput.value = toDateTimeLocalValue(currentSettings.slot1s_close_at);
+  }
+
+  if (slot2OpenInput) {
+    slot2OpenInput.value = toDateTimeLocalValue(currentSettings.slot2_open_at);
+  }
+
+  if (slot2CloseInput) {
+    slot2CloseInput.value = toDateTimeLocalValue(currentSettings.slot2_close_at);
+  }
+
+  if (slot2SOpenInput) {
+    slot2SOpenInput.value = toDateTimeLocalValue(currentSettings.slot2s_open_at);
+  }
+
+  if (slot2SCloseInput) {
+    slot2SCloseInput.value = toDateTimeLocalValue(currentSettings.slot2s_close_at);
+  }
+}
+
+function getNextFriday() {
+  const now = new Date();
+  const result = new Date(now);
+
+  const day = result.getDay();
+  const daysUntilFriday = (5 - day + 7) % 7 || 7;
+
+  result.setDate(result.getDate() + daysUntilFriday);
+  result.setHours(15, 0, 0, 0);
+
+  return result;
+}
+
+function setInputDateTime(input, date) {
+  if (!input || !date) return;
+
+  input.value = toDateTimeLocalValue(date.toISOString());
+}
+
+function addMinutes(date, minutes) {
+  return new Date(date.getTime() + minutes * 60 * 1000);
+}
+
+function fillStandardFridaySettings() {
+  const friday = getNextFriday();
+
+  const slot1Open = new Date(friday);
+  const slot1Close = addMinutes(slot1Open, 60);
+
+  const slot2Open = new Date(slot1Close);
+  const slot2Close = addMinutes(slot2Open, 60);
+
+  if (activePhaseSelect) activePhaseSelect.value = "round_robin";
+
+  setInputDateTime(slot1OpenInput, slot1Open);
+  setInputDateTime(slot1CloseInput, slot1Close);
+
+  setInputDateTime(slot2OpenInput, slot2Open);
+  setInputDateTime(slot2CloseInput, slot2Close);
+
+  if (slot1SOpenInput) slot1SOpenInput.value = "";
+  if (slot1SCloseInput) slot1SCloseInput.value = "";
+  if (slot2SOpenInput) slot2SOpenInput.value = "";
+  if (slot2SCloseInput) slot2SCloseInput.value = "";
+
+  setSettingsMessage("Venerdì standard impostato: slot 1 alle 15:00, slot 2 alle 16:00. Ricordati di salvare.");
+}
+
+function fillPlayoffFridaySettings() {
+  const friday = getNextFriday();
+
+  const slot1Open = new Date(friday);
+  const slot1Close = addMinutes(slot1Open, 30);
+
+  const slot1SOpen = new Date(slot1Close);
+  const slot1SClose = addMinutes(slot1SOpen, 30);
+
+  const slot2Open = new Date(slot1SClose);
+  const slot2Close = addMinutes(slot2Open, 30);
+
+  const slot2SOpen = new Date(slot2Close);
+  const slot2SClose = addMinutes(slot2SOpen, 30);
+
+  if (activePhaseSelect) activePhaseSelect.value = "playoff";
+
+  setInputDateTime(slot1OpenInput, slot1Open);
+  setInputDateTime(slot1CloseInput, slot1Close);
+
+  setInputDateTime(slot1SOpenInput, slot1SOpen);
+  setInputDateTime(slot1SCloseInput, slot1SClose);
+
+  setInputDateTime(slot2OpenInput, slot2Open);
+  setInputDateTime(slot2CloseInput, slot2Close);
+
+  setInputDateTime(slot2SOpenInput, slot2SOpen);
+  setInputDateTime(slot2SCloseInput, slot2SClose);
+
+  setSettingsMessage("Venerdì playoff impostato: 15:00, 15:30, 16:00, 16:30. Ricordati di salvare.");
+}
+
+async function saveWaiverSettings() {
+  if (!currentSettings) return;
+
+  const activeWeek = Number(activeWeekInput?.value || currentSettings.active_week);
+
+  if (!activeWeek || activeWeek < 1) {
+    setSettingsMessage("Inserisci una settimana valida.", true);
+    return;
+  }
+
+  const payload = {
+    active_phase: activePhaseSelect?.value || currentSettings.active_phase,
+    active_week: activeWeek,
+
+    slot1_open_at: fromDateTimeLocalValue(slot1OpenInput?.value),
+    slot1_close_at: fromDateTimeLocalValue(slot1CloseInput?.value),
+
+    slot1s_open_at: fromDateTimeLocalValue(slot1SOpenInput?.value),
+    slot1s_close_at: fromDateTimeLocalValue(slot1SCloseInput?.value),
+
+    slot2_open_at: fromDateTimeLocalValue(slot2OpenInput?.value),
+    slot2_close_at: fromDateTimeLocalValue(slot2CloseInput?.value),
+
+    slot2s_open_at: fromDateTimeLocalValue(slot2SOpenInput?.value),
+    slot2s_close_at: fromDateTimeLocalValue(slot2SCloseInput?.value)
+  };
+
+  setSettingsMessage("Salvataggio impostazioni in corso...");
+
+  const { data, error } = await supabase
+    .from("waiver_settings")
+    .update(payload)
+    .eq("id", currentSettings.id)
+    .select()
+    .single();
+
+  if (error) {
+    console.error("Errore salvataggio impostazioni waiver:", error);
+    setSettingsMessage("Errore salvataggio impostazioni: " + error.message, true);
+    return;
+  }
+
+  currentSettings = data;
+
+  activePhaseEl.textContent = currentSettings.active_phase || "Non impostata";
+  activeWeekEl.textContent = currentSettings.active_week || "-";
+
+  activeWaiverOrderId = null;
+  waiverOrderRows = [];
+  myOrderRows = [];
+  mySavedCalls = [];
+
+  await loadWaiverOrder();
+
+  if (currentUserEmail === "tringali0511@gmail.com") {
+    renderWaiverOrderAdmin();
+    await loadAllCalls();
+  }
+
+  await loadMyWaiverCalls();
+  await loadPublicCalls();
+
+  syncSettingsPanel();
+
+  setSettingsMessage("Impostazioni waiver salvate correttamente.");
+}
+
 /* ===============================
    INIT
 ================================ */
@@ -1417,7 +1663,7 @@ async function initWaiverRoom() {
     activePhaseEl.textContent = settings.active_phase || "Non impostata";
     activeWeekEl.textContent = settings.active_week || "-";
   }
-   syncPhaseSelect();
+   syncSettingsPanel();
 
   await loadTeams();
   await loadWaiverOrder();
@@ -1467,6 +1713,18 @@ searchInput?.addEventListener("input", () => {
 
 savePhaseBtn?.addEventListener("click", () => {
   saveActivePhase();
+});
+
+setStandardFridayBtn?.addEventListener("click", () => {
+  fillStandardFridaySettings();
+});
+
+setPlayoffFridayBtn?.addEventListener("click", () => {
+  fillPlayoffFridaySettings();
+});
+
+saveWaiverSettingsBtn?.addEventListener("click", () => {
+  saveWaiverSettings();
 });
 
 initWaiverRoom();
