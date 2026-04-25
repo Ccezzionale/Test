@@ -232,11 +232,7 @@ async function loadFreeAgents() {
         <td>${cols[3]}</td>
       `;
 
-      tr.addEventListener("click", () => {
-        const name = cols[0].trim();
-        const role = cols[1].trim();
-
-tr.addEventListener("click", () => {
+   tr.addEventListener("click", () => {
   const name = cols[0].trim();
   const role = cols[1].trim();
   const selectedPlayer = `${name} (${role})`;
