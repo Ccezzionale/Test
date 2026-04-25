@@ -31,10 +31,6 @@ const searchInput = document.getElementById("searchInput");
 const freeAgentsTableBody = document.querySelector("#freeAgentsTable tbody");
 
 const activePhaseSelect = document.getElementById("activePhaseSelect");
-const savePhaseBtn = document.getElementById("savePhaseBtn");
-const phaseMessageEl = document.getElementById("phaseMessage");
-
-const activePhaseSelect = document.getElementById("activePhaseSelect");
 const activeWeekInput = document.getElementById("activeWeekInput");
 
 const slot1OpenInput = document.getElementById("slot1OpenInput");
