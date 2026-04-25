@@ -10,6 +10,7 @@ const adminPanel = document.getElementById("adminPanel");
 
 let currentTeam = null;
 let currentSettings = null;
+let selectedPlayer = null;
 
 const playerInEl = document.getElementById("playerIn");
 const playerOutEl = document.getElementById("playerOut");
@@ -19,6 +20,80 @@ const playerInEl2 = document.getElementById("playerIn2");
 const playerOutEl2 = document.getElementById("playerOut2");
 const saveCallBtn2 = document.getElementById("saveCallBtn2");
 const callMessageEl2 = document.getElementById("callMessage2");
+
+function selectPlayer(player, rowElement = null) {
+  selectedPlayer = player;
+
+  const playerInput = document.getElementById("playerName");
+  const selectedBox = document.getElementById("selectedPlayerBox");
+  const selectedName = document.getElementById("selectedPlayerName");
+  const selectedRole = document.getElementById("selectedPlayerRole");
+
+  if (playerInput) {
+    playerInput.value = player.name || player.player_name || player.giocatore || "";
+  }
+
+  if (selectedBox && selectedName) {
+    selectedBox.classList.remove("hidden");
+    selectedName.textContent = player.name || player.player_name || player.giocatore || "";
+  }
+
+  if (selectedRole) {
+    selectedRole.textContent = player.role || player.ruolo || "";
+    selectedRole.style.display = selectedRole.textContent ? "inline-flex" : "none";
+  }
+
+  document
+    .querySelectorAll(".available-row.selected, .player-row.selected, tr.selected-player")
+    .forEach(row => {
+      row.classList.remove("selected");
+      row.classList.remove("selected-player");
+    });
+
+  if (rowElement) {
+    rowElement.classList.add("selected-player");
+  }
+}
+
+function resetCallForm() {
+  selectedPlayer = null;
+
+  const fieldsToReset = [
+    "playerName",
+    "releasedPlayer",
+    "callType",
+    "slot",
+    "role",
+    "serieATeam",
+    "quotation"
+  ];
+
+  fieldsToReset.forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+
+    if (el.tagName === "SELECT") {
+      el.selectedIndex = 0;
+    } else {
+      el.value = "";
+    }
+  });
+
+  const selectedBox = document.getElementById("selectedPlayerBox");
+  const selectedName = document.getElementById("selectedPlayerName");
+  const selectedRole = document.getElementById("selectedPlayerRole");
+
+  if (selectedBox) selectedBox.classList.add("hidden");
+  if (selectedName) selectedName.textContent = "";
+  if (selectedRole) selectedRole.textContent = "";
+
+  document
+    .querySelectorAll(".available-row.selected, .player-row.selected, tr.selected-player")
+    .forEach(row => {
+      row.classList.remove("selected");
+      row.classList.remove("selected-player");
+    });
+}
 
 function isSlotOpen(openAt, closeAt) {
   const now = new Date();
