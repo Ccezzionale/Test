@@ -168,6 +168,26 @@
         <article class="waiver-card admin-card" id="adminPanel" style="display:none;">
           <h2>Admin Waiver Room</h2>
 
+          <div class="admin-settings-panel">
+  <h3>Impostazioni fase</h3>
+
+  <div class="admin-settings-row">
+    <label for="activePhaseSelect">Fase attiva</label>
+
+    <select id="activePhaseSelect" class="waiver-owner-select">
+      <option value="conference">Conference</option>
+      <option value="round_robin">Round Robin</option>
+      <option value="playoff">Playoff</option>
+    </select>
+
+    <button id="savePhaseBtn" type="button" class="primary-btn small-btn">
+      Salva fase
+    </button>
+  </div>
+
+  <p id="phaseMessage" class="priority-message"></p>
+</div>
+
           <div class="admin-actions">
             <button id="generateWaiverOrderBtn" type="button" class="primary-btn small-btn">
               Genera ordine waiver
