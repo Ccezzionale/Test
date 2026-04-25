@@ -66,6 +66,30 @@ async function getWaiverSettings() {
   return data[0];
 }
 
+async function loadMySavedCall() {
+  if (!currentTeam || !currentSettings) return;
+
+  const { data, error } = await supabase
+    .from("waiver_calls")
+    .select("*")
+    .eq("team_id", currentTeam.id)
+    .eq("week", currentSettings.active_week)
+    .eq("phase", currentSettings.active_phase)
+    .eq("slot", "1")
+    .maybeSingle();
+
+  if (error) {
+    console.error("Errore caricamento chiamata salvata:", error);
+    return;
+  }
+
+  if (data) {
+    playerInEl.value = data.player_in || "";
+    playerOutEl.value = data.player_out || "";
+    callMessageEl.textContent = "Chiamata già salvata. Puoi modificarla finché la finestra è aperta.";
+  }
+}
+
 async function initWaiverRoom() {
   const team = await getMyTeam();
   const settings = await getWaiverSettings();
@@ -83,6 +107,7 @@ currentSettings = settings;
   }
 
   await loadFreeAgents();
+  await loadMySavedCall();
 }
 
 initWaiverRoom();
