@@ -49,19 +49,44 @@ function applySlotAvailability() {
 }
 
 async function loadAllCalls() {
+  if (!currentSettings) return;
+
   const { data, error } = await supabase
     .from("waiver_calls")
     .select("*")
     .eq("week", currentSettings.active_week)
-    .eq("phase", currentSettings.active_phase)
-    .order("created_at", { ascending: true });
+    .eq("phase", currentSettings.active_phase);
 
   if (error) {
     console.error("Errore caricamento chiamate:", error);
     return;
   }
 
-  console.log("ALL CALLS:", data);
+  const container = document.getElementById("allCalls");
+
+  if (!container) {
+    console.error("Elemento allCalls non trovato");
+    return;
+  }
+
+  container.innerHTML = "";
+
+  if (!data || data.length === 0) {
+    container.innerHTML = "<p>Nessuna chiamata ancora.</p>";
+    return;
+  }
+
+  data.forEach(call => {
+    const div = document.createElement("div");
+
+    div.style.marginBottom = "8px";
+
+    div.innerHTML = `
+      <strong>${call.team_id}</strong> → ${call.player_in} (slot ${call.slot})
+    `;
+
+    container.appendChild(div);
+  });
 }
 
 async function getMyTeam() {
