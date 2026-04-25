@@ -426,4 +426,5 @@ saveCallBtn2.addEventListener("click", () => {
   saveCall("2", playerInEl2, playerOutEl2, callMessageEl2);
 });
 
+
 initWaiverRoom();
