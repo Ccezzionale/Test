@@ -169,6 +169,80 @@
           <h2>Admin Waiver Room</h2>
 
           <div class="admin-settings-panel">
+  <h3>Impostazioni Waiver</h3>
+
+  <div class="admin-settings-grid">
+    <div class="admin-field">
+      <label for="activePhaseSelect">Fase attiva</label>
+      <select id="activePhaseSelect" class="waiver-owner-select">
+        <option value="conference">Conference</option>
+        <option value="round_robin">Round Robin</option>
+        <option value="playoff">Playoff</option>
+      </select>
+    </div>
+
+    <div class="admin-field">
+      <label for="activeWeekInput">Settimana</label>
+      <input type="number" id="activeWeekInput" min="1" />
+    </div>
+  </div>
+
+  <div class="slot-settings-grid">
+    <div class="slot-settings-card">
+      <h4>Slot 1</h4>
+      <label for="slot1OpenInput">Apertura</label>
+      <input type="datetime-local" id="slot1OpenInput" />
+
+      <label for="slot1CloseInput">Chiusura</label>
+      <input type="datetime-local" id="slot1CloseInput" />
+    </div>
+
+    <div class="slot-settings-card">
+      <h4>Slot 1S</h4>
+      <label for="slot1SOpenInput">Apertura</label>
+      <input type="datetime-local" id="slot1SOpenInput" />
+
+      <label for="slot1SCloseInput">Chiusura</label>
+      <input type="datetime-local" id="slot1SCloseInput" />
+    </div>
+
+    <div class="slot-settings-card">
+      <h4>Slot 2</h4>
+      <label for="slot2OpenInput">Apertura</label>
+      <input type="datetime-local" id="slot2OpenInput" />
+
+      <label for="slot2CloseInput">Chiusura</label>
+      <input type="datetime-local" id="slot2CloseInput" />
+    </div>
+
+    <div class="slot-settings-card">
+      <h4>Slot 2S</h4>
+      <label for="slot2SOpenInput">Apertura</label>
+      <input type="datetime-local" id="slot2SOpenInput" />
+
+      <label for="slot2SCloseInput">Chiusura</label>
+      <input type="datetime-local" id="slot2SCloseInput" />
+    </div>
+  </div>
+
+  <div class="admin-actions">
+    <button id="setStandardFridayBtn" type="button" class="secondary-btn small-btn">
+      Imposta venerdì standard
+    </button>
+
+    <button id="setPlayoffFridayBtn" type="button" class="secondary-btn small-btn">
+      Imposta venerdì playoff
+    </button>
+
+    <button id="saveWaiverSettingsBtn" type="button" class="primary-btn small-btn">
+      Salva impostazioni
+    </button>
+  </div>
+
+  <p id="settingsMessage" class="priority-message"></p>
+</div>
+
+          <div class="admin-settings-panel">
   <h3>Impostazioni fase</h3>
 
   <div class="admin-settings-row">
