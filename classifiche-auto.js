@@ -149,6 +149,27 @@ function resultFromGoals(gf, ga) {
 /* =========================================
    CALCOLO CLASSIFICA
    ========================================= */
+function removeDuplicateRows(rows) {
+  const seen = new Set();
+
+  return rows.filter(r => {
+    const key = [
+      String(r.GW || "").trim(),
+      String(r.GW_Stagionale || "").trim(),
+      cleanTeamName(r.Team),
+      cleanTeamName(r.Opponent),
+      String(r.PointsFor || "").replace(",", ".").trim(),
+      String(r.PointsAgainst || "").replace(",", ".").trim(),
+      String(r.Conference || "").trim()
+    ].join("|");
+
+    if (seen.has(key)) return false;
+
+    seen.add(key);
+    return true;
+  });
+}
+
 
 function getRowsForCompetition(rows, competitionName) {
   const config = COMPETITIONS[competitionName];
@@ -515,7 +536,8 @@ function gestisciSwitcher() {
 
 async function initClassifiche() {
   try {
-    allRows = await fetchCSV(CLASSIFICHE_CSV_URL);
+    const rawRows = await fetchCSV(CLASSIFICHE_CSV_URL);
+allRows = removeDuplicateRows(rawRows);
 
     gestisciSwitcher();
     caricaClassifica("Conf.League");
