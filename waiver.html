@@ -11,130 +11,243 @@
 </head>
 
 <body>
+
+  <nav class="site-nav">
+    <div class="nav-inner">
+      <div class="nav-left">
+        <span id="hamburger" class="hamburger">☰</span>
+        <a href="index.html" class="brand-home" aria-label="Home">🏠</a>
+      </div>
+
+      <ul class="navbar" id="mainMenu">
+        <li><a href="rose.html">Rose</a></li>
+
+        <li class="dropdown">
+          <a href="#" class="toggle-submenu">
+            Draft <span class="caret">▾</span>
+          </a>
+          <ul class="submenu">
+            <li><a href="draft_championship.html">🟦 Conf. Championship</a></li>
+            <li><a href="draft_conference.html">🟨 Conf. League</a></li>
+            <li><a href="trade-room.html">🤝 Trade Room</a></li>
+            <li><a href="dinamico-draft.html">🧑‍💼 Draft 2026</a></li>
+          </ul>
+        </li>
+
+        <li class="dropdown competizioni">
+          <a href="#" class="toggle-submenu">
+            Competizioni <span class="caret">▾</span>
+          </a>
+          <ul class="submenu">
+            <li><a href="classifica.html">📊 Classifiche</a></li>
+            <li><a href="playoff.html">🏆 Playoff</a></li>
+            <li><a href="arena.html">🏟️ Highlander</a></li>
+            <li><a href="crashoutcup.html">💥 Crash Out Cup</a></li>
+            <li><a href="crashoutplayoff.html">💥 Crash Out Cup - Playoff</a></li>
+            <li><a href="supercoppa.html">⭐ Supercoppa</a></li>
+            <li><a href="statistiche.html">🔎 Statistiche</a></li>
+          </ul>
+        </li>
+
+        <li><a href="svincolati.html">Svincolati</a></li>
+        <li><a href="waiver.html" class="active-nav">Waiver Wire</a></li>
+
+        <li class="dropdown">
+          <a href="#" class="toggle-submenu">
+            Hall of Fame <span class="caret">▾</span>
+          </a>
+          <ul class="submenu">
+            <li><a href="medagliere.html">👑 Albo d'Oro</a></li>
+            <li><a href="albo.html">🏅 Medagliere</a></li>
+          </ul>
+        </li>
+
+        <li><a href="regolamento.html">Regolamento</a></li>
+      </ul>
+
+      <div class="nav-right hero-actions">
+        <a id="trade-badge" href="trade-room.html" class="btn-hero trade-badge" style="display:none;">
+          🤝 Trade Room
+        </a>
+
+        <button id="logout-btn" type="button" class="btn-hero">🚪 Logout</button>
+        <button id="attiva-notifiche-btn" type="button" class="btn-hero warning">Attiva notifiche</button>
+      </div>
+    </div>
+  </nav>
+
   <main class="waiver-page">
 
     <section class="waiver-hero">
-      <h1>Waiver Room</h1>
-      <p>Chiamate settimanali, svincolati e risultati in un’unica stanza.</p>
-    </section>
-
-    <section class="waiver-card">
-      <h2>La mia squadra</h2>
-      <p><strong>Squadra:</strong> <span id="teamName">Caricamento...</span></p>
-      <p><strong>Conference:</strong> <span id="teamConference">Caricamento...</span></p>
-      <p><strong>Fase attiva:</strong> <span id="activePhase">Caricamento...</span></p>
-      <p><strong>Settimana:</strong> <span id="activeWeek">Caricamento...</span></p>
-    </section>
-
-    <section class="waiver-card">
-      <h2>La mia chiamata</h2>
-
-      <div id="selectedPlayerBox1" class="selected-player-box hidden">
-        <span class="selected-label">Giocatore selezionato</span>
-        <strong id="selectedPlayerName1"></strong>
-        <span id="selectedPlayerRole1" class="role-badge"></span>
+      <div>
+        <p class="eyebrow">Lega degli Eroi</p>
+        <h1>Waiver Room</h1>
+        <p>Chiamate settimanali, svincolati e risultati in un’unica stanza.</p>
       </div>
-
-      <label for="playerIn">Giocatore chiamato</label>
-      <input
-        type="text"
-        id="playerIn"
-        readonly
-        placeholder="Clicca uno svincolato dalla lista"
-      />
-
-      <label for="playerOut">Giocatore da svincolare</label>
-      <input
-        type="text"
-        id="playerOut"
-        placeholder="Scrivi il giocatore da svincolare"
-      />
-
-      <div class="call-actions">
-        <button id="saveCallBtn" type="button">Salva chiamata</button>
-        <button id="resetCallBtn1" type="button" class="btn-reset-call">
-          Reset chiamata
-        </button>
-      </div>
-
-      <p id="callMessage"></p>
     </section>
 
-    <section class="waiver-card">
-      <h2>Seconda chiamata</h2>
+    <section class="waiver-grid waiver-grid-info">
+      <article class="waiver-card team-card">
+        <h2>La mia squadra</h2>
 
-      <div id="selectedPlayerBox2" class="selected-player-box hidden">
-        <span class="selected-label">Giocatore selezionato</span>
-        <strong id="selectedPlayerName2"></strong>
-        <span id="selectedPlayerRole2" class="role-badge"></span>
-      </div>
+        <div class="info-grid">
+          <div class="info-item">
+            <span>Squadra</span>
+            <strong id="teamName">Caricamento...</strong>
+          </div>
 
-      <label for="playerIn2">Giocatore chiamato</label>
-      <input
-        type="text"
-        id="playerIn2"
-        readonly
-        placeholder="Clicca uno svincolato dalla lista"
-      />
+          <div class="info-item">
+            <span>Conference</span>
+            <strong id="teamConference">Caricamento...</strong>
+          </div>
 
-      <label for="playerOut2">Giocatore da svincolare</label>
-      <input
-        type="text"
-        id="playerOut2"
-        placeholder="Scrivi il giocatore da svincolare"
-      />
+          <div class="info-item">
+            <span>Fase attiva</span>
+            <strong id="activePhase">Caricamento...</strong>
+          </div>
 
-      <div class="call-actions">
-        <button id="saveCallBtn2" type="button">Salva seconda chiamata</button>
-        <button id="resetCallBtn2" type="button" class="btn-reset-call">
-          Reset seconda chiamata
-        </button>
-      </div>
-
-      <p id="callMessage2"></p>
+          <div class="info-item">
+            <span>Settimana</span>
+            <strong id="activeWeek">Caricamento...</strong>
+          </div>
+        </div>
+      </article>
     </section>
 
-    <section class="waiver-card">
-      <h2>Svincolati</h2>
+    <section class="waiver-grid waiver-grid-calls">
 
-      <input type="text" id="searchInput" placeholder="Cerca giocatore..." />
+      <article class="waiver-card call-card">
+        <div class="card-title-row">
+          <h2>Prima chiamata</h2>
+          <span class="slot-pill">Slot 1</span>
+        </div>
 
-      <table id="freeAgentsTable">
-        <thead>
-          <tr>
-            <th>Giocatore</th>
-            <th>Ruolo</th>
-            <th>Squadra</th>
-            <th>Quotazione</th>
-          </tr>
-        </thead>
-        <tbody></tbody>
-      </table>
+        <div id="selectedPlayerBox1" class="selected-player-box hidden">
+          <span class="selected-label">Giocatore selezionato</span>
+          <strong id="selectedPlayerName1"></strong>
+          <span id="selectedPlayerRole1" class="role-badge"></span>
+        </div>
+
+        <label for="playerIn">Giocatore chiamato</label>
+        <input
+          type="text"
+          id="playerIn"
+          readonly
+          placeholder="Clicca uno svincolato dalla lista"
+        />
+
+        <label for="playerOut">Giocatore da svincolare</label>
+        <input
+          type="text"
+          id="playerOut"
+          placeholder="Scrivi il giocatore da svincolare"
+        />
+
+        <div class="call-actions">
+          <button id="saveCallBtn" type="button" class="primary-btn">Salva chiamata</button>
+          <button id="resetCallBtn1" type="button" class="secondary-btn">
+            Reset
+          </button>
+        </div>
+
+        <p id="callMessage" class="call-message"></p>
+      </article>
+
+      <article class="waiver-card call-card">
+        <div class="card-title-row">
+          <h2>Seconda chiamata</h2>
+          <span class="slot-pill slot-pill-alt">Slot 2</span>
+        </div>
+
+        <div id="selectedPlayerBox2" class="selected-player-box hidden">
+          <span class="selected-label">Giocatore selezionato</span>
+          <strong id="selectedPlayerName2"></strong>
+          <span id="selectedPlayerRole2" class="role-badge"></span>
+        </div>
+
+        <label for="playerIn2">Giocatore chiamato</label>
+        <input
+          type="text"
+          id="playerIn2"
+          readonly
+          placeholder="Clicca uno svincolato dalla lista"
+        />
+
+        <label for="playerOut2">Giocatore da svincolare</label>
+        <input
+          type="text"
+          id="playerOut2"
+          placeholder="Scrivi il giocatore da svincolare"
+        />
+
+        <div class="call-actions">
+          <button id="saveCallBtn2" type="button" class="primary-btn">Salva seconda chiamata</button>
+          <button id="resetCallBtn2" type="button" class="secondary-btn">
+            Reset
+          </button>
+        </div>
+
+        <p id="callMessage2" class="call-message"></p>
+      </article>
+
     </section>
 
-    <section class="waiver-card">
-      <h2>Chiamate pubblicate</h2>
-      <div id="publicCalls"></div>
-    </section>
+    <section class="waiver-grid waiver-grid-main">
 
-    <section class="waiver-card" id="adminPanel" style="display:none;">
-      <h2>Tutte le chiamate (Admin)</h2>
+      <article class="waiver-card free-agents-card">
+        <div class="card-title-row">
+          <h2>Svincolati</h2>
+          <span class="table-hint">Scroll verticale</span>
+        </div>
 
-      <div class="admin-actions">
-        <button id="calculateSlot1Btn" type="button">
-          Calcola risultati slot 1
-        </button>
+        <input type="text" id="searchInput" placeholder="Cerca giocatore..." />
 
-        <button id="calculateSlot2Btn" type="button">
-          Calcola risultati slot 2
-        </button>
-      </div>
+        <div class="free-agents-table-wrap">
+          <table id="freeAgentsTable">
+            <thead>
+              <tr>
+                <th>Giocatore</th>
+                <th>Ruolo</th>
+                <th>Squadra</th>
+                <th>Quotazione</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </article>
 
-      <div id="allCalls"></div>
+      <aside class="waiver-side">
+
+        <article class="waiver-card">
+          <h2>Chiamate pubblicate</h2>
+          <div id="publicCalls" class="public-calls"></div>
+        </article>
+
+        <article class="waiver-card admin-card" id="adminPanel" style="display:none;">
+          <h2>Tutte le chiamate Admin</h2>
+
+          <div class="admin-actions">
+            <button id="calculateSlot1Btn" type="button" class="primary-btn small-btn">
+              Calcola slot 1
+            </button>
+
+            <button id="calculateSlot2Btn" type="button" class="primary-btn small-btn">
+              Calcola slot 2
+            </button>
+          </div>
+
+          <div id="allCalls" class="all-calls"></div>
+        </article>
+
+      </aside>
+
     </section>
 
   </main>
 
   <script type="module" src="waiver.js"></script>
+  <script type="module" src="home_auth.js"></script>
+  <script src="navbar.js"></script>
 </body>
 </html>
