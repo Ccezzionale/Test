@@ -6,6 +6,7 @@ const activePhaseEl = document.getElementById("activePhase");
 const activeWeekEl = document.getElementById("activeWeek");
 const calculateSlot1Btn = document.getElementById("calculateSlot1Btn");
 const calculateSlot2Btn = document.getElementById("calculateSlot2Btn");
+const adminPanel = document.getElementById("adminPanel");
 
 let currentTeam = null;
 let currentSettings = null;
@@ -184,6 +185,13 @@ async function loadMySavedCall() {
 async function initWaiverRoom() {
   const team = await getMyTeam();
   const settings = await getWaiverSettings();
+  const { data: authData } = await supabase.auth.getUser();
+const userEmail = authData?.user?.email;
+
+if (userEmail === "tringali0511@gmail.com") {
+  adminPanel.style.display = "block";
+  await loadAllCalls();
+}
 
   currentTeam = team;
   currentSettings = settings;
@@ -201,7 +209,6 @@ async function initWaiverRoom() {
   await loadFreeAgents();
   await loadMySavedCall();
   applySlotAvailability();
-  await loadAllCalls();
   await loadPublicCalls();
 }
 
