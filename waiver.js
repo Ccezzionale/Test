@@ -86,9 +86,9 @@ const { data, error } = await supabase
 
     div.style.marginBottom = "8px";
 
-    div.innerHTML = `
-      <strong>${call.team_id}</strong> → ${call.player_in} (slot ${call.slot})
-    `;
+div.innerHTML = `
+  <strong>${call.teams?.name || call.team_id}</strong> → ${call.player_in} (slot ${call.slot})
+`;
 
     container.appendChild(div);
   });
