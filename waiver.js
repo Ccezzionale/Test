@@ -242,6 +242,9 @@ async function loadPublicCalls() {
     .in("slot", visibleSlots)
     .order("slot", { ascending: true });
 
+  console.log("VISIBLE SLOTS:", visibleSlots);
+console.log("CALLS:", calls);
+
   if (error) {
     console.error("Errore caricamento chiamate pubbliche:", error);
     return;
