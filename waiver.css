@@ -694,6 +694,117 @@ button {
   cursor: pointer;
 }
 
+.public-calls {
+  display: grid;
+  gap: 12px;
+}
+
+.public-result-card {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 12px;
+  padding: 13px;
+  border-radius: 16px;
+  border: 1px solid rgba(0,31,63,.09);
+  background: #f8fafc;
+  box-shadow: 0 8px 18px rgba(0,31,63,.06);
+}
+
+.public-result-card.won {
+  background: linear-gradient(180deg, #f0fdf4 0%, #ffffff 100%);
+  border-color: rgba(22,163,74,.25);
+}
+
+.public-result-card.lost {
+  background: linear-gradient(180deg, #fef2f2 0%, #ffffff 100%);
+  border-color: rgba(220,38,38,.24);
+}
+
+.public-result-card.pending {
+  background: linear-gradient(180deg, #f8fafc 0%, #ffffff 100%);
+  border-color: rgba(100,116,139,.22);
+}
+
+.public-result-status {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  min-width: 54px;
+}
+
+.public-result-icon {
+  font-size: 1.35rem;
+  line-height: 1;
+}
+
+.public-result-label {
+  font-size: .68rem;
+  text-transform: uppercase;
+  font-weight: 900;
+  letter-spacing: .06em;
+  color: #64748b;
+}
+
+.public-result-card.won .public-result-label {
+  color: #15803d;
+}
+
+.public-result-card.lost .public-result-label {
+  color: #b91c1c;
+}
+
+.public-result-body {
+  min-width: 0;
+}
+
+.public-result-body strong {
+  display: block;
+  color: #0f172a;
+  font-size: .95rem;
+  line-height: 1.3;
+}
+
+.public-result-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.public-result-meta span {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  padding: 4px 8px;
+  background: #e2e8f0;
+  color: #334155;
+  font-size: .72rem;
+  font-weight: 900;
+}
+
+.public-result-via {
+  width: fit-content;
+  margin-top: 8px;
+  border-radius: 999px;
+  padding: 4px 8px;
+  background: rgba(255,204,0,.20);
+  color: #725300;
+  font-size: .72rem;
+  font-weight: 900;
+}
+
+@media (max-width: 560px) {
+  .public-result-card {
+    grid-template-columns: 1fr;
+  }
+
+  .public-result-status {
+    flex-direction: row;
+    justify-content: flex-start;
+  }
+}
+
 @media (max-width: 700px) {
   .admin-settings-row {
     grid-template-columns: 1fr;
