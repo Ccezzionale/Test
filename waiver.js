@@ -339,7 +339,7 @@ rows.push({
   slot,
   priority_number: index + 1,
   original_team_id: team.id,
-  owner_team_id: team.id,
+  owner_team_id: slot === "1" ? team.id : null,
   updated_at: new Date().toISOString()
 });
       });
@@ -1215,5 +1215,6 @@ calculateSlot2Btn?.addEventListener("click", () => {
 searchInput?.addEventListener("input", () => {
   renderFreeAgents();
 });
+
 
 initWaiverRoom();
