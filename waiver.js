@@ -51,11 +51,16 @@ function applySlotAvailability() {
 async function loadAllCalls() {
   if (!currentSettings) return;
 
-  const { data, error } = await supabase
-    .from("waiver_calls")
-    .select("*")
-    .eq("week", currentSettings.active_week)
-    .eq("phase", currentSettings.active_phase);
+const { data, error } = await supabase
+  .from("waiver_calls")
+  .select(`
+    *,
+    teams (
+      name
+    )
+  `)
+  .eq("week", currentSettings.active_week)
+  .eq("phase", currentSettings.active_phase);
 
   if (error) {
     console.error("Errore caricamento chiamate:", error);
