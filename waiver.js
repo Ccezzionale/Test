@@ -254,18 +254,18 @@ async function loadFreeAgents() {
 async function calculateResultsForSlot(slot) {
   if (!currentSettings) return;
 
-let query = supabase
-  .from("waiver_calls")
-  .select("*")
-  .eq("week", currentSettings.active_week)
-  .eq("phase", currentSettings.active_phase)
-  .eq("slot", slot);
+  let query = supabase
+    .from("waiver_calls")
+    .select("*")
+    .eq("week", currentSettings.active_week)
+    .eq("phase", currentSettings.active_phase)
+    .eq("slot", slot);
 
-if (slot === "2") {
-  query = query.eq("status", "pending");
-}
+  if (slot === "2") {
+    query = query.eq("status", "pending");
+  }
 
-const { data: calls } = await query;
+  const { data: calls, error: callsError } = await query;
 
   if (callsError) {
     console.error("Errore caricamento chiamate:", callsError);
