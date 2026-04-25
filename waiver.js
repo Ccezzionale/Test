@@ -332,16 +332,16 @@ async function generateWaiverOrder() {
   Object.keys(groups).forEach(groupKey => {
     ["1", "2"].forEach(slot => {
       groups[groupKey].forEach((team, index) => {
-        rows.push({
-          week: currentSettings.active_week,
-          phase: currentSettings.active_phase,
-          conference: groupKey,
-          slot,
-          priority_number: index + 1,
-          original_team_id: team.id,
-          owner_team_id: team.id,
-          updated_at: new Date().toISOString()
-        });
+rows.push({
+  week: currentSettings.active_week,
+  phase: currentSettings.active_phase,
+  conference: groupKey,
+  slot,
+  priority_number: index + 1,
+  original_team_id: team.id,
+  owner_team_id: team.id,
+  updated_at: new Date().toISOString()
+});
       });
     });
   });
