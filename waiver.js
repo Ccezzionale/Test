@@ -4,22 +4,30 @@ const teamNameEl = document.getElementById("teamName");
 const teamConferenceEl = document.getElementById("teamConference");
 const activePhaseEl = document.getElementById("activePhase");
 const activeWeekEl = document.getElementById("activeWeek");
+
 const calculateSlot1Btn = document.getElementById("calculateSlot1Btn");
 const calculateSlot2Btn = document.getElementById("calculateSlot2Btn");
 const adminPanel = document.getElementById("adminPanel");
 
+const priorityListEl = document.getElementById("priorityList");
+const savePriorityBtn = document.getElementById("savePriorityBtn");
+const priorityMessageEl = document.getElementById("priorityMessage");
+
 let currentTeam = null;
 let currentSettings = null;
-let selectedPlayer = null;
+let priorityTeams = [];
+let draggedPriorityTeamId = null;
 
 const playerInEl = document.getElementById("playerIn");
 const playerOutEl = document.getElementById("playerOut");
 const saveCallBtn = document.getElementById("saveCallBtn");
 const callMessageEl = document.getElementById("callMessage");
+
 const playerInEl2 = document.getElementById("playerIn2");
 const playerOutEl2 = document.getElementById("playerOut2");
 const saveCallBtn2 = document.getElementById("saveCallBtn2");
 const callMessageEl2 = document.getElementById("callMessage2");
+
 const resetCallBtn1 = document.getElementById("resetCallBtn1");
 const resetCallBtn2 = document.getElementById("resetCallBtn2");
 
@@ -30,6 +38,10 @@ const selectedPlayerRole1 = document.getElementById("selectedPlayerRole1");
 const selectedPlayerBox2 = document.getElementById("selectedPlayerBox2");
 const selectedPlayerName2 = document.getElementById("selectedPlayerName2");
 const selectedPlayerRole2 = document.getElementById("selectedPlayerRole2");
+
+/* ===============================
+   UI SELEZIONE GIOCATORI
+================================ */
 
 function clearSelectedRows() {
   document
@@ -99,6 +111,10 @@ function resetCallForm(slot) {
   clearSelectedRows();
 }
 
+/* ===============================
+   SLOT / DISPONIBILITÀ
+================================ */
+
 function isSlotOpen(openAt, closeAt) {
   const now = new Date();
 
@@ -110,8 +126,15 @@ function isSlotOpen(openAt, closeAt) {
 function applySlotAvailability() {
   if (!currentSettings) return;
 
-  const slot1Open = isSlotOpen(currentSettings.slot1_open_at, currentSettings.slot1_close_at);
-  const slot2Open = isSlotOpen(currentSettings.slot2_open_at, currentSettings.slot2_close_at);
+  const slot1Open = isSlotOpen(
+    currentSettings.slot1_open_at,
+    currentSettings.slot1_close_at
+  );
+
+  const slot2Open = isSlotOpen(
+    currentSettings.slot2_open_at,
+    currentSettings.slot2_close_at
+  );
 
   playerInEl.disabled = !slot1Open;
   playerOutEl.disabled = !slot1Open;
@@ -130,55 +153,9 @@ function applySlotAvailability() {
   }
 }
 
-async function loadAllCalls() {
-  if (!currentSettings) return;
-
-  const { data: calls, error: callsError } = await supabase
-    .from("waiver_calls")
-    .select("*")
-    .eq("week", currentSettings.active_week)
-    .eq("phase", currentSettings.active_phase);
-
-  if (callsError) {
-    console.error("Errore caricamento chiamate:", callsError);
-    return;
-  }
-
-  const { data: teams, error: teamsError } = await supabase
-    .from("teams")
-    .select("id, name");
-
-  if (teamsError) {
-    console.error("Errore caricamento squadre:", teamsError);
-    return;
-  }
-
-  const teamMap = {};
-  teams.forEach(team => {
-    teamMap[team.id] = team.name;
-  });
-
-  const container = document.getElementById("allCalls");
-  container.innerHTML = "";
-
-  if (!calls || calls.length === 0) {
-    container.innerHTML = "<p>Nessuna chiamata ancora.</p>";
-    return;
-  }
-
-  calls.forEach(call => {
-    const div = document.createElement("div");
-    div.style.marginBottom = "8px";
-
-div.innerHTML = `
-  <strong>${teamMap[call.team_id] || call.team_id}</strong>
-  → ${call.player_in} (slot ${call.slot}) 
-  <strong>${call.status || "pending"}</strong>
-`;
-
-    container.appendChild(div);
-  });
-}
+/* ===============================
+   DATI UTENTE / SETTINGS
+================================ */
 
 async function getMyTeam() {
   const { data: authData, error: authError } = await supabase.auth.getUser();
@@ -233,6 +210,235 @@ async function getWaiverSettings() {
   return data[0];
 }
 
+/* ===============================
+   ADMIN - CHIAMATE
+================================ */
+
+async function loadAllCalls() {
+  if (!currentSettings) return;
+
+  const { data: calls, error: callsError } = await supabase
+    .from("waiver_calls")
+    .select("*")
+    .eq("week", currentSettings.active_week)
+    .eq("phase", currentSettings.active_phase)
+    .order("slot", { ascending: true });
+
+  if (callsError) {
+    console.error("Errore caricamento chiamate:", callsError);
+    return;
+  }
+
+  const { data: teams, error: teamsError } = await supabase
+    .from("teams")
+    .select("id, name");
+
+  if (teamsError) {
+    console.error("Errore caricamento squadre:", teamsError);
+    return;
+  }
+
+  const teamMap = {};
+
+  teams.forEach(team => {
+    teamMap[team.id] = team.name;
+  });
+
+  const container = document.getElementById("allCalls");
+
+  if (!container) return;
+
+  container.innerHTML = "";
+
+  if (!calls || calls.length === 0) {
+    container.innerHTML = "<p>Nessuna chiamata ancora.</p>";
+    return;
+  }
+
+  calls.forEach(call => {
+    const div = document.createElement("div");
+    div.style.marginBottom = "8px";
+
+    div.innerHTML = `
+      <strong>${teamMap[call.team_id] || call.team_id}</strong>
+      → ${call.player_in} 
+      <span>(slot ${call.slot})</span>
+      <strong>${call.status || "pending"}</strong>
+    `;
+
+    container.appendChild(div);
+  });
+}
+
+/* ===============================
+   ADMIN - PRIORITY PANEL
+================================ */
+
+async function loadPriorityPanel() {
+  if (!currentSettings || !priorityListEl) return;
+
+  priorityListEl.innerHTML = "<p>Caricamento priorità...</p>";
+
+  const { data: teams, error: teamsError } = await supabase
+    .from("teams")
+    .select("id, name, conference")
+    .order("name", { ascending: true });
+
+  if (teamsError) {
+    console.error("Errore caricamento squadre:", teamsError);
+    priorityListEl.innerHTML = "<p>Errore nel caricamento squadre.</p>";
+    return;
+  }
+
+  const { data: priorities, error: priorityError } = await supabase
+    .from("waiver_priority")
+    .select("team_id, priority_number, conference")
+    .eq("week", currentSettings.active_week)
+    .eq("phase", currentSettings.active_phase);
+
+  if (priorityError) {
+    console.error("Errore caricamento priorità:", priorityError);
+    priorityListEl.innerHTML = "<p>Errore nel caricamento priorità.</p>";
+    return;
+  }
+
+  const priorityMap = {};
+
+  priorities?.forEach(row => {
+    priorityMap[String(row.team_id)] = row.priority_number;
+  });
+
+  priorityTeams = teams.map(team => ({
+    id: team.id,
+    name: team.name,
+    conference: team.conference,
+    priority_number: priorityMap[String(team.id)] ?? 9999
+  }));
+
+  priorityTeams.sort((a, b) => {
+    if (a.priority_number !== b.priority_number) {
+      return a.priority_number - b.priority_number;
+    }
+
+    return a.name.localeCompare(b.name);
+  });
+
+  renderPriorityList();
+}
+
+function renderPriorityList() {
+  if (!priorityListEl) return;
+
+  priorityListEl.innerHTML = "";
+
+  if (!priorityTeams || priorityTeams.length === 0) {
+    priorityListEl.innerHTML = "<p>Nessuna squadra trovata.</p>";
+    return;
+  }
+
+  priorityTeams.forEach((team, index) => {
+    const item = document.createElement("div");
+
+    item.className = "priority-item";
+    item.draggable = true;
+    item.dataset.teamId = team.id;
+
+    item.innerHTML = `
+      <span class="priority-rank">${index + 1}</span>
+      <span class="priority-team-name">
+        ${team.name}
+        <small>${team.conference || ""}</small>
+      </span>
+      <span class="priority-drag-icon">☰</span>
+    `;
+
+    item.addEventListener("dragstart", () => {
+      draggedPriorityTeamId = String(team.id);
+      item.classList.add("dragging");
+    });
+
+    item.addEventListener("dragend", () => {
+      draggedPriorityTeamId = null;
+      item.classList.remove("dragging");
+    });
+
+    item.addEventListener("dragover", event => {
+      event.preventDefault();
+    });
+
+    item.addEventListener("drop", event => {
+      event.preventDefault();
+
+      const targetTeamId = String(team.id);
+
+      if (!draggedPriorityTeamId || draggedPriorityTeamId === targetTeamId) return;
+
+      reorderPriorityTeams(draggedPriorityTeamId, targetTeamId);
+    });
+
+    priorityListEl.appendChild(item);
+  });
+}
+
+function reorderPriorityTeams(draggedId, targetId) {
+  const draggedIndex = priorityTeams.findIndex(team => String(team.id) === draggedId);
+  const targetIndex = priorityTeams.findIndex(team => String(team.id) === targetId);
+
+  if (draggedIndex === -1 || targetIndex === -1) return;
+
+  const [draggedTeam] = priorityTeams.splice(draggedIndex, 1);
+  priorityTeams.splice(targetIndex, 0, draggedTeam);
+
+  renderPriorityList();
+
+  if (priorityMessageEl) {
+    priorityMessageEl.textContent = "Ordine modificato. Ricordati di salvare.";
+  }
+}
+
+async function savePriorityOrder() {
+  if (!currentSettings || !priorityTeams || priorityTeams.length === 0) return;
+
+  if (priorityMessageEl) {
+    priorityMessageEl.textContent = "Salvataggio in corso...";
+  }
+
+  const rows = priorityTeams.map((team, index) => ({
+    week: currentSettings.active_week,
+    phase: currentSettings.active_phase,
+    conference: team.conference || null,
+    team_id: team.id,
+    priority_number: index + 1,
+    updated_at: new Date().toISOString()
+  }));
+
+  const { error } = await supabase
+    .from("waiver_priority")
+    .upsert(rows, {
+      onConflict: "week,phase,conference,team_id"
+    });
+
+  if (error) {
+    console.error("Errore salvataggio priorità:", error);
+
+    if (priorityMessageEl) {
+      priorityMessageEl.textContent = "Errore nel salvataggio priorità.";
+    }
+
+    return;
+  }
+
+  if (priorityMessageEl) {
+    priorityMessageEl.textContent = "Priorità salvata correttamente.";
+  }
+
+  await loadPriorityPanel();
+}
+
+/* ===============================
+   CHIAMATE SALVATE UTENTE
+================================ */
+
 async function loadMySavedCall() {
   if (!currentTeam || !currentSettings) return;
 
@@ -261,35 +467,9 @@ async function loadMySavedCall() {
   });
 }
 
-async function initWaiverRoom() {
-  const team = await getMyTeam();
-  const settings = await getWaiverSettings();
-  const { data: authData } = await supabase.auth.getUser();
-const userEmail = authData?.user?.email;
-
-if (userEmail === "tringali0511@gmail.com") {
-  adminPanel.style.display = "block";
-  await loadAllCalls();
-}
-
-  currentTeam = team;
-  currentSettings = settings;
-
-  if (team) {
-    teamNameEl.textContent = team.name;
-    teamConferenceEl.textContent = team.conference || "Non assegnata";
-  }
-
-  if (settings) {
-    activePhaseEl.textContent = settings.active_phase || "Non impostata";
-    activeWeekEl.textContent = settings.active_week || "-";
-  }
-
-  await loadFreeAgents();
-  await loadMySavedCall();
-  applySlotAvailability();
-  await loadPublicCalls();
-}
+/* ===============================
+   CHIAMATE PUBBLICHE
+================================ */
 
 async function loadPublicCalls() {
   if (!currentSettings) return;
@@ -328,9 +508,6 @@ async function loadPublicCalls() {
     .in("slot", visibleSlots)
     .order("slot", { ascending: true });
 
-  console.log("VISIBLE SLOTS:", visibleSlots);
-console.log("CALLS:", calls);
-
   if (error) {
     console.error("Errore caricamento chiamate pubbliche:", error);
     return;
@@ -341,6 +518,7 @@ console.log("CALLS:", calls);
     .select("id, name");
 
   const teamMap = {};
+
   teams?.forEach(team => {
     teamMap[team.id] = team.name;
   });
@@ -351,36 +529,39 @@ console.log("CALLS:", calls);
   }
 
   calls.forEach(call => {
-  const div = document.createElement("div");
-  div.className = "public-call-row";
+    const div = document.createElement("div");
+    div.className = "public-call-row";
 
-  const teamName = teamMap[call.team_id] || call.team_id;
-  const playerName = call.player_in || "-";
+    const teamName = teamMap[call.team_id] || call.team_id;
+    const playerName = call.player_in || "-";
 
-  let resultText = "⏳ In attesa";
-  let resultClass = "pending";
+    let resultText = "⏳ In attesa";
+    let resultClass = "pending";
 
-  if (call.status === "won") {
-    resultText = `🟢 ${teamName} prende ${playerName}`;
-    resultClass = "won";
-  }
+    if (call.status === "won") {
+      resultText = `🟢 ${teamName} prende ${playerName}`;
+      resultClass = "won";
+    }
 
-  if (call.status === "lost") {
-    resultText = `🔴 ${teamName} perde ${playerName}`;
-    resultClass = "lost";
-  }
+    if (call.status === "lost") {
+      resultText = `🔴 ${teamName} perde ${playerName}`;
+      resultClass = "lost";
+    }
 
-  div.innerHTML = `
-    <div class="public-call-main ${resultClass}">
-      <strong>${resultText}</strong>
-      <span>Slot ${call.slot}</span>
-    </div>
-  `;
+    div.innerHTML = `
+      <div class="public-call-main ${resultClass}">
+        <strong>${resultText}</strong>
+        <span>Slot ${call.slot}</span>
+      </div>
+    `;
 
-  container.appendChild(div);
-});
+    container.appendChild(div);
+  });
+}
 
-  }
+/* ===============================
+   SVINCOLATI
+================================ */
 
 async function loadFreeAgents() {
   try {
@@ -410,36 +591,36 @@ async function loadFreeAgents() {
         <td>${cols[3]}</td>
       `;
 
-tr.addEventListener("click", () => {
-  const player = {
-    name: cols[0].trim(),
-    role: cols[1].trim(),
-    serieATeam: cols[2].trim(),
-    quotation: cols[3].trim()
-  };
+      tr.addEventListener("click", () => {
+        const player = {
+          name: cols[0].trim(),
+          role: cols[1].trim(),
+          serieATeam: cols[2].trim(),
+          quotation: cols[3].trim()
+        };
 
-  if (!playerInEl.disabled && !playerInEl.value) {
-    selectPlayerForSlot("1", player, tr);
-    return;
-  }
+        if (!playerInEl.disabled && !playerInEl.value) {
+          selectPlayerForSlot("1", player, tr);
+          return;
+        }
 
-  if (!playerInEl2.disabled && !playerInEl2.value) {
-    selectPlayerForSlot("2", player, tr);
-    return;
-  }
+        if (!playerInEl2.disabled && !playerInEl2.value) {
+          selectPlayerForSlot("2", player, tr);
+          return;
+        }
 
-  if (!playerInEl.disabled) {
-    selectPlayerForSlot("1", player, tr);
-    return;
-  }
+        if (!playerInEl.disabled) {
+          selectPlayerForSlot("1", player, tr);
+          return;
+        }
 
-  if (!playerInEl2.disabled) {
-    selectPlayerForSlot("2", player, tr);
-    return;
-  }
+        if (!playerInEl2.disabled) {
+          selectPlayerForSlot("2", player, tr);
+          return;
+        }
 
-  alert("Nessuna finestra di chiamata è aperta in questo momento.");
-});
+        alert("Nessuna finestra di chiamata è aperta in questo momento.");
+      });
 
       tableBody.appendChild(tr);
     });
@@ -448,6 +629,10 @@ tr.addEventListener("click", () => {
     console.error("Errore caricamento svincolati:", err);
   }
 }
+
+/* ===============================
+   CALCOLO RISULTATI
+================================ */
 
 async function calculateResultsForSlot(slot) {
   if (!currentSettings) return;
@@ -483,6 +668,11 @@ async function calculateResultsForSlot(slot) {
 
   if (priorityError) {
     console.error("Errore caricamento priorità:", priorityError);
+    return;
+  }
+
+  if (!priorities || priorities.length === 0) {
+    alert("Prima salva l'ordine di priorità waiver.");
     return;
   }
 
@@ -530,7 +720,9 @@ async function calculateResultsForSlot(slot) {
   }
 
   alert(`Risultati slot ${slot} calcolati.`);
+
   await loadAllCalls();
+  await loadPublicCalls();
 }
 
 function normalizePlayerName(name) {
@@ -540,13 +732,9 @@ function normalizePlayerName(name) {
     .trim();
 }
 
-calculateSlot1Btn.addEventListener("click", () => {
-  calculateResultsForSlot("1");
-});
-
-calculateSlot2Btn.addEventListener("click", () => {
-  calculateResultsForSlot("2");
-});
+/* ===============================
+   SALVATAGGIO CHIAMATE
+================================ */
 
 async function saveCall(slot, playerInElRef, playerOutElRef, messageEl) {
   if (!currentTeam || !currentSettings) {
@@ -614,13 +802,67 @@ async function saveCall(slot, playerInElRef, playerOutElRef, messageEl) {
   messageEl.textContent = slot === "1"
     ? "Chiamata salvata correttamente."
     : "Seconda chiamata salvata correttamente.";
+
+  await loadMySavedCall();
 }
 
-saveCallBtn.addEventListener("click", () => {
+/* ===============================
+   INIT
+================================ */
+
+async function initWaiverRoom() {
+  const team = await getMyTeam();
+  const settings = await getWaiverSettings();
+
+  const { data: authData } = await supabase.auth.getUser();
+  const userEmail = authData?.user?.email;
+
+  currentTeam = team;
+  currentSettings = settings;
+
+  if (team) {
+    teamNameEl.textContent = team.name;
+    teamConferenceEl.textContent = team.conference || "Non assegnata";
+  }
+
+  if (settings) {
+    activePhaseEl.textContent = settings.active_phase || "Non impostata";
+    activeWeekEl.textContent = settings.active_week || "-";
+  }
+
+  if (userEmail === "tringali0511@gmail.com") {
+    adminPanel.style.display = "block";
+    await loadAllCalls();
+    await loadPriorityPanel();
+  }
+
+  await loadFreeAgents();
+  await loadMySavedCall();
+  applySlotAvailability();
+  await loadPublicCalls();
+}
+
+/* ===============================
+   EVENT LISTENERS
+================================ */
+
+calculateSlot1Btn?.addEventListener("click", () => {
+  calculateResultsForSlot("1");
+});
+
+calculateSlot2Btn?.addEventListener("click", () => {
+  calculateResultsForSlot("2");
+});
+
+savePriorityBtn?.addEventListener("click", () => {
+  savePriorityOrder();
+});
+
+saveCallBtn?.addEventListener("click", () => {
   saveCall("1", playerInEl, playerOutEl, callMessageEl);
 });
 
-saveCallBtn2.addEventListener("click", () => {
+saveCallBtn2?.addEventListener("click", () => {
   saveCall("2", playerInEl2, playerOutEl2, callMessageEl2);
 });
 
@@ -631,6 +873,5 @@ resetCallBtn1?.addEventListener("click", () => {
 resetCallBtn2?.addEventListener("click", () => {
   resetCallForm("2");
 });
-
 
 initWaiverRoom();
