@@ -15,8 +15,10 @@ const priorityMessageEl = document.getElementById("priorityMessage");
 
 let currentTeam = null;
 let currentSettings = null;
-let priorityTeams = [];
+
+let priorityGroups = {};
 let draggedPriorityTeamId = null;
+let draggedPriorityGroupKey = null;
 
 const playerInEl = document.getElementById("playerIn");
 const playerOutEl = document.getElementById("playerOut");
@@ -270,6 +272,34 @@ async function loadAllCalls() {
   });
 }
 
+function isConferencePhase() {
+  return (currentSettings?.active_phase || "").toLowerCase() === "conference";
+}
+
+function getPriorityGroupKey(team) {
+  if (isConferencePhase()) {
+    return team.conference || "Senza Conference";
+  }
+
+  return "Totale";
+}
+
+function getPriorityStorageConference(groupKey) {
+  if (isConferencePhase()) {
+    return groupKey;
+  }
+
+  return "Totale";
+}
+
+function getCallGroupKey(call) {
+  if (isConferencePhase()) {
+    return `${normalizePlayerName(call.player_in)}__${call.conference || "Senza Conference"}`;
+  }
+
+  return normalizePlayerName(call.player_in);
+}
+
 /* ===============================
    ADMIN - PRIORITY PANEL
 ================================ */
@@ -305,22 +335,38 @@ async function loadPriorityPanel() {
   const priorityMap = {};
 
   priorities?.forEach(row => {
-    priorityMap[String(row.team_id)] = row.priority_number;
+    const key = `${row.conference || "Totale"}__${row.team_id}`;
+    priorityMap[key] = row.priority_number;
   });
 
-  priorityTeams = teams.map(team => ({
-    id: team.id,
-    name: team.name,
-    conference: team.conference,
-    priority_number: priorityMap[String(team.id)] ?? 9999
-  }));
+  priorityGroups = {};
 
-  priorityTeams.sort((a, b) => {
-    if (a.priority_number !== b.priority_number) {
-      return a.priority_number - b.priority_number;
+  teams.forEach(team => {
+    const groupKey = getPriorityGroupKey(team);
+    const storageConference = getPriorityStorageConference(groupKey);
+    const mapKey = `${storageConference}__${team.id}`;
+
+    if (!priorityGroups[groupKey]) {
+      priorityGroups[groupKey] = [];
     }
 
-    return a.name.localeCompare(b.name);
+    priorityGroups[groupKey].push({
+      id: team.id,
+      name: team.name,
+      conference: team.conference,
+      storageConference,
+      priority_number: priorityMap[mapKey] ?? 9999
+    });
+  });
+
+  Object.keys(priorityGroups).forEach(groupKey => {
+    priorityGroups[groupKey].sort((a, b) => {
+      if (a.priority_number !== b.priority_number) {
+        return a.priority_number - b.priority_number;
+      }
+
+      return a.name.localeCompare(b.name);
+    });
   });
 
   renderPriorityList();
@@ -331,63 +377,112 @@ function renderPriorityList() {
 
   priorityListEl.innerHTML = "";
 
-  if (!priorityTeams || priorityTeams.length === 0) {
+  const groupKeys = Object.keys(priorityGroups);
+
+  if (groupKeys.length === 0) {
     priorityListEl.innerHTML = "<p>Nessuna squadra trovata.</p>";
     return;
   }
 
-  priorityTeams.forEach((team, index) => {
-    const item = document.createElement("div");
+  const sortedGroupKeys = groupKeys.sort((a, b) => {
+    if (a === "Conference League") return -1;
+    if (b === "Conference League") return 1;
+    if (a === "Conference Championship") return -1;
+    if (b === "Conference Championship") return 1;
+    if (a === "Totale") return -1;
+    if (b === "Totale") return 1;
+    return a.localeCompare(b);
+  });
 
-    item.className = "priority-item";
-    item.draggable = true;
-    item.dataset.teamId = team.id;
+  sortedGroupKeys.forEach(groupKey => {
+    const group = document.createElement("div");
+    group.className = "priority-group";
+    group.dataset.groupKey = groupKey;
 
-    item.innerHTML = `
-      <span class="priority-rank">${index + 1}</span>
-      <span class="priority-team-name">
-        ${team.name}
-        <small>${team.conference || ""}</small>
-      </span>
-      <span class="priority-drag-icon">☰</span>
+    group.innerHTML = `
+      <h4 class="priority-group-title">${groupKey}</h4>
+      <div class="priority-group-list" data-group-key="${groupKey}"></div>
     `;
 
-    item.addEventListener("dragstart", () => {
-      draggedPriorityTeamId = String(team.id);
-      item.classList.add("dragging");
+    const groupList = group.querySelector(".priority-group-list");
+
+    priorityGroups[groupKey].forEach((team, index) => {
+      const item = document.createElement("div");
+
+      item.className = "priority-item";
+      item.draggable = true;
+      item.dataset.teamId = team.id;
+      item.dataset.groupKey = groupKey;
+
+      const conferenceLabel = isConferencePhase()
+        ? ""
+        : `<small>${team.conference || ""}</small>`;
+
+      item.innerHTML = `
+        <span class="priority-rank">${index + 1}</span>
+        <span class="priority-team-name">
+          ${team.name}
+          ${conferenceLabel}
+        </span>
+        <span class="priority-drag-icon">☰</span>
+      `;
+
+      item.addEventListener("dragstart", () => {
+        draggedPriorityTeamId = String(team.id);
+        draggedPriorityGroupKey = groupKey;
+        item.classList.add("dragging");
+      });
+
+      item.addEventListener("dragend", () => {
+        draggedPriorityTeamId = null;
+        draggedPriorityGroupKey = null;
+        item.classList.remove("dragging");
+      });
+
+      item.addEventListener("dragover", event => {
+        event.preventDefault();
+      });
+
+      item.addEventListener("drop", event => {
+        event.preventDefault();
+
+        const targetTeamId = String(team.id);
+        const targetGroupKey = groupKey;
+
+        if (!draggedPriorityTeamId || !draggedPriorityGroupKey) return;
+
+        if (draggedPriorityGroupKey !== targetGroupKey) {
+          if (priorityMessageEl) {
+            priorityMessageEl.textContent =
+              "Non puoi spostare una squadra da una Conference all'altra.";
+          }
+          return;
+        }
+
+        if (draggedPriorityTeamId === targetTeamId) return;
+
+        reorderPriorityTeams(draggedPriorityGroupKey, draggedPriorityTeamId, targetTeamId);
+      });
+
+      groupList.appendChild(item);
     });
 
-    item.addEventListener("dragend", () => {
-      draggedPriorityTeamId = null;
-      item.classList.remove("dragging");
-    });
-
-    item.addEventListener("dragover", event => {
-      event.preventDefault();
-    });
-
-    item.addEventListener("drop", event => {
-      event.preventDefault();
-
-      const targetTeamId = String(team.id);
-
-      if (!draggedPriorityTeamId || draggedPriorityTeamId === targetTeamId) return;
-
-      reorderPriorityTeams(draggedPriorityTeamId, targetTeamId);
-    });
-
-    priorityListEl.appendChild(item);
+    priorityListEl.appendChild(group);
   });
 }
 
-function reorderPriorityTeams(draggedId, targetId) {
-  const draggedIndex = priorityTeams.findIndex(team => String(team.id) === draggedId);
-  const targetIndex = priorityTeams.findIndex(team => String(team.id) === targetId);
+function reorderPriorityTeams(groupKey, draggedId, targetId) {
+  const group = priorityGroups[groupKey];
+
+  if (!group) return;
+
+  const draggedIndex = group.findIndex(team => String(team.id) === draggedId);
+  const targetIndex = group.findIndex(team => String(team.id) === targetId);
 
   if (draggedIndex === -1 || targetIndex === -1) return;
 
-  const [draggedTeam] = priorityTeams.splice(draggedIndex, 1);
-  priorityTeams.splice(targetIndex, 0, draggedTeam);
+  const [draggedTeam] = group.splice(draggedIndex, 1);
+  group.splice(targetIndex, 0, draggedTeam);
 
   renderPriorityList();
 
@@ -397,44 +492,46 @@ function reorderPriorityTeams(draggedId, targetId) {
 }
 
 async function savePriorityOrder() {
-  if (!currentSettings || !priorityTeams || priorityTeams.length === 0) return;
+  if (!currentSettings || !priorityGroups) return;
+
+  const groupKeys = Object.keys(priorityGroups);
+
+  if (groupKeys.length === 0) return;
 
   if (priorityMessageEl) {
     priorityMessageEl.textContent = "Salvataggio in corso...";
   }
 
-  const rows = priorityTeams.map((team, index) => ({
-    week: currentSettings.active_week,
-    phase: currentSettings.active_phase,
-    conference: team.conference || null,
-    team_id: team.id,
-    priority_number: index + 1,
-    updated_at: new Date().toISOString()
-  }));
+  const rows = [];
 
-const { data, error } = await supabase
-  .from("waiver_priority")
-  .upsert(rows, {
-    onConflict: "week,phase,conference,team_id"
-  })
-  .select();
+  groupKeys.forEach(groupKey => {
+    const storageConference = getPriorityStorageConference(groupKey);
 
-if (error) {
-  console.error("Errore salvataggio priorità completo:", error);
+    priorityGroups[groupKey].forEach((team, index) => {
+      rows.push({
+        week: currentSettings.active_week,
+        phase: currentSettings.active_phase,
+        conference: storageConference,
+        team_id: team.id,
+        priority_number: index + 1,
+        updated_at: new Date().toISOString()
+      });
+    });
+  });
 
-  if (priorityMessageEl) {
-    priorityMessageEl.textContent =
-      "Errore salvataggio: " + (error.message || "controlla console");
-  }
-
-  return;
-}
+  const { data, error } = await supabase
+    .from("waiver_priority")
+    .upsert(rows, {
+      onConflict: "week,phase,conference,team_id"
+    })
+    .select();
 
   if (error) {
-    console.error("Errore salvataggio priorità:", error);
+    console.error("Errore salvataggio priorità completo:", error);
 
     if (priorityMessageEl) {
-      priorityMessageEl.textContent = "Errore nel salvataggio priorità.";
+      priorityMessageEl.textContent =
+        "Errore salvataggio: " + (error.message || "controlla console");
     }
 
     return;
@@ -688,32 +785,44 @@ async function calculateResultsForSlot(slot) {
     return;
   }
 
-  const priorityMap = {};
+const priorityMap = {};
 
-  priorities.forEach(row => {
-    priorityMap[row.team_id] = row.priority_number;
-  });
+priorities.forEach(row => {
+  const key = isConferencePhase()
+    ? `${row.conference || "Senza Conference"}__${row.team_id}`
+    : `Totale__${row.team_id}`;
+
+  priorityMap[key] = row.priority_number;
+});
 
   const callsByPlayer = {};
 
   calls.forEach(call => {
-    const playerKey = normalizePlayerName(call.player_in);
+  const playerKey = getCallGroupKey(call);
 
-    if (!callsByPlayer[playerKey]) {
-      callsByPlayer[playerKey] = [];
-    }
+  if (!callsByPlayer[playerKey]) {
+    callsByPlayer[playerKey] = [];
+  }
 
-    callsByPlayer[playerKey].push(call);
-  });
+  callsByPlayer[playerKey].push(call);
+});
 
   for (const playerKey in callsByPlayer) {
     const playerCalls = callsByPlayer[playerKey];
 
     playerCalls.sort((a, b) => {
-      const priorityA = priorityMap[a.team_id] ?? 9999;
-      const priorityB = priorityMap[b.team_id] ?? 9999;
-      return priorityA - priorityB;
-    });
+const priorityKeyA = isConferencePhase()
+  ? `${a.conference || "Senza Conference"}__${a.team_id}`
+  : `Totale__${a.team_id}`;
+
+const priorityKeyB = isConferencePhase()
+  ? `${b.conference || "Senza Conference"}__${b.team_id}`
+  : `Totale__${b.team_id}`;
+
+const priorityA = priorityMap[priorityKeyA] ?? 9999;
+const priorityB = priorityMap[priorityKeyB] ?? 9999;
+
+return priorityA - priorityB;
 
     const winner = playerCalls[0];
     const losers = playerCalls.slice(1);
