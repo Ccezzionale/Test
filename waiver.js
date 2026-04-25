@@ -382,12 +382,12 @@ Object.keys(groups).forEach(groupKey => {
   });
 });
 
-  const { error } = await supabase
-    .from("waiver_order")
-    .upsert(rows, {
-      onConflict: "week,phase,conference,slot,original_team_id"
-    });
-
+const { error } = await supabase
+  .from("waiver_order")
+  .upsert(rows, {
+    onConflict: "week,phase,conference,slot,priority_number"
+  });
+   
   if (error) {
     console.error("Errore generazione ordine waiver:", error);
     setAdminMessage("Errore generazione ordine waiver: " + error.message, true);
@@ -1247,6 +1247,7 @@ calculateSlot1Btn?.addEventListener("click", () => {
 calculateSlot2Btn?.addEventListener("click", () => {
   calculateResultsForSlot("2");
 });
+
 
 searchInput?.addEventListener("input", () => {
   renderFreeAgents();
