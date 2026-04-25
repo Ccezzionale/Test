@@ -412,11 +412,23 @@ async function savePriorityOrder() {
     updated_at: new Date().toISOString()
   }));
 
-  const { error } = await supabase
-    .from("waiver_priority")
-    .upsert(rows, {
-      onConflict: "week,phase,conference,team_id"
-    });
+const { data, error } = await supabase
+  .from("waiver_priority")
+  .upsert(rows, {
+    onConflict: "week,phase,conference,team_id"
+  })
+  .select();
+
+if (error) {
+  console.error("Errore salvataggio priorità completo:", error);
+
+  if (priorityMessageEl) {
+    priorityMessageEl.textContent =
+      "Errore salvataggio: " + (error.message || "controlla console");
+  }
+
+  return;
+}
 
   if (error) {
     console.error("Errore salvataggio priorità:", error);
