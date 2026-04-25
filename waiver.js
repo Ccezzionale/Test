@@ -785,44 +785,45 @@ async function calculateResultsForSlot(slot) {
     return;
   }
 
-const priorityMap = {};
+  const priorityMap = {};
 
-priorities.forEach(row => {
-  const key = isConferencePhase()
-    ? `${row.conference || "Senza Conference"}__${row.team_id}`
-    : `Totale__${row.team_id}`;
+  priorities.forEach(row => {
+    const key = isConferencePhase()
+      ? `${row.conference || "Senza Conference"}__${row.team_id}`
+      : `Totale__${row.team_id}`;
 
-  priorityMap[key] = row.priority_number;
-});
+    priorityMap[key] = row.priority_number;
+  });
 
   const callsByPlayer = {};
 
   calls.forEach(call => {
-  const playerKey = getCallGroupKey(call);
+    const playerKey = getCallGroupKey(call);
 
-  if (!callsByPlayer[playerKey]) {
-    callsByPlayer[playerKey] = [];
-  }
+    if (!callsByPlayer[playerKey]) {
+      callsByPlayer[playerKey] = [];
+    }
 
-  callsByPlayer[playerKey].push(call);
-});
+    callsByPlayer[playerKey].push(call);
+  });
 
   for (const playerKey in callsByPlayer) {
     const playerCalls = callsByPlayer[playerKey];
 
     playerCalls.sort((a, b) => {
-const priorityKeyA = isConferencePhase()
-  ? `${a.conference || "Senza Conference"}__${a.team_id}`
-  : `Totale__${a.team_id}`;
+      const priorityKeyA = isConferencePhase()
+        ? `${a.conference || "Senza Conference"}__${a.team_id}`
+        : `Totale__${a.team_id}`;
 
-const priorityKeyB = isConferencePhase()
-  ? `${b.conference || "Senza Conference"}__${b.team_id}`
-  : `Totale__${b.team_id}`;
+      const priorityKeyB = isConferencePhase()
+        ? `${b.conference || "Senza Conference"}__${b.team_id}`
+        : `Totale__${b.team_id}`;
 
-const priorityA = priorityMap[priorityKeyA] ?? 9999;
-const priorityB = priorityMap[priorityKeyB] ?? 9999;
+      const priorityA = priorityMap[priorityKeyA] ?? 9999;
+      const priorityB = priorityMap[priorityKeyB] ?? 9999;
 
-return priorityA - priorityB;
+      return priorityA - priorityB;
+    });
 
     const winner = playerCalls[0];
     const losers = playerCalls.slice(1);
