@@ -1120,15 +1120,16 @@ function renderMyWaiverCalls() {
           </button>
         </div>
 
-<p class="call-message">
-  ${
-    savedCall
-      ? `✅ Chiamata salvata il ${formatWaiverDateTime(savedCall.updated_at)}`
-      : slotOpen
-        ? "Nessuna chiamata salvata."
-        : `Slot ${normalizeSlot(orderRow.slot)} chiuso o non disponibile.`
-  }
-</p>
+        <p class="call-message">
+          ${
+            savedCall
+              ? `✅ Chiamata salvata il ${formatWaiverDateTime(savedCall.updated_at)}`
+              : slotOpen
+                ? "Nessuna chiamata salvata."
+                : `Slot ${normalizeSlot(orderRow.slot)} chiuso o non disponibile.`
+          }
+        </p>
+      `;
 
       card.addEventListener("click", event => {
         const tag = event.target.tagName.toLowerCase();
