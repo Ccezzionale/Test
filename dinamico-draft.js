@@ -105,27 +105,208 @@ function formattaDraft(draft) {
   }));
 }
 
-// Usa classifica totale + scambi
-function generaDraftDaCSV(classificaCSV, scambiCSV) {
-  const squadreTotali = classificaCSV.trim().split("\n").slice(1)
-    .map(r => r.split(",")[1]?.trim())  // colonna 2 = squadra
-    .filter(Boolean)
-    .reverse(); // ultimo in classifica → prima pick
+const STATS_MASTER_CSV_URL =
+  "https://docs.google.com/spreadsheets/d/e/2PACX-1vRhEJKfZhVb7V08KI29T_aPTR0hfx7ayIOlFjQn_v-fqgktImjXFg-QAEA6z7w5eyEh2B3w5KLpaRYz/pub?gid=1118969717&single=true&output=csv";
 
-  const leagueTeams = squadreTotali.filter(s => conferencePerSquadra[s] === "Conference League");
-  const champTeams  = squadreTotali.filter(s => conferencePerSquadra[s] === "Conference Championship");
+const SCAMBI_CSV_URL =
+  "https://docs.google.com/spreadsheets/d/1kPDuSW9IKwJArUS4oOv0iIVRHU7F4zPASPXT8Qf86Fo/export?format=csv&gid=940716301";
+
+function parseCSV(text) {
+  const rows = [];
+  let field = "";
+  let row = [];
+  let inQuotes = false;
+
+  for (let i = 0; i < text.length; i++) {
+    const c = text[i];
+
+    if (c === '"') {
+      if (inQuotes && text[i + 1] === '"') {
+        field += '"';
+        i++;
+      } else {
+        inQuotes = !inQuotes;
+      }
+    } else if (c === "," && !inQuotes) {
+      row.push(field);
+      field = "";
+    } else if ((c === "\n" || c === "\r") && !inQuotes) {
+      if (c === "\r" && text[i + 1] === "\n") i++;
+      row.push(field);
+      rows.push(row);
+      field = "";
+      row = [];
+    } else {
+      field += c;
+    }
+  }
+
+  if (field.length || row.length) {
+    row.push(field);
+    rows.push(row);
+  }
+
+  const headers = rows.shift().map(h => String(h || "").trim());
+
+  return rows
+    .filter(r => r.some(c => String(c || "").trim() !== ""))
+    .map(r => {
+      const obj = {};
+      headers.forEach((h, i) => {
+        obj[h] = String(r[i] ?? "").trim();
+      });
+      return obj;
+    });
+}
+
+function parseNumber(value) {
+  const n = parseFloat(String(value || "").replace(",", ".").trim());
+  return Number.isFinite(n) ? n : 0;
+}
+
+function cleanTeamName(name) {
+  return String(name || "")
+    .replace(/[👑🎖️💀]/g, "")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function teamKey(name) {
+  return cleanTeamName(name)
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+const GOAL_BASE = 66;
+const GOAL_STEP = 6;
+
+function pointsToGoals(points) {
+  const p = parseNumber(points);
+  if (p < GOAL_BASE) return 0;
+  return 1 + Math.floor((p - GOAL_BASE) / GOAL_STEP);
+}
+
+function removeDuplicateRows(rows) {
+  const seen = new Set();
+
+  return rows.filter(r => {
+    const key = [
+      String(r.GW || "").trim(),
+      String(r.GW_Stagionale || "").trim(),
+      cleanTeamName(r.Team),
+      cleanTeamName(r.Opponent),
+      String(r.PointsFor || "").replace(",", ".").trim(),
+      String(r.PointsAgainst || "").replace(",", ".").trim(),
+      String(r.Conference || "").trim()
+    ].join("|");
+
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+}
+
+function buildTotalRankingFromStats(statsCSV) {
+  const rawRows = parseCSV(statsCSV);
+  const rows = removeDuplicateRows(rawRows);
+
+  const table = new Map();
+
+  rows.forEach(r => {
+    const conference = String(r.Conference || "").trim();
+    const phase = String(r.Phase || "").trim();
+
+    // Per il draft contano solo Conference + Round Robin
+    const competizioneValida = ["Conf A", "Conf B", "Unificata"].includes(conference);
+    if (!competizioneValida) return;
+    if (phase && phase !== "Regular") return;
+
+    const squadra = cleanTeamName(r.Team);
+    const opponent = cleanTeamName(r.Opponent);
+    const pf = parseNumber(r.PointsFor);
+    const pa = parseNumber(r.PointsAgainst);
+
+    if (!squadra || !opponent) return;
+    if (pf === 0 && pa === 0) return;
+
+    const key = teamKey(squadra);
+
+    if (!table.has(key)) {
+      table.set(key, {
+        squadra,
+        g: 0,
+        v: 0,
+        n: 0,
+        p: 0,
+        gf: 0,
+        gs: 0,
+        pt: 0,
+        mp: 0
+      });
+    }
+
+    const rec = table.get(key);
+
+    const gf = pointsToGoals(pf);
+    const gs = pointsToGoals(pa);
+
+    rec.g += 1;
+    rec.gf += gf;
+    rec.gs += gs;
+    rec.mp += pf;
+
+    if (gf > gs) {
+      rec.v += 1;
+      rec.pt += 3;
+    } else if (gf === gs) {
+      rec.n += 1;
+      rec.pt += 1;
+    } else {
+      rec.p += 1;
+    }
+  });
+
+  return Array.from(table.values()).sort((a, b) => {
+    return (
+      b.pt - a.pt ||
+      b.mp - a.mp ||
+      b.gf - a.gf ||
+      (a.gs - b.gs) ||
+      a.squadra.localeCompare(b.squadra)
+    );
+  });
+}
+
+// Usa classifica totale + scambi
+function generaDraftDaCSV(statsCSV, scambiCSV) {
+  const classificaTotale = buildTotalRankingFromStats(statsCSV);
+
+  // Ultimo in classifica = prima pick
+  const squadreTotali = classificaTotale
+    .map(r => r.squadra)
+    .filter(Boolean)
+    .reverse();
+
+  const leagueTeams = squadreTotali.filter(
+    s => conferencePerSquadra[s] === "Conference League"
+  );
+
+  const champTeams = squadreTotali.filter(
+    s => conferencePerSquadra[s] === "Conference Championship"
+  );
 
   const scambi = scambiCSV.trim().split("\n").slice(1).map(r => {
     const [conf, round1, squadra1, round2, squadra2] = r.split(",").map(s => s.trim());
     return [conf, parseInt(round1), squadra1, parseInt(round2), squadra2];
   });
 
-  // --- Conference League (immutata) ---
   const leagueDraftBase = generaSnakeDraftBase(leagueTeams, 23);
   applicaScambi(leagueDraftBase, scambi, "Conference League");
   const league = formattaDraft(leagueDraftBase);
 
-  // --- Conference Championship + bonus Kebab ---
   const champDraftBase = generaSnakeDraftBase(champTeams, 23);
   applicaScambi(champDraftBase, scambi, "Conference Championship");
   applicaBonusRubinkebab(champDraftBase);
@@ -210,20 +391,19 @@ function renderRounds(draftContainerId, roundsColId) {
 
 // Fetch classifica totale + scambi
 Promise.all([
-  fetch("https://docs.google.com/spreadsheets/d/1kPDuSW9IKwJArUS4oOv0iIVRHU7F4zPASPXT8Qf86Fo/export?format=csv&gid=691152130").then(r => r.text()), // classifica totale
-  fetch("https://docs.google.com/spreadsheets/d/1kPDuSW9IKwJArUS4oOv0iIVRHU7F4zPASPXT8Qf86Fo/export?format=csv&gid=940716301").then(r => r.text())  // scambi
+  fetch(STATS_MASTER_CSV_URL + "&nocache=" + Date.now(), { cache: "no-store" }).then(r => r.text()),
+  fetch(SCAMBI_CSV_URL + "&nocache=" + Date.now(), { cache: "no-store" }).then(r => r.text())
 ])
-.then(([classificaCSV, scambiCSV]) => {
-  const draft = generaDraftDaCSV(classificaCSV, scambiCSV);
+.then(([statsCSV, scambiCSV]) => {
+  const draft = generaDraftDaCSV(statsCSV, scambiCSV);
 
   generaTabellaVerticale("draft-league", draft.league);
   generaTabellaVerticale("draft-championship", draft.championship);
 
-  // ✅ round a sinistra (DOPO che le card esistono)
   renderRounds("draft-league", "rounds-league");
   renderRounds("draft-championship", "rounds-championship");
 })
-
 .catch(err => {
   console.error("Errore nel caricamento del draft:", err);
 });
+
