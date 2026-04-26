@@ -37,12 +37,25 @@ function applicaScambi(draft, scambi, conference) {
     const roundPicks2 = draft[round2 - 1];
     if (!roundPicks1 || !roundPicks2) return;
 
-    const pick1 = roundPicks1.find(p => p.team === squadra1);
-    const pick2 = roundPicks2.find(p => p.team === squadra2);
+    const squadra1Key = teamKey(squadra1);
+    const squadra2Key = teamKey(squadra2);
 
-    if (!pick1 || !pick2) return;
+    const pick1 = roundPicks1.find(p => teamKey(p.team) === squadra1Key);
+    const pick2 = roundPicks2.find(p => teamKey(p.team) === squadra2Key);
+
+    if (!pick1 || !pick2) {
+      console.warn("Scambio non applicato:", {
+        conference,
+        round1,
+        squadra1,
+        round2,
+        squadra2
+      });
+      return;
+    }
 
     [pick1.pickNumber, pick2.pickNumber] = [pick2.pickNumber, pick1.pickNumber];
+
     pick1.scambioId = scambioIdCounter;
     pick2.scambioId = scambioIdCounter;
 
@@ -61,7 +74,7 @@ function applicaBonusRubinkebab(draftChampionship) {
   let lastPick = null;
   draftChampionship.forEach(round => {
     round.forEach(p => {
-      if (p.team === squadra) {
+     if (teamKey(p.team) === teamKey(squadra)) {
         if (!lastPick || p.pickNumber > lastPick.pickNumber) {
           lastPick = p;
         }
