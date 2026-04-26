@@ -1,8 +1,8 @@
 /* =========================================
-   CLASSIFICA (Google Sheet)
+   STATISTICHE MASTER (Google Sheet)
    ========================================= */
-const URL_CLASSIFICA_TOTALE = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTduESMbJiPuCDLaAFdOHjep9GW-notjraILSyyjo6SA0xKSR0H0fgMLPNNYSwXgnGGJUyv14kjFRqv/pub?gid=691152130&single=true&output=csv";
-
+const URL_STATS_MASTER =
+  "https://docs.google.com/spreadsheets/d/e/2PACX-1vRhEJKfZhVb7V08KI29T_aPTR0hfx7ayIOlFjQn_v-fqgktImjXFg-QAEA6z7w5eyEh2B3w5KLpaRYz/pub?gid=1118969717&single=true&output=csv";
 /* =========================================
    UTILS
    ========================================= */
@@ -328,29 +328,180 @@ function centerSemiColumn(col, targetHeight){
 }
 
 /* =========================================
-   FETCH CLASSIFICA
+   CALCOLO CLASSIFICA DA STATISTICHE
    ========================================= */
-fetch(URL_CLASSIFICA_TOTALE)
-  .then(res => res.text())
-  .then(csv => {
-    const righe = csv.trim().split("\n");
-    const startRow = 1;
-    const squadre = [];
 
-    for (let i = startRow; i < righe.length; i++) {
-      const colonne = righe[i].split(",").map(c => c.replace(/"/g, "").trim());
-      const nome = colonne[1];
-      const punti = parseInt(colonne[10]);
-      const mp = parseFloat(colonne[11]?.replace(",", ".")) || 0;
+function parseCSV(text) {
+  const rows = [];
+  let field = "";
+  let row = [];
+  let inQuotes = false;
 
-      if (!nome || isNaN(punti)) continue;
+  for (let i = 0; i < text.length; i++) {
+    const c = text[i];
 
-      squadre.push({ nome, punti, mp });
-      if (squadre.length === 12) break;
+    if (c === '"') {
+      if (inQuotes && text[i + 1] === '"') {
+        field += '"';
+        i++;
+      } else {
+        inQuotes = !inQuotes;
+      }
+    } else if (c === "," && !inQuotes) {
+      row.push(field);
+      field = "";
+    } else if ((c === "\n" || c === "\r") && !inQuotes) {
+      if (c === "\r" && text[i + 1] === "\n") i++;
+      row.push(field);
+      rows.push(row);
+      field = "";
+      row = [];
+    } else {
+      field += c;
+    }
+  }
+
+  if (field.length || row.length) {
+    row.push(field);
+    rows.push(row);
+  }
+
+  const headers = rows.shift().map(h => String(h || "").trim());
+
+  return rows
+    .filter(r => r.some(c => String(c || "").trim() !== ""))
+    .map(r => {
+      const obj = {};
+      headers.forEach((h, i) => {
+        obj[h] = String(r[i] ?? "").trim();
+      });
+      return obj;
+    });
+}
+
+function parseNumber(value) {
+  const n = parseFloat(String(value || "").replace(",", ".").trim());
+  return Number.isFinite(n) ? n : 0;
+}
+
+function cleanTeamName(name) {
+  return String(name || "")
+    .replace(/[👑🎖️💀]/g, "")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function teamKey(name) {
+  return cleanTeamName(name)
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+const GOAL_BASE = 66;
+const GOAL_STEP = 6;
+
+function pointsToGoals(points) {
+  const p = parseNumber(points);
+  if (p < GOAL_BASE) return 0;
+  return 1 + Math.floor((p - GOAL_BASE) / GOAL_STEP);
+}
+
+function removeDuplicateRows(rows) {
+  const seen = new Set();
+
+  return rows.filter(r => {
+    const key = [
+      String(r.GW || "").trim(),
+      String(r.GW_Stagionale || "").trim(),
+      cleanTeamName(r.Team),
+      cleanTeamName(r.Opponent),
+      String(r.PointsFor || "").replace(",", ".").trim(),
+      String(r.PointsAgainst || "").replace(",", ".").trim(),
+      String(r.Conference || "").trim()
+    ].join("|");
+
+    if (seen.has(key)) return false;
+
+    seen.add(key);
+    return true;
+  });
+}
+
+function buildTotalRankingFromStats(statsCSV) {
+  const rawRows = parseCSV(statsCSV);
+  const rows = removeDuplicateRows(rawRows);
+
+  const table = new Map();
+
+  rows.forEach(r => {
+    const conference = String(r.Conference || "").trim();
+    const phase = String(r.Phase || "").trim();
+
+    // Per i playoff contano Conference + Round Robin
+    const competizioneValida = ["Conf A", "Conf B", "Unificata"].includes(conference);
+    if (!competizioneValida) return;
+    if (phase && phase !== "Regular") return;
+
+    const squadra = cleanTeamName(r.Team);
+    const opponent = cleanTeamName(r.Opponent);
+    const pf = parseNumber(r.PointsFor);
+    const pa = parseNumber(r.PointsAgainst);
+
+    if (!squadra || !opponent) return;
+    if (pf === 0 && pa === 0) return;
+
+    const key = teamKey(squadra);
+
+    if (!table.has(key)) {
+      table.set(key, {
+        nome: squadra,
+        punti: 0,
+        mp: 0,
+        gf: 0,
+        gs: 0
+      });
     }
 
-    squadre.sort((a, b) => b.punti - a.punti || b.mp - a.mp);
-    window.squadre = squadre;
+    const rec = table.get(key);
+
+    const gf = pointsToGoals(pf);
+    const gs = pointsToGoals(pa);
+
+    rec.mp += pf;
+    rec.gf += gf;
+    rec.gs += gs;
+
+    if (gf > gs) {
+      rec.punti += 3;
+    } else if (gf === gs) {
+      rec.punti += 1;
+    }
+  });
+
+  return Array.from(table.values()).sort((a, b) => {
+    return (
+      b.punti - a.punti ||
+      b.mp - a.mp ||
+      b.gf - a.gf ||
+      (a.gs - b.gs) ||
+      a.nome.localeCompare(b.nome)
+    );
+  });
+}
+
+/* =========================================
+   FETCH CLASSIFICA
+   ========================================= */
+fetch(URL_STATS_MASTER + "&nocache=" + Date.now(), { cache: "no-store" })
+  .then(res => res.text())
+  .then(csv => {
+    const classificaTotale = buildTotalRankingFromStats(csv);
+
+    // Playoff: prime 12 della classifica totale
+    window.squadre = classificaTotale.slice(0, 12);
 
     aggiornaPlayoff();
 
@@ -358,7 +509,4 @@ fetch(URL_CLASSIFICA_TOTALE)
       alignLikeExcel();
     });
   })
-  .catch(err => console.error("Errore nel caricamento classifica:", err));
-
-window.aggiornaPlayoff = aggiornaPlayoff;
-window.PICKS = PICKS;
+  .catch(err => console.error("Errore nel caricamento classifica playoff:", err));
