@@ -230,47 +230,120 @@ function isFP(nome, squadra) {
   return false;
 }
 
-async function caricaRose() {
-  await caricaGiocatoriFP();
-  const response = await fetch(URL_ROSE);
-  const text = await response.text();
-  const rows = text.split("\n").map(r => r.split(","));
+function parseCSV(text) {
+  const rows = [];
+  let field = "";
+  let row = [];
+  let inQuotes = false;
 
-  for (const s of squadre) {
-    let nomeSquadra = rows[s.headerRow]?.[s.col]?.trim();
-    if (!nomeSquadra || nomeSquadra.toLowerCase() === "ruolo") continue;
+  for (let i = 0; i < text.length; i++) {
+    const c = text[i];
 
-    const giocatori = [];
-    for (let i = s.start; i <= s.end; i++) {
-      const ruolo = rows[i]?.[s.col]?.trim() || "";
-      const nome = rows[i]?.[s.col + 1]?.trim() || "";
-      const squadra = rows[i]?.[s.col + 2]?.trim() || "";
-      const quotazione = rows[i]?.[s.col + 3]?.trim() || "";
-      const nomeClean = nome.toLowerCase();
-
-      if (nome && nome.toLowerCase() !== "nome") {
-        giocatori.push({
-          nome,
-          ruolo,
-          squadra,
-          quotazione,
-          fp: isFP(nome, nomeSquadra),
-          u21: giocatoriU21PerSquadra[nomeSquadra]?.includes(nomeClean) || false
-        });
+    if (c === '"') {
+      if (inQuotes && text[i + 1] === '"') {
+        field += '"';
+        i++;
+      } else {
+        inQuotes = !inQuotes;
       }
-    }
-
-    if (giocatori.length > 0) {
-rose[nomeSquadra] = {
-  logo: trovaLogo(nomeSquadra),
-  maglia: trovaMaglia(nomeSquadra),
-  giocatori
-};
+    } else if (c === "," && !inQuotes) {
+      row.push(field);
+      field = "";
+    } else if ((c === "\n" || c === "\r") && !inQuotes) {
+      if (c === "\r" && text[i + 1] === "\n") i++;
+      row.push(field);
+      rows.push(row);
+      field = "";
+      row = [];
+    } else {
+      field += c;
     }
   }
 
-  mostraRose();
-  popolaFiltri();
+  if (field.length || row.length) {
+    row.push(field);
+    rows.push(row);
+  }
+
+  return rows;
+}
+
+async function caricaRose() {
+  await caricaGiocatoriFP();
+
+  try {
+    const response = await fetch(URL_ROSE + "&nocache=" + Date.now(), {
+      cache: "no-store"
+    });
+
+    if (!response.ok) {
+      throw new Error("Errore caricamento Rose Master: " + response.status);
+    }
+
+    const text = await response.text();
+    const rows = parseCSV(text);
+
+    const header = rows[0].map(h => String(h || "").trim().toLowerCase());
+
+    const idxSquadra = header.indexOf("squadra");
+    const idxRuolo = header.indexOf("ruolo");
+    const idxGiocatore = header.indexOf("giocatore");
+    const idxSquadraSerieA = header.indexOf("squadra serie a");
+    const idxCosto = header.indexOf("costo");
+
+    if (
+      idxSquadra === -1 ||
+      idxRuolo === -1 ||
+      idxGiocatore === -1 ||
+      idxSquadraSerieA === -1
+    ) {
+      throw new Error("Intestazioni Rose Master non valide");
+    }
+
+    for (let i = 1; i < rows.length; i++) {
+      const r = rows[i];
+
+      const nomeSquadra = String(r[idxSquadra] || "").trim();
+      const ruolo = String(r[idxRuolo] || "").trim();
+      const nome = String(r[idxGiocatore] || "").trim();
+      const squadraSerieA = String(r[idxSquadraSerieA] || "").trim();
+      const quotazione = idxCosto !== -1 ? String(r[idxCosto] || "").trim() : "";
+
+      if (!nomeSquadra || !nome) continue;
+
+      const nomeClean = nome.toLowerCase();
+
+      if (!rose[nomeSquadra]) {
+        rose[nomeSquadra] = {
+          logo: trovaLogo(nomeSquadra),
+          maglia: trovaMaglia(nomeSquadra),
+          giocatori: []
+        };
+      }
+
+      rose[nomeSquadra].giocatori.push({
+        nome,
+        ruolo,
+        squadra: squadraSerieA,
+        quotazione,
+        fp: isFP(nome, nomeSquadra),
+        u21: giocatoriU21PerSquadra[nomeSquadra]?.includes(nomeClean) || false
+      });
+    }
+
+    mostraRose();
+    popolaFiltri();
+
+  } catch (e) {
+    console.error("Errore nel caricamento rose:", e);
+
+    const container = document.getElementById("contenitore-rose");
+    if (container) {
+      container.innerHTML = `
+        <p>Errore nel caricamento delle rose. Controlla il CSV Rose Master.</p>
+      `;
+    }
+  }
 }
 
 function mostraRose() {
