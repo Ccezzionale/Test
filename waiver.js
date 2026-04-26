@@ -73,6 +73,22 @@ let draggedAdminGroupKey = null;
    HELPERS
 ================================ */
 
+function formatWaiverDateTime(value) {
+  if (!value) return "";
+
+  const date = new Date(value);
+
+  if (Number.isNaN(date.getTime())) return "";
+
+  return date.toLocaleString("it-IT", {
+    weekday: "long",
+    day: "2-digit",
+    month: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit"
+  });
+}
+
 function isConferencePhase() {
   return (currentSettings?.active_phase || "").toLowerCase() === "conference";
 }
@@ -1091,7 +1107,7 @@ function renderMyWaiverCalls() {
             data-order-id="${orderRow.id}"
             ${slotOpen ? "" : "disabled"}
           >
-            Reset
+            Cancella chiamata
           </button>
 
           <button
@@ -1104,14 +1120,15 @@ function renderMyWaiverCalls() {
           </button>
         </div>
 
-        <p class="call-message">
-          ${
-            slotOpen
-              ? "Disponibile ora."
-              : `Slot ${normalizeSlot(orderRow.slot)} chiuso o non disponibile.`
-          }
-        </p>
-      `;
+<p class="call-message">
+  ${
+    savedCall
+      ? `✅ Chiamata salvata il ${formatWaiverDateTime(savedCall.updated_at)}`
+      : slotOpen
+        ? "Nessuna chiamata salvata."
+        : `Slot ${normalizeSlot(orderRow.slot)} chiuso o non disponibile.`
+  }
+</p>
 
       card.addEventListener("click", event => {
         const tag = event.target.tagName.toLowerCase();
@@ -1388,7 +1405,36 @@ async function loadPublicCalls() {
   publicCallsEl.innerHTML = "";
 
   if (visibleSlots.length === 0) {
-    publicCallsEl.innerHTML = "<p>Le chiamate non sono ancora pubbliche.</p>";
+    const upcoming = getGeneratedSlots()
+      .map(slot => {
+        const { closeAt } = getSlotTimes(slot);
+
+        return {
+          slot: normalizeSlot(slot),
+          closeAt
+        };
+      })
+      .filter(item => item.closeAt)
+      .sort((a, b) => new Date(a.closeAt) - new Date(b.closeAt));
+
+    if (upcoming.length === 0) {
+      publicCallsEl.innerHTML = `
+        <p>Le chiamate saranno visibili dopo la chiusura degli slot.</p>
+      `;
+      return;
+    }
+
+    publicCallsEl.innerHTML = `
+      <div class="public-schedule-box">
+        <strong>Le chiamate saranno visibili:</strong>
+        <ul>
+          ${upcoming.map(item => `
+            <li>Slot ${item.slot}: ${formatWaiverDateTime(item.closeAt)}</li>
+          `).join("")}
+        </ul>
+      </div>
+    `;
+
     return;
   }
 
@@ -1398,6 +1444,7 @@ async function loadPublicCalls() {
     .eq("week", currentSettings.active_week)
     .eq("phase", currentSettings.active_phase)
     .in("slot", visibleSlots)
+    .order("conference", { ascending: true })
     .order("slot", { ascending: true })
     .order("priority_number", { ascending: true });
 
@@ -1412,67 +1459,126 @@ async function loadPublicCalls() {
     return;
   }
 
+  const grouped = {};
+
   calls.forEach(call => {
-    const owner = teamMap[call.owner_team_id] || teamMap[call.team_id];
-    const original = teamMap[call.original_team_id];
+    const conference = call.conference || "Totale";
+    const slot = normalizeSlot(call.slot);
+    const key = `${conference}__${slot}`;
 
-    const ownerName = owner?.name || "Squadra";
-    const originalName = original?.name || "";
-    const playerName = call.player_in || "-";
-    const slotLabel = normalizeSlot(call.slot);
-    const priorityLabel = call.priority_number || "-";
-
-    const isVia =
-      original &&
-      owner &&
-      String(original.id) !== String(owner.id);
-
-    let statusIcon = "⏳";
-    let statusLabel = "In attesa";
-    let actionText = `${ownerName} chiama ${playerName}`;
-    let statusClass = "pending";
-
-    if (call.status === "won") {
-      statusIcon = "🟢";
-      statusLabel = "Presa";
-      actionText = `${ownerName} prende ${playerName}`;
-      statusClass = "won";
+    if (!grouped[key]) {
+      grouped[key] = {
+        conference,
+        slot,
+        calls: []
+      };
     }
 
-    if (call.status === "lost") {
-      statusIcon = "🔴";
-      statusLabel = "Persa";
-      actionText = `${ownerName} perde ${playerName}`;
-      statusClass = "lost";
-    }
-
-    const div = document.createElement("div");
-    div.className = `public-result-card ${statusClass}`;
-
-    div.innerHTML = `
-      <div class="public-result-status">
-        <span class="public-result-icon">${statusIcon}</span>
-        <span class="public-result-label">${statusLabel}</span>
-      </div>
-
-      <div class="public-result-body">
-        <strong>${actionText}</strong>
-
-        <div class="public-result-meta">
-          <span>Slot ${slotLabel}</span>
-          <span>Priorità #${priorityLabel}</span>
-        </div>
-
-        ${
-          isVia
-            ? `<div class="public-result-via">via ${originalName}</div>`
-            : ""
-        }
-      </div>
-    `;
-
-    publicCallsEl.appendChild(div);
+    grouped[key].calls.push(call);
   });
+
+  const groupOrder = [
+    "Conference League__1",
+    "Conference League__1S",
+    "Conference League__2",
+    "Conference League__2S",
+    "Conference Championship__1",
+    "Conference Championship__1S",
+    "Conference Championship__2",
+    "Conference Championship__2S",
+    "Totale__1",
+    "Totale__1S",
+    "Totale__2",
+    "Totale__2S"
+  ];
+
+  Object.keys(grouped)
+    .sort((a, b) => {
+      const ia = groupOrder.indexOf(a);
+      const ib = groupOrder.indexOf(b);
+
+      if (ia !== -1 || ib !== -1) {
+        return (ia === -1 ? 999 : ia) - (ib === -1 ? 999 : ib);
+      }
+
+      return a.localeCompare(b);
+    })
+    .forEach(key => {
+      const group = grouped[key];
+
+      group.calls.sort((a, b) => {
+        return (a.priority_number || 999) - (b.priority_number || 999);
+      });
+
+      const block = document.createElement("div");
+      block.className = "public-calls-group";
+
+      block.innerHTML = `
+        <h3>${group.conference} - Slot ${group.slot}</h3>
+      `;
+
+      group.calls.forEach(call => {
+        const owner = teamMap[call.owner_team_id] || teamMap[call.team_id];
+        const original = teamMap[call.original_team_id];
+
+        const ownerName = owner?.name || "Squadra";
+        const originalName = original?.name || "";
+        const playerName = call.player_in || "-";
+        const priorityLabel = call.priority_number || "-";
+
+        const isVia =
+          original &&
+          owner &&
+          String(original.id) !== String(owner.id);
+
+        let statusIcon = "⏳";
+        let statusLabel = "In attesa";
+        let actionText = `${ownerName} chiama ${playerName}`;
+        let statusClass = "pending";
+
+        if (call.status === "won") {
+          statusIcon = "🟢";
+          statusLabel = "Presa";
+          actionText = `${ownerName} prende ${playerName}`;
+          statusClass = "won";
+        }
+
+        if (call.status === "lost") {
+          statusIcon = "🔴";
+          statusLabel = "Persa";
+          actionText = `${ownerName} perde ${playerName}`;
+          statusClass = "lost";
+        }
+
+        const div = document.createElement("div");
+        div.className = `public-result-card ${statusClass}`;
+
+        div.innerHTML = `
+          <div class="public-result-status">
+            <span class="public-result-icon">${statusIcon}</span>
+            <span class="public-result-label">${statusLabel}</span>
+          </div>
+
+          <div class="public-result-body">
+            <strong>${actionText}</strong>
+
+            <div class="public-result-meta">
+              <span>Priorità #${priorityLabel}</span>
+            </div>
+
+            ${
+              isVia
+                ? `<div class="public-result-via">via ${originalName}</div>`
+                : ""
+            }
+          </div>
+        `;
+
+        block.appendChild(div);
+      });
+
+      publicCallsEl.appendChild(block);
+    });
 }
 
 /* ===============================
