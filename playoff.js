@@ -438,12 +438,13 @@ function buildTotalRankingFromStats(statsCSV) {
 
   rows.forEach(r => {
     const conference = String(r.Conference || "").trim();
-    const phase = String(r.Phase || "").trim();
+const phase = String(r.Phase || "").trim();
 
-    // Per i playoff contano Conference + Round Robin
-    const competizioneValida = ["Conf A", "Conf B", "Unificata"].includes(conference);
-    if (!competizioneValida) return;
-    if (phase && phase !== "Regular") return;
+// Per i playoff contano solo Conference + Round Robin della Regular Season
+const competizioneValida = ["Conf A", "Conf B", "Unificata"].includes(conference);
+
+if (!competizioneValida) return;
+if (phase !== "Regular") return;
 
     const squadra = cleanTeamName(r.Team);
     const opponent = cleanTeamName(r.Opponent);
@@ -481,16 +482,15 @@ function buildTotalRankingFromStats(statsCSV) {
     }
   });
 
-  return Array.from(table.values()).sort((a, b) => {
-    return (
-      b.punti - a.punti ||
-      b.mp - a.mp ||
-      b.gf - a.gf ||
-      (a.gs - b.gs) ||
-      a.nome.localeCompare(b.nome)
-    );
-  });
-}
+return Array.from(table.values()).sort((a, b) => {
+  return (
+    b.punti - a.punti ||
+    b.mp - a.mp ||
+    b.gf - a.gf ||
+    (a.gs - b.gs) ||
+    a.nome.localeCompare(b.nome)
+  );
+});
 
 /* =========================================
    FETCH CLASSIFICA
