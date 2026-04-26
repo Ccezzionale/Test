@@ -2036,10 +2036,6 @@ searchInput?.addEventListener("input", () => {
   renderFreeAgents();
 });
 
-savePhaseBtn?.addEventListener("click", () => {
-  saveActivePhase();
-});
-
 setStandardFridayBtn?.addEventListener("click", () => {
   fillStandardFridaySettings();
 });
