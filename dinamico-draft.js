@@ -171,6 +171,18 @@ function cleanTeamName(name) {
     .trim();
 }
 
+function getConferenceForTeam(nomeSquadra) {
+  const key = teamKey(nomeSquadra);
+
+  for (const [team, conference] of Object.entries(conferencePerSquadra)) {
+    if (teamKey(team) === key) {
+      return conference;
+    }
+  }
+
+  return null;
+}
+
 function teamKey(name) {
   return cleanTeamName(name)
     .normalize("NFD")
@@ -290,13 +302,13 @@ function generaDraftDaCSV(statsCSV, scambiCSV) {
     .filter(Boolean)
     .reverse();
 
-  const leagueTeams = squadreTotali.filter(
-    s => conferencePerSquadra[s] === "Conference League"
-  );
+const leagueTeams = squadreTotali.filter(
+  s => getConferenceForTeam(s) === "Conference League"
+);
 
-  const champTeams = squadreTotali.filter(
-    s => conferencePerSquadra[s] === "Conference Championship"
-  );
+const champTeams = squadreTotali.filter(
+  s => getConferenceForTeam(s) === "Conference Championship"
+);
 
   const scambi = scambiCSV.trim().split("\n").slice(1).map(r => {
     const [conf, round1, squadra1, round2, squadra2] = r.split(",").map(s => s.trim());
