@@ -858,6 +858,42 @@ button {
   font-weight: 900;
 }
 
+.public-schedule-box {
+  background: #f8fafc;
+  border: 1px solid #dbe5f0;
+  border-radius: 14px;
+  padding: 14px 16px;
+  color: #1f2a44;
+}
+
+.public-schedule-box strong {
+  display: block;
+  margin-bottom: 8px;
+  color: #002b55;
+}
+
+.public-schedule-box ul {
+  margin: 0;
+  padding-left: 18px;
+}
+
+.public-schedule-box li {
+  margin: 5px 0;
+}
+
+.public-calls-group {
+  margin-bottom: 18px;
+}
+
+.public-calls-group h3 {
+  margin: 0 0 10px;
+  padding: 8px 12px;
+  border-radius: 12px;
+  background: #002b55;
+  color: #ffffff;
+  font-size: 0.95rem;
+}
+
 @media (max-width: 760px) {
   .admin-settings-grid,
   .slot-settings-grid {
