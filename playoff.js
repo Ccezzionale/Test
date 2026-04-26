@@ -491,6 +491,7 @@ return Array.from(table.values()).sort((a, b) => {
     a.nome.localeCompare(b.nome)
   );
 });
+   }
 
 /* =========================================
    FETCH CLASSIFICA
