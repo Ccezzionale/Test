@@ -250,6 +250,295 @@ function sortGroupKeys(keys) {
 }
 
 /* ===============================
+   CLASSIFICHE PER ORDINE WAIVER
+================================ */
+
+const STATS_MASTER_CSV_URL =
+  "https://docs.google.com/spreadsheets/d/e/2PACX-1vSG3HrTJsfZGhgfJJx8l63QYhooGsyiydLf1OTt2JldOPx5nSZyJz00IplWA5YHGwjymNL9EXIVX5XA/pub?gid=1118969717&single=true&output=csv";
+
+const GOAL_BASE = 66;
+const GOAL_STEP = 6;
+
+function teamKey(name) {
+  return String(name || "")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[👑🎖️💀]/g, "")
+    .replace(/\s+/g, " ")
+    .trim()
+    .toLowerCase();
+}
+
+function cleanTeamName(name) {
+  return String(name || "")
+    .replace(/[👑🎖️💀]/g, "")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function parseNumber(value) {
+  const n = parseFloat(String(value || "").replace(",", ".").trim());
+  return Number.isFinite(n) ? n : 0;
+}
+
+function pointsToGoals(points) {
+  const p = parseNumber(points);
+  if (p < GOAL_BASE) return 0;
+  return 1 + Math.floor((p - GOAL_BASE) / GOAL_STEP);
+}
+
+function parseCSV(text) {
+  const rows = [];
+  let field = "";
+  let row = [];
+  let inQuotes = false;
+
+  for (let i = 0; i < text.length; i++) {
+    const c = text[i];
+
+    if (c === '"') {
+      if (inQuotes && text[i + 1] === '"') {
+        field += '"';
+        i++;
+      } else {
+        inQuotes = !inQuotes;
+      }
+    } else if (c === "," && !inQuotes) {
+      row.push(field);
+      field = "";
+    } else if ((c === "\n" || c === "\r") && !inQuotes) {
+      if (c === "\r" && text[i + 1] === "\n") i++;
+      row.push(field);
+      rows.push(row);
+      field = "";
+      row = [];
+    } else {
+      field += c;
+    }
+  }
+
+  if (field.length || row.length) {
+    row.push(field);
+    rows.push(row);
+  }
+
+  const headers = rows.shift().map(h => String(h || "").trim());
+
+  return rows
+    .filter(r => r.some(c => String(c || "").trim() !== ""))
+    .map(r => {
+      const obj = {};
+      headers.forEach((h, i) => {
+        obj[h] = String(r[i] ?? "").trim();
+      });
+      return obj;
+    });
+}
+
+async function fetchStatsRows() {
+  const res = await fetch(STATS_MASTER_CSV_URL + "&nocache=" + Date.now(), {
+    cache: "no-store"
+  });
+
+  if (!res.ok) {
+    throw new Error("Errore caricamento statistiche: " + res.status);
+  }
+
+  const text = await res.text();
+  return removeDuplicateStatsRows(parseCSV(text));
+}
+
+function removeDuplicateStatsRows(rows) {
+  const seen = new Set();
+
+  return rows.filter(r => {
+    const key = [
+      String(r.GW || "").trim(),
+      String(r.GW_Stagionale || "").trim(),
+      cleanTeamName(r.Team),
+      cleanTeamName(r.Opponent),
+      String(r.PointsFor || "").replace(",", ".").trim(),
+      String(r.PointsAgainst || "").replace(",", ".").trim(),
+      String(r.Conference || "").trim()
+    ].join("|");
+
+    if (seen.has(key)) return false;
+
+    seen.add(key);
+    return true;
+  });
+}
+
+function getStatsRowsForConference(rows, conferenceName) {
+  return rows.filter(r => {
+    const team = cleanTeamName(r.Team);
+    const opponent = cleanTeamName(r.Opponent);
+    const pf = parseNumber(r.PointsFor);
+    const pa = parseNumber(r.PointsAgainst);
+    const conference = String(r.Conference || "").trim();
+    const phase = String(r.Phase || "").trim();
+
+    if (!team || !opponent) return false;
+    if (pf === 0 && pa === 0) return false;
+    if (phase !== "Regular") return false;
+
+    return conference === conferenceName;
+  });
+}
+
+function buildStandingsFromRows(rows) {
+  const table = new Map();
+
+  rows.forEach(r => {
+    const squadra = cleanTeamName(r.Team);
+    const key = teamKey(squadra);
+
+    if (!key) return;
+
+    const pf = parseNumber(r.PointsFor);
+    const pa = parseNumber(r.PointsAgainst);
+
+    const gf = pointsToGoals(pf);
+    const gs = pointsToGoals(pa);
+
+    if (!table.has(key)) {
+      table.set(key, {
+        squadra,
+        g: 0,
+        v: 0,
+        n: 0,
+        p: 0,
+        gf: 0,
+        gs: 0,
+        pt: 0,
+        mp: 0
+      });
+    }
+
+    const rec = table.get(key);
+
+    rec.g += 1;
+    rec.gf += gf;
+    rec.gs += gs;
+    rec.mp += pf;
+
+    if (gf > gs) {
+      rec.v += 1;
+      rec.pt += 3;
+    } else if (gf === gs) {
+      rec.n += 1;
+      rec.pt += 1;
+    } else {
+      rec.p += 1;
+    }
+  });
+
+  return Array.from(table.values()).sort((a, b) => {
+    return (
+      b.pt - a.pt ||
+      b.mp - a.mp ||
+      b.gf - a.gf ||
+      (a.gs - b.gs) ||
+      a.squadra.localeCompare(b.squadra)
+    );
+  });
+}
+
+function mergeStandings(...standingsLists) {
+  const merged = new Map();
+
+  standingsLists.flat().forEach(r => {
+    const key = teamKey(r.squadra);
+
+    if (!merged.has(key)) {
+      merged.set(key, {
+        squadra: r.squadra,
+        g: 0,
+        v: 0,
+        n: 0,
+        p: 0,
+        gf: 0,
+        gs: 0,
+        pt: 0,
+        mp: 0
+      });
+    }
+
+    const rec = merged.get(key);
+
+    rec.g += r.g;
+    rec.v += r.v;
+    rec.n += r.n;
+    rec.p += r.p;
+    rec.gf += r.gf;
+    rec.gs += r.gs;
+    rec.pt += r.pt;
+    rec.mp += r.mp;
+  });
+
+  return Array.from(merged.values()).sort((a, b) => {
+    return (
+      b.pt - a.pt ||
+      b.mp - a.mp ||
+      b.gf - a.gf ||
+      (a.gs - b.gs) ||
+      a.squadra.localeCompare(b.squadra)
+    );
+  });
+}
+
+function buildWaiverPriorityMapFromStats(rows) {
+  const confLeague = buildStandingsFromRows(
+    getStatsRowsForConference(rows, "Conf A")
+  );
+
+  const confChampionship = buildStandingsFromRows(
+    getStatsRowsForConference(rows, "Conf B")
+  );
+
+  const roundRobin = buildStandingsFromRows(
+    getStatsRowsForConference(rows, "Unificata")
+  );
+
+  const totale = mergeStandings(
+    confLeague,
+    confChampionship,
+    roundRobin
+  );
+
+  return {
+    "Conference League": confLeague.slice().reverse(),
+    "Conference Championship": confChampionship.slice().reverse(),
+    "Totale": totale.slice().reverse()
+  };
+}
+
+function getTeamPriorityIndex(teamName, priorityList) {
+  const key = teamKey(teamName);
+  const index = priorityList.findIndex(row => teamKey(row.squadra) === key);
+
+  return index === -1 ? 999 : index;
+}
+
+async function sortWaiverGroupsByStandings(groups) {
+  const statsRows = await fetchStatsRows();
+  const priorityMap = buildWaiverPriorityMapFromStats(statsRows);
+
+  Object.keys(groups).forEach(groupKey => {
+    const priorityList = priorityMap[groupKey] || [];
+
+    groups[groupKey].sort((a, b) => {
+      const rankA = getTeamPriorityIndex(a.name, priorityList);
+      const rankB = getTeamPriorityIndex(b.name, priorityList);
+
+      if (rankA !== rankB) return rankA - rankB;
+
+      return a.name.localeCompare(b.name);
+    });
+  });
+}
+
+/* ===============================
    AUTH / TEAM / SETTINGS
 ================================ */
 
@@ -391,9 +680,19 @@ async function generateWaiverOrder() {
     groups[groupKey].push(team);
   });
 
+try {
+  await sortWaiverGroupsByStandings(groups);
+} catch (err) {
+  console.error("Errore ordinamento waiver da classifiche:", err);
+  setAdminMessage(
+    "Errore nel caricamento classifiche. Uso ordine alfabetico di emergenza.",
+    true
+  );
+
   Object.keys(groups).forEach(groupKey => {
     groups[groupKey].sort((a, b) => a.name.localeCompare(b.name));
   });
+}
 
   const rows = [];
   const slots = getGeneratedSlots();
