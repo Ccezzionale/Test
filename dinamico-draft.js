@@ -234,7 +234,7 @@ function buildTotalRankingFromStats(statsCSV) {
     // Per il draft contano solo Conference + Round Robin
     const competizioneValida = ["Conf A", "Conf B", "Unificata"].includes(conference);
     if (!competizioneValida) return;
-    if (phase && phase !== "Regular") return;
+    if (phase !== "Regular") return;
 
     const squadra = cleanTeamName(r.Team);
     const opponent = cleanTeamName(r.Opponent);
