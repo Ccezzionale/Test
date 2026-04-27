@@ -561,24 +561,24 @@ async function caricaGiocatori() {
     squadre = new Set();
     Object.keys(mappaGiocatori).forEach(k => delete mappaGiocatori[k]);
 
-    const { data: players, error } = await supabase
-      .from("players")
-      .select(`
-        id,
-        external_id,
-        name,
-        role,
-        role_mantra,
-        serie_a_team,
-        quotation,
-        is_u21,
-        is_fp,
-        owner_team_id,
-        status
-      `)
-      .is("owner_team_id", null)
-      .eq("status", "active")
-      .order("name", { ascending: true });
+const { data: players, error } = await supabase
+  .from("players")
+  .select(`
+    id,
+    external_id,
+    name,
+    role,
+    role_mantra,
+    serie_a_team,
+    quotation,
+    is_u21,
+    is_fp,
+    owner_team_id,
+    status
+  `)
+  .eq("status", "active")
+  .order("name", { ascending: true });
+    
 
     console.log("PLAYERS DA SUPABASE:", players, error);
 
