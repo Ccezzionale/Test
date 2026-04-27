@@ -1615,37 +1615,24 @@ async function loadFreeAgents() {
       return;
     }
 
-    // ROUND ROBIN / PLAYOFF:
-    // un giocatore è svincolato solo se è libero in entrambe le Conference
-    const { data: leagueFree, error: leagueError } = await supabase
-      .from("players")
-      .select(selectFields)
-      .eq("status", "active")
-      .eq("pool", "conference_league")
-      .is("owner_team_id", null)
-      .order("name", { ascending: true });
+// ROUND ROBIN / PLAYOFF:
+// la lista è unica come competizione, ma mantiene le due copie dei pool.
+// Se un giocatore è libero in entrambe le Conference, compare due volte.
+// Se è libero solo in una Conference, compare una volta.
+const { data, error } = await supabase
+  .from("players")
+  .select(selectFields)
+  .eq("status", "active")
+  .is("owner_team_id", null)
+  .in("pool", ["conference_league", "conference_championship"])
+  .order("name", { ascending: true })
+  .order("pool", { ascending: true });
 
-    if (leagueError) throw leagueError;
+if (error) throw error;
 
-    const { data: championshipFree, error: championshipError } = await supabase
-      .from("players")
-      .select(selectFields)
-      .eq("status", "active")
-      .eq("pool", "conference_championship")
-      .is("owner_team_id", null)
-      .order("name", { ascending: true });
+freeAgents = (data || []).map(mapPlayerRow);
 
-    if (championshipError) throw championshipError;
-
-    const championshipFreeKeys = new Set(
-      (championshipFree || []).map(p => String(p.external_id || "").trim())
-    );
-
-    freeAgents = (leagueFree || [])
-      .filter(p => championshipFreeKeys.has(String(p.external_id || "").trim()))
-      .map(mapPlayerRow);
-
-    renderFreeAgents();
+renderFreeAgents();
 
   } catch (err) {
     console.error("Errore caricamento svincolati da Supabase:", err);
@@ -1677,7 +1664,15 @@ function renderFreeAgents() {
   filtered.forEach(player => {
     const tr = document.createElement("tr");
 
+const poolBadge =
+  player.pool === "conference_league"
+    ? "🟨 League"
+    : player.pool === "conference_championship"
+      ? "🟦 Championship"
+      : "";
+
 const badges = [
+  poolBadge,
   player.is_u21 ? "🟢 U21" : "",
   player.is_fp ? "⭐ FP" : ""
 ].filter(Boolean).join(" ");
