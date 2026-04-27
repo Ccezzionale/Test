@@ -1237,6 +1237,57 @@ button {
   display: none;
 }
 
+/* ===============================
+   ADMIN PANEL FULL WIDTH
+================================ */
+
+.waiver-admin-section {
+  width: 100%;
+  margin-top: 24px;
+  margin-bottom: 32px;
+}
+
+.waiver-admin-section .admin-card {
+  width: 100%;
+}
+
+.waiver-admin-section .admin-settings-panel {
+  margin-bottom: 18px;
+}
+
+@media (min-width: 1100px) {
+  .waiver-admin-section .slot-settings-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .waiver-admin-section .admin-settings-grid {
+    grid-template-columns: minmax(220px, 1fr) 160px;
+    max-width: 520px;
+  }
+
+  .admin-main-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .admin-bottom-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.35fr) minmax(320px, 0.75fr);
+    gap: 22px;
+    align-items: start;
+    margin-top: 18px;
+  }
+}
+
+@media (max-width: 1099px) {
+  .admin-bottom-grid {
+    display: grid;
+    gap: 18px;
+    margin-top: 18px;
+  }
+}
+
 @media (min-width: 1200px) {
   .waiver-dashboard-grid {
     grid-template-columns: minmax(680px, 1.45fr) minmax(420px, 0.9fr);
