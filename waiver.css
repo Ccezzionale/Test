@@ -1048,6 +1048,30 @@ button {
   gap: 14px;
 }
 
+.waiver-top-grid {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 22px;
+  margin-bottom: 24px;
+  clear: both;
+}
+
+@media (min-width: 1100px) {
+  .waiver-top-grid {
+    grid-template-columns: minmax(0, 1.4fr) minmax(360px, 0.8fr);
+    align-items: start;
+  }
+}
+
+.public-waiver-card {
+  min-width: 0;
+}
+
+.my-waiver-card {
+  min-width: 0;
+}
+
 @media (min-width: 1200px) {
   #myWaiverCalls .waiver-slot-block {
     grid-template-columns: repeat(2, minmax(320px, 1fr));
