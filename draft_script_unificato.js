@@ -563,12 +563,31 @@ async function caricaGiocatori() {
 
     const { data: players, error } = await supabase
       .from("players")
-      .select("id, external_id, name, role, role_mantra, serie_a_team, quotation, is_u21, is_fp, owner_team_id, status")
+      .select(`
+        id,
+        external_id,
+        name,
+        role,
+        role_mantra,
+        serie_a_team,
+        quotation,
+        is_u21,
+        is_fp,
+        owner_team_id,
+        status
+      `)
       .is("owner_team_id", null)
       .eq("status", "active")
       .order("name", { ascending: true });
 
+    console.log("PLAYERS DA SUPABASE:", players, error);
+
     if (error) throw error;
+
+    if (!players || players.length === 0) {
+      console.warn("⚠️ Nessun giocatore trovato da Supabase.");
+      return;
+    }
 
     players.forEach(p => {
       const nome = p.name || "";
@@ -595,10 +614,15 @@ async function caricaGiocatori() {
       if (squadra) squadre.add(squadra);
     });
 
+    console.log("MAPPA GIOCATORI:", Object.keys(mappaGiocatori).length);
+
   } catch (err) {
     console.error("❌ Errore caricamento players da Supabase:", err);
+
     const el = document.getElementById("turno-attuale");
-    if (el) el.textContent = "⚠️ Problema nel caricare i giocatori da Supabase.";
+    if (el) {
+      el.textContent = "⚠️ Problema nel caricare i giocatori da Supabase.";
+    }
   } finally {
     showSpinner(false);
   }
