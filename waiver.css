@@ -1005,6 +1005,55 @@ button {
   margin-bottom: 22px;
 }
 
+#myWaiverCalls .waiver-slot-block {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 14px;
+  margin-bottom: 20px;
+}
+
+#myWaiverCalls .waiver-slot-title {
+  grid-column: 1 / -1;
+  margin-bottom: 2px;
+}
+
+.dynamic-call-card {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+
+.call-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.call-actions button {
+  flex: 0 0 auto;
+}
+
+.public-waiver-row {
+  display: grid;
+  grid-template-columns: 44px 1fr;
+  gap: 10px;
+  align-items: center;
+  padding: 10px 12px;
+}
+
+.public-waiver-order {
+  display: grid;
+  gap: 14px;
+}
+
+@media (min-width: 1200px) {
+  #myWaiverCalls .waiver-slot-block {
+    grid-template-columns: repeat(2, minmax(320px, 1fr));
+  }
+}
+
 @media (min-width: 1100px) {
   .waiver-top-grid {
     grid-template-columns: 1.1fr 0.9fr;
