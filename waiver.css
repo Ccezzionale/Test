@@ -1057,6 +1057,35 @@ button {
   clear: both;
 }
 
+.waiver-dashboard-grid {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 24px;
+  margin-bottom: 32px;
+}
+
+.waiver-left-column,
+.waiver-right-column {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  min-width: 0;
+}
+
+@media (min-width: 1200px) {
+  .waiver-dashboard-grid {
+    grid-template-columns: minmax(680px, 1.45fr) minmax(420px, 0.9fr);
+    align-items: start;
+  }
+}
+
+@media (min-width: 1500px) {
+  .waiver-dashboard-grid {
+    grid-template-columns: minmax(780px, 1.55fr) minmax(460px, 0.9fr);
+  }
+}
+
 @media (min-width: 1100px) {
   .waiver-top-grid {
     grid-template-columns: minmax(0, 1.4fr) minmax(360px, 0.8fr);
