@@ -270,78 +270,104 @@ function parseCSV(text) {
 }
 
 async function caricaRose() {
-  await caricaGiocatoriFP();
+  const container = document.getElementById("contenitore-rose");
+
+  if (container) {
+    container.innerHTML = "Caricamento rose da Supabase...";
+  }
 
   try {
-    const response = await fetch(URL_ROSE + "&nocache=" + Date.now(), {
-      cache: "no-store"
+    // Svuota oggetto rose senza perdere il riferimento const
+    Object.keys(rose).forEach(k => delete rose[k]);
+
+    // 1. Carica tutte le squadre
+    const { data: teams, error: teamsError } = await supabase
+      .from("teams")
+      .select("id, name, conference")
+      .order("name", { ascending: true });
+
+    if (teamsError) throw teamsError;
+
+    const teamsMap = {};
+
+    teams.forEach(team => {
+      teamsMap[team.id] = team;
+
+      rose[team.name] = {
+        logo: trovaLogo(team.name),
+        maglia: trovaMaglia(team.name),
+        conference: team.conference || conferencePerSquadra[team.name] || "N/A",
+        giocatori: []
+      };
     });
 
-    if (!response.ok) {
-      throw new Error("Errore caricamento Rose Master: " + response.status);
-    }
+    // 2. Carica solo i giocatori assegnati a una squadra
+    const { data: players, error: playersError } = await supabase
+      .from("players")
+      .select(`
+        id,
+        name,
+        role,
+        role_mantra,
+        serie_a_team,
+        quotation,
+        is_u21,
+        is_fp,
+        owner_team_id,
+        status
+      `)
+      .not("owner_team_id", "is", null)
+      .eq("status", "active")
+      .order("name", { ascending: true });
 
-    const text = await response.text();
-    const rows = parseCSV(text);
+    if (playersError) throw playersError;
 
-    const header = rows[0].map(h => String(h || "").trim().toLowerCase());
+    players.forEach(p => {
+      const team = teamsMap[p.owner_team_id];
+      if (!team) return;
 
-    const idxSquadra = header.indexOf("squadra");
-    const idxRuolo = header.indexOf("ruolo");
-    const idxGiocatore = header.indexOf("giocatore");
-    const idxSquadraSerieA = header.indexOf("squadra serie a");
-    const idxCosto = header.indexOf("costo");
-
-    if (
-      idxSquadra === -1 ||
-      idxRuolo === -1 ||
-      idxGiocatore === -1 ||
-      idxSquadraSerieA === -1
-    ) {
-      throw new Error("Intestazioni Rose Master non valide");
-    }
-
-    for (let i = 1; i < rows.length; i++) {
-      const r = rows[i];
-
-      const nomeSquadra = String(r[idxSquadra] || "").trim();
-      const ruolo = String(r[idxRuolo] || "").trim();
-      const nome = String(r[idxGiocatore] || "").trim();
-      const squadraSerieA = String(r[idxSquadraSerieA] || "").trim();
-      const quotazione = idxCosto !== -1 ? String(r[idxCosto] || "").trim() : "";
-
-      if (!nomeSquadra || !nome) continue;
-
-      const nomeClean = nome.toLowerCase();
+      const nomeSquadra = team.name;
 
       if (!rose[nomeSquadra]) {
         rose[nomeSquadra] = {
           logo: trovaLogo(nomeSquadra),
           maglia: trovaMaglia(nomeSquadra),
+          conference: team.conference || conferencePerSquadra[nomeSquadra] || "N/A",
           giocatori: []
         };
       }
 
       rose[nomeSquadra].giocatori.push({
-        nome,
-        ruolo,
-        squadra: squadraSerieA,
-        quotazione,
-        fp: isFP(nome, nomeSquadra),
-        u21: giocatoriU21PerSquadra[nomeSquadra]?.includes(nomeClean) || false
+        nome: p.name || "",
+        ruolo: p.role || p.role_mantra || "",
+        squadra: p.serie_a_team || "",
+        quotazione: p.quotation ?? "",
+        fp: !!p.is_fp,
+        u21: !!p.is_u21
       });
-    }
+    });
+
+    // 3. Ordina i giocatori dentro ogni rosa
+    Object.values(rose).forEach(teamData => {
+      teamData.giocatori.sort((a, b) => {
+        const ruoloA = String(a.ruolo || "");
+        const ruoloB = String(b.ruolo || "");
+        const nomeA = String(a.nome || "");
+        const nomeB = String(b.nome || "");
+
+        return ruoloA.localeCompare(ruoloB) || nomeA.localeCompare(nomeB);
+      });
+    });
 
     mostraRose();
     popolaFiltri();
 
   } catch (e) {
-    console.error("Errore nel caricamento rose:", e);
+    console.error("Errore nel caricamento rose da Supabase:", e);
 
-    const container = document.getElementById("contenitore-rose");
     if (container) {
       container.innerHTML = `
-        <p>Errore nel caricamento delle rose. Controlla il CSV Rose Master.</p>
+        <p>Errore nel caricamento delle rose da Supabase.</p>
       `;
     }
   }
@@ -358,7 +384,7 @@ function mostraRose() {
     const div = document.createElement("div");
     div.className = "box-rosa giocatore";
     div.setAttribute("data-squadra", nome);
-    div.setAttribute("data-conference", conferencePerSquadra[nome] || "N/A");
+   div.setAttribute("data-conference", data.conference || conferencePerSquadra[nome] || "N/A");
 
 const header = document.createElement("div");
 header.className = "logo-nome";
@@ -426,7 +452,7 @@ function popolaFiltri() {
 
   for (const squadra in rose) {
     squadreSet.add(squadra);
-    const conf = conferencePerSquadra[squadra] || "N/A";
+    const conf = rose[squadra]?.conference || conferencePerSquadra[squadra] || "N/A";
     conferenceSet.add(conf);
   }
 
