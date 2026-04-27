@@ -1073,6 +1073,43 @@ button {
   min-width: 0;
 }
 
+.waiver-slot-title.waiver-slot-toggle {
+  width: 100%;
+  border: 0;
+  background: transparent;
+  color: #002b55;
+  font: inherit;
+  font-weight: 900;
+  text-align: left;
+  cursor: default;
+  padding: 0;
+  margin: 0 0 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.collapsible-slot .waiver-slot-toggle {
+  cursor: pointer;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: #f1f5f9;
+  border: 1px solid #dbe5f0;
+}
+
+.slot-toggle-icon {
+  font-size: 1rem;
+  transition: transform 0.18s ease;
+}
+
+.collapsible-slot:not(.slot-closed) .slot-toggle-icon {
+  transform: rotate(180deg);
+}
+
+.collapsible-slot.slot-closed .waiver-slot-content {
+  display: none;
+}
+
 @media (min-width: 1200px) {
   .waiver-dashboard-grid {
     grid-template-columns: minmax(680px, 1.45fr) minmax(420px, 0.9fr);
