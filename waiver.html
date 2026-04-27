@@ -7,7 +7,7 @@
   <title>Waiver Room</title>
 
   <link rel="stylesheet" href="navbar.css" />
-  <link rel="stylesheet" href="waiver.css?v=4" />
+  <link rel="stylesheet" href="waiver.css?v=9" />
 </head>
 
 <body>
@@ -114,71 +114,74 @@
       </article>
     </section>
 
-   <section class="waiver-dashboard-grid">
+    <section class="waiver-dashboard-grid">
 
-  <div class="waiver-left-column">
+      <div class="waiver-left-column">
 
-    <article class="waiver-card my-waiver-card">
-      <div class="card-title-row">
-        <div>
-          <h2>Le mie chiamate</h2>
-          <p class="card-subtitle">
-            Ogni box corrisponde a una chiamata disponibile. Se una squadra ha comprato una chiamata, la vedrà qui.
-          </p>
-        </div>
+        <article class="waiver-card my-waiver-card">
+          <div class="card-title-row">
+            <div>
+              <h2>Le mie chiamate</h2>
+              <p class="card-subtitle">
+                Ogni box corrisponde a una chiamata disponibile. Se una squadra ha comprato una chiamata, la vedrà qui.
+              </p>
+            </div>
+          </div>
+
+          <div id="myWaiverCalls" class="my-waiver-calls">
+            <p>Caricamento chiamate disponibili...</p>
+          </div>
+
+          <p id="callMessage" class="call-message"></p>
+        </article>
+
+        <article class="waiver-card free-agents-card">
+          <div class="card-title-row">
+            <h2>Svincolati</h2>
+            <span class="table-hint">Scroll verticale</span>
+          </div>
+
+          <input type="text" id="searchInput" placeholder="Cerca giocatore..." />
+
+          <div class="free-agents-table-wrap">
+            <table id="freeAgentsTable">
+              <thead>
+                <tr>
+                  <th>Giocatore</th>
+                  <th>Ruolo</th>
+                  <th>Squadra</th>
+                  <th>Quotazione</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </article>
+
       </div>
 
-      <div id="myWaiverCalls" class="my-waiver-calls">
-        <p>Caricamento chiamate disponibili...</p>
+      <div class="waiver-right-column">
+
+        <article class="waiver-card public-waiver-card">
+          <div class="card-title-row">
+            <div>
+              <h2>Ordine Waiver</h2>
+              <p class="card-subtitle">
+                Priorità aggiornate per ogni slot. I risultati compariranno quando lo slot sarà pubblico.
+              </p>
+            </div>
+          </div>
+
+          <div id="publicWaiverOrder" class="public-waiver-order">
+            <p>Caricamento ordine waiver...</p>
+          </div>
+        </article>
+
       </div>
 
-      <p id="callMessage" class="call-message"></p>
-    </article>
+    </section>
 
-    <article class="waiver-card free-agents-card">
-      <div class="card-title-row">
-        <h2>Svincolati</h2>
-        <span class="table-hint">Scroll verticale</span>
-      </div>
-
-      <input type="text" id="searchInput" placeholder="Cerca giocatore..." />
-
-      <div class="free-agents-table-wrap">
-        <table id="freeAgentsTable">
-          <thead>
-            <tr>
-              <th>Giocatore</th>
-              <th>Ruolo</th>
-              <th>Squadra</th>
-              <th>Quotazione</th>
-            </tr>
-          </thead>
-          <tbody></tbody>
-        </table>
-      </div>
-    </article>
-
-  </div>
-
-  <div class="waiver-right-column">
-
-    <article class="waiver-card public-waiver-card">
-      <div class="card-title-row">
-        <div>
-          <h2>Ordine Waiver</h2>
-          <p class="card-subtitle">
-            Priorità aggiornate per ogni slot. I risultati compariranno quando lo slot sarà pubblico.
-          </p>
-        </div>
-      </div>
-
-      <div id="publicWaiverOrder" class="public-waiver-order">
-        <p>Caricamento ordine waiver...</p>
-      </div>
-    </article>
-
-    <aside class="waiver-side">
-
+    <section class="waiver-admin-section">
       <article class="waiver-card admin-card" id="adminPanel" style="display:none;">
         <h2>Admin Waiver Room</h2>
 
@@ -256,7 +259,7 @@
           <p id="settingsMessage" class="priority-message"></p>
         </div>
 
-        <div class="admin-actions">
+        <div class="admin-actions admin-main-actions">
           <button id="generateWaiverOrderBtn" type="button" class="primary-btn small-btn">
             Genera ordine waiver
           </button>
@@ -284,36 +287,34 @@
 
         <div id="waiverOrderMessage" class="priority-message"></div>
 
-        <div class="priority-panel">
-          <div class="priority-header">
-            <div>
-              <h3>Ordine Waiver</h3>
-              <p>
-                Ogni riga è una chiamata. Cambia il proprietario per registrare una chiamata venduta.
-              </p>
+        <div class="admin-bottom-grid">
+          <div class="priority-panel">
+            <div class="priority-header">
+              <div>
+                <h3>Ordine Waiver</h3>
+                <p>
+                  Ogni riga è una chiamata. Cambia il proprietario per registrare una chiamata venduta.
+                </p>
+              </div>
+            </div>
+
+            <div id="waiverOrderAdmin" class="waiver-order-admin">
+              <p>Caricamento ordine waiver...</p>
             </div>
           </div>
 
-          <div id="waiverOrderAdmin" class="waiver-order-admin">
-            <p>Caricamento ordine waiver...</p>
+          <div class="admin-calls-block">
+            <h3>Chiamate ricevute</h3>
+            <div id="allCalls" class="all-calls"></div>
           </div>
         </div>
 
-        <div class="admin-calls-block">
-          <h3>Chiamate ricevute</h3>
-          <div id="allCalls" class="all-calls"></div>
-        </div>
       </article>
-
-    </aside>
-
-  </div>
-
-</section>
+    </section>
 
   </main>
 
-  <script type="module" src="waiver.js?v=12"></script>
+  <script type="module" src="waiver.js?v=16"></script>
   <script type="module" src="home_auth.js"></script>
   <script src="navbar.js"></script>
 </body>
