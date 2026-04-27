@@ -1206,6 +1206,37 @@ button {
   display: none !important;
 }
 
+.public-waiver-group-title.public-waiver-toggle {
+  width: 100%;
+  border: 0;
+  background: transparent;
+  cursor: default;
+}
+
+.public-collapsible-slot .public-waiver-toggle {
+  cursor: pointer;
+}
+
+.public-waiver-group-content {
+  display: grid;
+  gap: 8px;
+}
+
+.public-toggle-icon {
+  display: inline-block;
+  margin-left: 6px;
+  color: #002b55;
+  transition: transform 0.18s ease;
+}
+
+.public-collapsible-slot:not(.public-slot-closed) .public-toggle-icon {
+  transform: rotate(180deg);
+}
+
+.public-collapsible-slot.public-slot-closed .public-waiver-group-content {
+  display: none;
+}
+
 @media (min-width: 1200px) {
   .waiver-dashboard-grid {
     grid-template-columns: minmax(680px, 1.45fr) minmax(420px, 0.9fr);
