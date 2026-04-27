@@ -1110,6 +1110,102 @@ button {
   display: none;
 }
 
+/* ===============================
+   FIX LAYOUT WAIVER DASHBOARD
+================================ */
+
+.waiver-dashboard-grid {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 24px;
+  margin-bottom: 32px;
+}
+
+.waiver-left-column,
+.waiver-right-column {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  min-width: 0;
+}
+
+@media (min-width: 1200px) {
+  .waiver-dashboard-grid {
+    grid-template-columns: minmax(680px, 1.45fr) minmax(420px, 0.9fr);
+    align-items: start;
+  }
+}
+
+@media (min-width: 1500px) {
+  .waiver-dashboard-grid {
+    grid-template-columns: minmax(780px, 1.55fr) minmax(460px, 0.9fr);
+  }
+}
+
+/* Lo slot contiene titolo + contenuto */
+#myWaiverCalls .waiver-slot-block {
+  display: block;
+  margin-bottom: 20px;
+}
+
+/* La griglia a 2 colonne va qui, non sul blocco esterno */
+#myWaiverCalls .waiver-slot-content {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 14px;
+}
+
+@media (min-width: 1200px) {
+  #myWaiverCalls .waiver-slot-content {
+    grid-template-columns: repeat(2, minmax(280px, 1fr));
+  }
+}
+
+/* Evita card stirate altissime */
+.dynamic-call-card {
+  height: auto !important;
+  min-height: 0;
+}
+
+/* Slot 2 chiuso a tendina */
+.waiver-slot-title.waiver-slot-toggle {
+  width: 100%;
+  border: 0;
+  background: transparent;
+  color: #002b55;
+  font: inherit;
+  font-weight: 900;
+  text-align: left;
+  cursor: default;
+  padding: 0;
+  margin: 0 0 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.collapsible-slot .waiver-slot-toggle {
+  cursor: pointer;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: #f1f5f9;
+  border: 1px solid #dbe5f0;
+}
+
+.slot-toggle-icon {
+  font-size: 1rem;
+  transition: transform 0.18s ease;
+}
+
+.collapsible-slot:not(.slot-closed) .slot-toggle-icon {
+  transform: rotate(180deg);
+}
+
+.collapsible-slot.slot-closed .waiver-slot-content {
+  display: none !important;
+}
+
 @media (min-width: 1200px) {
   .waiver-dashboard-grid {
     grid-template-columns: minmax(680px, 1.45fr) minmax(420px, 0.9fr);
