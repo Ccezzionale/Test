@@ -894,6 +894,128 @@ button {
   font-size: 0.95rem;
 }
 
+.public-waiver-order {
+  display: grid;
+  gap: 18px;
+}
+
+.public-waiver-group {
+  border: 1px solid #dbe5f0;
+  border-radius: 16px;
+  background: #f8fafc;
+  padding: 14px;
+}
+
+.public-waiver-group-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.public-waiver-group-title h3 {
+  margin: 0;
+  color: #002b55;
+  font-size: 1rem;
+}
+
+.public-waiver-group-title span {
+  font-size: 0.82rem;
+  color: #64748b;
+  font-weight: 700;
+  text-align: right;
+}
+
+.public-waiver-row {
+  display: grid;
+  grid-template-columns: 52px 1fr;
+  gap: 12px;
+  align-items: center;
+  background: #ffffff;
+  border: 1px solid #e5edf6;
+  border-radius: 14px;
+  padding: 10px 12px;
+  margin-bottom: 8px;
+}
+
+.public-waiver-row:last-child {
+  margin-bottom: 0;
+}
+
+.public-waiver-rank {
+  width: 42px;
+  height: 42px;
+  border-radius: 999px;
+  background: #002b55;
+  color: #ffcc00;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 900;
+}
+
+.public-waiver-main {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.public-waiver-main strong {
+  color: #14213d;
+  font-size: 0.98rem;
+}
+
+.public-waiver-via {
+  color: #64748b;
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.public-waiver-result {
+  font-size: 0.9rem;
+  font-weight: 800;
+}
+
+.public-waiver-row.won {
+  border-color: #86efac;
+  background: #f0fdf4;
+}
+
+.public-waiver-row.lost {
+  border-color: #fecaca;
+  background: #fef2f2;
+}
+
+.public-waiver-row.pending {
+  border-color: #fde68a;
+  background: #fffbeb;
+}
+
+.public-waiver-row.empty {
+  opacity: 0.75;
+}
+
+@media (max-width: 700px) {
+  .public-waiver-group-title {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .public-waiver-row {
+    grid-template-columns: 44px 1fr;
+    padding: 10px;
+  }
+
+  .public-waiver-rank {
+    width: 36px;
+    height: 36px;
+    font-size: 0.85rem;
+  }
+}
+
 @media (max-width: 760px) {
   .admin-settings-grid,
   .slot-settings-grid {
