@@ -7,7 +7,7 @@
   <title>Waiver Room</title>
 
   <link rel="stylesheet" href="navbar.css" />
-  <link rel="stylesheet" href="waiver.css" />
+  <link rel="stylesheet" href="waiver.css?v=3" />
 </head>
 
 <body>
@@ -116,41 +116,39 @@
 
     <section class="waiver-top-grid">
 
-<section class="waiver-top-grid">
+      <article class="waiver-card my-waiver-card">
+        <div class="card-title-row">
+          <div>
+            <h2>Le mie chiamate</h2>
+            <p class="card-subtitle">
+              Ogni box corrisponde a una chiamata disponibile. Se una squadra ha comprato una chiamata, la vedrà qui.
+            </p>
+          </div>
+        </div>
 
-  <article class="waiver-card my-waiver-card">
-    <div class="card-title-row">
-      <div>
-        <h2>Le mie chiamate</h2>
-        <p class="card-subtitle">
-          Ogni box corrisponde a una chiamata disponibile. Se una squadra ha comprato una chiamata, la vedrà qui.
-        </p>
-      </div>
-    </div>
+        <div id="myWaiverCalls" class="my-waiver-calls">
+          <p>Caricamento chiamate disponibili...</p>
+        </div>
 
-    <div id="myWaiverCalls" class="my-waiver-calls">
-      <p>Caricamento chiamate disponibili...</p>
-    </div>
+        <p id="callMessage" class="call-message"></p>
+      </article>
 
-    <p id="callMessage" class="call-message"></p>
-  </article>
+      <article class="waiver-card public-waiver-card">
+        <div class="card-title-row">
+          <div>
+            <h2>Ordine Waiver</h2>
+            <p class="card-subtitle">
+              Priorità aggiornate per ogni slot. I risultati compariranno quando lo slot sarà pubblico.
+            </p>
+          </div>
+        </div>
 
-  <article class="waiver-card public-waiver-card">
-    <div class="card-title-row">
-      <div>
-        <h2>Ordine Waiver</h2>
-        <p class="card-subtitle">
-          Priorità aggiornate per ogni slot. I risultati compariranno quando lo slot sarà pubblico.
-        </p>
-      </div>
-    </div>
+        <div id="publicWaiverOrder" class="public-waiver-order">
+          <p>Caricamento ordine waiver...</p>
+        </div>
+      </article>
 
-    <div id="publicWaiverOrder" class="public-waiver-order">
-      <p>Caricamento ordine waiver...</p>
-    </div>
-  </article>
-
-</section>
+    </section>
 
     <section class="waiver-grid waiver-grid-main">
 
@@ -183,78 +181,78 @@
           <h2>Admin Waiver Room</h2>
 
           <div class="admin-settings-panel">
-  <h3>Impostazioni Waiver</h3>
+            <h3>Impostazioni Waiver</h3>
 
-  <div class="admin-settings-grid">
-    <div class="admin-field">
-      <label for="activePhaseSelect">Fase attiva</label>
-      <select id="activePhaseSelect" class="waiver-owner-select">
-        <option value="conference">Conference</option>
-        <option value="round_robin">Round Robin</option>
-        <option value="playoff">Playoff</option>
-      </select>
-    </div>
+            <div class="admin-settings-grid">
+              <div class="admin-field">
+                <label for="activePhaseSelect">Fase attiva</label>
+                <select id="activePhaseSelect" class="waiver-owner-select">
+                  <option value="conference">Conference</option>
+                  <option value="round_robin">Round Robin</option>
+                  <option value="playoff">Playoff</option>
+                </select>
+              </div>
 
-    <div class="admin-field">
-      <label for="activeWeekInput">Settimana</label>
-      <input type="number" id="activeWeekInput" min="1" />
-    </div>
-  </div>
+              <div class="admin-field">
+                <label for="activeWeekInput">Settimana</label>
+                <input type="number" id="activeWeekInput" min="1" />
+              </div>
+            </div>
 
-  <div class="slot-settings-grid">
-    <div class="slot-settings-card">
-      <h4>Slot 1</h4>
-      <label for="slot1OpenInput">Apertura</label>
-      <input type="datetime-local" id="slot1OpenInput" />
+            <div class="slot-settings-grid">
+              <div class="slot-settings-card">
+                <h4>Slot 1</h4>
+                <label for="slot1OpenInput">Apertura</label>
+                <input type="datetime-local" id="slot1OpenInput" />
 
-      <label for="slot1CloseInput">Chiusura</label>
-      <input type="datetime-local" id="slot1CloseInput" />
-    </div>
+                <label for="slot1CloseInput">Chiusura</label>
+                <input type="datetime-local" id="slot1CloseInput" />
+              </div>
 
-    <div class="slot-settings-card">
-      <h4>Slot 1S</h4>
-      <label for="slot1SOpenInput">Apertura</label>
-      <input type="datetime-local" id="slot1SOpenInput" />
+              <div class="slot-settings-card">
+                <h4>Slot 1S</h4>
+                <label for="slot1SOpenInput">Apertura</label>
+                <input type="datetime-local" id="slot1SOpenInput" />
 
-      <label for="slot1SCloseInput">Chiusura</label>
-      <input type="datetime-local" id="slot1SCloseInput" />
-    </div>
+                <label for="slot1SCloseInput">Chiusura</label>
+                <input type="datetime-local" id="slot1SCloseInput" />
+              </div>
 
-    <div class="slot-settings-card">
-      <h4>Slot 2</h4>
-      <label for="slot2OpenInput">Apertura</label>
-      <input type="datetime-local" id="slot2OpenInput" />
+              <div class="slot-settings-card">
+                <h4>Slot 2</h4>
+                <label for="slot2OpenInput">Apertura</label>
+                <input type="datetime-local" id="slot2OpenInput" />
 
-      <label for="slot2CloseInput">Chiusura</label>
-      <input type="datetime-local" id="slot2CloseInput" />
-    </div>
+                <label for="slot2CloseInput">Chiusura</label>
+                <input type="datetime-local" id="slot2CloseInput" />
+              </div>
 
-    <div class="slot-settings-card">
-      <h4>Slot 2S</h4>
-      <label for="slot2SOpenInput">Apertura</label>
-      <input type="datetime-local" id="slot2SOpenInput" />
+              <div class="slot-settings-card">
+                <h4>Slot 2S</h4>
+                <label for="slot2SOpenInput">Apertura</label>
+                <input type="datetime-local" id="slot2SOpenInput" />
 
-      <label for="slot2SCloseInput">Chiusura</label>
-      <input type="datetime-local" id="slot2SCloseInput" />
-    </div>
-  </div>
+                <label for="slot2SCloseInput">Chiusura</label>
+                <input type="datetime-local" id="slot2SCloseInput" />
+              </div>
+            </div>
 
-  <div class="admin-actions">
-    <button id="setStandardFridayBtn" type="button" class="secondary-btn small-btn">
-      Imposta venerdì standard
-    </button>
+            <div class="admin-actions">
+              <button id="setStandardFridayBtn" type="button" class="secondary-btn small-btn">
+                Imposta venerdì standard
+              </button>
 
-    <button id="setPlayoffFridayBtn" type="button" class="secondary-btn small-btn">
-      Imposta venerdì playoff
-    </button>
+              <button id="setPlayoffFridayBtn" type="button" class="secondary-btn small-btn">
+                Imposta venerdì playoff
+              </button>
 
-    <button id="saveWaiverSettingsBtn" type="button" class="primary-btn small-btn">
-      Salva impostazioni
-    </button>
-  </div>
+              <button id="saveWaiverSettingsBtn" type="button" class="primary-btn small-btn">
+                Salva impostazioni
+              </button>
+            </div>
 
-  <p id="settingsMessage" class="priority-message"></p>
-</div>
+            <p id="settingsMessage" class="priority-message"></p>
+          </div>
 
           <div class="admin-actions">
             <button id="generateWaiverOrderBtn" type="button" class="primary-btn small-btn">
@@ -269,16 +267,17 @@
               Calcola slot 1
             </button>
 
+            <button id="calculateSlot1SBtn" type="button" class="primary-btn small-btn">
+              Calcola slot 1S
+            </button>
+
             <button id="calculateSlot2Btn" type="button" class="primary-btn small-btn">
               Calcola slot 2
             </button>
-<button id="calculateSlot1SBtn" type="button" class="primary-btn small-btn">
-  Calcola slot 1S
-</button>
 
-<button id="calculateSlot2SBtn" type="button" class="primary-btn small-btn">
-  Calcola slot 2S
-</button>
+            <button id="calculateSlot2SBtn" type="button" class="primary-btn small-btn">
+              Calcola slot 2S
+            </button>
           </div>
 
           <div id="waiverOrderMessage" class="priority-message"></div>
@@ -310,7 +309,7 @@
 
   </main>
 
-  <script type="module" src="waiver.js?v=5"></script>
+  <script type="module" src="waiver.js?v=9"></script>
   <script type="module" src="home_auth.js"></script>
   <script src="navbar.js"></script>
 </body>
