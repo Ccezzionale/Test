@@ -1666,9 +1666,9 @@ function renderFreeAgents() {
 
 const poolBadge =
   player.pool === "conference_league"
-    ? "🟨 League"
+    ? "🟨"
     : player.pool === "conference_championship"
-      ? "🟦 Championship"
+      ? "🟦"
       : "";
 
 const badges = [
