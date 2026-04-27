@@ -160,6 +160,10 @@ const urlParams = new URLSearchParams(window.location.search);
 const tab = urlParams.get("tab") || (window.location.href.includes("conference") ? "Draft Conference" : "Draft Championship");
 const endpoint = "https://script.google.com/macros/s/AKfycbyFSp-hdD7_r2pNoCJ_X1vjxAzVKXG4py42RUT5cFloUA9PG5zFGWh3sp-qg2MEg7H5OQ/exec";
 
+const draftPool = tab === "Draft Championship"
+  ? "conference_championship"
+  : "conference_league";
+
 // ========== Render Picks ==========
 function renderPicks(dati) {
   const corpoTabella = document.querySelector("#tabella-pick tbody");
@@ -574,9 +578,11 @@ const { data: players, error } = await supabase
     is_u21,
     is_fp,
     owner_team_id,
-    status
+    status,
+    pool
   `)
   .eq("status", "active")
+  .eq("pool", draftPool)
   .order("name", { ascending: true });
     
 
