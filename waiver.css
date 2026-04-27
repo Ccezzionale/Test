@@ -10,11 +10,11 @@ body {
 }
 
 body {
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
   color: #172033;
   background:
-    radial-gradient(900px 500px at 15% 0%, rgba(0,116,217,.25), transparent 60%),
-    radial-gradient(900px 500px at 85% 15%, rgba(255,204,0,.12), transparent 55%),
+    radial-gradient(900px 500px at 15% 0%, rgba(0, 116, 217, 0.25), transparent 60%),
+    radial-gradient(900px 500px at 85% 15%, rgba(255, 204, 0, 0.12), transparent 55%),
     linear-gradient(180deg, #001f3f 0%, #062b52 45%, #f4f7fb 45%, #f4f7fb 100%);
   min-height: 100vh;
 }
@@ -23,10 +23,18 @@ a {
   text-decoration: none;
 }
 
+button {
+  font-family: inherit;
+}
+
 .active-nav {
   color: var(--gold, #ffcc00) !important;
-  background: rgba(255,255,255,0.08);
+  background: rgba(255, 255, 255, 0.08);
 }
+
+/* ===============================
+   PAGE / HERO
+================================ */
 
 .waiver-page {
   width: 100%;
@@ -41,9 +49,9 @@ a {
   padding: 30px;
   color: #fff;
   background:
-    linear-gradient(135deg, rgba(0,31,63,.98), rgba(0,75,145,.88)),
-    radial-gradient(600px 260px at 85% 20%, rgba(255,204,0,.22), transparent 60%);
-  box-shadow: 0 18px 42px rgba(0,0,0,.24);
+    linear-gradient(135deg, rgba(0, 31, 63, 0.98), rgba(0, 75, 145, 0.88)),
+    radial-gradient(600px 260px at 85% 20%, rgba(255, 204, 0, 0.22), transparent 60%);
+  box-shadow: 0 18px 42px rgba(0, 0, 0, 0.24);
   display: flex;
   align-items: flex-end;
   margin-bottom: 18px;
@@ -59,23 +67,23 @@ a {
   font-size: clamp(4rem, 12vw, 10rem);
   font-weight: 900;
   letter-spacing: -0.08em;
-  color: rgba(255,255,255,.055);
+  color: rgba(255, 255, 255, 0.055);
   pointer-events: none;
 }
 
 .eyebrow {
   margin: 0 0 8px;
   text-transform: uppercase;
-  letter-spacing: .12em;
+  letter-spacing: 0.12em;
   font-weight: 800;
-  font-size: .78rem;
+  font-size: 0.78rem;
   color: #ffdf5a;
 }
 
 .waiver-hero h1 {
   margin: 0;
   font-size: clamp(2rem, 5vw, 4.2rem);
-  line-height: .95;
+  line-height: 0.95;
   letter-spacing: -0.05em;
 }
 
@@ -83,8 +91,12 @@ a {
   max-width: 620px;
   margin: 12px 0 0;
   font-size: 1.05rem;
-  color: rgba(255,255,255,.86);
+  color: rgba(255, 255, 255, 0.86);
 }
+
+/* ===============================
+   GENERIC CARDS / GRID
+================================ */
 
 .waiver-grid {
   display: grid;
@@ -96,25 +108,11 @@ a {
   grid-template-columns: 1fr;
 }
 
-.waiver-grid-calls {
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-}
-
-.waiver-grid-main {
-  grid-template-columns: minmax(0, 1.55fr) minmax(320px, .8fr);
-  align-items: start;
-}
-
-.waiver-side {
-  display: grid;
-  gap: 18px;
-}
-
 .waiver-card {
-  background: rgba(255,255,255,.96);
-  border: 1px solid rgba(0,31,63,.08);
+  background: rgba(255, 255, 255, 0.96);
+  border: 1px solid rgba(0, 31, 63, 0.08);
   border-radius: 22px;
-  box-shadow: 0 14px 32px rgba(0,31,63,.10);
+  box-shadow: 0 14px 32px rgba(0, 31, 63, 0.10);
   padding: 20px;
 }
 
@@ -137,6 +135,17 @@ a {
   margin: 0;
 }
 
+.card-subtitle {
+  margin: 6px 0 0;
+  color: #64748b;
+  font-size: 0.9rem;
+  line-height: 1.35;
+}
+
+/* ===============================
+   TEAM INFO
+================================ */
+
 .info-grid {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -147,15 +156,15 @@ a {
   padding: 14px;
   border-radius: 16px;
   background: linear-gradient(180deg, #f8fbff 0%, #eef5ff 100%);
-  border: 1px solid rgba(0,31,63,.08);
+  border: 1px solid rgba(0, 31, 63, 0.08);
 }
 
 .info-item span {
   display: block;
   margin-bottom: 6px;
-  font-size: .76rem;
+  font-size: 0.76rem;
   text-transform: uppercase;
-  letter-spacing: .08em;
+  letter-spacing: 0.08em;
   font-weight: 800;
   color: #64748b;
 }
@@ -167,30 +176,75 @@ a {
   word-break: break-word;
 }
 
+/* ===============================
+   MAIN DASHBOARD
+================================ */
+
+.waiver-dashboard-grid {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 24px;
+  margin-bottom: 32px;
+}
+
+.waiver-left-column,
+.waiver-right-column {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  min-width: 0;
+}
+
+.public-waiver-card,
+.my-waiver-card,
+.free-agents-card {
+  min-width: 0;
+}
+
+@media (min-width: 1200px) {
+  .waiver-dashboard-grid {
+    grid-template-columns: minmax(680px, 1.45fr) minmax(420px, 0.9fr);
+    align-items: start;
+  }
+}
+
+@media (min-width: 1500px) {
+  .waiver-dashboard-grid {
+    grid-template-columns: minmax(780px, 1.55fr) minmax(460px, 0.9fr);
+  }
+}
+
+/* ===============================
+   FORM ELEMENTS
+================================ */
+
 label {
   display: block;
   margin: 12px 0 7px;
   color: #334155;
-  font-size: .88rem;
+  font-size: 0.88rem;
   font-weight: 800;
 }
 
-input {
+input,
+select {
   width: 100%;
   min-height: 44px;
-  border: 1px solid rgba(0,31,63,.14);
+  border: 1px solid rgba(0, 31, 63, 0.14);
   border-radius: 13px;
   padding: 10px 12px;
   background: #fff;
   color: #111827;
-  font-size: .96rem;
+  font-size: 0.96rem;
   outline: none;
-  transition: border-color .18s ease, box-shadow .18s ease, background .18s ease;
+  transition: border-color 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
 }
 
-input:focus {
+input:focus,
+select:focus {
   border-color: #0b5fc2;
-  box-shadow: 0 0 0 4px rgba(11,95,194,.11);
+  box-shadow: 0 0 0 4px rgba(11, 95, 194, 0.11);
 }
 
 input[readonly] {
@@ -198,10 +252,26 @@ input[readonly] {
   cursor: pointer;
 }
 
-input:disabled {
-  opacity: .62;
+input:disabled,
+button:disabled {
+  opacity: 0.62;
   cursor: not-allowed;
 }
+
+.waiver-owner-select {
+  width: 100%;
+  min-height: 40px;
+  border: 1px solid rgba(0, 31, 63, 0.14);
+  border-radius: 11px;
+  padding: 8px 10px;
+  background: #fff;
+  color: #111827;
+  font-weight: 800;
+}
+
+/* ===============================
+   BUTTONS
+================================ */
 
 .call-actions,
 .admin-actions {
@@ -209,10 +279,6 @@ input:disabled {
   gap: 10px;
   flex-wrap: wrap;
   margin-top: 14px;
-}
-
-button {
-  font-family: inherit;
 }
 
 .primary-btn,
@@ -228,8 +294,8 @@ button {
   color: #fff;
   font-weight: 900;
   cursor: pointer;
-  box-shadow: 0 10px 22px rgba(0,63,127,.20);
-  transition: transform .16s ease, box-shadow .16s ease, opacity .16s ease;
+  box-shadow: 0 10px 22px rgba(0, 63, 127, 0.20);
+  transition: transform 0.16s ease, box-shadow 0.16s ease, opacity 0.16s ease;
 }
 
 .primary-btn:hover,
@@ -238,14 +304,12 @@ button {
 #calculateSlot1Btn:hover,
 #calculateSlot2Btn:hover {
   transform: translateY(-1px);
-  box-shadow: 0 14px 26px rgba(0,63,127,.26);
+  box-shadow: 0 14px 26px rgba(0, 63, 127, 0.26);
 }
 
 .primary-btn:disabled,
 #saveCallBtn:disabled,
 #saveCallBtn2:disabled {
-  opacity: .55;
-  cursor: not-allowed;
   transform: none;
   box-shadow: none;
 }
@@ -253,44 +317,44 @@ button {
 .secondary-btn,
 .btn-reset-call {
   appearance: none;
-  border: 1px solid rgba(0,31,63,.12);
+  border: 1px solid rgba(0, 31, 63, 0.12);
   border-radius: 13px;
   padding: 11px 15px;
   background: #ffffff;
   color: #001f3f;
   font-weight: 900;
   cursor: pointer;
-  transition: transform .16s ease, background .16s ease, border-color .16s ease;
+  transition: transform 0.16s ease, background 0.16s ease, border-color 0.16s ease;
 }
 
 .secondary-btn:hover,
 .btn-reset-call:hover {
   transform: translateY(-1px);
   background: #f1f5f9;
-  border-color: rgba(0,31,63,.20);
+  border-color: rgba(0, 31, 63, 0.20);
 }
 
 .small-btn {
   padding: 10px 12px;
-  font-size: .9rem;
+  font-size: 0.9rem;
 }
 
-.slot-pill,
-.table-hint {
+.table-hint,
+.slot-pill {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   border-radius: 999px;
   padding: 6px 10px;
-  font-size: .78rem;
+  font-size: 0.78rem;
   font-weight: 900;
-  background: rgba(0,63,127,.10);
+  background: rgba(0, 63, 127, 0.10);
   color: #003f7f;
   white-space: nowrap;
 }
 
 .slot-pill-alt {
-  background: rgba(255,204,0,.22);
+  background: rgba(255, 204, 0, 0.22);
   color: #725300;
 }
 
@@ -299,54 +363,118 @@ button {
   color: #334155;
 }
 
-.selected-player-box {
-  margin-bottom: 14px;
-  padding: 12px 14px;
-  border-radius: 15px;
-  background: #eef6ff;
-  border: 1px solid #bfdbfe;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  flex-wrap: wrap;
+/* ===============================
+   MY WAIVER CALLS
+================================ */
+
+.my-waiver-calls {
+  display: grid;
+  gap: 16px;
 }
 
-.selected-player-box.hidden {
-  display: none;
+#myWaiverCalls .waiver-slot-block {
+  display: block;
+  margin-bottom: 20px;
 }
 
-.selected-label {
-  font-size: .72rem;
-  text-transform: uppercase;
-  color: #64748b;
+#myWaiverCalls .waiver-slot-title {
+  margin: 4px 0 12px;
+  color: #001f3f;
+  font-size: 1rem;
   font-weight: 900;
-  letter-spacing: .06em;
 }
 
-.role-badge {
+#myWaiverCalls .waiver-slot-content {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 14px;
+}
+
+@media (min-width: 1200px) {
+  #myWaiverCalls .waiver-slot-content {
+    grid-template-columns: repeat(2, minmax(280px, 1fr));
+  }
+}
+
+.dynamic-call-card {
+  height: auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  border: 1px solid rgba(0, 31, 63, 0.10);
+  background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+  border-radius: 16px;
+  padding: 14px;
+  box-shadow: 0 8px 18px rgba(0, 31, 63, 0.07);
+}
+
+.dynamic-call-card.active-call-target {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.10), 0 12px 24px rgba(0, 31, 63, 0.10);
+}
+
+.dynamic-call-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.dynamic-call-title {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.dynamic-call-title strong {
+  color: #001f3f;
+  font-size: 0.98rem;
+}
+
+.dynamic-call-title span {
+  color: #64748b;
+  font-size: 0.82rem;
+  font-weight: 800;
+}
+
+.via-badge {
+  display: inline-flex;
+  width: fit-content;
+  padding: 4px 8px;
+  border-radius: 999px;
+  background: rgba(255, 204, 0, 0.20);
+  color: #725300;
+  font-size: 0.75rem;
+  font-weight: 900;
+}
+
+.order-position-pill {
+  flex-shrink: 0;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-width: 30px;
-  padding: 4px 8px;
+  min-width: 38px;
+  height: 32px;
+  padding: 0 10px;
   border-radius: 999px;
-  background: #1d4ed8;
-  color: white;
-  font-size: .78rem;
+  background: #001f3f;
+  color: #ffcc00;
   font-weight: 900;
 }
 
 .call-message {
   min-height: 22px;
   margin: 12px 0 0;
-  font-size: .92rem;
+  font-size: 0.92rem;
   font-weight: 700;
   color: #334155;
 }
 
-.free-agents-card {
-  min-width: 0;
-}
+/* ===============================
+   FREE AGENTS
+================================ */
 
 #searchInput {
   margin-bottom: 12px;
@@ -356,7 +484,7 @@ button {
   max-height: 560px;
   overflow-y: auto;
   overflow-x: auto;
-  border: 1px solid rgba(0,31,63,.10);
+  border: 1px solid rgba(0, 31, 63, 0.10);
   border-radius: 16px;
   background: #fff;
 }
@@ -387,8 +515,8 @@ button {
 #freeAgentsTable td {
   padding: 12px 13px;
   text-align: left;
-  border-bottom: 1px solid rgba(0,31,63,.08);
-  font-size: .92rem;
+  border-bottom: 1px solid rgba(0, 31, 63, 0.08);
+  font-size: 0.92rem;
 }
 
 #freeAgentsTable thead th {
@@ -397,14 +525,14 @@ button {
   z-index: 3;
   background: #001f3f;
   color: #fff;
-  font-size: .78rem;
+  font-size: 0.78rem;
   text-transform: uppercase;
-  letter-spacing: .06em;
+  letter-spacing: 0.06em;
 }
 
 #freeAgentsTable tbody tr {
   cursor: pointer;
-  transition: background .14s ease, box-shadow .14s ease;
+  transition: background 0.14s ease, box-shadow 0.14s ease;
 }
 
 #freeAgentsTable tbody tr:hover {
@@ -416,487 +544,13 @@ button {
   box-shadow: inset 4px 0 0 #2563eb;
 }
 
-.public-calls,
-.all-calls {
-  display: grid;
-  gap: 10px;
-}
-
-.public-call-row,
-#allCalls > div {
-  border-radius: 14px;
-  border: 1px solid rgba(0,31,63,.09);
-  background: #f8fafc;
-  padding: 12px;
-}
-
-.public-call-main {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  line-height: 1.3;
-}
-
-.public-call-main strong {
-  color: #0f172a;
-}
-
-.public-call-main span {
-  flex-shrink: 0;
-  display: inline-flex;
-  border-radius: 999px;
-  padding: 4px 8px;
-  background: #e2e8f0;
-  color: #334155;
-  font-size: .76rem;
-  font-weight: 900;
-}
-
-.public-call-main.won {
-  border-left: 4px solid #16a34a;
-  padding-left: 10px;
-}
-
-.public-call-main.lost {
-  border-left: 4px solid #dc2626;
-  padding-left: 10px;
-}
-
-.public-call-main.pending {
-  border-left: 4px solid #94a3b8;
-  padding-left: 10px;
-}
-
-.admin-card {
-  border-color: rgba(255,204,0,.32);
-  background:
-    linear-gradient(180deg, rgba(255,255,255,.98), rgba(255,251,235,.96));
-}
-
-.priority-group {
-  margin-top: 14px;
-  padding: 12px;
-  border-radius: 16px;
-  background: rgba(0,31,63,.035);
-  border: 1px solid rgba(0,31,63,.08);
-}
-
-.priority-group-title {
-  margin: 0 0 10px;
-  color: #001f3f;
-  font-size: .98rem;
-  font-weight: 900;
-}
-
-.priority-group-list {
-  display: grid;
-  gap: 8px;
-}
-
-.priority-team-name {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.priority-team-name small {
-  color: #64748b;
-  font-size: .74rem;
-  font-weight: 800;
-}
-
-.card-subtitle {
-  margin: 6px 0 0;
-  color: #64748b;
-  font-size: .9rem;
-  line-height: 1.35;
-}
-
-.my-waiver-calls {
-  display: grid;
-  gap: 16px;
-}
-
-.waiver-slot-block {
-  display: grid;
-  gap: 10px;
-}
-
-.waiver-slot-title {
-  margin: 4px 0 2px;
-  color: #001f3f;
-  font-size: 1rem;
-  font-weight: 900;
-}
-
-.dynamic-call-card {
-  border: 1px solid rgba(0,31,63,.10);
-  background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
-  border-radius: 16px;
-  padding: 14px;
-  box-shadow: 0 8px 18px rgba(0,31,63,.07);
-}
-
-.dynamic-call-card.active-call-target {
-  border-color: #2563eb;
-  box-shadow: 0 0 0 4px rgba(37,99,235,.10), 0 12px 24px rgba(0,31,63,.10);
-}
-
-.dynamic-call-header {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 12px;
-  margin-bottom: 12px;
-}
-
-.dynamic-call-title {
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
-}
-
-.dynamic-call-title strong {
-  color: #001f3f;
-  font-size: .98rem;
-}
-
-.dynamic-call-title span {
-  color: #64748b;
-  font-size: .82rem;
-  font-weight: 800;
-}
-
-.via-badge {
-  display: inline-flex;
-  width: fit-content;
-  padding: 4px 8px;
-  border-radius: 999px;
-  background: rgba(255,204,0,.20);
-  color: #725300;
-  font-size: .75rem;
-  font-weight: 900;
-}
-
-.order-position-pill {
-  flex-shrink: 0;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 38px;
-  height: 32px;
-  padding: 0 10px;
-  border-radius: 999px;
-  background: #001f3f;
-  color: #ffcc00;
-  font-weight: 900;
-}
-
-.waiver-order-admin {
-  display: grid;
-  gap: 16px;
-}
-
-.waiver-admin-group {
-  padding: 12px;
-  border-radius: 16px;
-  background: rgba(0,31,63,.035);
-  border: 1px solid rgba(0,31,63,.08);
-}
-
-.waiver-admin-group h4 {
-  margin: 0 0 10px;
-  color: #001f3f;
-  font-weight: 900;
-}
-
-.waiver-admin-row {
-  display: grid;
-  grid-template-columns: 52px 1fr 1fr;
-  gap: 10px;
-  align-items: center;
-  padding: 10px;
-  border-radius: 13px;
-  background: #fff;
-  border: 1px solid rgba(0,31,63,.08);
-  margin-bottom: 8px;
-}
-
-.waiver-admin-original {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.waiver-admin-original strong {
-  color: #0f172a;
-}
-
-.waiver-admin-original span {
-  color: #64748b;
-  font-size: .78rem;
-  font-weight: 800;
-}
-
-.waiver-owner-select {
-  width: 100%;
-  min-height: 40px;
-  border: 1px solid rgba(0,31,63,.14);
-  border-radius: 11px;
-  padding: 8px 10px;
-  background: #fff;
-  color: #111827;
-  font-weight: 800;
-}
-
-.admin-settings-panel {
-  margin-bottom: 18px;
-  padding: 14px;
-  border-radius: 16px;
-  background: rgba(0,31,63,.035);
-  border: 1px solid rgba(0,31,63,.08);
-}
-
-.admin-settings-panel h3 {
-  margin: 0 0 12px;
-  color: #001f3f;
-  font-size: 1rem;
-  font-weight: 900;
-}
-
-.admin-settings-row {
-  display: grid;
-  grid-template-columns: 120px minmax(180px, 1fr) auto;
-  gap: 10px;
-  align-items: center;
-}
-
-.admin-settings-row label {
-  margin: 0;
-}
-
-.waiver-admin-row {
-  cursor: grab;
-}
-
-.waiver-admin-row:hover {
-  background: #f8fbff;
-  box-shadow: 0 8px 18px rgba(0,31,63,.08);
-}
-
-.waiver-admin-row.dragging {
-  opacity: .45;
-  cursor: grabbing;
-}
-
-.waiver-admin-row select {
-  cursor: pointer;
-}
-
-.public-calls {
-  display: grid;
-  gap: 12px;
-}
-
-.public-result-card {
-  display: grid;
-  grid-template-columns: auto 1fr;
-  gap: 12px;
-  padding: 13px;
-  border-radius: 16px;
-  border: 1px solid rgba(0,31,63,.09);
-  background: #f8fafc;
-  box-shadow: 0 8px 18px rgba(0,31,63,.06);
-}
-
-.public-result-card.won {
-  background: linear-gradient(180deg, #f0fdf4 0%, #ffffff 100%);
-  border-color: rgba(22,163,74,.25);
-}
-
-.public-result-card.lost {
-  background: linear-gradient(180deg, #fef2f2 0%, #ffffff 100%);
-  border-color: rgba(220,38,38,.24);
-}
-
-.public-result-card.pending {
-  background: linear-gradient(180deg, #f8fafc 0%, #ffffff 100%);
-  border-color: rgba(100,116,139,.22);
-}
-
-.public-result-status {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 4px;
-  min-width: 54px;
-}
-
-.public-result-icon {
-  font-size: 1.35rem;
-  line-height: 1;
-}
-
-.public-result-label {
-  font-size: .68rem;
-  text-transform: uppercase;
-  font-weight: 900;
-  letter-spacing: .06em;
-  color: #64748b;
-}
-
-.public-result-card.won .public-result-label {
-  color: #15803d;
-}
-
-.public-result-card.lost .public-result-label {
-  color: #b91c1c;
-}
-
-.public-result-body {
-  min-width: 0;
-}
-
-.public-result-body strong {
-  display: block;
-  color: #0f172a;
-  font-size: .95rem;
-  line-height: 1.3;
-}
-
-.public-result-meta {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  margin-top: 8px;
-}
-
-.public-result-meta span {
-  display: inline-flex;
-  align-items: center;
-  border-radius: 999px;
-  padding: 4px 8px;
-  background: #e2e8f0;
-  color: #334155;
-  font-size: .72rem;
-  font-weight: 900;
-}
-
-.public-result-via {
-  width: fit-content;
-  margin-top: 8px;
-  border-radius: 999px;
-  padding: 4px 8px;
-  background: rgba(255,204,0,.20);
-  color: #725300;
-  font-size: .72rem;
-  font-weight: 900;
-}
-
-.admin-settings-panel {
-  margin-bottom: 18px;
-  padding: 14px;
-  border-radius: 16px;
-  background: rgba(0,31,63,.035);
-  border: 1px solid rgba(0,31,63,.08);
-}
-
-.admin-settings-panel h3 {
-  margin: 0 0 12px;
-  color: #001f3f;
-  font-size: 1rem;
-  font-weight: 900;
-}
-
-.admin-settings-grid {
-  display: grid;
-  grid-template-columns: minmax(180px, 1fr) 120px;
-  gap: 12px;
-  margin-bottom: 14px;
-}
-
-.admin-field label,
-.slot-settings-card label {
-  display: block;
-  margin: 8px 0 6px;
-  color: #334155;
-  font-size: .82rem;
-  font-weight: 900;
-}
-
-.admin-field input,
-.slot-settings-card input {
-  width: 100%;
-  min-height: 40px;
-  border: 1px solid rgba(0,31,63,.14);
-  border-radius: 11px;
-  padding: 8px 10px;
-  background: #fff;
-  color: #111827;
-  font-weight: 700;
-}
-
-.slot-settings-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 12px;
-  margin-top: 12px;
-}
-
-.slot-settings-card {
-  padding: 12px;
-  border-radius: 14px;
-  background: #ffffff;
-  border: 1px solid rgba(0,31,63,.08);
-}
-
-.slot-settings-card h4 {
-  margin: 0 0 8px;
-  color: #001f3f;
-  font-size: .95rem;
-  font-weight: 900;
-}
-
-.public-schedule-box {
-  background: #f8fafc;
-  border: 1px solid #dbe5f0;
-  border-radius: 14px;
-  padding: 14px 16px;
-  color: #1f2a44;
-}
-
-.public-schedule-box strong {
-  display: block;
-  margin-bottom: 8px;
-  color: #002b55;
-}
-
-.public-schedule-box ul {
-  margin: 0;
-  padding-left: 18px;
-}
-
-.public-schedule-box li {
-  margin: 5px 0;
-}
-
-.public-calls-group {
-  margin-bottom: 18px;
-}
-
-.public-calls-group h3 {
-  margin: 0 0 10px;
-  padding: 8px 12px;
-  border-radius: 12px;
-  background: #002b55;
-  color: #ffffff;
-  font-size: 0.95rem;
-}
+/* ===============================
+   PUBLIC WAIVER ORDER
+================================ */
 
 .public-waiver-order {
   display: grid;
-  gap: 18px;
+  gap: 14px;
 }
 
 .public-waiver-group {
@@ -907,13 +561,17 @@ button {
 }
 
 .public-waiver-group-title {
+  width: 100%;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  margin-bottom: 12px;
-  padding-bottom: 10px;
+  margin: 0 0 12px;
+  padding: 0 0 10px;
+  border: 0;
   border-bottom: 1px solid #e2e8f0;
+  background: transparent;
+  text-align: left;
 }
 
 .public-waiver-group-title h3 {
@@ -929,20 +587,39 @@ button {
   text-align: right;
 }
 
+.public-collapsible-slot .public-waiver-toggle {
+  cursor: pointer;
+}
+
+.public-waiver-group-content {
+  display: grid;
+  gap: 8px;
+}
+
+.public-toggle-icon {
+  display: inline-block;
+  margin-left: 6px;
+  color: #002b55;
+  transition: transform 0.18s ease;
+}
+
+.public-collapsible-slot:not(.public-slot-closed) .public-toggle-icon {
+  transform: rotate(180deg);
+}
+
+.public-collapsible-slot.public-slot-closed .public-waiver-group-content {
+  display: none;
+}
+
 .public-waiver-row {
   display: grid;
-  grid-template-columns: 52px 1fr;
-  gap: 12px;
+  grid-template-columns: 44px 1fr;
+  gap: 10px;
   align-items: center;
   background: #ffffff;
   border: 1px solid #e5edf6;
   border-radius: 14px;
   padding: 10px 12px;
-  margin-bottom: 8px;
-}
-
-.public-waiver-row:last-child {
-  margin-bottom: 0;
 }
 
 .public-waiver-rank {
@@ -998,247 +675,8 @@ button {
   opacity: 0.75;
 }
 
-.waiver-top-grid {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 22px;
-  margin-bottom: 22px;
-}
-
-#myWaiverCalls .waiver-slot-block {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 14px;
-  margin-bottom: 20px;
-}
-
-#myWaiverCalls .waiver-slot-title {
-  grid-column: 1 / -1;
-  margin-bottom: 2px;
-}
-
-.dynamic-call-card {
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-}
-
-.call-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  margin-top: 12px;
-}
-
-.call-actions button {
-  flex: 0 0 auto;
-}
-
-.public-waiver-row {
-  display: grid;
-  grid-template-columns: 44px 1fr;
-  gap: 10px;
-  align-items: center;
-  padding: 10px 12px;
-}
-
-.public-waiver-order {
-  display: grid;
-  gap: 14px;
-}
-
-.waiver-top-grid {
-  width: 100%;
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 22px;
-  margin-bottom: 24px;
-  clear: both;
-}
-
-.waiver-dashboard-grid {
-  width: 100%;
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 24px;
-  margin-bottom: 32px;
-}
-
-.waiver-left-column,
-.waiver-right-column {
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
-  min-width: 0;
-}
-
-.waiver-slot-title.waiver-slot-toggle {
-  width: 100%;
-  border: 0;
-  background: transparent;
-  color: #002b55;
-  font: inherit;
-  font-weight: 900;
-  text-align: left;
-  cursor: default;
-  padding: 0;
-  margin: 0 0 12px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.collapsible-slot .waiver-slot-toggle {
-  cursor: pointer;
-  padding: 10px 12px;
-  border-radius: 12px;
-  background: #f1f5f9;
-  border: 1px solid #dbe5f0;
-}
-
-.slot-toggle-icon {
-  font-size: 1rem;
-  transition: transform 0.18s ease;
-}
-
-.collapsible-slot:not(.slot-closed) .slot-toggle-icon {
-  transform: rotate(180deg);
-}
-
-.collapsible-slot.slot-closed .waiver-slot-content {
-  display: none;
-}
-
 /* ===============================
-   FIX LAYOUT WAIVER DASHBOARD
-================================ */
-
-.waiver-dashboard-grid {
-  width: 100%;
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 24px;
-  margin-bottom: 32px;
-}
-
-.waiver-left-column,
-.waiver-right-column {
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
-  min-width: 0;
-}
-
-@media (min-width: 1200px) {
-  .waiver-dashboard-grid {
-    grid-template-columns: minmax(680px, 1.45fr) minmax(420px, 0.9fr);
-    align-items: start;
-  }
-}
-
-@media (min-width: 1500px) {
-  .waiver-dashboard-grid {
-    grid-template-columns: minmax(780px, 1.55fr) minmax(460px, 0.9fr);
-  }
-}
-
-/* Lo slot contiene titolo + contenuto */
-#myWaiverCalls .waiver-slot-block {
-  display: block;
-  margin-bottom: 20px;
-}
-
-/* La griglia a 2 colonne va qui, non sul blocco esterno */
-#myWaiverCalls .waiver-slot-content {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 14px;
-}
-
-@media (min-width: 1200px) {
-  #myWaiverCalls .waiver-slot-content {
-    grid-template-columns: repeat(2, minmax(280px, 1fr));
-  }
-}
-
-/* Evita card stirate altissime */
-.dynamic-call-card {
-  height: auto !important;
-  min-height: 0;
-}
-
-/* Slot 2 chiuso a tendina */
-.waiver-slot-title.waiver-slot-toggle {
-  width: 100%;
-  border: 0;
-  background: transparent;
-  color: #002b55;
-  font: inherit;
-  font-weight: 900;
-  text-align: left;
-  cursor: default;
-  padding: 0;
-  margin: 0 0 12px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.collapsible-slot .waiver-slot-toggle {
-  cursor: pointer;
-  padding: 10px 12px;
-  border-radius: 12px;
-  background: #f1f5f9;
-  border: 1px solid #dbe5f0;
-}
-
-.slot-toggle-icon {
-  font-size: 1rem;
-  transition: transform 0.18s ease;
-}
-
-.collapsible-slot:not(.slot-closed) .slot-toggle-icon {
-  transform: rotate(180deg);
-}
-
-.collapsible-slot.slot-closed .waiver-slot-content {
-  display: none !important;
-}
-
-.public-waiver-group-title.public-waiver-toggle {
-  width: 100%;
-  border: 0;
-  background: transparent;
-  cursor: default;
-}
-
-.public-collapsible-slot .public-waiver-toggle {
-  cursor: pointer;
-}
-
-.public-waiver-group-content {
-  display: grid;
-  gap: 8px;
-}
-
-.public-toggle-icon {
-  display: inline-block;
-  margin-left: 6px;
-  color: #002b55;
-  transition: transform 0.18s ease;
-}
-
-.public-collapsible-slot:not(.public-slot-closed) .public-toggle-icon {
-  transform: rotate(180deg);
-}
-
-.public-collapsible-slot.public-slot-closed .public-waiver-group-content {
-  display: none;
-}
-
-/* ===============================
-   ADMIN PANEL FULL WIDTH
+   ADMIN PANEL
 ================================ */
 
 .waiver-admin-section {
@@ -1251,9 +689,181 @@ button {
   width: 100%;
 }
 
-.waiver-admin-section .admin-settings-panel {
-  margin-bottom: 18px;
+.admin-card {
+  border-color: rgba(255, 204, 0, 0.32);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(255, 251, 235, 0.96));
 }
+
+.admin-settings-panel {
+  margin-bottom: 18px;
+  padding: 14px;
+  border-radius: 16px;
+  background: rgba(0, 31, 63, 0.035);
+  border: 1px solid rgba(0, 31, 63, 0.08);
+}
+
+.admin-settings-panel h3 {
+  margin: 0 0 12px;
+  color: #001f3f;
+  font-size: 1rem;
+  font-weight: 900;
+}
+
+.admin-settings-grid {
+  display: grid;
+  grid-template-columns: minmax(180px, 1fr) 120px;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.admin-field label,
+.slot-settings-card label {
+  display: block;
+  margin: 8px 0 6px;
+  color: #334155;
+  font-size: 0.82rem;
+  font-weight: 900;
+}
+
+.admin-field input,
+.slot-settings-card input {
+  width: 100%;
+  min-height: 40px;
+  border: 1px solid rgba(0, 31, 63, 0.14);
+  border-radius: 11px;
+  padding: 8px 10px;
+  background: #fff;
+  color: #111827;
+  font-weight: 700;
+}
+
+.slot-settings-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.slot-settings-card {
+  padding: 12px;
+  border-radius: 14px;
+  background: #ffffff;
+  border: 1px solid rgba(0, 31, 63, 0.08);
+}
+
+.slot-settings-card h4 {
+  margin: 0 0 8px;
+  color: #001f3f;
+  font-size: 0.95rem;
+  font-weight: 900;
+}
+
+.admin-main-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.admin-bottom-grid {
+  display: grid;
+  gap: 18px;
+  margin-top: 18px;
+}
+
+.priority-panel,
+.admin-calls-block {
+  min-width: 0;
+}
+
+.priority-header h3,
+.admin-calls-block h3 {
+  margin: 0 0 8px;
+  color: #001f3f;
+}
+
+.priority-header p {
+  margin: 0 0 12px;
+  color: #334155;
+  line-height: 1.35;
+}
+
+.waiver-order-admin {
+  display: grid;
+  gap: 16px;
+}
+
+.waiver-admin-group {
+  padding: 12px;
+  border-radius: 16px;
+  background: rgba(0, 31, 63, 0.035);
+  border: 1px solid rgba(0, 31, 63, 0.08);
+}
+
+.waiver-admin-group h4 {
+  margin: 0 0 10px;
+  color: #001f3f;
+  font-weight: 900;
+}
+
+.waiver-admin-row {
+  display: grid;
+  grid-template-columns: 52px 1fr 1fr;
+  gap: 10px;
+  align-items: center;
+  padding: 10px;
+  border-radius: 13px;
+  background: #fff;
+  border: 1px solid rgba(0, 31, 63, 0.08);
+  margin-bottom: 8px;
+  cursor: grab;
+}
+
+.waiver-admin-row:hover {
+  background: #f8fbff;
+  box-shadow: 0 8px 18px rgba(0, 31, 63, 0.08);
+}
+
+.waiver-admin-row.dragging {
+  opacity: 0.45;
+  cursor: grabbing;
+}
+
+.waiver-admin-original {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.waiver-admin-original strong {
+  color: #0f172a;
+}
+
+.waiver-admin-original span {
+  color: #64748b;
+  font-size: 0.78rem;
+  font-weight: 800;
+}
+
+.all-calls {
+  display: grid;
+  gap: 10px;
+}
+
+#allCalls > div {
+  border-radius: 14px;
+  border: 1px solid rgba(0, 31, 63, 0.09);
+  background: #f8fafc;
+  padding: 12px;
+}
+
+.priority-message {
+  margin-top: 12px;
+  font-weight: 800;
+}
+
+/* ===============================
+   DESKTOP ADMIN
+================================ */
 
 @media (min-width: 1100px) {
   .waiver-admin-section .slot-settings-grid {
@@ -1265,139 +875,18 @@ button {
     max-width: 520px;
   }
 
-  .admin-main-actions {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-  }
-
   .admin-bottom-grid {
-    display: grid;
     grid-template-columns: minmax(0, 1.35fr) minmax(320px, 0.75fr);
     gap: 22px;
     align-items: start;
-    margin-top: 18px;
   }
 }
 
-@media (max-width: 1099px) {
-  .admin-bottom-grid {
-    display: grid;
-    gap: 18px;
-    margin-top: 18px;
-  }
-}
-
-@media (min-width: 1200px) {
-  .waiver-dashboard-grid {
-    grid-template-columns: minmax(680px, 1.45fr) minmax(420px, 0.9fr);
-    align-items: start;
-  }
-}
-
-@media (min-width: 1500px) {
-  .waiver-dashboard-grid {
-    grid-template-columns: minmax(780px, 1.55fr) minmax(460px, 0.9fr);
-  }
-}
-
-@media (min-width: 1100px) {
-  .waiver-top-grid {
-    grid-template-columns: minmax(0, 1.4fr) minmax(360px, 0.8fr);
-    align-items: start;
-  }
-}
-
-.public-waiver-card {
-  min-width: 0;
-}
-
-.my-waiver-card {
-  min-width: 0;
-}
-
-@media (min-width: 1200px) {
-  #myWaiverCalls .waiver-slot-block {
-    grid-template-columns: repeat(2, minmax(320px, 1fr));
-  }
-}
-
-@media (min-width: 1100px) {
-  .waiver-top-grid {
-    grid-template-columns: 1.1fr 0.9fr;
-    align-items: start;
-  }
-}
-
-@media (max-width: 700px) {
-  .public-waiver-group-title {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  .public-waiver-row {
-    grid-template-columns: 44px 1fr;
-    padding: 10px;
-  }
-
-  .public-waiver-rank {
-    width: 36px;
-    height: 36px;
-    font-size: 0.85rem;
-  }
-}
-
-@media (max-width: 760px) {
-  .admin-settings-grid,
-  .slot-settings-grid {
-    grid-template-columns: 1fr;
-  }
-}
-
-@media (max-width: 560px) {
-  .public-result-card {
-    grid-template-columns: 1fr;
-  }
-
-  .public-result-status {
-    flex-direction: row;
-    justify-content: flex-start;
-  }
-}
-
-@media (max-width: 700px) {
-  .admin-settings-row {
-    grid-template-columns: 1fr;
-  }
-
-  .admin-settings-row button {
-    width: 100%;
-  }
-}
-
-@media (max-width: 700px) {
-  .waiver-admin-row {
-    grid-template-columns: 42px 1fr;
-  }
-
-  .waiver-owner-select {
-    grid-column: 1 / -1;
-  }
-
-  .dynamic-call-header {
-    flex-direction: column;
-  }
-}
+/* ===============================
+   RESPONSIVE
+================================ */
 
 @media (max-width: 1050px) {
-  .waiver-grid-main {
-    grid-template-columns: 1fr;
-  }
-
-  .waiver-side {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
   .info-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -1414,14 +903,6 @@ button {
     border-radius: 20px;
   }
 
-  .waiver-grid-calls {
-    grid-template-columns: 1fr;
-  }
-
-  .waiver-side {
-    grid-template-columns: 1fr;
-  }
-
   .waiver-card {
     border-radius: 18px;
     padding: 16px;
@@ -1429,6 +910,47 @@ button {
 
   .free-agents-table-wrap {
     max-height: 460px;
+  }
+}
+
+@media (max-width: 760px) {
+  .admin-settings-grid,
+  .slot-settings-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 700px) {
+  .public-waiver-group-title {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .public-waiver-group-title span {
+    text-align: left;
+  }
+
+  .public-waiver-row {
+    grid-template-columns: 44px 1fr;
+    padding: 10px;
+  }
+
+  .public-waiver-rank {
+    width: 36px;
+    height: 36px;
+    font-size: 0.85rem;
+  }
+
+  .waiver-admin-row {
+    grid-template-columns: 42px 1fr;
+  }
+
+  .waiver-owner-select {
+    grid-column: 1 / -1;
+  }
+
+  .dynamic-call-header {
+    flex-direction: column;
   }
 }
 
@@ -1443,7 +965,7 @@ button {
   }
 
   .waiver-hero p {
-    font-size: .95rem;
+    font-size: 0.95rem;
   }
 
   .info-grid {
@@ -1456,7 +978,8 @@ button {
   }
 
   .call-actions,
-  .admin-actions {
+  .admin-actions,
+  .admin-main-actions {
     flex-direction: column;
   }
 
@@ -1468,11 +991,6 @@ button {
   #calculateSlot1Btn,
   #calculateSlot2Btn {
     width: 100%;
-  }
-
-  .public-call-main {
-    align-items: flex-start;
-    flex-direction: column;
   }
 
   .free-agents-table-wrap {
