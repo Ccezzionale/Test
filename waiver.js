@@ -1778,6 +1778,60 @@ tr.innerHTML = `
   });
 }
 
+async function applyWinningWaiverCall(call) {
+  const winningTeamId = call.owner_team_id || call.team_id;
+
+  if (!winningTeamId) {
+    throw new Error("Squadra vincitrice non trovata.");
+  }
+
+  if (!call.player_in_id || !call.player_out_id) {
+    throw new Error("Chiamata senza player_in_id o player_out_id.");
+  }
+
+  const nowIso = new Date().toISOString();
+
+  // 1. assegna il giocatore preso alla squadra vincitrice
+  const { data: incomingPlayer, error: incomingError } = await supabase
+    .from("players")
+    .update({
+      owner_team_id: winningTeamId,
+      updated_at: nowIso
+    })
+    .eq("id", call.player_in_id)
+    .is("owner_team_id", null)
+    .select("id, name")
+    .maybeSingle();
+
+  if (incomingError) {
+    throw incomingError;
+  }
+
+  if (!incomingPlayer) {
+    throw new Error("Il giocatore richiesto non è più disponibile.");
+  }
+
+  // 2. svincola il giocatore in uscita, solo se appartiene davvero alla squadra vincitrice
+  const { data: outgoingPlayer, error: outgoingError } = await supabase
+    .from("players")
+    .update({
+      owner_team_id: null,
+      updated_at: nowIso
+    })
+    .eq("id", call.player_out_id)
+    .eq("owner_team_id", winningTeamId)
+    .select("id, name")
+    .maybeSingle();
+
+  if (outgoingError) {
+    throw outgoingError;
+  }
+
+  if (!outgoingPlayer) {
+    throw new Error("Il giocatore da svincolare non appartiene più alla squadra vincitrice.");
+  }
+}
+
 /* ===============================
    CALCOLO RISULTATI
 ================================ */
@@ -1833,9 +1887,11 @@ async function calculateResultsForSlot(slot) {
 
     if (!order) return;
 
-    const playerKey = isConferencePhase()
-      ? `${normalizePlayerName(call.player_in)}__${order.conference}`
-      : normalizePlayerName(call.player_in);
+const playerKey = call.player_in_id
+  ? String(call.player_in_id)
+  : isConferencePhase()
+    ? `${normalizePlayerName(call.player_in)}__${order.conference}`
+    : normalizePlayerName(call.player_in);
 
     if (!callsByPlayer[playerKey]) {
       callsByPlayer[playerKey] = [];
@@ -1857,24 +1913,34 @@ async function calculateResultsForSlot(slot) {
     const winner = entries[0];
     const losers = entries.slice(1);
 
+    try {
+  await applyWinningWaiverCall(winner.call);
+
+  await supabase
+    .from("waiver_calls")
+    .update({ status: "won" })
+    .eq("id", winner.call.id);
+
+  for (const loser of losers) {
     await supabase
       .from("waiver_calls")
-      .update({ status: "won" })
-      .eq("id", winner.call.id);
-
-    for (const loser of losers) {
-      await supabase
-        .from("waiver_calls")
-        .update({ status: "lost" })
-        .eq("id", loser.call.id);
-    }
+      .update({ status: "lost" })
+      .eq("id", loser.call.id);
+  }
+} catch (err) {
+  console.error("Errore aggiornamento rosa waiver:", err);
+  alert(`Errore aggiornamento rosa: ${err.message || err}`);
+  return;
+}
   }
 
   alert(`Risultati slot ${normalizedSlot} calcolati.`);
 
-  await loadAllCalls();
-  await loadMyWaiverCalls();
-   await renderPublicWaiverOrder();
+ await loadMyOwnedPlayers();
+await loadFreeAgents();
+await loadAllCalls();
+await loadMyWaiverCalls();
+await renderPublicWaiverOrder();;
 }
 
 function setPhaseMessage(text, isError = false) {
