@@ -683,11 +683,12 @@ async function inviaPickAlFoglio(pick, fantaTeam, nome, ruolo, squadra, quotazio
           'Authorization': `Bearer ${accessToken}`,
           'apikey': supabaseKey
         },
-        body: JSON.stringify({
+body: JSON.stringify({
   draft_name: tab,
   player_name: nome,
-  player_id: options.player_id || null
- })
+  player_id: options.player_id || null,
+  pool: draftPool
+})
   }
 );
 
