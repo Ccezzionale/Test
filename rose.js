@@ -1,3 +1,5 @@
+import { supabase } from './supabase.js';
+
 const rose = {};
 
 
