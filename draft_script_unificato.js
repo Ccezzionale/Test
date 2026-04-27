@@ -1039,6 +1039,8 @@ if (!fantaTeam) {
 inviaPickAlFoglio(pick, fantaTeam, nome, ruolo, squadra, quotazione, {
   player_id: playerId
 });
+
+    }); // 👈 questa mancava
     listaGiocatori.dataset.bound = "1"; // evita di aggiungere più volte il listener
   }
 
@@ -1050,9 +1052,11 @@ inviaPickAlFoglio(pick, fantaTeam, nome, ruolo, squadra, quotazione, {
     Array.from(squadreTrovate).sort((a, b) => a.localeCompare(b))
       .map(s => `<option value="${s}">${s}</option>`).join("");
 
-  // applica i filtri esistenti (se l'utente aveva già scritto qualcosa)
+  // applica i filtri esistenti
   filtraLista();
 }
+
+
 function rangeToSet(a, b) {
   const s = new Set();
   for (let i = a; i <= b; i++) s.add(i);
