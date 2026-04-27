@@ -1021,12 +1021,24 @@ async function renderPublicWaiverOrder() {
     const slotPublic = isSlotPublic(group.slot);
     const { closeAt } = getSlotTimes(group.slot);
 
+    const isCollapsiblePublicSlot =
+      normalizeSlot(group.slot) === "2" || normalizeSlot(group.slot) === "2S";
+
     const groupBlock = document.createElement("div");
     groupBlock.className = "public-waiver-group";
 
+    if (isCollapsiblePublicSlot) {
+      groupBlock.classList.add("public-collapsible-slot", "public-slot-closed");
+    }
+
     groupBlock.innerHTML = `
-      <div class="public-waiver-group-title">
+      <button
+        type="button"
+        class="public-waiver-group-title public-waiver-toggle"
+        aria-expanded="${isCollapsiblePublicSlot ? "false" : "true"}"
+      >
         <h3>${group.conference} - Slot ${group.slot}</h3>
+
         <span>
           ${
             slotPublic
@@ -1035,9 +1047,18 @@ async function renderPublicWaiverOrder() {
                 ? `Risultati visibili ${formatWaiverDateTime(closeAt)}`
                 : "Risultati non ancora programmati"
           }
+          ${
+            isCollapsiblePublicSlot
+              ? `<strong class="public-toggle-icon">▾</strong>`
+              : ""
+          }
         </span>
-      </div>
+      </button>
+
+      <div class="public-waiver-group-content"></div>
     `;
+
+    const groupContent = groupBlock.querySelector(".public-waiver-group-content");
 
     group.rows
       .sort((a, b) => a.priority_number - b.priority_number)
@@ -1092,8 +1113,17 @@ async function renderPublicWaiverOrder() {
           </div>
         `;
 
-        groupBlock.appendChild(rowDiv);
+        groupContent.appendChild(rowDiv);
       });
+
+    const publicToggleBtn = groupBlock.querySelector(".public-waiver-toggle");
+
+    if (isCollapsiblePublicSlot && publicToggleBtn) {
+      publicToggleBtn.addEventListener("click", () => {
+        const isClosed = groupBlock.classList.toggle("public-slot-closed");
+        publicToggleBtn.setAttribute("aria-expanded", String(!isClosed));
+      });
+    }
 
     publicWaiverOrderEl.appendChild(groupBlock);
   });
