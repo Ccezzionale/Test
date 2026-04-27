@@ -552,62 +552,56 @@ function controllaNotificaTurno() {
   }
 }
 
-// CSV con cache locale (TTL 24h) + delega al fetch
-function caricaGiocatori() {
-  const KEY = "giocatori_championship_cache";
-  const TTL = 24 * 60 * 60 * 1000;
-  const now = Date.now();
-
-  try {
-    const cache = JSON.parse(localStorage.getItem(KEY) || "null");
-    if (cache && (now - cache.time) < TTL && cache.csv) {
-      parseGiocatoriCSV(cache.csv);
-      return Promise.resolve();
-    }
-  } catch (err) {
-    console.warn("Cache CSV non disponibile, vado di fetch:", err);
-  }
-
-  return fetchAndParseGiocatoriGeneric(KEY, now, "giocatori_completo_finale.csv");
-}
-
-// ========== CSV Giocatori con Abort + Spinner ==========
-async function fetchAndParseGiocatoriGeneric(KEY, now, fileName) {
+// ========== Giocatori da Supabase ==========
+async function caricaGiocatori() {
   showSpinner(true);
+
   try {
-    const res = await abortAndFetch("csv", fileName, 3, 800, 12000);
-    const csv = await res.text();
-    localStorage.setItem(KEY, JSON.stringify({ time: now, csv }));
-    parseGiocatoriCSV(csv);
+    ruoli = new Set();
+    squadre = new Set();
+    Object.keys(mappaGiocatori).forEach(k => delete mappaGiocatori[k]);
+
+    const { data: players, error } = await supabase
+      .from("players")
+      .select("id, external_id, name, role, role_mantra, serie_a_team, quotation, is_u21, is_fp, owner_team_id, status")
+      .is("owner_team_id", null)
+      .eq("status", "active")
+      .order("name", { ascending: true });
+
+    if (error) throw error;
+
+    players.forEach(p => {
+      const nome = p.name || "";
+      if (!nome) return;
+
+      const ruolo = p.role || p.role_mantra || "";
+      const squadra = p.serie_a_team || "";
+      const quotazione = p.quotation ?? 0;
+
+      const key = normalize(nome);
+
+      mappaGiocatori[key] = {
+        id: p.id,
+        external_id: p.external_id,
+        nome,
+        ruolo,
+        squadra,
+        quotazione,
+        is_u21: !!p.is_u21,
+        is_fp: !!p.is_fp
+      };
+
+      if (ruolo) ruoli.add(ruolo);
+      if (squadra) squadre.add(squadra);
+    });
+
   } catch (err) {
-    console.error(`❌ Errore nel caricamento ${fileName}:`, err);
+    console.error("❌ Errore caricamento players da Supabase:", err);
     const el = document.getElementById("turno-attuale");
-    if (el) el.textContent = "⚠️ Problema di rete nel caricare i giocatori.";
-    const cache = JSON.parse(localStorage.getItem(KEY) || "null");
-    if (cache?.csv) {
-      console.warn("↩️ Uso cache locale fallback");
-      parseGiocatoriCSV(cache.csv);
-    }
+    if (el) el.textContent = "⚠️ Problema nel caricare i giocatori da Supabase.";
   } finally {
     showSpinner(false);
   }
-}
-
-// Parser CSV semplice (ok se non hai virgole nei campi)
-function parseGiocatoriCSV(csv) {
-  ruoli = new Set();
-  squadre = new Set();
-  Object.keys(mappaGiocatori).forEach(k => delete mappaGiocatori[k]);
-
-  const righe = csv.trim().split(/\r?\n/).slice(1);
-  righe.forEach(r => {
-    const [nome, ruolo, squadra, quotazione, u21] = r.split(",");
-    if (!nome) return;
-    const key = normalize(nome);
-    mappaGiocatori[key] = { nome, ruolo, squadra, quotazione, u21 };
-    if (ruolo) ruoli.add(ruolo);
-    if (squadra) squadre.add(squadra);
-  });
 }
 
 async function inviaPickAlFoglio(pick, fantaTeam, nome, ruolo, squadra, quotazione, options = {}) {
@@ -660,11 +654,12 @@ async function inviaPickAlFoglio(pick, fantaTeam, nome, ruolo, squadra, quotazio
           'apikey': supabaseKey
         },
         body: JSON.stringify({
-          draft_name: tab,
-          player_name: nome
-        })
-      }
-    );
+  draft_name: tab,
+  player_name: nome,
+  player_id: options.player_id || null
+ })
+  }
+);
 
     const result = await response.json();
 
@@ -971,25 +966,29 @@ function popolaListaDisponibili() {
   // crea un buffer in memoria per evitare reflow continui
   const frag = document.createDocumentFragment();
 
-  Object.values(mappaGiocatori).forEach(({ nome, ruolo, squadra, quotazione }) => {
-    const key = normalize(nome);
-    if (giocatoriScelti.has(key)) return;
+Object.values(mappaGiocatori).forEach(({ id, nome, ruolo, squadra, quotazione, is_u21, is_fp }) => {
+  const key = normalize(nome);
+  if (giocatoriScelti.has(key)) return;
 
-    const u21 = mappaGiocatori[key]?.u21?.toLowerCase() === "u21" ? "U21" : "";
+  const u21 = is_u21 ? "🟢 U21" : "";
+  const fp = is_fp ? "⭐ FP" : "";
 
-    if (ruolo) ruoliTrovati.add(ruolo);
-    if (squadra) squadreTrovate.add(squadra);
+  if (ruolo) ruoliTrovati.add(ruolo);
+  if (squadra) squadreTrovate.add(squadra);
 
-    const tr = document.createElement("tr");
-    tr.innerHTML = `
-      <td>${nome}</td>
-      <td>${ruolo || ""}</td>
-      <td>${squadra || ""}</td>
-      <td>${parseInt(quotazione) || 0}</td>
-      <td>${u21}</td>
-    `;
-    frag.appendChild(tr);
-  });
+  const tr = document.createElement("tr");
+  tr.dataset.playerId = id;
+
+  tr.innerHTML = `
+    <td>${nome}</td>
+    <td>${ruolo || ""}</td>
+    <td>${squadra || ""}</td>
+    <td>${parseInt(quotazione) || 0}</td>
+    <td>${[u21, fp].filter(Boolean).join(" ")}</td>
+  `;
+
+  frag.appendChild(tr);
+});
 
   // inserisci tutte le righe in un colpo solo
   listaGiocatori.appendChild(frag);
@@ -1004,10 +1003,11 @@ function popolaListaDisponibili() {
   return;
 }
 
-      const nome = tr.children[0].textContent;
-      const ruolo = tr.children[1].textContent;
-      const squadra = tr.children[2].textContent;
-      const quotazione = tr.children[3].textContent;
+const playerId = tr.dataset.playerId;
+const nome = tr.children[0].textContent;
+const ruolo = tr.children[1].textContent;
+const squadra = tr.children[2].textContent;
+const quotazione = tr.children[3].textContent;
 
 const conferma = confirm(`Vuoi selezionare ${nome} per la squadra al turno?`);
 if (!conferma) return;
@@ -1036,8 +1036,9 @@ if (!fantaTeam) {
   return;
 }
 
-inviaPickAlFoglio(pick, fantaTeam, nome, ruolo, squadra, quotazione);
-    });
+inviaPickAlFoglio(pick, fantaTeam, nome, ruolo, squadra, quotazione, {
+  player_id: playerId
+});
     listaGiocatori.dataset.bound = "1"; // evita di aggiungere più volte il listener
   }
 
