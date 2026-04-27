@@ -1548,42 +1548,112 @@ async function loadAllCalls() {
    SVINCOLATI
 ================================ */
 
+function getPoolForTeamConference(team) {
+  if (!team) return null;
+
+  return team.conference === "Conference Championship"
+    ? "conference_championship"
+    : "conference_league";
+}
+
+function isUnifiedWaiverPhase() {
+  const phase = String(currentSettings?.active_phase || "").toLowerCase();
+  return phase === "round_robin" || phase === "playoff";
+}
+
+function mapPlayerRow(p) {
+  return {
+    id: p.id,
+    external_id: p.external_id,
+    name: p.name || "",
+    role: p.role || p.role_mantra || "",
+    serieATeam: p.serie_a_team || "",
+    quotation: p.quotation ?? "",
+    is_u21: !!p.is_u21,
+    is_fp: !!p.is_fp,
+    pool: p.pool
+  };
+}
+
 async function loadFreeAgents() {
   try {
-    const response = await fetch("./svincolati.csv");
+    if (!currentSettings) return;
 
-    if (!response.ok) {
-      throw new Error("CSV non trovato: " + response.status);
+    freeAgents = [];
+
+    const selectFields = `
+      id,
+      external_id,
+      name,
+      role,
+      role_mantra,
+      serie_a_team,
+      quotation,
+      is_u21,
+      is_fp,
+      owner_team_id,
+      status,
+      pool
+    `;
+
+    // FASE CONFERENCE: ogni Conference vede solo il proprio pool
+    if (!isUnifiedWaiverPhase()) {
+      const pool = getPoolForTeamConference(currentTeam);
+
+      const { data, error } = await supabase
+        .from("players")
+        .select(selectFields)
+        .eq("status", "active")
+        .eq("pool", pool)
+        .is("owner_team_id", null)
+        .order("name", { ascending: true });
+
+      if (error) throw error;
+
+      freeAgents = (data || []).map(mapPlayerRow);
+      renderFreeAgents();
+      return;
     }
 
-    const text = await response.text();
+    // ROUND ROBIN / PLAYOFF:
+    // un giocatore è svincolato solo se è libero in entrambe le Conference
+    const { data: leagueFree, error: leagueError } = await supabase
+      .from("players")
+      .select(selectFields)
+      .eq("status", "active")
+      .eq("pool", "conference_league")
+      .is("owner_team_id", null)
+      .order("name", { ascending: true });
 
-    freeAgents = text
-      .split("\n")
-      .slice(1)
-      .map(row => row.trim())
-      .filter(Boolean)
-      .map(row => {
-        const cols = row.split(",");
+    if (leagueError) throw leagueError;
 
-        return {
-          name: (cols[0] || "").trim(),
-          role: (cols[1] || "").trim(),
-          serieATeam: (cols[2] || "").trim(),
-          quotation: (cols[3] || "").trim()
-        };
-      })
-      .filter(player => player.name);
+    const { data: championshipFree, error: championshipError } = await supabase
+      .from("players")
+      .select(selectFields)
+      .eq("status", "active")
+      .eq("pool", "conference_championship")
+      .is("owner_team_id", null)
+      .order("name", { ascending: true });
+
+    if (championshipError) throw championshipError;
+
+    const championshipFreeKeys = new Set(
+      (championshipFree || []).map(p => String(p.external_id || "").trim())
+    );
+
+    freeAgents = (leagueFree || [])
+      .filter(p => championshipFreeKeys.has(String(p.external_id || "").trim()))
+      .map(mapPlayerRow);
 
     renderFreeAgents();
 
   } catch (err) {
-    console.error("Errore caricamento svincolati:", err);
+    console.error("Errore caricamento svincolati da Supabase:", err);
 
     if (freeAgentsTableBody) {
       freeAgentsTableBody.innerHTML = `
         <tr>
-          <td colspan="4">Errore caricamento svincolati.</td>
+          <td colspan="4">Errore caricamento svincolati da Supabase.</td>
         </tr>
       `;
     }
@@ -1607,12 +1677,17 @@ function renderFreeAgents() {
   filtered.forEach(player => {
     const tr = document.createElement("tr");
 
-    tr.innerHTML = `
-      <td>${player.name}</td>
-      <td>${player.role}</td>
-      <td>${player.serieATeam}</td>
-      <td>${player.quotation}</td>
-    `;
+const badges = [
+  player.is_u21 ? "🟢 U21" : "",
+  player.is_fp ? "⭐ FP" : ""
+].filter(Boolean).join(" ");
+
+tr.innerHTML = `
+  <td>${player.name} ${badges ? `<span class="player-badges">${badges}</span>` : ""}</td>
+  <td>${player.role}</td>
+  <td>${player.serieATeam}</td>
+  <td>${player.quotation}</td>
+`;
 
     tr.addEventListener("click", () => {
       fillActiveCallWithPlayer({
@@ -2028,11 +2103,12 @@ async function saveWaiverSettings() {
     await loadAllCalls();
   }
 
-  await loadMyWaiverCalls();
+await loadMyWaiverCalls();
+await loadFreeAgents();
 
-  syncSettingsPanel();
+syncSettingsPanel();
 
-  setSettingsMessage("Impostazioni waiver salvate correttamente.");
+setSettingsMessage("Impostazioni waiver salvate correttamente.");
 }
 
 /* ===============================
