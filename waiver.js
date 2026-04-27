@@ -14,6 +14,7 @@ const callMessageEl = document.getElementById("callMessage");
 
 const publicCallsEl = document.getElementById("publicCalls");
 const allCallsEl = document.getElementById("allCalls");
+const publicWaiverOrderEl = document.getElementById("publicWaiverOrder");
 
 const adminPanel = document.getElementById("adminPanel");
 const generateWaiverOrderBtn = document.getElementById("generateWaiverOrderBtn");
@@ -757,9 +758,10 @@ try {
 
   setAdminMessage("Ordine waiver generato correttamente.");
 
-  await loadWaiverOrder();
-  renderWaiverOrderAdmin();
-  await loadMyWaiverCalls();
+await loadWaiverOrder();
+renderWaiverOrderAdmin();
+await renderPublicWaiverOrder();
+await loadMyWaiverCalls();
 }
 
 async function saveWaiverOrderAdmin() {
@@ -813,10 +815,11 @@ async function saveWaiverOrderAdmin() {
 
   setAdminMessage("Ordine waiver salvato correttamente.");
 
-  await loadWaiverOrder();
-  renderWaiverOrderAdmin();
-  await loadMyWaiverCalls();
-}
+await loadWaiverOrder();
+renderWaiverOrderAdmin();
+await renderPublicWaiverOrder();
+await loadMyWaiverCalls();
+    }
 
 /* ===============================
    ADMIN ORDER UI
@@ -974,6 +977,126 @@ function renderWaiverOrderAdmin() {
     });
 
     waiverOrderAdminEl.appendChild(groupDiv);
+  });
+}
+
+async function renderPublicWaiverOrder() {
+  if (!publicWaiverOrderEl || !currentSettings) return;
+
+  publicWaiverOrderEl.innerHTML = "";
+
+  if (!waiverOrderRows || waiverOrderRows.length === 0) {
+    publicWaiverOrderEl.innerHTML = `
+      <p>Nessun ordine waiver generato per questa settimana/fase.</p>
+    `;
+    return;
+  }
+
+  const { data: calls, error } = await supabase
+    .from("waiver_calls")
+    .select("*")
+    .eq("week", currentSettings.active_week)
+    .eq("phase", currentSettings.active_phase);
+
+  if (error) {
+    console.error("Errore caricamento chiamate per ordine pubblico:", error);
+    publicWaiverOrderEl.innerHTML = `
+      <p>Errore nel caricamento dell'ordine waiver pubblico.</p>
+    `;
+    return;
+  }
+
+  const callsByOrderId = {};
+
+  (calls || []).forEach(call => {
+    if (call.waiver_order_id) {
+      callsByOrderId[String(call.waiver_order_id)] = call;
+    }
+  });
+
+  const groups = groupRowsByConferenceAndSlot(waiverOrderRows);
+  const sortedKeys = sortGroupKeys(Object.keys(groups));
+
+  sortedKeys.forEach(key => {
+    const group = groups[key];
+    const slotPublic = isSlotPublic(group.slot);
+    const { closeAt } = getSlotTimes(group.slot);
+
+    const groupBlock = document.createElement("div");
+    groupBlock.className = "public-waiver-group";
+
+    groupBlock.innerHTML = `
+      <div class="public-waiver-group-title">
+        <h3>${group.conference} - Slot ${group.slot}</h3>
+        <span>
+          ${
+            slotPublic
+              ? "Risultati visibili"
+              : closeAt
+                ? `Risultati visibili ${formatWaiverDateTime(closeAt)}`
+                : "Risultati non ancora programmati"
+          }
+        </span>
+      </div>
+    `;
+
+    group.rows
+      .sort((a, b) => a.priority_number - b.priority_number)
+      .forEach(row => {
+        const originalTeam = teamMap[row.original_team_id];
+        const ownerTeam = row.owner_team_id ? teamMap[row.owner_team_id] : null;
+        const call = callsByOrderId[String(row.id)];
+
+        const ownerName = ownerTeam?.name || "Nessun proprietario";
+        const originalName = originalTeam?.name || "Squadra originale";
+
+        const isVia =
+          ownerTeam &&
+          originalTeam &&
+          String(ownerTeam.id) !== String(originalTeam.id);
+
+        let statusClass = "waiting";
+        let resultText = "";
+
+        if (!slotPublic) {
+          resultText = closeAt
+            ? `Le chiamate saranno visibili ${formatWaiverDateTime(closeAt)}`
+            : "Le chiamate saranno visibili dopo la chiusura dello slot.";
+        } else if (!call) {
+          statusClass = "empty";
+          resultText = "Nessuna chiamata registrata.";
+        } else if (call.status === "won") {
+          statusClass = "won";
+          resultText = `🟢 Prende ${call.player_in || "-"}`;
+        } else if (call.status === "lost") {
+          statusClass = "lost";
+          resultText = `🔴 Perde ${call.player_in || "-"}`;
+        } else {
+          statusClass = "pending";
+          resultText = `⏳ Chiama ${call.player_in || "-"}`;
+        }
+
+        const rowDiv = document.createElement("div");
+        rowDiv.className = `public-waiver-row ${statusClass}`;
+
+        rowDiv.innerHTML = `
+          <div class="public-waiver-rank">#${row.priority_number}</div>
+
+          <div class="public-waiver-main">
+            <strong>${ownerName}</strong>
+            ${
+              isVia
+                ? `<span class="public-waiver-via">via ${originalName}</span>`
+                : `<span class="public-waiver-via">chiamata originale</span>`
+            }
+            <span class="public-waiver-result">${resultText}</span>
+          </div>
+        `;
+
+        groupBlock.appendChild(rowDiv);
+      });
+
+    publicWaiverOrderEl.appendChild(groupBlock);
   });
 }
 
@@ -1302,6 +1425,7 @@ async function saveDynamicCall(orderId) {
 
   await loadMyWaiverCalls();
   await loadAllCalls();
+   await renderPublicWaiverOrder();
 }
 
 async function resetDynamicCall(orderId) {
@@ -1333,6 +1457,7 @@ async function resetDynamicCall(orderId) {
     setMessage("Chiamata cancellata.");
     await loadMyWaiverCalls();
     await loadAllCalls();
+     await renderPublicWaiverOrder();
     return;
   }
 
@@ -1760,6 +1885,7 @@ async function calculateResultsForSlot(slot) {
   await loadAllCalls();
   await loadPublicCalls();
   await loadMyWaiverCalls();
+   await renderPublicWaiverOrder();
 }
 
 function setPhaseMessage(text, isError = false) {
@@ -2099,6 +2225,7 @@ async function initWaiverRoom() {
 
   await loadTeams();
   await loadWaiverOrder();
+   await renderPublicWaiverOrder();
 
   if (currentUserEmail === "tringali0511@gmail.com") {
     adminPanel.style.display = "block";
