@@ -117,6 +117,7 @@ async function caricaRose() {
       .not("owner_team_id", "is", null)
       .eq("status", "active")
       .order("name", { ascending: true });
+    console.log("PLAYERS ASSEGNATI ROSE:", players, playersError);
 
     if (playersError) throw playersError;
 
