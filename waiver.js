@@ -1162,9 +1162,28 @@ function renderMyWaiverCalls() {
     const slotBlock = document.createElement("div");
     slotBlock.className = "waiver-slot-block";
 
-    slotBlock.innerHTML = `
-      <h3 class="waiver-slot-title">${group.conference} - Slot ${group.slot}</h3>
-    `;
+const isCollapsibleSlot = group.slot === "2" || group.slot === "2S";
+
+slotBlock.classList.toggle("collapsible-slot", isCollapsibleSlot);
+slotBlock.classList.toggle("slot-closed", isCollapsibleSlot);
+
+slotBlock.innerHTML = `
+  <button
+    type="button"
+    class="waiver-slot-title waiver-slot-toggle"
+    data-slot-key="${key}"
+    aria-expanded="${isCollapsibleSlot ? "false" : "true"}"
+  >
+    <span>${group.conference} - Slot ${group.slot}</span>
+    ${
+      isCollapsibleSlot
+        ? `<span class="slot-toggle-icon">▾</span>`
+        : ""
+    }
+  </button>
+
+  <div class="waiver-slot-content"></div>
+`;
 
     group.rows.forEach(orderRow => {
       const originalTeam = teamMap[orderRow.original_team_id];
@@ -1263,9 +1282,18 @@ function renderMyWaiverCalls() {
         setActiveCallCard(orderRow.id);
       });
 
-      slotBlock.appendChild(card);
+     const slotContent = slotBlock.querySelector(".waiver-slot-content");
+slotContent.appendChild(card);
     });
+     
+const toggleBtn = slotBlock.querySelector(".waiver-slot-toggle");
 
+if (isCollapsibleSlot && toggleBtn) {
+  toggleBtn.addEventListener("click", () => {
+    const isClosed = slotBlock.classList.toggle("slot-closed");
+    toggleBtn.setAttribute("aria-expanded", String(!isClosed));
+  });
+}
     myWaiverCallsEl.appendChild(slotBlock);
   });
 
