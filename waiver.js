@@ -64,6 +64,7 @@ let waiverOrderRows = [];
 let myOrderRows = [];
 let mySavedCalls = [];
 let freeAgents = [];
+let myOwnedPlayers = [];
 
 let activeWaiverOrderId = null;
 let draggedAdminOrderId = null;
@@ -1171,6 +1172,39 @@ async function loadMyWaiverCalls() {
   renderMyWaiverCalls();
 }
 
+function buildPlayerOutOptions(savedPlayerOutId = null, savedPlayerOutName = "") {
+  const options = [
+    `<option value="">Seleziona giocatore da svincolare</option>`
+  ];
+
+  myOwnedPlayers.forEach(player => {
+    const selected =
+      String(player.id) === String(savedPlayerOutId)
+        ? "selected"
+        : "";
+
+    const label = `${player.name}${player.role ? ` (${player.role})` : ""}`;
+
+    options.push(`
+      <option value="${player.id}" ${selected}>
+        ${label}
+      </option>
+    `);
+  });
+
+  // Paracadute: se esiste una vecchia chiamata salvata solo come testo,
+  // la mostriamo comunque.
+  if (savedPlayerOutName && !savedPlayerOutId) {
+    options.push(`
+      <option value="" selected>
+        ${savedPlayerOutName}
+      </option>
+    `);
+  }
+
+  return options.join("");
+}
+
 function renderMyWaiverCalls() {
   if (!myWaiverCallsEl) return;
 
@@ -1234,15 +1268,14 @@ slotBlock.innerHTML = `
           ${slotOpen ? "" : "disabled"}
         />
 
-        <label>Giocatore da svincolare</label>
-        <input
-          type="text"
-          class="dynamic-player-out"
-          data-order-id="${orderRow.id}"
-          placeholder="Scrivi il giocatore da svincolare"
-          value="${savedCall?.player_out || ""}"
-          ${slotOpen ? "" : "disabled"}
-        />
+  <label>Giocatore da svincolare</label>
+<select
+  class="dynamic-player-out"
+  data-order-id="${orderRow.id}"
+  ${slotOpen ? "" : "disabled"}
+>
+  ${buildPlayerOutOptions(savedCall?.player_out_id, savedCall?.player_out || "")}
+</select>
 
         <div class="call-actions">
           <button
@@ -1360,6 +1393,7 @@ function fillActiveCallWithPlayer(player) {
   if (!input) return;
 
   input.value = player.role ? `${player.name} (${player.role})` : player.name;
+   input.dataset.playerId = player.id || "";
 
   document
     .querySelectorAll("#freeAgentsTable tbody tr.selected-player")
@@ -1390,13 +1424,19 @@ async function saveDynamicCall(orderId) {
   const playerInEl = document.querySelector(`.dynamic-player-in[data-order-id="${orderId}"]`);
   const playerOutEl = document.querySelector(`.dynamic-player-out[data-order-id="${orderId}"]`);
 
-  const playerIn = playerInEl?.value.trim() || "";
-  const playerOut = playerOutEl?.value.trim() || "";
+const playerIn = playerInEl?.value.trim() || "";
+const playerInId = playerInEl?.dataset.playerId || null;
 
-  if (!playerIn || !playerOut) {
-    setMessage("Compila giocatore chiamato e giocatore da svincolare.", true);
-    return;
-  }
+const playerOutId = playerOutEl?.value || null;
+const selectedOutOption = playerOutEl?.selectedOptions?.[0];
+const playerOut = selectedOutOption && playerOutId
+  ? selectedOutOption.textContent.trim()
+  : "";
+
+if (!playerIn || !playerInId || !playerOut || !playerOutId) {
+  setMessage("Seleziona giocatore chiamato e giocatore da svincolare.", true);
+  return;
+}
 
   const payload = {
     waiver_order_id: orderRow.id,
@@ -1408,9 +1448,11 @@ async function saveDynamicCall(orderId) {
     phase: currentSettings.active_phase,
     conference: orderRow.conference,
     slot: normalizeSlot(orderRow.slot),
-    player_in: playerIn,
-    player_out: playerOut,
-    status: "pending",
+   player_in: playerIn,
+player_out: playerOut,
+player_in_id: playerInId,
+player_out_id: playerOutId,
+status: "pending",
     updated_at: new Date().toISOString()
   };
 
@@ -1573,6 +1615,47 @@ function mapPlayerRow(p) {
     is_fp: !!p.is_fp,
     pool: p.pool
   };
+}
+
+async function loadMyOwnedPlayers() {
+  if (!currentTeam || !currentSettings) return;
+
+  const selectFields = `
+    id,
+    external_id,
+    name,
+    role,
+    role_mantra,
+    serie_a_team,
+    quotation,
+    is_u21,
+    is_fp,
+    owner_team_id,
+    status,
+    pool
+  `;
+
+  let query = supabase
+    .from("players")
+    .select(selectFields)
+    .eq("status", "active")
+    .eq("owner_team_id", currentTeam.id);
+
+  // In Conference vedo solo la mia copia/pool.
+  // In Round Robin e Playoff vedo tutti i miei giocatori, anche se arrivano dai due pool.
+  if (!isUnifiedWaiverPhase()) {
+    query = query.eq("pool", getPoolForTeamConference(currentTeam));
+  }
+
+  const { data, error } = await query.order("name", { ascending: true });
+
+  if (error) {
+    console.error("Errore caricamento rosa squadra:", error);
+    myOwnedPlayers = [];
+    return;
+  }
+
+  myOwnedPlayers = (data || []).map(mapPlayerRow);
 }
 
 async function loadFreeAgents() {
@@ -2098,6 +2181,7 @@ async function saveWaiverSettings() {
     await loadAllCalls();
   }
 
+await loadMyOwnedPlayers();
 await loadMyWaiverCalls();
 await loadFreeAgents();
 
@@ -2138,9 +2222,10 @@ async function initWaiverRoom() {
     await loadAllCalls();
   }
 
-  await loadMyWaiverCalls();
-  await loadFreeAgents();
-}
+await loadMyOwnedPlayers();
+await loadMyWaiverCalls();
+await loadFreeAgents();
+   }
 
 /* ===============================
    EVENT LISTENERS
