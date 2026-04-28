@@ -336,10 +336,10 @@ function generaDraftDaCSV(statsCSV, futurePicks) {
   const classificaTotale = buildTotalRankingFromStats(statsCSV);
 
   // Ultimo in classifica = prima pick
-  const squadreTotali = classificaTotale
-    .map(r => r.squadra)
-    .filter(Boolean)
-    .reverse();
+const squadreTotali = classificaTotale
+  .map(r => cleanTeamName(r.squadra))
+  .filter(Boolean)
+  .reverse();
 
   const leagueTeams = squadreTotali.filter(
     s => getConferenceForTeam(s) === "Conference League"
@@ -422,6 +422,11 @@ function shortTeamName(name) {
   return map[cleaned] || cleaned;
 }
 
+function getCanonicalTeamName(name, squadre) {
+  const key = teamKey(name);
+  const found = squadre.find(s => teamKey(s) === key);
+  return found || cleanTeamName(name);
+}
 
 function generaTabellaVerticale(containerId, draftData, squadreOrdine) {
   const container = document.getElementById(containerId);
@@ -432,22 +437,27 @@ function generaTabellaVerticale(containerId, draftData, squadreOrdine) {
   }
 
   const squadre = squadreOrdine && squadreOrdine.length
-    ? squadreOrdine
-    : draftData[0].Picks.map(p => p.team);
+    ? squadreOrdine.map(s => cleanTeamName(s))
+    : draftData[0].Picks.map(p => cleanTeamName(p.team));
 
   const draftPerSquadra = {};
-  squadre.forEach(s => draftPerSquadra[s] = []);
+  squadre.forEach(s => {
+    draftPerSquadra[s] = [];
+  });
 
   draftData.forEach(round => {
     round.Picks.forEach(p => {
-      if (!draftPerSquadra[p.team]) {
-        draftPerSquadra[p.team] = [];
-        squadre.push(p.team);
+      const ownerCanonical = getCanonicalTeamName(p.team, squadre);
+      const originalCanonical = getCanonicalTeamName(p.originalTeam, squadre);
+
+      if (!draftPerSquadra[ownerCanonical]) {
+        draftPerSquadra[ownerCanonical] = [];
+        squadre.push(ownerCanonical);
       }
 
-      draftPerSquadra[p.team].push({
+      draftPerSquadra[ownerCanonical].push({
         pickNumber: p.pickNumber,
-        originalTeam: p.originalTeam,
+        originalTeam: originalCanonical,
         traded: p.traded,
         protection_note: p.protection_note,
         notes: p.notes
@@ -486,6 +496,7 @@ function generaTabellaVerticale(containerId, draftData, squadreOrdine) {
   html += '</div></div>';
   container.innerHTML = html;
 }
+
 
 function renderRounds(draftContainerId, roundsColId) {
   const container = document.getElementById(draftContainerId);
