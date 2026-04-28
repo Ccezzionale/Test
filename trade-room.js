@@ -33,8 +33,12 @@ const CONFIG = {
 
   PROFILE_TABLE: "profiles",
   PROFILE_EMAIL_COL: "email",
-  PROFILE_TEAM_COL: "team_id"
+  PROFILE_TEAM_COL: "team_id",
+
+  FUTURE_PICKS_TABLE: "future_draft_picks",
+  FUTURE_PICK_SEASON: 2027
 };
+
 
 let currentUser = null;
 let currentTeamId = null;
@@ -46,6 +50,7 @@ let allPicks = [];
 let allPickedPlayers = [];
 let allTeams = [];
 let usedPickNumbers = new Set();
+let allFuturePicks = [];
 
 /* ========= ELEMENTI ========= */
 
@@ -110,14 +115,16 @@ function setupEvents() {
   }
 
   document.addEventListener("change", (e) => {
-    if (
-      e.target.classList.contains("my-pick-checkbox") ||
-      e.target.classList.contains("their-pick-checkbox") ||
-      e.target.classList.contains("my-player-checkbox") ||
-      e.target.classList.contains("their-player-checkbox")
-    ) {
-      updateAssetSummaries();
-    }
+if (
+  e.target.classList.contains("my-pick-checkbox") ||
+  e.target.classList.contains("their-pick-checkbox") ||
+  e.target.classList.contains("my-player-checkbox") ||
+  e.target.classList.contains("their-player-checkbox") ||
+  e.target.classList.contains("my-future-pick-checkbox") ||
+  e.target.classList.contains("their-future-pick-checkbox")
+) {
+  updateAssetSummaries();
+}
   });
 }
 
@@ -204,7 +211,8 @@ async function loadTeams() {
 async function loadAssetsForTrade() {
   await Promise.all([
     loadPicks(),
-    loadPickedPlayers()
+    loadPickedPlayers(),
+    loadFuturePicks()
   ]);
 }
 
@@ -260,6 +268,39 @@ async function loadPickedPlayers() {
   allPickedPlayers = data || [];
 }
 
+async function loadFuturePicks() {
+  const { data, error } = await supabase
+    .from(CONFIG.FUTURE_PICKS_TABLE)
+    .select(`
+      id,
+      season,
+      draft_name,
+      round,
+      original_team_id,
+      owner_team_id,
+      pick_kind,
+      bonus_for_team_id,
+      protection_note,
+      notes,
+      status,
+      original:teams!future_draft_picks_original_team_id_fkey(id, name, conference),
+      owner:teams!future_draft_picks_owner_team_id_fkey(id, name, conference)
+    `)
+    .eq("season", CONFIG.FUTURE_PICK_SEASON)
+    .eq("pick_kind", "normal")
+    .eq("status", "active")
+    .order("draft_name", { ascending: true })
+    .order("round", { ascending: true });
+
+  if (error) {
+    console.error("Errore caricamento future pick:", error);
+    allFuturePicks = [];
+    return;
+  }
+
+  allFuturePicks = data || [];
+}
+
 /* ========= RENDER FORM ========= */
 
 function renderTeamSelect() {
@@ -267,11 +308,15 @@ function renderTeamSelect() {
 
   allTeams
     .filter(team => team[CONFIG.TEAM_ID_COL] !== currentTeamId)
-    .filter(team => team.conference === currentTeamConference)
     .forEach(team => {
       const option = document.createElement("option");
       option.value = team[CONFIG.TEAM_ID_COL];
-      option.textContent = team[CONFIG.TEAM_NAME_COL];
+
+      const conferenceLabel = team.conference === currentTeamConference
+        ? "stessa Conference"
+        : "altra Conference";
+
+      option.textContent = `${team[CONFIG.TEAM_NAME_COL]} (${conferenceLabel})`;
       toTeamSelect.appendChild(option);
     });
 }
@@ -285,21 +330,32 @@ function renderMyAssets() {
     player => player[CONFIG.PICKS_OWNER_COL] === currentTeamId
   );
 
-  myPicksBox.innerHTML = renderAssetGroup({
-    title: "Pick disponibili",
-    emptyText: "Nessuna pick disponibile.",
-    items: myPicks,
-    inputClass: "my-pick-checkbox",
-    getValue: pick => pick[CONFIG.PICK_NUMBER_COL],
-    getLabel: formatPickLabel
-  }) + renderAssetGroup({
-    title: "Giocatori già chiamati",
-    emptyText: "Nessun giocatore ancora chiamato.",
-    items: myPlayers,
-    inputClass: "my-player-checkbox",
-    getValue: player => player[CONFIG.PICKS_ID_COL],
-    getLabel: formatPlayerLabel
-  });
+   const myFuturePicks = allFuturePicks.filter(
+  pick => pick.owner_team_id === currentTeamId
+);
+
+myPicksBox.innerHTML = renderAssetGroup({
+  title: "Pick disponibili",
+  emptyText: "Nessuna pick disponibile.",
+  items: myPicks,
+  inputClass: "my-pick-checkbox",
+  getValue: pick => pick[CONFIG.PICK_NUMBER_COL],
+  getLabel: formatPickLabel
+}) + renderAssetGroup({
+  title: "Giocatori già chiamati",
+  emptyText: "Nessun giocatore ancora chiamato.",
+  items: myPlayers,
+  inputClass: "my-player-checkbox",
+  getValue: player => player[CONFIG.PICKS_ID_COL],
+  getLabel: formatPlayerLabel
+}) + renderAssetGroup({
+  title: `Pick future ${CONFIG.FUTURE_PICK_SEASON}`,
+  emptyText: "Nessuna pick futura disponibile.",
+  items: myFuturePicks,
+  inputClass: "my-future-pick-checkbox",
+  getValue: pick => pick.id,
+  getLabel: formatFuturePickLabel
+});
 
   updateAssetSummaries();
 }
@@ -322,22 +378,33 @@ function renderTheirAssets() {
   const theirPlayers = allPickedPlayers.filter(
     player => player[CONFIG.PICKS_OWNER_COL] === selectedTeamId
   );
-
-  theirPicksBox.innerHTML = renderAssetGroup({
-    title: `Pick disponibili di ${selectedTeamName}`,
-    emptyText: `Nessuna pick disponibile per ${selectedTeamName}.`,
-    items: theirPicks,
-    inputClass: "their-pick-checkbox",
-    getValue: pick => pick[CONFIG.PICK_NUMBER_COL],
-    getLabel: formatPickLabel
-  }) + renderAssetGroup({
-    title: `Giocatori già chiamati di ${selectedTeamName}`,
-    emptyText: `Nessun giocatore ancora chiamato da ${selectedTeamName}.`,
-    items: theirPlayers,
-    inputClass: "their-player-checkbox",
-    getValue: player => player[CONFIG.PICKS_ID_COL],
-    getLabel: formatPlayerLabel
-  });
+   
+const theirFuturePicks = allFuturePicks.filter(
+  pick => pick.owner_team_id === selectedTeamId
+);
+   
+theirPicksBox.innerHTML = renderAssetGroup({
+  title: `Pick disponibili di ${selectedTeamName}`,
+  emptyText: `Nessuna pick disponibile per ${selectedTeamName}.`,
+  items: theirPicks,
+  inputClass: "their-pick-checkbox",
+  getValue: pick => pick[CONFIG.PICK_NUMBER_COL],
+  getLabel: formatPickLabel
+}) + renderAssetGroup({
+  title: `Giocatori già chiamati di ${selectedTeamName}`,
+  emptyText: `Nessun giocatore ancora chiamato da ${selectedTeamName}.`,
+  items: theirPlayers,
+  inputClass: "their-player-checkbox",
+  getValue: player => player[CONFIG.PICKS_ID_COL],
+  getLabel: formatPlayerLabel
+}) + renderAssetGroup({
+  title: `Pick future ${CONFIG.FUTURE_PICK_SEASON} di ${selectedTeamName}`,
+  emptyText: `Nessuna pick futura disponibile per ${selectedTeamName}.`,
+  items: theirFuturePicks,
+  inputClass: "their-future-pick-checkbox",
+  getValue: pick => pick.id,
+  getLabel: formatFuturePickLabel
+});
 
   updateAssetSummaries();
 }
@@ -377,6 +444,35 @@ function formatPlayerLabel(player) {
     : playerName;
 }
 
+function formatFuturePickLabel(pick) {
+  const originalName = pick.original?.name || getTeamName(pick.original_team_id);
+  const ownerName = pick.owner?.name || getTeamName(pick.owner_team_id);
+
+  const originalShort = shortTeamName(originalName);
+  const ownerShort = shortTeamName(ownerName);
+
+  const tradedLabel = originalShort !== ownerShort
+    ? ` · da ${originalShort}`
+    : "";
+
+  return `R${pick.round} ${CONFIG.FUTURE_PICK_SEASON}${tradedLabel}`;
+}
+
+function shortTeamName(name) {
+  const map = {
+    "Bayern Christiansen": "Bayern",
+    "Pandinicoccolosini": "Pandinico",
+    "Minnesode Timberland": "Minnesode",
+    "MinneSota Snakes": "Snakes",
+    "Eintracht Franco 126": "Eintracht",
+    "Fc Disoneste": "Disoneste",
+    "Golden Knights": "Golden",
+    "Team Bartowski": "Bartowski"
+  };
+
+  return map[name] || name;
+}
+
 function getTeamName(teamId) {
   const team = allTeams.find(t => t[CONFIG.TEAM_ID_COL] === teamId);
   return team ? team[CONFIG.TEAM_NAME_COL] : teamId;
@@ -398,9 +494,18 @@ async function sendTradeProposal() {
   const theirSelectedPickNumbers = getCheckedValues(".their-pick-checkbox");
   const mySelectedPlayerIds = getCheckedValues(".my-player-checkbox");
   const theirSelectedPlayerIds = getCheckedValues(".their-player-checkbox");
+   const mySelectedFuturePickIds = getCheckedValues(".my-future-pick-checkbox");
+const theirSelectedFuturePickIds = getCheckedValues(".their-future-pick-checkbox");
 
-  const myAssetCount = mySelectedPickNumbers.length + mySelectedPlayerIds.length;
-  const theirAssetCount = theirSelectedPickNumbers.length + theirSelectedPlayerIds.length;
+const myAssetCount =
+  mySelectedPickNumbers.length +
+  mySelectedPlayerIds.length +
+  mySelectedFuturePickIds.length;
+
+const theirAssetCount =
+  theirSelectedPickNumbers.length +
+  theirSelectedPlayerIds.length +
+  theirSelectedFuturePickIds.length;
 
   if (!myAssetCount || !theirAssetCount) {
     showMessage("La trade deve contenere almeno un asset per entrambe le squadre.", "error");
@@ -421,13 +526,15 @@ async function sendTradeProposal() {
     await loadAssetsForTrade();
 
     const assetsToInsert = buildTradeAssets({
-      proposalId: null,
-      toTeamId,
-      mySelectedPickNumbers,
-      theirSelectedPickNumbers,
-      mySelectedPlayerIds,
-      theirSelectedPlayerIds
-    });
+  proposalId: null,
+  toTeamId,
+  mySelectedPickNumbers,
+  theirSelectedPickNumbers,
+  mySelectedPlayerIds,
+  theirSelectedPlayerIds,
+  mySelectedFuturePickIds,
+  theirSelectedFuturePickIds
+});
 
     const fromAssets = assetsToInsert.filter(asset => asset.side === "from");
     const toAssets = assetsToInsert.filter(asset => asset.side === "to");
@@ -485,7 +592,9 @@ function buildTradeAssets({
   mySelectedPickNumbers,
   theirSelectedPickNumbers,
   mySelectedPlayerIds,
-  theirSelectedPlayerIds
+  theirSelectedPlayerIds,
+  mySelectedFuturePickIds,
+  theirSelectedFuturePickIds
 }) {
   const assets = [];
 
@@ -523,6 +632,23 @@ function buildTradeAssets({
     }
   });
 
+  mySelectedFuturePickIds.forEach(pickId => {
+    const pick = allFuturePicks.find(p =>
+      String(p.id) === String(pickId) &&
+      p.owner_team_id === currentTeamId
+    );
+
+    if (pick) {
+      assets.push({
+        proposal_id: proposalId,
+        side: "from",
+        asset_type: "future_pick",
+        asset_id: String(pick.id),
+        asset_label: formatFuturePickLabel(pick)
+      });
+    }
+  });
+
   theirSelectedPickNumbers.forEach(pickNumber => {
     const pick = allPicks.find(p =>
       String(p[CONFIG.PICK_NUMBER_COL]) === String(pickNumber) &&
@@ -553,6 +679,23 @@ function buildTradeAssets({
         asset_type: "player",
         asset_id: String(player[CONFIG.PICKS_ID_COL]),
         asset_label: formatPlayerLabel(player)
+      });
+    }
+  });
+
+  theirSelectedFuturePickIds.forEach(pickId => {
+    const pick = allFuturePicks.find(p =>
+      String(p.id) === String(pickId) &&
+      p.owner_team_id === toTeamId
+    );
+
+    if (pick) {
+      assets.push({
+        proposal_id: proposalId,
+        side: "to",
+        asset_type: "future_pick",
+        asset_id: String(pick.id),
+        asset_label: formatFuturePickLabel(pick)
       });
     }
   });
@@ -887,13 +1030,15 @@ function updateAssetSummaries() {
   const theirPickCount = getCheckedValues(".their-pick-checkbox").length;
   const myPlayerCount = getCheckedValues(".my-player-checkbox").length;
   const theirPlayerCount = getCheckedValues(".their-player-checkbox").length;
+  const myFuturePickCount = getCheckedValues(".my-future-pick-checkbox").length;
+  const theirFuturePickCount = getCheckedValues(".their-future-pick-checkbox").length;
 
-  const myCount = myPickCount + myPlayerCount;
-  const theirCount = theirPickCount + theirPlayerCount;
+  const myCount = myPickCount + myPlayerCount + myFuturePickCount;
+  const theirCount = theirPickCount + theirPlayerCount + theirFuturePickCount;
 
   if (myPicksSummary) {
     myPicksSummary.textContent = myCount
-      ? `${myCount} asset selezionat${myCount > 1 ? "i" : "o"} (${myPickCount} pick, ${myPlayerCount} giocatori)`
+      ? `${myCount} asset selezionat${myCount > 1 ? "i" : "o"} (${myPickCount} pick, ${myPlayerCount} giocatori, ${myFuturePickCount} future)`
       : "Seleziona i tuoi asset";
   }
 
@@ -902,7 +1047,7 @@ function updateAssetSummaries() {
     const selectedTeamName = selectedTeamId ? getTeamName(selectedTeamId) : "";
 
     theirPicksSummary.textContent = theirCount
-      ? `${theirCount} asset selezionat${theirCount > 1 ? "i" : "o"} (${theirPickCount} pick, ${theirPlayerCount} giocatori)`
+      ? `${theirCount} asset selezionat${theirCount > 1 ? "i" : "o"} (${theirPickCount} pick, ${theirPlayerCount} giocatori, ${theirFuturePickCount} future)`
       : selectedTeamId
         ? `Asset disponibili di ${selectedTeamName}`
         : "Seleziona prima una squadra";
