@@ -519,6 +519,7 @@ Promise.all([
   loadFutureDraftPicks()
 ])
 .then(([statsCSV, futurePicks]) => {
+  console.log("FUTURE PICKS DA SUPABASE:", futurePicks);
   const draft = generaDraftDaCSV(statsCSV, futurePicks);
 
   generaTabellaVerticale("draft-league", draft.league, draft.leagueTeams);
