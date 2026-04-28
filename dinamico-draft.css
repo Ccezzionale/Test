@@ -448,6 +448,11 @@ body{
   }
 }
 
+.pick.pick-empty{
+  visibility: hidden;
+  pointer-events: none;
+}
+
 /* Tablet e mobile */
 @media (max-width: 900px){
   :root{
