@@ -76,7 +76,36 @@
  <section class="draft-card user-card">
   <p id="userInfo">Controllo accesso...</p>
 </section>
+<section id="tradeAdminPanel" class="draft-card admin-card" style="display:none;">
+  <h2>Admin Mercato</h2>
 
+  <div class="form-row">
+    <label for="adminTradePhase">Fase mercato</label>
+    <select id="adminTradePhase">
+      <option value="draft">Durante il Draft</option>
+      <option value="conference_market">Mercato Conferences</option>
+      <option value="round_robin_market">Round Robin / Mercato unificato</option>
+    </select>
+  </div>
+
+  <div class="form-row">
+    <label for="adminFutureSeason">Stagione pick future</label>
+    <input id="adminFutureSeason" type="number" min="2026" step="1" />
+  </div>
+
+  <div class="form-row admin-toggle-row">
+    <label>
+      <input id="adminMarketOpen" type="checkbox" />
+      Mercato aperto
+    </label>
+  </div>
+
+  <button id="saveTradeSettingsBtn" type="button">
+    Salva impostazioni mercato
+  </button>
+
+  <p id="tradeSettingsMessage"></p>
+</section>
     <section id="tradeApp" style="display:none;">
       <section class="draft-card">
         <h2>Proponi una trade</h2>
