@@ -382,8 +382,7 @@ function applicaProprietariFuturePicks(draftBase, futurePicks, draftName) {
     (fp.pick_kind || "normal") === "normal"
   );
 
-  const bonusPicks = picksForDraft.filter(fp =>
-    fp.pick_kind === "bonus" &&
+  const activeNormalPicks = normalPicks.filter(fp =>
     fp.status === "active"
   );
 
@@ -391,7 +390,12 @@ function applicaProprietariFuturePicks(draftBase, futurePicks, draftName) {
     fp.status === "converted_interconference"
   );
 
-  // Chiavi delle pick normali da togliere dal draft
+  const bonusPicks = picksForDraft.filter(fp =>
+    fp.pick_kind === "bonus" &&
+    fp.status === "active"
+  );
+
+  // Pick normali convertite in bonus inter-conference da eliminare
   const convertedKeys = new Set(
     convertedPicks.map(fp => {
       const originalName = fp.original?.name || "";
@@ -400,9 +404,83 @@ function applicaProprietariFuturePicks(draftBase, futurePicks, draftName) {
   );
 
   /*
-    Mappa display round per le bonus pick:
-    se Bartowski ha ceduto R2/R3 e riceve Rubin R9/R10,
-    le bonus ricevute da Bartowski vengono mostrate in R2/R3.
+    LOGICA DISPLAY ROUND PER SCAMBI NORMALI INTRA-CONFERENCE
+
+    Esempio:
+    Bayern perde R2
+    Bayern riceve R4 Desperados
+
+    Allora la pick ricevuta da Bayern va mostrata in R2.
+  */
+  const lostNormalSlotsByTeamId = new Map();
+
+  activeNormalPicks.forEach(fp => {
+    const originalId = fp.original?.id;
+    const ownerId = fp.owner?.id;
+
+    if (!originalId || !ownerId) return;
+
+    // Se owner diverso da original, la squadra originale ha perso quel round
+    if (originalId !== ownerId) {
+      if (!lostNormalSlotsByTeamId.has(originalId)) {
+        lostNormalSlotsByTeamId.set(originalId, []);
+      }
+
+      lostNormalSlotsByTeamId.get(originalId).push({
+        round: Number(fp.round),
+        source_trade_id: fp.source_trade_id || null
+      });
+    }
+  });
+
+  lostNormalSlotsByTeamId.forEach(slots => {
+    slots.sort((a, b) => a.round - b.round);
+  });
+
+  const usedLostSlotsByTeamId = new Map();
+
+  function getReplacementRoundForNormalTrade(fp) {
+    const ownerId = fp.owner?.id;
+    if (!ownerId) return Number(fp.round);
+
+    const slots = lostNormalSlotsByTeamId.get(ownerId) || [];
+    if (!slots.length) return Number(fp.round);
+
+    if (!usedLostSlotsByTeamId.has(ownerId)) {
+      usedLostSlotsByTeamId.set(ownerId, new Set());
+    }
+
+    const used = usedLostSlotsByTeamId.get(ownerId);
+
+    // Prima prova: stesso source_trade_id, se presente
+    let slotIndex = -1;
+
+    if (fp.source_trade_id) {
+      slotIndex = slots.findIndex((slot, index) =>
+        !used.has(index) &&
+        slot.source_trade_id === fp.source_trade_id
+      );
+    }
+
+    // Fallback: primo slot libero
+    if (slotIndex === -1) {
+      slotIndex = slots.findIndex((slot, index) => !used.has(index));
+    }
+
+    if (slotIndex === -1) return Number(fp.round);
+
+    used.add(slotIndex);
+    return slots[slotIndex].round;
+  }
+
+  /*
+    LOGICA DISPLAY ROUND PER BONUS INTER-CONFERENCE
+
+    Esempio:
+    Bartowski perde R2/R3
+    Bartowski riceve bonus da Rubinkebab
+
+    Le bonus ricevute vanno mostrate in R2/R3.
   */
   const bonusDisplayRoundById = new Map();
 
@@ -475,7 +553,12 @@ function applicaProprietariFuturePicks(draftBase, futurePicks, draftName) {
 
       const originalTeam = futurePick?.original?.name || pickBase.team;
       const ownerTeam = futurePick?.owner?.name || pickBase.team;
+
       const isTraded = teamKey(originalTeam) !== teamKey(ownerTeam);
+
+      const displayRound = isTraded && futurePick
+        ? getReplacementRoundForNormalTrade(futurePick)
+        : roundNumber;
 
       normalRoundPicks.push({
         team: ownerTeam,
@@ -484,7 +567,7 @@ function applicaProprietariFuturePicks(draftBase, futurePicks, draftName) {
         traded: isTraded,
         bonus: false,
         round: roundNumber,
-        displayRound: roundNumber,
+        displayRound,
         protection_note: futurePick?.protection_note || "",
         notes: futurePick?.notes || ""
       });
