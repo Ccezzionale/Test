@@ -149,6 +149,7 @@ if (
    if (saveTradeSettingsBtn) {
   saveTradeSettingsBtn.addEventListener("click", saveTradeSettings);
 }
+   }
 
 /* ========= AUTH ========= */
 
