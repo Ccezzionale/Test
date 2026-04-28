@@ -87,6 +87,9 @@ async function initTradeRoom() {
   if (!ok) return;
 
   await loadTradeSettings();
+   if (activeDraftLabel) {
+  activeDraftLabel.textContent = `${getTradePhaseLabel()} · ${currentDraftName}`;
+}
 
   if (!marketOpen) {
     userInfo.textContent = "Il mercato è attualmente chiuso.";
