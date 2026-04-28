@@ -49,6 +49,9 @@ let currentTradePhase = "draft";
 let marketOpen = true;
 let futurePickSeason = 2027;
 
+let currentUserRole = "coach";
+let currentIsAdmin = false;
+
 let allPicks = [];
 let allPickedPlayers = [];
 let allTeams = [];
@@ -70,6 +73,12 @@ const tradeMessage = document.getElementById("tradeMessage");
 const myPicksSummary = document.getElementById("myPicksSummary");
 const theirPicksSummary = document.getElementById("theirPicksSummary");
 const activeDraftLabel = document.getElementById("activeDraftLabel");
+const tradeAdminPanel = document.getElementById("tradeAdminPanel");
+const adminTradePhase = document.getElementById("adminTradePhase");
+const adminMarketOpen = document.getElementById("adminMarketOpen");
+const adminFutureSeason = document.getElementById("adminFutureSeason");
+const saveTradeSettingsBtn = document.getElementById("saveTradeSettingsBtn");
+const tradeSettingsMessage = document.getElementById("tradeSettingsMessage");
 
 const receivedTradesBox = document.getElementById("receivedTradesBox");
 const sentTradesBox = document.getElementById("sentTradesBox");
@@ -91,11 +100,6 @@ async function initTradeRoom() {
   activeDraftLabel.textContent = `${getTradePhaseLabel()} · ${currentDraftName}`;
 }
 
-  if (!marketOpen) {
-    userInfo.textContent = "Il mercato è attualmente chiuso.";
-    return;
-  }
-
   await loadTeams();
   await loadAssetsForTrade();
 
@@ -105,6 +109,8 @@ async function initTradeRoom() {
   await loadTrades();
 
   tradeApp.style.display = "block";
+   renderTradeAdminPanel();
+applyMarketOpenState();
 }
 
 /* ========= NAVBAR MOBILE ========= */
@@ -139,6 +145,9 @@ if (
   updateAssetSummaries();
 }
   });
+
+   if (saveTradeSettingsBtn) {
+  saveTradeSettingsBtn.addEventListener("click", saveTradeSettings);
 }
 
 /* ========= AUTH ========= */
@@ -167,7 +176,8 @@ async function checkUser() {
   }
 
   currentTeamId = profile[CONFIG.PROFILE_TEAM_COL];
-
+currentUserRole = profile.role || "coach";
+currentIsAdmin = currentUserRole === "admin";
   if (!currentTeamId) {
     userInfo.textContent = "Nessuna squadra collegata a questo utente.";
     return false;
@@ -584,6 +594,10 @@ function getTeamName(teamId) {
 /* ========= INVIO PROPOSTA ========= */
 
 async function sendTradeProposal() {
+   if (!marketOpen) {
+  showMessage("Mercato chiuso. Non puoi inviare proposte in questo momento.", "error");
+  return;
+}
   clearMessage();
 
   const toTeamId = toTeamSelect.value;
@@ -969,6 +983,10 @@ async function renderTrades(container, trades, mode) {
 /* ========= AZIONI TRADE ========= */
 
 async function acceptTrade(proposalId) {
+   if (!marketOpen) {
+  alert("Mercato chiuso. Non puoi accettare trade in questo momento.");
+  return;
+}
   const ok = confirm("Confermi di voler accettare questa trade?");
   if (!ok) return;
 
@@ -1155,6 +1173,117 @@ function updateAssetSummaries() {
       : selectedTeamId
         ? `Asset disponibili di ${selectedTeamName}`
         : "Seleziona prima una squadra";
+  }
+}
+
+   function renderTradeAdminPanel() {
+  if (!tradeAdminPanel) return;
+
+  if (!currentIsAdmin) {
+    tradeAdminPanel.style.display = "none";
+    return;
+  }
+
+  tradeAdminPanel.style.display = "block";
+
+  if (adminTradePhase) {
+    adminTradePhase.value = currentTradePhase;
+  }
+
+  if (adminMarketOpen) {
+    adminMarketOpen.checked = marketOpen;
+  }
+
+  if (adminFutureSeason) {
+    adminFutureSeason.value = futurePickSeason;
+  }
+}
+
+async function saveTradeSettings() {
+  if (!currentIsAdmin) return;
+
+  const nextPhase = adminTradePhase?.value || "draft";
+  const nextMarketOpen = !!adminMarketOpen?.checked;
+  const nextSeason = Number(adminFutureSeason?.value || futurePickSeason || 2027);
+
+  if (!Number.isFinite(nextSeason) || nextSeason < 2026) {
+    showTradeSettingsMessage("Stagione pick future non valida.", "error");
+    return;
+  }
+
+  saveTradeSettingsBtn.disabled = true;
+  saveTradeSettingsBtn.textContent = "Salvataggio...";
+
+  try {
+    const { error } = await supabase
+      .from("trade_settings")
+      .update({
+        active_phase: nextPhase,
+        market_open: nextMarketOpen,
+        future_pick_season: nextSeason,
+        updated_at: new Date().toISOString()
+      })
+      .eq("id", 1);
+
+    if (error) throw error;
+
+    currentTradePhase = nextPhase;
+    marketOpen = nextMarketOpen;
+    futurePickSeason = nextSeason;
+
+    showTradeSettingsMessage("Impostazioni mercato salvate.", "success");
+
+    await refreshAll();
+    renderTeamSelect();
+    renderMyAssets();
+    applyMarketOpenState();
+    renderTradeAdminPanel();
+
+    if (activeDraftLabel) {
+      activeDraftLabel.textContent = `${getTradePhaseLabel()} · ${currentDraftName}`;
+    }
+  } catch (err) {
+    console.error(err);
+    showTradeSettingsMessage("Errore durante il salvataggio delle impostazioni.", "error");
+  } finally {
+    saveTradeSettingsBtn.disabled = false;
+    saveTradeSettingsBtn.textContent = "Salva impostazioni mercato";
+  }
+}
+
+function showTradeSettingsMessage(text, type) {
+  if (!tradeSettingsMessage) return;
+
+  tradeSettingsMessage.textContent = text;
+  tradeSettingsMessage.className = type === "success" ? "success-message" : "error-message";
+}
+
+   function applyMarketOpenState() {
+  const locked = !marketOpen;
+
+  if (sendTradeBtn) {
+    sendTradeBtn.disabled = locked;
+    sendTradeBtn.textContent = locked ? "Mercato chiuso" : "Invia proposta";
+  }
+
+  if (tradeApp) {
+    const inputs = tradeApp.querySelectorAll("select, textarea, input, button");
+
+    inputs.forEach(el => {
+      if (tradeAdminPanel && tradeAdminPanel.contains(el)) return;
+      el.disabled = locked;
+    });
+  }
+
+  const actionButtons = document.querySelectorAll(".trade-actions button");
+  actionButtons.forEach(btn => {
+    btn.disabled = locked;
+  });
+
+  if (locked) {
+    userInfo.textContent = "Mercato chiuso. Puoi consultare le trade, ma non crearne o accettarne.";
+  } else if (currentUser?.email) {
+    userInfo.textContent = `Accesso effettuato come ${currentUser.email}`;
   }
 }
 
