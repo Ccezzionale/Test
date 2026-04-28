@@ -670,9 +670,9 @@ if (!myAssetCount || !theirAssetCount) {
   return;
 }
 
-if (isDraftPhase() && myAssetCount !== theirAssetCount) {
+if (isDraftPhase() && myPlayerBalance !== 0) {
   showMessage(
-    "Durante il draft la trade deve avere lo stesso numero di asset da entrambe le parti.",
+    "Durante il draft la trade deve avere anche lo stesso numero di giocatori da entrambe le parti.",
     "error"
   );
   return;
