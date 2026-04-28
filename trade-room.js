@@ -719,7 +719,6 @@ async function loadReceivedTrades() {
     .select("*")
     .eq("to_team", currentTeamId)
     .eq("status", "pending")
-    .eq("draft_name", currentDraftName)
     .order("created_at", { ascending: false });
 
   if (error) {
