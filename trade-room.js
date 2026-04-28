@@ -51,6 +51,8 @@ let futurePickSeason = 2027;
 
 let currentUserRole = "coach";
 let currentIsAdmin = false;
+let marketOpenAt = null;
+let marketCloseAt = null;
 
 let allPicks = [];
 let allPickedPlayers = [];
@@ -77,6 +79,8 @@ const tradeAdminPanel = document.getElementById("tradeAdminPanel");
 const adminTradePhase = document.getElementById("adminTradePhase");
 const adminMarketOpen = document.getElementById("adminMarketOpen");
 const adminFutureSeason = document.getElementById("adminFutureSeason");
+const adminMarketOpenAt = document.getElementById("adminMarketOpenAt");
+const adminMarketCloseAt = document.getElementById("adminMarketCloseAt");
 const saveTradeSettingsBtn = document.getElementById("saveTradeSettingsBtn");
 const tradeSettingsMessage = document.getElementById("tradeSettingsMessage");
 
@@ -236,6 +240,9 @@ async function loadTradeSettings() {
   currentTradePhase = data?.active_phase || "draft";
   marketOpen = data?.market_open ?? true;
   futurePickSeason = data?.future_pick_season || CONFIG.FUTURE_PICK_SEASON || 2027;
+
+   marketOpenAt = data?.market_open_at || null;
+marketCloseAt = data?.market_close_at || null;
 }
 
 async function loadTeams() {
@@ -363,6 +370,22 @@ function canTradeWithTeam(team) {
   }
 
   return false;
+}
+
+function isMarketCurrentlyOpen() {
+  if (!marketOpen) return false;
+
+  const now = new Date();
+
+  if (marketOpenAt && now < new Date(marketOpenAt)) {
+    return false;
+  }
+
+  if (marketCloseAt && now > new Date(marketCloseAt)) {
+    return false;
+  }
+
+  return true;
 }
 
 function showCurrentDraftAssets() {
@@ -595,7 +618,7 @@ function getTeamName(teamId) {
 /* ========= INVIO PROPOSTA ========= */
 
 async function sendTradeProposal() {
-   if (!marketOpen) {
+  if (!isMarketCurrentlyOpen()) {
   showMessage("Mercato chiuso. Non puoi inviare proposte in questo momento.", "error");
   return;
 }
@@ -984,7 +1007,7 @@ async function renderTrades(container, trades, mode) {
 /* ========= AZIONI TRADE ========= */
 
 async function acceptTrade(proposalId) {
-   if (!marketOpen) {
+   if (!isMarketCurrentlyOpen()) {
   alert("Mercato chiuso. Non puoi accettare trade in questo momento.");
   return;
 }
@@ -1198,6 +1221,23 @@ function updateAssetSummaries() {
   if (adminFutureSeason) {
     adminFutureSeason.value = futurePickSeason;
   }
+      if (adminMarketOpenAt) {
+  adminMarketOpenAt.value = toDatetimeLocalValue(marketOpenAt);
+}
+
+if (adminMarketCloseAt) {
+  adminMarketCloseAt.value = toDatetimeLocalValue(marketCloseAt);
+}
+}
+
+function toDatetimeLocalValue(value) {
+  if (!value) return "";
+
+  const date = new Date(value);
+  const offset = date.getTimezoneOffset();
+  const localDate = new Date(date.getTime() - offset * 60000);
+
+  return localDate.toISOString().slice(0, 16);
 }
 
 async function saveTradeSettings() {
@@ -1206,6 +1246,13 @@ async function saveTradeSettings() {
   const nextPhase = adminTradePhase?.value || "draft";
   const nextMarketOpen = !!adminMarketOpen?.checked;
   const nextSeason = Number(adminFutureSeason?.value || futurePickSeason || 2027);
+   const nextMarketOpenAt = adminMarketOpenAt?.value
+  ? new Date(adminMarketOpenAt.value).toISOString()
+  : null;
+
+const nextMarketCloseAt = adminMarketCloseAt?.value
+  ? new Date(adminMarketCloseAt.value).toISOString()
+  : null;
 
   if (!Number.isFinite(nextSeason) || nextSeason < 2026) {
     showTradeSettingsMessage("Stagione pick future non valida.", "error");
@@ -1218,12 +1265,14 @@ async function saveTradeSettings() {
   try {
     const { error } = await supabase
       .from("trade_settings")
-      .update({
-        active_phase: nextPhase,
-        market_open: nextMarketOpen,
-        future_pick_season: nextSeason,
-        updated_at: new Date().toISOString()
-      })
+ .update({
+  active_phase: nextPhase,
+  market_open: nextMarketOpen,
+  future_pick_season: nextSeason,
+  market_open_at: nextMarketOpenAt,
+  market_close_at: nextMarketCloseAt,
+  updated_at: new Date().toISOString()
+})
       .eq("id", 1);
 
     if (error) throw error;
@@ -1231,6 +1280,8 @@ async function saveTradeSettings() {
     currentTradePhase = nextPhase;
     marketOpen = nextMarketOpen;
     futurePickSeason = nextSeason;
+     marketOpenAt = nextMarketOpenAt;
+marketCloseAt = nextMarketCloseAt;
 
     showTradeSettingsMessage("Impostazioni mercato salvate.", "success");
 
@@ -1260,7 +1311,7 @@ function showTradeSettingsMessage(text, type) {
 }
 
    function applyMarketOpenState() {
-  const locked = !marketOpen;
+ const locked = !isMarketCurrentlyOpen();
 
   if (sendTradeBtn) {
     sendTradeBtn.disabled = locked;
@@ -1282,10 +1333,28 @@ function showTradeSettingsMessage(text, type) {
   });
 
   if (locked) {
-    userInfo.textContent = "Mercato chiuso. Puoi consultare le trade, ma non crearne o accettarne.";
-  } else if (currentUser?.email) {
-    userInfo.textContent = `Accesso effettuato come ${currentUser.email}`;
+  userInfo.textContent = getMarketClosedMessage();
+} else if (currentUser?.email) {
+  userInfo.textContent = `Accesso effettuato come ${currentUser.email}`;
+}
+}
+
+function getMarketClosedMessage() {
+  const now = new Date();
+
+  if (!marketOpen) {
+    return "Mercato chiuso manualmente. Puoi consultare le trade, ma non crearne o accettarne.";
   }
+
+  if (marketOpenAt && now < new Date(marketOpenAt)) {
+    return `Mercato non ancora aperto. Apertura prevista: ${formatDateTime(marketOpenAt)}.`;
+  }
+
+  if (marketCloseAt && now > new Date(marketCloseAt)) {
+    return `Mercato chiuso. Chiusura avvenuta: ${formatDateTime(marketCloseAt)}.`;
+  }
+
+  return "Mercato chiuso. Puoi consultare le trade, ma non crearne o accettarne.";
 }
 
 async function refreshAll() {
