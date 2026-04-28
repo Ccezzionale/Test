@@ -387,15 +387,66 @@ function applicaProprietariFuturePicks(draftBase, futurePicks, draftName) {
     fp.status === "active"
   );
 
-  // Set esplicito delle pick normali da eliminare
-  const convertedKeys = new Set(
-    normalPicks
-      .filter(fp => fp.status === "converted_interconference")
-      .map(fp => {
-        const originalName = fp.original?.name || "";
-        return `${Number(fp.round)}|${teamKey(originalName)}`;
-      })
+  const convertedPicks = normalPicks.filter(fp =>
+    fp.status === "converted_interconference"
   );
+
+  // Chiavi delle pick normali da togliere dal draft
+  const convertedKeys = new Set(
+    convertedPicks.map(fp => {
+      const originalName = fp.original?.name || "";
+      return `${Number(fp.round)}|${teamKey(originalName)}`;
+    })
+  );
+
+  /*
+    Mappa display round per le bonus pick:
+    se Bartowski ha ceduto R2/R3 e riceve Rubin R9/R10,
+    le bonus ricevute da Bartowski vengono mostrate in R2/R3.
+  */
+  const bonusDisplayRoundById = new Map();
+
+  const tradeIds = [
+    ...new Set(
+      bonusPicks
+        .map(fp => fp.source_trade_id)
+        .filter(Boolean)
+    )
+  ];
+
+  tradeIds.forEach(tradeId => {
+    const bonusesForTrade = bonusPicks.filter(fp => fp.source_trade_id === tradeId);
+
+    const owners = [
+      ...new Set(
+        bonusesForTrade
+          .map(fp => fp.owner?.id)
+          .filter(Boolean)
+      )
+    ];
+
+    owners.forEach(ownerId => {
+      const ownerConvertedSlots = convertedPicks
+        .filter(fp =>
+          fp.source_trade_id === tradeId &&
+          fp.owner?.id === ownerId
+        )
+        .sort((a, b) => Number(a.round) - Number(b.round));
+
+      const ownerBonuses = bonusesForTrade
+        .filter(fp => fp.owner?.id === ownerId)
+        .sort((a, b) => Number(a.round) - Number(b.round));
+
+      ownerBonuses.forEach((bonus, index) => {
+        const replacementSlot = ownerConvertedSlots[index];
+
+        bonusDisplayRoundById.set(
+          bonus.id,
+          replacementSlot ? Number(replacementSlot.round) : Number(bonus.round)
+        );
+      });
+    });
+  });
 
   let globalPickNumber = 1;
 
@@ -408,8 +459,7 @@ function applicaProprietariFuturePicks(draftBase, futurePicks, draftName) {
       const originalKey = teamKey(pickBase.team);
       const convertedKey = `${roundNumber}|${originalKey}`;
 
-      // Se questa pick normale è stata convertita in bonus inter-conference,
-      // NON deve più apparire nella tabella.
+      // Pick ceduta fuori conference: non appare più come pick normale
       if (convertedKeys.has(convertedKey)) {
         return;
       }
@@ -434,6 +484,7 @@ function applicaProprietariFuturePicks(draftBase, futurePicks, draftName) {
         traded: isTraded,
         bonus: false,
         round: roundNumber,
+        displayRound: roundNumber,
         protection_note: futurePick?.protection_note || "",
         notes: futurePick?.notes || ""
       });
@@ -452,6 +503,7 @@ function applicaProprietariFuturePicks(draftBase, futurePicks, draftName) {
           traded: true,
           bonus: true,
           round: roundNumber,
+          displayRound: bonusDisplayRoundById.get(fp.id) || roundNumber,
           protection_note: fp.protection_note || "",
           notes: fp.notes || ""
         };
@@ -463,6 +515,7 @@ function applicaProprietariFuturePicks(draftBase, futurePicks, draftName) {
     };
   });
 }
+
 function shortTeamName(name) {
   const cleaned = cleanTeamName(name);
 
