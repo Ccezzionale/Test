@@ -45,6 +45,9 @@ let currentTeamId = null;
 let currentTeamName = null;
 let currentTeamConference = null;
 let currentDraftName = CONFIG.DEFAULT_DRAFT_NAME;
+let currentTradePhase = "draft";
+let marketOpen = true;
+let futurePickSeason = 2027;
 
 let allPicks = [];
 let allPickedPlayers = [];
@@ -82,6 +85,13 @@ async function initTradeRoom() {
 
   const ok = await checkUser();
   if (!ok) return;
+
+  await loadTradeSettings();
+
+  if (!marketOpen) {
+    userInfo.textContent = "Il mercato è attualmente chiuso.";
+    return;
+  }
 
   await loadTeams();
   await loadAssetsForTrade();
@@ -191,7 +201,28 @@ async function checkUser() {
   return true;
 }
 
+
 /* ========= DATI ========= */
+
+async function loadTradeSettings() {
+  const { data, error } = await supabase
+    .from("trade_settings")
+    .select("*")
+    .eq("id", 1)
+    .maybeSingle();
+
+  if (error) {
+    console.error("Errore caricamento trade_settings:", error);
+    currentTradePhase = "draft";
+    marketOpen = true;
+    futurePickSeason = CONFIG.FUTURE_PICK_SEASON || 2027;
+    return;
+  }
+
+  currentTradePhase = data?.active_phase || "draft";
+  marketOpen = data?.market_open ?? true;
+  futurePickSeason = data?.future_pick_season || CONFIG.FUTURE_PICK_SEASON || 2027;
+}
 
 async function loadTeams() {
   const { data, error } = await supabase
@@ -286,7 +317,7 @@ async function loadFuturePicks() {
       original:teams!future_draft_picks_original_team_id_fkey(id, name, conference),
       owner:teams!future_draft_picks_owner_team_id_fkey(id, name, conference)
     `)
-    .eq("season", CONFIG.FUTURE_PICK_SEASON)
+    .eq("season", futurePickSeason)
     .eq("pick_kind", "normal")
     .eq("status", "active")
     .order("draft_name", { ascending: true })
@@ -302,12 +333,53 @@ async function loadFuturePicks() {
 }
 
 /* ========= RENDER FORM ========= */
+function canTradeWithTeam(team) {
+  if (team[CONFIG.TEAM_ID_COL] === currentTeamId) return false;
+
+  if (currentTradePhase === "draft") {
+    return team.conference === currentTeamConference;
+  }
+
+  if (currentTradePhase === "conference_market") {
+    return team.conference === currentTeamConference;
+  }
+
+  if (currentTradePhase === "round_robin_market") {
+    return true;
+  }
+
+  return false;
+}
+
+function showCurrentDraftAssets() {
+  return currentTradePhase === "draft";
+}
+
+function showFuturePickAssets() {
+  return (
+    currentTradePhase === "draft" ||
+    currentTradePhase === "conference_market" ||
+    currentTradePhase === "round_robin_market"
+  );
+}
+
+function showPlayerAssets() {
+  return true;
+}
+
+function getTradePhaseLabel() {
+  if (currentTradePhase === "draft") return "Mercato durante il Draft";
+  if (currentTradePhase === "conference_market") return "Mercato Conferences";
+  if (currentTradePhase === "round_robin_market") return "Mercato Round Robin";
+  return currentTradePhase;
+}
+
 
 function renderTeamSelect() {
   toTeamSelect.innerHTML = `<option value="">Seleziona squadra...</option>`;
 
   allTeams
-    .filter(team => team[CONFIG.TEAM_ID_COL] !== currentTeamId)
+    .filter(canTradeWithTeam)
     .forEach(team => {
       const option = document.createElement("option");
       option.value = team[CONFIG.TEAM_ID_COL];
@@ -334,28 +406,42 @@ function renderMyAssets() {
   pick => pick.owner_team_id === currentTeamId
 );
 
-myPicksBox.innerHTML = renderAssetGroup({
-  title: "Pick disponibili",
-  emptyText: "Nessuna pick disponibile.",
-  items: myPicks,
-  inputClass: "my-pick-checkbox",
-  getValue: pick => pick[CONFIG.PICK_NUMBER_COL],
-  getLabel: formatPickLabel
-}) + renderAssetGroup({
-  title: "Giocatori già chiamati",
-  emptyText: "Nessun giocatore ancora chiamato.",
-  items: myPlayers,
-  inputClass: "my-player-checkbox",
-  getValue: player => player[CONFIG.PICKS_ID_COL],
-  getLabel: formatPlayerLabel
-}) + renderAssetGroup({
-  title: `Pick future ${CONFIG.FUTURE_PICK_SEASON}`,
-  emptyText: "Nessuna pick futura disponibile.",
-  items: myFuturePicks,
-  inputClass: "my-future-pick-checkbox",
-  getValue: pick => pick.id,
-  getLabel: formatFuturePickLabel
-});
+const myAssetGroups = [];
+
+if (showCurrentDraftAssets()) {
+  myAssetGroups.push(renderAssetGroup({
+    title: "Pick draft in corso",
+    emptyText: "Nessuna pick disponibile.",
+    items: myPicks,
+    inputClass: "my-pick-checkbox",
+    getValue: pick => pick[CONFIG.PICK_NUMBER_COL],
+    getLabel: formatPickLabel
+  }));
+}
+
+if (showPlayerAssets()) {
+  myAssetGroups.push(renderAssetGroup({
+    title: "Giocatori",
+    emptyText: "Nessun giocatore disponibile.",
+    items: myPlayers,
+    inputClass: "my-player-checkbox",
+    getValue: player => player[CONFIG.PICKS_ID_COL],
+    getLabel: formatPlayerLabel
+  }));
+}
+
+if (showFuturePickAssets()) {
+  myAssetGroups.push(renderAssetGroup({
+    title: `Pick future ${futurePickSeason}`,
+    emptyText: "Nessuna pick futura disponibile.",
+    items: myFuturePicks,
+    inputClass: "my-future-pick-checkbox",
+    getValue: pick => pick.id,
+    getLabel: formatFuturePickLabel
+  }));
+}
+
+myPicksBox.innerHTML = myAssetGroups.join("");
 
   updateAssetSummaries();
 }
@@ -383,28 +469,42 @@ const theirFuturePicks = allFuturePicks.filter(
   pick => pick.owner_team_id === selectedTeamId
 );
    
-theirPicksBox.innerHTML = renderAssetGroup({
-  title: `Pick disponibili di ${selectedTeamName}`,
-  emptyText: `Nessuna pick disponibile per ${selectedTeamName}.`,
-  items: theirPicks,
-  inputClass: "their-pick-checkbox",
-  getValue: pick => pick[CONFIG.PICK_NUMBER_COL],
-  getLabel: formatPickLabel
-}) + renderAssetGroup({
-  title: `Giocatori già chiamati di ${selectedTeamName}`,
-  emptyText: `Nessun giocatore ancora chiamato da ${selectedTeamName}.`,
-  items: theirPlayers,
-  inputClass: "their-player-checkbox",
-  getValue: player => player[CONFIG.PICKS_ID_COL],
-  getLabel: formatPlayerLabel
-}) + renderAssetGroup({
-  title: `Pick future ${CONFIG.FUTURE_PICK_SEASON} di ${selectedTeamName}`,
-  emptyText: `Nessuna pick futura disponibile per ${selectedTeamName}.`,
-  items: theirFuturePicks,
-  inputClass: "their-future-pick-checkbox",
-  getValue: pick => pick.id,
-  getLabel: formatFuturePickLabel
-});
+const theirAssetGroups = [];
+
+if (showCurrentDraftAssets()) {
+  theirAssetGroups.push(renderAssetGroup({
+    title: `Pick draft in corso di ${selectedTeamName}`,
+    emptyText: `Nessuna pick disponibile per ${selectedTeamName}.`,
+    items: theirPicks,
+    inputClass: "their-pick-checkbox",
+    getValue: pick => pick[CONFIG.PICK_NUMBER_COL],
+    getLabel: formatPickLabel
+  }));
+}
+
+if (showPlayerAssets()) {
+  theirAssetGroups.push(renderAssetGroup({
+    title: `Giocatori di ${selectedTeamName}`,
+    emptyText: `Nessun giocatore disponibile per ${selectedTeamName}.`,
+    items: theirPlayers,
+    inputClass: "their-player-checkbox",
+    getValue: player => player[CONFIG.PICKS_ID_COL],
+    getLabel: formatPlayerLabel
+  }));
+}
+
+if (showFuturePickAssets()) {
+  theirAssetGroups.push(renderAssetGroup({
+    title: `Pick future ${futurePickSeason} di ${selectedTeamName}`,
+    emptyText: `Nessuna pick futura disponibile per ${selectedTeamName}.`,
+    items: theirFuturePicks,
+    inputClass: "their-future-pick-checkbox",
+    getValue: pick => pick.id,
+    getLabel: formatFuturePickLabel
+  }));
+}
+
+theirPicksBox.innerHTML = theirAssetGroups.join("");
 
   updateAssetSummaries();
 }
@@ -455,7 +555,7 @@ function formatFuturePickLabel(pick) {
     ? ` · da ${originalShort}`
     : "";
 
-  return `R${pick.round} ${CONFIG.FUTURE_PICK_SEASON}${tradedLabel}`;
+ return `R${pick.round} ${futurePickSeason}${tradedLabel}`;
 }
 
 function shortTeamName(name) {
