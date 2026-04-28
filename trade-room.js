@@ -736,7 +736,6 @@ async function loadSentTrades() {
     .select("*")
     .eq("from_team", currentTeamId)
     .eq("status", "pending")
-    .eq("draft_name", currentDraftName)
     .order("created_at", { ascending: false });
 
   if (error) {
@@ -753,7 +752,6 @@ async function loadCompletedTrades() {
     .from("trade_proposals")
     .select("*")
     .eq("status", "accepted")
-    .eq("draft_name", currentDraftName)
     .or(`from_team.eq.${currentTeamId},to_team.eq.${currentTeamId}`)
     .order("accepted_at", { ascending: false })
     .limit(30);
