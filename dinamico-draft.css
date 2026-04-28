@@ -396,6 +396,14 @@ body{
   color: var(--blue);
 }
 
+.pick.pick-traded{
+  background: linear-gradient(90deg, rgba(255, 204, 0, 0.22), #fff7cc);
+  border: 1px solid #ffcc00;
+  color: #4b3a00;
+  font-weight: 800;
+  font-size: 0.72rem;
+}
+
 /* Desktop largo: tutte e 8 visibili */
 @media (min-width: 1200px){
   .draft-scroll-x{
