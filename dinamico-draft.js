@@ -549,9 +549,15 @@ function generaTabellaVerticale(containerId, draftData, squadreOrdine) {
     ? squadreOrdine.map(s => cleanTeamName(s))
     : draftData[0].Picks.map(p => cleanTeamName(p.team));
 
+  const maxRounds = Math.max(...draftData.map(r => Number(r.Round) || 0));
+
   const draftPerSquadra = {};
+
   squadre.forEach(s => {
-    draftPerSquadra[s] = [];
+    draftPerSquadra[s] = {};
+    for (let r = 1; r <= maxRounds; r++) {
+      draftPerSquadra[s][r] = [];
+    }
   });
 
   draftData.forEach(round => {
@@ -559,19 +565,32 @@ function generaTabellaVerticale(containerId, draftData, squadreOrdine) {
       const ownerCanonical = getCanonicalTeamName(p.team, squadre);
       const originalCanonical = getCanonicalTeamName(p.originalTeam, squadre);
 
+      const displayRound = Number(
+        p.displayRound || p.round || round.Round
+      );
+
       if (!draftPerSquadra[ownerCanonical]) {
-        draftPerSquadra[ownerCanonical] = [];
+        draftPerSquadra[ownerCanonical] = {};
+        for (let r = 1; r <= maxRounds; r++) {
+          draftPerSquadra[ownerCanonical][r] = [];
+        }
         squadre.push(ownerCanonical);
       }
 
-draftPerSquadra[ownerCanonical].push({
-  pickNumber: p.pickNumber,
-  originalTeam: originalCanonical,
-  traded: p.traded,
-  bonus: p.bonus,
-  protection_note: p.protection_note,
-  notes: p.notes
-});
+      if (!draftPerSquadra[ownerCanonical][displayRound]) {
+        draftPerSquadra[ownerCanonical][displayRound] = [];
+      }
+
+      draftPerSquadra[ownerCanonical][displayRound].push({
+        pickNumber: p.pickNumber,
+        originalTeam: originalCanonical,
+        traded: p.traded,
+        bonus: p.bonus,
+        round: p.round,
+        displayRound,
+        protection_note: p.protection_note,
+        notes: p.notes
+      });
     });
   });
 
@@ -587,19 +606,29 @@ draftPerSquadra[ownerCanonical].push({
               </div>
               <div class="draft-picks">`;
 
-    draftPerSquadra[squadra].forEach(pick => {
-      const tradedClass = pick.traded ? "pick-traded" : "";
-const bonusClass = pick.bonus ? "pick-bonus" : "";
-      const title = pick.traded
-        ? `Pick originale di ${pick.originalTeam}. ${pick.notes || ""} ${pick.protection_note || ""}`.trim()
-        : "";
+    for (let r = 1; r <= maxRounds; r++) {
+      const picksInRound = draftPerSquadra[squadra][r] || [];
 
-const label = pick.traded
-  ? `Pick #${pick.pickNumber}<br><span class="bonus-source">da ${shortTeamName(pick.originalTeam)}</span>`
-  : `Pick #${pick.pickNumber}`;
+      if (!picksInRound.length) {
+        html += `<div class="pick pick-empty"></div>`;
+        continue;
+      }
 
-html += `<div class="pick ${tradedClass} ${bonusClass}" title="${title}">${label}</div>`;
-    });
+      picksInRound.forEach(pick => {
+        const tradedClass = pick.traded ? "pick-traded" : "";
+        const bonusClass = pick.bonus ? "pick-bonus" : "";
+
+        const title = pick.traded
+          ? `Round visualizzato ${pick.displayRound}. Round originale ${pick.round}. Pick originale di ${pick.originalTeam}. ${pick.notes || ""} ${pick.protection_note || ""}`.trim()
+          : `Round ${pick.displayRound}`;
+
+        const label = pick.traded
+          ? `Pick #${pick.pickNumber}<br><span class="bonus-source">da ${shortTeamName(pick.originalTeam)}</span>`
+          : `Pick #${pick.pickNumber}`;
+
+        html += `<div class="pick ${tradedClass} ${bonusClass}" title="${title}">${label}</div>`;
+      });
+    }
 
     html += `</div></div>`;
   });
