@@ -401,7 +401,12 @@ body{
   border: 1px solid #ffcc00;
   color: #4b3a00;
   font-weight: 800;
-  font-size: 0.72rem;
+  font-size: 0.68rem;
+  line-height: 1.1;
+  white-space: normal;
+  min-height: 34px;
+  height: auto;
+  padding: 4px 6px;
 }
 
 /* Desktop largo: tutte e 8 visibili */
