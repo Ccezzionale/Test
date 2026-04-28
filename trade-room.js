@@ -874,7 +874,11 @@ async function acceptTrade(proposalId) {
       p_proposal_id: proposalId
     });
 
-    if (error) throw error;
+    if (error) {
+      console.error("ERRORE ACCEPT_TRADE RPC:", error);
+      alert(JSON.stringify(error, null, 2));
+      throw error;
+    }
 
     alert("Trade accettata. Pick e giocatori sono stati aggiornati.");
     await refreshAll();
