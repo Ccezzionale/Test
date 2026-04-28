@@ -644,6 +644,14 @@ async function sendTradeProposal() {
    const mySelectedFuturePickIds = getCheckedValues(".my-future-pick-checkbox");
 const theirSelectedFuturePickIds = getCheckedValues(".their-future-pick-checkbox");
 
+   const myDraftSlotCount =
+  mySelectedPickNumbers.length +
+  mySelectedPlayerIds.length;
+
+const theirDraftSlotCount =
+  theirSelectedPickNumbers.length +
+  theirSelectedPlayerIds.length;
+
 const myAssetCount =
   mySelectedPickNumbers.length +
   mySelectedPlayerIds.length +
@@ -670,9 +678,9 @@ if (!myAssetCount || !theirAssetCount) {
   return;
 }
 
-if (isDraftPhase() && myPlayerBalance !== 0) {
+   if (isDraftPhase() && myDraftSlotCount !== theirDraftSlotCount) {
   showMessage(
-    "Durante il draft la trade deve avere anche lo stesso numero di giocatori da entrambe le parti.",
+    "Durante il draft la trade deve mantenere lo stesso numero di slot rosa: giocatori già chiamati + pick del draft in corso devono essere pari da entrambe le parti. Le pick future non contano.",
     "error"
   );
   return;
