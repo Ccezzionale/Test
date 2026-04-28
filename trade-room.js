@@ -117,6 +117,12 @@ async function initTradeRoom() {
 applyMarketOpenState();
 }
 
+function isDraftPhase() {
+  return currentTradePhase === "draft";
+}
+
+
+
 /* ========= NAVBAR MOBILE ========= */
 
 function setupNavbar() {
@@ -653,10 +659,13 @@ const theirAssetCount =
     return;
   }
 
-  if (myAssetCount !== theirAssetCount) {
-    showMessage("Trade non valida: il numero di asset deve essere uguale per entrambe le squadre.", "error");
-    return;
-  }
+if (isDraftPhase() && myAssetCount !== theirAssetCount) {
+  showMessage(
+    "Durante il draft la trade deve avere lo stesso numero di asset da entrambe le parti.",
+    "error"
+  );
+  return;
+}
 
   const message = tradeMessageInput.value.trim();
 
