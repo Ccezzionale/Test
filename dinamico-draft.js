@@ -1,3 +1,6 @@
+import { supabase } from './supabase.js';
+const FUTURE_PICK_SEASON = 2027;
+
 const conferencePerSquadra = {
   "Team Bartowski": "Conference League",
   "Desperados": "Conference League",
@@ -120,9 +123,6 @@ function formattaDraft(draft) {
 
 const STATS_MASTER_CSV_URL =
   "https://docs.google.com/spreadsheets/d/e/2PACX-1vSG3HrTJsfZGhgfJJx8l63QYhooGsyiydLf1OTt2JldOPx5nSZyJz00IplWA5YHGwjymNL9EXIVX5XA/pub?gid=1118969717&single=true&output=csv";
-
-const SCAMBI_CSV_URL =
-  "https://docs.google.com/spreadsheets/d/1kPDuSW9IKwJArUS4oOv0iIVRHU7F4zPASPXT8Qf86Fo/export?format=csv&gid=940716301";
 
 function parseCSV(text) {
   const rows = [];
@@ -305,8 +305,34 @@ function buildTotalRankingFromStats(statsCSV) {
   });
 }
 
-// Usa classifica totale + scambi
-function generaDraftDaCSV(statsCSV, scambiCSV) {
+async function loadFutureDraftPicks() {
+  const { data, error } = await supabase
+    .from("future_draft_picks")
+    .select(`
+      id,
+      season,
+      draft_name,
+      round,
+      protection_note,
+      notes,
+      status,
+      original:teams!future_draft_picks_original_team_id_fkey(id, name),
+      owner:teams!future_draft_picks_owner_team_id_fkey(id, name)
+    `)
+    .eq("season", FUTURE_PICK_SEASON)
+    .eq("status", "active")
+    .order("draft_name", { ascending: true })
+    .order("round", { ascending: true });
+
+  if (error) {
+    console.error("Errore caricamento future_draft_picks:", error);
+    throw error;
+  }
+
+  return data || [];
+}
+
+function generaDraftDaCSV(statsCSV, futurePicks) {
   const classificaTotale = buildTotalRankingFromStats(statsCSV);
 
   // Ultimo in classifica = prima pick
@@ -315,57 +341,122 @@ function generaDraftDaCSV(statsCSV, scambiCSV) {
     .filter(Boolean)
     .reverse();
 
-const leagueTeams = squadreTotali.filter(
-  s => getConferenceForTeam(s) === "Conference League"
-);
+  const leagueTeams = squadreTotali.filter(
+    s => getConferenceForTeam(s) === "Conference League"
+  );
 
-const champTeams = squadreTotali.filter(
-  s => getConferenceForTeam(s) === "Conference Championship"
-);
-
-  const scambi = scambiCSV.trim().split("\n").slice(1).map(r => {
-    const [conf, round1, squadra1, round2, squadra2] = r.split(",").map(s => s.trim());
-    return [conf, parseInt(round1), squadra1, parseInt(round2), squadra2];
-  });
+  const champTeams = squadreTotali.filter(
+    s => getConferenceForTeam(s) === "Conference Championship"
+  );
 
   const leagueDraftBase = generaSnakeDraftBase(leagueTeams, 23);
-  applicaScambi(leagueDraftBase, scambi, "Conference League");
-  const league = formattaDraft(leagueDraftBase);
-
   const champDraftBase = generaSnakeDraftBase(champTeams, 23);
-  applicaScambi(champDraftBase, scambi, "Conference Championship");
-  applicaBonusRubinkebab(champDraftBase);
-  const championship = formattaDraft(champDraftBase);
+
+  const league = applicaProprietariFuturePicks(
+    leagueDraftBase,
+    futurePicks,
+    "Draft Conference"
+  );
+
+  const championship = applicaProprietariFuturePicks(
+    champDraftBase,
+    futurePicks,
+    "Draft Championship"
+  );
 
   return {
     league,
-    championship
+    championship,
+    leagueTeams,
+    champTeams
   };
 }
 
-// Stampa il draft
-function generaTabellaVerticale(containerId, draftData) {
+function applicaProprietariFuturePicks(draftBase, futurePicks, draftName) {
+  return draftBase.map((round, roundIndex) => {
+    const roundNumber = roundIndex + 1;
+
+    return {
+      Round: roundNumber,
+      Picks: round.map(pickBase => {
+        const originalKey = teamKey(pickBase.team);
+
+        const futurePick = futurePicks.find(fp => {
+          return (
+            fp.draft_name === draftName &&
+            Number(fp.round) === roundNumber &&
+            fp.original &&
+            teamKey(fp.original.name) === originalKey
+          );
+        });
+
+        const originalTeam = futurePick?.original?.name || pickBase.team;
+        const ownerTeam = futurePick?.owner?.name || pickBase.team;
+        const isTraded = teamKey(originalTeam) !== teamKey(ownerTeam);
+
+        return {
+          team: ownerTeam,
+          originalTeam,
+          pickNumber: pickBase.pickNumber,
+          traded: isTraded,
+          protection_note: futurePick?.protection_note || "",
+          notes: futurePick?.notes || ""
+        };
+      })
+    };
+  });
+}
+
+function shortTeamName(name) {
+  const cleaned = cleanTeamName(name);
+
+  const map = {
+    "Bayern Christiansen": "Bayern",
+    "Pandinicoccolosini": "Pandinico",
+    "Minnesode Timberland": "Minnesode",
+    "MinneSota Snakes": "Snakes",
+    "Eintracht Franco 126": "Eintracht",
+    "Fc Disoneste": "Disoneste"
+  };
+
+  return map[cleaned] || cleaned;
+}
+
+
+function generaTabellaVerticale(containerId, draftData, squadreOrdine) {
   const container = document.getElementById(containerId);
+
   if (!draftData || draftData.length === 0) {
     container.innerHTML = "<p>⚠️ Nessun dato disponibile</p>";
     return;
   }
 
-  const squadre = draftData[0].Picks.map(p => p.team);
+  const squadre = squadreOrdine && squadreOrdine.length
+    ? squadreOrdine
+    : draftData[0].Picks.map(p => p.team);
+
   const draftPerSquadra = {};
   squadre.forEach(s => draftPerSquadra[s] = []);
 
   draftData.forEach(round => {
     round.Picks.forEach(p => {
-      draftPerSquadra[p.team]?.push({
+      if (!draftPerSquadra[p.team]) {
+        draftPerSquadra[p.team] = [];
+        squadre.push(p.team);
+      }
+
+      draftPerSquadra[p.team].push({
         pickNumber: p.pickNumber,
-        scambioId: p.scambioId,
-        bonusCoppa: p.bonusCoppa
+        originalTeam: p.originalTeam,
+        traded: p.traded,
+        protection_note: p.protection_note,
+        notes: p.notes
       });
     });
   });
 
   let html = '<div class="draft-scroll"><div class="draft-columns">';
+
   squadre.forEach(squadra => {
     html += `<div class="draft-card">
               <div class="draft-header">
@@ -377,9 +468,16 @@ function generaTabellaVerticale(containerId, draftData) {
               <div class="draft-picks">`;
 
     draftPerSquadra[squadra].forEach(pick => {
-      const scambioClass = pick.scambioId ? `scambio-${pick.scambioId}` : "";
-      const bonusClass = pick.bonusCoppa ? "bonus-coppa" : "";
-html += `<div class="pick ${scambioClass} ${bonusClass}">Pick #${pick.pickNumber}</div>`;
+      const tradedClass = pick.traded ? "pick-traded" : "";
+      const title = pick.traded
+        ? `Pick originale di ${pick.originalTeam}. ${pick.notes || ""} ${pick.protection_note || ""}`.trim()
+        : "";
+
+      const label = pick.traded
+        ? `#${pick.pickNumber} · da ${shortTeamName(pick.originalTeam)}`
+        : `Pick #${pick.pickNumber}`;
+
+      html += `<div class="pick ${tradedClass}" title="${title}">${label}</div>`;
     });
 
     html += `</div></div>`;
@@ -388,6 +486,7 @@ html += `<div class="pick ${scambioClass} ${bonusClass}">Pick #${pick.pickNumber
   html += '</div></div>';
   container.innerHTML = html;
 }
+
 function renderRounds(draftContainerId, roundsColId) {
   const container = document.getElementById(draftContainerId);
   const roundsCol = document.getElementById(roundsColId);
@@ -417,18 +516,23 @@ function renderRounds(draftContainerId, roundsColId) {
 // Fetch classifica totale + scambi
 Promise.all([
   fetch(STATS_MASTER_CSV_URL + "&nocache=" + Date.now(), { cache: "no-store" }).then(r => r.text()),
-  fetch(SCAMBI_CSV_URL + "&nocache=" + Date.now(), { cache: "no-store" }).then(r => r.text())
+  loadFutureDraftPicks()
 ])
-.then(([statsCSV, scambiCSV]) => {
-  const draft = generaDraftDaCSV(statsCSV, scambiCSV);
+.then(([statsCSV, futurePicks]) => {
+  const draft = generaDraftDaCSV(statsCSV, futurePicks);
 
-  generaTabellaVerticale("draft-league", draft.league);
-  generaTabellaVerticale("draft-championship", draft.championship);
+  generaTabellaVerticale("draft-league", draft.league, draft.leagueTeams);
+  generaTabellaVerticale("draft-championship", draft.championship, draft.champTeams);
 
   renderRounds("draft-league", "rounds-league");
   renderRounds("draft-championship", "rounds-championship");
 })
 .catch(err => {
   console.error("Errore nel caricamento del draft:", err);
-});
 
+  const league = document.getElementById("draft-league");
+  const championship = document.getElementById("draft-championship");
+
+  if (league) league.innerHTML = "<p>⚠️ Errore nel caricamento del draft futuro.</p>";
+  if (championship) championship.innerHTML = "<p>⚠️ Errore nel caricamento del draft futuro.</p>";
+});
