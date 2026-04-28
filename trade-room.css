@@ -503,6 +503,36 @@ button:disabled{
   }
 }
 
+.admin-card{
+  border:1px solid rgba(255,204,0,.45);
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.96), rgba(255,251,235,.96));
+}
+
+.admin-toggle-row label{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  cursor:pointer;
+}
+
+.admin-toggle-row input{
+  width:18px;
+  height:18px;
+  accent-color:var(--gold);
+}
+
+#adminFutureSeason{
+  width:100%;
+  border:1px solid rgba(15,23,42,.14);
+  border-radius:14px;
+  padding:12px 13px;
+  background:#fff;
+  color:var(--ink);
+  font:inherit;
+  outline:none;
+}
+
 /* =========================
    RESPONSIVE
    ========================= */
