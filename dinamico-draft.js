@@ -387,47 +387,57 @@ function applicaProprietariFuturePicks(draftBase, futurePicks, draftName) {
     fp.status === "active"
   );
 
+  // Set esplicito delle pick normali da eliminare
+  const convertedKeys = new Set(
+    normalPicks
+      .filter(fp => fp.status === "converted_interconference")
+      .map(fp => {
+        const originalName = fp.original?.name || "";
+        return `${Number(fp.round)}|${teamKey(originalName)}`;
+      })
+  );
+
   let globalPickNumber = 1;
 
   return draftBase.map((round, roundIndex) => {
     const roundNumber = roundIndex + 1;
 
-    const normalRoundPicks = round
-      .map(pickBase => {
-        const originalKey = teamKey(pickBase.team);
+    const normalRoundPicks = [];
 
-        const futurePick = normalPicks.find(fp => {
-          return (
-            Number(fp.round) === roundNumber &&
-            fp.original &&
-            teamKey(fp.original.name) === originalKey
-          );
-        });
+    round.forEach(pickBase => {
+      const originalKey = teamKey(pickBase.team);
+      const convertedKey = `${roundNumber}|${originalKey}`;
 
-        // Se una pick normale è stata ceduta fuori Conference,
-        // sparisce dal draft normale.
-        if (futurePick?.status === "converted_interconference") {
-          return null;
-        }
+      // Se questa pick normale è stata convertita in bonus inter-conference,
+      // NON deve più apparire nella tabella.
+      if (convertedKeys.has(convertedKey)) {
+        return;
+      }
 
-        const originalTeam = futurePick?.original?.name || pickBase.team;
-        const ownerTeam = futurePick?.owner?.name || pickBase.team;
-        const isTraded = teamKey(originalTeam) !== teamKey(ownerTeam);
+      const futurePick = normalPicks.find(fp => {
+        const fpOriginalKey = teamKey(fp.original?.name || "");
+        return (
+          Number(fp.round) === roundNumber &&
+          fpOriginalKey === originalKey &&
+          fp.status === "active"
+        );
+      });
 
-        const pick = {
-          team: ownerTeam,
-          originalTeam,
-          pickNumber: globalPickNumber++,
-          traded: isTraded,
-          bonus: false,
-          round: roundNumber,
-          protection_note: futurePick?.protection_note || "",
-          notes: futurePick?.notes || ""
-        };
+      const originalTeam = futurePick?.original?.name || pickBase.team;
+      const ownerTeam = futurePick?.owner?.name || pickBase.team;
+      const isTraded = teamKey(originalTeam) !== teamKey(ownerTeam);
 
-        return pick;
-      })
-      .filter(Boolean);
+      normalRoundPicks.push({
+        team: ownerTeam,
+        originalTeam,
+        pickNumber: globalPickNumber++,
+        traded: isTraded,
+        bonus: false,
+        round: roundNumber,
+        protection_note: futurePick?.protection_note || "",
+        notes: futurePick?.notes || ""
+      });
+    });
 
     const bonusRoundPicks = bonusPicks
       .filter(fp => Number(fp.round) === roundNumber)
@@ -453,7 +463,6 @@ function applicaProprietariFuturePicks(draftBase, futurePicks, draftName) {
     };
   });
 }
-
 function shortTeamName(name) {
   const cleaned = cleanTeamName(name);
 
