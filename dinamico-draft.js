@@ -387,6 +387,8 @@ function applicaProprietariFuturePicks(draftBase, futurePicks, draftName) {
     fp.status === "active"
   );
 
+  let globalPickNumber = 1;
+
   return draftBase.map((round, roundIndex) => {
     const roundNumber = roundIndex + 1;
 
@@ -402,8 +404,8 @@ function applicaProprietariFuturePicks(draftBase, futurePicks, draftName) {
           );
         });
 
-        // Se la pick normale è stata convertita in bonus inter-conference,
-        // sparisce dalla colonna del proprietario originale.
+        // Se una pick normale è stata ceduta fuori Conference,
+        // sparisce dal draft normale.
         if (futurePick?.status === "converted_interconference") {
           return null;
         }
@@ -412,30 +414,34 @@ function applicaProprietariFuturePicks(draftBase, futurePicks, draftName) {
         const ownerTeam = futurePick?.owner?.name || pickBase.team;
         const isTraded = teamKey(originalTeam) !== teamKey(ownerTeam);
 
-        return {
+        const pick = {
           team: ownerTeam,
           originalTeam,
-          pickNumber: pickBase.pickNumber,
+          pickNumber: globalPickNumber++,
           traded: isTraded,
           bonus: false,
+          round: roundNumber,
           protection_note: futurePick?.protection_note || "",
           notes: futurePick?.notes || ""
         };
+
+        return pick;
       })
       .filter(Boolean);
 
     const bonusRoundPicks = bonusPicks
       .filter(fp => Number(fp.round) === roundNumber)
-      .map((fp, index) => {
+      .map(fp => {
         const originalTeam = fp.original?.name || "Altra Conference";
         const ownerTeam = fp.owner?.name || "";
 
         return {
           team: ownerTeam,
           originalTeam,
-          pickNumber: `Bonus R${roundNumber}.${index + 1}`,
+          pickNumber: globalPickNumber++,
           traded: true,
           bonus: true,
+          round: roundNumber,
           protection_note: fp.protection_note || "",
           notes: fp.notes || ""
         };
@@ -526,11 +532,9 @@ const bonusClass = pick.bonus ? "pick-bonus" : "";
         ? `Pick originale di ${pick.originalTeam}. ${pick.notes || ""} ${pick.protection_note || ""}`.trim()
         : "";
 
-     const label = pick.bonus
-  ? `${pick.pickNumber} · da ${shortTeamName(pick.originalTeam)}`
-  : pick.traded
-    ? `#${pick.pickNumber} · da ${shortTeamName(pick.originalTeam)}`
-    : `Pick #${pick.pickNumber}`;
+const label = pick.traded
+  ? `Pick #${pick.pickNumber}<br><span class="bonus-source">da ${shortTeamName(pick.originalTeam)}</span>`
+  : `Pick #${pick.pickNumber}`;
 
 html += `<div class="pick ${tradedClass} ${bonusClass}" title="${title}">${label}</div>`;
     });
