@@ -93,12 +93,22 @@
     <input id="adminFutureSeason" type="number" min="2026" step="1" />
   </div>
 
-  <div class="form-row admin-toggle-row">
-    <label>
-      <input id="adminMarketOpen" type="checkbox" />
-      Mercato aperto
-    </label>
-  </div>
+<div class="form-row admin-toggle-row">
+  <label>
+    <input id="adminMarketOpen" type="checkbox" />
+    Mercato aperto
+  </label>
+</div>
+
+<div class="form-row">
+  <label for="adminMarketOpenAt">Apertura mercato</label>
+  <input id="adminMarketOpenAt" type="datetime-local" />
+</div>
+
+<div class="form-row">
+  <label for="adminMarketCloseAt">Chiusura mercato</label>
+  <input id="adminMarketCloseAt" type="datetime-local" />
+</div>
 
   <button id="saveTradeSettingsBtn" type="button">
     Salva impostazioni mercato
