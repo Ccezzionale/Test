@@ -409,6 +409,20 @@ body{
   padding: 4px 6px;
 }
 
+.pick.pick-bonus{
+  background: linear-gradient(135deg, #001f3f, #0b4d8a);
+  border: 2px solid #ffcc00;
+  color: #fff7cc;
+  font-weight: 900;
+  font-size: 0.66rem;
+  line-height: 1.1;
+  white-space: normal;
+  min-height: 38px;
+  height: auto;
+  padding: 5px 6px;
+  box-shadow: 0 0 0 2px rgba(255, 204, 0, 0.18);
+}
+
 /* Desktop largo: tutte e 8 visibili */
 @media (min-width: 1200px){
   .draft-scroll-x{
