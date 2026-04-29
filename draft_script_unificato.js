@@ -539,7 +539,7 @@ async function adminResetDraft() {
   }
 
   const conferma = confirm(
-    `Vuoi davvero resettare ${tab}? Verranno cancellate tutte le pick già fatte e il draft tornerà alla pick #1.`
+    `Vuoi davvero resettare ${tab}? Verranno cancellate tutte le pick, il turno tornerà alla pick #1 e le rose verranno svuotate.`
   );
 
   if (!conferma) return;
@@ -564,22 +564,33 @@ async function adminResetDraft() {
 
     if (stateError) throw stateError;
 
-    if (statusEl) statusEl.textContent = "✅ Draft resettato correttamente.";
+    const { error: playersError } = await supabase
+      .from("players")
+      .update({
+        owner_team_id: null,
+        status: "active"
+      })
+      .eq("pool", draftPool);
+
+    if (playersError) throw playersError;
 
     lastPickNotificata = null;
+    giocatoriScelti.clear();
 
+    await caricaGiocatori();
     await caricaPick();
     popolaListaDisponibili();
     aggiornaChiamatePerSquadra();
     aggiornaStatoInterattivoLista();
 
+    if (statusEl) statusEl.textContent = "✅ Draft resettato correttamente.";
+
   } catch (err) {
     console.error("Errore reset draft:", err);
     if (statusEl) statusEl.textContent = "❌ Errore durante il reset draft.";
-    alert("Errore durante il reset draft.");
+    alert("Errore durante il reset draft. Controlla la console.");
   }
 }
-
 function controllaNotificaTurno() {
   if (!currentDraftState) return;
 
