@@ -60,6 +60,9 @@ let allTeams = [];
 let usedPickNumbers = new Set();
 let allFuturePicks = [];
 
+let pendingAcceptProposalId = null;
+let requiredCutsCount = 0;
+
 /* ========= ELEMENTI ========= */
 
 const userInfo = document.getElementById("userInfo");
@@ -87,6 +90,13 @@ const tradeSettingsMessage = document.getElementById("tradeSettingsMessage");
 const receivedTradesBox = document.getElementById("receivedTradesBox");
 const sentTradesBox = document.getElementById("sentTradesBox");
 const completedTradesBox = document.getElementById("completedTradesBox");
+
+const cutPlayersModal = document.getElementById("cutPlayersModal");
+const cutPlayersModalText = document.getElementById("cutPlayersModalText");
+const cutPlayersList = document.getElementById("cutPlayersList");
+const confirmCutPlayersBtn = document.getElementById("confirmCutPlayersBtn");
+const cancelCutPlayersBtn = document.getElementById("cancelCutPlayersBtn");
+const cutPlayersModalMessage = document.getElementById("cutPlayersModalMessage");
 
 /* ========= INIT ========= */
 
@@ -158,6 +168,14 @@ if (
 
    if (saveTradeSettingsBtn) {
   saveTradeSettingsBtn.addEventListener("click", saveTradeSettings);
+}
+
+   if (cancelCutPlayersBtn) {
+  cancelCutPlayersBtn.addEventListener("click", closeCutPlayersModal);
+}
+
+if (confirmCutPlayersBtn) {
+  confirmCutPlayersBtn.addEventListener("click", confirmTradeWithCuts);
 }
    }
 
@@ -1072,31 +1090,172 @@ async function renderTrades(container, trades, mode) {
 /* ========= AZIONI TRADE ========= */
 
 async function acceptTrade(proposalId) {
-   if (!isMarketCurrentlyOpen()) {
-  alert("Mercato chiuso. Non puoi accettare trade in questo momento.");
-  return;
-}
-  const ok = confirm("Confermi di voler accettare questa trade?");
-  if (!ok) return;
+  if (!isMarketCurrentlyOpen()) {
+    alert("Mercato chiuso. Non puoi accettare trade in questo momento.");
+    return;
+  }
 
   try {
-    const { error } = await supabase.rpc("accept_trade", {
-      p_proposal_id: proposalId
-    });
+    await loadAssetsForTrade();
 
-    if (error) {
-      console.error("ERRORE ACCEPT_TRADE RPC:", error);
-      alert(JSON.stringify(error, null, 2));
-      throw error;
+    const { data: proposal, error: proposalError } = await supabase
+      .from("trade_proposals")
+      .select("*")
+      .eq("id", proposalId)
+      .maybeSingle();
+
+    if (proposalError) throw proposalError;
+
+    if (!proposal) {
+      alert("Proposta non trovata.");
+      return;
     }
 
-    alert("Trade accettata. Pick e giocatori sono stati aggiornati.");
-    await refreshAll();
+    const { data: assets, error: assetsError } = await supabase
+      .from("trade_assets")
+      .select("*")
+      .eq("proposal_id", proposalId);
+
+    if (assetsError) throw assetsError;
+
+    const fromPlayerCount = (assets || []).filter(
+      asset => asset.side === "from" && asset.asset_type === "player"
+    ).length;
+
+    const toPlayerCount = (assets || []).filter(
+      asset => asset.side === "to" && asset.asset_type === "player"
+    ).length;
+
+    const receiverPlayerBalance = fromPlayerCount - toPlayerCount;
+
+    if (!isDraftPhase() && receiverPlayerBalance > 0) {
+      openCutPlayersModal(proposalId, receiverPlayerBalance, assets || []);
+      return;
+    }
+
+    const ok = confirm("Confermi di voler accettare questa trade?");
+    if (!ok) return;
+
+    await acceptTradeRpc(proposalId, []);
 
   } catch (err) {
     console.error(err);
     alert(err.message || "Errore durante l’accettazione della trade.");
   }
+}
+
+function openCutPlayersModal(proposalId, cutsCount, tradeAssets) {
+  pendingAcceptProposalId = proposalId;
+  requiredCutsCount = cutsCount;
+
+  const outgoingPlayerIds = new Set(
+    tradeAssets
+      .filter(asset => asset.side === "to" && asset.asset_type === "player")
+      .map(asset => String(asset.asset_id))
+  );
+
+  const cuttablePlayers = allPickedPlayers.filter(player =>
+    player[CONFIG.PICKS_OWNER_COL] === currentTeamId &&
+    !outgoingPlayerIds.has(String(player[CONFIG.PICKS_ID_COL]))
+  );
+
+  if (!cuttablePlayers.length) {
+    alert("Non ci sono giocatori disponibili da svincolare.");
+    return;
+  }
+
+  cutPlayersModalText.textContent =
+    `Questa trade ti farebbe ricevere ${cutsCount} giocatore/i netto/i. ` +
+    `Per accettarla devi selezionare ${cutsCount} giocatore/i da svincolare.`;
+
+  cutPlayersList.innerHTML = cuttablePlayers.map(player => `
+    <label class="cut-player-choice">
+      <input
+        type="checkbox"
+        class="cut-player-checkbox"
+        value="${escapeHtml(player[CONFIG.PICKS_ID_COL])}"
+      />
+      ${escapeHtml(formatPlayerLabel(player))}
+    </label>
+  `).join("");
+
+  cutPlayersModalMessage.textContent = "";
+  cutPlayersModal.style.display = "flex";
+}
+
+function closeCutPlayersModal() {
+  pendingAcceptProposalId = null;
+  requiredCutsCount = 0;
+
+  if (cutPlayersModal) {
+    cutPlayersModal.style.display = "none";
+  }
+
+  if (cutPlayersList) {
+    cutPlayersList.innerHTML = "";
+  }
+
+  if (cutPlayersModalMessage) {
+    cutPlayersModalMessage.textContent = "";
+  }
+}
+
+async function confirmTradeWithCuts() {
+  const selectedCutPlayerIds = getCheckedValues(".cut-player-checkbox");
+
+  if (selectedCutPlayerIds.length !== requiredCutsCount) {
+    cutPlayersModalMessage.textContent =
+      `Devi selezionare esattamente ${requiredCutsCount} giocatore/i da svincolare.`;
+    cutPlayersModalMessage.className = "error-message";
+    return;
+  }
+
+  const ok = confirm(
+    `Confermi la trade e lo svincolo di ${selectedCutPlayerIds.length} giocatore/i?`
+  );
+
+  if (!ok) return;
+
+  confirmCutPlayersBtn.disabled = true;
+  confirmCutPlayersBtn.textContent = "Accettazione in corso...";
+
+  try {
+    await acceptTradeRpc(pendingAcceptProposalId, selectedCutPlayerIds);
+    closeCutPlayersModal();
+  } catch (err) {
+    console.error(err);
+    cutPlayersModalMessage.textContent =
+      err.message || "Errore durante l’accettazione della trade.";
+    cutPlayersModalMessage.className = "error-message";
+  } finally {
+    confirmCutPlayersBtn.disabled = false;
+    confirmCutPlayersBtn.textContent = "Conferma e accetta trade";
+  }
+}
+
+async function acceptTradeRpc(proposalId, cutPlayerIds = []) {
+  const { error } = await supabase.rpc("accept_trade", {
+    p_proposal_id: proposalId
+  });
+
+  if (error) {
+    console.error("ERRORE ACCEPT_TRADE RPC:", error);
+    alert(JSON.stringify(error, null, 2));
+    throw error;
+  }
+
+  if (cutPlayerIds.length) {
+    console.log("Giocatori da svincolare:", cutPlayerIds);
+    alert(
+      "Trade accettata. Giocatori da svincolare selezionati: " +
+      cutPlayerIds.length +
+      ". Nel prossimo step li salviamo/gestiamo automaticamente."
+    );
+  } else {
+    alert("Trade accettata. Pick e giocatori sono stati aggiornati.");
+  }
+
+  await refreshAll();
 }
 
 async function moveAssetToTeam(asset, newTeamId, draftName) {
