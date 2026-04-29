@@ -1181,6 +1181,7 @@ function openCutPlayersModal(proposalId, cutsCount, tradeAssets) {
 
   cutPlayersModalMessage.textContent = "";
   cutPlayersModal.style.display = "flex";
+   document.body.classList.add("modal-open");
 }
 
 function closeCutPlayersModal() {
