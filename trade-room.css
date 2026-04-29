@@ -441,6 +441,10 @@ button:disabled{
   cursor: pointer;
 }
 
+body.modal-open {
+  overflow: hidden;
+}
+
 /* =========================
    MESSAGES
    ========================= */
