@@ -1254,6 +1254,67 @@ async function acceptTradeRpc(proposalId, cutPlayerIds = []) {
     throw error;
   }
 
+  // Calcolo compensative dopo accettazione trade
+  const { data: proposal, error: proposalError } = await supabase
+    .from("trade_proposals")
+    .select("from_team, to_team")
+    .eq("id", proposalId)
+    .single();
+
+  if (proposalError) throw proposalError;
+
+  const { data: assets, error: assetsError } = await supabase
+    .from("trade_assets")
+    .select("*")
+    .eq("proposal_id", proposalId);
+
+  if (assetsError) throw assetsError;
+
+  const fromPlayers = (assets || []).filter(
+    a => a.side === "from" && a.asset_type === "player"
+  ).length;
+
+  const toPlayers = (assets || []).filter(
+    a => a.side === "to" && a.asset_type === "player"
+  ).length;
+
+  const fromTeamBalance = toPlayers - fromPlayers;
+  const toTeamBalance = fromPlayers - toPlayers;
+
+  const compensatoryRows = [];
+
+  if (fromTeamBalance < 0) {
+    compensatoryRows.push({
+      team_id: proposal.from_team,
+      proposal_id: proposalId,
+      count: Math.abs(fromTeamBalance),
+      status: "pending"
+    });
+  }
+
+  if (toTeamBalance < 0) {
+    compensatoryRows.push({
+      team_id: proposal.to_team,
+      proposal_id: proposalId,
+      count: Math.abs(toTeamBalance),
+      status: "pending"
+    });
+  }
+
+  if (compensatoryRows.length) {
+    const { error: compError } = await supabase
+      .from("waiver_compensatory_calls")
+      .insert(compensatoryRows);
+
+    if (compError) {
+      console.error("ERRORE CREAZIONE COMPENSATIVE:", compError);
+      alert(
+        "Trade accettata, ma errore durante la creazione delle chiamate compensative."
+      );
+      throw compError;
+    }
+  }
+
   if (cutPlayerIds.length) {
     const { error: cutError } = await supabase
       .from("players")
