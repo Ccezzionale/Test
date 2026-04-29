@@ -530,6 +530,56 @@ async function adminSwapPicks() {
   }
 }
 
+async function adminResetDraft() {
+  const statusEl = document.getElementById("admin-status");
+
+  if (!isAdmin) {
+    alert("Solo admin.");
+    return;
+  }
+
+  const conferma = confirm(
+    `Vuoi davvero resettare ${tab}? Verranno cancellate tutte le pick già fatte e il draft tornerà alla pick #1.`
+  );
+
+  if (!conferma) return;
+
+  if (statusEl) statusEl.textContent = "⏳ Reset draft in corso...";
+
+  try {
+    const { error: deleteError } = await supabase
+      .from("draft_picks")
+      .delete()
+      .eq("draft_name", tab);
+
+    if (deleteError) throw deleteError;
+
+    const { error: stateError } = await supabase
+      .from("draft_state")
+      .update({
+        current_pick: 1,
+        is_open: true
+      })
+      .eq("draft_name", tab);
+
+    if (stateError) throw stateError;
+
+    if (statusEl) statusEl.textContent = "✅ Draft resettato correttamente.";
+
+    lastPickNotificata = null;
+
+    await caricaPick();
+    popolaListaDisponibili();
+    aggiornaChiamatePerSquadra();
+    aggiornaStatoInterattivoLista();
+
+  } catch (err) {
+    console.error("Errore reset draft:", err);
+    if (statusEl) statusEl.textContent = "❌ Errore durante il reset draft.";
+    alert("Errore durante il reset draft.");
+  }
+}
+
 function controllaNotificaTurno() {
   if (!currentDraftState) return;
 
@@ -1195,6 +1245,11 @@ if (adminForceBtn) {
   const adminSetPickBtn = document.getElementById("admin-set-pick-btn");
 if (adminSetPickBtn) {
   adminSetPickBtn.addEventListener("click", adminSetCurrentPick);
+}
+
+  const adminResetDraftBtn = document.getElementById("admin-reset-draft-btn");
+if (adminResetDraftBtn) {
+  adminResetDraftBtn.addEventListener("click", adminResetDraft);
 }
 
   const logoutBtn = document.getElementById("logout-btn");
