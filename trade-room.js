@@ -1255,11 +1255,24 @@ async function acceptTradeRpc(proposalId, cutPlayerIds = []) {
   }
 
   if (cutPlayerIds.length) {
-    console.log("Giocatori da svincolare:", cutPlayerIds);
+    const { error: cutError } = await supabase
+      .from("players")
+      .update({
+        owner_team_id: null,
+        status: "free"
+      })
+      .in("id", cutPlayerIds);
+
+    if (cutError) {
+      console.error("ERRORE SVINCOLI POST-TRADE:", cutError);
+      alert(
+        "Trade accettata, ma errore durante lo svincolo dei giocatori. Controlla Supabase."
+      );
+      throw cutError;
+    }
+
     alert(
-      "Trade accettata. Giocatori da svincolare selezionati: " +
-      cutPlayerIds.length +
-      ". Nel prossimo step li salviamo/gestiamo automaticamente."
+      `Trade accettata. ${cutPlayerIds.length} giocatore/i svincolato/i correttamente.`
     );
   } else {
     alert("Trade accettata. Pick e giocatori sono stati aggiornati.");
