@@ -1190,6 +1190,7 @@ function closeCutPlayersModal() {
 
   if (cutPlayersModal) {
     cutPlayersModal.style.display = "none";
+     document.body.classList.remove("modal-open");
   }
 
   if (cutPlayersList) {
