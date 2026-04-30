@@ -7,7 +7,7 @@
   <title>Waiver Room</title>
 
   <link rel="stylesheet" href="navbar.css" />
-  <link rel="stylesheet" href="waiver.css?v=9" />
+  <link rel="stylesheet" href="waiver.css?v=10" />
 </head>
 
 <body>
@@ -82,7 +82,7 @@
       <div>
         <p class="eyebrow">Lega degli Eroi</p>
         <h1>Waiver Room</h1>
-        <p>Chiamate settimanali, svincolati e risultati in un’unica stanza.</p>
+        <p>Chiamate settimanali, svincolati, compensative e risultati in un’unica stanza.</p>
       </div>
     </section>
 
@@ -133,6 +133,21 @@
           </div>
 
           <p id="callMessage" class="call-message"></p>
+        </article>
+
+        <article class="waiver-card my-compensatory-card">
+          <div class="card-title-row">
+            <div>
+              <h2>Chiamate compensative</h2>
+              <p class="card-subtitle">
+                Qui trovi le chiamate extra ottenute tramite trade sbilanciate. Sono giocate dopo gli slot standard.
+              </p>
+            </div>
+          </div>
+
+          <div id="myCompensatoryCalls" class="my-waiver-calls">
+            <p>Caricamento chiamate compensative...</p>
+          </div>
         </article>
 
         <article class="waiver-card free-agents-card">
@@ -283,6 +298,10 @@
           <button id="calculateSlot2SBtn" type="button" class="primary-btn small-btn">
             Calcola slot 2S
           </button>
+
+          <button id="calculateCompensatoryBtn" type="button" class="primary-btn small-btn">
+            Calcola compensative
+          </button>
         </div>
 
         <div id="waiverOrderMessage" class="priority-message"></div>
@@ -307,6 +326,16 @@
             <h3>Chiamate ricevute</h3>
             <div id="allCalls" class="all-calls"></div>
           </div>
+
+          <div class="admin-calls-block">
+            <h3>Chiamate compensative</h3>
+            <p class="card-subtitle">
+              Chiamate extra create automaticamente dalle trade sbilanciate.
+            </p>
+            <div id="allCompensatoryCalls" class="all-calls">
+              <p>Caricamento compensative...</p>
+            </div>
+          </div>
         </div>
 
       </article>
@@ -314,7 +343,7 @@
 
   </main>
 
-  <script type="module" src="waiver.js?v=16"></script>
+  <script type="module" src="waiver.js?v=17"></script>
   <script type="module" src="home_auth.js"></script>
   <script src="navbar.js"></script>
 </body>
