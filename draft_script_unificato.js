@@ -531,6 +531,8 @@ async function adminSwapPicks() {
 }
 
 async function adminResetDraft() {
+  console.log("🔥 RESET DRAFT CLICCATO", tab, draftPool);
+alert("Reset cliccato");
   const statusEl = document.getElementById("admin-status");
 
   if (!isAdmin) {
