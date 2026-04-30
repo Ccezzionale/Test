@@ -1181,7 +1181,7 @@ function openCutPlayersModal(proposalId, cutsCount, tradeAssets) {
       <input
         type="checkbox"
         class="cut-player-checkbox"
-        value="${escapeHtml(player[CONFIG.PICKS_ID_COL])}"
+        value="${escapeHtml(player.player_id)}"
       />
       ${escapeHtml(formatPlayerLabel(player))}
     </label>
@@ -1254,7 +1254,6 @@ async function acceptTradeRpc(proposalId, cutPlayerIds = []) {
     throw error;
   }
 
-  // Calcolo compensative dopo accettazione trade
   const { data: proposal, error: proposalError } = await supabase
     .from("trade_proposals")
     .select("from_team, to_team")
@@ -1308,9 +1307,7 @@ async function acceptTradeRpc(proposalId, cutPlayerIds = []) {
 
     if (compError) {
       console.error("ERRORE CREAZIONE COMPENSATIVE:", compError);
-      alert(
-        "Trade accettata, ma errore durante la creazione delle chiamate compensative."
-      );
+      alert("Trade accettata, ma errore durante la creazione delle chiamate compensative.");
       throw compError;
     }
   }
@@ -1326,15 +1323,24 @@ async function acceptTradeRpc(proposalId, cutPlayerIds = []) {
 
     if (cutError) {
       console.error("ERRORE SVINCOLI POST-TRADE:", cutError);
-      alert(
-        "Trade accettata, ma errore durante lo svincolo dei giocatori. Controlla Supabase."
-      );
+      alert("Trade accettata, ma errore durante lo svincolo dei giocatori. Controlla Supabase.");
       throw cutError;
     }
 
-    alert(
-      `Trade accettata. ${cutPlayerIds.length} giocatore/i svincolato/i correttamente.`
-    );
+    const { error: cutDraftPickError } = await supabase
+      .from("draft_picks")
+      .update({
+        team_id: null
+      })
+      .in("player_id", cutPlayerIds);
+
+    if (cutDraftPickError) {
+      console.error("ERRORE RESET DRAFT_PICKS POST-SVINCOLO:", cutDraftPickError);
+      alert("Giocatori svincolati, ma errore durante l'aggiornamento delle draft_picks.");
+      throw cutDraftPickError;
+    }
+
+    alert(`Trade accettata. ${cutPlayerIds.length} giocatore/i svincolato/i correttamente.`);
   } else {
     alert("Trade accettata. Pick e giocatori sono stati aggiornati.");
   }
