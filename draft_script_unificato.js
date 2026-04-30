@@ -531,8 +531,6 @@ async function adminSwapPicks() {
 }
 
 async function adminResetDraft() {
-  console.log("🔥 RESET DRAFT CLICCATO", tab, draftPool);
-alert("Reset cliccato");
   const statusEl = document.getElementById("admin-status");
 
   if (!isAdmin) {
@@ -540,41 +538,19 @@ alert("Reset cliccato");
     return;
   }
 
-  const conferma = confirm(
-    `Vuoi davvero resettare ${tab}? Verranno cancellate tutte le pick, il turno tornerà alla pick #1 e le rose verranno svuotate.`
-  );
-
+  const conferma = confirm(`Vuoi davvero resettare ${tab}?`);
   if (!conferma) return;
 
   if (statusEl) statusEl.textContent = "⏳ Reset draft in corso...";
 
   try {
-    const { error: deleteError } = await supabase
-      .from("draft_picks")
-      .delete()
-      .eq("draft_name", tab);
+    const { data, error } = await supabase.rpc("admin_reset_draft", {
+      p_draft_name: tab
+    });
 
-    if (deleteError) throw deleteError;
+    if (error) throw error;
 
-    const { error: stateError } = await supabase
-      .from("draft_state")
-      .update({
-        current_pick: 1,
-        is_open: true
-      })
-      .eq("draft_name", tab);
-
-    if (stateError) throw stateError;
-
-    const { error: playersError } = await supabase
-      .from("players")
-      .update({
-        owner_team_id: null,
-        status: "active"
-      })
-      .eq("pool", draftPool);
-
-    if (playersError) throw playersError;
+    console.log("RESET OK:", data);
 
     lastPickNotificata = null;
     giocatoriScelti.clear();
@@ -585,14 +561,19 @@ alert("Reset cliccato");
     aggiornaChiamatePerSquadra();
     aggiornaStatoInterattivoLista();
 
-    if (statusEl) statusEl.textContent = "✅ Draft resettato correttamente.";
+    if (statusEl) {
+      statusEl.textContent = `✅ Reset completato. Pick cancellate: ${data.deleted_picks}`;
+    }
+
+    alert("Draft resettato correttamente.");
 
   } catch (err) {
     console.error("Errore reset draft:", err);
     if (statusEl) statusEl.textContent = "❌ Errore durante il reset draft.";
-    alert("Errore durante il reset draft. Controlla la console.");
+    alert(err.message || "Errore durante il reset draft.");
   }
 }
+
 function controllaNotificaTurno() {
   if (!currentDraftState) return;
 
