@@ -328,11 +328,19 @@ async function loadPicks() {
 }
 
 async function loadPickedPlayers() {
-  const { data, error } = await supabase
+  let query = supabase
     .from(CONFIG.PICKS_TABLE)
     .select("*")
-    .eq(CONFIG.PICKS_DRAFT_NAME_COL, currentDraftName)
+    .order(CONFIG.PICKS_DRAFT_NAME_COL, { ascending: true })
     .order(CONFIG.PICKS_PICK_NUMBER_COL, { ascending: true });
+
+  // Durante draft e mercato conference, restiamo dentro la propria conference.
+  // Durante round robin, invece, servono i giocatori di entrambe le conference.
+  if (currentTradePhase !== "round_robin_market") {
+    query = query.eq(CONFIG.PICKS_DRAFT_NAME_COL, currentDraftName);
+  }
+
+  const { data, error } = await query;
 
   if (error) {
     console.error(error);
@@ -340,7 +348,6 @@ async function loadPickedPlayers() {
     return;
   }
 
-  // Sono scambiabili solo i giocatori già chiamati.
   allPickedPlayers = data || [];
 }
 
