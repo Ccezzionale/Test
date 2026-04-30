@@ -1848,12 +1848,7 @@ async function loadAllCompensatoryCalls() {
 
   const { data, error } = await supabase
     .from("waiver_compensatory_calls")
-    .select(`
-      *,
-      teams:team_id (
-        name
-      )
-    `)
+    .select("*")
     .eq("week", currentSettings.active_week)
     .eq("phase", currentSettings.active_phase)
     .order("priority_order", { ascending: true });
@@ -1872,10 +1867,12 @@ async function loadAllCompensatoryCalls() {
   allCompensatoryCallsEl.innerHTML = "";
 
   data.forEach(call => {
+    const team = teamMap[call.team_id];
+
     const div = document.createElement("div");
 
     div.innerHTML = `
-      <strong>#${call.priority_order || "-"} ${call.teams?.name || "Squadra sconosciuta"}</strong>
+      <strong>#${call.priority_order || "-"} ${team?.name || "Squadra sconosciuta"}</strong>
       → ${call.player_in || "nessun giocatore selezionato"}
       <strong>${call.status || "pending"}</strong>
     `;
