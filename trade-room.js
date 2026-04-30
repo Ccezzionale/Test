@@ -1307,18 +1307,6 @@ async function acceptTradeRpc(proposalId, cutPlayerIds = []) {
     });
   }
 
-  if (compensatoryRows.length) {
-    const { error: compError } = await supabase
-      .from("waiver_compensatory_calls")
-      .insert(compensatoryRows);
-
-    if (compError) {
-      console.error("ERRORE CREAZIONE COMPENSATIVE:", compError);
-      alert("Trade accettata, ma errore durante la creazione delle chiamate compensative.");
-      throw compError;
-    }
-  }
-
   if (cutPlayerIds.length) {
 const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
 
