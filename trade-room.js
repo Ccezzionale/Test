@@ -1313,18 +1313,34 @@ async function acceptTradeRpc(proposalId, cutPlayerIds = []) {
   }
 
   if (cutPlayerIds.length) {
-    const { data: cutResult, error: cutError } = await supabase.rpc("cut_trade_players", {
-      p_player_ids: cutPlayerIds,
-      p_draft_name: currentDraftName
-    });
+const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
 
-    if (cutError) {
-      console.error("ERRORE SVINCOLI POST-TRADE:", cutError);
-      alert("Trade accettata, ma errore durante lo svincolo dei giocatori.");
-      throw cutError;
-    }
+if (sessionError || !sessionData?.session?.access_token) {
+  throw new Error("Sessione non valida per eseguire gli svincoli.");
+}
 
-    console.log("SVINCOLI OK:", cutResult);
+const response = await fetch(`${supabaseUrl}/rest/v1/rpc/cut_trade_players`, {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json",
+    "Authorization": `Bearer ${sessionData.session.access_token}`,
+    "apikey": supabaseKey
+  },
+  body: JSON.stringify({
+    p_player_ids: cutPlayerIds,
+    p_draft_name: currentDraftName
+  })
+});
+
+const cutResult = await response.json();
+
+if (!response.ok) {
+  console.error("ERRORE SVINCOLI POST-TRADE:", cutResult);
+  alert("Trade accettata, ma errore durante lo svincolo dei giocatori.");
+  throw new Error(cutResult?.message || "Errore svincoli post-trade.");
+}
+
+console.log("SVINCOLI OK:", cutResult);
 
     alert(
       `Trade accettata. ${cutResult.updated_players} giocatore/i svincolato/i correttamente.`
