@@ -1312,28 +1312,30 @@ async function acceptTradeRpc(proposalId, cutPlayerIds = []) {
     }
   }
 
-if (cutPlayerIds.length) {
-  const { data: cutResult, error: cutError } = await supabase.rpc("cut_trade_players", {
-    p_player_ids: cutPlayerIds,
-    p_draft_name: currentDraftName
-  });
+  if (cutPlayerIds.length) {
+    const { data: cutResult, error: cutError } = await supabase.rpc("cut_trade_players", {
+      p_player_ids: cutPlayerIds,
+      p_draft_name: currentDraftName
+    });
 
-  if (cutError) {
-    console.error("ERRORE SVINCOLI POST-TRADE:", cutError);
-    alert("Trade accettata, ma errore durante lo svincolo dei giocatori.");
-    throw cutError;
+    if (cutError) {
+      console.error("ERRORE SVINCOLI POST-TRADE:", cutError);
+      alert("Trade accettata, ma errore durante lo svincolo dei giocatori.");
+      throw cutError;
+    }
+
+    console.log("SVINCOLI OK:", cutResult);
+
+    alert(
+      `Trade accettata. ${cutResult.updated_players} giocatore/i svincolato/i correttamente.`
+    );
+  } else {
+    alert("Trade accettata. Pick e giocatori sono stati aggiornati.");
   }
 
-  console.log("SVINCOLI OK:", cutResult);
-
-  alert(
-    `Trade accettata. ${cutResult.updated_players} giocatore/i svincolato/i correttamente.`
-  );
-} else {
-  alert("Trade accettata. Pick e giocatori sono stati aggiornati.");
+  await refreshAll();
 }
 
-await refreshAll();
 
 async function moveAssetToTeam(asset, newTeamId, draftName) {
   if (asset.asset_type === "pick") {
