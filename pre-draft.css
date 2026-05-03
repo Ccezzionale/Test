@@ -327,6 +327,13 @@ body{
   display:none !important;
 }
 
+.roster-summary{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+  margin:0 0 12px;
+}
+
 @media (max-width:900px){
   .predraft-page{
     padding:16px 10px 36px;
