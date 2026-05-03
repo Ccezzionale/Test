@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+  <title>Pre-Draft - Lega degli Eroi</title>
+
+  <link rel="stylesheet" href="navbar.css">
+  <link rel="stylesheet" href="pre-draft.css">
+
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#0b3d91">
+</head>
+
+<body>
+  <nav class="site-nav">
+    <div class="nav-inner">
+      <div class="nav-left">
+        <span id="hamburger" class="hamburger">☰</span>
+        <a href="index.html" class="brand-home" aria-label="Home">🏠</a>
+      </div>
+
+      <ul class="navbar" id="mainMenu">
+        <li><a href="rose.html">Rose</a></li>
+
+        <li class="dropdown">
+          <a href="#" class="toggle-submenu">
+            Draft <span class="caret">▾</span>
+          </a>
+          <ul class="submenu">
+            <li><a href="pre-draft.html">📝 Pre-Draft</a></li>
+            <li><a href="draft_championship.html">🟦 Conf. Championship</a></li>
+            <li><a href="draft_conference.html">🟨 Conf. League</a></li>
+            <li><a href="dinamico-draft.html">🧑‍💼 Draft 2026</a></li>
+          </ul>
+        </li>
+
+        <li class="dropdown competizioni">
+          <a href="#" class="toggle-submenu">
+            Competizioni <span class="caret">▾</span>
+          </a>
+          <ul class="submenu">
+            <li><a href="classifica.html">📊 Classifiche</a></li>
+            <li><a href="playoff.html">🏆 Playoff</a></li>
+            <li><a href="arena.html">🏟️ Highlander</a></li>
+            <li><a href="crashoutcup.html">💥 Crash Out Cup</a></li>
+            <li><a href="crashoutplayoff.html">💥 Crash Out Cup - Playoff</a></li>
+            <li><a href="supercoppa.html">⭐ Supercoppa</a></li>
+            <li><a href="statistiche.html">🔎 Statistiche</a></li>
+          </ul>
+        </li>
+
+        <li><a href="svincolati.html">Svincolati</a></li>
+        <li><a href="chiamate.html">Waiver Wire</a></li>
+
+        <li class="dropdown">
+          <a href="#" class="toggle-submenu">
+            Hall of Fame <span class="caret">▾</span>
+          </a>
+          <ul class="submenu">
+            <li><a href="medagliere.html">👑 Albo d'Oro</a></li>
+            <li><a href="albo.html">🏅 Medagliere</a></li>
+          </ul>
+        </li>
+
+        <li><a href="regolamento.html">Regolamento</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <main class="predraft-page">
+    <section class="predraft-hero">
+      <div>
+        <p class="eyebrow">Lega degli Eroi</p>
+        <h1>Pre-Draft</h1>
+        <p>
+          Gestisci le scelte speciali prima del draft: Franchise Player,
+          Under 21 confermato e Restricted Free Agent.
+        </p>
+      </div>
+    </section>
+
+    <section id="keeper-status" class="predraft-status">
+      Caricamento...
+    </section>
+
+    <section id="keeper-team-box" class="predraft-card hidden">
+      <h2 id="keeper-team-name">La tua squadra</h2>
+      <p id="keeper-season-label"></p>
+    </section>
+
+    <section id="keeper-closed-box" class="predraft-card warning hidden">
+      <strong>Modulo chiuso.</strong>
+      Le scelte Pre-Draft non sono modificabili in questo momento.
+    </section>
+
+    <section id="keeper-selections" class="predraft-grid hidden">
+      <article class="predraft-card choice-card">
+        <div class="choice-icon">⭐</div>
+        <h3>Franchise Player</h3>
+        <p>
+          Puoi scegliere massimo un Franchise Player. Costo base:
+          Round 8, oppure Round 4 in caso di seconda conferma.
+        </p>
+
+        <select id="select-fp"></select>
+        <button id="btn-save-fp" class="predraft-btn">Salva FP</button>
+
+        <div id="current-fp" class="current-selection"></div>
+      </article>
+
+      <article class="predraft-card choice-card">
+        <div class="choice-icon">🐣</div>
+        <h3>Under 21 confermato</h3>
+        <p>
+          Puoi riconfermare massimo un Under 21. Non conterà più tra i
+          4 Under 21 obbligatori della rosa. Costo: Round 15.
+        </p>
+
+        <select id="select-u21"></select>
+        <button id="btn-save-u21" class="predraft-btn">Salva U21 confermato</button>
+
+        <div id="current-u21" class="current-selection"></div>
+      </article>
+
+      <article class="predraft-card choice-card">
+        <div class="choice-icon">🛡️</div>
+        <h3>Restricted Free Agent</h3>
+        <p>
+          Puoi indicare massimo un RFA. Se viene chiamato al draft,
+          il draft si fermerà per permetterti di pareggiare l’offerta.
+        </p>
+
+        <select id="select-rfa"></select>
+        <button id="btn-save-rfa" class="predraft-btn">Salva RFA</button>
+
+        <div id="current-rfa" class="current-selection"></div>
+      </article>
+    </section>
+
+    <section class="predraft-card">
+      <div class="section-title-row">
+        <div>
+          <h2>La tua rosa</h2>
+          <p>
+            Qui vedi i giocatori attualmente assegnati alla tua squadra.
+            Gli U21 di rosa restano separati dagli U21 confermati.
+          </p>
+        </div>
+      </div>
+
+      <div id="keeper-roster" class="predraft-table-wrap">
+        Caricamento rosa...
+      </div>
+    </section>
+
+    <section id="keeper-admin" class="predraft-card hidden">
+      <h2>Admin Pre-Draft</h2>
+
+      <div class="admin-controls">
+        <label>
+          Stagione
+          <input id="admin-season" type="number" min="2026" step="1" />
+        </label>
+
+        <label class="checkbox-row">
+          <input id="admin-is-open" type="checkbox" />
+          Modulo aperto
+        </label>
+
+        <button id="btn-save-settings" class="predraft-btn">Salva impostazioni</button>
+      </div>
+
+      <h3>Riepilogo scelte</h3>
+      <div id="admin-summary" class="predraft-table-wrap">
+        Caricamento riepilogo...
+      </div>
+    </section>
+  </main>
+
+  <script type="module" src="pre-draft.js"></script>
+  <script src="navbar.js"></script>
+</body>
+</html>
