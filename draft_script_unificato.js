@@ -254,7 +254,12 @@ function renderPicks(dati) {
     });
   }
 
-  document.getElementById("turno-attuale").textContent = prossima
+const turnoEl = document.getElementById("turno-attuale");
+
+if (currentDraftState?.is_open === false) {
+  turnoEl.textContent = "🛑 Draft fermo: decisione RFA in attesa.";
+} else {
+  turnoEl.textContent = prossima
     ? `🎯 È il turno di: ${prossima.fantaTeam} (Pick ${prossima.pick})`
     : "✅ Draft completato!";
 }
@@ -338,6 +343,7 @@ function avviaAutoRefresh() {
 
 function isMioTurno() {
   if (!currentDraftState) return false;
+  if (currentDraftState.is_open === false) return false;
 
   const pickCorrente = currentDraftState.current_pick;
   const righe = document.querySelectorAll("#tabella-pick tbody tr");
@@ -354,7 +360,6 @@ function isMioTurno() {
 
   return false;
 }
-
 function aggiornaStatoInterattivoLista() {
   const mioTurno = isMioTurno();
 
