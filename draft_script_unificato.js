@@ -147,7 +147,7 @@ function ensureRfaPanel() {
   panel.id = "rfa-panel";
   panel.className = "panel";
   panel.style.display = "none";
-  panel.style.marginTop = "20px";
+  panel.style.margin = "20px 0";
   panel.innerHTML = `
     <div class="panel-header">
       <div class="panel-title-wrap">
@@ -161,8 +161,9 @@ function ensureRfaPanel() {
   `;
 
   const container = document.querySelector(".container");
+
   if (container) {
-    container.insertAdjacentElement("afterend", panel);
+    container.insertAdjacentElement("beforebegin", panel);
   } else {
     main.appendChild(panel);
   }
@@ -170,40 +171,48 @@ function ensureRfaPanel() {
 
 async function caricaPendingRfaClaim() {
   try {
-    const { data, error } = await supabase
+    const { data: claim, error: claimError } = await supabase
       .from("rfa_draft_claims")
-      .select(`
-        id,
-        season,
-        draft_name,
-        pick_number,
-        claiming_team_id,
-        original_team_id,
-        player_id,
-        status,
-        created_at,
-        claiming_team:teams!rfa_draft_claims_claiming_team_id_fkey (
-          name
-        ),
-        original_team:teams!rfa_draft_claims_original_team_id_fkey (
-          name
-        ),
-        players (
-          name,
-          role,
-          role_mantra,
-          serie_a_team
-        )
-      `)
+      .select("*")
       .eq("draft_name", tab)
       .eq("status", "pending")
       .order("created_at", { ascending: false })
       .limit(1)
       .maybeSingle();
 
-    if (error) throw error;
+    if (claimError) throw claimError;
 
-    pendingRfaClaim = data || null;
+    if (!claim) {
+      pendingRfaClaim = null;
+      renderRfaPanel();
+      return;
+    }
+
+    const { data: teams, error: teamsError } = await supabase
+      .from("teams")
+      .select("id, name")
+      .in("id", [claim.claiming_team_id, claim.original_team_id]);
+
+    if (teamsError) throw teamsError;
+
+    const { data: player, error: playerError } = await supabase
+      .from("players")
+      .select("id, name, role, role_mantra, serie_a_team")
+      .eq("id", claim.player_id)
+      .single();
+
+    if (playerError) throw playerError;
+
+    const claimingTeam = teams.find(t => t.id === claim.claiming_team_id);
+    const originalTeam = teams.find(t => t.id === claim.original_team_id);
+
+    pendingRfaClaim = {
+      ...claim,
+      claiming_team: claimingTeam || null,
+      original_team: originalTeam || null,
+      players: player || null
+    };
+
     renderRfaPanel();
 
   } catch (err) {
