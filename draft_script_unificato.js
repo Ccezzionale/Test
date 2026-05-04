@@ -762,39 +762,39 @@ async function inviaPickAlFoglio(pick, fantaTeam, nome, ruolo, squadra, quotazio
     const accessToken = sessionData.session.access_token;
 
     const response = await fetch(
-      'https://vfzadnfpwsbzfiyzbpvx.supabase.co/functions/v1/submit-pick',
+      "https://vfzadnfpwsbzfiyzbpvx.supabase.co/functions/v1/submit-pick",
       {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${accessToken}`,
-          'apikey': supabaseKey
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${accessToken}`,
+          "apikey": supabaseKey
         },
-body: JSON.stringify({
-  draft_name: tab,
-  player_name: nome,
-  player_id: options.player_id || null,
-  pool: draftPool
-})
-  }
-);
+        body: JSON.stringify({
+          draft_name: tab,
+          player_name: nome,
+          player_id: options.player_id || null,
+          pool: draftPool
+        })
+      }
+    );
 
     const result = await response.json();
 
-if (!response.ok) {
-  console.error("❌ ERRORE submit-pick:", result);
+    if (!response.ok) {
+      console.error("❌ ERRORE submit-pick:", result);
 
-  if (result?.error === "RFA_PENDING") {
-    alert(result.message || "Questo giocatore è un RFA. Il draft è stato fermato in attesa della decisione.");
-  } else {
-    alert(result?.error || "Errore nell'invio della pick.");
-  }
+      if (result?.error === "RFA_PENDING") {
+        alert(result.message || "Questo giocatore è un RFA. Il draft è stato fermato in attesa della decisione.");
+      } else {
+        alert(result?.error || "Errore nell'invio della pick.");
+      }
 
-  pickInInvio = false;
-  await caricaPick();
-  aggiornaStatoInterattivoLista();
-  return;
-}
+      pickInInvio = false;
+      await caricaPick();
+      aggiornaStatoInterattivoLista();
+      return;
+    }
 
     console.log("✅ submit-pick OK:", result);
 
