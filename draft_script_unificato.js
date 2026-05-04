@@ -127,6 +127,240 @@ function aggiornaAdminPanel() {
   }
 }
 
+function ensureRfaPanel() {
+  if (document.getElementById("rfa-panel")) return;
+
+  const main = document.querySelector(".page-shell") || document.querySelector("main");
+  if (!main) return;
+
+  const panel = document.createElement("section");
+  panel.id = "rfa-panel";
+  panel.className = "panel";
+  panel.style.display = "none";
+  panel.style.marginTop = "20px";
+  panel.innerHTML = `
+    <div class="panel-header">
+      <div class="panel-title-wrap">
+        <h2 class="panel-title">🛡️ Decisione RFA</h2>
+        <p class="panel-subtitle">Un Restricted Free Agent è stato chiamato. Serve una decisione.</p>
+      </div>
+      <div class="panel-count">RFA</div>
+    </div>
+
+    <div id="rfa-panel-content" style="padding:16px; display:grid; gap:12px;"></div>
+  `;
+
+  const container = document.querySelector(".container");
+  if (container) {
+    container.insertAdjacentElement("afterend", panel);
+  } else {
+    main.appendChild(panel);
+  }
+}
+
+async function caricaPendingRfaClaim() {
+  try {
+    const { data, error } = await supabase
+      .from("rfa_draft_claims")
+      .select(`
+        id,
+        season,
+        draft_name,
+        pick_number,
+        claiming_team_id,
+        original_team_id,
+        player_id,
+        status,
+        created_at,
+        claiming_team:teams!rfa_draft_claims_claiming_team_id_fkey (
+          name
+        ),
+        original_team:teams!rfa_draft_claims_original_team_id_fkey (
+          name
+        ),
+        players (
+          name,
+          role,
+          role_mantra,
+          serie_a_team
+        )
+      `)
+      .eq("draft_name", tab)
+      .eq("status", "pending")
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+
+    if (error) throw error;
+
+    pendingRfaClaim = data || null;
+    renderRfaPanel();
+
+  } catch (err) {
+    console.error("Errore caricamento RFA pending:", err);
+  }
+}
+
+function renderRfaPanel() {
+  ensureRfaPanel();
+
+  const panel = document.getElementById("rfa-panel");
+  const content = document.getElementById("rfa-panel-content");
+  if (!panel || !content) return;
+
+  if (!pendingRfaClaim) {
+    panel.style.display = "none";
+    content.innerHTML = "";
+    return;
+  }
+
+  const canResolve =
+    isAdmin ||
+    pendingRfaClaim.original_team_id === currentTeamId;
+
+  const player = pendingRfaClaim.players || {};
+  const playerName = player.name || "Giocatore RFA";
+  const role = player.role || player.role_mantra || "-";
+  const serieATeam = player.serie_a_team || "-";
+
+  const claimingTeamName = pendingRfaClaim.claiming_team?.name || "Squadra chiamante";
+  const originalTeamName = pendingRfaClaim.original_team?.name || "Squadra proprietaria";
+
+  panel.style.display = "block";
+
+  content.innerHTML = `
+    <div style="
+      display:grid;
+      gap:8px;
+      padding:14px;
+      border-radius:14px;
+      background:#fff7e6;
+      border:1px solid #ffd591;
+    ">
+      <strong style="font-size:18px;">${escapeHtml(playerName)}</strong>
+      <div>
+        ${escapeHtml(role)} · ${escapeHtml(serieATeam)}
+      </div>
+      <div>
+        <strong>${escapeHtml(claimingTeamName)}</strong> ha chiamato un RFA di
+        <strong>${escapeHtml(originalTeamName)}</strong> alla pick
+        <strong>${pendingRfaClaim.pick_number}</strong>.
+      </div>
+      <div>
+        ${
+          canResolve
+            ? "Puoi pareggiare l’offerta oppure lasciare andare il giocatore."
+            : "Decisione in attesa del proprietario RFA o dell’admin."
+        }
+      </div>
+    </div>
+
+    ${
+      canResolve
+        ? `
+          <div style="display:flex; gap:10px; flex-wrap:wrap;">
+            <button id="btn-rfa-matched" type="button">
+              ✅ Pareggia offerta
+            </button>
+            <button id="btn-rfa-declined" type="button" class="danger-btn">
+              ❌ Lascia andare
+            </button>
+          </div>
+        `
+        : ""
+    }
+
+    <p id="rfa-action-status" style="margin:0; font-weight:600;"></p>
+  `;
+
+  document.getElementById("btn-rfa-matched")?.addEventListener("click", () => {
+    resolveRfaClaim("matched");
+  });
+
+  document.getElementById("btn-rfa-declined")?.addEventListener("click", () => {
+    resolveRfaClaim("declined");
+  });
+}
+
+async function resolveRfaClaim(decision) {
+  if (!pendingRfaClaim) return;
+
+  const statusEl = document.getElementById("rfa-action-status");
+
+  const playerName = pendingRfaClaim.players?.name || "questo giocatore";
+
+  const confirmMessage =
+    decision === "matched"
+      ? `Vuoi pareggiare l’offerta per ${playerName}? Il giocatore verrà assegnato alla tua prossima pick valida e la squadra chiamante richiamerà subito.`
+      : `Vuoi lasciare andare ${playerName}? Il giocatore verrà assegnato alla squadra chiamante.`;
+
+  if (!confirm(confirmMessage)) return;
+
+  if (statusEl) {
+    statusEl.textContent =
+      decision === "matched"
+        ? "⏳ Pareggio offerta in corso..."
+        : "⏳ Conferma cessione RFA in corso...";
+  }
+
+  try {
+    const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
+
+    if (sessionError || !sessionData?.session?.access_token) {
+      if (statusEl) statusEl.textContent = "❌ Sessione non valida.";
+      alert("Sessione non valida. Fai di nuovo login.");
+      return;
+    }
+
+    const response = await fetch(
+      `${supabaseUrl}/functions/v1/resolve-rfa-claim`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${sessionData.session.access_token}`,
+          "apikey": supabaseKey
+        },
+        body: JSON.stringify({
+          claim_id: pendingRfaClaim.id,
+          decision
+        })
+      }
+    );
+
+    const result = await response.json();
+
+    if (!response.ok) {
+      console.error("Errore resolve-rfa-claim:", result);
+      if (statusEl) statusEl.textContent = `❌ ${result?.error || "Errore decisione RFA"}`;
+      alert(result?.error || "Errore decisione RFA.");
+      return;
+    }
+
+    if (statusEl) {
+      statusEl.textContent =
+        decision === "matched"
+          ? "✅ Offerta pareggiata. Il draft riparte dalla squadra chiamante."
+          : "✅ RFA lasciato andare. Il draft avanza.";
+    }
+
+    pendingRfaClaim = null;
+
+    await caricaKeeperSelectionsDraft();
+    await caricaGiocatori();
+    await caricaPick();
+    popolaListaDisponibili();
+    aggiornaChiamatePerSquadra();
+    aggiornaStatoInterattivoLista();
+    await caricaPendingRfaClaim();
+
+  } catch (err) {
+    console.error("Errore resolve RFA:", err);
+    if (statusEl) statusEl.textContent = "❌ Errore durante la decisione RFA.";
+    alert("Errore durante la decisione RFA.");
+  }
+}
+
 
 
 // Spinner
@@ -1314,12 +1548,15 @@ if (adminResetDraftBtn) {
 
 await aggiornaBottoneNotifiche();
 
+ensureRfaPanel();
+
 await caricaKeeperSelectionsDraft();
 await caricaGiocatori();
 await caricaPick();
 popolaListaDisponibili();
 aggiornaChiamatePerSquadra();
 aggiornaStatoInterattivoLista();
+await caricaPendingRfaClaim();
 avviaAutoRefresh();
 });
 
