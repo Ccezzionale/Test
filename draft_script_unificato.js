@@ -263,6 +263,7 @@ if (currentDraftState?.is_open === false) {
     ? `🎯 È il turno di: ${prossima.fantaTeam} (Pick ${prossima.pick})`
     : "✅ Draft completato!";
 }
+  }
 // ========== caricaPick con Retry + Abort + Spinner + Fallback ==========
 async function caricaPick() {
   showSpinner(true);
