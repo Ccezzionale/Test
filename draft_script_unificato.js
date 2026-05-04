@@ -23,6 +23,7 @@ let lastPickNotificata = null;
 let pickInInvio = false;
 let isAdmin = false;
 let keeperSelections = [];
+let pendingRfaClaim = null;
 
 function normalize(nome) { return nome.trim().toLowerCase(); }
 
