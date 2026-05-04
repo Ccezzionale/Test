@@ -171,16 +171,14 @@ function ensureRfaPanel() {
 
 async function caricaPendingRfaClaim() {
   try {
-    const { data: claim, error: claimError } = await supabase
-      .from("rfa_draft_claims")
-      .select("*")
-      .eq("draft_name", tab)
-      .eq("status", "pending")
-      .order("created_at", { ascending: false })
-      .limit(1)
-      .maybeSingle();
+    const { data, error } = await supabase
+      .rpc("get_pending_rfa_claim", {
+        p_draft_name: tab
+      });
 
-    if (claimError) throw claimError;
+    if (error) throw error;
+
+    const claim = data?.[0] || null;
 
     if (!claim) {
       pendingRfaClaim = null;
@@ -188,29 +186,28 @@ async function caricaPendingRfaClaim() {
       return;
     }
 
-    const { data: teams, error: teamsError } = await supabase
-      .from("teams")
-      .select("id, name")
-      .in("id", [claim.claiming_team_id, claim.original_team_id]);
-
-    if (teamsError) throw teamsError;
-
-    const { data: player, error: playerError } = await supabase
-      .from("players")
-      .select("id, name, role, role_mantra, serie_a_team")
-      .eq("id", claim.player_id)
-      .single();
-
-    if (playerError) throw playerError;
-
-    const claimingTeam = teams.find(t => t.id === claim.claiming_team_id);
-    const originalTeam = teams.find(t => t.id === claim.original_team_id);
-
     pendingRfaClaim = {
-      ...claim,
-      claiming_team: claimingTeam || null,
-      original_team: originalTeam || null,
-      players: player || null
+      id: claim.id,
+      season: claim.season,
+      draft_name: claim.draft_name,
+      pick_number: claim.pick_number,
+      claiming_team_id: claim.claiming_team_id,
+      original_team_id: claim.original_team_id,
+      player_id: claim.player_id,
+      status: claim.status,
+      created_at: claim.created_at,
+      claiming_team: {
+        name: claim.claiming_team_name
+      },
+      original_team: {
+        name: claim.original_team_name
+      },
+      players: {
+        name: claim.player_name,
+        role: claim.player_role,
+        role_mantra: claim.player_role_mantra,
+        serie_a_team: claim.player_serie_a_team
+      }
     };
 
     renderRfaPanel();
