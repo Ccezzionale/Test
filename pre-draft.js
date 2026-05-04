@@ -98,27 +98,56 @@ async function loadKeeperSettings() {
 }
 
 async function loadRoster() {
+  const snapshotSeason = Number(keeperSettings.season) - 1;
+
   const { data, error } = await supabase
-    .from("players")
+    .from("season_roster_snapshots")
     .select(`
       id,
-      name,
+      season,
+      team_id,
+      player_id,
+      player_name,
       role,
       role_mantra,
       serie_a_team,
       quotation,
       is_u21,
       is_fp,
-      owner_team_id,
-      status
+      players (
+        id,
+        name,
+        role,
+        role_mantra,
+        serie_a_team,
+        quotation,
+        is_u21,
+        is_fp
+      )
     `)
-    .eq("owner_team_id", currentTeam.id)
-    .eq("status", "active")
+    .eq("team_id", currentTeam.id)
+    .eq("season", snapshotSeason)
     .order("role", { ascending: true })
-    .order("name", { ascending: true });
+    .order("player_name", { ascending: true });
 
   if (error) throw error;
-  roster = data || [];
+
+  roster = (data || []).map(row => {
+    const linkedPlayer = row.players || {};
+
+    return {
+      snapshot_id: row.id,
+      id: row.player_id,
+      name: row.player_name || linkedPlayer.name || "",
+      role: row.role || linkedPlayer.role || "",
+      role_mantra: row.role_mantra || linkedPlayer.role_mantra || "",
+      serie_a_team: row.serie_a_team || linkedPlayer.serie_a_team || "",
+      quotation: row.quotation ?? linkedPlayer.quotation ?? "",
+      is_u21: !!row.is_u21,
+      is_fp: !!row.is_fp,
+      snapshot_season: row.season
+    };
+  });
 }
 
 async function loadSelections() {
@@ -359,10 +388,20 @@ function renderRoster() {
   const container = document.getElementById("keeper-roster");
   if (!container) return;
 
-  if (!roster.length) {
-    container.innerHTML = "<p>Nessun giocatore trovato nella tua rosa.</p>";
-    return;
-  }
+if (!roster.length) {
+  const snapshotSeason = Number(keeperSettings.season) - 1;
+
+  container.innerHTML = `
+    <p>
+      Nessuna rosa finale trovata per <strong>${escapeHtml(currentTeam.name)}</strong>
+      nella stagione ${snapshotSeason}.
+    </p>
+    <p>
+      Il Pre-Draft ${keeperSettings.season} legge le rose finali ${snapshotSeason}.
+    </p>
+  `;
+  return;
+}
 
   const selectionByPlayerId = {};
   selections.forEach(s => {
