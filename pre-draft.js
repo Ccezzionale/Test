@@ -6,6 +6,7 @@ let currentTeam = null;
 let keeperSettings = null;
 let roster = [];
 let selections = [];
+let eligiblePlayers = [];
 
 const TYPE_LABELS = {
   FP: "Franchise Player",
@@ -41,6 +42,7 @@ async function initPreDraftPage() {
     await loadProfileAndTeam();
     await loadKeeperSettings();
     await loadRoster();
+    await loadEligiblePlayers();
     await loadSelections();
 
     renderPage();
@@ -148,6 +150,25 @@ async function loadRoster() {
       snapshot_season: row.season
     };
   });
+}
+
+async function loadEligiblePlayers() {
+  const { data, error } = await supabase
+    .from("predraft_eligible_players")
+    .select(`
+      id,
+      season,
+      team_id,
+      player_id,
+      can_be_fp,
+      can_be_rfa
+    `)
+    .eq("season", keeperSettings.season)
+    .eq("team_id", currentTeam.id);
+
+  if (error) throw error;
+
+  eligiblePlayers = data || [];
 }
 
 async function loadSelections() {
@@ -287,33 +308,10 @@ function getEligiblePlayers(type) {
 }
 
 function isEligibleFP(player) {
-  /*
-    Versione 1:
-    - eleggibile se già segnato is_fp
-    - oppure se rispetta le soglie quotazione ruolo Classic:
-      P <= 12, D <= 9, C <= 14, A <= 19
-
-    Più avanti possiamo aggiungere:
-    - draftato round 10+
-    - almeno 10 partite
-    - eccezione mercato invernale
-    - massimo 2 stagioni consecutive
-    - conflitti stesso giocatore in conference
-  */
-
-  if (player.is_fp) return true;
-
-  const role = String(player.role || player.role_mantra || "").toUpperCase();
-  const q = Number(player.quotation);
-
-  if (Number.isNaN(q)) return false;
-
-  if (role === "P") return q <= 12;
-  if (role === "D") return q <= 9;
-  if (role === "C") return q <= 14;
-  if (role === "A") return q <= 19;
-
-  return false;
+  return eligiblePlayers.some(e =>
+    e.player_id === player.id &&
+    e.can_be_fp === true
+  );
 }
 
 function isEligibleU21Keeper(player) {
@@ -325,12 +323,10 @@ function isEligibleU21Keeper(player) {
 }
 
 function isEligibleRFA(player) {
-  /*
-    Versione 1:
-    RFA selezionabile tra tutti i giocatori attivi della propria rosa,
-    purché non sia già selezionato come FP o U21_KEEPER.
-  */
-  return true;
+  return eligiblePlayers.some(e =>
+    e.player_id === player.id &&
+    e.can_be_rfa === true
+  );
 }
 
 function formatPlayerOption(player) {
