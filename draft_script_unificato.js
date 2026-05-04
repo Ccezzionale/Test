@@ -776,14 +776,20 @@ body: JSON.stringify({
 
     const result = await response.json();
 
-    if (!response.ok) {
-      console.error("❌ ERRORE submit-pick:", result);
-      alert(result?.error || "Errore nell'invio della pick.");
-      pickInInvio = false;
-      await caricaPick();
-      aggiornaStatoInterattivoLista();
-      return;
-    }
+if (!response.ok) {
+  console.error("❌ ERRORE submit-pick:", result);
+
+  if (result?.error === "RFA_PENDING") {
+    alert(result.message || "Questo giocatore è un RFA. Il draft è stato fermato in attesa della decisione.");
+  } else {
+    alert(result?.error || "Errore nell'invio della pick.");
+  }
+
+  pickInInvio = false;
+  await caricaPick();
+  aggiornaStatoInterattivoLista();
+  return;
+}
 
     console.log("✅ submit-pick OK:", result);
 
