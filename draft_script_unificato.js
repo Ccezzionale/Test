@@ -22,12 +22,42 @@ let autoRefreshInterval = null;
 let lastPickNotificata = null;
 let pickInInvio = false;
 let isAdmin = false;
+let keeperSelections = [];
 
 function normalize(nome) { return nome.trim().toLowerCase(); }
 
 async function logoutUtente() {
   await supabase.auth.signOut();
   window.location.href = 'login.html';
+}
+
+async function caricaKeeperSelectionsDraft() {
+  const { data: settings, error: settingsError } = await supabase
+    .from("keeper_settings")
+    .select("season")
+    .eq("id", 1)
+    .single();
+
+  if (settingsError) throw settingsError;
+
+  const { data, error } = await supabase
+    .from("keeper_selections")
+    .select(`
+      id,
+      season,
+      team_id,
+      player_id,
+      selection_type,
+      cost_round,
+      actual_paid_round,
+      status
+    `)
+    .eq("season", settings.season)
+    .eq("status", "active");
+
+  if (error) throw error;
+
+  keeperSelections = data || [];
 }
 
 async function caricaUtenteLoggato() {
@@ -609,26 +639,31 @@ async function caricaGiocatori() {
     squadre = new Set();
     Object.keys(mappaGiocatori).forEach(k => delete mappaGiocatori[k]);
 
-const { data: players, error } = await supabase
-  .from("players")
-  .select(`
-    id,
-    external_id,
-    name,
-    role,
-    role_mantra,
-    serie_a_team,
-    quotation,
-    is_u21,
-    is_fp,
-    owner_team_id,
-    status,
-    pool
-  `)
-  .eq("status", "active")
-  .eq("pool", draftPool)
-  .order("name", { ascending: true });
-    
+    const lockedKeeperPlayerIds = new Set(
+      keeperSelections
+        .filter(s => ["FP", "U21_KEEPER"].includes(s.selection_type))
+        .map(s => s.player_id)
+    );
+
+    const { data: players, error } = await supabase
+      .from("players")
+      .select(`
+        id,
+        external_id,
+        name,
+        role,
+        role_mantra,
+        serie_a_team,
+        quotation,
+        is_u21,
+        is_fp,
+        owner_team_id,
+        status,
+        pool
+      `)
+      .eq("status", "active")
+      .eq("pool", draftPool)
+      .order("name", { ascending: true });
 
     console.log("PLAYERS DA SUPABASE:", players, error);
 
@@ -640,6 +675,9 @@ const { data: players, error } = await supabase
     }
 
     players.forEach(p => {
+      // ✅ QUI: FP e U21_KEEPER scelti nel Pre-Draft non entrano nel listone
+      if (lockedKeeperPlayerIds.has(p.id)) return;
+
       const nome = p.name || "";
       if (!nome) return;
 
@@ -1262,14 +1300,15 @@ if (adminResetDraftBtn) {
     });
   }
 
-  await aggiornaBottoneNotifiche();
+await aggiornaBottoneNotifiche();
 
-  await caricaGiocatori();
-  await caricaPick();
-  popolaListaDisponibili();
-  aggiornaChiamatePerSquadra();
-  aggiornaStatoInterattivoLista();
-  avviaAutoRefresh();
+await caricaKeeperSelectionsDraft();
+await caricaGiocatori();
+await caricaPick();
+popolaListaDisponibili();
+aggiornaChiamatePerSquadra();
+aggiornaStatoInterattivoLista();
+avviaAutoRefresh();
 });
 
 
