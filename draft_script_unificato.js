@@ -27,6 +27,15 @@ let pendingRfaClaim = null;
 
 function normalize(nome) { return nome.trim().toLowerCase(); }
 
+function escapeHtml(value) {
+  return String(value ?? "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
+
 async function logoutUtente() {
   await supabase.auth.signOut();
   window.location.href = 'login.html';
@@ -570,7 +579,8 @@ function avviaAutoRefresh() {
   autoRefreshInterval = setInterval(async () => {
     try {
       await caricaPick();
-      aggiornaChiamatePerSquadra();
+aggiornaChiamatePerSquadra();
+await caricaPendingRfaClaim();
     } catch (err) {
       console.warn("Auto refresh fallito:", err);
     }
