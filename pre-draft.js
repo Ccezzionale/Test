@@ -818,12 +818,6 @@ const payload = {
   }
 }
 
-function getDefaultCostRound(type) {
-  if (type === "FP") return 8;
-  if (type === "U21_KEEPER") return 15;
-  return null;
-}
-
 async function removeSelection(selectionId) {
   if (!keeperSettings.is_open && !isAdmin()) {
     alert("Il modulo Pre-Draft è chiuso.");
