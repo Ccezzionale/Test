@@ -63,6 +63,43 @@ function bindEvents() {
   document.getElementById("btn-save-rfa")?.addEventListener("click", () => saveSelection("RFA"));
   document.getElementById("btn-save-settings")?.addEventListener("click", saveKeeperSettings);
   document.getElementById("btn-scan-conflicts")?.addEventListener("click", scanKeeperConflicts);
+  document.getElementById("btn-apply-predraft")?.addEventListener("click", applyPreDraftToDraft);
+}
+
+async function applyPreDraftToDraft() {
+  if (!isAdmin()) return;
+
+  const ok = confirm(
+    "Vuoi applicare definitivamente il Pre-Draft al Draft? Verranno bruciati i round FP/U21 e il Pre-Draft verrà chiuso."
+  );
+
+  if (!ok) return;
+
+  const statusEl = document.getElementById("admin-apply-status");
+  if (statusEl) statusEl.textContent = "⏳ Applicazione Pre-Draft in corso...";
+
+  const { data, error } = await supabase.rpc("apply_predraft_if_ready");
+
+  if (error) {
+    console.error(error);
+    if (statusEl) statusEl.textContent = `❌ ${error.message}`;
+    alert(error.message || "Errore durante l'applicazione Pre-Draft.");
+    return;
+  }
+
+  if (statusEl) {
+    statusEl.textContent = "✅ Pre-Draft applicato correttamente al Draft.";
+  }
+
+  console.log("APPLY PREDRAFT RESULT:", data);
+
+  await loadKeeperSettings();
+  await loadSelections();
+  renderPage();
+
+  if (isAdmin()) {
+    await loadAdminSummary();
+  }
 }
 
 async function loadProfileAndTeam() {
@@ -92,7 +129,7 @@ async function loadProfileAndTeam() {
 async function loadKeeperSettings() {
   const { data, error } = await supabase
     .from("keeper_settings")
-    .select("id, season, is_open, open_at, close_at")
+    .select("id, season, is_open, open_at, close_at, apply_at, applied_at, is_applied")
     .eq("id", 1)
     .single();
 
@@ -737,40 +774,36 @@ async function removeSelection(selectionId) {
 function renderAdminControls() {
   const seasonInput = document.getElementById("admin-season");
   const openInput = document.getElementById("admin-is-open");
+  const applyAtInput = document.getElementById("admin-apply-at");
+  const applyStatus = document.getElementById("admin-apply-status");
 
   if (seasonInput) seasonInput.value = keeperSettings.season;
   if (openInput) openInput.checked = !!keeperSettings.is_open;
+
+  if (applyAtInput) {
+    applyAtInput.value = keeperSettings.apply_at
+      ? toDatetimeLocalValue(keeperSettings.apply_at)
+      : "";
+  }
+
+  if (applyStatus) {
+    if (keeperSettings.is_applied) {
+      applyStatus.textContent = `✅ Pre-Draft già applicato al Draft${
+        keeperSettings.applied_at ? ` il ${new Date(keeperSettings.applied_at).toLocaleString()}` : ""
+      }`;
+    } else if (keeperSettings.apply_at) {
+      applyStatus.textContent = `⏳ Applicazione prevista: ${new Date(keeperSettings.apply_at).toLocaleString()}`;
+    } else {
+      applyStatus.textContent = "Timer applicazione non impostato.";
+    }
+  }
 }
 
-async function saveKeeperSettings() {
-  if (!isAdmin()) return;
-
-  const season = Number(document.getElementById("admin-season")?.value);
-  const isOpen = !!document.getElementById("admin-is-open")?.checked;
-
-  if (!season || season < 2026) {
-    alert("Stagione non valida.");
-    return;
-  }
-
-  const { error } = await supabase
-    .from("keeper_settings")
-    .update({
-      season,
-      is_open: isOpen
-    })
-    .eq("id", 1);
-
-  if (error) {
-    console.error(error);
-    alert("Errore nel salvataggio impostazioni.");
-    return;
-  }
-
-  await loadKeeperSettings();
-  await loadSelections();
-  renderPage();
-  await loadAdminSummary();
+function toDatetimeLocalValue(value) {
+  const date = new Date(value);
+  const offset = date.getTimezoneOffset();
+  const localDate = new Date(date.getTime() - offset * 60000);
+  return localDate.toISOString().slice(0, 16);
 }
 
 async function loadAdminSummary() {
