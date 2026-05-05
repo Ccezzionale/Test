@@ -555,16 +555,18 @@ async function caricaPick() {
       picksMap[p.pick_number] = p;
     });
 
-    const dati = orderRows.map(r => {
-      const team = teams.find(t => t.id === r.team_id);
-      const pick = picksMap[r.pick_number];
+const dati = orderRows.map(r => {
+  const pick = picksMap[r.pick_number];
 
-      return {
-        "Pick": r.pick_number,
-        "Fanta Team": team ? team.name : "",
-        "Giocatore": pick ? pick.player_name : ""
-      };
-    });
+  const teamIdToShow = pick?.team_id || r.team_id;
+  const team = teams.find(t => t.id === teamIdToShow);
+
+  return {
+    "Pick": r.pick_number,
+    "Fanta Team": team ? team.name : "",
+    "Giocatore": pick ? pick.player_name : ""
+  };
+});
 
     renderPicks(dati);
     aggiornaStatoInterattivoLista();
