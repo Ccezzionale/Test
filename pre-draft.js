@@ -646,17 +646,20 @@ async function saveSelection(type) {
 
   const costRound = getDefaultCostRound(type);
 
-  const payload = {
-    season: keeperSettings.season,
-    team_id: currentTeam.id,
-    player_id: playerId,
-    selection_type: type,
-    confirmation_year: 1,
-    cost_round: costRound,
-    actual_paid_round: costRound,
-    status: "active",
-    created_by: currentUser.id
-  };
+const payload = {
+  season: keeperSettings.season,
+  team_id: currentTeam.id,
+  player_id: playerId,
+  selection_type: type,
+  confirmation_year: 1,
+  cost_round: costRound,
+  actual_paid_round: costRound,
+  status: "active",
+  created_by: currentUser.id,
+  admin_approved: true,
+  conflict_status: "none",
+  conflict_group_id: null
+};
 
   const existing = selections.find(s => s.selection_type === type);
 
@@ -665,14 +668,17 @@ async function saveSelection(type) {
   if (existing) {
     result = await supabase
       .from("keeper_selections")
-      .update({
-        player_id: playerId,
-        confirmation_year: 1,
-        cost_round: costRound,
-        actual_paid_round: costRound,
-        status: "active",
-        notes: null
-      })
+.update({
+  player_id: playerId,
+  confirmation_year: 1,
+  cost_round: costRound,
+  actual_paid_round: costRound,
+  status: "active",
+  notes: null,
+  admin_approved: true,
+  conflict_status: "none",
+  conflict_group_id: null
+})
       .eq("id", existing.id);
   } else {
     result = await supabase
