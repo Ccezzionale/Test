@@ -129,7 +129,7 @@ async function loadProfileAndTeam() {
 async function loadKeeperSettings() {
   const { data, error } = await supabase
     .from("keeper_settings")
-    .select("id, season, is_open, open_at, close_at, apply_at, applied_at, is_applied")
+    .select("id, season, is_open, open_at, close_at, applied_at, is_applied")
     .eq("id", 1)
     .single();
 
@@ -774,36 +774,9 @@ async function removeSelection(selectionId) {
 function renderAdminControls() {
   const seasonInput = document.getElementById("admin-season");
   const openInput = document.getElementById("admin-is-open");
-  const applyAtInput = document.getElementById("admin-apply-at");
-  const applyStatus = document.getElementById("admin-apply-status");
 
   if (seasonInput) seasonInput.value = keeperSettings.season;
   if (openInput) openInput.checked = !!keeperSettings.is_open;
-
-  if (applyAtInput) {
-    applyAtInput.value = keeperSettings.apply_at
-      ? toDatetimeLocalValue(keeperSettings.apply_at)
-      : "";
-  }
-
-  if (applyStatus) {
-    if (keeperSettings.is_applied) {
-      applyStatus.textContent = `✅ Pre-Draft già applicato al Draft${
-        keeperSettings.applied_at ? ` il ${new Date(keeperSettings.applied_at).toLocaleString()}` : ""
-      }`;
-    } else if (keeperSettings.apply_at) {
-      applyStatus.textContent = `⏳ Applicazione prevista: ${new Date(keeperSettings.apply_at).toLocaleString()}`;
-    } else {
-      applyStatus.textContent = "Timer applicazione non impostato.";
-    }
-  }
-}
-
-function toDatetimeLocalValue(value) {
-  const date = new Date(value);
-  const offset = date.getTimezoneOffset();
-  const localDate = new Date(date.getTime() - offset * 60000);
-  return localDate.toISOString().slice(0, 16);
 }
 
 async function saveKeeperSettings() {
@@ -811,7 +784,6 @@ async function saveKeeperSettings() {
 
   const season = Number(document.getElementById("admin-season")?.value);
   const isOpen = !!document.getElementById("admin-is-open")?.checked;
-  const applyAtValue = document.getElementById("admin-apply-at")?.value || null;
 
   if (!season || season < 2026) {
     alert("Stagione non valida.");
@@ -822,8 +794,7 @@ async function saveKeeperSettings() {
     .from("keeper_settings")
     .update({
       season,
-      is_open: isOpen,
-      apply_at: applyAtValue ? new Date(applyAtValue).toISOString() : null
+      is_open: isOpen
     })
     .eq("id", 1);
 
