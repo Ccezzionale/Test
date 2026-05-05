@@ -902,25 +902,26 @@ async function caricaGiocatori() {
         .map(s => s.player_id)
     );
 
-    const { data: players, error } = await supabase
-      .from("players")
-      .select(`
-        id,
-        external_id,
-        name,
-        role,
-        role_mantra,
-        serie_a_team,
-        quotation,
-        is_u21,
-        is_fp,
-        owner_team_id,
-        status,
-        pool
-      `)
-      .eq("status", "active")
-      .eq("pool", draftPool)
-      .order("name", { ascending: true });
+const { data: players, error } = await supabase
+  .from("players")
+  .select(`
+    id,
+    external_id,
+    name,
+    role,
+    role_mantra,
+    serie_a_team,
+    quotation,
+    is_u21,
+    is_fp,
+    owner_team_id,
+    status,
+    pool
+  `)
+  .eq("status", "active")
+  .eq("pool", draftPool)
+  .is("owner_team_id", null)
+  .order("name", { ascending: true });
 
     console.log("PLAYERS DA SUPABASE:", players, error);
 
