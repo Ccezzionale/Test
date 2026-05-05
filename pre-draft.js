@@ -7,6 +7,7 @@ let keeperSettings = null;
 let roster = [];
 let selections = [];
 let eligiblePlayers = [];
+let previousKeeperSelections = [];
 
 const TYPE_LABELS = {
   FP: "Franchise Player",
@@ -44,6 +45,7 @@ async function initPreDraftPage() {
     await loadRoster();
     await loadEligiblePlayers();
     await loadSelections();
+    await loadPreviousKeeperSelections();
 
     renderPage();
 
@@ -209,6 +211,32 @@ async function loadEligiblePlayers() {
   eligiblePlayers = data || [];
 }
 
+async function loadPreviousKeeperSelections() {
+  const previousSeason = Number(keeperSettings.season) - 1;
+
+  const { data, error } = await supabase
+    .from("keeper_selections")
+    .select(`
+      id,
+      season,
+      team_id,
+      player_id,
+      selection_type,
+      confirmation_year,
+      cost_round,
+      actual_paid_round,
+      status
+    `)
+    .eq("season", previousSeason)
+    .eq("team_id", currentTeam.id)
+    .eq("status", "active")
+    .in("selection_type", ["FP", "U21_KEEPER"]);
+
+  if (error) throw error;
+
+  previousKeeperSelections = data || [];
+}
+
 async function loadSelections() {
   const { data, error } = await supabase
     .from("keeper_selections")
@@ -304,6 +332,11 @@ function fillSelect(selectId, players, placeholder) {
   const select = document.getElementById(selectId);
   if (!select) return;
 
+  const type =
+    selectId === "select-fp" ? "FP" :
+    selectId === "select-u21" ? "U21_KEEPER" :
+    "RFA";
+
   select.innerHTML = "";
 
   const empty = document.createElement("option");
@@ -314,7 +347,7 @@ function fillSelect(selectId, players, placeholder) {
   players.forEach(player => {
     const option = document.createElement("option");
     option.value = player.id;
-    option.textContent = formatPlayerOption(player);
+    option.textContent = formatPlayerOption(player, type);
     select.appendChild(option);
   });
 }
@@ -345,11 +378,40 @@ function getEligiblePlayers(type) {
   });
 }
 
+function getPreviousSameTeamKeeper(playerId, type) {
+  return previousKeeperSelections.find(s =>
+    s.player_id === playerId &&
+    s.selection_type === type &&
+    s.team_id === currentTeam.id
+  ) || null;
+}
+
+function getConfirmationYear(playerId, type) {
+  const previous = getPreviousSameTeamKeeper(playerId, type);
+  return previous ? 2 : 1;
+}
+
+function getDefaultCostRound(type, confirmationYear = 1) {
+  if (type === "FP") {
+    return confirmationYear >= 2 ? 4 : 8;
+  }
+
+  if (type === "U21_KEEPER") {
+    return 15;
+  }
+
+  return null;
+}
+
 function isEligibleFP(player) {
-  return eligiblePlayers.some(e =>
+  const isNormallyEligible = eligiblePlayers.some(e =>
     e.player_id === player.id &&
     e.can_be_fp === true
   );
+
+  const isSecondYearFP = !!getPreviousSameTeamKeeper(player.id, "FP");
+
+  return isNormallyEligible || isSecondYearFP;
 }
 
 async function scanKeeperConflicts() {
@@ -494,7 +556,11 @@ function isEligibleU21Keeper(player) {
 
   if (role === "P") return false;
 
-  return !!player.is_u21;
+  const isNormallyEligible = !!player.is_u21;
+
+  const isSecondYearU21Keeper = !!getPreviousSameTeamKeeper(player.id, "U21_KEEPER");
+
+  return isNormallyEligible || isSecondYearU21Keeper;
 }
 
 function isEligibleRFA(player) {
@@ -504,12 +570,24 @@ function isEligibleRFA(player) {
   );
 }
 
-function formatPlayerOption(player) {
+function formatPlayerOption(player, type = null) {
   const role = player.role || player.role_mantra || "-";
   const team = player.serie_a_team || "-";
   const quotation = player.quotation ?? "-";
 
-  return `${player.name} · ${role} · ${team} · Q ${quotation}`;
+  const badges = [];
+
+  if (type === "FP" && getPreviousSameTeamKeeper(player.id, "FP")) {
+    badges.push("2° anno FP · costa R4");
+  }
+
+  if (type === "U21_KEEPER" && getPreviousSameTeamKeeper(player.id, "U21_KEEPER")) {
+    badges.push("2° anno U21");
+  }
+
+  const badgeText = badges.length ? ` · ${badges.join(" · ")}` : "";
+
+  return `${player.name} · ${role} · ${team} · Q ${quotation}${badgeText}`;
 }
 
 function renderCurrentSelections() {
@@ -537,8 +615,10 @@ function renderCurrentSelection(type, containerId) {
       <div>
         <span class="selection-name">${escapeHtml(player?.name || "Giocatore")}</span>
         <span class="selection-meta">
-          ${TYPE_LABELS[type]} · ${escapeHtml(player?.role || player?.role_mantra || "-")}
-          · ${escapeHtml(player?.serie_a_team || "-")}
+         ${TYPE_LABELS[type]} · ${escapeHtml(player?.role || player?.role_mantra || "-")}
+· ${escapeHtml(player?.serie_a_team || "-")}
+· Anno ${selection.confirmation_year || 1}
+${selection.actual_paid_round ? `· Round ${selection.actual_paid_round}` : ""}
         </span>
       </div>
 
@@ -681,14 +761,15 @@ async function saveSelection(type) {
     return;
   }
 
-  const costRound = getDefaultCostRound(type);
+  const confirmationYear = getConfirmationYear(playerId, type);
+const costRound = getDefaultCostRound(type, confirmationYear);
 
 const payload = {
   season: keeperSettings.season,
   team_id: currentTeam.id,
   player_id: playerId,
   selection_type: type,
-  confirmation_year: 1,
+  confirmation_year: confirmationYear,
   cost_round: costRound,
   actual_paid_round: costRound,
   status: "active",
@@ -707,7 +788,7 @@ const payload = {
       .from("keeper_selections")
 .update({
   player_id: playerId,
-  confirmation_year: 1,
+  confirmation_year: confirmationYear,
   cost_round: costRound,
   actual_paid_round: costRound,
   status: "active",
