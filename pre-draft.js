@@ -806,6 +806,44 @@ function toDatetimeLocalValue(value) {
   return localDate.toISOString().slice(0, 16);
 }
 
+async function saveKeeperSettings() {
+  if (!isAdmin()) return;
+
+  const season = Number(document.getElementById("admin-season")?.value);
+  const isOpen = !!document.getElementById("admin-is-open")?.checked;
+  const applyAtValue = document.getElementById("admin-apply-at")?.value || null;
+
+  if (!season || season < 2026) {
+    alert("Stagione non valida.");
+    return;
+  }
+
+  const { error } = await supabase
+    .from("keeper_settings")
+    .update({
+      season,
+      is_open: isOpen,
+      apply_at: applyAtValue ? new Date(applyAtValue).toISOString() : null
+    })
+    .eq("id", 1);
+
+  if (error) {
+    console.error(error);
+    alert("Errore nel salvataggio impostazioni.");
+    return;
+  }
+
+  await loadKeeperSettings();
+  await loadSelections();
+  renderPage();
+
+  if (isAdmin()) {
+    await loadAdminSummary();
+  }
+
+  alert("Impostazioni Pre-Draft salvate.");
+}
+
 async function loadAdminSummary() {
   const container = document.getElementById("admin-summary");
   if (!container) return;
