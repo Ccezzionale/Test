@@ -62,6 +62,7 @@ function bindEvents() {
   document.getElementById("btn-save-u21")?.addEventListener("click", () => saveSelection("U21_KEEPER"));
   document.getElementById("btn-save-rfa")?.addEventListener("click", () => saveSelection("RFA"));
   document.getElementById("btn-save-settings")?.addEventListener("click", saveKeeperSettings);
+  document.getElementById("btn-scan-conflicts")?.addEventListener("click", scanKeeperConflicts);
 }
 
 async function loadProfileAndTeam() {
@@ -312,6 +313,143 @@ function isEligibleFP(player) {
     e.player_id === player.id &&
     e.can_be_fp === true
   );
+}
+
+async function scanKeeperConflicts() {
+  if (!isAdmin()) return;
+
+  const container = document.getElementById("admin-conflicts");
+  if (container) container.innerHTML = "⏳ Ricerca conflitti in corso...";
+
+  const { error } = await supabase.rpc("mark_keeper_conflicts", {
+    p_season: keeperSettings.season
+  });
+
+  if (error) {
+    console.error(error);
+    if (container) container.innerHTML = "Errore nella ricerca conflitti.";
+    return;
+  }
+
+  await loadAdminSummary();
+  await loadAdminConflicts();
+}
+
+async function loadAdminConflicts() {
+  const container = document.getElementById("admin-conflicts");
+  if (!container) return;
+
+  const { data, error } = await supabase
+    .from("keeper_selections")
+    .select(`
+      id,
+      season,
+      team_id,
+      player_id,
+      selection_type,
+      conflict_group_id,
+      conflict_status,
+      admin_approved,
+      teams (
+        name,
+        conference
+      ),
+      players (
+        name,
+        role,
+        role_mantra,
+        serie_a_team,
+        quotation
+      )
+    `)
+    .eq("season", keeperSettings.season)
+    .eq("status", "active")
+    .eq("conflict_status", "pending")
+    .order("selection_type", { ascending: true });
+
+  if (error) {
+    console.error(error);
+    container.innerHTML = "Errore nel caricamento dei conflitti.";
+    return;
+  }
+
+  if (!data?.length) {
+    container.innerHTML = "<p>✅ Nessun conflitto pending.</p>";
+    return;
+  }
+
+  const groups = {};
+
+  data.forEach(row => {
+    const groupId = row.conflict_group_id || "no-group";
+    if (!groups[groupId]) groups[groupId] = [];
+    groups[groupId].push(row);
+  });
+
+  container.innerHTML = Object.entries(groups).map(([groupId, rows]) => {
+    const first = rows[0];
+    const playerName = first.players?.name || "Giocatore";
+    const typeLabel = TYPE_LABELS[first.selection_type] || first.selection_type;
+    const conference = first.teams?.conference || "-";
+    const role = first.players?.role || first.players?.role_mantra || "-";
+    const serieA = first.players?.serie_a_team || "-";
+
+    return `
+      <div class="predraft-card" style="margin-bottom:14px; border:1px solid #ffd591; background:#fff7e6;">
+        <h4 style="margin-top:0;">
+          ⚠️ Conflitto ${escapeHtml(typeLabel)}: ${escapeHtml(playerName)}
+        </h4>
+
+        <p style="margin:4px 0;">
+          ${escapeHtml(role)} · ${escapeHtml(serieA)} · ${escapeHtml(conference)}
+        </p>
+
+        <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:10px;">
+          ${rows.map(row => `
+            <button
+              class="predraft-btn"
+              type="button"
+              data-resolve-conflict="${escapeHtml(groupId)}"
+              data-winner-selection="${escapeHtml(row.id)}"
+            >
+              Assegna a ${escapeHtml(row.teams?.name || "Squadra")}
+            </button>
+          `).join("")}
+        </div>
+      </div>
+    `;
+  }).join("");
+
+  container.querySelectorAll("[data-resolve-conflict]").forEach(button => {
+    button.addEventListener("click", async () => {
+      const conflictGroupId = button.dataset.resolveConflict;
+      const winnerSelectionId = button.dataset.winnerSelection;
+      await resolveKeeperConflict(conflictGroupId, winnerSelectionId);
+    });
+  });
+}
+
+async function resolveKeeperConflict(conflictGroupId, winnerSelectionId) {
+  if (!isAdmin()) return;
+
+  const ok = confirm("Vuoi assegnare questo giocatore a questa squadra?");
+  if (!ok) return;
+
+  const { error } = await supabase.rpc("resolve_keeper_conflict", {
+    p_conflict_group_id: conflictGroupId,
+    p_winner_selection_id: winnerSelectionId
+  });
+
+  if (error) {
+    console.error(error);
+    alert("Errore nella risoluzione del conflitto.");
+    return;
+  }
+
+  alert("Conflitto risolto.");
+
+  await loadAdminSummary();
+  await loadAdminConflicts();
 }
 
 function isEligibleU21Keeper(player) {
@@ -664,6 +802,7 @@ async function loadAdminSummary() {
 
   if (!data?.length) {
     container.innerHTML = "<p>Nessuna scelta registrata.</p>";
+    await loadAdminConflicts(); // ✅ qui, così aggiorna comunque i conflitti
     return;
   }
 
@@ -695,6 +834,8 @@ async function loadAdminSummary() {
       </tbody>
     </table>
   `;
+
+  await loadAdminConflicts(); // ✅ QUI
 }
 
 function isAdmin() {
