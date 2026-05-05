@@ -165,11 +165,22 @@
         </label>
 
         <label class="checkbox-row">
-          <input id="admin-is-open" type="checkbox" />
-          Modulo aperto
-        </label>
+  <input id="admin-is-open" type="checkbox" />
+  Modulo aperto
+</label>
 
-        <button id="btn-save-settings" class="predraft-btn">Salva impostazioni</button>
+<label>
+  Applicazione Pre-Draft al Draft
+  <input id="admin-apply-at" type="datetime-local" />
+</label>
+
+<button id="btn-apply-predraft" class="predraft-btn" type="button">
+  🚀 Applica Pre-Draft al Draft
+</button>
+
+<p id="admin-apply-status" style="font-weight:600;"></p>
+
+<button id="btn-save-settings" class="predraft-btn">Salva impostazioni</button>
       </div>
 
       <h3>Riepilogo scelte</h3>
