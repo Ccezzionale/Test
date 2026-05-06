@@ -701,17 +701,34 @@ function formatPlayerLabel(player) {
 
   const role = player.role_mantra || player.role || "";
   const serieATeam = player.serie_a_team || "";
-  const u21Badge = player.is_u21 ? " 🐣 U21" : "";
+
+  const badges = [];
+
+  // U21 reale: conta per la regola trade U21 1:1
+  if (player.is_u21 === true) {
+    badges.push("U21");
+  }
+
+  // U21 confermato: badge informativo, NON conta per la regola trade U21
+  if (player.is_u21_keeper === true) {
+    if (Number(player.u21_keeper_year) === 2) {
+      badges.push("🐣🐣");
+    } else {
+      badges.push("🐣");
+    }
+  }
+
+  const badgeText = badges.length ? ` ${badges.join(" ")}` : "";
 
   if (isDraftPhase() && pickNumber) {
-    return `${playerName}${u21Badge} (pick ${pickNumber})`;
+    return `${playerName}${badgeText} (pick ${pickNumber})`;
   }
 
   const details = [role, serieATeam].filter(Boolean).join(" · ");
 
   return details
-    ? `${playerName}${u21Badge} (${details})`
-    : `${playerName}${u21Badge}`;
+    ? `${playerName}${badgeText} (${details})`
+    : `${playerName}${badgeText}`;
 }
 
 function formatFuturePickLabel(pick) {
