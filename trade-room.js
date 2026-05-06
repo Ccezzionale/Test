@@ -719,6 +719,14 @@ if (!myAssetCount || !theirAssetCount) {
   return;
 }
 
+if (!isDraftPhase() && myPlayerBalance > 0) {
+  showMessage(
+    `Questa trade ti farebbe ricevere ${myPlayerBalance} giocatore/i netto/i. Per ora non puoi proporre trade in cui sei tu a dover svincolare: fai proporre la trade all'altra squadra, oppure rendi lo scambio bilanciato.`,
+    "error"
+  );
+  return;
+}
+
 if (!isDraftPhase()) {
   const warnings = [];
 
@@ -727,6 +735,27 @@ if (!isDraftPhase()) {
       `La tua squadra riceverà ${myPlayerBalance} giocatore/i netto/i: dovrai svincolare ${myPlayerBalance} giocatore/i.`
     );
   }
+
+  if (myPlayerBalance < 0) {
+    warnings.push(
+      `La tua squadra cederà ${Math.abs(myPlayerBalance)} giocatore/i netto/i: riceverai ${Math.abs(myPlayerBalance)} chiamata/e compensativa/e nel waiver.`
+    );
+  }
+
+  if (theirPlayerBalance > 0) {
+    warnings.push(
+      `L'altra squadra riceverà ${theirPlayerBalance} giocatore/i netto/i: dovrà svincolare ${theirPlayerBalance} giocatore/i.`
+    );
+  }
+
+  if (theirPlayerBalance < 0) {
+    warnings.push(
+      `L'altra squadra cederà ${Math.abs(theirPlayerBalance)} giocatore/i netto/i: riceverà ${Math.abs(theirPlayerBalance)} chiamata/e compensativa/e nel waiver.`
+    );
+  }
+
+  tradeWarningMessage = warnings.join(" ");
+}
 
   if (myPlayerBalance < 0) {
     warnings.push(
