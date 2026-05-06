@@ -659,10 +659,23 @@ function formatPickLabel(pick) {
 
 function formatPlayerLabel(player) {
   const pickNumber = player[CONFIG.PICKS_PICK_NUMBER_COL];
-  const playerName = player[CONFIG.PICKS_PLAYER_NAME_COL] || "Giocatore senza nome";
+  const playerName =
+    player[CONFIG.PICKS_PLAYER_NAME_COL] ||
+    player.player_name ||
+    player.name ||
+    "Giocatore senza nome";
 
-  return pickNumber
-    ? `${playerName} (pick ${pickNumber})`
+  const role = player.role_mantra || player.role || "";
+  const serieATeam = player.serie_a_team || "";
+
+  if (isDraftPhase() && pickNumber) {
+    return `${playerName} (pick ${pickNumber})`;
+  }
+
+  const details = [role, serieATeam].filter(Boolean).join(" · ");
+
+  return details
+    ? `${playerName} (${details})`
     : playerName;
 }
 
