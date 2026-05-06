@@ -361,7 +361,7 @@ async function loadPickedPlayers() {
     if (playerIds.length) {
       const { data: playersData, error: playersError } = await supabase
         .from("players")
-        .select("id, is_u21, role, role_mantra, serie_a_team, quotation")
+        .select("id, is_u21, is_u21_keeper, u21_keeper_year, role, role_mantra, serie_a_team, quotation")
         .in("id", playerIds);
 
       if (playersError) {
@@ -376,14 +376,16 @@ async function loadPickedPlayers() {
     allPickedPlayers = rows.map(row => {
       const playerDetails = u21Map.get(row.player_id) || {};
 
-      return {
-        ...row,
-        is_u21: !!playerDetails.is_u21,
-        role: playerDetails.role,
-        role_mantra: playerDetails.role_mantra,
-        serie_a_team: playerDetails.serie_a_team,
-        quotation: playerDetails.quotation
-      };
+return {
+  ...row,
+  is_u21: !!playerDetails.is_u21,
+  is_u21_keeper: !!playerDetails.is_u21_keeper,
+  u21_keeper_year: playerDetails.u21_keeper_year,
+  role: playerDetails.role,
+  role_mantra: playerDetails.role_mantra,
+  serie_a_team: playerDetails.serie_a_team,
+  quotation: playerDetails.quotation
+};
     });
 
     return;
