@@ -914,9 +914,11 @@ const { data: players, error } = await supabase
     role_mantra,
     serie_a_team,
     quotation,
-    is_u21,
-    is_fp,
-    owner_team_id,
+is_u21,
+is_u21_keeper,
+u21_keeper_year,
+is_fp,
+owner_team_id,
     status,
     pool
   `)
@@ -947,16 +949,18 @@ const { data: players, error } = await supabase
 
       const key = normalize(nome);
 
-      mappaGiocatori[key] = {
-        id: p.id,
-        external_id: p.external_id,
-        nome,
-        ruolo,
-        squadra,
-        quotazione,
-        is_u21: !!p.is_u21,
-        is_fp: !!p.is_fp
-      };
+mappaGiocatori[key] = {
+  id: p.id,
+  external_id: p.external_id,
+  nome,
+  ruolo,
+  squadra,
+  quotazione,
+  is_u21: !!p.is_u21,
+  is_u21_keeper: !!p.is_u21_keeper,
+  u21_keeper_year: p.u21_keeper_year,
+  is_fp: !!p.is_fp
+};
 
       if (ruolo) ruoli.add(ruolo);
       if (squadra) squadre.add(squadra);
@@ -1345,12 +1349,19 @@ function popolaListaDisponibili() {
   // crea un buffer in memoria per evitare reflow continui
   const frag = document.createDocumentFragment();
 
-Object.values(mappaGiocatori).forEach(({ id, nome, ruolo, squadra, quotazione, is_u21, is_fp }) => {
+Object.values(mappaGiocatori).forEach(({ id, nome, ruolo, squadra, quotazione, is_u21, is_u21_keeper, u21_keeper_year, is_fp }) => {
   const key = normalize(nome);
   if (giocatoriScelti.has(key)) return;
 
-  const u21 = is_u21 ? "🟢 U21" : "";
-  const fp = is_fp ? "⭐ FP" : "";
+let u21 = "";
+
+if (is_u21_keeper) {
+  u21 = Number(u21_keeper_year) === 2 ? "🐣🐣" : "🐣";
+} else if (is_u21) {
+  u21 = "🟢 U21";
+}
+
+const fp = is_fp ? "⭐ FP" : "";
 
   if (ruolo) ruoliTrovati.add(ruolo);
   if (squadra) squadreTrovate.add(squadra);
@@ -1619,12 +1630,15 @@ function aggiornaChiamatePerSquadra() {
     if (!team || !nome || isNaN(pickNum)) return;
 
     const key = normalize(nome);
-    const ruolo = mappaGiocatori[key]?.ruolo || "";
-    const isU21 = mappaGiocatori[key]?.u21?.toLowerCase() === "u21";
-    const nAssoluto = indexMap[`${team}|${pickNum}`] || 1;
+const playerInfo = mappaGiocatori[key] || {};
+const ruolo = playerInfo.ruolo || "";
+const isU21 = playerInfo.is_u21 === true && playerInfo.is_u21_keeper !== true;
+const isU21Keeper = playerInfo.is_u21_keeper === true;
+const u21KeeperYear = Number(playerInfo.u21_keeper_year || 1);
+const nAssoluto = indexMap[`${team}|${pickNum}`] || 1;
 
     if (!riepilogo[team]) riepilogo[team] = [];
-    riepilogo[team].push({ n: nAssoluto, nome, ruolo, isU21, pickNum });
+    riepilogo[team].push({ n: nAssoluto, nome, ruolo, isU21, isU21Keeper, u21KeeperYear, pickNum });
   });
 
   const container = document.getElementById("riepilogo-squadre");
@@ -1671,9 +1685,11 @@ if (sets.u21.has(p.pickNum || 0)) {
 }
 
   // (opzionale) badge u21 anagrafico dal CSV
-  if (p.isU21) {
-    parts.push('<span class="badge u21-flag">u21</span>');
-  }
+if (p.isU21Keeper) {
+  parts.push(`<span class="badge u21-keeper">${p.u21KeeperYear === 2 ? "🐣🐣" : "🐣"}</span>`);
+} else if (p.isU21) {
+  parts.push('<span class="badge u21-flag">U21</span>');
+}
 
   riga.innerHTML = parts.join(" ");
 
