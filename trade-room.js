@@ -710,18 +710,17 @@ function formatPlayerLabel(player) {
 
   const badges = [];
 
-  // U21 reale: conta per la regola trade U21 1:1
-  if (player.is_u21 === true) {
-    badges.push("U21");
+// U21 confermato: badge informativo, NON conta per la regola trade U21
+if (player.is_u21_keeper === true) {
+  if (Number(player.u21_keeper_year) === 2) {
+    badges.push("🐣🐣");
+  } else {
+    badges.push("🐣");
   }
-
-  // U21 confermato: badge informativo, NON conta per la regola trade U21
-  if (player.is_u21_keeper === true) {
-    if (Number(player.u21_keeper_year) === 2) {
-      badges.push("🐣🐣");
-    } else {
-      badges.push("🐣");
-    }
+} else if (player.is_u21 === true) {
+  // U21 reale non confermato: conta per la regola trade U21 1:1
+  badges.push("U21");
+}
   }
 
   const badgeText = badges.length ? ` ${badges.join(" ")}` : "";
@@ -1365,7 +1364,7 @@ function countSelectedU21Players(selectedPlayerIds) {
       String(p[CONFIG.PICKS_ID_COL]) === String(playerId)
     );
 
-    return !!player?.is_u21;
+    return player?.is_u21 === true && player?.is_u21_keeper !== true;
   }).length;
 }
 
