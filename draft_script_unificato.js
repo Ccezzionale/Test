@@ -1721,11 +1721,6 @@ if (sets.fp.has(p.pickNum || 0)) {
   parts.push('<span class="badge fp">⭐</span>');
 }
 
-// Badge U21 se la pick è in uno slot U21
-if (sets.u21.has(p.pickNum || 0)) {
-  parts.push('<span class="badge u21">🐣</span>');
-}
-
   // (opzionale) badge u21 anagrafico dal CSV
 if (p.isU21Keeper) {
   parts.push(`<span class="badge u21-keeper">${p.u21KeeperYear === 2 ? "🐣🐣" : "🐣"}</span>`);
