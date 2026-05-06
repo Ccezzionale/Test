@@ -393,18 +393,20 @@ return {
 
   let query = supabase
     .from("players")
-    .select(`
-      id,
-      name,
-      role,
-      role_mantra,
-      serie_a_team,
-      quotation,
-      is_u21,
-      owner_team_id,
-      status,
-      pool
-    `)
+.select(`
+  id,
+  name,
+  role,
+  role_mantra,
+  serie_a_team,
+  quotation,
+  is_u21,
+  is_u21_keeper,
+  u21_keeper_year,
+  owner_team_id,
+  status,
+  pool
+`)
     .eq("status", "active")
     .not("owner_team_id", "is", null)
     .order("name", { ascending: true });
@@ -426,19 +428,21 @@ return {
     return;
   }
 
-  allPickedPlayers = (data || []).map(player => ({
-    id: player.id,
-    player_id: player.id,
-    draft_name: currentDraftName,
-    pick_number: null,
-    team_id: player.owner_team_id,
-    player_name: player.name,
-    role: player.role,
-    role_mantra: player.role_mantra,
-    serie_a_team: player.serie_a_team,
-    quotation: player.quotation,
-    is_u21: !!player.is_u21
-  }));
+allPickedPlayers = (data || []).map(player => ({
+  id: player.id,
+  player_id: player.id,
+  draft_name: currentDraftName,
+  pick_number: null,
+  team_id: player.owner_team_id,
+  player_name: player.name,
+  role: player.role,
+  role_mantra: player.role_mantra,
+  serie_a_team: player.serie_a_team,
+  quotation: player.quotation,
+  is_u21: !!player.is_u21,
+  is_u21_keeper: !!player.is_u21_keeper,
+  u21_keeper_year: player.u21_keeper_year
+}));
 }
 
 async function loadFuturePicks() {
