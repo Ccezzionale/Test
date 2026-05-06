@@ -650,9 +650,10 @@ function getTeamName(teamId) {
 
 async function sendTradeProposal() {
   if (!isMarketCurrentlyOpen()) {
-  showMessage("Mercato chiuso. Non puoi inviare proposte in questo momento.", "error");
-  return;
-}
+    showMessage("Mercato chiuso. Non puoi inviare proposte in questo momento.", "error");
+    return;
+  }
+
   clearMessage();
 
   const toTeamId = toTeamSelect.value;
@@ -666,119 +667,92 @@ async function sendTradeProposal() {
   const theirSelectedPickNumbers = getCheckedValues(".their-pick-checkbox");
   const mySelectedPlayerIds = getCheckedValues(".my-player-checkbox");
   const theirSelectedPlayerIds = getCheckedValues(".their-player-checkbox");
-   const mySelectedFuturePickIds = getCheckedValues(".my-future-pick-checkbox");
-const theirSelectedFuturePickIds = getCheckedValues(".their-future-pick-checkbox");
+  const mySelectedFuturePickIds = getCheckedValues(".my-future-pick-checkbox");
+  const theirSelectedFuturePickIds = getCheckedValues(".their-future-pick-checkbox");
 
-   const myDraftSlotCount =
-  mySelectedPickNumbers.length +
-  mySelectedPlayerIds.length;
+  const myDraftSlotCount =
+    mySelectedPickNumbers.length +
+    mySelectedPlayerIds.length;
 
-const theirDraftSlotCount =
-  theirSelectedPickNumbers.length +
-  theirSelectedPlayerIds.length;
+  const theirDraftSlotCount =
+    theirSelectedPickNumbers.length +
+    theirSelectedPlayerIds.length;
 
-const myAssetCount =
-  mySelectedPickNumbers.length +
-  mySelectedPlayerIds.length +
-  mySelectedFuturePickIds.length;
+  const myAssetCount =
+    mySelectedPickNumbers.length +
+    mySelectedPlayerIds.length +
+    mySelectedFuturePickIds.length;
 
-const theirAssetCount =
-  theirSelectedPickNumbers.length +
-  theirSelectedPlayerIds.length +
-  theirSelectedFuturePickIds.length;
+  const theirAssetCount =
+    theirSelectedPickNumbers.length +
+    theirSelectedPlayerIds.length +
+    theirSelectedFuturePickIds.length;
 
-const myPlayersOut = mySelectedPlayerIds.length;
-const myPlayersIn = theirSelectedPlayerIds.length;
+  const myPlayersOut = mySelectedPlayerIds.length;
+  const myPlayersIn = theirSelectedPlayerIds.length;
 
-const theirPlayersOut = theirSelectedPlayerIds.length;
-const theirPlayersIn = mySelectedPlayerIds.length;
+  const theirPlayersOut = theirSelectedPlayerIds.length;
+  const theirPlayersIn = mySelectedPlayerIds.length;
 
-const myPlayerBalance = myPlayersIn - myPlayersOut;
-const theirPlayerBalance = theirPlayersIn - theirPlayersOut;
+  const myPlayerBalance = myPlayersIn - myPlayersOut;
+  const theirPlayerBalance = theirPlayersIn - theirPlayersOut;
 
-let tradeWarningMessage = "";
+  let tradeWarningMessage = "";
 
-if (!myAssetCount || !theirAssetCount) {
-  showMessage("La trade deve contenere almeno un asset per entrambe le squadre.", "error");
-  return;
-}
-
-   if (isDraftPhase() && myDraftSlotCount !== theirDraftSlotCount) {
-  showMessage(
-    "Durante il draft la trade deve mantenere lo stesso numero di slot rosa: giocatori già chiamati + pick del draft in corso devono essere pari da entrambe le parti. Le pick future non contano.",
-    "error"
-  );
-  return;
-}
-
-   if (!isDraftPhase() && mySelectedFuturePickIds.length !== theirSelectedFuturePickIds.length) {
-  showMessage(
-    "Le pick future devono sempre essere scambiate con rapporto 1:1. Puoi scambiare giocatori in modo sbilanciato, ma non puoi creare una squadra con una pick futura in più e un'altra con una pick futura in meno.",
-    "error"
-  );
-  return;
-}
-
-if (!isDraftPhase() && myPlayerBalance > 0) {
-  showMessage(
-    `Questa trade ti farebbe ricevere ${myPlayerBalance} giocatore/i netto/i. Per ora non puoi proporre trade in cui sei tu a dover svincolare: fai proporre la trade all'altra squadra, oppure rendi lo scambio bilanciato.`,
-    "error"
-  );
-  return;
-}
-
-if (!isDraftPhase()) {
-  const warnings = [];
-
-  if (myPlayerBalance > 0) {
-    warnings.push(
-      `La tua squadra riceverà ${myPlayerBalance} giocatore/i netto/i: dovrai svincolare ${myPlayerBalance} giocatore/i.`
-    );
+  if (!myAssetCount || !theirAssetCount) {
+    showMessage("La trade deve contenere almeno un asset per entrambe le squadre.", "error");
+    return;
   }
 
-  if (myPlayerBalance < 0) {
-    warnings.push(
-      `La tua squadra cederà ${Math.abs(myPlayerBalance)} giocatore/i netto/i: riceverai ${Math.abs(myPlayerBalance)} chiamata/e compensativa/e nel waiver.`
+  if (isDraftPhase() && myDraftSlotCount !== theirDraftSlotCount) {
+    showMessage(
+      "Durante il draft la trade deve mantenere lo stesso numero di slot rosa: giocatori già chiamati + pick del draft in corso devono essere pari da entrambe le parti. Le pick future non contano.",
+      "error"
     );
+    return;
   }
 
-  if (theirPlayerBalance > 0) {
-    warnings.push(
-      `L'altra squadra riceverà ${theirPlayerBalance} giocatore/i netto/i: dovrà svincolare ${theirPlayerBalance} giocatore/i.`
+  if (!isDraftPhase() && mySelectedFuturePickIds.length !== theirSelectedFuturePickIds.length) {
+    showMessage(
+      "Le pick future devono sempre essere scambiate con rapporto 1:1. Puoi scambiare giocatori in modo sbilanciato, ma non puoi creare una squadra con una pick futura in più e un'altra con una pick futura in meno.",
+      "error"
     );
+    return;
   }
 
-  if (theirPlayerBalance < 0) {
-    warnings.push(
-      `L'altra squadra cederà ${Math.abs(theirPlayerBalance)} giocatore/i netto/i: riceverà ${Math.abs(theirPlayerBalance)} chiamata/e compensativa/e nel waiver.`
+  if (!isDraftPhase() && myPlayerBalance > 0) {
+    showMessage(
+      `Questa trade ti farebbe ricevere ${myPlayerBalance} giocatore/i netto/i. Per ora non puoi proporre trade in cui sei tu a dover svincolare: fai proporre la trade all'altra squadra, oppure rendi lo scambio bilanciato.`,
+      "error"
     );
+    return;
   }
 
-  tradeWarningMessage = warnings.join(" ");
-}
+  if (!isDraftPhase()) {
+    const warnings = [];
 
-  if (myPlayerBalance < 0) {
-    warnings.push(
-      `La tua squadra cederà ${Math.abs(myPlayerBalance)} giocatore/i netto/i: riceverai ${Math.abs(myPlayerBalance)} chiamata/e compensativa/e nel waiver.`
-    );
+    if (myPlayerBalance < 0) {
+      warnings.push(
+        `La tua squadra cederà ${Math.abs(myPlayerBalance)} giocatore/i netto/i: riceverai ${Math.abs(myPlayerBalance)} chiamata/e compensativa/e nel waiver.`
+      );
+    }
+
+    if (theirPlayerBalance > 0) {
+      warnings.push(
+        `L'altra squadra riceverà ${theirPlayerBalance} giocatore/i netto/i: dovrà svincolare ${theirPlayerBalance} giocatore/i.`
+      );
+    }
+
+    if (theirPlayerBalance < 0) {
+      warnings.push(
+        `L'altra squadra cederà ${Math.abs(theirPlayerBalance)} giocatore/i netto/i: riceverà ${Math.abs(theirPlayerBalance)} chiamata/e compensativa/e nel waiver.`
+      );
+    }
+
+    tradeWarningMessage = warnings.join(" ");
   }
 
-  if (theirPlayerBalance > 0) {
-    warnings.push(
-      `L'altra squadra riceverà ${theirPlayerBalance} giocatore/i netto/i: dovrà svincolare ${theirPlayerBalance} giocatore/i.`
-    );
-  }
-
-  if (theirPlayerBalance < 0) {
-    warnings.push(
-      `L'altra squadra cederà ${Math.abs(theirPlayerBalance)} giocatore/i netto/i: riceverà ${Math.abs(theirPlayerBalance)} chiamata/e compensativa/e nel waiver.`
-    );
-  }
-
-  tradeWarningMessage = warnings.join(" ");
-}
-
-const message = tradeMessageInput.value.trim();
+  const message = tradeMessageInput.value.trim();
 
   sendTradeBtn.disabled = true;
   sendTradeBtn.textContent = "Invio in corso...";
@@ -787,15 +761,15 @@ const message = tradeMessageInput.value.trim();
     await loadAssetsForTrade();
 
     const assetsToInsert = buildTradeAssets({
-  proposalId: null,
-  toTeamId,
-  mySelectedPickNumbers,
-  theirSelectedPickNumbers,
-  mySelectedPlayerIds,
-  theirSelectedPlayerIds,
-  mySelectedFuturePickIds,
-  theirSelectedFuturePickIds
-});
+      proposalId: null,
+      toTeamId,
+      mySelectedPickNumbers,
+      theirSelectedPickNumbers,
+      mySelectedPlayerIds,
+      theirSelectedPlayerIds,
+      mySelectedFuturePickIds,
+      theirSelectedFuturePickIds
+    });
 
     const fromAssets = assetsToInsert.filter(asset => asset.side === "from");
     const toAssets = assetsToInsert.filter(asset => asset.side === "to");
@@ -830,21 +804,22 @@ const message = tradeMessageInput.value.trim();
 
     if (assetsError) throw assetsError;
 
-await sendTradeNotification(toTeamId);
+    await sendTradeNotification(toTeamId);
 
-if (tradeWarningMessage) {
-  showMessage(
-    `Proposta inviata correttamente. ${tradeWarningMessage}`,
-    "error"
-  );
-} else {
-  showMessage("Proposta inviata correttamente.", "success");
-}
+    if (tradeWarningMessage) {
+      showMessage(
+        `Proposta inviata correttamente. ${tradeWarningMessage}`,
+        "error"
+      );
+    } else {
+      showMessage("Proposta inviata correttamente.", "success");
+    }
 
-tradeMessageInput.value = "";
-toTeamSelect.value = "";
+    tradeMessageInput.value = "";
+    toTeamSelect.value = "";
 
     await refreshAll();
+
   } catch (err) {
     console.error(err);
     showMessage("Errore durante l’invio della proposta.", "error");
