@@ -11,6 +11,7 @@ const searchInput = document.getElementById("searchGiocatore");
 const cercaRuolo = document.getElementById("cercaRuolo");
 
 const mappaGiocatori = {};
+const mappaGiocatoriDraft = {};
 let ruoli = new Set();
 let squadre = new Set();
 let currentUser = null;
@@ -538,8 +539,44 @@ async function caricaPick() {
       .select('*')
       .eq('draft_name', tab)
       .order('pick_number', { ascending: true });
+if (picksError) throw picksError;
+    Object.keys(mappaGiocatoriDraft).forEach(k => delete mappaGiocatoriDraft[k]);
 
-    if (picksError) throw picksError;
+const draftPlayerIds = [...new Set(
+  (pickRows || [])
+    .map(p => p.player_id)
+    .filter(Boolean)
+)];
+
+if (draftPlayerIds.length) {
+  const { data: draftPlayers, error: draftPlayersError } = await supabase
+    .from("players")
+    .select(`
+      id,
+      name,
+      role,
+      role_mantra,
+      is_u21,
+      is_u21_keeper,
+      u21_keeper_year
+    `)
+    .in("id", draftPlayerIds);
+
+  if (draftPlayersError) throw draftPlayersError;
+
+  (draftPlayers || []).forEach(p => {
+    const key = normalize(p.name || "");
+
+    mappaGiocatoriDraft[key] = {
+      id: p.id,
+      nome: p.name || "",
+      ruolo: p.role || p.role_mantra || "",
+      is_u21: !!p.is_u21,
+      is_u21_keeper: !!p.is_u21_keeper,
+      u21_keeper_year: p.u21_keeper_year
+    };
+  });
+}
 
     const { data: stateRows, error: stateError } = await supabase
       .from('draft_state')
@@ -1629,8 +1666,13 @@ function aggiornaChiamatePerSquadra() {
     const nome = celle[2]?.textContent?.trim();
     if (!team || !nome || isNaN(pickNum)) return;
 
-    const key = normalize(nome);
-const playerInfo = mappaGiocatori[key] || {};
+const key = normalize(nome);
+
+const playerInfo =
+  mappaGiocatoriDraft[key] ||
+  mappaGiocatori[key] ||
+  {};
+
 const ruolo = playerInfo.ruolo || "";
 const isU21 = playerInfo.is_u21 === true && playerInfo.is_u21_keeper !== true;
 const isU21Keeper = playerInfo.is_u21_keeper === true;
