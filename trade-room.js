@@ -331,21 +331,19 @@ async function loadPickedPlayers() {
   /*
     FASE DRAFT:
     I giocatori scambiabili sono quelli già chiamati nel draft,
-    quindi leggiamo da draft_picks.
+    quindi leggiamo da draft_picks e poi recuperiamo is_u21 da players.
 
     FASE CONFERENCE / ROUND ROBIN:
     Le rose vere sono in players.owner_team_id,
-    quindi leggiamo da players.
+    quindi leggiamo direttamente da players.
   */
 
   if (isDraftPhase()) {
-    let query = supabase
+    const { data, error } = await supabase
       .from(CONFIG.PICKS_TABLE)
       .select("*")
       .eq(CONFIG.PICKS_DRAFT_NAME_COL, currentDraftName)
       .order(CONFIG.PICKS_PICK_NUMBER_COL, { ascending: true });
-
-    const { data, error } = await query;
 
     if (error) {
       console.error(error);
@@ -353,7 +351,41 @@ async function loadPickedPlayers() {
       return;
     }
 
-    allPickedPlayers = data || [];
+    const rows = data || [];
+    const playerIds = rows
+      .map(row => row.player_id)
+      .filter(Boolean);
+
+    let u21Map = new Map();
+
+    if (playerIds.length) {
+      const { data: playersData, error: playersError } = await supabase
+        .from("players")
+        .select("id, is_u21, role, role_mantra, serie_a_team, quotation")
+        .in("id", playerIds);
+
+      if (playersError) {
+        console.error("Errore caricamento dettagli players:", playersError);
+      } else {
+        u21Map = new Map(
+          (playersData || []).map(p => [p.id, p])
+        );
+      }
+    }
+
+    allPickedPlayers = rows.map(row => {
+      const playerDetails = u21Map.get(row.player_id) || {};
+
+      return {
+        ...row,
+        is_u21: !!playerDetails.is_u21,
+        role: playerDetails.role,
+        role_mantra: playerDetails.role_mantra,
+        serie_a_team: playerDetails.serie_a_team,
+        quotation: playerDetails.quotation
+      };
+    });
+
     return;
   }
 
@@ -366,6 +398,7 @@ async function loadPickedPlayers() {
       role_mantra,
       serie_a_team,
       quotation,
+      is_u21,
       owner_team_id,
       status,
       pool
@@ -401,7 +434,8 @@ async function loadPickedPlayers() {
     role: player.role,
     role_mantra: player.role_mantra,
     serie_a_team: player.serie_a_team,
-    quotation: player.quotation
+    quotation: player.quotation,
+    is_u21: !!player.is_u21
   }));
 }
 
@@ -667,16 +701,17 @@ function formatPlayerLabel(player) {
 
   const role = player.role_mantra || player.role || "";
   const serieATeam = player.serie_a_team || "";
+  const u21Badge = player.is_u21 ? " 🐣 U21" : "";
 
   if (isDraftPhase() && pickNumber) {
-    return `${playerName} (pick ${pickNumber})`;
+    return `${playerName}${u21Badge} (pick ${pickNumber})`;
   }
 
   const details = [role, serieATeam].filter(Boolean).join(" · ");
 
   return details
-    ? `${playerName} (${details})`
-    : playerName;
+    ? `${playerName}${u21Badge} (${details})`
+    : `${playerName}${u21Badge}`;
 }
 
 function formatFuturePickLabel(pick) {
@@ -765,6 +800,17 @@ async function sendTradeProposal() {
   const theirPlayerBalance = theirPlayersIn - theirPlayersOut;
 
   let tradeWarningMessage = "";
+
+   const myU21Out = countSelectedU21Players(mySelectedPlayerIds);
+const theirU21Out = countSelectedU21Players(theirSelectedPlayerIds);
+
+if (myU21Out !== theirU21Out) {
+  showMessage(
+    `Trade non valida: gli Under 21 possono essere scambiati solo con altri Under 21 e sempre in rapporto 1:1. In questa proposta ci sono ${myU21Out} U21 da una parte e ${theirU21Out} dall'altra.`,
+    "error"
+  );
+  return;
+}
 
   if (!myAssetCount || !theirAssetCount) {
     showMessage("La trade deve contenere almeno un asset per entrambe le squadre.", "error");
@@ -1286,6 +1332,18 @@ function closeCutPlayersModal() {
   if (cutPlayersModalMessage) {
     cutPlayersModalMessage.textContent = "";
   }
+}
+
+function countSelectedU21Players(selectedPlayerIds) {
+  return selectedPlayerIds.filter(playerId => {
+    const player = allPickedPlayers.find(p =>
+      String(p.id) === String(playerId) ||
+      String(p.player_id) === String(playerId) ||
+      String(p[CONFIG.PICKS_ID_COL]) === String(playerId)
+    );
+
+    return !!player?.is_u21;
+  }).length;
 }
 
 async function confirmTradeWithCuts() {
