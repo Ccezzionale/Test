@@ -328,27 +328,81 @@ async function loadPicks() {
 }
 
 async function loadPickedPlayers() {
-  let query = supabase
-    .from(CONFIG.PICKS_TABLE)
-    .select("*")
-    .order(CONFIG.PICKS_DRAFT_NAME_COL, { ascending: true })
-    .order(CONFIG.PICKS_PICK_NUMBER_COL, { ascending: true });
+  /*
+    FASE DRAFT:
+    I giocatori scambiabili sono quelli già chiamati nel draft,
+    quindi leggiamo da draft_picks.
 
-  // Durante draft e mercato conference, restiamo dentro la propria conference.
-  // Durante round robin, invece, servono i giocatori di entrambe le conference.
-  if (currentTradePhase !== "round_robin_market") {
-    query = query.eq(CONFIG.PICKS_DRAFT_NAME_COL, currentDraftName);
+    FASE CONFERENCE / ROUND ROBIN:
+    Le rose vere sono in players.owner_team_id,
+    quindi leggiamo da players.
+  */
+
+  if (isDraftPhase()) {
+    let query = supabase
+      .from(CONFIG.PICKS_TABLE)
+      .select("*")
+      .eq(CONFIG.PICKS_DRAFT_NAME_COL, currentDraftName)
+      .order(CONFIG.PICKS_PICK_NUMBER_COL, { ascending: true });
+
+    const { data, error } = await query;
+
+    if (error) {
+      console.error(error);
+      allPickedPlayers = [];
+      return;
+    }
+
+    allPickedPlayers = data || [];
+    return;
+  }
+
+  let query = supabase
+    .from("players")
+    .select(`
+      id,
+      name,
+      role,
+      role_mantra,
+      serie_a_team,
+      quotation,
+      owner_team_id,
+      status,
+      pool
+    `)
+    .eq("status", "active")
+    .not("owner_team_id", "is", null)
+    .order("name", { ascending: true });
+
+  if (currentTradePhase === "conference_market") {
+    const pool =
+      currentDraftName === "Draft Championship"
+        ? "conference_championship"
+        : "conference_league";
+
+    query = query.eq("pool", pool);
   }
 
   const { data, error } = await query;
 
   if (error) {
-    console.error(error);
+    console.error("Errore caricamento giocatori da players:", error);
     allPickedPlayers = [];
     return;
   }
 
-  allPickedPlayers = data || [];
+  allPickedPlayers = (data || []).map(player => ({
+    id: player.id,
+    player_id: player.id,
+    draft_name: currentDraftName,
+    pick_number: null,
+    team_id: player.owner_team_id,
+    player_name: player.name,
+    role: player.role,
+    role_mantra: player.role_mantra,
+    serie_a_team: player.serie_a_team,
+    quotation: player.quotation
+  }));
 }
 
 async function loadFuturePicks() {
