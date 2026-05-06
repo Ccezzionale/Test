@@ -109,9 +109,11 @@ async function caricaRose() {
         role_mantra,
         serie_a_team,
         quotation,
-        is_u21,
-        is_fp,
-        owner_team_id,
+ is_u21,
+is_u21_keeper,
+u21_keeper_year,
+is_fp,
+owner_team_id,
         status
       `)
       .not("owner_team_id", "is", null)
@@ -142,7 +144,9 @@ async function caricaRose() {
         squadra: p.serie_a_team || "",
         quotazione: p.quotation ?? "",
         fp: !!p.is_fp,
-        u21: !!p.is_u21
+u21: !!p.is_u21,
+u21Keeper: !!p.is_u21_keeper,
+u21KeeperYear: p.u21_keeper_year
       });
     });
 
@@ -235,7 +239,13 @@ function mostraRose() {
               <td class="nome">
                 ${g.fp ? `<strong>${evidenziato}</strong>` : evidenziato}
                 ${g.fp ? '<span class="badge-fp">⭐</span>' : ''}
-                ${g.u21 ? '<span class="badge-u21">U21</span>' : ''}
+                ${
+  g.u21Keeper
+    ? `<span class="badge-u21">${Number(g.u21KeeperYear) === 2 ? "🐣🐣" : "🐣"}</span>`
+    : g.u21
+      ? '<span class="badge-u21">U21</span>'
+      : ''
+}
               </td>
               <td>${g.squadra}</td>
             </tr>
