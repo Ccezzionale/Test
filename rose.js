@@ -109,18 +109,20 @@ async function caricaRose() {
         role_mantra,
         serie_a_team,
         quotation,
- is_u21,
-is_u21_keeper,
-u21_keeper_year,
-is_fp,
-is_fp_keeper,
-fp_keeper_year,
-owner_team_id,
+        is_u21,
+        is_u21_keeper,
+        u21_keeper_year,
+        is_fp,
+        is_fp_keeper,
+        fp_keeper_year,
+        is_rfa_matched,
+        owner_team_id,
         status
       `)
       .not("owner_team_id", "is", null)
       .eq("status", "active")
       .order("name", { ascending: true });
+
     console.log("PLAYERS ASSEGNATI ROSE:", players, playersError);
 
     if (playersError) throw playersError;
@@ -145,12 +147,16 @@ owner_team_id,
         ruolo: p.role || p.role_mantra || "",
         squadra: p.serie_a_team || "",
         quotazione: p.quotation ?? "",
-       fp: !!p.is_fp,
-fpKeeper: !!p.is_fp_keeper,
-fpKeeperYear: p.fp_keeper_year,
-u21: !!p.is_u21,
-u21Keeper: !!p.is_u21_keeper,
-u21KeeperYear: p.u21_keeper_year
+
+        fp: !!p.is_fp,
+        fpKeeper: !!p.is_fp_keeper,
+        fpKeeperYear: p.fp_keeper_year,
+
+        u21: !!p.is_u21,
+        u21Keeper: !!p.is_u21_keeper,
+        u21KeeperYear: p.u21_keeper_year,
+
+        rfaMatched: !!p.is_rfa_matched
       });
     });
 
@@ -182,9 +188,19 @@ u21KeeperYear: p.u21_keeper_year
 function renderPlayerBadges(g) {
   const badges = [];
 
-  // FP confermato
+  /*
+    LOGICA BADGE:
+    - FP confermato 1° anno  -> img/badges/fp.png
+    - FP confermato 2° anno  -> img/badges/fp-confermato.png
+    - U21 normale            -> badge testuale giallo U21
+    - U21 confermato 1° anno -> img/badges/u21.png
+    - U21 confermato 2° anno -> img/badges/u21-confermato.png
+    - RFA pareggiato         -> badge testuale giallo RFA
+  */
+
   if (g.fpKeeper) {
-    const src = Number(g.fpKeeperYear) === 2
+    const isSecondYear = Number(g.fpKeeperYear) === 2;
+    const src = isSecondYear
       ? "img/badges/fp-confermato.png"
       : "img/badges/fp.png";
 
@@ -193,7 +209,7 @@ function renderPlayerBadges(g) {
         class="badge-img"
         src="${src}"
         alt="FP"
-        title="${Number(g.fpKeeperYear) === 2 ? "Franchise Player confermato 2° anno" : "Franchise Player 1° anno"}"
+        title="${isSecondYear ? "Franchise Player confermato 2° anno" : "Franchise Player 1° anno"}"
       >
     `);
   } else if (g.fp) {
@@ -207,9 +223,9 @@ function renderPlayerBadges(g) {
     `);
   }
 
-  // U21 confermato
   if (g.u21Keeper) {
-    const src = Number(g.u21KeeperYear) === 2
+    const isSecondYear = Number(g.u21KeeperYear) === 2;
+    const src = isSecondYear
       ? "img/badges/u21-confermato.png"
       : "img/badges/u21.png";
 
@@ -218,12 +234,18 @@ function renderPlayerBadges(g) {
         class="badge-img"
         src="${src}"
         alt="U21 confermato"
-        title="${Number(g.u21KeeperYear) === 2 ? "U21 confermato 2° anno" : "U21 confermato 1° anno"}"
+        title="${isSecondYear ? "U21 confermato 2° anno" : "U21 confermato 1° anno"}"
       >
     `);
   } else if (g.u21) {
     badges.push(`
       <span class="badge-u21 badge-u21-normal" title="Under 21">U21</span>
+    `);
+  }
+
+  if (g.rfaMatched) {
+    badges.push(`
+      <span class="badge-rfa" title="RFA pareggiato">RFA</span>
     `);
   }
 
@@ -292,8 +314,8 @@ function mostraRose() {
             <tr>
               <td>${g.ruolo}</td>
               <td class="nome">
-${g.fpKeeper || g.fp ? `<strong>${evidenziato}</strong>` : evidenziato}
-${renderPlayerBadges(g)}
+                ${g.fpKeeper || g.fp ? `<strong>${evidenziato}</strong>` : evidenziato}
+                ${renderPlayerBadges(g)}
               </td>
               <td>${g.squadra}</td>
             </tr>
