@@ -873,18 +873,16 @@ if (myU21Out !== theirU21Out) {
       "error"
     );
     return;
-  }
-
-  if (!isDraftPhase() && myPlayerBalance > 0) {
-    showMessage(
-      `Questa trade ti farebbe ricevere ${myPlayerBalance} giocatore/i netto/i. Per ora non puoi proporre trade in cui sei tu a dover svincolare: fai proporre la trade all'altra squadra, oppure rendi lo scambio bilanciato.`,
-      "error"
-    );
-    return;
-  }
-
+ }
+   
   if (!isDraftPhase()) {
     const warnings = [];
+
+     if (myPlayerBalance > 0) {
+  warnings.push(
+    `La tua squadra riceverà ${myPlayerBalance} giocatore/i netto/i: dovrai svincolare ${myPlayerBalance} giocatore/i prima che la trade venga completata.`
+  );
+}
 
     if (myPlayerBalance < 0) {
       warnings.push(
@@ -1302,15 +1300,32 @@ async function acceptTrade(proposalId) {
 
     const receiverPlayerBalance = fromPlayerCount - toPlayerCount;
 
+    let confirmMessage = "Confermi di voler accettare questa trade?";
+
     if (!isDraftPhase() && receiverPlayerBalance > 0) {
-      openCutPlayersModal(proposalId, receiverPlayerBalance, assets || []);
-      return;
+      confirmMessage =
+        `Questa trade ti farà ricevere ${receiverPlayerBalance} giocatore/i netto/i. ` +
+        `Dopo l'accettazione dovrai svincolare ${receiverPlayerBalance} giocatore/i per completarla. Confermi?`;
     }
 
-    const ok = confirm("Confermi di voler accettare questa trade?");
+    const ok = confirm(confirmMessage);
     if (!ok) return;
 
-    await acceptTradeRpc(proposalId, []);
+    const result = await acceptTradeRpc(proposalId);
+
+    if (result?.status === "accepted_pending_cuts") {
+      if (result.cut_team_id === currentTeamId) {
+        openCutPlayersModal(proposalId, result.cuts_required, assets || [], proposal);
+      } else {
+        alert(
+          `Trade accettata. La trade sarà conclusa quando ${result.cut_team_name} svincolerà ${result.cuts_required} giocatore/i.`
+        );
+      }
+    } else {
+      alert("Trade accettata. Pick e giocatori sono stati aggiornati.");
+    }
+
+    await refreshAll();
 
   } catch (err) {
     console.error(err);
@@ -1318,13 +1333,18 @@ async function acceptTrade(proposalId) {
   }
 }
 
-function openCutPlayersModal(proposalId, cutsCount, tradeAssets) {
+function openCutPlayersModal(proposalId, cutsCount, tradeAssets, proposal) {
   pendingAcceptProposalId = proposalId;
   requiredCutsCount = cutsCount;
 
+  const myOutgoingSide =
+    proposal?.from_team === currentTeamId
+      ? "from"
+      : "to";
+
   const outgoingPlayerIds = new Set(
     tradeAssets
-      .filter(asset => asset.side === "to" && asset.asset_type === "player")
+      .filter(asset => asset.side === myOutgoingSide && asset.asset_type === "player")
       .map(asset => String(asset.asset_id))
   );
 
@@ -1339,8 +1359,8 @@ function openCutPlayersModal(proposalId, cutsCount, tradeAssets) {
   }
 
   cutPlayersModalText.textContent =
-    `Questa trade ti farebbe ricevere ${cutsCount} giocatore/i netto/i. ` +
-    `Per accettarla devi selezionare ${cutsCount} giocatore/i da svincolare.`;
+    `Hai una trade in attesa di svincolo. ` +
+    `Devi selezionare ${cutsCount} giocatore/i da svincolare per completarla.`;
 
   cutPlayersList.innerHTML = cuttablePlayers.map(player => `
     <label class="cut-player-choice">
@@ -1355,17 +1375,8 @@ function openCutPlayersModal(proposalId, cutsCount, tradeAssets) {
 
   cutPlayersModalMessage.textContent = "";
   cutPlayersModal.style.display = "flex";
-   document.body.classList.add("modal-open");
+  document.body.classList.add("modal-open");
 }
-
-function closeCutPlayersModal() {
-  pendingAcceptProposalId = null;
-  requiredCutsCount = 0;
-
-  if (cutPlayersModal) {
-    cutPlayersModal.style.display = "none";
-     document.body.classList.remove("modal-open");
-  }
 
   if (cutPlayersList) {
     cutPlayersList.innerHTML = "";
@@ -1399,21 +1410,36 @@ async function confirmTradeWithCuts() {
   }
 
   const ok = confirm(
-    `Confermi la trade e lo svincolo di ${selectedCutPlayerIds.length} giocatore/i?`
+    `Confermi lo svincolo di ${selectedCutPlayerIds.length} giocatore/i? La trade verrà completata subito dopo.`
   );
 
   if (!ok) return;
 
   confirmCutPlayersBtn.disabled = true;
-  confirmCutPlayersBtn.textContent = "Accettazione in corso...";
+  confirmCutPlayersBtn.textContent = "Svincolo in corso...";
 
   try {
-    await acceptTradeRpc(pendingAcceptProposalId, selectedCutPlayerIds);
+    const { data, error } = await supabase.rpc("cut_trade_players", {
+      p_proposal_id: pendingAcceptProposalId,
+      p_player_ids: selectedCutPlayerIds
+    });
+
+    if (error) throw error;
+
     closeCutPlayersModal();
+
+    if (data?.trade_completed) {
+      alert(`Svincoli completati. Trade conclusa.`);
+    } else {
+      alert(`Svincoli registrati.`);
+    }
+
+    await refreshAll();
+
   } catch (err) {
     console.error(err);
     cutPlayersModalMessage.textContent =
-      err.message || "Errore durante l’accettazione della trade.";
+      err.message || "Errore durante lo svincolo.";
     cutPlayersModalMessage.className = "error-message";
   } finally {
     confirmCutPlayersBtn.disabled = false;
@@ -1421,8 +1447,8 @@ async function confirmTradeWithCuts() {
   }
 }
 
-async function acceptTradeRpc(proposalId, cutPlayerIds = []) {
-  const { error } = await supabase.rpc("accept_trade", {
+async function acceptTradeRpc(proposalId) {
+  const { data, error } = await supabase.rpc("accept_trade", {
     p_proposal_id: proposalId
   });
 
@@ -1432,92 +1458,8 @@ async function acceptTradeRpc(proposalId, cutPlayerIds = []) {
     throw error;
   }
 
-  const { data: proposal, error: proposalError } = await supabase
-    .from("trade_proposals")
-    .select("from_team, to_team")
-    .eq("id", proposalId)
-    .single();
-
-  if (proposalError) throw proposalError;
-
-  const { data: assets, error: assetsError } = await supabase
-    .from("trade_assets")
-    .select("*")
-    .eq("proposal_id", proposalId);
-
-  if (assetsError) throw assetsError;
-
-  const fromPlayers = (assets || []).filter(
-    a => a.side === "from" && a.asset_type === "player"
-  ).length;
-
-  const toPlayers = (assets || []).filter(
-    a => a.side === "to" && a.asset_type === "player"
-  ).length;
-
-  const fromTeamBalance = toPlayers - fromPlayers;
-  const toTeamBalance = fromPlayers - toPlayers;
-
-  const compensatoryRows = [];
-
-  if (fromTeamBalance < 0) {
-    compensatoryRows.push({
-      team_id: proposal.from_team,
-      proposal_id: proposalId,
-      count: Math.abs(fromTeamBalance),
-      status: "pending"
-    });
-  }
-
-  if (toTeamBalance < 0) {
-    compensatoryRows.push({
-      team_id: proposal.to_team,
-      proposal_id: proposalId,
-      count: Math.abs(toTeamBalance),
-      status: "pending"
-    });
-  }
-
-  if (cutPlayerIds.length) {
-const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
-
-if (sessionError || !sessionData?.session?.access_token) {
-  throw new Error("Sessione non valida per eseguire gli svincoli.");
+  return data;
 }
-
-const response = await fetch(`${supabaseUrl}/rest/v1/rpc/cut_trade_players`, {
-  method: "POST",
-  headers: {
-    "Content-Type": "application/json",
-    "Authorization": `Bearer ${sessionData.session.access_token}`,
-    "apikey": supabaseKey
-  },
-  body: JSON.stringify({
-    p_player_ids: cutPlayerIds,
-    p_draft_name: currentDraftName
-  })
-});
-
-const cutResult = await response.json();
-
-if (!response.ok) {
-  console.error("ERRORE SVINCOLI POST-TRADE:", cutResult);
-  alert("Trade accettata, ma errore durante lo svincolo dei giocatori.");
-  throw new Error(cutResult?.message || "Errore svincoli post-trade.");
-}
-
-console.log("SVINCOLI OK:", cutResult);
-
-    alert(
-      `Trade accettata. ${cutResult.updated_players} giocatore/i svincolato/i correttamente.`
-    );
-  } else {
-    alert("Trade accettata. Pick e giocatori sono stati aggiornati.");
-  }
-
-  await refreshAll();
-}
-
 
 async function moveAssetToTeam(asset, newTeamId, draftName) {
   if (asset.asset_type === "pick") {
