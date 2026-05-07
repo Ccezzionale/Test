@@ -182,6 +182,7 @@ u21KeeperYear: p.u21_keeper_year
 function renderPlayerBadges(g) {
   const badges = [];
 
+  // FP confermato
   if (g.fpKeeper) {
     const src = Number(g.fpKeeperYear) === 2
       ? "img/badges/fp-confermato.png"
@@ -192,7 +193,7 @@ function renderPlayerBadges(g) {
         class="badge-img"
         src="${src}"
         alt="FP"
-        title="${Number(g.fpKeeperYear) === 2 ? "Franchise Player confermato" : "Franchise Player"}"
+        title="${Number(g.fpKeeperYear) === 2 ? "Franchise Player confermato 2° anno" : "Franchise Player 1° anno"}"
       >
     `);
   } else if (g.fp) {
@@ -206,23 +207,23 @@ function renderPlayerBadges(g) {
     `);
   }
 
+  // U21 confermato
   if (g.u21Keeper) {
+    const src = Number(g.u21KeeperYear) === 2
+      ? "img/badges/u21-confermato.png"
+      : "img/badges/u21.png";
+
     badges.push(`
       <img
         class="badge-img"
-        src="img/badges/u21-confermato.png"
+        src="${src}"
         alt="U21 confermato"
-        title="U21 confermato"
+        title="${Number(g.u21KeeperYear) === 2 ? "U21 confermato 2° anno" : "U21 confermato 1° anno"}"
       >
     `);
   } else if (g.u21) {
     badges.push(`
-      <img
-        class="badge-img"
-        src="img/badges/u21.png"
-        alt="U21"
-        title="Under 21"
-      >
+      <span class="badge-u21 badge-u21-normal" title="Under 21">U21</span>
     `);
   }
 
