@@ -179,6 +179,56 @@ u21KeeperYear: p.u21_keeper_year
   }
 }
 
+function renderPlayerBadges(g) {
+  const badges = [];
+
+  if (g.fpKeeper) {
+    const src = Number(g.fpKeeperYear) === 2
+      ? "img/badges/fp-confermato.png"
+      : "img/badges/fp.png";
+
+    badges.push(`
+      <img
+        class="badge-img"
+        src="${src}"
+        alt="FP"
+        title="${Number(g.fpKeeperYear) === 2 ? "Franchise Player confermato" : "Franchise Player"}"
+      >
+    `);
+  } else if (g.fp) {
+    badges.push(`
+      <img
+        class="badge-img"
+        src="img/badges/fp.png"
+        alt="FP"
+        title="Franchise Player"
+      >
+    `);
+  }
+
+  if (g.u21Keeper) {
+    badges.push(`
+      <img
+        class="badge-img"
+        src="img/badges/u21-confermato.png"
+        alt="U21 confermato"
+        title="U21 confermato"
+      >
+    `);
+  } else if (g.u21) {
+    badges.push(`
+      <img
+        class="badge-img"
+        src="img/badges/u21.png"
+        alt="U21"
+        title="Under 21"
+      >
+    `);
+  }
+
+  return badges.join("");
+}
+
 function mostraRose() {
   const container = document.getElementById("contenitore-rose");
   if (!container) return;
@@ -242,20 +292,7 @@ function mostraRose() {
               <td>${g.ruolo}</td>
               <td class="nome">
 ${g.fpKeeper || g.fp ? `<strong>${evidenziato}</strong>` : evidenziato}
-${
-  g.fpKeeper
-    ? `<span class="badge-fp">${Number(g.fpKeeperYear) === 2 ? "🌟" : "⭐"}</span>`
-    : g.fp
-      ? '<span class="badge-fp">⭐</span>'
-      : ''
-}
-${
-  g.u21Keeper
-    ? `<span class="badge-u21">${Number(g.u21KeeperYear) === 2 ? "🐥" : "🐣"}</span>`
-    : g.u21
-      ? '<span class="badge-u21">U21</span>'
-      : ''
-}
+${renderPlayerBadges(g)}
               </td>
               <td>${g.squadra}</td>
             </tr>
