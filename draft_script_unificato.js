@@ -552,13 +552,16 @@ if (draftPlayerIds.length) {
   const { data: draftPlayers, error: draftPlayersError } = await supabase
     .from("players")
     .select(`
-      id,
-      name,
-      role,
-      role_mantra,
-      is_u21,
-      is_u21_keeper,
-      u21_keeper_year
+id,
+name,
+role,
+role_mantra,
+is_u21,
+is_u21_keeper,
+u21_keeper_year,
+is_fp,
+is_fp_keeper,
+fp_keeper_year
     `)
     .in("id", draftPlayerIds);
 
@@ -573,6 +576,9 @@ if (draftPlayerIds.length) {
       ruolo: p.role || p.role_mantra || "",
       is_u21: !!p.is_u21,
       is_u21_keeper: !!p.is_u21_keeper,
+      is_fp: !!p.is_fp,
+is_fp_keeper: !!p.is_fp_keeper,
+fp_keeper_year: p.fp_keeper_year,
       u21_keeper_year: p.u21_keeper_year
     };
   });
@@ -955,6 +961,8 @@ is_u21,
 is_u21_keeper,
 u21_keeper_year,
 is_fp,
+is_fp_keeper,
+fp_keeper_year,
 owner_team_id,
     status,
     pool
@@ -993,6 +1001,8 @@ mappaGiocatori[key] = {
   ruolo,
   squadra,
   quotazione,
+  is_fp_keeper: !!p.is_fp_keeper,
+fp_keeper_year: p.fp_keeper_year,
   is_u21: !!p.is_u21,
   is_u21_keeper: !!p.is_u21_keeper,
   u21_keeper_year: p.u21_keeper_year,
@@ -1386,19 +1396,25 @@ function popolaListaDisponibili() {
   // crea un buffer in memoria per evitare reflow continui
   const frag = document.createDocumentFragment();
 
-Object.values(mappaGiocatori).forEach(({ id, nome, ruolo, squadra, quotazione, is_u21, is_u21_keeper, u21_keeper_year, is_fp }) => {
+Object.values(mappaGiocatori).forEach(({ id, nome, ruolo, squadra, quotazione, is_u21, is_u21_keeper, u21_keeper_year, is_fp, is_fp_keeper, fp_keeper_year }) => {
   const key = normalize(nome);
   if (giocatoriScelti.has(key)) return;
 
 let u21 = "";
 
 if (is_u21_keeper) {
-  u21 = Number(u21_keeper_year) === 2 ? "🐣🐣" : "🐣";
+  u21 = Number(u21_keeper_year) === 2 ? "🐥" : "🐣";
 } else if (is_u21) {
   u21 = "🟢 U21";
 }
 
-const fp = is_fp ? "⭐ FP" : "";
+let fp = "";
+
+if (is_fp_keeper) {
+  fp = Number(fp_keeper_year) === 2 ? "🌟" : "⭐";
+} else if (is_fp) {
+  fp = "⭐";
+}
 
   if (ruolo) ruoliTrovati.add(ruolo);
   if (squadra) squadreTrovate.add(squadra);
@@ -1677,10 +1693,25 @@ const ruolo = playerInfo.ruolo || "";
 const isU21 = playerInfo.is_u21 === true && playerInfo.is_u21_keeper !== true;
 const isU21Keeper = playerInfo.is_u21_keeper === true;
 const u21KeeperYear = Number(playerInfo.u21_keeper_year || 1);
+const isFp = playerInfo.is_fp === true;
+const isFpKeeper = playerInfo.is_fp_keeper === true;
+const fpKeeperYear = Number(playerInfo.fp_keeper_year || 1);
 const nAssoluto = indexMap[`${team}|${pickNum}`] || 1;
+    
 
     if (!riepilogo[team]) riepilogo[team] = [];
-    riepilogo[team].push({ n: nAssoluto, nome, ruolo, isU21, isU21Keeper, u21KeeperYear, pickNum });
+    riepilogo[team].push({
+  n: nAssoluto,
+  nome,
+  ruolo,
+  isU21,
+  isU21Keeper,
+  u21KeeperYear,
+  isFp,
+  isFpKeeper,
+  fpKeeperYear,
+  pickNum
+});
   });
 
   const container = document.getElementById("riepilogo-squadre");
@@ -1716,14 +1747,15 @@ div.appendChild(img);
   const parts = [];
   parts.push(`${p.n}. ${p.nome} (${p.ruolo})`);
 
-  // Badge FP se la pick è in uno slot FP
-if (sets.fp.has(p.pickNum || 0)) {
+if (p.isFpKeeper) {
+  parts.push(`<span class="badge fp">${p.fpKeeperYear === 2 ? "🌟" : "⭐"}</span>`);
+} else if (p.isFp) {
   parts.push('<span class="badge fp">⭐</span>');
 }
 
   // (opzionale) badge u21 anagrafico dal CSV
 if (p.isU21Keeper) {
-  parts.push(`<span class="badge u21-keeper">${p.u21KeeperYear === 2 ? "🐣🐣" : "🐣"}</span>`);
+  parts.push(`<span class="badge u21-keeper">${p.u21KeeperYear === 2 ? "🐥" : "🐣"}</span>`);
 } else if (p.isU21) {
   parts.push('<span class="badge u21-flag">U21</span>');
 }
