@@ -113,6 +113,8 @@ async function caricaRose() {
 is_u21_keeper,
 u21_keeper_year,
 is_fp,
+is_fp_keeper,
+fp_keeper_year,
 owner_team_id,
         status
       `)
@@ -143,7 +145,9 @@ owner_team_id,
         ruolo: p.role || p.role_mantra || "",
         squadra: p.serie_a_team || "",
         quotazione: p.quotation ?? "",
-        fp: !!p.is_fp,
+       fp: !!p.is_fp,
+fpKeeper: !!p.is_fp_keeper,
+fpKeeperYear: p.fp_keeper_year,
 u21: !!p.is_u21,
 u21Keeper: !!p.is_u21_keeper,
 u21KeeperYear: p.u21_keeper_year
@@ -237,11 +241,17 @@ function mostraRose() {
             <tr>
               <td>${g.ruolo}</td>
               <td class="nome">
-                ${g.fp ? `<strong>${evidenziato}</strong>` : evidenziato}
-                ${g.fp ? '<span class="badge-fp">⭐</span>' : ''}
-                ${
+${g.fpKeeper || g.fp ? `<strong>${evidenziato}</strong>` : evidenziato}
+${
+  g.fpKeeper
+    ? `<span class="badge-fp">${Number(g.fpKeeperYear) === 2 ? "🌟" : "⭐"}</span>`
+    : g.fp
+      ? '<span class="badge-fp">⭐</span>'
+      : ''
+}
+${
   g.u21Keeper
-    ? `<span class="badge-u21">${Number(g.u21KeeperYear) === 2 ? "🐣🐣" : "🐣"}</span>`
+    ? `<span class="badge-u21">${Number(g.u21KeeperYear) === 2 ? "🐥" : "🐣"}</span>`
     : g.u21
       ? '<span class="badge-u21">U21</span>'
       : ''
