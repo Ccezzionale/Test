@@ -331,7 +331,7 @@ async function loadPickedPlayers() {
   /*
     FASE DRAFT:
     I giocatori scambiabili sono quelli già chiamati nel draft,
-    quindi leggiamo da draft_picks e poi recuperiamo is_u21 da players.
+    quindi leggiamo da draft_picks e poi recuperiamo i dettagli da players.
 
     FASE CONFERENCE / ROUND ROBIN:
     Le rose vere sono in players.owner_team_id,
@@ -356,36 +356,51 @@ async function loadPickedPlayers() {
       .map(row => row.player_id)
       .filter(Boolean);
 
-    let u21Map = new Map();
+    let playersMap = new Map();
 
     if (playerIds.length) {
       const { data: playersData, error: playersError } = await supabase
         .from("players")
-        .select("id, is_u21, is_u21_keeper, u21_keeper_year, role, role_mantra, serie_a_team, quotation")
+        .select(`
+          id,
+          is_u21,
+          is_u21_keeper,
+          u21_keeper_year,
+          is_fp,
+          is_fp_keeper,
+          fp_keeper_year,
+          role,
+          role_mantra,
+          serie_a_team,
+          quotation
+        `)
         .in("id", playerIds);
 
       if (playersError) {
         console.error("Errore caricamento dettagli players:", playersError);
       } else {
-        u21Map = new Map(
+        playersMap = new Map(
           (playersData || []).map(p => [p.id, p])
         );
       }
     }
 
     allPickedPlayers = rows.map(row => {
-      const playerDetails = u21Map.get(row.player_id) || {};
+      const playerDetails = playersMap.get(row.player_id) || {};
 
-return {
-  ...row,
-  is_u21: !!playerDetails.is_u21,
-  is_u21_keeper: !!playerDetails.is_u21_keeper,
-  u21_keeper_year: playerDetails.u21_keeper_year,
-  role: playerDetails.role,
-  role_mantra: playerDetails.role_mantra,
-  serie_a_team: playerDetails.serie_a_team,
-  quotation: playerDetails.quotation
-};
+      return {
+        ...row,
+        is_u21: !!playerDetails.is_u21,
+        is_u21_keeper: !!playerDetails.is_u21_keeper,
+        u21_keeper_year: playerDetails.u21_keeper_year,
+        is_fp: !!playerDetails.is_fp,
+        is_fp_keeper: !!playerDetails.is_fp_keeper,
+        fp_keeper_year: playerDetails.fp_keeper_year,
+        role: playerDetails.role,
+        role_mantra: playerDetails.role_mantra,
+        serie_a_team: playerDetails.serie_a_team,
+        quotation: playerDetails.quotation
+      };
     });
 
     return;
@@ -393,20 +408,23 @@ return {
 
   let query = supabase
     .from("players")
-.select(`
-  id,
-  name,
-  role,
-  role_mantra,
-  serie_a_team,
-  quotation,
-  is_u21,
-  is_u21_keeper,
-  u21_keeper_year,
-  owner_team_id,
-  status,
-  pool
-`)
+    .select(`
+      id,
+      name,
+      role,
+      role_mantra,
+      serie_a_team,
+      quotation,
+      is_u21,
+      is_u21_keeper,
+      u21_keeper_year,
+      is_fp,
+      is_fp_keeper,
+      fp_keeper_year,
+      owner_team_id,
+      status,
+      pool
+    `)
     .eq("status", "active")
     .not("owner_team_id", "is", null)
     .order("name", { ascending: true });
@@ -428,21 +446,24 @@ return {
     return;
   }
 
-allPickedPlayers = (data || []).map(player => ({
-  id: player.id,
-  player_id: player.id,
-  draft_name: currentDraftName,
-  pick_number: null,
-  team_id: player.owner_team_id,
-  player_name: player.name,
-  role: player.role,
-  role_mantra: player.role_mantra,
-  serie_a_team: player.serie_a_team,
-  quotation: player.quotation,
-  is_u21: !!player.is_u21,
-  is_u21_keeper: !!player.is_u21_keeper,
-  u21_keeper_year: player.u21_keeper_year
-}));
+  allPickedPlayers = (data || []).map(player => ({
+    id: player.id,
+    player_id: player.id,
+    draft_name: currentDraftName,
+    pick_number: null,
+    team_id: player.owner_team_id,
+    player_name: player.name,
+    role: player.role,
+    role_mantra: player.role_mantra,
+    serie_a_team: player.serie_a_team,
+    quotation: player.quotation,
+    is_u21: !!player.is_u21,
+    is_u21_keeper: !!player.is_u21_keeper,
+    u21_keeper_year: player.u21_keeper_year,
+    is_fp: !!player.is_fp,
+    is_fp_keeper: !!player.is_fp_keeper,
+    fp_keeper_year: player.fp_keeper_year
+  }));
 }
 
 async function loadFuturePicks() {
@@ -710,15 +731,15 @@ function formatPlayerLabel(player) {
 
   const badges = [];
 
-  // U21 confermato: badge informativo, NON conta per la regola trade U21
+  if (player.is_fp_keeper === true) {
+    badges.push(Number(player.fp_keeper_year) === 2 ? "🌟" : "⭐");
+  } else if (player.is_fp === true) {
+    badges.push("⭐");
+  }
+
   if (player.is_u21_keeper === true) {
-    if (Number(player.u21_keeper_year) === 2) {
-      badges.push("🐣🐣");
-    } else {
-      badges.push("🐣");
-    }
+    badges.push(Number(player.u21_keeper_year) === 2 ? "🐥" : "🐣");
   } else if (player.is_u21 === true) {
-    // U21 reale non confermato: conta per la regola trade U21 1:1
     badges.push("U21");
   }
 
