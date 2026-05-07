@@ -1104,12 +1104,31 @@ function buildTradeAssets({
 /* ========= CARICAMENTO TRADE ========= */
 
 async function loadTrades() {
+  await loadPendingCutsMap();
+
   await Promise.all([
     loadPendingCutTrades(),
     loadReceivedTrades(),
     loadSentTrades(),
     loadCompletedTrades()
   ]);
+}
+
+async function loadPendingCutsMap() {
+  const { data, error } = await supabase
+    .from("trade_required_cuts")
+    .select("*")
+    .eq("status", "pending");
+
+  if (error) {
+    console.error("Errore caricamento pending cuts map:", error);
+    window.pendingCutsByProposalId = new Map();
+    return;
+  }
+
+  window.pendingCutsByProposalId = new Map(
+    (data || []).map(row => [row.proposal_id, row])
+  );
 }
 
 async function loadPendingCutTrades() {
@@ -1264,6 +1283,7 @@ async function renderTrades(container, trades, mode) {
       .join("");
 
     let actions = "";
+     const pendingCutInfo = window.pendingCutsByProposalId?.get(trade.id);
 
     if (mode === "received") {
       actions = `
@@ -1277,6 +1297,16 @@ async function renderTrades(container, trades, mode) {
         <button type="button" onclick="cancelTrade('${trade.id}')">Annulla proposta</button>
       `;
     }
+
+     if (pendingCutInfo && pendingCutInfo.team_id === currentTeamId && pendingCutInfo.status === "pending") {
+  const remainingCuts = pendingCutInfo.cuts_required - pendingCutInfo.cuts_done;
+
+  actions += `
+    <button type="button" onclick="openPendingCutModal('${trade.id}', ${remainingCuts})">
+      Svincola e completa trade
+    </button>
+  `;
+}
 
     let statusLabel = trade.status;
 
