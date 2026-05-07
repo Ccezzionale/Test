@@ -90,6 +90,8 @@ const tradeSettingsMessage = document.getElementById("tradeSettingsMessage");
 const receivedTradesBox = document.getElementById("receivedTradesBox");
 const sentTradesBox = document.getElementById("sentTradesBox");
 const completedTradesBox = document.getElementById("completedTradesBox");
+const pendingCutsPanel = document.getElementById("pendingCutsPanel");
+const pendingCutsBox = document.getElementById("pendingCutsBox");
 
 const cutPlayersModal = document.getElementById("cutPlayersModal");
 const cutPlayersModalText = document.getElementById("cutPlayersModalText");
@@ -1103,10 +1105,69 @@ function buildTradeAssets({
 
 async function loadTrades() {
   await Promise.all([
+    loadPendingCutTrades(),
     loadReceivedTrades(),
     loadSentTrades(),
     loadCompletedTrades()
   ]);
+}
+
+async function loadPendingCutTrades() {
+  if (!pendingCutsPanel || !pendingCutsBox) return;
+
+  const { data, error } = await supabase
+    .from("trade_required_cuts")
+    .select(`
+      *,
+      proposal:trade_proposals(*)
+    `)
+    .eq("team_id", currentTeamId)
+    .eq("status", "pending")
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    console.error("Errore caricamento pending cuts:", error);
+    pendingCutsPanel.style.display = "block";
+    pendingCutsBox.innerHTML = `<p>Errore nel caricamento degli svincoli obbligatori.</p>`;
+    return;
+  }
+
+  const rows = data || [];
+
+  if (!rows.length) {
+    pendingCutsPanel.style.display = "none";
+    pendingCutsBox.innerHTML = "";
+    return;
+  }
+
+  pendingCutsPanel.style.display = "block";
+
+  pendingCutsBox.innerHTML = rows.map(row => {
+    const proposal = row.proposal;
+    const remaining = Number(row.cuts_required || 0) - Number(row.cuts_done || 0);
+
+    if (!proposal || remaining <= 0) return "";
+
+    const fromName = getTeamName(proposal.from_team);
+    const toName = getTeamName(proposal.to_team);
+
+    return `
+      <div class="trade-card pending-cuts-card">
+        <h3>${escapeHtml(fromName)} → ${escapeHtml(toName)}</h3>
+
+        <p>
+          Hai una trade in attesa di svincolo.
+          Devi svincolare <strong>${remaining}</strong> giocatore/i per completarla.
+        </p>
+
+        <div class="trade-actions">
+          <button type="button" onclick="openPendingCutModal('${proposal.id}', ${remaining})">
+            Svincola e completa trade
+          </button>
+        </div>
+      </div>
+    `;
+  }).join("");
 }
 
 async function loadReceivedTrades() {
@@ -1131,7 +1192,7 @@ async function loadSentTrades() {
     .from("trade_proposals")
     .select("*")
     .eq("from_team", currentTeamId)
-    .eq("status", "pending")
+    .in("status", ["pending", "accepted_pending_cuts"])
     .order("created_at", { ascending: false });
 
   if (error) {
@@ -1211,7 +1272,7 @@ async function renderTrades(container, trades, mode) {
       `;
     }
 
-    if (mode === "sent") {
+    if (mode === "sent" && trade.status === "pending") {
       actions = `
         <button type="button" onclick="cancelTrade('${trade.id}')">Annulla proposta</button>
       `;
@@ -1220,6 +1281,7 @@ async function renderTrades(container, trades, mode) {
     let statusLabel = trade.status;
 
     if (trade.status === "accepted") statusLabel = "Affare concluso";
+    if (trade.status === "accepted_pending_cuts") statusLabel = "Accettata - in attesa di svincolo";
     if (trade.status === "rejected") statusLabel = "Rifiutata";
     if (trade.status === "cancelled") statusLabel = "Annullata";
 
@@ -1378,12 +1440,54 @@ function openCutPlayersModal(proposalId, cutsCount, tradeAssets, proposal) {
   document.body.classList.add("modal-open");
 }
 
+async function openPendingCutModal(proposalId, cutsCount) {
+  try {
+    await loadAssetsForTrade();
+
+    const { data: proposal, error: proposalError } = await supabase
+      .from("trade_proposals")
+      .select("*")
+      .eq("id", proposalId)
+      .maybeSingle();
+
+    if (proposalError) throw proposalError;
+
+    if (!proposal) {
+      alert("Trade non trovata.");
+      return;
+    }
+
+    const { data: assets, error: assetsError } = await supabase
+      .from("trade_assets")
+      .select("*")
+      .eq("proposal_id", proposalId);
+
+    if (assetsError) throw assetsError;
+
+    openCutPlayersModal(proposalId, cutsCount, assets || [], proposal);
+
+  } catch (err) {
+    console.error(err);
+    alert(err.message || "Errore durante l'apertura degli svincoli.");
+  }
+}
+
+function closeCutPlayersModal() {
+  pendingAcceptProposalId = null;
+  requiredCutsCount = 0;
+
+  if (cutPlayersModal) {
+    cutPlayersModal.style.display = "none";
+    document.body.classList.remove("modal-open");
+  }
+
   if (cutPlayersList) {
     cutPlayersList.innerHTML = "";
   }
 
   if (cutPlayersModalMessage) {
     cutPlayersModalMessage.textContent = "";
+    cutPlayersModalMessage.className = "";
   }
 }
 
@@ -1878,3 +1982,4 @@ function escapeHtml(str) {
 window.acceptTrade = acceptTrade;
 window.rejectTrade = rejectTrade;
 window.cancelTrade = cancelTrade;
+window.openPendingCutModal = openPendingCutModal;
