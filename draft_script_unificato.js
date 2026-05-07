@@ -439,8 +439,6 @@ function abortAndFetch(key, url, tries = 4, baseDelay = 1200, timeoutMs = 25000)
 // Tab/endpoint
 const urlParams = new URLSearchParams(window.location.search);
 const tab = urlParams.get("tab") || (window.location.href.includes("conference") ? "Draft Conference" : "Draft Championship");
-const endpoint = "https://script.google.com/macros/s/AKfycbyFSp-hdD7_r2pNoCJ_X1vjxAzVKXG4py42RUT5cFloUA9PG5zFGWh3sp-qg2MEg7H5OQ/exec";
-
 const draftPool = tab === "Draft Championship"
   ? "conference_championship"
   : "conference_league";
@@ -487,7 +485,6 @@ function renderPicks(dati) {
     corpoTabella.appendChild(tr);
   });
 
-  applicaColoriPickSpeciali();
 
   if (prossimaIndex >= 0) {
     const rigaCorrente = document.querySelectorAll("#tabella-pick tbody tr")[prossimaIndex];
@@ -561,7 +558,8 @@ is_u21_keeper,
 u21_keeper_year,
 is_fp,
 is_fp_keeper,
-fp_keeper_year
+fp_keeper_year,
+is_rfa_matched
     `)
     .in("id", draftPlayerIds);
 
@@ -579,7 +577,8 @@ fp_keeper_year
       is_fp: !!p.is_fp,
 is_fp_keeper: !!p.is_fp_keeper,
 fp_keeper_year: p.fp_keeper_year,
-      u21_keeper_year: p.u21_keeper_year
+      u21_keeper_year: p.u21_keeper_year,
+      is_rfa_matched: !!p.is_rfa_matched
     };
   });
 }
@@ -963,6 +962,7 @@ u21_keeper_year,
 is_fp,
 is_fp_keeper,
 fp_keeper_year,
+is_rfa_matched,
 owner_team_id,
     status,
     pool
@@ -1006,7 +1006,8 @@ fp_keeper_year: p.fp_keeper_year,
   is_u21: !!p.is_u21,
   is_u21_keeper: !!p.is_u21_keeper,
   u21_keeper_year: p.u21_keeper_year,
-  is_fp: !!p.is_fp
+  is_fp: !!p.is_fp,
+  is_rfa_matched: !!p.is_rfa_matched
 };
 
       if (ruolo) ruoli.add(ruolo);
@@ -1385,6 +1386,58 @@ async function adminEditPick() {
   }
 }
 
+
+function renderDraftBadgeImages(player) {
+  const badges = [];
+
+  if (player.is_fp_keeper) {
+    const src = Number(player.fp_keeper_year) === 2
+      ? "img/badges/fp-confermato.png"
+      : "img/badges/fp.png";
+
+    badges.push(`
+      <img
+        class="badge-img small"
+        src="${src}"
+        alt="FP"
+        title="${Number(player.fp_keeper_year) === 2 ? "Franchise Player confermato 2° anno" : "Franchise Player 1° anno"}"
+      >
+    `);
+  } else if (player.is_fp) {
+    badges.push(`
+      <img
+        class="badge-img small"
+        src="img/badges/fp.png"
+        alt="FP"
+        title="Franchise Player"
+      >
+    `);
+  }
+
+  if (player.is_u21_keeper) {
+    const src = Number(player.u21_keeper_year) === 2
+      ? "img/badges/u21-confermato.png"
+      : "img/badges/u21.png";
+
+    badges.push(`
+      <img
+        class="badge-img small"
+        src="${src}"
+        alt="U21 confermato"
+        title="${Number(player.u21_keeper_year) === 2 ? "U21 confermato 2° anno" : "U21 confermato 1° anno"}"
+      >
+    `);
+  } else if (player.is_u21) {
+    badges.push(`<span class="badge-u21-normal" title="Under 21">U21</span>`);
+  }
+
+  if (player.is_rfa_matched) {
+    badges.push(`<span class="badge-rfa" title="RFA pareggiato">RFA</span>`);
+  }
+
+  return badges.join("");
+}
+
 function popolaListaDisponibili() {
   // svuota tabella una volta sola
   listaGiocatori.innerHTML = "";
@@ -1396,25 +1449,13 @@ function popolaListaDisponibili() {
   // crea un buffer in memoria per evitare reflow continui
   const frag = document.createDocumentFragment();
 
-Object.values(mappaGiocatori).forEach(({ id, nome, ruolo, squadra, quotazione, is_u21, is_u21_keeper, u21_keeper_year, is_fp, is_fp_keeper, fp_keeper_year }) => {
+Object.values(mappaGiocatori).forEach((player) => {
+  const { id, nome, ruolo, squadra, quotazione } = player;
+
   const key = normalize(nome);
   if (giocatoriScelti.has(key)) return;
 
-let u21 = "";
-
-if (is_u21_keeper) {
-  u21 = Number(u21_keeper_year) === 2 ? "🐥" : "🐣";
-} else if (is_u21) {
-  u21 = "🟢 U21";
-}
-
-let fp = "";
-
-if (is_fp_keeper) {
-  fp = Number(fp_keeper_year) === 2 ? "🌟" : "⭐";
-} else if (is_fp) {
-  fp = "⭐";
-}
+  const badges = renderDraftBadgeImages(player);
 
   if (ruolo) ruoliTrovati.add(ruolo);
   if (squadra) squadreTrovate.add(squadra);
@@ -1423,11 +1464,11 @@ if (is_fp_keeper) {
   tr.dataset.playerId = id;
 
   tr.innerHTML = `
-    <td>${nome}</td>
-    <td>${ruolo || ""}</td>
-    <td>${squadra || ""}</td>
+    <td>${escapeHtml(nome)}</td>
+    <td>${escapeHtml(ruolo || "")}</td>
+    <td>${escapeHtml(squadra || "")}</td>
     <td>${parseInt(quotazione) || 0}</td>
-    <td>${[u21, fp].filter(Boolean).join(" ")}</td>
+    <td>${badges}</td>
   `;
 
   frag.appendChild(tr);
@@ -1499,53 +1540,6 @@ inviaPickAlFoglio(pick, fantaTeam, nome, ruolo, squadra, quotazione, {
   filtraLista();
 }
 
-
-function rangeToSet(a, b) {
-  const s = new Set();
-  for (let i = a; i <= b; i++) s.add(i);
-  return s;
-}
-
-function getSpecialPickSets(tab) {
-  if (tab === "Draft Championship") {
-    return {
-      fp: new Set([56, 59, 60]),
-      u21: new Set([114, 115])
-    };
-  }
-  // Default: Conference
-  return {
-    fp: new Set([61, 64]),
-    u21: new Set([114, 115, 117, 118, 119])
-  };
-}
-
-function applicaColoriPickSpeciali() {
-  const righe = document.querySelectorAll("#tabella-pick tbody tr");
-  const sets = getSpecialPickSets(tab);
-
-  righe.forEach(r => {
-    const celle = r.querySelectorAll("td");
-    const pickNum = parseInt(celle[0]?.textContent);
-    if (isNaN(pickNum)) return;
-
-    // reset
-    r.style.backgroundColor = "";
-    r.style.borderLeft = "";
-
-    // FP
-    if (sets.fp.has(pickNum)) {
-      r.style.backgroundColor = "#cce5ff";
-      r.style.borderLeft = "4px solid #004085";
-    }
-
-    // U21
-    if (sets.u21.has(pickNum)) {
-      r.style.backgroundColor = "#d4edda";
-      r.style.borderLeft = "4px solid #155724";
-    }
-  });
-}
 
 function debounce(fn, delay = 150) {
   let t;
@@ -1673,8 +1667,6 @@ function aggiornaChiamatePerSquadra() {
   const righe = document.querySelectorAll("#tabella-pick tbody tr");
   const riepilogo = {};
   const indexMap = mappaIndiceAssolutoPerTeam(); // team|pick -> posizione assoluta
-  const sets = getSpecialPickSets(tab);
-
   righe.forEach(r => {
     const celle = r.querySelectorAll("td");
     const pickNum = parseInt(celle[0]?.textContent);
@@ -1696,6 +1688,7 @@ const u21KeeperYear = Number(playerInfo.u21_keeper_year || 1);
 const isFp = playerInfo.is_fp === true;
 const isFpKeeper = playerInfo.is_fp_keeper === true;
 const fpKeeperYear = Number(playerInfo.fp_keeper_year || 1);
+const isRfaMatched = playerInfo.is_rfa_matched === true;
 const nAssoluto = indexMap[`${team}|${pickNum}`] || 1;
     
 
@@ -1710,6 +1703,7 @@ const nAssoluto = indexMap[`${team}|${pickNum}`] || 1;
   isFp,
   isFpKeeper,
   fpKeeperYear,
+  isRfaMatched,
   pickNum
 });
   });
@@ -1747,18 +1741,17 @@ div.appendChild(img);
   const parts = [];
   parts.push(`${p.n}. ${p.nome} (${p.ruolo})`);
 
-if (p.isFpKeeper) {
-  parts.push(`<span class="badge fp">${p.fpKeeperYear === 2 ? "🌟" : "⭐"}</span>`);
-} else if (p.isFp) {
-  parts.push('<span class="badge fp">⭐</span>');
-}
+const badgeHtml = renderDraftBadgeImages({
+  is_fp: p.isFp,
+  is_fp_keeper: p.isFpKeeper,
+  fp_keeper_year: p.fpKeeperYear,
+  is_u21: p.isU21,
+  is_u21_keeper: p.isU21Keeper,
+  u21_keeper_year: p.u21KeeperYear,
+  is_rfa_matched: p.isRfaMatched
+});
 
-  // (opzionale) badge u21 anagrafico dal CSV
-if (p.isU21Keeper) {
-  parts.push(`<span class="badge u21-keeper">${p.u21KeeperYear === 2 ? "🐥" : "🐣"}</span>`);
-} else if (p.isU21) {
-  parts.push('<span class="badge u21-flag">U21</span>');
-}
+if (badgeHtml) parts.push(badgeHtml);
 
   riga.innerHTML = parts.join(" ");
 
