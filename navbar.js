@@ -88,4 +88,3 @@ async function updateAuthButtons() {
     if (logoutBtn) logoutBtn.style.display = "none";
   }
 }
-
