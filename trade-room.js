@@ -943,7 +943,6 @@ if (myU21Out !== theirU21Out) {
   trade_phase: currentTradePhase,
   status: "pending",
   message
-})
       })
       .select()
       .single();
