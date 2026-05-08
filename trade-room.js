@@ -1410,7 +1410,7 @@ async function renderTrades(container, trades, mode) {
           <ul>${toAssets || "<li>Nessun asset</li>"}</ul>
         </div>
 
-        ${trade.message ? `<p><em>${escapeHtml(trade.message)}</em></p>` : ""}
+      ${trade.message && mode !== "completed" ? `<p><em>${escapeHtml(trade.message)}</em></p>` : ""}
 
         ${cutsHtml}
 
