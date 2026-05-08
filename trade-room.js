@@ -1228,9 +1228,26 @@ async function loadCompletedTrades() {
     .from("trade_proposals")
     .select("*")
     .eq("status", "accepted")
-    .or(`from_team.eq.${currentTeamId},to_team.eq.${currentTeamId}`)
     .order("accepted_at", { ascending: false })
-    .limit(30);
+    .limit(100);
+
+  if (error) {
+    console.error(error);
+    completedTradesBox.textContent = "Errore nel caricamento dello storico.";
+    return;
+  }
+
+  const note = document.getElementById("historySummaryNote");
+
+  if (note) {
+    const count = data?.length || 0;
+    note.textContent = count
+      ? `${count} movimento${count > 1 ? "i" : ""} ufficiale${count > 1 ? "i" : ""}`
+      : "Nessun movimento ufficiale";
+  }
+
+  await renderTrades(completedTradesBox, data || [], "completed");
+}
 
   if (error) {
     console.error(error);
