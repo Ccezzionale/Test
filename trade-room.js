@@ -1511,7 +1511,7 @@ const cuttablePlayers = allPickedPlayers.filter(player => {
 });
 
   if (!cuttablePlayers.length) {
-    alert("Non ci sono giocatori disponibili da svincolare.");
+    alert("Non ci sono giocatori disponibili da svincolare. Gli Under 21 normali non possono essere svincolati.");
     return;
   }
 
