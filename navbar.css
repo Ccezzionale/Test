@@ -583,4 +583,14 @@ nav.site-nav{
   nav.site-nav .nav-right.hero-actions {
     gap: 5px !important;
   }
+
+  /* =========================
+   HOTFIX: NASCONDI LOGIN/LOGOUT NON ATTIVO IN MOBILE
+   ========================= */
+@media (max-width: 900px) {
+  nav.site-nav .nav-right.hero-actions .btn-hero[style*="display:none"],
+  nav.site-nav .nav-right.hero-actions .btn-hero[style*="display: none"] {
+    display: none !important;
+  }
 }
+
