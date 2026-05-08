@@ -7,9 +7,40 @@ function urlBase64ToUint8Array(base64String) {
   return Uint8Array.from([...rawData].map((char) => char.charCodeAt(0)));
 }
 
+function setButtonLabel(button, label) {
+  if (!button) return;
+
+  const labelSpan = button.querySelector('.btn-label');
+
+  if (labelSpan) {
+    labelSpan.textContent = label;
+  } else {
+    button.textContent = label;
+  }
+
+  button.setAttribute('aria-label', label);
+}
+
+function setTradeBadgeLabel(button, label, count = 0) {
+  if (!button) return;
+
+  const labelSpan = button.querySelector('.btn-label');
+
+  if (labelSpan) {
+    labelSpan.textContent = label;
+  } else {
+    button.innerHTML = `
+      <img src="icons/nav/trade-room.webp" class="action-icon" alt="">
+      <span class="btn-label">${label}</span>
+    `;
+  }
+
+  button.setAttribute('aria-label', count > 0 ? `${count} proposta trade` : 'Trade Room');
+}
+
 async function logoutUtente() {
   await supabase.auth.signOut();
-  window.location.href = 'login.html';
+  window.location.href = 'index.html';
 }
 
 async function attivaNotifichePush() {
@@ -133,13 +164,17 @@ async function aggiornaBadgeTrade() {
       return;
     }
 
+    badge.style.display = 'inline-flex';
+
     if (count && count > 0) {
-      badge.style.display = 'inline-flex';
-      badge.textContent = `🤝 ${count} proposta${count > 1 ? 'e' : ''} trade`;
+      setTradeBadgeLabel(
+        badge,
+        `${count} proposta${count > 1 ? 'e' : ''} trade`,
+        count
+      );
       badge.classList.add('has-trades');
     } else {
-      badge.style.display = 'inline-flex';
-      badge.textContent = '🤝 Trade Room';
+      setTradeBadgeLabel(badge, 'Trade Room', 0);
       badge.classList.remove('has-trades');
     }
 
@@ -163,15 +198,15 @@ async function aggiornaBottoneNotifiche() {
     const subscription = await registration.pushManager.getSubscription();
 
     if (subscription) {
-      notifBtn.textContent = 'Disattiva notifiche';
+      setButtonLabel(notifBtn, 'Disattiva notifiche');
       notifBtn.dataset.attive = 'true';
     } else {
-      notifBtn.textContent = 'Attiva notifiche';
+      setButtonLabel(notifBtn, 'Attiva notifiche');
       notifBtn.dataset.attive = 'false';
     }
   } catch (err) {
     console.error(err);
-    notifBtn.textContent = 'Attiva notifiche';
+    setButtonLabel(notifBtn, 'Attiva notifiche');
     notifBtn.dataset.attive = 'false';
   }
 }
@@ -196,4 +231,3 @@ window.addEventListener('DOMContentLoaded', async () => {
   await aggiornaBottoneNotifiche();
   await aggiornaBadgeTrade();
 });
-
