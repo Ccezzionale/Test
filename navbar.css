@@ -54,7 +54,6 @@ nav.site-nav{
   border-radius: 12px;
   background: rgba(255,255,255,0.08);
   color: #fff;
-  font-size: 1.3rem;
   transition: transform .18s ease, background .18s ease, box-shadow .18s ease;
 }
 
@@ -62,6 +61,13 @@ nav.site-nav{
   background: rgba(255,255,255,0.14);
   transform: translateY(-1px);
   box-shadow: 0 6px 16px rgba(0,0,0,0.20);
+}
+
+.nav-home-icon{
+  width: 30px;
+  height: 30px;
+  object-fit: contain;
+  display: block;
 }
 
 .site-nav .hamburger{
@@ -219,49 +225,18 @@ nav.site-nav{
   min-width: 290px;
 }
 
-  .hero-actions{
+.menu-icon{
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+  display: inline-block;
+  flex-shrink: 0;
+}
+
+.hero-actions{
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   gap: 10px;
-}
-
-.btn-hero{
-  appearance: none;
-  border: 1px solid rgba(0, 31, 63, 0.10);
-  background: linear-gradient(180deg, #ffffff 0%, #f7fbff 100%);
-  color: var(--navy, #001f3f);
-  font-weight: 800;
-  font-size: 0.95rem;
-  padding: 11px 16px;
-  border-radius: 12px;
-  cursor: pointer;
-  box-shadow: 0 4px 14px rgba(0, 31, 63, 0.06);
-  transition: transform 0.16s ease, box-shadow 0.16s ease, border-color 0.16s ease, background 0.16s ease;
-}
-
-.btn-hero:hover{
-  transform: translateY(-1px);
-  box-shadow: 0 10px 22px rgba(0, 31, 63, 0.12);
-  border-color: rgba(0, 31, 63, 0.18);
-}
-
-.btn-hero:active{
-  transform: translateY(0);
-}
-
-.btn-hero:focus-visible{
-  outline: none;
-  box-shadow: 0 0 0 4px rgba(11, 95, 194, 0.12);
-}
-
-.btn-hero.warning{
-  background: linear-gradient(180deg, #fff4c4 0%, #ffe082 100%);
-  color: #5c4300;
-  border-color: #f0d36c;
-}
-
-.btn-hero.warning:hover{
-  background: linear-gradient(180deg, #ffefae 0%, #ffd54a 100%);
 }
 
 .nav-right.hero-actions{
@@ -269,6 +244,7 @@ nav.site-nav{
   align-items:center;
   gap:10px;
   flex-shrink:0;
+  margin-left: auto;
 }
 
 .btn-hero{
@@ -311,63 +287,89 @@ nav.site-nav{
   box-shadow:0 8px 18px rgba(255,204,0,.25);
 }
 
-@media (max-width:900px){
-  .nav-right.hero-actions{
-    margin-top:10px;
-    display:grid;
-    grid-template-columns:1fr;
-    gap:8px;
-  }
-
-  .btn-hero{
-    width:100%;
-  }
+.action-icon{
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+  display: inline-block;
+  flex-shrink: 0;
 }
-
-@media (max-width: 768px){
-  .hero-actions{
-    width: 100%;
-  }
-
-  .btn-hero{
-    flex: 1 1 100%;
-    justify-content: center;
-  }
 
 /* =========================
    NAVBAR MOBILE
    ========================= */
 @media (max-width: 900px){
   nav.site-nav .nav-inner{
-    display: block;
     min-height: 64px;
-    padding: 10px 14px;
+    padding: 10px 12px;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
   }
 
   nav.site-nav .nav-left{
     display: flex;
     align-items: center;
-    gap: 10px;
-    width: 100%;
-    margin: 0 0 10px 0;
+    gap: 8px;
+    width: auto;
+    margin: 0;
+    flex-shrink: 0;
   }
 
   nav.site-nav .hamburger{
+    width: 40px;
+    height: 40px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
+    padding: 0;
+    border-radius: 12px;
+    background: rgba(255,255,255,0.08);
   }
 
   nav.site-nav .brand-home{
     width: 40px;
     height: 40px;
-    font-size: 1.2rem;
+    border-radius: 12px;
+  }
+
+  .nav-home-icon{
+    width: 30px;
+    height: 30px;
+  }
+
+  .nav-right.hero-actions{
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    flex-wrap: nowrap;
+  }
+
+  .btn-hero{
+    width: 40px;
+    height: 40px;
+    min-height: 40px;
+    padding: 0;
+    border-radius: 12px;
+    flex: 0 0 auto;
+  }
+
+  .btn-hero .btn-label{
+    display: none;
+  }
+
+  .action-icon{
+    width: 30px;
+    height: 30px;
   }
 
   nav.site-nav #mainMenu.navbar{
+    order: 3;
     display: none;
     width: 100%;
-    margin: 0;
+    margin: 6px 0 0;
     padding: 12px;
     flex-direction: column;
     align-items: stretch;
@@ -438,4 +440,10 @@ nav.site-nav{
     padding: 9px 10px;
     border-radius: 9px;
   }
+
+  .menu-icon{
+    width: 26px;
+    height: 26px;
+  }
 }
+
