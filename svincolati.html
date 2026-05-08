@@ -12,13 +12,14 @@
     .hint { text-align:center; color:#6b7280; font-size:.9rem; margin-top:4px; }
   </style>
 </head>
-
 <body>
   <nav class="site-nav">
     <div class="nav-inner">
       <div class="nav-left">
-        <span id="hamburger" class="hamburger">☰</span>
-        <a href="index.html" class="brand-home" aria-label="Home">🏠</a>
+        <span id="hamburger" class="hamburger" aria-label="Apri menu">☰</span>
+        <a href="index.html" class="brand-home" aria-label="Home">
+          <img src="icons/nav/home.webp" alt="" class="nav-home-icon">
+        </a>
       </div>
 
       <ul class="navbar" id="mainMenu">
@@ -29,9 +30,10 @@
             Draft <span class="caret">▾</span>
           </a>
           <ul class="submenu">
-            <li><a href="draft_championship.html">🟦 Conf. Championship</a></li>
-            <li><a href="draft_conference.html">🟨 Conf. League</a></li>
-            <li><a href="dinamico-draft.html">🧑‍💼 Draft 2026</a></li>
+            <li><a href="pre-draft.html"><img src="icons/nav/pre-draft.webp" class="menu-icon" alt="">Pre-Draft</a></li>
+            <li><a href="draft_championship.html"><img src="icons/nav/conf-championship.webp" class="menu-icon" alt="">Conf. Championship</a></li>
+            <li><a href="draft_conference.html"><img src="icons/nav/conf-league.webp" class="menu-icon" alt="">Conf. League</a></li>
+            <li><a href="dinamico-draft.html"><img src="icons/nav/draft-2026.webp" class="menu-icon" alt="">Draft 2027</a></li>
           </ul>
         </li>
 
@@ -40,34 +42,55 @@
             Competizioni <span class="caret">▾</span>
           </a>
           <ul class="submenu">
-            <li><a href="classifica.html">📊 Classifiche</a></li>
-            <li><a href="playoff.html">🏆 Playoff</a></li>
-            <li><a href="arena.html">🏟️ Highlander</a></li>
-            <li><a href="crashoutcup.html">💥 Crash Out Cup</a></li>
-            <li><a href="crashoutplayoff.html">💥 Crash Out Cup - Playoff</a></li>
-            <li><a href="supercoppa.html">⭐ Supercoppa</a></li>
-            <li><a href="statistiche.html">🔎 Statistiche</a></li>
+            <li><a href="classifica.html"><img src="icons/nav/classifiche.webp" class="menu-icon" alt="">Classifiche</a></li>
+            <li><a href="playoff.html"><img src="icons/nav/playoff.webp" class="menu-icon" alt="">Playoff</a></li>
+            <li><a href="arena.html"><img src="icons/nav/highlander.webp" class="menu-icon" alt="">Highlander</a></li>
+            <li><a href="crashoutcup.html"><img src="icons/nav/crashout-cup.webp" class="menu-icon" alt="">Crash Out Cup</a></li>
+            <li><a href="crashoutplayoff.html"><img src="icons/nav/crashout-playoff.webp" class="menu-icon" alt="">Crash Out Cup - Playoff</a></li>
+            <li><a href="supercoppa.html"><img src="icons/nav/supercoppa.webp" class="menu-icon" alt="">Supercoppa</a></li>
+            <li><a href="statistiche.html"><img src="icons/nav/statistiche.webp" class="menu-icon" alt="">Statistiche</a></li>
           </ul>
         </li>
 
         <li><a href="svincolati.html">Svincolati</a></li>
-        <li><a href="chiamate.html">Waiver Wire</a></li>
+        <li><a href="waiver.html">Waiver Wire</a></li>
 
         <li class="dropdown">
           <a href="#" class="toggle-submenu">
             Hall of Fame <span class="caret">▾</span>
           </a>
           <ul class="submenu">
-            <li><a href="medagliere.html">👑 Albo d'Oro</a></li>
-            <li><a href="albo.html">🏅 Medagliere</a></li>
+            <li><a href="medagliere.html"><img src="icons/nav/albo-oro.webp" class="menu-icon" alt="">Albo d'Oro</a></li>
+            <li><a href="albo.html"><img src="icons/nav/medagliere.webp" class="menu-icon" alt="">Medagliere</a></li>
           </ul>
         </li>
 
         <li><a href="regolamento.html">Regolamento</a></li>
       </ul>
+
+      <div class="nav-right hero-actions">
+        <a id="trade-badge" href="trade-room.html" class="btn-hero trade-badge" aria-label="Trade Room">
+          <img src="icons/nav/trade-room.webp" class="action-icon" alt="">
+          <span class="btn-label">Trade Room</span>
+        </a>
+
+        <a id="login-btn" href="login.html" class="btn-hero" style="display:none;" aria-label="Login">
+          <img src="icons/nav/login-logout.webp" class="action-icon" alt="">
+          <span class="btn-label">Login</span>
+        </a>
+
+        <button id="logout-btn" type="button" class="btn-hero" style="display:none;" aria-label="Logout">
+          <img src="icons/nav/login-logout.webp" class="action-icon" alt="">
+          <span class="btn-label">Logout</span>
+        </button>
+
+        <button id="attiva-notifiche-btn" type="button" class="btn-hero warning" aria-label="Attiva notifiche">
+          <img src="icons/nav/notifications.webp" class="action-icon" alt="">
+          <span class="btn-label">Attiva notifiche</span>
+        </button>
+      </div>
     </div>
   </nav>
-
   <h1 class="titolo-pagina">📋 Svincolati <span id="spinner" class="spinner" style="display:none"></span></h1>
 
   <div class="container">
