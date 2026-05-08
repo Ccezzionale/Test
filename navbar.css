@@ -486,4 +486,101 @@ nav.site-nav{
     width: 28px;
     height: 28px;
   }
+
+  /* =========================
+   HOTFIX MOBILE ACTION ICONS
+   ========================= */
+@media (max-width: 900px) {
+  nav.site-nav .nav-inner {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    min-height: 66px !important;
+    padding: 10px 12px !important;
+    gap: 8px !important;
+    flex-wrap: wrap !important;
+  }
+
+  nav.site-nav .nav-left {
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    flex: 0 0 auto !important;
+    margin: 0 !important;
+    width: auto !important;
+  }
+
+  nav.site-nav .nav-right.hero-actions {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: flex-end !important;
+    gap: 7px !important;
+    flex: 0 0 auto !important;
+    width: auto !important;
+    margin: 0 !important;
+  }
+
+  nav.site-nav .hamburger,
+  nav.site-nav .brand-home,
+  nav.site-nav .btn-hero {
+    width: 42px !important;
+    height: 42px !important;
+    min-width: 42px !important;
+    min-height: 42px !important;
+    max-width: 42px !important;
+    padding: 0 !important;
+    border-radius: 12px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    overflow: hidden !important;
+  }
+
+  nav.site-nav .btn-hero {
+    font-size: 0 !important;
+    line-height: 0 !important;
+    color: transparent !important;
+    white-space: nowrap !important;
+  }
+
+  nav.site-nav .btn-hero .btn-label {
+    display: none !important;
+  }
+
+  nav.site-nav .action-icon,
+  nav.site-nav .nav-home-icon {
+    width: 30px !important;
+    height: 30px !important;
+    min-width: 30px !important;
+    object-fit: contain !important;
+    display: block !important;
+  }
+
+  nav.site-nav #mainMenu.navbar {
+    flex: 1 1 100% !important;
+    order: 3 !important;
+    margin-top: 8px !important;
+  }
+}
+
+@media (max-width: 390px) {
+  nav.site-nav .hamburger,
+  nav.site-nav .brand-home,
+  nav.site-nav .btn-hero {
+    width: 38px !important;
+    height: 38px !important;
+    min-width: 38px !important;
+    min-height: 38px !important;
+    max-width: 38px !important;
+  }
+
+  nav.site-nav .action-icon,
+  nav.site-nav .nav-home-icon {
+    width: 28px !important;
+    height: 28px !important;
+  }
+
+  nav.site-nav .nav-right.hero-actions {
+    gap: 5px !important;
+  }
 }
