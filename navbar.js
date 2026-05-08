@@ -54,4 +54,37 @@ document.addEventListener("DOMContentLoaded", function () {
       });
     }
   });
+
+  updateAuthButtons();
 });
+
+async function updateAuthButtons() {
+  const loginBtn = document.getElementById("login-btn");
+  const logoutBtn = document.getElementById("logout-btn");
+
+  if (!loginBtn && !logoutBtn) return;
+
+  try {
+    const { supabase } = await import("./supabase.js");
+    const { data, error } = await supabase.auth.getSession();
+
+    if (error) throw error;
+
+    const isLoggedIn = !!data.session;
+
+    if (loginBtn) loginBtn.style.display = isLoggedIn ? "none" : "inline-flex";
+    if (logoutBtn) logoutBtn.style.display = isLoggedIn ? "inline-flex" : "none";
+
+    if (logoutBtn) {
+      logoutBtn.onclick = async function () {
+        await supabase.auth.signOut();
+        window.location.href = "index.html";
+      };
+    }
+  } catch (err) {
+    console.warn("Controllo login non riuscito:", err);
+
+    if (loginBtn) loginBtn.style.display = "inline-flex";
+    if (logoutBtn) logoutBtn.style.display = "none";
+  }
+}
