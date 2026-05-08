@@ -1269,6 +1269,32 @@ async function renderTrades(container, trades, mode) {
     return;
   }
 
+  let cutRows = [];
+
+  if (mode === "completed") {
+    const { data: cutsData, error: cutsError } = await supabase
+      .from("trade_cut_players")
+      .select(`
+        proposal_id,
+        team_id,
+        player_id,
+        player:players(
+          id,
+          name,
+          role,
+          role_mantra,
+          serie_a_team
+        )
+      `)
+      .in("proposal_id", proposalIds);
+
+    if (cutsError) {
+      console.error("Errore caricamento svincoli trade:", cutsError);
+    } else {
+      cutRows = cutsData || [];
+    }
+  }
+
   container.innerHTML = trades.map(trade => {
     const tradeAssets = assets.filter(a => a.proposal_id === trade.id);
 
@@ -1282,8 +1308,39 @@ async function renderTrades(container, trades, mode) {
       .map(a => `<li>${escapeHtml(a.asset_label)}</li>`)
       .join("");
 
+    const tradeCuts = cutRows.filter(row => row.proposal_id === trade.id);
+
+    const cutsHtml = tradeCuts.length
+      ? `
+        <div class="trade-cuts-box">
+          <strong>Svincoli obbligatori:</strong>
+          <ul>
+            ${tradeCuts.map(row => {
+              const playerData = Array.isArray(row.player)
+                ? row.player[0]
+                : row.player;
+
+              const teamName = getTeamName(row.team_id);
+              const playerName = playerData?.name || "Giocatore sconosciuto";
+              const role = playerData?.role_mantra || playerData?.role || "";
+              const serieATeam = playerData?.serie_a_team || "";
+              const details = [role, serieATeam].filter(Boolean).join(" · ");
+
+              return `
+                <li>
+                  ${escapeHtml(teamName)} ha svincolato:
+                  <strong>${escapeHtml(playerName)}</strong>
+                  ${details ? `(${escapeHtml(details)})` : ""}
+                </li>
+              `;
+            }).join("")}
+          </ul>
+        </div>
+      `
+      : "";
+
     let actions = "";
-     const pendingCutInfo = window.pendingCutsByProposalId?.get(trade.id);
+    const pendingCutInfo = window.pendingCutsByProposalId?.get(trade.id);
 
     if (mode === "received") {
       actions = `
@@ -1298,15 +1355,15 @@ async function renderTrades(container, trades, mode) {
       `;
     }
 
-     if (pendingCutInfo && pendingCutInfo.team_id === currentTeamId && pendingCutInfo.status === "pending") {
-  const remainingCuts = pendingCutInfo.cuts_required - pendingCutInfo.cuts_done;
+    if (pendingCutInfo && pendingCutInfo.team_id === currentTeamId && pendingCutInfo.status === "pending") {
+      const remainingCuts = pendingCutInfo.cuts_required - pendingCutInfo.cuts_done;
 
-  actions += `
-    <button type="button" onclick="openPendingCutModal('${trade.id}', ${remainingCuts})">
-      Svincola e completa trade
-    </button>
-  `;
-}
+      actions += `
+        <button type="button" onclick="openPendingCutModal('${trade.id}', ${remainingCuts})">
+          Svincola e completa trade
+        </button>
+      `;
+    }
 
     let statusLabel = trade.status;
 
@@ -1337,6 +1394,8 @@ async function renderTrades(container, trades, mode) {
         </div>
 
         ${trade.message ? `<p><em>${escapeHtml(trade.message)}</em></p>` : ""}
+
+        ${cutsHtml}
 
         <p class="trade-status ${escapeHtml(trade.status)}">
           ${escapeHtml(statusLabel)}
