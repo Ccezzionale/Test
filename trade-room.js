@@ -1499,10 +1499,16 @@ function openCutPlayersModal(proposalId, cutsCount, tradeAssets, proposal) {
       .map(asset => String(asset.asset_id))
   );
 
-  const cuttablePlayers = allPickedPlayers.filter(player =>
-    player[CONFIG.PICKS_OWNER_COL] === currentTeamId &&
-    !outgoingPlayerIds.has(String(player[CONFIG.PICKS_ID_COL]))
-  );
+const cuttablePlayers = allPickedPlayers.filter(player => {
+  const isMine = player[CONFIG.PICKS_OWNER_COL] === currentTeamId;
+  const isOutgoing = outgoingPlayerIds.has(String(player[CONFIG.PICKS_ID_COL]));
+
+  const isNormalU21 =
+    player.is_u21 === true &&
+    player.is_u21_keeper !== true;
+
+  return isMine && !isOutgoing && !isNormalU21;
+});
 
   if (!cuttablePlayers.length) {
     alert("Non ci sono giocatori disponibili da svincolare.");
