@@ -1,37 +1,55 @@
 <!DOCTYPE html>
-<html>
+<html lang="it">
 <head>
-  <title>Login</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login - Lega degli Eroi</title>
 </head>
 <body>
 
 <h2>Login Lega degli Eroi</h2>
 
-<input type="email" id="email" placeholder="Email">
-<input type="password" id="password" placeholder="Password">
-<button onclick="login()">Login</button>
+<input type="email" id="email" placeholder="Email" autocomplete="email">
+<input type="password" id="password" placeholder="Password" autocomplete="current-password">
+<button id="loginButton" type="button">Login</button>
 
 <p id="status"></p>
 
 <script type="module">
-import { supabase } from './supabase.js'
+import { supabase } from './supabase.js';
 
-window.login = async () => {
-  const email = document.getElementById('email').value
-  const password = document.getElementById('password').value
+async function login() {
+  const status = document.getElementById('status');
+  const email = document.getElementById('email').value.trim();
+  const password = document.getElementById('password').value;
 
-  const { data, error } = await supabase.auth.signInWithPassword({
+  status.innerText = '';
+
+  if (!email || !password) {
+    status.innerText = 'Inserisci email e password.';
+    return;
+  }
+
+  const { error } = await supabase.auth.signInWithPassword({
     email,
     password
-  })
+  });
 
   if (error) {
-    document.getElementById('status').innerText = error.message
-  } else {
-    window.location.href = 'draft_championship.html'
+    status.innerText = error.message;
+    return;
   }
+
+  window.location.href = 'index.html';
 }
+
+document.getElementById('loginButton').addEventListener('click', login);
+
+document.addEventListener('keydown', function (event) {
+  if (event.key === 'Enter') login();
+});
 </script>
 
 </body>
 </html>
+
