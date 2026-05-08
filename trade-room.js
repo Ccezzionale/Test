@@ -937,11 +937,13 @@ if (myU21Out !== theirU21Out) {
     const { data: proposal, error: proposalError } = await supabase
       .from("trade_proposals")
       .insert({
-        from_team: currentTeamId,
-        to_team: toTeamId,
-        draft_name: currentDraftName,
-        status: "pending",
-        message
+  from_team: currentTeamId,
+  to_team: toTeamId,
+  draft_name: currentDraftName,
+  trade_phase: currentTradePhase,
+  status: "pending",
+  message
+})
       })
       .select()
       .single();
