@@ -10,6 +10,7 @@ import { supabase, supabaseUrl, supabaseKey } from './supabase.js';
    - profiles: email, team_id
    - trade_proposals: from_team, to_team, status, message, draft_name
    - trade_assets: proposal_id, side, asset_type, asset_id, asset_label
+   
 ================================ */
 
 const CONFIG = {
