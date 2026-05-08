@@ -1251,24 +1251,6 @@ async function loadCompletedTrades() {
   await renderTrades(completedTradesBox, data || [], "completed");
 }
 
-  if (error) {
-    console.error(error);
-    completedTradesBox.textContent = "Errore nel caricamento dello storico.";
-    return;
-  }
-
-  const note = document.getElementById("historySummaryNote");
-
-  if (note) {
-    const count = data?.length || 0;
-    note.textContent = count
-      ? `${count} trade conclusa${count > 1 ? "e" : ""}`
-      : "Nessuna trade conclusa";
-  }
-
-  await renderTrades(completedTradesBox, data || [], "completed");
-}
-
 async function renderTrades(container, trades, mode) {
   if (!trades.length) {
     container.innerHTML = `<p>Nessuna trade da mostrare.</p>`;
