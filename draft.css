@@ -206,10 +206,19 @@ body{
    ========================= */
 .container{
   display: grid;
-  grid-template-columns: minmax(0, 1.65fr) minmax(380px, 0.95fr);
+  grid-template-columns: minmax(420px, 0.8fr) minmax(720px, 1.4fr);
   gap: 22px;
   align-items: start;
   padding: 0;
+}
+
+.colonna-pick{
+  max-width: 620px;
+  width: 100%;
+}
+
+.lista-container{
+  width: 100%;
 }
 
 .panel{
