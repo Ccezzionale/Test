@@ -372,6 +372,7 @@ async function loadPickedPlayers() {
           is_fp,
           is_fp_keeper,
           fp_keeper_year,
+          is_rfa_matched,
           role,
           role_mantra,
           serie_a_team,
@@ -399,6 +400,7 @@ async function loadPickedPlayers() {
         is_fp: !!playerDetails.is_fp,
         is_fp_keeper: !!playerDetails.is_fp_keeper,
         fp_keeper_year: playerDetails.fp_keeper_year,
+        is_rfa_matched: !!playerDetails.is_rfa_matched,
         role: playerDetails.role,
         role_mantra: playerDetails.role_mantra,
         serie_a_team: playerDetails.serie_a_team,
@@ -424,6 +426,7 @@ async function loadPickedPlayers() {
       is_fp,
       is_fp_keeper,
       fp_keeper_year,
+      is_rfa_matched,
       owner_team_id,
       status,
       pool
@@ -465,7 +468,8 @@ async function loadPickedPlayers() {
     u21_keeper_year: player.u21_keeper_year,
     is_fp: !!player.is_fp,
     is_fp_keeper: !!player.is_fp_keeper,
-    fp_keeper_year: player.fp_keeper_year
+    fp_keeper_year: player.fp_keeper_year,
+    is_rfa_matched: !!player.is_rfa_matched
   }));
 }
 
@@ -612,7 +616,8 @@ if (showPlayerAssets()) {
     items: myPlayers,
     inputClass: "my-player-checkbox",
     getValue: player => player[CONFIG.PICKS_ID_COL],
-    getLabel: formatPlayerLabel
+    getLabel: formatPlayerLabel,
+    getBadgeHtml: renderTradeBadgeImages
   }));
 }
 
@@ -675,7 +680,8 @@ if (showPlayerAssets()) {
     items: theirPlayers,
     inputClass: "their-player-checkbox",
     getValue: player => player[CONFIG.PICKS_ID_COL],
-    getLabel: formatPlayerLabel
+    getLabel: formatPlayerLabel,
+    getBadgeHtml: renderTradeBadgeImages
   }));
 }
 
@@ -695,7 +701,7 @@ theirPicksBox.innerHTML = theirAssetGroups.join("");
   updateAssetSummaries();
 }
 
-function renderAssetGroup({ title, emptyText, items, inputClass, getValue, getLabel }) {
+function renderAssetGroup({ title, emptyText, items, inputClass, getValue, getLabel, getBadgeHtml }) {
   const list = items.length
     ? items.map(item => `
         <label class="pick-choice trade-asset-choice">
@@ -704,7 +710,10 @@ function renderAssetGroup({ title, emptyText, items, inputClass, getValue, getLa
             class="${inputClass}"
             value="${escapeHtml(getValue(item))}"
           />
-          ${escapeHtml(getLabel(item))}
+          <span class="trade-asset-label">
+            ${escapeHtml(getLabel(item))}
+            ${typeof getBadgeHtml === "function" ? getBadgeHtml(item) : ""}
+          </span>
         </label>
       `).join("")
     : `<p>${escapeHtml(emptyText)}</p>`;
@@ -721,6 +730,105 @@ function formatPickLabel(pick) {
   return `Pick ${pick[CONFIG.PICK_NUMBER_COL]}`;
 }
 
+function renderTradeBadgeImages(player) {
+  const badges = [];
+
+  if (player.is_fp_keeper === true) {
+    const isSecondYear = Number(player.fp_keeper_year) === 2;
+    badges.push(`
+      <img
+        class="badge-img badge-img-star trade-badge-img"
+        src="${isSecondYear ? "img/badges/fp-confermato.webp" : "img/badges/fp.webp"}"
+        alt="FP"
+        title="${isSecondYear ? "Franchise Player confermato 2° anno" : "Franchise Player confermato 1° anno"}"
+      >
+    `);
+  } else if (player.is_fp === true) {
+    badges.push(`
+      <img
+        class="badge-img badge-img-star trade-badge-img"
+        src="img/badges/fp.webp"
+        alt="FP"
+        title="Franchise Player"
+      >
+    `);
+  }
+
+  if (player.is_u21_keeper === true) {
+    const isSecondYear = Number(player.u21_keeper_year) === 2;
+    badges.push(`
+      <img
+        class="badge-img badge-img-star trade-badge-img"
+        src="${isSecondYear ? "img/badges/u21-confermato-secondo-anno.webp" : "img/badges/u21-confermato.webp"}"
+        alt="U21"
+        title="${isSecondYear ? "U21 confermato 2° anno" : "U21 confermato 1° anno"}"
+      >
+    `);
+  } else if (player.is_u21 === true) {
+    badges.push(`
+      <img
+        class="badge-img badge-img-pill trade-badge-img"
+        src="img/badges/u21.webp"
+        alt="U21"
+        title="Under 21"
+      >
+    `);
+  }
+
+  if (player.is_rfa_matched === true) {
+    badges.push(`
+      <img
+        class="badge-img badge-img-pill trade-badge-img"
+        src="img/badges/rfa.webp"
+        alt="RFA"
+        title="RFA pareggiato"
+      >
+    `);
+  }
+
+  return badges.join("");
+}
+
+function getTradeBadgeTokens(player) {
+  const tokens = [];
+
+  if (player.is_fp_keeper === true) {
+    tokens.push(Number(player.fp_keeper_year) === 2 ? "[FP2]" : "[FP]");
+  } else if (player.is_fp === true) {
+    tokens.push("[FP]");
+  }
+
+  if (player.is_u21_keeper === true) {
+    tokens.push(Number(player.u21_keeper_year) === 2 ? "[U21-2]" : "[U21]");
+  } else if (player.is_u21 === true) {
+    tokens.push("[U21]");
+  }
+
+  if (player.is_rfa_matched === true) {
+    tokens.push("[RFA]");
+  }
+
+  return tokens.length ? ` ${tokens.join(" ")}` : "";
+}
+
+function formatTradeAssetLabelHtml(label) {
+  let html = escapeHtml(label);
+
+  const replacements = {
+    "[FP2]": `<img class="badge-img badge-img-star trade-badge-img" src="img/badges/fp-confermato.webp" alt="FP" title="Franchise Player confermato 2° anno">`,
+    "[FP]": `<img class="badge-img badge-img-star trade-badge-img" src="img/badges/fp.webp" alt="FP" title="Franchise Player">`,
+    "[U21-2]": `<img class="badge-img badge-img-star trade-badge-img" src="img/badges/u21-confermato-secondo-anno.webp" alt="U21" title="U21 confermato 2° anno">`,
+    "[U21]": `<img class="badge-img badge-img-pill trade-badge-img" src="img/badges/u21.webp" alt="U21" title="Under 21">`,
+    "[RFA]": `<img class="badge-img badge-img-pill trade-badge-img" src="img/badges/rfa.webp" alt="RFA" title="RFA pareggiato">`
+  };
+
+  Object.entries(replacements).forEach(([token, imageHtml]) => {
+    html = html.replaceAll(escapeHtml(token), imageHtml);
+  });
+
+  return html;
+}
+
 function formatPlayerLabel(player) {
   const pickNumber = player[CONFIG.PICKS_PICK_NUMBER_COL];
   const playerName =
@@ -731,32 +839,17 @@ function formatPlayerLabel(player) {
 
   const role = player.role_mantra || player.role || "";
   const serieATeam = player.serie_a_team || "";
-
-  const badges = [];
-
-  if (player.is_fp_keeper === true) {
-    badges.push(Number(player.fp_keeper_year) === 2 ? "🌟" : "⭐");
-  } else if (player.is_fp === true) {
-    badges.push("⭐");
-  }
-
-  if (player.is_u21_keeper === true) {
-    badges.push(Number(player.u21_keeper_year) === 2 ? "🐥" : "🐣");
-  } else if (player.is_u21 === true) {
-    badges.push("U21");
-  }
-
-  const badgeText = badges.length ? ` ${badges.join(" ")}` : "";
+  const badgeTokens = getTradeBadgeTokens(player);
 
   if (isDraftPhase() && pickNumber) {
-    return `${playerName}${badgeText} (pick ${pickNumber})`;
+    return `${playerName}${badgeTokens} (pick ${pickNumber})`;
   }
 
   const details = [role, serieATeam].filter(Boolean).join(" · ");
 
   return details
-    ? `${playerName}${badgeText} (${details})`
-    : `${playerName}${badgeText}`;
+    ? `${playerName}${badgeTokens} (${details})`
+    : `${playerName}${badgeTokens}`;
 }
 
 function formatFuturePickLabel(pick) {
@@ -1301,12 +1394,12 @@ async function renderTrades(container, trades, mode) {
 
     const fromAssets = tradeAssets
       .filter(a => a.side === "from")
-      .map(a => `<li>${escapeHtml(a.asset_label)}</li>`)
+      .map(a => `<li>${formatTradeAssetLabelHtml(a.asset_label)}</li>`)
       .join("");
 
     const toAssets = tradeAssets
       .filter(a => a.side === "to")
-      .map(a => `<li>${escapeHtml(a.asset_label)}</li>`)
+      .map(a => `<li>${formatTradeAssetLabelHtml(a.asset_label)}</li>`)
       .join("");
 
     const tradeCuts = cutRows.filter(row => row.proposal_id === trade.id);
@@ -1527,7 +1620,7 @@ const cuttablePlayers = allPickedPlayers.filter(player => {
         class="cut-player-checkbox"
         value="${escapeHtml(player.player_id)}"
       />
-      ${escapeHtml(formatPlayerLabel(player))}
+      ${formatTradeAssetLabelHtml(formatPlayerLabel(player))}
     </label>
   `).join("");
 
