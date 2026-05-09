@@ -190,33 +190,33 @@ function renderPlayerBadges(g) {
 
   /*
     LOGICA BADGE:
-    - FP confermato 1° anno  -> img/badges/fp.png
-    - FP confermato 2° anno  -> img/badges/fp-confermato.png
-    - U21 normale            -> badge testuale giallo U21
-    - U21 confermato 1° anno -> img/badges/u21.png
-    - U21 confermato 2° anno -> img/badges/u21-confermato.png
-    - RFA pareggiato         -> badge testuale giallo RFA
+    - FP confermato 1° anno       -> img/badges/fp.webp
+    - FP confermato 2° anno       -> img/badges/fp-confermato.webp
+    - U21 normale                 -> img/badges/u21.webp
+    - U21 confermato 1° anno      -> img/badges/u21-confermato.webp
+    - U21 confermato 2° anno      -> img/badges/u21-confermato-secondo-anno.webp
+    - RFA pareggiato              -> badge testuale giallo RFA
   */
 
   if (g.fpKeeper) {
     const isSecondYear = Number(g.fpKeeperYear) === 2;
     const src = isSecondYear
-      ? "img/badges/fp-confermato.png"
-      : "img/badges/fp.png";
+      ? "img/badges/fp-confermato.webp"
+      : "img/badges/fp.webp";
 
     badges.push(`
       <img
-        class="badge-img"
+        class="badge-img badge-img-star"
         src="${src}"
         alt="FP"
-        title="${isSecondYear ? "Franchise Player confermato 2° anno" : "Franchise Player 1° anno"}"
+        title="${isSecondYear ? "Franchise Player confermato 2° anno" : "Franchise Player confermato 1° anno"}"
       >
     `);
   } else if (g.fp) {
     badges.push(`
       <img
-        class="badge-img"
-        src="img/badges/fp.png"
+        class="badge-img badge-img-star"
+        src="img/badges/fp.webp"
         alt="FP"
         title="Franchise Player"
       >
@@ -226,20 +226,25 @@ function renderPlayerBadges(g) {
   if (g.u21Keeper) {
     const isSecondYear = Number(g.u21KeeperYear) === 2;
     const src = isSecondYear
-      ? "img/badges/u21-confermato.png"
-      : "img/badges/u21.png";
+      ? "img/badges/u21-confermato-secondo-anno.webp"
+      : "img/badges/u21-confermato.webp";
 
     badges.push(`
       <img
-        class="badge-img"
+        class="badge-img badge-img-star"
         src="${src}"
-        alt="U21 confermato"
+        alt="U21"
         title="${isSecondYear ? "U21 confermato 2° anno" : "U21 confermato 1° anno"}"
       >
     `);
   } else if (g.u21) {
     badges.push(`
-      <span class="badge-u21 badge-u21-normal" title="Under 21">U21</span>
+      <img
+        class="badge-img badge-img-pill"
+        src="img/badges/u21.webp"
+        alt="U21"
+        title="Under 21"
+      >
     `);
   }
 
