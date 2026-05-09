@@ -373,18 +373,21 @@
       });
     }
   </script>
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const splash = document.getElementById("appSplash");
 
-  <script>
-    window.addEventListener("load", () => {
-      const splash = document.getElementById("appSplash");
+    if (!splash) return;
 
-      if (!splash) return;
+    setTimeout(() => {
+      splash.classList.add("hidden");
 
       setTimeout(() => {
-        splash.classList.add("hidden");
-      }, 1200);
-    });
-  </script>
+        splash.remove();
+      }, 700);
+    }, 1200);
+  });
+</script>
 
   <script type="module" src="home_auth.js"></script>
   <script src="navbar.js"></script>
