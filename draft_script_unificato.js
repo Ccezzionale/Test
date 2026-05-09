@@ -1588,25 +1588,68 @@ function filtraLista() {
   const squadra = filtroSerieA.value.toLowerCase();
   const cerca = searchInput.value.toLowerCase();
 
+  const filtroU21 = document.getElementById("filtroU21");
+  const u21Value = filtroU21 ? filtroU21.value : "";
+
   Array.from(listaGiocatori.children).forEach(row => {
-    const nome = row.children[0].textContent.toLowerCase();
-    const r = row.children[1].textContent.toLowerCase();
-    const s = row.children[2].textContent.toLowerCase();
-    const ruoliGiocatore = r.split(/[,;\s]+/).map(part => part.trim());
-    const key = normalize(nome);
+    const nome = row.children[0]?.textContent.toLowerCase() || "";
+    const r = row.children[1]?.textContent.toLowerCase() || "";
+    const s = row.children[2]?.textContent.toLowerCase() || "";
+    const badgeCell = row.children[4];
 
+    const ruoliGiocatore = r
+      .split(/[,;\s]+/)
+      .map(part => part.trim())
+      .filter(Boolean);
 
-    const matchInput = !ruoloTesto || ruoliGiocatore.some(part => part.includes(ruoloTesto));
-    const matchSelect = !ruoloSelect.length || ruoloSelect.some(rs => ruoliGiocatore.includes(rs));
+    const hasU21 = Boolean(
+      badgeCell?.querySelector('img[src*="u21"]') ||
+      badgeCell?.textContent.toLowerCase().includes("u21")
+    );
+
+    const matchInput =
+      !ruoloTesto ||
+      ruoliGiocatore.some(part => part.includes(ruoloTesto));
+
+    const matchSelect =
+      !ruoloSelect.length ||
+      ruoloSelect.some(rs => ruoliGiocatore.includes(rs));
+
     const matchSquadra = !squadra || s === squadra;
     const matchNome = !cerca || nome.includes(cerca);
 
-   row.style.display = (matchInput && matchSelect && matchSquadra && matchNome) ? "" : "none";
+    let matchU21 = true;
+
+    if (u21Value === "u21") {
+      matchU21 = hasU21;
+    }
+
+    if (u21Value === "non-u21") {
+      matchU21 = !hasU21;
+    }
+
+    row.style.display =
+      matchInput &&
+      matchSelect &&
+      matchSquadra &&
+      matchNome &&
+      matchU21
+        ? ""
+        : "none";
   });
 }
 
-[filtroRuolo, filtroSerieA, searchInput, cercaRuolo].forEach(el => {
-  if (el) el.addEventListener("input", debounce(filtraLista, 150));
+[
+  filtroRuolo,
+  filtroSerieA,
+  searchInput,
+  cercaRuolo,
+  document.getElementById("filtroU21")
+].forEach(el => {
+  if (el) {
+    el.addEventListener("input", debounce(filtraLista, 150));
+    el.addEventListener("change", debounce(filtraLista, 150));
+  }
 });
 
 window.addEventListener("DOMContentLoaded", async function () {
