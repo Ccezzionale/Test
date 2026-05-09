@@ -1496,16 +1496,31 @@ Object.values(mappaGiocatori).forEach((player) => {
   if (ruolo) ruoliTrovati.add(ruolo);
   if (squadra) squadreTrovate.add(squadra);
 
-  const tr = document.createElement("tr");
-  tr.dataset.playerId = id;
+const tr = document.createElement("tr");
+tr.dataset.playerId = id;
 
-  tr.innerHTML = `
-    <td>${escapeHtml(nome)}</td>
-    <td>${escapeHtml(ruolo || "")}</td>
-    <td>${escapeHtml(squadra || "")}</td>
-    <td>${parseInt(quotazione) || 0}</td>
-    <td>${badges}</td>
-  `;
+/* Valori nascosti per ordinare correttamente la colonna badge */
+if (player.is_fp_keeper) {
+  tr.dataset.badgeSort = Number(player.fp_keeper_year) === 2 ? "1-fp2" : "2-fp1";
+} else if (player.is_fp) {
+  tr.dataset.badgeSort = "3-fp";
+} else if (player.is_u21_keeper) {
+  tr.dataset.badgeSort = Number(player.u21_keeper_year) === 2 ? "4-u21-2" : "5-u21-1";
+} else if (player.is_u21) {
+  tr.dataset.badgeSort = "6-u21";
+} else if (player.is_rfa_matched) {
+  tr.dataset.badgeSort = "7-rfa";
+} else {
+  tr.dataset.badgeSort = "9-none";
+}
+
+tr.innerHTML = `
+  <td>${escapeHtml(nome)}</td>
+  <td>${escapeHtml(ruolo || "")}</td>
+  <td>${escapeHtml(squadra || "")}</td>
+  <td>${parseInt(quotazione) || 0}</td>
+  <td>${badges}</td>
+`;
 
   frag.appendChild(tr);
 });
@@ -1897,8 +1912,13 @@ function ordinaLista(colonnaIndex, numerico = false) {
   });
 
   righe.sort((a, b) => {
-    const aText = a.children[colonnaIndex]?.textContent.trim();
-    const bText = b.children[colonnaIndex]?.textContent.trim();
+   const aText = colonnaIndex === 4
+  ? (a.dataset.badgeSort || "9-none")
+  : (a.children[colonnaIndex]?.textContent.trim() || "");
+
+const bText = colonnaIndex === 4
+  ? (b.dataset.badgeSort || "9-none")
+  : (b.children[colonnaIndex]?.textContent.trim() || "");
 
     if (numerico) {
       const aNum = parseFloat(aText) || 0;
