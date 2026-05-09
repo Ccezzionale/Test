@@ -1,11 +1,10 @@
 {
   "name": "Lega degli Eroi",
   "short_name": "Lega Eroi",
-  "start_url": "/Test/",
-  "scope": "/Test/",
+  "start_url": "./index.html",
   "display": "standalone",
-  "background_color": "#001f3f",
-  "theme_color": "#001f3f",
+  "background_color": "#061326",
+  "theme_color": "#061326",
   "icons": [
     {
       "src": "icon-192.png",
