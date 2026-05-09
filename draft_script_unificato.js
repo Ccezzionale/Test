@@ -1391,23 +1391,24 @@ function renderDraftBadgeImages(player) {
   const badges = [];
 
   if (player.is_fp_keeper) {
-    const src = Number(player.fp_keeper_year) === 2
-      ? "img/badges/fp-confermato.png"
-      : "img/badges/fp.png";
+    const isSecondYear = Number(player.fp_keeper_year) === 2;
+    const src = isSecondYear
+      ? "img/badges/fp-confermato.webp"
+      : "img/badges/fp.webp";
 
     badges.push(`
       <img
-        class="badge-img small"
+        class="badge-img badge-img-star"
         src="${src}"
         alt="FP"
-        title="${Number(player.fp_keeper_year) === 2 ? "Franchise Player confermato 2° anno" : "Franchise Player 1° anno"}"
+        title="${isSecondYear ? "Franchise Player confermato 2° anno" : "Franchise Player confermato 1° anno"}"
       >
     `);
   } else if (player.is_fp) {
     badges.push(`
       <img
-        class="badge-img small"
-        src="img/badges/fp.png"
+        class="badge-img badge-img-star"
+        src="img/badges/fp.webp"
         alt="FP"
         title="Franchise Player"
       >
@@ -1415,24 +1416,39 @@ function renderDraftBadgeImages(player) {
   }
 
   if (player.is_u21_keeper) {
-    const src = Number(player.u21_keeper_year) === 2
-      ? "img/badges/u21-confermato.png"
-      : "img/badges/u21.png";
+    const isSecondYear = Number(player.u21_keeper_year) === 2;
+    const src = isSecondYear
+      ? "img/badges/u21-confermato-secondo-anno.webp"
+      : "img/badges/u21-confermato.webp";
 
     badges.push(`
       <img
-        class="badge-img small"
+        class="badge-img badge-img-star"
         src="${src}"
-        alt="U21 confermato"
-        title="${Number(player.u21_keeper_year) === 2 ? "U21 confermato 2° anno" : "U21 confermato 1° anno"}"
+        alt="U21"
+        title="${isSecondYear ? "U21 confermato 2° anno" : "U21 confermato 1° anno"}"
       >
     `);
   } else if (player.is_u21) {
-    badges.push(`<span class="badge-u21-normal" title="Under 21">U21</span>`);
+    badges.push(`
+      <img
+        class="badge-img badge-img-pill"
+        src="img/badges/u21.webp"
+        alt="U21"
+        title="Under 21"
+      >
+    `);
   }
 
   if (player.is_rfa_matched) {
-    badges.push(`<span class="badge-rfa" title="RFA pareggiato">RFA</span>`);
+    badges.push(`
+      <img
+        class="badge-img badge-img-pill"
+        src="img/badges/rfa.webp"
+        alt="RFA"
+        title="RFA pareggiato"
+      >
+    `);
   }
 
   return badges.join("");
