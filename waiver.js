@@ -33,6 +33,9 @@ const waiverOrderAdminEl = document.getElementById("waiverOrderAdmin");
 
 const searchInput = document.getElementById("searchInput");
 const freeAgentsTableBody = document.querySelector("#freeAgentsTable tbody");
+const roleFilter = document.getElementById("roleFilter");
+const serieATeamFilter = document.getElementById("serieATeamFilter");
+const u21Filter = document.getElementById("u21Filter");
 
 const activePhaseSelect = document.getElementById("activePhaseSelect");
 const activeWeekInput = document.getElementById("activeWeekInput");
@@ -130,6 +133,38 @@ function getGeneratedSlots() {
   }
 
   return ["1", "2"];
+}
+
+function populateFreeAgentsFilters() {
+  if (!roleFilter || !serieATeamFilter) return;
+
+  const currentRole = roleFilter.value;
+  const currentTeam = serieATeamFilter.value;
+
+  const roles = [...new Set(
+    freeAgents
+      .map(player => player.role)
+      .filter(Boolean)
+  )].sort((a, b) => a.localeCompare(b));
+
+  const serieATeams = [...new Set(
+    freeAgents
+      .map(player => player.serieATeam)
+      .filter(Boolean)
+  )].sort((a, b) => a.localeCompare(b));
+
+  roleFilter.innerHTML = `
+    <option value="">Tutti i ruoli</option>
+    ${roles.map(role => `<option value="${role}">${role}</option>`).join("")}
+  `;
+
+  serieATeamFilter.innerHTML = `
+    <option value="">Tutte le squadre</option>
+    ${serieATeams.map(team => `<option value="${team}">${team}</option>`).join("")}
+  `;
+
+  roleFilter.value = currentRole;
+  serieATeamFilter.value = currentTeam;
 }
 
 function getSlotTimes(slot) {
@@ -1988,9 +2023,10 @@ async function loadFreeAgents() {
 
       if (error) throw error;
 
-      freeAgents = (data || []).map(mapPlayerRow);
-      renderFreeAgents();
-      return;
+freeAgents = (data || []).map(mapPlayerRow);
+populateFreeAgentsFilters();
+renderFreeAgents();
+return;
     }
 
 // ROUND ROBIN / PLAYOFF:
@@ -2009,7 +2045,7 @@ const { data, error } = await supabase
 if (error) throw error;
 
 freeAgents = (data || []).map(mapPlayerRow);
-
+populateFreeAgentsFilters();
 renderFreeAgents();
 
   } catch (err) {
@@ -2029,12 +2065,33 @@ function renderFreeAgents() {
   if (!freeAgentsTableBody) return;
 
   const query = (searchInput?.value || "").toLowerCase().trim();
+  const selectedRole = (roleFilter?.value || "").toLowerCase().trim();
+  const selectedSerieATeam = (serieATeamFilter?.value || "").toLowerCase().trim();
+  const selectedU21 = u21Filter?.value || "";
 
   const filtered = freeAgents.filter(player => {
-    const blob = `${player.name} ${player.role} ${player.serieATeam} ${player.quotation}`
-      .toLowerCase();
+    const name = String(player.name || "").toLowerCase();
+    const role = String(player.role || "").toLowerCase();
+    const serieATeam = String(player.serieATeam || "").toLowerCase();
+    const quotation = String(player.quotation || "").toLowerCase();
 
-    return blob.includes(query);
+    const blob = `${name} ${role} ${serieATeam} ${quotation}`;
+
+    const matchSearch = !query || blob.includes(query);
+    const matchRole = !selectedRole || role === selectedRole;
+    const matchSerieATeam = !selectedSerieATeam || serieATeam === selectedSerieATeam;
+
+    let matchU21 = true;
+
+    if (selectedU21 === "u21") {
+      matchU21 = player.is_u21 === true;
+    }
+
+    if (selectedU21 === "non-u21") {
+      matchU21 = player.is_u21 !== true;
+    }
+
+    return matchSearch && matchRole && matchSerieATeam && matchU21;
   });
 
   freeAgentsTableBody.innerHTML = "";
@@ -2042,25 +2099,27 @@ function renderFreeAgents() {
   filtered.forEach(player => {
     const tr = document.createElement("tr");
 
-const poolBadge =
-  player.pool === "conference_league"
-    ? "🟨"
-    : player.pool === "conference_championship"
-      ? "🟦"
-      : "";
+    const poolBadge =
+      player.pool === "conference_league"
+        ? "🟨"
+        : player.pool === "conference_championship"
+          ? "🟦"
+          : "";
 
-const badges = [
-  poolBadge,
-  player.is_u21 ? "🟢 U21" : "",
-  player.is_fp ? "⭐ FP" : ""
-].filter(Boolean).join(" ");
+    const fpBadge = player.is_fp ? "⭐ FP" : "";
 
-tr.innerHTML = `
-  <td>${player.name} ${badges ? `<span class="player-badges">${badges}</span>` : ""}</td>
-  <td>${player.role}</td>
-  <td>${player.serieATeam}</td>
-  <td>${player.quotation}</td>
-`;
+    tr.innerHTML = `
+      <td>
+        ${player.name}
+        ${poolBadge || fpBadge ? `<span class="player-badges">${poolBadge} ${fpBadge}</span>` : ""}
+      </td>
+      <td>${player.role}</td>
+      <td>${player.serieATeam}</td>
+      <td>${player.quotation}</td>
+      <td class="u21-cell">
+        ${player.is_u21 ? `<span class="u21-table-badge">U21</span>` : ""}
+      </td>
+    `;
 
     tr.addEventListener("click", () => {
       fillActiveCallWithPlayer({
@@ -2733,10 +2792,10 @@ calculateCompensatoryBtn?.addEventListener("click", () => {
   calculateCompensatoryResults();
 });
 
-searchInput?.addEventListener("input", () => {
-  renderFreeAgents();
+[searchInput, roleFilter, serieATeamFilter, u21Filter].forEach(el => {
+  el?.addEventListener("input", renderFreeAgents);
+  el?.addEventListener("change", renderFreeAgents);
 });
-
 setStandardFridayBtn?.addEventListener("click", () => {
   fillStandardFridaySettings();
 });
