@@ -7,119 +7,143 @@
 
   <link rel="stylesheet" href="navbar.css">
 
+  <!-- PWA -->
   <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#0b3d91">
+
+  <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+  <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
+
+  <meta name="theme-color" content="#061326">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Lega Eroi">
 
   <style>
-    *{
-      box-sizing:border-box;
+    * {
+      box-sizing: border-box;
     }
 
-    html, body{
-      margin:0;
-      padding:0;
-      overflow-x:hidden;
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+      overflow-x: hidden;
     }
 
-    body{
-      font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      color:#222;
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      color: #222;
       background:
-        radial-gradient(900px 500px at 15% 0%, rgba(0,116,217,.25), transparent 60%),
-        radial-gradient(900px 500px at 85% 15%, rgba(255,204,0,.10), transparent 55%),
+        radial-gradient(900px 500px at 15% 0%, rgba(0, 116, 217, .25), transparent 60%),
+        radial-gradient(900px 500px at 85% 15%, rgba(255, 204, 0, .10), transparent 55%),
         #001f3f;
     }
 
-    a{
-      text-decoration:none;
+    a {
+      text-decoration: none;
     }
 
-    .home-wrap{
-      overflow-x:hidden;
-      max-width:1200px;
-      margin:0 auto;
-      padding:20px 16px 30px;
-      background:transparent;
-    }
-
+    /* SPLASH SCREEN */
     .app-splash {
-  position: fixed;
-  inset: 0;
-  z-index: 99999;
-  background: radial-gradient(circle at top, #123a66 0%, #061326 45%, #020812 100%);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: opacity 0.6s ease, visibility 0.6s ease;
-}
+      position: fixed;
+      inset: 0;
+      z-index: 99999;
+      background: radial-gradient(circle at top, #123a66 0%, #061326 45%, #020812 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: opacity 0.6s ease, visibility 0.6s ease;
+    }
 
-.app-splash.hidden {
-  opacity: 0;
-  visibility: hidden;
-}
+    .app-splash.hidden {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
 
-.splash-content {
-  text-align: center;
-  animation: splashZoom 0.9s ease forwards;
-}
+    .splash-content {
+      text-align: center;
+      animation: splashZoom 0.9s ease forwards;
+      padding: 20px;
+    }
 
-.splash-logo {
-  width: 180px;
-  height: 180px;
-  object-fit: contain;
-  border-radius: 32px;
-  box-shadow: 0 18px 45px rgba(0, 0, 0, 0.45);
-}
+    .splash-logo {
+      width: 180px;
+      height: 180px;
+      object-fit: contain;
+      border-radius: 32px;
+      box-shadow: 0 18px 45px rgba(0, 0, 0, 0.45);
+    }
 
-.splash-content h1 {
-  margin-top: 18px;
-  color: #f5c85b;
-  font-size: 1.8rem;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  font-weight: 800;
-}
+    .splash-content h1 {
+      margin: 18px 0 0;
+      color: #f5c85b;
+      font-size: 1.8rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      font-weight: 800;
+    }
 
-@keyframes splashZoom {
-  from {
-    opacity: 0;
-    transform: scale(0.92);
-  }
+    @keyframes splashZoom {
+      from {
+        opacity: 0;
+        transform: scale(0.92);
+      }
 
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
-}
-
-    @media (min-width:1200px){
-      .home-wrap{
-        max-width:none;
-        width:100%;
-        margin:0;
-        padding:20px 12px 30px;
+      to {
+        opacity: 1;
+        transform: scale(1);
       }
     }
 
-    .gazzetta-frame{
-      width:100%;
-      max-width:100%;
-      border:0;
-      border-radius:14px;
-      background:transparent;
-      box-shadow:none;
-      overflow:hidden;
-      display:block;
+    .home-wrap {
+      overflow-x: hidden;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px 16px 30px;
+      background: transparent;
     }
 
-    @media (max-width:900px){
-      .home-wrap{
-        padding:14px 10px 20px;
+    @media (min-width: 1200px) {
+      .home-wrap {
+        max-width: none;
+        width: 100%;
+        margin: 0;
+        padding: 20px 12px 30px;
+      }
+    }
+
+    .gazzetta-frame {
+      width: 100%;
+      max-width: 100%;
+      border: 0;
+      border-radius: 14px;
+      background: transparent;
+      box-shadow: none;
+      overflow: hidden;
+      display: block;
+    }
+
+    @media (max-width: 900px) {
+      .home-wrap {
+        padding: 14px 10px 20px;
       }
 
-      .gazzetta-frame{
-        height:88vh;
-        border-radius:12px;
+      .gazzetta-frame {
+        height: 88vh;
+        border-radius: 12px;
+      }
+
+      .splash-logo {
+        width: 150px;
+        height: 150px;
+        border-radius: 28px;
+      }
+
+      .splash-content h1 {
+        font-size: 1.35rem;
+        letter-spacing: 0.10em;
       }
     }
   </style>
@@ -127,16 +151,19 @@
 
 <body>
 
+  <!-- Splash personalizzata -->
   <div id="appSplash" class="app-splash">
-  <div class="splash-content">
-    <img src="icon-512.png" alt="Lega degli Eroi" class="splash-logo">
-    <h1>Lega degli Eroi</h1>
+    <div class="splash-content">
+      <img src="icon-512.png" alt="Lega degli Eroi" class="splash-logo">
+      <h1>Lega degli Eroi</h1>
+    </div>
   </div>
-</div>
+
   <nav class="site-nav">
     <div class="nav-inner">
       <div class="nav-left">
         <span id="hamburger" class="hamburger" aria-label="Apri menu">☰</span>
+
         <a href="index.html" class="brand-home" aria-label="Home">
           <img src="icons/nav/home.webp" alt="" class="nav-home-icon">
         </a>
@@ -149,11 +176,35 @@
           <a href="#" class="toggle-submenu">
             Draft <span class="caret">▾</span>
           </a>
+
           <ul class="submenu">
-            <li><a href="pre-draft.html"><img src="icons/nav/pre-draft.webp" class="menu-icon" alt="">Pre-Draft</a></li>
-            <li><a href="draft_championship.html"><img src="icons/nav/conf-championship.webp" class="menu-icon" alt="">Conf. Championship</a></li>
-            <li><a href="draft_conference.html"><img src="icons/nav/conf-league.webp" class="menu-icon" alt="">Conf. League</a></li>
-            <li><a href="dinamico-draft.html"><img src="icons/nav/draft-2026.webp" class="menu-icon" alt="">Draft 2027</a></li>
+            <li>
+              <a href="pre-draft.html">
+                <img src="icons/nav/pre-draft.webp" class="menu-icon" alt="">
+                Pre-Draft
+              </a>
+            </li>
+
+            <li>
+              <a href="draft_championship.html">
+                <img src="icons/nav/conf-championship.webp" class="menu-icon" alt="">
+                Conf. Championship
+              </a>
+            </li>
+
+            <li>
+              <a href="draft_conference.html">
+                <img src="icons/nav/conf-league.webp" class="menu-icon" alt="">
+                Conf. League
+              </a>
+            </li>
+
+            <li>
+              <a href="dinamico-draft.html">
+                <img src="icons/nav/draft-2026.webp" class="menu-icon" alt="">
+                Draft 2027
+              </a>
+            </li>
           </ul>
         </li>
 
@@ -161,27 +212,80 @@
           <a href="#" class="toggle-submenu">
             Competizioni <span class="caret">▾</span>
           </a>
+
           <ul class="submenu">
-            <li><a href="classifica.html"><img src="icons/nav/classifiche.webp" class="menu-icon" alt="">Classifiche</a></li>
-            <li><a href="playoff.html"><img src="icons/nav/playoff.webp" class="menu-icon" alt="">Playoff</a></li>
-            <li><a href="arena.html"><img src="icons/nav/highlander.webp" class="menu-icon" alt="">Highlander</a></li>
-            <li><a href="crashoutcup.html"><img src="icons/nav/crashout-cup.webp" class="menu-icon" alt="">Crash Out Cup</a></li>
-            <li><a href="crashoutplayoff.html"><img src="icons/nav/crashout-playoff.webp" class="menu-icon" alt="">Crash Out Cup - Playoff</a></li>
-            <li><a href="supercoppa.html"><img src="icons/nav/supercoppa.webp" class="menu-icon" alt="">Supercoppa</a></li>
-            <li><a href="statistiche.html"><img src="icons/nav/statistiche.webp" class="menu-icon" alt="">Statistiche</a></li>
+            <li>
+              <a href="classifica.html">
+                <img src="icons/nav/classifiche.webp" class="menu-icon" alt="">
+                Classifiche
+              </a>
+            </li>
+
+            <li>
+              <a href="playoff.html">
+                <img src="icons/nav/playoff.webp" class="menu-icon" alt="">
+                Playoff
+              </a>
+            </li>
+
+            <li>
+              <a href="arena.html">
+                <img src="icons/nav/highlander.webp" class="menu-icon" alt="">
+                Highlander
+              </a>
+            </li>
+
+            <li>
+              <a href="crashoutcup.html">
+                <img src="icons/nav/crashout-cup.webp" class="menu-icon" alt="">
+                Crash Out Cup
+              </a>
+            </li>
+
+            <li>
+              <a href="crashoutplayoff.html">
+                <img src="icons/nav/crashout-playoff.webp" class="menu-icon" alt="">
+                Crash Out Cup - Playoff
+              </a>
+            </li>
+
+            <li>
+              <a href="supercoppa.html">
+                <img src="icons/nav/supercoppa.webp" class="menu-icon" alt="">
+                Supercoppa
+              </a>
+            </li>
+
+            <li>
+              <a href="statistiche.html">
+                <img src="icons/nav/statistiche.webp" class="menu-icon" alt="">
+                Statistiche
+              </a>
+            </li>
           </ul>
         </li>
 
-      
         <li><a href="waiver.html">Waiver Wire</a></li>
 
         <li class="dropdown">
           <a href="#" class="toggle-submenu">
             Hall of Fame <span class="caret">▾</span>
           </a>
+
           <ul class="submenu">
-            <li><a href="medagliere.html"><img src="icons/nav/albo-oro.webp" class="menu-icon" alt="">Albo d'Oro</a></li>
-            <li><a href="albo.html"><img src="icons/nav/medagliere.webp" class="menu-icon" alt="">Medagliere</a></li>
+            <li>
+              <a href="medagliere.html">
+                <img src="icons/nav/albo-oro.webp" class="menu-icon" alt="">
+                Albo d'Oro
+              </a>
+            </li>
+
+            <li>
+              <a href="albo.html">
+                <img src="icons/nav/medagliere.webp" class="menu-icon" alt="">
+                Medagliere
+              </a>
+            </li>
           </ul>
         </li>
 
@@ -223,18 +327,19 @@
   </main>
 
   <script>
-    function resizeGazzetta(){
+    function resizeGazzetta() {
       const iframe = document.getElementById("gazzettaFrame");
       if (!iframe) return;
 
-      try{
+      try {
         const doc = iframe.contentDocument || iframe.contentWindow.document;
         const h = Math.max(
           doc.body.scrollHeight,
           doc.documentElement.scrollHeight
         );
+
         iframe.style.height = (h + 20) + "px";
-      }catch(e){
+      } catch (e) {
         console.warn("Impossibile auto-resize iframe:", e);
       }
     }
@@ -267,6 +372,18 @@
           });
       });
     }
+  </script>
+
+  <script>
+    window.addEventListener("load", () => {
+      const splash = document.getElementById("appSplash");
+
+      if (!splash) return;
+
+      setTimeout(() => {
+        splash.classList.add("hidden");
+      }, 1200);
+    });
   </script>
 
   <script type="module" src="home_auth.js"></script>
