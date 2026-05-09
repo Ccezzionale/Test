@@ -1040,3 +1040,12 @@ button:disabled {
     grid-template-columns: 1fr;
   }
 }
+
+#freeAgentsTable thead th[data-sort] {
+  cursor: pointer;
+  user-select: none;
+}
+
+#freeAgentsTable thead th[data-sort]:hover {
+  background: #073763;
+}
