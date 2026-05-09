@@ -248,11 +248,16 @@ function renderPlayerBadges(g) {
     `);
   }
 
-  if (g.rfaMatched) {
-    badges.push(`
-      <span class="badge-rfa" title="RFA pareggiato">RFA</span>
-    `);
-  }
+if (g.rfaMatched) {
+  badges.push(`
+    <img
+      class="badge-img badge-img-pill"
+      src="img/badges/rfa.webp"
+      alt="RFA"
+      title="RFA pareggiato"
+    >
+  `);
+}
 
   return badges.join("");
 }
