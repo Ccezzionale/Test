@@ -72,6 +72,8 @@ let myOrderRows = [];
 let mySavedCalls = [];
 let freeAgents = [];
 let myOwnedPlayers = [];
+let freeAgentsSortKey = "name";
+let freeAgentsSortDirection = "asc";
 
 let activeWaiverOrderId = null;
 let draggedAdminOrderId = null;
@@ -2061,6 +2063,73 @@ renderFreeAgents();
   }
 }
 
+function sortFreeAgentsList(players) {
+  return [...players].sort((a, b) => {
+    let aValue = a[freeAgentsSortKey];
+    let bValue = b[freeAgentsSortKey];
+
+    if (freeAgentsSortKey === "quotation") {
+      aValue = Number(aValue) || 0;
+      bValue = Number(bValue) || 0;
+
+      return freeAgentsSortDirection === "asc"
+        ? aValue - bValue
+        : bValue - aValue;
+    }
+
+    if (freeAgentsSortKey === "is_u21") {
+      aValue = a.is_u21 ? 1 : 0;
+      bValue = b.is_u21 ? 1 : 0;
+
+      return freeAgentsSortDirection === "asc"
+        ? bValue - aValue
+        : aValue - bValue;
+    }
+
+    aValue = String(aValue || "").toLowerCase();
+    bValue = String(bValue || "").toLowerCase();
+
+    return freeAgentsSortDirection === "asc"
+      ? aValue.localeCompare(bValue)
+      : bValue.localeCompare(aValue);
+  });
+}
+
+function updateFreeAgentsSortArrows() {
+  document.querySelectorAll("#freeAgentsTable thead th[data-sort]").forEach(th => {
+    const baseLabel = th.dataset.label || th.textContent.replace(/[↑↓]/g, "").trim();
+    th.dataset.label = baseLabel;
+
+    if (th.dataset.sort === freeAgentsSortKey) {
+      th.textContent = `${baseLabel} ${freeAgentsSortDirection === "asc" ? "↑" : "↓"}`;
+    } else {
+      th.textContent = baseLabel;
+    }
+  });
+}
+
+function setupFreeAgentsSorting() {
+  document.querySelectorAll("#freeAgentsTable thead th[data-sort]").forEach(th => {
+    th.style.cursor = "pointer";
+
+    th.addEventListener("click", () => {
+      const sortKey = th.dataset.sort;
+
+      if (freeAgentsSortKey === sortKey) {
+        freeAgentsSortDirection = freeAgentsSortDirection === "asc" ? "desc" : "asc";
+      } else {
+        freeAgentsSortKey = sortKey;
+        freeAgentsSortDirection = "asc";
+      }
+
+      updateFreeAgentsSortArrows();
+      renderFreeAgents();
+    });
+  });
+
+  updateFreeAgentsSortArrows();
+}
+
 function renderFreeAgents() {
   if (!freeAgentsTableBody) return;
 
@@ -2094,9 +2163,10 @@ function renderFreeAgents() {
     return matchSearch && matchRole && matchSerieATeam && matchU21;
   });
 
-  freeAgentsTableBody.innerHTML = "";
+   const sortedFiltered = sortFreeAgentsList(filtered);
 
-  filtered.forEach(player => {
+  freeAgentsTableBody.innerHTML = "";
+sortedFiltered.forEach(player => {
     const tr = document.createElement("tr");
 
     const poolBadge =
@@ -2807,5 +2877,6 @@ setPlayoffFridayBtn?.addEventListener("click", () => {
 saveWaiverSettingsBtn?.addEventListener("click", () => {
   saveWaiverSettings();
 });
+setupFreeAgentsSorting();
 
 initWaiverRoom();
