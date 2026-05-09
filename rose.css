@@ -318,11 +318,6 @@ tbody tr:last-child {
   height: 22px;
 }
 
-.badge-img.small {
-  width: 24px;
-  height: 24px;
-}
-
 .badge-rfa {
   display: inline-flex;
   align-items: center;
