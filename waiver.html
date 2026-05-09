@@ -169,16 +169,34 @@
             <span class="table-hint">Scroll verticale</span>
           </div>
 
-          <input type="text" id="searchInput" placeholder="Cerca giocatore..." />
+          <div class="free-agents-filters">
+  <input type="text" id="searchInput" placeholder="Cerca giocatore..." />
+
+  <select id="roleFilter">
+    <option value="">Tutti i ruoli</option>
+  </select>
+
+  <select id="serieATeamFilter">
+    <option value="">Tutte le squadre</option>
+  </select>
+
+  <select id="u21Filter">
+    <option value="">Tutti</option>
+    <option value="u21">Solo U21</option>
+    <option value="non-u21">No U21</option>
+  </select>
+</div>
 
           <div class="free-agents-table-wrap">
             <table id="freeAgentsTable">
               <thead>
                 <tr>
-                  <th>Giocatore</th>
-                  <th>Ruolo</th>
-                  <th>Squadra</th>
-                  <th>Quotazione</th>
+  <th>Giocatore</th>
+  <th>Ruolo</th>
+  <th>Squadra</th>
+  <th>Quotazione</th>
+  <th>U21</th>
+</tr>
                 </tr>
               </thead>
               <tbody></tbody>
