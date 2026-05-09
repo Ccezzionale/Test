@@ -997,3 +997,46 @@ button:disabled {
     max-height: 420px;
   }
 }
+
+.free-agents-filters {
+  display: grid;
+  grid-template-columns: 1.4fr 0.8fr 1fr 0.7fr;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.u21-cell {
+  text-align: center;
+  white-space: nowrap;
+}
+
+.u21-table-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 34px;
+  height: 22px;
+  padding: 0 8px;
+  border-radius: 999px;
+  background: #ffcc00;
+  color: #111;
+  border: 1px solid #d7aa00;
+  font-size: 0.76rem;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.player-badges {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: 6px;
+  font-size: 0.8rem;
+  white-space: nowrap;
+}
+
+@media (max-width: 820px) {
+  .free-agents-filters {
+    grid-template-columns: 1fr;
+  }
+}
