@@ -747,7 +747,30 @@ async function aggiornaBottoneNotifiche() {
   const notifBtn = document.getElementById("attiva-notifiche-btn");
   if (!notifBtn) return;
 
-  if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
+  function setNotificationButtonLabel(text, attive) {
+    notifBtn.dataset.attive = attive ? "true" : "false";
+
+    let icon = notifBtn.querySelector(".action-icon");
+    let label = notifBtn.querySelector(".btn-label");
+
+    if (!icon) {
+      icon = document.createElement("img");
+      icon.src = "icons/nav/notifications.webp";
+      icon.alt = "";
+      icon.className = "action-icon";
+      notifBtn.prepend(icon);
+    }
+
+    if (!label) {
+      label = document.createElement("span");
+      label.className = "btn-label";
+      notifBtn.appendChild(label);
+    }
+
+    label.textContent = text;
+  }
+
+  if (!("serviceWorker" in navigator) || !("PushManager" in window)) {
     notifBtn.style.display = "none";
     return;
   }
@@ -757,16 +780,13 @@ async function aggiornaBottoneNotifiche() {
     const subscription = await registration.pushManager.getSubscription();
 
     if (subscription) {
-      notifBtn.textContent = "Disattiva notifiche";
-      notifBtn.dataset.attive = "true";
+      setNotificationButtonLabel("Disattiva notifiche", true);
     } else {
-      notifBtn.textContent = "Attiva notifiche";
-      notifBtn.dataset.attive = "false";
+      setNotificationButtonLabel("Attiva notifiche", false);
     }
   } catch (err) {
     console.error("Errore controllo stato notifiche:", err);
-    notifBtn.textContent = "Attiva notifiche";
-    notifBtn.dataset.attive = "false";
+    setNotificationButtonLabel("Attiva notifiche", false);
   }
 }
 
