@@ -1139,4 +1139,43 @@ h1, h2, h3, h4, p{
     flex: 1 1 100%;
     justify-content: center;
   }
+
+    /* ===== FIX MOBILE NAVBAR DRAFT: BOTTONI SOLO ICONA ===== */
+@media (max-width: 768px) {
+  .site-nav .nav-right.hero-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: nowrap;
+    margin-top: 0;
+  }
+
+  .site-nav .btn-hero {
+    width: 52px;
+    height: 52px;
+    min-width: 52px;
+    padding: 0;
+    border-radius: 14px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 52px;
+    overflow: hidden;
+  }
+
+  .site-nav .btn-hero .btn-label {
+    display: none !important;
+  }
+
+  .site-nav .btn-hero .action-icon {
+    width: 26px;
+    height: 26px;
+    object-fit: contain;
+    margin: 0;
+  }
+
+  .site-nav #attiva-notifiche-btn {
+    background: rgba(255, 213, 74, 0.14);
+    border-color: rgba(255, 213, 74, 0.28);
+  }
 }
