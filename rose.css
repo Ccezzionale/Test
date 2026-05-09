@@ -301,12 +301,21 @@ tbody tr:last-child {
 }
 
 .badge-img {
-  width: 28px;
-  height: 28px;
   object-fit: contain;
   vertical-align: middle;
-  margin-left: 6px;
+  margin-left: 5px;
   display: inline-block;
+  transform: translateY(-1px);
+}
+
+.badge-img-star {
+  width: 24px;
+  height: 24px;
+}
+
+.badge-img-pill {
+  width: 34px;
+  height: 22px;
 }
 
 .badge-img.small {
