@@ -593,7 +593,7 @@ select:focus{
   background: linear-gradient(90deg, var(--gold), #ffeaa0, var(--navy-3));
 }
 
-.card-pick img{
+.card-pick > img{
   display: block;
   width: 72px;
   height: 72px;
@@ -630,96 +630,87 @@ select:focus{
   box-shadow: inset 0 1px 0 rgba(255,255,255,0.6);
 }
 
-/* badges */
-.badge{
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 2px 8px;
-  margin-left: 6px;
-  border-radius: 999px;
-  font-size: 12px;
-  font-weight: 800;
-  line-height: 1.45;
-  vertical-align: middle;
+/* =========================
+   PLAYER STATUS BADGES
+   FP / U21 / RFA icons inside tables and summary cards
+   ========================= */
+.badge-img{
+  object-fit: contain !important;
+  vertical-align: middle !important;
+  display: inline-block !important;
+  margin-left: 5px !important;
+  margin-bottom: 0 !important;
+  transform: translateY(-1px);
+  max-width: none !important;
+  max-height: none !important;
+  min-width: 0 !important;
+  min-height: 0 !important;
 }
 
-.badge.fp{
-  background: #d8eaff;
-  color: #0b4c93;
-  border: 1px solid #86b6eb;
+.badge-img-star,
+.badge-img.small{
+  width: 18px !important;
+  height: 18px !important;
 }
 
-/* U21 normale */
-.badge.u21-flag,
-.badge-u21-normal {
-  background: #ffcc00;
-  color: #111;
-  border: 1px solid #d7aa00;
+.badge-img-pill{
+  width: 28px !important;
+  height: 17px !important;
 }
 
-/* U21 keeper primo anno */
-.badge.u21-keeper,
-.badge-u21-k1 {
-  background: #ffffff;
-  color: #1f3b64;
-  border: 1px solid #9ac8a5;
+/* Safety net: the summary cards have logo rules, but badges must stay tiny */
+.card-pick .badge-img,
+.card-pick .badge-img-star,
+.card-pick .badge-img-pill{
+  display: inline-block !important;
+  margin: 0 0 0 5px !important;
+  vertical-align: middle !important;
 }
 
-/* U21 keeper secondo anno */
-.badge-u21-k2 {
-  background: #ffffff;
-  color: #1f3b64;
-  border: 1px solid #5aa06a;
+.card-pick .badge-img-star,
+.card-pick .badge-img.small{
+  width: 18px !important;
+  height: 18px !important;
 }
 
-.badge-u21 {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 34px;
-  height: 24px;
-  padding: 0 9px;
-  margin-left: 6px;
-  border-radius: 999px;
-  font-size: 12px;
-  font-weight: 800;
-  line-height: 1;
-  vertical-align: middle;
+.card-pick .badge-img-pill{
+  width: 28px !important;
+  height: 17px !important;
 }
 
-.badge-img {
-  width: 28px;
-  height: 28px;
-  object-fit: contain;
-  vertical-align: middle;
-  margin-left: 6px;
-  display: inline-block;
-}
-
-.badge-img.small {
-  width: 24px;
-  height: 24px;
+#lista-giocatori-table .badge-img{
+  margin-left: 3px !important;
 }
 
 .badge-u21-normal,
-.badge-rfa {
+.badge-rfa{
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-width: 34px;
-  height: 24px;
-  padding: 0 9px;
-  margin-left: 6px;
+  min-width: 28px;
+  height: 18px;
+  padding: 0 7px;
+  margin-left: 5px;
   border-radius: 999px;
   background: #ffcc00;
   color: #111;
   border: 1px solid #d7aa00;
-  font-size: 0.78em;
+  font-size: 0.72em;
   font-weight: 800;
   line-height: 1;
   vertical-align: middle;
   box-shadow: inset 0 -1px 0 rgba(0,0,0,0.08);
+}
+
+.trade-asset-label{
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+
+.trade-badge-img{
+  margin-left: 3px !important;
 }
 
 .hero-actions{
@@ -789,35 +780,53 @@ select:focus{
   border-color: rgba(139, 30, 30, 0.28);
 }
 
-.badge-img {
-  object-fit: contain;
-  vertical-align: middle;
-  margin-left: 5px;
-  display: inline-block;
+
+
+/* =========================
+   NAVBAR OVERRIDES
+   draft.css must not wash out navbar buttons
+   ========================= */
+nav.site-nav .btn-hero,
+nav.site-nav a.btn-hero,
+nav.site-nav button.btn-hero{
+  opacity: 1 !important;
+  color: #ffffff !important;
+  background: rgba(255,255,255,0.12) !important;
+  border: 1px solid rgba(255,255,255,0.14) !important;
+  box-shadow: none !important;
+  text-shadow: none !important;
+}
+
+nav.site-nav .btn-hero .btn-label,
+nav.site-nav a.btn-hero .btn-label,
+nav.site-nav button.btn-hero .btn-label{
+  color: #ffffff !important;
+  opacity: 1 !important;
+}
+
+nav.site-nav .btn-hero:hover,
+nav.site-nav a.btn-hero:hover,
+nav.site-nav button.btn-hero:hover{
+  background: rgba(255,255,255,0.18) !important;
   transform: translateY(-1px);
 }
 
-.badge-img-star {
-  width: 24px;
-  height: 24px;
+nav.site-nav .btn-hero.warning,
+nav.site-nav button.btn-hero.warning{
+  background: linear-gradient(180deg, #fff1a8 0%, #ffd966 100%) !important;
+  color: #5c4300 !important;
+  border-color: rgba(255, 213, 74, 0.75) !important;
 }
 
-.badge-img-pill {
-  width: 34px;
-  height: 22px;
+nav.site-nav .btn-hero.warning .btn-label,
+nav.site-nav button.btn-hero.warning .btn-label{
+  color: #5c4300 !important;
 }
 
-.trade-asset-label {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  flex-wrap: wrap;
+nav.site-nav .action-icon{
+  opacity: 1 !important;
+  filter: none !important;
 }
-
-.trade-badge-img {
-  margin-left: 3px;
-}
-
 
 /* =========================
    GENERIC UTILITIES
@@ -1085,7 +1094,7 @@ h1, h2, h3, h4, p{
     border-radius: 18px;
   }
 
-  .card-pick img{
+  .card-pick > img{
     width: 64px;
     height: 64px;
   }
