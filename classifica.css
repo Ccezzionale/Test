@@ -864,3 +864,99 @@ th {
   }
 }
 
+/* FIX MOBILE - card dalla 4ª posizione in poi */
+@media (max-width: 768px) {
+
+  /* Nasconde i doppioni delle prime 3 nella lista mobile */
+  #classifica-mobile > *:nth-child(1),
+  #classifica-mobile > *:nth-child(2),
+  #classifica-mobile > *:nth-child(3) {
+    display: none !important;
+  }
+
+  /* Card dalla 4ª in poi */
+  #classifica-mobile > *:nth-child(n+4) {
+    width: 100% !important;
+    max-width: 520px !important;
+    margin: 0 auto 14px !important;
+    padding: 18px 18px !important;
+    border-radius: 22px !important;
+    background: linear-gradient(135deg, #061326, #0b3d73) !important;
+    color: white !important;
+    box-shadow: 0 14px 30px rgba(6, 19, 38, 0.16) !important;
+    border: 1px solid rgba(255,255,255,0.10) !important;
+    overflow: hidden !important;
+  }
+
+  /* Se il contenuto è dentro accordion-header */
+  #classifica-mobile > *:nth-child(n+4) .accordion-header {
+    display: grid !important;
+    grid-template-columns: 48px 68px 1fr !important;
+    align-items: center !important;
+    gap: 14px !important;
+    min-height: 92px !important;
+    padding: 0 !important;
+    background: transparent !important;
+    color: white !important;
+  }
+
+  #classifica-mobile > *:nth-child(n+4) .accordion-header img {
+    width: 58px !important;
+    height: 58px !important;
+    object-fit: contain !important;
+    border-radius: 50% !important;
+    background: white !important;
+    padding: 4px !important;
+    box-shadow: 0 8px 18px rgba(0,0,0,0.18) !important;
+  }
+
+  #classifica-mobile > *:nth-child(n+4) .accordion-body {
+    display: none;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+    padding: 14px 0 0 !important;
+    background: transparent !important;
+  }
+
+  #classifica-mobile > *:nth-child(n+4).active .accordion-body {
+    display: grid !important;
+  }
+
+  #classifica-mobile > *:nth-child(n+4) .accordion-body span {
+    background: rgba(255,255,255,0.10) !important;
+    color: white !important;
+    border-radius: 12px !important;
+    padding: 8px 10px !important;
+    box-shadow: none !important;
+    white-space: normal !important;
+    font-weight: 700 !important;
+  }
+
+  /* Se invece il JS genera elementi semplici senza accordion */
+  #classifica-mobile > *:nth-child(n+4) img {
+    width: 58px !important;
+    height: 58px !important;
+    max-width: 58px !important;
+    max-height: 58px !important;
+    object-fit: contain !important;
+    border-radius: 50% !important;
+    background: white !important;
+    padding: 4px !important;
+    margin-right: 14px !important;
+    vertical-align: middle !important;
+  }
+
+  #classifica-mobile > *:nth-child(n+4) strong,
+  #classifica-mobile > *:nth-child(n+4) b {
+    color: white !important;
+  }
+
+  /* Toglie giallo/rosso ereditati sulle card mobile */
+  #classifica-mobile > *:nth-child(n+4).top4,
+  #classifica-mobile > *:nth-child(n+4).top1,
+  #classifica-mobile > *:nth-child(n+4).ultime4 {
+    background: linear-gradient(135deg, #061326, #0b3d73) !important;
+    color: white !important;
+  }
+}
+
