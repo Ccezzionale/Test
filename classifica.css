@@ -977,3 +977,36 @@ th {
   }
 }
 
+/* MOBILE - dettagli podio visibili solo al click */
+@media (max-width: 768px) {
+
+  .podio-card .ranking-details {
+    display: none !important;
+    grid-column: 1 / -1;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+    padding-top: 12px;
+    margin-top: 6px;
+    border-top: 1px solid rgba(6, 19, 38, 0.10);
+  }
+
+  .podio-card.is-open .ranking-details {
+    display: grid !important;
+  }
+
+  .podio-card .ranking-details span {
+    padding: 8px 10px;
+    border-radius: 12px;
+    background: rgba(6, 19, 38, 0.06);
+    color: #061326;
+    font-weight: 800;
+  }
+
+  .podio-card .ranking-details b {
+    display: block;
+    color: #66758a;
+    font-size: 0.72rem;
+    margin-bottom: 2px;
+  }
+}
+
