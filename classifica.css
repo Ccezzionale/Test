@@ -36,7 +36,8 @@ body {
   position: relative;
   max-width: 100%;
   margin: 0 -20px 0;
-  padding: 48px clamp(24px, 6vw, 80px) 76px;
+  min-height: 340px;
+  padding: 66px clamp(24px, 6vw, 80px) 92px;
   overflow: hidden;
   color: #fff;
   background:
@@ -97,12 +98,12 @@ h1 {
 
 .hero-crest {
   position: absolute;
-  right: clamp(28px, 8vw, 120px);
-  top: 50%;
-  width: clamp(180px, 24vw, 360px);
+  right: clamp(34px, 8vw, 120px);
+  top: 48%;
+  width: clamp(240px, 30vw, 430px);
   transform: translateY(-45%);
-  opacity: 0.13;
-  filter: grayscale(1) brightness(1.45);
+  opacity: 0.22;
+  filter: grayscale(1) brightness(1.35);
   pointer-events: none;
 }
 
@@ -111,14 +112,14 @@ h1 {
   position: relative;
   z-index: 3;
   max-width: 1320px;
-  margin: -42px auto 0;
+  margin: -54px auto 0;
   padding: 0 0 32px;
 }
 
 /* SWITCHER */
 .switcher {
   width: min(760px, calc(100% - 24px));
-  margin: 0 auto 26px;
+  margin: 0 auto 30px;
   padding: 9px;
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -158,6 +159,130 @@ h1 {
 .switcher button.active::before {
   content: "🏆";
   margin-right: 8px;
+}
+
+
+/* PODIO TOP 3 */
+.podio-classifica {
+  width: min(1120px, 100%);
+  margin: 0 auto 24px;
+  display: none;
+  grid-template-columns: 1fr 1.16fr 1fr;
+  align-items: end;
+  gap: 18px;
+}
+
+.podio-classifica.is-visible {
+  display: grid;
+}
+
+.podio-card {
+  position: relative;
+  min-height: 128px;
+  display: grid;
+  grid-template-columns: 86px 1fr;
+  align-items: center;
+  gap: 16px;
+  padding: 24px 24px 22px;
+  overflow: hidden;
+  border: 1px solid rgba(210, 222, 238, 0.95);
+  border-radius: 20px;
+  background:
+    radial-gradient(circle at 85% 20%, rgba(243, 195, 78, 0.16), transparent 35%),
+    linear-gradient(135deg, rgba(255,255,255,0.98), rgba(247,250,255,0.96));
+  box-shadow: 0 18px 42px rgba(6, 19, 38, 0.12);
+}
+
+.podio-card::after {
+  content: "";
+  position: absolute;
+  right: 18px;
+  bottom: 14px;
+  width: 110px;
+  height: 72px;
+  background: linear-gradient(135deg, transparent, rgba(243,195,78,0.14));
+  clip-path: polygon(0 100%, 100% 0, 100% 100%);
+  opacity: 0.9;
+  pointer-events: none;
+}
+
+.podio-card.rank-1 {
+  min-height: 152px;
+  border-color: rgba(243, 195, 78, 0.95);
+  background:
+    radial-gradient(circle at 50% -10%, rgba(255, 204, 0, 0.26), transparent 44%),
+    linear-gradient(135deg, #fffdf7, #fff7dc 62%, #ffffff);
+  box-shadow: 0 24px 58px rgba(243, 195, 78, 0.24), 0 18px 42px rgba(6, 19, 38, 0.14);
+  transform: translateY(-8px);
+}
+
+.podio-ribbon {
+  position: absolute;
+  top: 0;
+  left: 22px;
+  min-width: 54px;
+  padding: 8px 10px 12px;
+  text-align: center;
+  color: #061326;
+  font-weight: 950;
+  background: linear-gradient(180deg, #fff1b7, #f3c34e);
+  border-radius: 0 0 16px 16px;
+  box-shadow: 0 8px 18px rgba(6, 19, 38, 0.14);
+}
+
+.podio-card.rank-1 .podio-ribbon::after {
+  content: "👑";
+  margin-left: 5px;
+}
+
+.podio-logo-wrap {
+  width: 82px;
+  height: 82px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: inset 0 0 0 1px rgba(220,229,240,0.95), 0 10px 24px rgba(6, 19, 38, 0.12);
+}
+
+.podio-logo {
+  width: 66px;
+  height: 66px;
+  object-fit: contain;
+}
+
+.podio-info {
+  position: relative;
+  z-index: 1;
+  min-width: 0;
+}
+
+.podio-info h3 {
+  margin: 0 0 6px;
+  color: var(--blue-950);
+  font-size: clamp(1rem, 1.4vw, 1.28rem);
+  line-height: 1.05;
+  font-weight: 950;
+}
+
+.podio-info p {
+  margin: 0 0 3px;
+  color: var(--blue-900);
+  font-weight: 850;
+}
+
+.podio-info p strong {
+  color: #b47a00;
+  font-size: 1.35rem;
+}
+
+.podio-info span {
+  color: var(--muted);
+  font-weight: 700;
+}
+
+.podium-hidden-row {
+  display: none;
 }
 
 /* TABLE */
@@ -365,7 +490,8 @@ th {
 
   .classifica-hero {
     margin: 0 -12px;
-    padding: 34px 18px 70px;
+    min-height: 300px;
+    padding: 34px 18px 72px;
     text-align: center;
   }
 
@@ -376,9 +502,9 @@ th {
   .hero-crest {
     right: 50%;
     top: 54%;
-    width: 240px;
+    width: 280px;
     transform: translate(50%, -50%);
-    opacity: 0.10;
+    opacity: 0.14;
   }
 
   h1 {
@@ -407,6 +533,40 @@ th {
   .switcher button {
     padding: 12px 8px;
     font-size: 0.84rem;
+  }
+
+
+  .podio-classifica {
+    grid-template-columns: 1fr;
+    gap: 12px;
+    margin-bottom: 18px;
+  }
+
+  .podio-card,
+  .podio-card.rank-1 {
+    min-height: 112px;
+    grid-template-columns: 72px 1fr;
+    gap: 14px;
+    padding: 22px 18px 18px;
+    transform: none;
+  }
+
+  .podio-logo-wrap {
+    width: 68px;
+    height: 68px;
+  }
+
+  .podio-logo {
+    width: 54px;
+    height: 54px;
+  }
+
+  .podio-info h3 {
+    font-size: 1rem;
+  }
+
+  .podium-hidden-mobile {
+    display: none;
   }
 
   .table-shell {
@@ -469,4 +629,3 @@ th {
     grid-template-columns: 1fr;
   }
 }
-
