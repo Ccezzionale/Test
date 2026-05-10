@@ -1054,3 +1054,47 @@ th {
   }
 }
 
+/* DESKTOP - pulizia podio: no corona e posizione sopra al logo senza sovrapporsi */
+@media (min-width: 769px) {
+
+  /* Toglie la corona nel podio */
+  .podio-card.rank-1 .podio-ribbon::after {
+    content: none !important;
+  }
+
+  /* Card con più spazio sopra per la medaglia */
+  .podio-card,
+  .podio-card.rank-1 {
+    padding-top: 34px;
+  }
+
+  /* Medaglia posizione più alta e centrata rispetto al logo */
+  .podio-ribbon {
+    top: 0;
+    left: 34px;
+    min-width: 56px;
+    z-index: 4;
+  }
+
+  /* Logo leggermente più in basso, così non viene coperto */
+  .podio-logo-wrap {
+    margin-top: 18px;
+  }
+
+  /* Primo posto più alto, effetto podio */
+  .podio-card.rank-1 {
+    transform: translateY(-24px) !important;
+    z-index: 3;
+  }
+
+  .podio-card.rank-2,
+  .podio-card.rank-3 {
+    transform: translateY(10px);
+  }
+
+  /* Nel podio desktop niente dettagli */
+  .podio-card .ranking-details {
+    display: none !important;
+  }
+}
+
