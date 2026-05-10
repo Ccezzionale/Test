@@ -867,12 +867,6 @@ th {
 /* FIX MOBILE - card dalla 4ª posizione in poi */
 @media (max-width: 768px) {
 
-  /* Nasconde i doppioni delle prime 3 nella lista mobile */
-  #classifica-mobile > *:nth-child(1),
-  #classifica-mobile > *:nth-child(2),
-  #classifica-mobile > *:nth-child(3) {
-    display: none !important;
-  }
 
   /* Card dalla 4ª in poi */
   #classifica-mobile > *:nth-child(n+4) {
@@ -957,6 +951,118 @@ th {
   #classifica-mobile > *:nth-child(n+4).ultime4 {
     background: linear-gradient(135deg, #061326, #0b3d73) !important;
     color: white !important;
+  }
+}
+
+/* MOBILE LISTA CUSTOM DAL 4° POSTO IN POI */
+@media (max-width: 768px) {
+
+  #classifica-mobile {
+    width: 100%;
+    max-width: 520px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .mobile-standing-card {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 46px 68px 1fr;
+    align-items: center;
+    gap: 14px;
+    padding: 18px;
+    border-radius: 22px;
+    background: linear-gradient(135deg, #061326, #0b3d73);
+    color: white;
+    box-shadow: 0 14px 30px rgba(6, 19, 38, 0.16);
+    border: 1px solid rgba(255,255,255,0.10);
+  }
+
+  .mobile-rank {
+    font-size: 1.05rem;
+    font-weight: 950;
+    color: white;
+  }
+
+  .mobile-logo-wrap {
+    width: 62px;
+    height: 62px;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    background: white;
+    box-shadow: 0 8px 18px rgba(0,0,0,0.18);
+  }
+
+  .mobile-logo-wrap img {
+    width: 52px !important;
+    height: 52px !important;
+    max-width: 52px !important;
+    max-height: 52px !important;
+    object-fit: contain !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    background: transparent !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+  }
+
+  .mobile-main {
+    min-width: 0;
+  }
+
+  .mobile-main h3 {
+    margin: 0 0 6px;
+    color: white;
+    font-size: 1.08rem;
+    line-height: 1.08;
+    font-weight: 950;
+  }
+
+  .mobile-main p {
+    margin: 0 0 3px;
+    color: white;
+    font-weight: 850;
+  }
+
+  .mobile-main p strong {
+    font-size: 1.35rem;
+  }
+
+  .mobile-main span {
+    color: rgba(255,255,255,0.78);
+    font-weight: 800;
+  }
+
+  .mobile-standing-card .ranking-details {
+    display: none;
+    grid-column: 1 / -1;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+    padding-top: 12px;
+    margin-top: 2px;
+    border-top: 1px solid rgba(255,255,255,0.16);
+  }
+
+  .mobile-standing-card.is-open .ranking-details {
+    display: grid;
+  }
+
+  .mobile-standing-card .ranking-details span {
+    padding: 8px 10px;
+    border-radius: 12px;
+    background: rgba(255,255,255,0.10);
+    color: white;
+    font-weight: 800;
+  }
+
+  .mobile-standing-card .ranking-details b {
+    display: block;
+    color: rgba(255,255,255,0.62);
+    font-size: 0.72rem;
+    margin-bottom: 2px;
   }
 }
 
