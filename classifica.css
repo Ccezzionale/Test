@@ -1014,4 +1014,43 @@ th {
     margin-bottom: 2px;
   }
 }
+/* DESKTOP - podio più pulito e primo posto più alto */
+@media (min-width: 769px) {
+
+  /* Nel podio desktop niente dettagli: solo PT e MP */
+  .podio-card .ranking-details {
+    display: none !important;
+  }
+
+  /* Toglie eventuale corona dal primo posto */
+  .podio-card.rank-1 .podio-ribbon::after {
+    content: none !important;
+  }
+
+  /* Più respiro sotto il podio */
+  .podio-classifica {
+    align-items: end;
+    margin-top: 8px;
+    margin-bottom: 34px;
+  }
+
+  /* Card laterali leggermente più basse */
+  .podio-card.rank-2,
+  .podio-card.rank-3 {
+    transform: translateY(12px);
+    min-height: 132px;
+  }
+
+  /* Primo posto più alto, effetto podio vero */
+  .podio-card.rank-1 {
+    transform: translateY(-22px) !important;
+    min-height: 146px;
+    z-index: 2;
+  }
+
+  /* Evita che i dettagli nascosti lascino spazi strani */
+  .podio-card {
+    padding-bottom: 22px;
+  }
+}
 
