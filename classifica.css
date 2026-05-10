@@ -176,6 +176,10 @@ h1 {
   display: grid;
 }
 
+.podio-card.rank-2 { order: 1; }
+.podio-card.rank-1 { order: 2; }
+.podio-card.rank-3 { order: 3; }
+
 .podio-card {
   position: relative;
   min-height: 128px;
@@ -218,10 +222,11 @@ h1 {
 
 .podio-ribbon {
   position: absolute;
-  top: 0;
-  left: 22px;
-  min-width: 54px;
-  padding: 8px 10px 12px;
+  top: 12px;
+  left: 48px;
+  z-index: 3;
+  min-width: 48px;
+  padding: 7px 10px 9px;
   text-align: center;
   color: #061326;
   font-weight: 950;
@@ -230,12 +235,9 @@ h1 {
   box-shadow: 0 8px 18px rgba(6, 19, 38, 0.14);
 }
 
-.podio-card.rank-1 .podio-ribbon::after {
-  content: "👑";
-  margin-left: 5px;
-}
-
 .podio-logo-wrap {
+  position: relative;
+  margin-top: 16px;
   width: 82px;
   height: 82px;
   display: grid;
@@ -282,7 +284,7 @@ h1 {
 }
 
 .podium-hidden-row {
-  display: none;
+  display: table-row;
 }
 
 /* TABLE */
@@ -386,10 +388,6 @@ th {
   color: #111;
   font-weight: 900;
   box-shadow: inset 5px 0 0 var(--gold);
-}
-
-.top1 td:first-child::after {
-  content: " 👑";
 }
 
 .top4:not(.top1) {
@@ -542,6 +540,21 @@ th {
     margin-bottom: 18px;
   }
 
+  .podio-card.rank-1,
+  .podio-card.rank-2,
+  .podio-card.rank-3 {
+    order: initial;
+  }
+
+  .podio-card.rank-1 { order: 1; }
+  .podio-card.rank-2 { order: 2; }
+  .podio-card.rank-3 { order: 3; }
+
+  .podio-ribbon {
+    left: 42px;
+    top: 8px;
+  }
+
   .podio-card,
   .podio-card.rank-1 {
     min-height: 112px;
@@ -566,7 +579,7 @@ th {
   }
 
   .podium-hidden-mobile {
-    display: none;
+    display: block;
   }
 
   .table-shell {
@@ -583,6 +596,44 @@ th {
     gap: 12px;
     padding: 0;
     width: 100%;
+  }
+
+  .accordion-header {
+    display: grid;
+    grid-template-columns: 44px 58px minmax(0, 1fr);
+    grid-template-areas: "pos logo name" "pos logo stats";
+    align-items: center;
+    column-gap: 14px;
+    row-gap: 4px;
+    padding: 16px;
+    min-height: 92px;
+    text-align: left;
+  }
+
+  .accordion-header > *:nth-child(1) {
+    grid-area: pos;
+    justify-self: center;
+    font-size: 1.15rem;
+    font-weight: 950;
+  }
+
+  .accordion-header img {
+    grid-area: logo;
+    width: 58px;
+    height: 58px;
+  }
+
+  .accordion-header > *:nth-child(3) {
+    grid-area: name;
+    min-width: 0;
+    line-height: 1.12;
+  }
+
+  .accordion-header > *:nth-child(n+4) {
+    grid-area: stats;
+    justify-self: start;
+    font-size: 0.92rem;
+    opacity: 0.96;
   }
 
   .accordion-body {
