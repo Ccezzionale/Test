@@ -89,12 +89,17 @@
 
   <main class="classifica-page">
     <section class="classifica-hero">
-      <h1>Classifica Conference League</h1>
-      <p class="classifica-subtitle">Panoramica completa della stagione regolare</p>
+      <div class="hero-copy">
+        <span class="eyebrow">Lega degli Eroi</span>
+        <h1>Classifica Conference League</h1>
+        <p class="classifica-subtitle">Panoramica completa della stagione regolare</p>
+      </div>
+
+      <img class="hero-crest" src="img/conference-league.png" alt="Conference League">
     </section>
 
     <section class="classifica-card">
-      <div class="switcher">
+      <div class="switcher" aria-label="Seleziona classifica">
         <button class="active">Conf.League</button>
         <button>Conf. Championship</button>
         <button>Round Robin</button>
@@ -102,10 +107,12 @@
       </div>
 
       <div id="classifica-container">
-        <table id="tabella-classifica">
-          <thead></thead>
-          <tbody></tbody>
-        </table>
+        <div class="table-shell">
+          <table id="tabella-classifica">
+            <thead></thead>
+            <tbody></tbody>
+          </table>
+        </div>
 
         <div id="classifica-mobile"></div>
       </div>
