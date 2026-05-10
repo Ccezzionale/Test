@@ -146,12 +146,12 @@
         },
         "round robin": {
           title: "Classifica Round Robin",
-          crest: "img/roundrobin.png",
+          crest: "img/conference-league.png",
           alt: "Round Robin"
         },
         "totale": {
           title: "Classifica Totale",
-          crest: "img/roundrobin.png",
+          crest: "img/conference-league.png",
           alt: "Classifica Totale"
         }
       };
@@ -198,11 +198,11 @@
 
         const ptIndex = getColumnIndex("PT", 7);
         const mpIndex = getColumnIndex("MP", 8);
-        const visualOrder = [rows[0], rows[1], rows[2]];
+        const visualOrder = [rows[1], rows[0], rows[2]];
 
         podium.innerHTML = visualOrder.map((row) => {
           const cells = row.querySelectorAll("td");
-          const position = cleanText(cells[0]?.textContent).replace("👑", "").trim();
+          const position = cleanText(cells[0]?.textContent).replace("👑", "");
           const teamCell = cells[1];
           const img = teamCell?.querySelector("img");
           const logo = img ? img.getAttribute("src") : "";
@@ -228,10 +228,14 @@
 
         podium.classList.add("is-visible");
 
-        rows.forEach((row) => row.classList.remove("podium-hidden-row"));
+        rows.forEach((row, index) => {
+          row.classList.toggle("podium-hidden-row", index < 3);
+        });
 
         if (mobileList) {
-          Array.from(mobileList.children).forEach((item) => item.classList.remove("podium-hidden-mobile"));
+          Array.from(mobileList.children).forEach((item, index) => {
+            item.classList.toggle("podium-hidden-mobile", index < 3);
+          });
         }
       }
 
