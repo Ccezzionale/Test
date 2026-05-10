@@ -282,7 +282,7 @@ h1 {
 }
 
 .podium-hidden-row {
-  display: none;
+  display: table-row;
 }
 
 /* TABLE */
@@ -389,7 +389,7 @@ th {
 }
 
 .top1 td:first-child::after {
-  content: " 👑";
+  content: "";
 }
 
 .top4:not(.top1) {
@@ -627,6 +627,240 @@ th {
 
   .accordion-body {
     grid-template-columns: 1fr;
+  }
+}
+/* FIX MOBILE CLASSIFICA - non tocca desktop */
+@media (max-width: 768px) {
+
+  html,
+  body {
+    overflow-x: hidden;
+  }
+
+  .classifica-page {
+    padding: 0 12px 34px;
+    overflow-x: hidden;
+  }
+
+  .classifica-card {
+    width: 100%;
+    margin-top: -36px;
+    padding-bottom: 0;
+  }
+
+  /* Switcher più compatto */
+  .switcher {
+    width: 100%;
+    max-width: 520px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    border-radius: 22px;
+    padding: 8px;
+    margin: 0 auto 18px;
+  }
+
+  .switcher button {
+    min-width: 0;
+    padding: 12px 8px;
+    font-size: 0.84rem;
+  }
+
+  /* PODIO MOBILE: solo prime 3, stile card pulito */
+  .podio-classifica {
+    width: 100%;
+    max-width: 520px;
+    margin: 0 auto 18px;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+
+  .podio-classifica.is-visible {
+    display: grid;
+  }
+
+  .podio-card,
+  .podio-card.rank-1 {
+    width: 100%;
+    min-height: 128px;
+    display: grid;
+    grid-template-columns: 82px 1fr;
+    align-items: center;
+    gap: 18px;
+    padding: 24px 18px 20px 22px;
+    transform: none !important;
+    border-radius: 22px;
+  }
+
+  .podio-card.rank-1 {
+    order: 1;
+  }
+
+  .podio-card.rank-2 {
+    order: 2;
+  }
+
+  .podio-card.rank-3 {
+    order: 3;
+  }
+
+  .podio-ribbon {
+    top: 0;
+    left: 28px;
+    min-width: 58px;
+    padding: 8px 10px 12px;
+    border-radius: 0 0 16px 16px;
+  }
+
+  .podio-card.rank-1 .podio-ribbon::after {
+    content: none !important;
+  }
+
+  .podio-logo-wrap {
+    width: 76px;
+    height: 76px;
+  }
+
+  .podio-logo {
+    width: 60px;
+    height: 60px;
+  }
+
+  .podio-info {
+    min-width: 0;
+  }
+
+  .podio-info h3 {
+    font-size: 1.05rem;
+    line-height: 1.08;
+    margin-bottom: 8px;
+  }
+
+  .podio-info p {
+    margin-bottom: 4px;
+  }
+
+  .podio-info p strong {
+    font-size: 1.55rem;
+  }
+
+  /* Se nel podio hai i dettagli, li mostra solo quando la card è aperta */
+  .podio-details,
+  .podio-extra,
+  .podio-stats {
+    display: none;
+    grid-column: 1 / -1;
+    margin-top: 4px;
+    padding-top: 12px;
+    border-top: 1px solid rgba(6, 19, 38, 0.10);
+  }
+
+  .podio-card.active .podio-details,
+  .podio-card.active .podio-extra,
+  .podio-card.active .podio-stats {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  /* Nasconde i doppioni 1-2-3 nella lista mobile sotto */
+  #classifica-mobile .accordion-item:nth-child(1),
+  #classifica-mobile .accordion-item:nth-child(2),
+  #classifica-mobile .accordion-item:nth-child(3) {
+    display: none !important;
+  }
+
+  /* LISTA MOBILE DAL 4° IN GIÙ */
+  #classifica-mobile {
+    width: 100%;
+    max-width: 520px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .accordion-item {
+    width: 100%;
+    border-radius: 22px;
+    overflow: hidden;
+    background: linear-gradient(135deg, var(--blue-950), var(--blue-800));
+    border: 1px solid rgba(255,255,255,0.10);
+    box-shadow: 0 14px 30px rgba(6, 19, 38, 0.14);
+  }
+
+  .accordion-header {
+    display: grid;
+    grid-template-columns: 46px 64px 1fr;
+    align-items: center;
+    gap: 14px;
+    width: 100%;
+    min-height: 104px;
+    padding: 18px 18px;
+    background: transparent !important;
+    color: white !important;
+    text-align: left;
+  }
+
+  .accordion-header img {
+    width: 58px !important;
+    height: 58px !important;
+    max-width: 58px !important;
+    max-height: 58px !important;
+    object-fit: contain !important;
+    border-radius: 50%;
+    background: white;
+    padding: 4px;
+    box-shadow: 0 8px 18px rgba(0,0,0,0.18);
+  }
+
+  .accordion-header > * {
+    min-width: 0;
+  }
+
+  .accordion-header span,
+  .accordion-header div,
+  .accordion-header strong {
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+
+  /* Toglie il giallo dalla 4ª su mobile */
+  .accordion-item.top4:not(.top1) .accordion-header {
+    background: transparent !important;
+    color: white !important;
+  }
+
+  .accordion-item.top1 .accordion-header {
+    background: transparent !important;
+    color: white !important;
+  }
+
+  .accordion-body {
+    display: none;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+    padding: 0 18px 18px;
+    background: transparent;
+  }
+
+  .accordion-item.active .accordion-body {
+    display: grid;
+  }
+
+  .accordion-body span {
+    padding: 9px 10px;
+    border-radius: 12px;
+    background: rgba(255,255,255,0.10);
+    color: white;
+    box-shadow: none;
+    white-space: normal;
+    font-weight: 700;
+  }
+
+  /* Protezione anti-logo gigante */
+  #classifica-mobile img {
+    max-width: 64px !important;
+    max-height: 64px !important;
   }
 }
 
