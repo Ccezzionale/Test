@@ -97,6 +97,15 @@
       }
     }
 
+    #app-content {
+      min-height: 100vh;
+      transition: opacity 0.18s ease;
+    }
+
+    #app-content.page-loading {
+      opacity: 0.96;
+    }
+
     .home-wrap {
       overflow-x: hidden;
       max-width: 1200px;
@@ -316,14 +325,16 @@
     </div>
   </nav>
 
-  <main class="home-wrap">
-    <iframe
-      id="gazzettaFrame"
-      class="gazzetta-frame"
-      src="giornale.html"
-      title="La Gazzetta degli Eroi"
-      scrolling="no">
-    </iframe>
+  <main id="app-content">
+    <section class="home-wrap">
+      <iframe
+        id="gazzettaFrame"
+        class="gazzetta-frame"
+        src="giornale.html"
+        title="La Gazzetta degli Eroi"
+        scrolling="no">
+      </iframe>
+    </section>
   </main>
 
   <script>
@@ -344,7 +355,7 @@
       }
     }
 
-    document.addEventListener("DOMContentLoaded", () => {
+    function initGazzettaFrame() {
       const iframe = document.getElementById("gazzettaFrame");
 
       if (iframe) {
@@ -357,7 +368,9 @@
       }
 
       window.addEventListener("resize", resizeGazzetta);
-    });
+    }
+
+    document.addEventListener("DOMContentLoaded", initGazzettaFrame);
   </script>
 
   <script>
@@ -373,23 +386,26 @@
       });
     }
   </script>
-<script>
-  document.addEventListener("DOMContentLoaded", () => {
-    const splash = document.getElementById("appSplash");
 
-    if (!splash) return;
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const splash = document.getElementById("appSplash");
 
-    setTimeout(() => {
-      splash.classList.add("hidden");
+      if (!splash) return;
 
       setTimeout(() => {
-        splash.remove();
-      }, 700);
-    }, 1200);
-  });
-</script>
+        splash.classList.add("hidden");
+
+        setTimeout(() => {
+          splash.remove();
+        }, 700);
+      }, 1200);
+    });
+  </script>
 
   <script type="module" src="home_auth.js"></script>
   <script src="navbar.js"></script>
+  <script src="spa-router.js"></script>
+
 </body>
 </html>
