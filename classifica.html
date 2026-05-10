@@ -107,6 +107,8 @@
       </div>
 
       <div id="classifica-container">
+        <section id="podio-classifica" class="podio-classifica" aria-label="Podio classifica"></section>
+
         <div class="table-shell">
           <table id="tabella-classifica">
             <thead></thead>
@@ -120,6 +122,143 @@
   </main>
 
   <script src="classifiche-auto.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const table = document.getElementById("tabella-classifica");
+      const podium = document.getElementById("podio-classifica");
+      const mobileList = document.getElementById("classifica-mobile");
+      const heroTitle = document.querySelector(".classifica-hero h1");
+      const heroCrest = document.querySelector(".hero-crest");
+      const switcher = document.querySelector(".switcher");
+
+      if (!table || !podium) return;
+
+      const leagueAssets = {
+        "conf.league": {
+          title: "Classifica Conference League",
+          crest: "img/conference-league.png",
+          alt: "Conference League"
+        },
+        "conf. championship": {
+          title: "Classifica Championship League",
+          crest: "img/championship-league.png",
+          alt: "Championship League"
+        },
+        "round robin": {
+          title: "Classifica Round Robin",
+          crest: "img/conference-league.png",
+          alt: "Round Robin"
+        },
+        "totale": {
+          title: "Classifica Totale",
+          crest: "img/conference-league.png",
+          alt: "Classifica Totale"
+        }
+      };
+
+      function cleanText(value) {
+        return (value || "").replace(/\s+/g, " ").trim();
+      }
+
+      function getActiveKey() {
+        const activeButton = switcher?.querySelector("button.active");
+        return cleanText(activeButton?.textContent).toLowerCase();
+      }
+
+      function updateHero() {
+        const data = leagueAssets[getActiveKey()];
+        if (!data) return;
+
+        if (heroTitle) heroTitle.textContent = data.title;
+        if (heroCrest) {
+          heroCrest.src = data.crest;
+          heroCrest.alt = data.alt;
+        }
+      }
+
+      function getColumnIndex(label, fallback) {
+        const headers = Array.from(table.querySelectorAll("thead th"));
+        const found = headers.findIndex((th) => cleanText(th.textContent).toUpperCase() === label);
+        return found >= 0 ? found : fallback;
+      }
+
+      function getTeamName(teamCell) {
+        const clone = teamCell.cloneNode(true);
+        clone.querySelectorAll("img").forEach((img) => img.remove());
+        return cleanText(clone.textContent);
+      }
+
+      function buildPodium() {
+        const rows = Array.from(table.querySelectorAll("tbody tr"));
+        if (rows.length < 3) {
+          podium.innerHTML = "";
+          podium.classList.remove("is-visible");
+          return;
+        }
+
+        const ptIndex = getColumnIndex("PT", 7);
+        const mpIndex = getColumnIndex("MP", 8);
+        const visualOrder = [rows[1], rows[0], rows[2]];
+
+        podium.innerHTML = visualOrder.map((row) => {
+          const cells = row.querySelectorAll("td");
+          const position = cleanText(cells[0]?.textContent).replace("👑", "");
+          const teamCell = cells[1];
+          const img = teamCell?.querySelector("img");
+          const logo = img ? img.getAttribute("src") : "";
+          const team = getTeamName(teamCell || document.createElement("td"));
+          const points = cleanText(cells[ptIndex]?.textContent);
+          const magicPoints = cleanText(cells[mpIndex]?.textContent);
+          const rank = parseInt(position, 10) || 0;
+
+          return `
+            <article class="podio-card rank-${rank}">
+              <div class="podio-ribbon">${position}</div>
+              <div class="podio-logo-wrap">
+                ${logo ? `<img src="${logo}" alt="${team}" class="podio-logo">` : ""}
+              </div>
+              <div class="podio-info">
+                <h3>${team}</h3>
+                <p><strong>${points}</strong> PT</p>
+                <span>${magicPoints} MP</span>
+              </div>
+            </article>
+          `;
+        }).join("");
+
+        podium.classList.add("is-visible");
+
+        rows.forEach((row, index) => {
+          row.classList.toggle("podium-hidden-row", index < 3);
+        });
+
+        if (mobileList) {
+          Array.from(mobileList.children).forEach((item, index) => {
+            item.classList.toggle("podium-hidden-mobile", index < 3);
+          });
+        }
+      }
+
+      function refreshDashboard() {
+        updateHero();
+        window.requestAnimationFrame(buildPodium);
+      }
+
+      const observer = new MutationObserver(() => {
+        window.clearTimeout(window.__classificaPodiumTimer);
+        window.__classificaPodiumTimer = window.setTimeout(refreshDashboard, 60);
+      });
+
+      const tbody = table.querySelector("tbody");
+      if (tbody) observer.observe(tbody, { childList: true, subtree: true });
+
+      switcher?.addEventListener("click", () => {
+        window.setTimeout(refreshDashboard, 180);
+      });
+
+      refreshDashboard();
+    });
+  </script>
    <script src="navbar.js"></script>
 
 </body>
