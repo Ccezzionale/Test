@@ -131,7 +131,7 @@
       const heroCrest = document.querySelector(".hero-crest");
       const switcher = document.querySelector(".switcher");
 
-      if (!table || !podium) return;
+      if (!table || !podium || !mobileList) return;
 
       const leagueAssets = {
         "conf.league": {
@@ -188,6 +188,43 @@
         return cleanText(clone.textContent);
       }
 
+      function rowToData(row) {
+        const cells = row.querySelectorAll("td");
+        const teamCell = cells[1] || document.createElement("td");
+        const img = teamCell.querySelector("img");
+        const get = (label, fallback) => cleanText(cells[getColumnIndex(label, fallback)]?.textContent);
+
+        const position = cleanText(cells[0]?.textContent).replace("👑", "");
+
+        return {
+          rank: parseInt(position, 10) || 0,
+          position,
+          logo: img ? img.getAttribute("src") : "",
+          team: getTeamName(teamCell),
+          g: get("G", 2),
+          v: get("V", 3),
+          n: get("N", 4),
+          p: get("P", 5),
+          gf: get("GF", 6),
+          gs: get("GS", 7),
+          pt: get("PT", 8),
+          mp: get("MP", 9)
+        };
+      }
+
+      function detailGrid(data) {
+        return `
+          <div class="ranking-details">
+            <span><b>G</b>${data.g}</span>
+            <span><b>V</b>${data.v}</span>
+            <span><b>N</b>${data.n}</span>
+            <span><b>P</b>${data.p}</span>
+            <span><b>GF</b>${data.gf}</span>
+            <span><b>GS</b>${data.gs}</span>
+          </div>
+        `;
+      }
+
       function buildPodium() {
         const rows = Array.from(table.querySelectorAll("tbody tr"));
         if (rows.length < 3) {
@@ -196,64 +233,78 @@
           return;
         }
 
-        const ptIndex = getColumnIndex("PT", 7);
-        const mpIndex = getColumnIndex("MP", 8);
-        const visualOrder = [rows[1], rows[0], rows[2]];
+        const topThree = rows.slice(0, 3).map(rowToData);
+        const desktopOrder = [topThree[1], topThree[0], topThree[2]];
 
-        podium.innerHTML = visualOrder.map((row) => {
-          const cells = row.querySelectorAll("td");
-          const position = cleanText(cells[0]?.textContent).replace("👑", "");
-          const teamCell = cells[1];
-          const img = teamCell?.querySelector("img");
-          const logo = img ? img.getAttribute("src") : "";
-          const team = getTeamName(teamCell || document.createElement("td"));
-          const points = cleanText(cells[ptIndex]?.textContent);
-          const magicPoints = cleanText(cells[mpIndex]?.textContent);
-          const rank = parseInt(position, 10) || 0;
-
-          return `
-            <article class="podio-card rank-${rank}">
-              <div class="podio-ribbon">${position}</div>
-              <div class="podio-logo-wrap">
-                ${logo ? `<img src="${logo}" alt="${team}" class="podio-logo">` : ""}
-              </div>
-              <div class="podio-info">
-                <h3>${team}</h3>
-                <p><strong>${points}</strong> PT</p>
-                <span>${magicPoints} MP</span>
-              </div>
-            </article>
-          `;
-        }).join("");
+        podium.innerHTML = desktopOrder.map((data) => `
+          <article class="podio-card rank-${data.rank}" tabindex="0" role="button" aria-label="Apri dettagli ${data.team}">
+            <div class="podio-ribbon">${data.position}</div>
+            <div class="podio-logo-wrap">
+              ${data.logo ? `<img src="${data.logo}" alt="${data.team}" class="podio-logo">` : ""}
+            </div>
+            <div class="podio-info">
+              <h3>${data.team}</h3>
+              <p><strong>${data.pt}</strong> PT</p>
+              <span>${data.mp} MP</span>
+            </div>
+            ${detailGrid(data)}
+          </article>
+        `).join("");
 
         podium.classList.add("is-visible");
+      }
 
-        rows.forEach((row, index) => {
-          row.classList.toggle("podium-hidden-row", index < 3);
-        });
+      function buildMobileRanking() {
+        const rows = Array.from(table.querySelectorAll("tbody tr"));
+        const teamsFromFourth = rows.slice(3).map(rowToData);
 
-        if (mobileList) {
-          Array.from(mobileList.children).forEach((item, index) => {
-            item.classList.toggle("podium-hidden-mobile", index < 3);
+        mobileList.innerHTML = teamsFromFourth.map((data) => `
+          <article class="mobile-standing-card rank-${data.rank}" tabindex="0" role="button" aria-label="Apri dettagli ${data.team}">
+            <div class="mobile-rank">${data.position}</div>
+            <div class="mobile-logo-wrap">
+              ${data.logo ? `<img src="${data.logo}" alt="${data.team}">` : ""}
+            </div>
+            <div class="mobile-main">
+              <h3>${data.team}</h3>
+              <p><strong>${data.pt}</strong> PT</p>
+              <span>${data.mp} MP</span>
+            </div>
+            ${detailGrid(data)}
+          </article>
+        `).join("");
+      }
+
+      function bindExpandableCards() {
+        document.querySelectorAll(".podio-card, .mobile-standing-card").forEach((card) => {
+          card.addEventListener("click", () => card.classList.toggle("is-open"));
+          card.addEventListener("keydown", (event) => {
+            if (event.key === "Enter" || event.key === " ") {
+              event.preventDefault();
+              card.classList.toggle("is-open");
+            }
           });
-        }
+        });
       }
 
       function refreshDashboard() {
         updateHero();
-        window.requestAnimationFrame(buildPodium);
+        window.requestAnimationFrame(() => {
+          buildPodium();
+          buildMobileRanking();
+          bindExpandableCards();
+        });
       }
 
       const observer = new MutationObserver(() => {
         window.clearTimeout(window.__classificaPodiumTimer);
-        window.__classificaPodiumTimer = window.setTimeout(refreshDashboard, 60);
+        window.__classificaPodiumTimer = window.setTimeout(refreshDashboard, 80);
       });
 
       const tbody = table.querySelector("tbody");
       if (tbody) observer.observe(tbody, { childList: true, subtree: true });
 
       switcher?.addEventListener("click", () => {
-        window.setTimeout(refreshDashboard, 180);
+        window.setTimeout(refreshDashboard, 200);
       });
 
       refreshDashboard();
