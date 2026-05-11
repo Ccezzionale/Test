@@ -1857,7 +1857,7 @@ const badgeHtml = renderDraftBadgeImages({
   is_fp_keeper: p.isFpKeeper,
   fp_keeper_year: p.fpKeeperYear,
   is_u21: p.isU21,
-  is_top6_protected: p.isTop6Protected
+  is_top6_protected: p.isTop6Protected,
   is_u21_keeper: p.isU21Keeper,
   u21_keeper_year: p.u21KeeperYear,
   is_rfa_matched: p.isRfaMatched
