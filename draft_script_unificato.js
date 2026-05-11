@@ -559,6 +559,7 @@ u21_keeper_year,
 is_fp,
 is_fp_keeper,
 fp_keeper_year,
+is_top6_protected,
 is_rfa_matched
     `)
     .in("id", draftPlayerIds);
@@ -577,6 +578,7 @@ is_rfa_matched
       is_fp: !!p.is_fp,
 is_fp_keeper: !!p.is_fp_keeper,
 fp_keeper_year: p.fp_keeper_year,
+      is_top6_protected: !!p.is_top6_protected,
       u21_keeper_year: p.u21_keeper_year,
       is_rfa_matched: !!p.is_rfa_matched
     };
@@ -1471,18 +1473,18 @@ function renderDraftBadgeImages(player) {
         title="RFA pareggiato"
       >
     `);
+  }
 
-    if (player.is_top6_protected) {
-  badges.push(`
-    <img
-      class="badge-img badge-img-star"
-      src="img/badges/protetto-p6-lucchetto.webp"
-      alt="P6"
-      title="Giocatore protetto mercato: può generare priorità waiver speciale"
-    >
-  `);
-}
-
+  if (player.is_top6_protected) {
+    badges.push(`
+      <img
+        class="badge-img badge-img-star"
+        src="img/badges/protetto-p6-lucchetto.webp"
+        alt="P6"
+        title="Giocatore protetto mercato: può generare priorità waiver speciale"
+      >
+    `);
+  }
 
   return badges.join("");
 }
@@ -1789,6 +1791,7 @@ const playerInfo =
   {};
 
 const ruolo = playerInfo.ruolo || "";
+const isTop6Protected = playerInfo.is_top6_protected === true;
 const isU21 = playerInfo.is_u21 === true && playerInfo.is_u21_keeper !== true;
 const isU21Keeper = playerInfo.is_u21_keeper === true;
 const u21KeeperYear = Number(playerInfo.u21_keeper_year || 1);
@@ -1810,6 +1813,7 @@ const nAssoluto = indexMap[`${team}|${pickNum}`] || 1;
   isFp,
   isFpKeeper,
   fpKeeperYear,
+      isTop6Protected,
   isRfaMatched,
   pickNum
 });
@@ -1853,6 +1857,7 @@ const badgeHtml = renderDraftBadgeImages({
   is_fp_keeper: p.isFpKeeper,
   fp_keeper_year: p.fpKeeperYear,
   is_u21: p.isU21,
+  is_top6_protected: p.isTop6Protected
   is_u21_keeper: p.isU21Keeper,
   u21_keeper_year: p.u21KeeperYear,
   is_rfa_matched: p.isRfaMatched
