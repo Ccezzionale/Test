@@ -78,6 +78,16 @@ body {
   color: #213246;
 }
 
+.badge-img-protected {
+  width: 24px !important;
+  height: 24px !important;
+  object-fit: contain !important;
+  vertical-align: middle !important;
+  margin-left: 5px;
+  display: inline-block;
+  transform: translateY(-1px);
+}
+
 /* ===== FILTRI ===== */
 #filtri-rose {
   display: flex;
