@@ -983,6 +983,7 @@ is_fp,
 is_fp_keeper,
 fp_keeper_year,
 is_rfa_matched,
+is_top6_protected,
 owner_team_id,
     status,
     pool
@@ -1026,6 +1027,7 @@ fp_keeper_year: p.fp_keeper_year,
   is_u21: !!p.is_u21,
   is_u21_keeper: !!p.is_u21_keeper,
   u21_keeper_year: p.u21_keeper_year,
+  is_top6_protected: !!p.is_top6_protected,
   is_fp: !!p.is_fp,
   is_rfa_matched: !!p.is_rfa_matched
 };
