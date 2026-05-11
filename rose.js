@@ -260,6 +260,16 @@ if (g.rfaMatched) {
     >
   `);
 }
+  if (g.top6Protected) {
+  badges.push(`
+    <img
+      class="badge-img badge-img-star"
+      src="img/badges/protetto-p6-lucchetto.webp"
+      alt="P6"
+      title="Giocatore protetto mercato: può generare priorità waiver speciale"
+    >
+  `);
+}
 
   return badges.join("");
 }
