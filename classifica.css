@@ -1097,4 +1097,59 @@ th {
     display: none !important;
   }
 }
+/* MOBILE - colori speciali solo quando la classifica Totale assegna top4/ultime4 */
+@media (max-width: 768px) {
 
+  /* Prime 4 oro nella Totale */
+  .podio-card.mobile-top4,
+  .mobile-standing-card.mobile-top4 {
+    background:
+      radial-gradient(circle at 85% 20%, rgba(255, 204, 0, 0.22), transparent 38%),
+      linear-gradient(135deg, #fffdf5, #fff1b7 58%, #ffffff) !important;
+    border-color: rgba(243, 195, 78, 0.95) !important;
+    color: #061326 !important;
+  }
+
+  .podio-card.mobile-top4 .podio-info h3,
+  .podio-card.mobile-top4 .podio-info p,
+  .podio-card.mobile-top4 .podio-info span,
+  .mobile-standing-card.mobile-top4 .mobile-main h3,
+  .mobile-standing-card.mobile-top4 .mobile-main p,
+  .mobile-standing-card.mobile-top4 .mobile-main span,
+  .mobile-standing-card.mobile-top4 .mobile-rank {
+    color: #061326 !important;
+  }
+
+  .podio-card.mobile-top4 .podio-info p strong,
+  .mobile-standing-card.mobile-top4 .mobile-main p strong {
+    color: #b47a00 !important;
+  }
+
+  /* Ultime 4 rosse nella Totale */
+  .mobile-standing-card.mobile-bottom4 {
+    background:
+      linear-gradient(135deg, #7f0012 0%, #c5162e 100%) !important;
+    border-color: rgba(255,255,255,0.18) !important;
+    color: white !important;
+  }
+
+  .mobile-standing-card.mobile-bottom4 .mobile-main h3,
+  .mobile-standing-card.mobile-bottom4 .mobile-main p,
+  .mobile-standing-card.mobile-bottom4 .mobile-main span,
+  .mobile-standing-card.mobile-bottom4 .mobile-rank {
+    color: white !important;
+  }
+
+  .mobile-standing-card.mobile-bottom4 .mobile-main p strong {
+    color: white !important;
+  }
+
+  .mobile-standing-card.mobile-bottom4 .ranking-details span {
+    background: rgba(255,255,255,0.14) !important;
+    color: white !important;
+  }
+
+  .mobile-standing-card.mobile-bottom4 .ranking-details b {
+    color: rgba(255,255,255,0.68) !important;
+  }
+}
