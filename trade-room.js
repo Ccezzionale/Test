@@ -402,7 +402,7 @@ async function loadPickedPlayers() {
         is_fp_keeper: !!playerDetails.is_fp_keeper,
         fp_keeper_year: playerDetails.fp_keeper_year,
         is_rfa_matched: !!playerDetails.is_rfa_matched,
-         is_top6_protected: !!p.is_top6_protected,
+       is_top6_protected: !!playerDetails.is_top6_protected,
         role: playerDetails.role,
         role_mantra: playerDetails.role_mantra,
         serie_a_team: playerDetails.serie_a_team,
@@ -423,6 +423,7 @@ async function loadPickedPlayers() {
       serie_a_team,
       quotation,
       is_u21,
+      is_top6_protected,
       is_u21_keeper,
       u21_keeper_year,
       is_fp,
@@ -466,12 +467,14 @@ async function loadPickedPlayers() {
     serie_a_team: player.serie_a_team,
     quotation: player.quotation,
     is_u21: !!player.is_u21,
+     
     is_u21_keeper: !!player.is_u21_keeper,
     u21_keeper_year: player.u21_keeper_year,
     is_fp: !!player.is_fp,
     is_fp_keeper: !!player.is_fp_keeper,
     fp_keeper_year: player.fp_keeper_year,
-    is_rfa_matched: !!player.is_rfa_matched
+    is_rfa_matched: !!player.is_rfa_matched,
+     is_top6_protected: !!player.is_top6_protected
   }));
 }
 
@@ -821,6 +824,10 @@ function getTradeBadgeTokens(player) {
     tokens.push("[RFA]");
   }
 
+   if (player.is_top6_protected === true) {
+  tokens.push("[P6]");
+}
+
   return tokens.length ? ` ${tokens.join(" ")}` : "";
 }
 
@@ -832,7 +839,8 @@ function formatTradeAssetLabelHtml(label) {
     "[FP]": `<img class="badge-img badge-img-star trade-badge-img" src="img/badges/fp.webp" alt="FP" title="Franchise Player">`,
     "[U21-2]": `<img class="badge-img badge-img-star trade-badge-img" src="img/badges/u21-confermato-secondo-anno.webp" alt="U21" title="U21 confermato 2° anno">`,
     "[U21]": `<img class="badge-img badge-img-pill trade-badge-img" src="img/badges/u21.webp" alt="U21" title="Under 21">`,
-    "[RFA]": `<img class="badge-img badge-img-pill trade-badge-img" src="img/badges/rfa.webp" alt="RFA" title="RFA pareggiato">`
+    "[RFA]": `<img class="badge-img badge-img-pill trade-badge-img" src="img/badges/rfa.webp" alt="RFA" title="RFA pareggiato">`,
+     "[P6]": `<img class="badge-img badge-img-star trade-badge-img" src="img/badges/protetto-p6-lucchetto.webp" alt="P6" title="Giocatore protetto mercato: può generare priorità waiver speciale">`
   };
 
   Object.entries(replacements).forEach(([token, imageHtml]) => {
