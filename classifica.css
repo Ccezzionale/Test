@@ -1153,3 +1153,15 @@ th {
     color: rgba(255,255,255,0.68) !important;
   }
 }
+/* MOBILE - dettagli leggibili anche sulla 4ª oro */
+@media (max-width: 768px) {
+
+  .mobile-standing-card.mobile-top4 .ranking-details span {
+    background: rgba(6, 19, 38, 0.06) !important;
+    color: #061326 !important;
+  }
+
+  .mobile-standing-card.mobile-top4 .ranking-details b {
+    color: #66758a !important;
+  }
+}
