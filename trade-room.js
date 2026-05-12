@@ -403,7 +403,6 @@ async function loadPickedPlayers() {
         is_fp_keeper: !!playerDetails.is_fp_keeper,
         fp_keeper_year: playerDetails.fp_keeper_year,
         is_rfa_matched: !!playerDetails.is_rfa_matched,
-       is_top6_protected: !!playerDetails.is_top6_protected,
          is_top6_protected:
   !!playerDetails.is_top6_protected &&
   row.team_id === playerDetails.top6_protected_team_id,
@@ -418,27 +417,28 @@ top6_protected_team_id: playerDetails.top6_protected_team_id,
     return;
   }
 
-  let query = supabase
-    .from("players")
-    .select(`
-      id,
-      name,
-      role,
-      role_mantra,
-      serie_a_team,
-      quotation,
-      is_u21,
-      is_top6_protected,
-      is_u21_keeper,
-      u21_keeper_year,
-      is_fp,
-      is_fp_keeper,
-      fp_keeper_year,
-      is_rfa_matched,
-      owner_team_id,
-      status,
-      pool
-    `)
+let query = supabase
+  .from("players")
+  .select(`
+    id,
+    name,
+    role,
+    role_mantra,
+    serie_a_team,
+    quotation,
+    is_u21,
+    is_top6_protected,
+    top6_protected_team_id,
+    is_u21_keeper,
+    u21_keeper_year,
+    is_fp,
+    is_fp_keeper,
+    fp_keeper_year,
+    is_rfa_matched,
+    owner_team_id,
+    status,
+    pool
+  `)
     .eq("status", "active")
     .not("owner_team_id", "is", null)
     .order("name", { ascending: true });
@@ -460,27 +460,29 @@ top6_protected_team_id: playerDetails.top6_protected_team_id,
     return;
   }
 
-  allPickedPlayers = (data || []).map(player => ({
-    id: player.id,
-    player_id: player.id,
-    draft_name: currentDraftName,
-    pick_number: null,
-    team_id: player.owner_team_id,
-    player_name: player.name,
-    role: player.role,
-    role_mantra: player.role_mantra,
-    serie_a_team: player.serie_a_team,
-    quotation: player.quotation,
-    is_u21: !!player.is_u21,
-     
-    is_u21_keeper: !!player.is_u21_keeper,
-    u21_keeper_year: player.u21_keeper_year,
-    is_fp: !!player.is_fp,
-    is_fp_keeper: !!player.is_fp_keeper,
-    fp_keeper_year: player.fp_keeper_year,
-    is_rfa_matched: !!player.is_rfa_matched,
-     is_top6_protected: !!player.is_top6_protected
-  }));
+ allPickedPlayers = (data || []).map(player => ({
+  id: player.id,
+  player_id: player.id,
+  draft_name: currentDraftName,
+  pick_number: null,
+  team_id: player.owner_team_id,
+  player_name: player.name,
+  role: player.role,
+  role_mantra: player.role_mantra,
+  serie_a_team: player.serie_a_team,
+  quotation: player.quotation,
+  is_u21: !!player.is_u21,
+  is_u21_keeper: !!player.is_u21_keeper,
+  u21_keeper_year: player.u21_keeper_year,
+  is_fp: !!player.is_fp,
+  is_fp_keeper: !!player.is_fp_keeper,
+  fp_keeper_year: player.fp_keeper_year,
+  is_rfa_matched: !!player.is_rfa_matched,
+  is_top6_protected:
+    !!player.is_top6_protected &&
+    player.owner_team_id === player.top6_protected_team_id,
+  top6_protected_team_id: player.top6_protected_team_id
+}));
 }
 
 async function loadFuturePicks() {
