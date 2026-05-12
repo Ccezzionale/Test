@@ -1068,10 +1068,10 @@ async function inviaPickAlFoglio(pick, fantaTeam, nome, ruolo, squadra, quotazio
       return;
     }
 
-    if (!isMioTurno()) {
-      alert("Non è il tuo turno.");
-      return;
-    }
+ if (!isAdmin && !isMioTurno()) {
+  alert("Non è il tuo turno.");
+  return;
+}
 
     pickInInvio = true;
 
@@ -1552,7 +1552,7 @@ tr.innerHTML = `
     listaGiocatori.addEventListener("click", (e) => {
       const tr = e.target.closest("tr");
       if (!tr) return;
-      if (!isMioTurno()) {
+if (!isAdmin && !isMioTurno()) {
   alert("Non è il tuo turno.");
   return;
 }
