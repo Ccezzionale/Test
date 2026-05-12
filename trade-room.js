@@ -825,11 +825,11 @@ function getTradeBadgeTokens(player) {
     tokens.push("[FP]");
   }
 
-  if (player.is_u21_keeper === true) {
-    tokens.push(Number(player.u21_keeper_year) === 2 ? "[U21-2]" : "[U21]");
-  } else if (player.is_u21_slot === true) {
-    tokens.push("[U21]");
-  }
+if (player.is_u21_keeper === true) {
+  tokens.push(Number(player.u21_keeper_year) === 2 ? "[U21K2]" : "[U21K]");
+} else if (player.is_u21_slot === true) {
+  tokens.push("[U21]");
+}
 
   if (player.is_rfa_matched === true) {
     tokens.push("[RFA]");
@@ -851,6 +851,8 @@ function formatTradeAssetLabelHtml(label) {
     "[U21-2]": `<img class="badge-img badge-img-star trade-badge-img" src="img/badges/u21-confermato-secondo-anno.webp" alt="U21" title="U21 confermato 2° anno">`,
     "[U21]": `<img class="badge-img badge-img-pill trade-badge-img" src="img/badges/u21.webp" alt="U21" title="Under 21">`,
     "[RFA]": `<img class="badge-img badge-img-pill trade-badge-img" src="img/badges/rfa.webp" alt="RFA" title="RFA pareggiato">`,
+     "[U21K2]": `<img class="badge-img badge-img-star trade-badge-img" src="img/badges/u21-confermato-secondo-anno.webp" alt="U21" title="U21 confermato 2° anno">`,
+"[U21K]": `<img class="badge-img badge-img-star trade-badge-img" src="img/badges/u21-confermato.webp" alt="U21" title="U21 confermato 1° anno">`,
      "[P6]": `<img class="badge-img badge-img-protected trade-badge-img" src="img/badges/protetto-p6-lucchetto.webp" alt="P6" title="Giocatore protetto mercato: può generare priorità waiver speciale">`
   };
 
