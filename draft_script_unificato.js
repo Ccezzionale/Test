@@ -1525,7 +1525,7 @@ if (player.is_fp_keeper) {
   tr.dataset.badgeSort = "3-fp";
 } else if (player.is_u21_keeper) {
   tr.dataset.badgeSort = Number(player.u21_keeper_year) === 2 ? "4-u21-2" : "5-u21-1";
-} else if (player.is_u21) {
+} else if (player.is_u21_slot) {
   tr.dataset.badgeSort = "6-u21";
 } else if (player.is_rfa_matched) {
   tr.dataset.badgeSort = "7-rfa";
@@ -1796,8 +1796,8 @@ const playerInfo =
 
 const ruolo = playerInfo.ruolo || "";
 const isTop6Protected = playerInfo.is_top6_protected === true;
-const isU21 = playerInfo.is_u21 === true && playerInfo.is_u21_keeper !== true;
-const isU21Keeper = playerInfo.is_u21_keeper === true;
+const isU21 = playerInfo.is_u21_slot === true;
+const isU21Keeper = playerInfo.is_u21_keeper === true;;
 const u21KeeperYear = Number(playerInfo.u21_keeper_year || 1);
 const isFp = playerInfo.is_fp === true;
 const isFpKeeper = playerInfo.is_fp_keeper === true;
@@ -1861,6 +1861,7 @@ const badgeHtml = renderDraftBadgeImages({
   is_fp_keeper: p.isFpKeeper,
   fp_keeper_year: p.fpKeeperYear,
   is_u21: p.isU21,
+  is_u21_slot: p.isU21,
   is_top6_protected: p.isTop6Protected,
   is_u21_keeper: p.isU21Keeper,
   u21_keeper_year: p.u21KeeperYear,
