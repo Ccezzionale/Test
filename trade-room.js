@@ -373,6 +373,7 @@ async function loadPickedPlayers() {
           is_fp_keeper,
           fp_keeper_year,
           is_top6_protected,
+          top6_protected_team_id,
           is_rfa_matched,
           role,
           role_mantra,
@@ -403,6 +404,10 @@ async function loadPickedPlayers() {
         fp_keeper_year: playerDetails.fp_keeper_year,
         is_rfa_matched: !!playerDetails.is_rfa_matched,
        is_top6_protected: !!playerDetails.is_top6_protected,
+         is_top6_protected:
+  !!playerDetails.is_top6_protected &&
+  row.team_id === playerDetails.top6_protected_team_id,
+top6_protected_team_id: playerDetails.top6_protected_team_id,
         role: playerDetails.role,
         role_mantra: playerDetails.role_mantra,
         serie_a_team: playerDetails.serie_a_team,
