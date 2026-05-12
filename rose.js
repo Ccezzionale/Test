@@ -115,6 +115,7 @@ async function caricaRose() {
         is_fp,
         is_fp_keeper,
         is_top6_protected,
+        top6_protected_team_id,
         fp_keeper_year,
         is_rfa_matched,
         owner_team_id,
@@ -156,7 +157,9 @@ async function caricaRose() {
         u21: !!p.is_u21,
         u21Keeper: !!p.is_u21_keeper,
         u21KeeperYear: p.u21_keeper_year,
-        top6Protected: !!p.is_top6_protected,
+        top6Protected:
+  !!p.is_top6_protected &&
+  p.owner_team_id === p.top6_protected_team_id,
           
         rfaMatched: !!p.is_rfa_matched
       });
