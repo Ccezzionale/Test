@@ -1415,7 +1415,7 @@ async function adminEditPick() {
 }
 
 
-function renderDraftBadgeImages(player) {
+function renderDraftBadgeImages(player, options = {}) {
   const badges = [];
 
   if (player.is_fp_keeper) {
@@ -1457,7 +1457,10 @@ function renderDraftBadgeImages(player) {
         title="${isSecondYear ? "U21 confermato 2° anno" : "U21 confermato 1° anno"}"
       >
     `);
-  } else if (player.is_u21_slot) {
+  } else if (
+    player.is_u21_slot ||
+    (options.showEligibleU21 === true && player.is_u21 === true)
+  ) {
     badges.push(`
       <img
         class="badge-img badge-img-pill"
@@ -1510,7 +1513,7 @@ Object.values(mappaGiocatori).forEach((player) => {
   const key = normalize(nome);
   if (giocatoriScelti.has(key)) return;
 
-  const badges = renderDraftBadgeImages(player);
+    const badges = renderDraftBadgeImages(player, { showEligibleU21: true });
 
   if (ruolo) ruoliTrovati.add(ruolo);
   if (squadra) squadreTrovate.add(squadra);
@@ -1525,7 +1528,7 @@ if (player.is_fp_keeper) {
   tr.dataset.badgeSort = "3-fp";
 } else if (player.is_u21_keeper) {
   tr.dataset.badgeSort = Number(player.u21_keeper_year) === 2 ? "4-u21-2" : "5-u21-1";
-} else if (player.is_u21_slot) {
+} else if (player.is_u21 === true) {
   tr.dataset.badgeSort = "6-u21";
 } else if (player.is_rfa_matched) {
   tr.dataset.badgeSort = "7-rfa";
