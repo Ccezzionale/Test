@@ -366,6 +366,18 @@ tbody tr:hover{
   font-weight: 800;
 }
 
+.badge-img-protected {
+  width: 22px !important;
+  height: 22px !important;
+  max-width: 22px !important;
+  max-height: 22px !important;
+  object-fit: contain !important;
+  vertical-align: middle !important;
+  display: inline-block !important;
+  margin-left: 5px;
+  transform: translateY(-1px);
+}
+
 /* =========================
    PLAYER LIST COLUMN
    ========================= */
