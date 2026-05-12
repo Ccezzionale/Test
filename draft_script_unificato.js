@@ -661,9 +661,9 @@ function isMioTurno() {
   return false;
 }
 function aggiornaStatoInterattivoLista() {
-  const mioTurno = isMioTurno();
+  const puoScegliere = isAdmin || isMioTurno();
 
-  if (mioTurno) {
+  if (puoScegliere) {
     listaGiocatori.style.opacity = "1";
     listaGiocatori.style.pointerEvents = "auto";
   } else {
