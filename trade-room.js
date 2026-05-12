@@ -367,6 +367,7 @@ async function loadPickedPlayers() {
         .select(`
           id,
           is_u21,
+          is_u21_slot,
           is_u21_keeper,
           u21_keeper_year,
           is_fp,
@@ -397,6 +398,7 @@ async function loadPickedPlayers() {
       return {
         ...row,
         is_u21: !!playerDetails.is_u21,
+        is_u21_slot: !!playerDetails.is_u21_slot,
         is_u21_keeper: !!playerDetails.is_u21_keeper,
         u21_keeper_year: playerDetails.u21_keeper_year,
         is_fp: !!playerDetails.is_fp,
@@ -427,6 +429,7 @@ let query = supabase
     serie_a_team,
     quotation,
     is_u21,
+    is_u21_slot,
     is_top6_protected,
     top6_protected_team_id,
     is_u21_keeper,
@@ -472,6 +475,7 @@ let query = supabase
   serie_a_team: player.serie_a_team,
   quotation: player.quotation,
   is_u21: !!player.is_u21,
+  is_u21_slot: !!player.is_u21_slot,
   is_u21_keeper: !!player.is_u21_keeper,
   u21_keeper_year: player.u21_keeper_year,
   is_fp: !!player.is_fp,
@@ -776,7 +780,7 @@ function renderTradeBadgeImages(player) {
         title="${isSecondYear ? "U21 confermato 2° anno" : "U21 confermato 1° anno"}"
       >
     `);
-  } else if (player.is_u21 === true) {
+  } else if (player.is_u21_slot === true) {
     badges.push(`
       <img
         class="badge-img badge-img-pill trade-badge-img"
@@ -823,7 +827,7 @@ function getTradeBadgeTokens(player) {
 
   if (player.is_u21_keeper === true) {
     tokens.push(Number(player.u21_keeper_year) === 2 ? "[U21-2]" : "[U21]");
-  } else if (player.is_u21 === true) {
+  } else if (player.is_u21_slot === true) {
     tokens.push("[U21]");
   }
 
@@ -847,7 +851,7 @@ function formatTradeAssetLabelHtml(label) {
     "[U21-2]": `<img class="badge-img badge-img-star trade-badge-img" src="img/badges/u21-confermato-secondo-anno.webp" alt="U21" title="U21 confermato 2° anno">`,
     "[U21]": `<img class="badge-img badge-img-pill trade-badge-img" src="img/badges/u21.webp" alt="U21" title="Under 21">`,
     "[RFA]": `<img class="badge-img badge-img-pill trade-badge-img" src="img/badges/rfa.webp" alt="RFA" title="RFA pareggiato">`,
-     "[P6]": `<img class="badge-img badge-img-star trade-badge-img" src="img/badges/protetto-p6-lucchetto.webp" alt="P6" title="Giocatore protetto mercato: può generare priorità waiver speciale">`
+     "[P6]": `<img class="badge-img badge-img-protected trade-badge-img" src="img/badges/protetto-p6-lucchetto.webp" alt="P6" title="Giocatore protetto mercato: può generare priorità waiver speciale">`
   };
 
   Object.entries(replacements).forEach(([token, imageHtml]) => {
@@ -972,7 +976,7 @@ const theirU21Out = countSelectedNormalU21Players(theirSelectedPlayerIds);
 
 if (myU21Out !== theirU21Out) {
   showMessage(
-    `Trade non valida: gli Under 21 possono essere scambiati solo con altri Under 21 e sempre in rapporto 1:1. In questa proposta ci sono ${myU21Out} U21 da una parte e ${theirU21Out} dall'altra.`,
+    `Trade non valida: gli Under 21 normali possono essere scambiati solo con altri Under 21 normali e sempre in rapporto 1:1. In questa proposta ci sono ${myU21Out} U21 normali da una parte e ${theirU21Out} dall'altra.`,
     "error"
   );
   return;
@@ -1626,14 +1630,13 @@ const cuttablePlayers = allPickedPlayers.filter(player => {
   const isOutgoing = outgoingPlayerIds.has(String(player[CONFIG.PICKS_ID_COL]));
 
   const isNormalU21 =
-    player.is_u21 === true &&
-    player.is_u21_keeper !== true;
+    player.is_u21_slot === true;
 
   return isMine && !isOutgoing && !isNormalU21;
 });
 
   if (!cuttablePlayers.length) {
-    alert("Non ci sono giocatori disponibili da svincolare. Gli Under 21 normali non possono essere svincolati.");
+    alert("Non ci sono giocatori disponibili da svincolare. Gli Under 21 slot non possono essere svincolati.");
     return;
   }
 
@@ -1716,7 +1719,7 @@ function countSelectedNormalU21Players(selectedPlayerIds) {
       String(p[CONFIG.PICKS_ID_COL]) === String(playerId)
     );
 
-    return player?.is_u21 === true && player?.is_u21_keeper !== true;
+    return player?.is_u21_slot === true;
   }).length;
 }
 
