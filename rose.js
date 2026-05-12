@@ -108,8 +108,9 @@ async function caricaRose() {
         role,
         role_mantra,
         serie_a_team,
-        quotation,
+            quotation,
         is_u21,
+        is_u21_slot,
         is_u21_keeper,
         u21_keeper_year,
         is_fp,
@@ -154,7 +155,8 @@ async function caricaRose() {
         fpKeeper: !!p.is_fp_keeper,
         fpKeeperYear: p.fp_keeper_year,
 
-        u21: !!p.is_u21,
+           u21: !!p.is_u21,
+        u21Slot: !!p.is_u21_slot,
         u21Keeper: !!p.is_u21_keeper,
         u21KeeperYear: p.u21_keeper_year,
         top6Protected:
@@ -242,7 +244,7 @@ function renderPlayerBadges(g) {
         title="${isSecondYear ? "U21 confermato 2° anno" : "U21 confermato 1° anno"}"
       >
     `);
-  } else if (g.u21) {
+  } else if (g.u21Slot) {
     badges.push(`
       <img
         class="badge-img badge-img-pill"
@@ -263,10 +265,10 @@ if (g.rfaMatched) {
     >
   `);
 }
-  if (g.top6Protected) {
+if (g.top6Protected) {
   badges.push(`
     <img
-      class="badge-img badge-img-star"
+      class="badge-img badge-img-protected"
       src="img/badges/protetto-p6-lucchetto.webp"
       alt="P6"
       title="Giocatore protetto mercato: può generare priorità waiver speciale"
