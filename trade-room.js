@@ -967,8 +967,8 @@ async function sendTradeProposal() {
 
   let tradeWarningMessage = "";
 
-   const myU21Out = countSelectedU21Players(mySelectedPlayerIds);
-const theirU21Out = countSelectedU21Players(theirSelectedPlayerIds);
+const myU21Out = countSelectedNormalU21Players(mySelectedPlayerIds);
+const theirU21Out = countSelectedNormalU21Players(theirSelectedPlayerIds);
 
 if (myU21Out !== theirU21Out) {
   showMessage(
@@ -1708,7 +1708,7 @@ function closeCutPlayersModal() {
   }
 }
 
-function countSelectedU21Players(selectedPlayerIds) {
+function countSelectedNormalU21Players(selectedPlayerIds) {
   return selectedPlayerIds.filter(playerId => {
     const player = allPickedPlayers.find(p =>
       String(p.id) === String(playerId) ||
