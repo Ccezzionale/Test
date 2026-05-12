@@ -670,13 +670,19 @@ select:focus{
 
 .badge-img-star,
 .badge-img.small{
-  width: 18px !important;
-  height: 18px !important;
+  width: 26px !important;
+  height: 26px !important;
 }
 
 .badge-img-pill{
-  width: 28px !important;
-  height: 17px !important;
+  width: 38px !important;
+  height: 23px !important;
+}
+
+.badge-img-protected{
+  width: 26px !important;
+  height: 26px !important;
+  object-fit: contain !important;
 }
 
 /* Safety net: the summary cards have logo rules, but badges must stay tiny */
@@ -690,13 +696,18 @@ select:focus{
 
 .card-pick .badge-img-star,
 .card-pick .badge-img.small{
-  width: 18px !important;
-  height: 18px !important;
+  width: 26px !important;
+  height: 26px !important;
 }
 
 .card-pick .badge-img-pill{
-  width: 28px !important;
-  height: 17px !important;
+  width: 38px !important;
+  height: 23px !important;
+}
+
+.card-pick .badge-img-protected{
+  width: 26px !important;
+  height: 26px !important;
 }
 
 #lista-giocatori-table .badge-img{
