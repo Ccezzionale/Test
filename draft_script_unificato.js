@@ -1797,7 +1797,7 @@ const playerInfo =
 const ruolo = playerInfo.ruolo || "";
 const isTop6Protected = playerInfo.is_top6_protected === true;
 const isU21 = playerInfo.is_u21_slot === true;
-const isU21Keeper = playerInfo.is_u21_keeper === true;;
+const isU21Keeper = playerInfo.is_u21_keeper === true;
 const u21KeeperYear = Number(playerInfo.u21_keeper_year || 1);
 const isFp = playerInfo.is_fp === true;
 const isFpKeeper = playerInfo.is_fp_keeper === true;
