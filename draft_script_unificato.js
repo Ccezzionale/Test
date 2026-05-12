@@ -548,12 +548,13 @@ const draftPlayerIds = [...new Set(
 if (draftPlayerIds.length) {
   const { data: draftPlayers, error: draftPlayersError } = await supabase
     .from("players")
-    .select(`
+.select(`
 id,
 name,
 role,
 role_mantra,
 is_u21,
+is_u21_slot,
 is_u21_keeper,
 u21_keeper_year,
 is_fp,
@@ -574,6 +575,7 @@ is_rfa_matched
       nome: p.name || "",
       ruolo: p.role || p.role_mantra || "",
       is_u21: !!p.is_u21,
+      is_u21_slot: !!p.is_u21_slot,
       is_u21_keeper: !!p.is_u21_keeper,
       is_fp: !!p.is_fp,
 is_fp_keeper: !!p.is_fp_keeper,
@@ -979,6 +981,7 @@ const { data: players, error } = await supabase
     serie_a_team,
     quotation,
 is_u21,
+is_u21_slot,
 is_u21_keeper,
 u21_keeper_year,
 is_fp,
@@ -1026,7 +1029,8 @@ mappaGiocatori[key] = {
   quotazione,
   is_fp_keeper: !!p.is_fp_keeper,
 fp_keeper_year: p.fp_keeper_year,
-  is_u21: !!p.is_u21,
+   is_u21: !!p.is_u21,
+  is_u21_slot: !!p.is_u21_slot,
   is_u21_keeper: !!p.is_u21_keeper,
   u21_keeper_year: p.u21_keeper_year,
   is_top6_protected: !!p.is_top6_protected,
@@ -1453,7 +1457,7 @@ function renderDraftBadgeImages(player) {
         title="${isSecondYear ? "U21 confermato 2° anno" : "U21 confermato 1° anno"}"
       >
     `);
-  } else if (player.is_u21) {
+  } else if (player.is_u21_slot) {
     badges.push(`
       <img
         class="badge-img badge-img-pill"
@@ -1478,7 +1482,7 @@ function renderDraftBadgeImages(player) {
   if (player.is_top6_protected) {
     badges.push(`
       <img
-        class="badge-img badge-img-star"
+        class="badge-img badge-img-protected"
         src="img/badges/protetto-p6-lucchetto.webp"
         alt="P6"
         title="Giocatore protetto mercato: può generare priorità waiver speciale"
