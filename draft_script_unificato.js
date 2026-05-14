@@ -1882,16 +1882,28 @@ function aggiornaChiamatePerSquadra() {
     });
   });
 
-  const container = document.getElementById("riepilogo-squadre");
-  if (!container) return;
+const container = document.getElementById("riepilogo-squadre");
+if (!container) return;
 
-  container.innerHTML = "";
+/* Salva le squadre aperte prima del refresh */
+const openTeams = new Set(
+  Array.from(container.querySelectorAll(".team-accordion.is-open"))
+    .map(card => card.dataset.teamName)
+    .filter(Boolean)
+);
+
+container.innerHTML = "";
 
   Object.entries(riepilogo).forEach(([team, picks], index) => {
     picks.sort((a, b) => a.n - b.n);
 
-    const div = document.createElement("div");
-    div.className = "card-pick team-accordion";
+const div = document.createElement("div");
+div.className = "card-pick team-accordion";
+div.dataset.teamName = team;
+
+if (openTeams.has(team)) {
+  div.classList.add("is-open");
+}
 
     const logoPath = `img/${team}.png`;
 
