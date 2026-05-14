@@ -2577,3 +2577,106 @@ h1, h2, h3, h4, p{
     color: #001f3f !important;
   }
 }
+/* =========================
+   MOBILE DRAFT BOARD SPORT APP PALETTE
+   ========================= */
+@media (max-width: 768px){
+
+  #draft-board-panel{
+    background:
+      linear-gradient(180deg, rgba(255,255,255,.96) 0%, rgba(246,251,255,.96) 100%) !important;
+    border: 1px solid rgba(0,31,63,.12) !important;
+    box-shadow:
+      0 14px 30px rgba(0, 31, 63, .13),
+      0 2px 8px rgba(0, 31, 63, .06) !important;
+  }
+
+  #draft-board-panel .panel-header{
+    background:
+      linear-gradient(180deg, #ffffff 0%, #f3f8ff 100%) !important;
+    border-bottom: 1px solid rgba(0,31,63,.08) !important;
+  }
+
+  #draft-board-panel .panel-title{
+    color: #001f3f !important;
+    text-shadow: 0 2px 0 rgba(255,204,0,.16);
+  }
+
+  #draft-board-panel .panel-subtitle{
+    color: #66758b !important;
+  }
+
+  #draft-board-panel .panel-count{
+    background:
+      linear-gradient(180deg, #0b5cad 0%, #001f3f 100%) !important;
+    color: #ffdd55 !important;
+    border: 1px solid rgba(255,213,74,.4) !important;
+    box-shadow:
+      0 6px 14px rgba(0,31,63,.22),
+      inset 0 1px 0 rgba(255,255,255,.16) !important;
+  }
+
+  #tabella-pick tbody tr{
+    background:
+      linear-gradient(135deg, #ffffff 0%, #f3f9ff 58%, #eef7ff 100%) !important;
+    border: 1px solid #bfd8f2 !important;
+    box-shadow:
+      0 7px 16px rgba(0, 31, 63, .08),
+      inset 0 1px 0 rgba(255,255,255,.88) !important;
+  }
+
+  #tabella-pick tbody tr:nth-child(odd){
+    background:
+      linear-gradient(135deg, #ffffff 0%, #f8fbff 52%, #edf6ff 100%) !important;
+  }
+
+  #tabella-pick tbody tr.next-pick{
+    background:
+      linear-gradient(135deg, #fff7d1 0%, #ffdf5f 55%, #ffd03a 100%) !important;
+    border: 1px solid #d8aa00 !important;
+    box-shadow:
+      0 10px 22px rgba(255, 204, 0, .30),
+      inset 0 1px 0 rgba(255,255,255,.85) !important;
+  }
+
+  #tabella-pick tbody td:nth-child(1){
+    background:
+      linear-gradient(180deg, #0b5cad 0%, #001f3f 100%) !important;
+    border: 1px solid rgba(255,255,255,.20) !important;
+    color: white !important;
+    box-shadow:
+      0 6px 13px rgba(0,31,63,.30),
+      inset 0 1px 0 rgba(255,255,255,.20) !important;
+  }
+
+  #tabella-pick tbody tr.next-pick td:nth-child(1){
+    background:
+      linear-gradient(180deg, #001f3f 0%, #000b18 100%) !important;
+    color: #ffdd55 !important;
+    box-shadow:
+      0 6px 13px rgba(0,31,63,.35),
+      inset 0 1px 0 rgba(255,255,255,.16) !important;
+  }
+
+  #tabella-pick tbody td:nth-child(2){
+    color: #001f3f !important;
+    letter-spacing: -.02em;
+  }
+
+  #tabella-pick tbody td:nth-child(3){
+    color: #52647c !important;
+  }
+
+  #tabella-pick tbody tr.next-pick td:nth-child(2){
+    color: #001f3f !important;
+  }
+
+  #tabella-pick tbody tr.next-pick td:nth-child(3){
+    color: #705400 !important;
+    font-weight: 900 !important;
+  }
+
+  #tabella-pick tbody tr:active{
+    transform: scale(.985);
+  }
+}
