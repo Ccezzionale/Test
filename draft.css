@@ -3104,3 +3104,120 @@ h1, h2, h3, h4, p{
     gap: 4px !important;
   }
 }
+
+/* =========================
+   DESKTOP SUMMARY - ALIGNED PLAYER ROWS
+   ========================= */
+@media (min-width: 769px){
+
+  .team-accordion-body{
+    display: grid !important;
+    gap: 8px !important;
+    width: 100% !important;
+    padding: 0 24px 24px !important;
+  }
+
+  .team-player-row{
+    display: grid !important;
+    grid-template-columns: 28px minmax(0, 1fr) 46px 42px !important;
+    align-items: center !important;
+    gap: 8px !important;
+
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 3px 0 !important;
+
+    text-align: left !important;
+    background: transparent !important;
+    border: 0 !important;
+    box-shadow: none !important;
+  }
+
+  .team-player-left{
+    display: contents !important;
+  }
+
+  .team-player-number{
+    display: block !important;
+    grid-column: 1 !important;
+    text-align: right !important;
+
+    width: auto !important;
+    height: auto !important;
+    margin: 0 !important;
+
+    background: transparent !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+
+    color: #001f3f !important;
+    font-size: .95rem !important;
+    font-weight: 500 !important;
+  }
+
+  .team-player-pick{
+    display: none !important;
+  }
+
+  .team-player-info{
+    display: contents !important;
+  }
+
+  .team-player-info strong{
+    grid-column: 2 !important;
+    display: block !important;
+
+    max-width: 100% !important;
+    min-width: 0 !important;
+
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+
+    font-size: 1rem !important;
+    font-weight: 900 !important;
+    color: #001f3f !important;
+  }
+
+  .team-player-info small{
+    grid-column: 3 !important;
+    display: block !important;
+
+    margin: 0 !important;
+    text-align: left !important;
+
+    font-size: .82rem !important;
+    font-weight: 500 !important;
+    color: #001f3f !important;
+  }
+
+  .team-player-badges{
+    grid-column: 4 !important;
+    display: flex !important;
+    justify-content: flex-start !important;
+    align-items: center !important;
+
+    min-width: 42px !important;
+    margin: 0 !important;
+    gap: 4px !important;
+  }
+
+  .team-player-badges:empty{
+    display: block !important;
+  }
+
+  .team-player-badges .badge-img-star{
+    width: 25px !important;
+    height: 25px !important;
+  }
+
+  .team-player-badges .badge-img-pill{
+    width: 34px !important;
+    height: 20px !important;
+  }
+
+  .team-player-badges .badge-img-protected{
+    width: 22px !important;
+    height: 22px !important;
+  }
+}
