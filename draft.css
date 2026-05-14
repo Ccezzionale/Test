@@ -2080,3 +2080,32 @@ h1, h2, h3, h4, p{
     margin-left:2px !important;
   }
 }
+
+@media (max-width: 768px){
+  .team-player-badges{
+    min-width: 76px;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: flex-end !important;
+    gap: 4px !important;
+  }
+
+  .team-player-badges .badge-img-star{
+    width: 26px !important;
+    height: 26px !important;
+  }
+
+  .team-player-badges .badge-img-pill{
+    width: 38px !important;
+    height: 23px !important;
+  }
+
+  .team-player-badges .badge-img-protected{
+    width: 24px !important;
+    height: 24px !important;
+  }
+
+  .team-player-info strong{
+    max-width: 170px !important;
+  }
+}
