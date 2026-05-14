@@ -2987,3 +2987,56 @@ h1, h2, h3, h4, p{
     display: contents !important;
   }
 }
+
+/* =========================
+   DESKTOP TEAM SUMMARY HEADER FIX
+   ========================= */
+@media (min-width: 769px){
+
+  .team-accordion-header{
+    display:flex !important;
+    flex-direction:column !important;
+    align-items:center !important;
+    justify-content:center !important;
+    width:100% !important;
+    border:0 !important;
+    background:transparent !important;
+    cursor:default !important;
+    padding:18px 12px 12px !important;
+    pointer-events:none !important;
+  }
+
+  .team-accordion-left{
+    display:flex !important;
+    flex-direction:column !important;
+    align-items:center !important;
+    justify-content:center !important;
+    gap:10px !important;
+  }
+
+  .team-accordion-left img{
+    width:72px !important;
+    height:72px !important;
+    object-fit:contain !important;
+  }
+
+  .team-accordion-left strong{
+    display:block !important;
+    font-size:1.25rem !important;
+    font-weight:900 !important;
+    color:#001f3f !important;
+    text-align:center !important;
+  }
+
+  .team-accordion-left small{
+    display:none !important;
+  }
+
+  .team-accordion-chevron{
+    display:none !important;
+  }
+
+  .team-accordion-body{
+    display:block !important;
+  }
+}
