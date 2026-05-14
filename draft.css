@@ -2680,3 +2680,105 @@ h1, h2, h3, h4, p{
     transform: scale(.985);
   }
 }
+
+/* =========================
+   MOBILE DRAFT BOARD - DRAFT NIGHT
+   ========================= */
+@media (max-width: 768px){
+
+  #draft-board-panel{
+    background:
+      linear-gradient(180deg, #062b57 0%, #001f3f 100%) !important;
+    border: 1px solid rgba(255, 213, 74, .24) !important;
+    box-shadow:
+      0 16px 36px rgba(0, 31, 63, .28),
+      inset 0 1px 0 rgba(255,255,255,.10) !important;
+  }
+
+  #draft-board-panel .panel-header{
+    background: transparent !important;
+    border-bottom: 1px solid rgba(255,255,255,.10) !important;
+  }
+
+  #draft-board-panel .panel-title{
+    color: #ffffff !important;
+    text-shadow: none !important;
+  }
+
+  #draft-board-panel .panel-subtitle{
+    color: rgba(255,255,255,.72) !important;
+  }
+
+  #draft-board-panel .panel-count{
+    background:
+      linear-gradient(180deg, #ffe36a 0%, #ffcc00 100%) !important;
+    color: #001f3f !important;
+    border: 1px solid rgba(255,255,255,.35) !important;
+    box-shadow:
+      0 8px 18px rgba(255, 204, 0, .25),
+      inset 0 1px 0 rgba(255,255,255,.75) !important;
+  }
+
+  #draft-board-panel .table-scroll{
+    background: rgba(255,255,255,.06) !important;
+    border: 1px solid rgba(255,255,255,.08) !important;
+    padding: 10px !important;
+  }
+
+  #tabella-pick tbody tr{
+    background:
+      linear-gradient(135deg, rgba(255,255,255,.14) 0%, rgba(255,255,255,.07) 100%) !important;
+    border: 1px solid rgba(255,255,255,.14) !important;
+    box-shadow:
+      0 8px 16px rgba(0,0,0,.12),
+      inset 0 1px 0 rgba(255,255,255,.12) !important;
+  }
+
+  #tabella-pick tbody tr:nth-child(odd){
+    background:
+      linear-gradient(135deg, rgba(255,255,255,.18) 0%, rgba(255,255,255,.08) 100%) !important;
+  }
+
+  #tabella-pick tbody tr.next-pick{
+    background:
+      linear-gradient(135deg, #ffe36a 0%, #ffcc00 100%) !important;
+    border: 1px solid rgba(255,255,255,.55) !important;
+    box-shadow:
+      0 12px 24px rgba(255, 204, 0, .32),
+      inset 0 1px 0 rgba(255,255,255,.78) !important;
+  }
+
+  #tabella-pick tbody td:nth-child(1){
+    background:
+      linear-gradient(180deg, #ffffff 0%, #dcecff 100%) !important;
+    color: #001f3f !important;
+    border: 1px solid rgba(255,255,255,.65) !important;
+    box-shadow:
+      0 7px 14px rgba(0,0,0,.22),
+      inset 0 1px 0 rgba(255,255,255,.9) !important;
+  }
+
+  #tabella-pick tbody tr.next-pick td:nth-child(1){
+    background:
+      linear-gradient(180deg, #001f3f 0%, #000b18 100%) !important;
+    color: #ffdd55 !important;
+  }
+
+  #tabella-pick tbody td:nth-child(2){
+    color: #ffffff !important;
+    font-weight: 950 !important;
+  }
+
+  #tabella-pick tbody td:nth-child(3){
+    color: rgba(255,255,255,.72) !important;
+    font-weight: 850 !important;
+  }
+
+  #tabella-pick tbody tr.next-pick td:nth-child(2){
+    color: #001f3f !important;
+  }
+
+  #tabella-pick tbody tr.next-pick td:nth-child(3){
+    color: #5b4500 !important;
+  }
+}
