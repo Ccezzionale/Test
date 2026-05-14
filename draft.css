@@ -2440,3 +2440,140 @@ h1, h2, h3, h4, p{
     color: #697789 !important;
   }
 }
+/* =========================
+   MOBILE DRAFT BOARD TICKER
+   ========================= */
+@media (max-width: 768px){
+
+  #draft-board-panel .table-shell{
+    padding: 12px !important;
+  }
+
+  #draft-board-panel .table-scroll{
+    max-height: 420px !important;
+    overflow-y: auto !important;
+    border-radius: 22px !important;
+    background: transparent !important;
+    border: none !important;
+  }
+
+  #tabella-pick{
+    display: block !important;
+    width: 100% !important;
+    border-collapse: separate !important;
+    border-spacing: 0 !important;
+    background: transparent !important;
+  }
+
+  #tabella-pick thead{
+    display: none !important;
+  }
+
+  #tabella-pick tbody{
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 10px !important;
+  }
+
+  #tabella-pick tbody tr{
+    display: grid !important;
+    grid-template-columns: 48px 1fr !important;
+    grid-template-areas:
+      "pick team"
+      "pick player";
+    align-items: center !important;
+
+    padding: 12px 14px !important;
+    border-radius: 20px !important;
+
+    background:
+      linear-gradient(135deg, #ffffff 0%, #eef7ff 100%) !important;
+
+    border: 1px solid #c7def5 !important;
+
+    box-shadow:
+      0 6px 14px rgba(0, 31, 63, .07),
+      inset 0 1px 0 rgba(255,255,255,.85) !important;
+
+    color: #001f3f !important;
+  }
+
+  #tabella-pick tbody tr.next-pick{
+    background:
+      linear-gradient(135deg, #fff7d1 0%, #ffe06a 100%) !important;
+    border-color: #d8aa00 !important;
+    box-shadow:
+      0 8px 18px rgba(255, 204, 0, .28),
+      inset 0 1px 0 rgba(255,255,255,.8) !important;
+  }
+
+  #tabella-pick tbody td{
+    display: block !important;
+    border: none !important;
+    padding: 0 !important;
+    background: transparent !important;
+  }
+
+  #tabella-pick tbody td:nth-child(1){
+    grid-area: pick;
+    width: 38px;
+    height: 38px;
+    border-radius: 999px;
+
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+
+    background:
+      linear-gradient(180deg, #0b5cad 0%, #001f3f 100%) !important;
+
+    color: white !important;
+    font-size: .95rem !important;
+    font-weight: 950 !important;
+
+    box-shadow:
+      0 6px 12px rgba(0,31,63,.28),
+      inset 0 1px 0 rgba(255,255,255,.20) !important;
+  }
+
+  #tabella-pick tbody tr.next-pick td:nth-child(1){
+    background:
+      linear-gradient(180deg, #001f3f 0%, #000b18 100%) !important;
+    color: #ffdd55 !important;
+  }
+
+  #tabella-pick tbody td:nth-child(2){
+    grid-area: team;
+    font-size: .98rem !important;
+    font-weight: 950 !important;
+    color: #001f3f !important;
+
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+  }
+
+  #tabella-pick tbody td:nth-child(3){
+    grid-area: player;
+    margin-top: 3px !important;
+    font-size: .9rem !important;
+    font-weight: 800 !important;
+    color: #52647c !important;
+
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+  }
+
+  #tabella-pick tbody td:nth-child(3):empty::after{
+    content: "In attesa...";
+    color: #8b98aa;
+    font-style: italic;
+    font-weight: 700;
+  }
+
+  #tabella-pick tbody tr.next-pick td:nth-child(2),
+  #tabella-pick tbody tr.next-pick td:nth-child(3){
+    color: #001f3f !important;
+  }
+}
