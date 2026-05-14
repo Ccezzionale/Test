@@ -1901,3 +1901,188 @@ h1, h2, h3, h4, p{
     scroll-margin-top: 14px;
   }
 }
+
+/* =========================
+   MOBILE TEAM ACCORDION
+   ========================= */
+.team-accordion-header{
+  display:none;
+}
+
+.team-accordion-body{
+  display:block;
+}
+
+@media (max-width: 768px){
+
+  #riepilogo-squadre{
+    display:flex !important;
+    flex-direction:column !important;
+    gap:12px !important;
+  }
+
+  .team-accordion{
+    padding:0 !important;
+    overflow:hidden;
+    text-align:left !important;
+  }
+
+  .team-accordion::before{
+    display:none !important;
+  }
+
+  .team-accordion > img,
+  .team-accordion > h4{
+    display:none !important;
+  }
+
+  .team-accordion-header{
+    width:100%;
+    border:0;
+    background:linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+    padding:14px 14px;
+    cursor:pointer;
+  }
+
+  .team-accordion-left{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    min-width:0;
+  }
+
+  .team-accordion-left img{
+    width:46px;
+    height:46px;
+    object-fit:contain;
+    flex:0 0 auto;
+  }
+
+  .team-accordion-left strong{
+    display:block;
+    color:var(--navy);
+    font-size:1rem;
+    font-weight:900;
+    line-height:1.05;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    max-width:230px;
+  }
+
+  .team-accordion-left small{
+    display:block;
+    margin-top:3px;
+    color:var(--muted);
+    font-size:.78rem;
+    font-weight:700;
+  }
+
+  .team-accordion-chevron{
+    width:34px;
+    height:34px;
+    border-radius:999px;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    background:#eef4ff;
+    color:var(--navy);
+    font-size:1.2rem;
+    font-weight:900;
+    transition:transform .18s ease;
+    flex:0 0 auto;
+  }
+
+  .team-accordion-body{
+    display:none;
+    padding:0 12px 12px;
+    background:#ffffff;
+  }
+
+  .team-accordion.is-open .team-accordion-body{
+    display:block;
+  }
+
+  .team-accordion.is-open .team-accordion-chevron{
+    transform:rotate(180deg);
+  }
+
+  .team-player-row{
+    display:flex !important;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+    text-align:left !important;
+    padding:10px 10px;
+    margin:7px 0 !important;
+    border-radius:16px;
+    background:#f7fbff;
+    border:1px solid #e7eef7;
+  }
+
+  .team-player-row.highlight-pick{
+    background:linear-gradient(180deg, #fff3bf 0%, #ffe59a 100%) !important;
+    border-color:#f0d277 !important;
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.65);
+  }
+
+  .team-player-main{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    min-width:0;
+  }
+
+  .team-player-number{
+    width:28px;
+    height:28px;
+    border-radius:999px;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    background:var(--navy);
+    color:white;
+    font-size:.82rem;
+    font-weight:900;
+    flex:0 0 auto;
+  }
+
+  .team-player-info{
+    min-width:0;
+  }
+
+  .team-player-info strong{
+    display:block;
+    color:var(--navy);
+    font-size:.98rem;
+    font-weight:900;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    max-width:185px;
+  }
+
+  .team-player-info small{
+    display:block;
+    color:var(--muted);
+    font-size:.78rem;
+    font-weight:700;
+    margin-top:2px;
+  }
+
+  .team-player-badges{
+    display:flex;
+    align-items:center;
+    justify-content:flex-end;
+    gap:3px;
+    flex:0 0 auto;
+  }
+
+  .team-player-badges .badge-img{
+    margin-left:2px !important;
+  }
+}
