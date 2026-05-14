@@ -1765,3 +1765,72 @@ h1, h2, h3, h4, p{
     font-size: 1rem !important;
   }
 }
+
+/* =========================
+   MOBILE LIVE DRAFT HERO
+   ========================= */
+.mobile-live-draft{
+  display:none;
+}
+
+@media (max-width: 768px){
+  .mobile-live-draft{
+    display:block;
+    margin: 10px 0 18px;
+    padding: 20px;
+    border-radius: 28px;
+    background:
+      radial-gradient(circle at 85% 20%, rgba(255,213,74,.24), transparent 34%),
+      linear-gradient(180deg, #082f5f 0%, #001f3f 100%);
+    color:white;
+    box-shadow: 0 16px 34px rgba(0,31,63,.24);
+    border:1px solid rgba(255,255,255,.10);
+    overflow:hidden;
+  }
+
+  .mobile-live-top{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:12px;
+    margin-bottom:18px;
+  }
+
+  .mobile-live-badge{
+    display:inline-flex;
+    align-items:center;
+    padding:8px 13px;
+    border-radius:999px;
+    background:rgba(255,255,255,.12);
+    border:1px solid rgba(255,255,255,.16);
+    font-size:.78rem;
+    font-weight:900;
+    letter-spacing:.06em;
+  }
+
+  .mobile-live-pick{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    padding:9px 15px;
+    border-radius:999px;
+    background:#ffd54a;
+    color:#001f3f;
+    font-size:.9rem;
+    font-weight:900;
+  }
+
+  .mobile-live-team{
+    font-size:2rem;
+    line-height:1;
+    font-weight:950;
+    letter-spacing:-.04em;
+    text-transform:uppercase;
+  }
+
+  .mobile-live-sub{
+    margin-top:8px;
+    color:rgba(255,255,255,.76);
+    font-weight:700;
+  }
+}
