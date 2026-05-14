@@ -2158,11 +2158,11 @@ h1, h2, h3, h4, p{
   .team-player-side{
     margin-left:auto;
     display:flex;
-    flex-direction:column;
-    align-items:flex-end;
-    justify-content:center;
-    gap:4px;
-    min-width:72px;
+    flex-direction:row;
+    align-items:center;
+    justify-content:flex-end;
+    gap:6px;
+    min-width:92px;
     flex:0 0 auto;
   }
 
@@ -2193,6 +2193,21 @@ h1, h2, h3, h4, p{
   }
 
   .team-player-info strong{
-    max-width:170px !important;
+    max-width:160px !important;
+  }
+
+  .team-player-badges .badge-img-star{
+    width:24px !important;
+    height:24px !important;
+  }
+
+  .team-player-badges .badge-img-pill{
+    width:34px !important;
+    height:20px !important;
+  }
+
+  .team-player-badges .badge-img-protected{
+    width:22px !important;
+    height:22px !important;
   }
 }
