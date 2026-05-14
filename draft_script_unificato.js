@@ -1912,7 +1912,12 @@ if (openTeams.has(team)) {
     header.className = "team-accordion-header";
     header.innerHTML = `
       <span class="team-accordion-left">
-        <img src="${logoPath}" alt="${escapeHtml(team)}" loading="lazy">
+       <img
+  src="${logoPath}"
+  alt="${escapeHtml(team)}"
+  loading="lazy"
+  onerror="this.style.display='none'"
+>
         <span>
           <strong>${escapeHtml(team)}</strong>
           <small>${picks.length} giocatori draftati</small>
