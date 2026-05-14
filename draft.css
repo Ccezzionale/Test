@@ -3040,3 +3040,67 @@ h1, h2, h3, h4, p{
     display:block !important;
   }
 }
+
+/* =========================
+   DESKTOP SUMMARY - HIDE PICK BADGE
+   ========================= */
+@media (min-width: 769px){
+
+  .team-player-pick{
+    display: none !important;
+  }
+
+  .team-player-row{
+    display: block !important;
+    text-align: center !important;
+    margin: 8px 0 !important;
+    padding: 0 !important;
+    background: transparent !important;
+    border: 0 !important;
+    box-shadow: none !important;
+  }
+
+  .team-player-left{
+    display: inline !important;
+  }
+
+  .team-player-number{
+    display: inline !important;
+    width: auto !important;
+    height: auto !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    color: #001f3f !important;
+    box-shadow: none !important;
+    font-size: 1rem !important;
+    font-weight: 400 !important;
+    margin-right: 4px !important;
+  }
+
+  .team-player-info{
+    display: inline !important;
+  }
+
+  .team-player-info strong{
+    display: inline !important;
+    font-size: 1rem !important;
+    font-weight: 900 !important;
+    color: #001f3f !important;
+    max-width: none !important;
+    white-space: normal !important;
+  }
+
+  .team-player-info small{
+    display: inline !important;
+    margin-left: 4px !important;
+    font-size: .82rem !important;
+    color: #001f3f !important;
+  }
+
+  .team-player-badges{
+    display: inline-flex !important;
+    vertical-align: middle !important;
+    margin-left: 6px !important;
+    gap: 4px !important;
+  }
+}
