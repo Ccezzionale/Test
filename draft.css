@@ -1201,3 +1201,472 @@ h1, h2, h3, h4, p{
     border-color: rgba(255, 213, 74, 0.28);
   }
 }
+
+}
+
+
+/* =========================================================
+   MOBILE DRAFT APP CONCEPT - PHASE 1
+   Solo mobile: bottom nav, quick tabs, pool a card, board compatto
+   ========================================================= */
+.mobile-bottom-nav,
+.mobile-draft-tabs{
+  display: none;
+}
+
+@media (max-width: 768px){
+  body{
+    padding-bottom: 86px;
+    background:
+      radial-gradient(circle at top left, rgba(255, 213, 74, 0.18), transparent 28%),
+      linear-gradient(180deg, #f8fbff 0%, #eef3f8 100%);
+  }
+
+  .page-shell{
+    padding: 10px 10px 100px;
+  }
+
+  .hero{
+    margin: 10px 0 12px;
+    padding: 0;
+    border-radius: 24px;
+    background: linear-gradient(180deg, #052d56 0%, #001f3f 100%);
+    color: #fff;
+    overflow: hidden;
+  }
+
+  .hero::before{
+    width: 260px;
+    height: 260px;
+    background: radial-gradient(circle, rgba(255, 213, 74, 0.23), transparent 66%);
+    top: -90px;
+    left: -70px;
+  }
+
+  .hero::after{
+    width: 230px;
+    height: 230px;
+    background: radial-gradient(circle, rgba(255,255,255,.16), transparent 64%);
+    top: auto;
+    right: -80px;
+    bottom: -90px;
+  }
+
+  .hero-inner{
+    display: grid;
+    gap: 14px;
+    padding: 18px 16px 16px;
+  }
+
+  .hero-copy{
+    min-width: 0;
+  }
+
+  .kicker{
+    background: rgba(255,255,255,.12);
+    color: #fff;
+    border-color: rgba(255,255,255,.18);
+    margin-bottom: 10px;
+  }
+
+  .titolo-pagina{
+    color: #fff;
+    font-size: 1.72rem;
+    text-shadow: none;
+  }
+
+  .hero-subtitle{
+    color: rgba(255,255,255,.76);
+    font-size: .92rem;
+  }
+
+  .hero-status{
+    min-width: 0;
+  }
+
+  .status-card{
+    padding: 16px;
+    border-radius: 20px;
+    background: rgba(255,255,255,.10);
+    border: 1px solid rgba(255,255,255,.16);
+    box-shadow: none;
+    backdrop-filter: blur(8px);
+  }
+
+  .status-label{
+    color: rgba(255,255,255,.7);
+  }
+
+  #turno-attuale{
+    color: #ffd54a;
+    font-size: 1.28rem;
+    line-height: 1.25;
+  }
+
+  #utente-loggato{
+    margin-top: 8px;
+    color: rgba(255,255,255,.82);
+    font-weight: 700;
+  }
+
+  .hero-badges{
+    gap: 8px;
+  }
+
+  .hero-badge{
+    background: rgba(255,255,255,.12);
+    color: #fff;
+    border-color: rgba(255,255,255,.16);
+    box-shadow: none;
+    font-size: .82rem;
+    padding: 8px 10px;
+  }
+
+  .mobile-draft-tabs{
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 8px;
+    margin: 0 0 12px;
+  }
+
+  .mobile-draft-tabs a{
+    text-decoration: none;
+    color: var(--navy);
+    background: #fff;
+    border: 1px solid rgba(0,31,63,.08);
+    box-shadow: var(--shadow-soft);
+    border-radius: 16px;
+    padding: 10px 6px;
+    font-weight: 850;
+    font-size: .78rem;
+    text-align: center;
+  }
+
+  .container{
+    display: grid;
+    gap: 14px;
+  }
+
+  .panel{
+    border-radius: 24px;
+    box-shadow: 0 8px 22px rgba(0,31,63,.08);
+  }
+
+  .panel-header{
+    padding: 16px 16px 12px;
+  }
+
+  .panel-count{
+    height: 42px;
+    min-width: 64px;
+    background: var(--navy);
+    color: #fff;
+    font-size: 1rem;
+  }
+
+  .panel-title{
+    font-size: 1.2rem;
+  }
+
+  .panel-subtitle{
+    font-size: .9rem;
+  }
+
+  /* Draft Board mobile: ticker compatto */
+  .colonna-pick .table-scroll{
+    max-height: 360px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    border-radius: 18px;
+  }
+
+  #tabella-pick{
+    width: 100%;
+    table-layout: fixed;
+  }
+
+  #tabella-pick th,
+  #tabella-pick td{
+    padding: 10px 8px;
+    font-size: .9rem;
+  }
+
+  #tabella-pick th:first-child,
+  #tabella-pick td:first-child{
+    width: 54px;
+    text-align: center;
+  }
+
+  #tabella-pick th:nth-child(2),
+  #tabella-pick td:nth-child(2){
+    width: 34%;
+  }
+
+  #tabella-pick tbody tr.next-pick,
+  #tabella-pick tbody tr[style*="255, 204, 0"]{
+    background: linear-gradient(90deg, #fff3a8 0%, #ffd54a 100%) !important;
+  }
+
+  #tabella-pick tbody tr.next-pick td{
+    color: #071f38;
+    font-weight: 900;
+  }
+
+  /* Player Pool mobile: tabella trasformata in card */
+  .lista-container{
+    height: auto;
+  }
+
+  .filters-wrap{
+    padding: 12px 14px 8px;
+  }
+
+  .filters-grid{
+    gap: 10px;
+  }
+
+  input[type="text"],
+  select{
+    min-height: 48px;
+    border-radius: 16px;
+    font-size: .95rem;
+    padding: 10px 14px;
+  }
+
+  .results-pill{
+    min-height: 38px;
+    padding: 8px 14px;
+    font-size: .95rem;
+    background: #edf5ff;
+  }
+
+  .lista-container #lista-giocatori-scroll{
+    max-height: 540px !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    padding: 0 14px 16px !important;
+  }
+
+  .lista-container #lista-giocatori-table{
+    display: block !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    border: 0 !important;
+    background: transparent !important;
+    table-layout: auto !important;
+    overflow: visible !important;
+  }
+
+  .lista-container #lista-giocatori-table thead{
+    display: none !important;
+  }
+
+  .lista-container #lista-giocatori-table tbody{
+    display: grid !important;
+    gap: 10px !important;
+    width: 100% !important;
+  }
+
+  .lista-container #lista-giocatori-table tbody tr{
+    position: relative;
+    display: grid !important;
+    grid-template-columns: 1fr auto;
+    grid-template-areas:
+      "name badges"
+      "meta quote"
+      "team action";
+    gap: 5px 10px;
+    width: 100% !important;
+    padding: 14px 14px 13px;
+    border-radius: 18px;
+    border: 1px solid rgba(0,31,63,.08);
+    background: #ffffff;
+    box-shadow: 0 5px 14px rgba(0,31,63,.07);
+    cursor: pointer;
+  }
+
+  .lista-container #lista-giocatori-table tbody tr:hover{
+    background: #ffffff;
+    transform: none;
+  }
+
+  .lista-container #lista-giocatori-table tbody tr::after{
+    content: "CHIAMA";
+    grid-area: action;
+    justify-self: end;
+    align-self: center;
+    min-width: 74px;
+    padding: 8px 12px;
+    border-radius: 999px;
+    background: linear-gradient(180deg, #0d5fc7 0%, #06499d 100%);
+    color: #fff;
+    font-size: .72rem;
+    font-weight: 900;
+    letter-spacing: .02em;
+    text-align: center;
+  }
+
+  .lista-container #lista-giocatori-table td{
+    display: block !important;
+    width: auto !important;
+    border: 0 !important;
+    padding: 0 !important;
+    white-space: normal !important;
+    overflow: visible !important;
+    text-overflow: clip !important;
+    font-size: .9rem !important;
+    color: var(--text);
+  }
+
+  .lista-container #lista-giocatori-table td:nth-child(1){
+    grid-area: name;
+    font-size: 1.08rem !important;
+    font-weight: 900;
+    color: var(--navy);
+    line-height: 1.2;
+  }
+
+  .lista-container #lista-giocatori-table td:nth-child(2){
+    grid-area: meta;
+    color: #334155;
+    font-weight: 750;
+  }
+
+  .lista-container #lista-giocatori-table td:nth-child(3){
+    grid-area: team;
+    color: var(--muted);
+    font-weight: 650;
+  }
+
+  .lista-container #lista-giocatori-table td:nth-child(3)::before{
+    content: "Serie A: ";
+    color: #8792a2;
+    font-weight: 700;
+  }
+
+  .lista-container #lista-giocatori-table td:nth-child(4){
+    grid-area: quote;
+    justify-self: end;
+    align-self: start;
+    min-width: 46px;
+    padding: 5px 10px !important;
+    border-radius: 999px;
+    background: #eaf3ff;
+    color: #06499d;
+    font-weight: 900;
+    text-align: center;
+  }
+
+  .lista-container #lista-giocatori-table td:nth-child(4)::before{
+    content: "Q ";
+  }
+
+  .lista-container #lista-giocatori-table td:nth-child(5){
+    grid-area: badges;
+    justify-self: end;
+    min-width: 42px;
+    text-align: right;
+  }
+
+  /* Riepilogo squadre mobile: più compatto e leggibile */
+  .summary-section{
+    margin-top: 22px;
+  }
+
+  .summary-title{
+    font-size: 1.65rem;
+  }
+
+  #riepilogo-squadre{
+    grid-template-columns: 1fr !important;
+    gap: 14px;
+  }
+
+  .card-pick{
+    padding: 16px 14px;
+    border-radius: 24px;
+  }
+
+  .card-pick > img{
+    width: 58px !important;
+    height: 58px !important;
+  }
+
+  .card-pick h4{
+    font-size: 1.42rem;
+    margin-bottom: 12px;
+  }
+
+  .card-pick div{
+    font-size: .98rem;
+  }
+
+  .highlight-pick{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 10px;
+    border-radius: 14px;
+  }
+
+  .highlight-pick::before{
+    content: "🔒";
+    font-size: .92rem;
+  }
+
+  /* Admin mobile: bottoni grandi */
+  #admin-panel > div:last-child,
+  #admin-trade-panel > div:last-child{
+    max-width: none !important;
+  }
+
+  #admin-panel button,
+  #admin-trade-panel button{
+    min-height: 44px;
+    border-radius: 12px;
+    padding: 9px 12px;
+    font-weight: 800;
+  }
+
+  /* Bottom nav fissa */
+  .mobile-bottom-nav{
+    position: fixed;
+    left: 10px;
+    right: 10px;
+    bottom: 10px;
+    z-index: 999;
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 4px;
+    padding: 8px;
+    border-radius: 22px;
+    background: rgba(0,31,63,.96);
+    box-shadow: 0 12px 32px rgba(0,31,63,.28);
+    border: 1px solid rgba(255,255,255,.10);
+    backdrop-filter: blur(10px);
+  }
+
+  .mobile-bottom-nav a{
+    display: grid;
+    gap: 3px;
+    place-items: center;
+    text-decoration: none;
+    color: rgba(255,255,255,.72);
+    font-size: .68rem;
+    font-weight: 800;
+    padding: 7px 3px;
+    border-radius: 14px;
+  }
+
+  .mobile-bottom-nav a span:first-child{
+    font-size: 1.05rem;
+    line-height: 1;
+  }
+
+  .mobile-bottom-nav a:active,
+  .mobile-bottom-nav a:hover{
+    color: #ffd54a;
+    background: rgba(255,255,255,.08);
+  }
+}

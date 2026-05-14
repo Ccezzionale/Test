@@ -113,8 +113,15 @@
       </div>
     </section>
 
+    <section class="mobile-draft-tabs" aria-label="Navigazione rapida Draft mobile">
+      <a href="#draft-board-panel">📋 Board</a>
+      <a href="#player-pool-panel">🔎 Pool</a>
+      <a href="#summary-panel">🛡 Rose</a>
+      <a href="#admin-panel">⚙️ Admin</a>
+    </section>
+
     <section class="container">
-      <section class="panel colonna-pick">
+      <section id="draft-board-panel" class="panel colonna-pick">
         <div class="panel-header">
           <div class="panel-title-wrap">
             <h2 class="panel-title">📌 Draft Board</h2>
@@ -140,7 +147,7 @@
       
 </section>
 
-      <aside class="panel lista-container">
+      <aside id="player-pool-panel" class="panel lista-container">
         <div class="panel-header">
           <div class="panel-title-wrap">
             <h2 class="panel-title">🎯 Player Pool</h2>
@@ -260,7 +267,7 @@
   </div>
 </section>
     </section>
-    <section class="summary-section">
+    <section id="summary-panel" class="summary-section">
       <div class="summary-topbar">
         <div class="summary-title-wrap">
           <h2 class="summary-title">📋 Riepilogo Pick per Squadra</h2>
@@ -275,6 +282,15 @@
       <div id="riepilogo-squadre"></div>
     </section>
   </main>
+
+
+  <nav class="mobile-bottom-nav" aria-label="Navigazione Draft mobile">
+    <a href="#" aria-label="Torna in alto"><span>🏠</span><span>Home</span></a>
+    <a href="#draft-board-panel" aria-label="Draft board"><span>📋</span><span>Draft</span></a>
+    <a href="#player-pool-panel" aria-label="Player pool"><span>🔎</span><span>Pool</span></a>
+    <a href="#summary-panel" aria-label="Riepilogo rose"><span>🏆</span><span>Rose</span></a>
+    <a href="#admin-panel" aria-label="Admin panel"><span>⚙️</span><span>Admin</span></a>
+  </nav>
 
   <script type="module" src="draft_script_unificato.js"></script>
   <script src="navbar.js"></script>
