@@ -2782,3 +2782,55 @@ h1, h2, h3, h4, p{
     color: #5b4500 !important;
   }
 }
+
+/* =========================
+   MOBILE DRAFT BOARD - FINAL TWEAKS
+   ========================= */
+@media (max-width: 768px){
+
+  /* più spazio al testo: prima la colonna pick rubava troppo */
+  #tabella-pick tbody tr{
+    grid-template-columns: 42px minmax(0, 1fr) !important;
+    column-gap: 12px !important;
+    padding: 12px 12px !important;
+  }
+
+  /* cerchio numero pick in oro */
+  #tabella-pick tbody td:nth-child(1){
+    width: 36px !important;
+    height: 36px !important;
+    background:
+      linear-gradient(180deg, #ffe36a 0%, #ffcc00 100%) !important;
+    color: #001f3f !important;
+    border: 1px solid rgba(255,255,255,.65) !important;
+    box-shadow:
+      0 7px 14px rgba(255,204,0,.22),
+      inset 0 1px 0 rgba(255,255,255,.85) !important;
+  }
+
+  /* pick corrente: resta più “speciale” */
+  #tabella-pick tbody tr.next-pick td:nth-child(1){
+    background:
+      linear-gradient(180deg, #001f3f 0%, #000b18 100%) !important;
+    color: #ffdd55 !important;
+    border-color: rgba(255,221,85,.65) !important;
+  }
+
+  /* lascia più respiro al nome squadra */
+  #tabella-pick tbody td:nth-child(2){
+    max-width: none !important;
+    min-width: 0 !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    font-size: .98rem !important;
+  }
+
+  #tabella-pick tbody td:nth-child(3){
+    max-width: none !important;
+    min-width: 0 !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+  }
+}
