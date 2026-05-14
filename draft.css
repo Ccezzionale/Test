@@ -2834,3 +2834,44 @@ h1, h2, h3, h4, p{
     text-overflow: ellipsis !important;
   }
 }
+
+/* =========================
+   MOBILE DRAFT BOARD - NAME WIDTH FIX
+   ========================= */
+@media (max-width: 768px){
+
+  #tabella-pick tbody tr{
+    grid-template-columns: 34px minmax(0, 1fr) !important;
+    column-gap: 10px !important;
+    padding: 10px 10px !important;
+  }
+
+  #tabella-pick tbody td:nth-child(1){
+    width: 32px !important;
+    height: 32px !important;
+    font-size: .86rem !important;
+  }
+
+  #tabella-pick tbody td:nth-child(2),
+  #tabella-pick tbody td:nth-child(3){
+    width: auto !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+  }
+
+  #tabella-pick tbody td:nth-child(2){
+    font-size: .88rem !important;
+    line-height: 1.05 !important;
+    white-space: normal !important;
+    overflow: visible !important;
+    text-overflow: clip !important;
+  }
+
+  #tabella-pick tbody td:nth-child(3){
+    font-size: .82rem !important;
+    line-height: 1.05 !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+  }
+}
