@@ -511,6 +511,24 @@ if (currentDraftState?.is_open === false) {
     ? `🎯 È il turno di: ${prossima.fantaTeam} (Pick ${prossima.pick})`
     : "✅ Draft completato!";
 }
+  const mobileLivePick = document.getElementById("mobile-live-pick");
+const mobileLiveTeam = document.getElementById("mobile-live-team");
+const mobileLiveSub = document.getElementById("mobile-live-sub");
+
+if (mobileLivePick && mobileLiveTeam && mobileLiveSub) {
+  if (currentDraftState?.is_open === false) {
+    mobileLivePick.textContent = "RFA";
+    mobileLiveTeam.textContent = "Draft fermo";
+    mobileLiveSub.textContent = "Decisione RFA in attesa";
+  } else if (prossima) {
+    mobileLivePick.textContent = `Pick #${prossima.pick}`;
+    mobileLiveTeam.textContent = prossima.fantaTeam;
+    mobileLiveSub.textContent = "È il turno di questa squadra";
+  } else {
+    mobileLivePick.textContent = "Fine";
+    mobileLiveTeam.textContent = "Draft completato";
+    mobileLiveSub.textContent = "Tutte le pick sono state effettuate";
+  }
   }
 // ========== caricaPick con Retry + Abort + Spinner + Fallback ==========
 async function caricaPick() {
