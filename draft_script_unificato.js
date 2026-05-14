@@ -1537,7 +1537,16 @@ function popolaListaDisponibili() {
   // crea un buffer in memoria per evitare reflow continui
   const frag = document.createDocumentFragment();
 
-Object.values(mappaGiocatori).forEach((player) => {
+const giocatoriOrdinati = Object.values(mappaGiocatori).sort((a, b) => {
+  const qA = Number(a.quotazione) || 0;
+  const qB = Number(b.quotazione) || 0;
+
+  if (qB !== qA) return qB - qA;
+
+  return String(a.nome || "").localeCompare(String(b.nome || ""));
+});
+
+giocatoriOrdinati.forEach((player) => {
   const { id, nome, ruolo, squadra, quotazione } = player;
 
   const key = normalize(nome);
@@ -1868,7 +1877,6 @@ function aggiornaChiamatePerSquadra() {
 
     const div = document.createElement("div");
     div.className = "card-pick team-accordion";
-    if (index === 0) div.classList.add("is-open");
 
     const logoPath = `img/${team}.png`;
 
