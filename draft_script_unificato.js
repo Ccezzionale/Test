@@ -1812,112 +1812,126 @@ function mappaIndiceAssolutoPerTeam() {
 function aggiornaChiamatePerSquadra() {
   const righe = document.querySelectorAll("#tabella-pick tbody tr");
   const riepilogo = {};
-  const indexMap = mappaIndiceAssolutoPerTeam(); // team|pick -> posizione assoluta
+  const indexMap = mappaIndiceAssolutoPerTeam();
+
   righe.forEach(r => {
     const celle = r.querySelectorAll("td");
     const pickNum = parseInt(celle[0]?.textContent);
     const team = celle[1]?.textContent?.trim();
     const nome = celle[2]?.textContent?.trim();
+
     if (!team || !nome || isNaN(pickNum)) return;
 
-const key = normalize(nome);
+    const key = normalize(nome);
 
-const playerInfo =
-  mappaGiocatoriDraft[key] ||
-  mappaGiocatori[key] ||
-  {};
+    const playerInfo =
+      mappaGiocatoriDraft[key] ||
+      mappaGiocatori[key] ||
+      {};
 
-const ruolo = playerInfo.ruolo || "";
-const isTop6Protected = playerInfo.is_top6_protected === true;
-const isU21 = playerInfo.is_u21_slot === true;
-const isU21Keeper = playerInfo.is_u21_keeper === true;
-const u21KeeperYear = Number(playerInfo.u21_keeper_year || 1);
-const isFp = playerInfo.is_fp === true;
-const isFpKeeper = playerInfo.is_fp_keeper === true;
-const fpKeeperYear = Number(playerInfo.fp_keeper_year || 1);
-const isRfaMatched = playerInfo.is_rfa_matched === true;
-const nAssoluto = indexMap[`${team}|${pickNum}`] || 1;
-    
+    const ruolo = playerInfo.ruolo || "";
+    const isTop6Protected = playerInfo.is_top6_protected === true;
+    const isU21 = playerInfo.is_u21_slot === true;
+    const isU21Keeper = playerInfo.is_u21_keeper === true;
+    const u21KeeperYear = Number(playerInfo.u21_keeper_year || 1);
+    const isFp = playerInfo.is_fp === true;
+    const isFpKeeper = playerInfo.is_fp_keeper === true;
+    const fpKeeperYear = Number(playerInfo.fp_keeper_year || 1);
+    const isRfaMatched = playerInfo.is_rfa_matched === true;
+    const nAssoluto = indexMap[`${team}|${pickNum}`] || 1;
 
     if (!riepilogo[team]) riepilogo[team] = [];
+
     riepilogo[team].push({
-  n: nAssoluto,
-  nome,
-  ruolo,
-  isU21,
-  isU21Keeper,
-  u21KeeperYear,
-  isFp,
-  isFpKeeper,
-  fpKeeperYear,
+      n: nAssoluto,
+      nome,
+      ruolo,
+      isU21,
+      isU21Keeper,
+      u21KeeperYear,
+      isFp,
+      isFpKeeper,
+      fpKeeperYear,
       isTop6Protected,
-  isRfaMatched,
-  pickNum
-});
+      isRfaMatched,
+      pickNum
+    });
   });
 
   const container = document.getElementById("riepilogo-squadre");
+  if (!container) return;
+
   container.innerHTML = "";
 
-  for (const [team, picks] of Object.entries(riepilogo)) {
-    // Ordina per numero assoluto della chiamata
+  Object.entries(riepilogo).forEach(([team, picks], index) => {
     picks.sort((a, b) => a.n - b.n);
 
     const div = document.createElement("div");
-    div.className = "card-pick";
+    div.className = "card-pick team-accordion";
+    if (index === 0) div.classList.add("is-open");
 
     const logoPath = `img/${team}.png`;
- const img = document.createElement("img");
-img.src = logoPath;
-img.alt = team;
-img.loading = "lazy";     // 👈 lazy-load
-img.width = 60;           // 👈 dimensioni fisse utili al layout
-img.height = 60;
-img.style.margin = "0 auto 8px";
-img.style.display = "block";
-div.appendChild(img);
 
-    const h4 = document.createElement("h4");
-    h4.textContent = team;
-    h4.style.textAlign = "center";
-    div.appendChild(h4);
+    const header = document.createElement("button");
+    header.type = "button";
+    header.className = "team-accordion-header";
+    header.innerHTML = `
+      <span class="team-accordion-left">
+        <img src="${logoPath}" alt="${escapeHtml(team)}" loading="lazy">
+        <span>
+          <strong>${escapeHtml(team)}</strong>
+          <small>${picks.length} giocatori draftati</small>
+        </span>
+      </span>
+      <span class="team-accordion-chevron">⌄</span>
+    `;
 
- picks.forEach(p => {
-  const riga = document.createElement("div");
-  riga.style.textAlign = "center";
+    const body = document.createElement("div");
+    body.className = "team-accordion-body";
 
-  const parts = [];
-  parts.push(`${p.n}. ${p.nome} (${p.ruolo})`);
+    picks.forEach(p => {
+      const riga = document.createElement("div");
+      riga.className = "team-player-row";
 
-const badgeHtml = renderDraftBadgeImages({
-  is_fp: p.isFp,
-  is_fp_keeper: p.isFpKeeper,
-  fp_keeper_year: p.fpKeeperYear,
-  is_u21: p.isU21,
-  is_u21_slot: p.isU21,
-  is_top6_protected: p.isTop6Protected,
-  is_u21_keeper: p.isU21Keeper,
-  u21_keeper_year: p.u21KeeperYear,
-  is_rfa_matched: p.isRfaMatched
-});
+      const badgeHtml = renderDraftBadgeImages({
+        is_fp: p.isFp,
+        is_fp_keeper: p.isFpKeeper,
+        fp_keeper_year: p.fpKeeperYear,
+        is_u21: p.isU21,
+        is_u21_slot: p.isU21,
+        is_top6_protected: p.isTop6Protected,
+        is_u21_keeper: p.isU21Keeper,
+        u21_keeper_year: p.u21KeeperYear,
+        is_rfa_matched: p.isRfaMatched
+      });
 
-if (badgeHtml) parts.push(badgeHtml);
+      riga.innerHTML = `
+        <span class="team-player-main">
+          <span class="team-player-number">${p.n}</span>
+          <span class="team-player-info">
+            <strong>${escapeHtml(p.nome)}</strong>
+            <small>${escapeHtml(p.ruolo || "-")}</small>
+          </span>
+        </span>
+        <span class="team-player-badges">${badgeHtml}</span>
+      `;
 
-  riga.innerHTML = parts.join(" ");
+      if (p.n <= 6) {
+        riga.classList.add("highlight-pick");
+      }
 
-  // giallo per prime 6 chiamate assolute del team
-  if (p.n <= 6) riga.classList.add("highlight-pick");
+      body.appendChild(riga);
+    });
 
-  div.appendChild(riga);
-});
+    header.addEventListener("click", () => {
+      div.classList.toggle("is-open");
+    });
 
+    div.appendChild(header);
+    div.appendChild(body);
     container.appendChild(div);
-  }
+  });
 }
-
-window.aggiornaChiamatePerSquadra = aggiornaChiamatePerSquadra;
-
-let ordineAscendente = {};
 
 function ordinaPick(colonnaIndex, numerico = false) {
   const tbody = document.querySelector("#tabella-pick tbody");
