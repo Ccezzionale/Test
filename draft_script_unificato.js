@@ -1699,14 +1699,18 @@ const hasU21 = row.dataset.isU21 === "true";
       matchU21 = !hasU21;
     }
 
-    row.style.display =
-      matchInput &&
-      matchSelect &&
-      matchSquadra &&
-      matchNome &&
-      matchU21
-        ? ""
-        : "none";
+const shouldShow =
+  matchInput &&
+  matchSelect &&
+  matchSquadra &&
+  matchNome &&
+  matchU21;
+
+if (shouldShow) {
+  row.style.removeProperty("display");
+} else {
+  row.style.setProperty("display", "none", "important");
+}
   });
 }
 
