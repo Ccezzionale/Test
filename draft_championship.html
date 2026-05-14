@@ -157,98 +157,131 @@
       
 </section>
 
-     <aside class="panel lista-container" id="pool-section">
-        <div class="panel-header">
-          <div class="panel-title-wrap">
-            <h2 class="panel-title">🎯 Player Pool</h2>
-            <p class="panel-subtitle">Filtra il listone per squadra, ruolo e nome</p>
-          </div>
-          <div class="panel-count">Pool</div>
-        </div>
+<aside class="panel lista-container" id="pool-section">
+  <div class="panel-header">
+    <div class="panel-title-wrap">
+      <h2 class="panel-title">🎯 Player Pool</h2>
+      <p class="panel-subtitle">Filtra il listone per squadra, ruolo e nome</p>
+    </div>
+    <div class="panel-count">Pool</div>
+  </div>
 
-        <div class="filters-wrap">
-          <div class="filters-grid">
-            <div class="filter-field">
-              <label class="filter-label" for="filtroSerieA">Filtra per Squadra Serie A</label>
-              <select id="filtroSerieA">
-                <option value="">-- Tutte --</option>
-              </select>
-            </div>
-
-            <div class="filter-field">
-              <label class="filter-label" for="cercaRuolo">Cerca ruolo</label>
-              <input type="text" id="cercaRuolo" placeholder="Cerca ruolo..." />
-            </div>
-
-            <div class="filter-field">
-              <label class="filter-label" for="filtroRuolo">Filtra per Ruolo</label>
-              <select id="filtroRuolo">
-                <option value="">-- Tutti i Ruoli --</option>
-              </select>
-            </div>
-
-            <div class="filter-field">
-              <label class="filter-label" for="searchGiocatore">Cerca Giocatore</label>
-              <input id="searchGiocatore" placeholder="Digita un nome..." type="text" />
-            </div>
-          </div>
-
-          <div class="filters-toolbar">
-            <div class="results-pill">🔎 Listone disponibile</div>
-          </div>
-        </div>
-
-        <div id="lista-giocatori-scroll">
-          <table id="lista-giocatori-table">
-            <thead>
-              <tr>
-                <th onclick="ordinaLista(0)">Giocatore</th>
-                <th onclick="ordinaLista(1)">Ruolo</th>
-                <th onclick="ordinaLista(2)">Squadra</th>
-                <th onclick="ordinaLista(3, true)">Quotazione</th>
-                <th onclick="ordinaLista(4)">U21</th>
-              </tr>
-            </thead>
-            <tbody id="lista-giocatori"></tbody>
-          </table>
-        </div>
-      </aside>
-    </section>
-
-    <section id="admin-panel" class="panel" style="display:none; margin-top:20px;">
-      <div class="panel-header">
-        <div class="panel-title-wrap">
-          <h2 class="panel-title">🛠️ Admin Panel</h2>
-          <p class="panel-subtitle">Strumenti di correzione draft</p>
-        </div>
+  <div class="filters-wrap">
+    <div class="filters-grid">
+      <div class="filter-field">
+        <label class="filter-label" for="filtroSerieA">Filtra per Squadra Serie A</label>
+        <select id="filtroSerieA">
+          <option value="">-- Tutte --</option>
+        </select>
       </div>
 
-      <div style="padding:16px; display:grid; gap:12px; max-width:500px;">
-        <div>
-          <label for="admin-pick-number"><strong>Pick number</strong></label><br>
-          <input id="admin-pick-number" type="number" min="1" placeholder="Es. 17" style="width:100%; padding:8px; margin-top:6px;">
-        </div>
-
-        <div>
-          <label for="admin-new-player"><strong>Nuovo giocatore</strong> (solo per modifica)</label><br>
-          <input id="admin-new-player" type="text" placeholder="Nome giocatore" style="width:100%; padding:8px; margin-top:6px;">
-        </div>
-
-<div style="display:flex; gap:10px; flex-wrap:wrap;">
-  <button id="admin-cancel-pick-btn" type="button">❌ Annulla pick</button>
-  <button id="admin-edit-pick-btn" type="button">✏️ Modifica pick</button>
-  <button id="admin-force-pick-btn" type="button">➕ Forza pick</button>
-  <button id="admin-set-pick-btn" type="button">⏭️ Vai a questa pick</button>
-  <button id="admin-reset-draft-btn" class="danger-btn" type="button">🔥 Reset Draft</button>
-</div>
-</button>
-        </div>
-
-        <p id="admin-status" style="margin:0; font-weight:600;"></p>
+      <div class="filter-field">
+        <label class="filter-label" for="cercaRuolo">Cerca ruolo</label>
+        <input type="text" id="cercaRuolo" placeholder="Cerca ruolo..." />
       </div>
-    </section>
 
-    <section id="admin-trade-panel" class="panel" style="display:none; margin-top:20px;">
+      <div class="filter-field">
+        <label class="filter-label" for="filtroRuolo">Filtra per Ruolo</label>
+        <select id="filtroRuolo">
+          <option value="">-- Tutti i Ruoli --</option>
+        </select>
+      </div>
+
+      <div class="filter-field">
+        <label class="filter-label" for="searchGiocatore">Cerca Giocatore</label>
+        <input id="searchGiocatore" placeholder="Digita un nome..." type="text" />
+      </div>
+
+      <div class="filter-field">
+        <label class="filter-label" for="filtroU21">Filtro U21</label>
+        <select id="filtroU21">
+          <option value="">Tutti</option>
+          <option value="u21">Solo U21</option>
+          <option value="non-u21">No U21</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="filters-toolbar">
+      <div class="results-pill">🔎 Listone disponibile</div>
+    </div>
+  </div>
+
+  <div id="lista-giocatori-scroll">
+    <table id="lista-giocatori-table">
+      <thead>
+        <tr>
+          <th onclick="ordinaLista(0)">Giocatore</th>
+          <th onclick="ordinaLista(1)">Ruolo</th>
+          <th onclick="ordinaLista(2)">Squadra</th>
+          <th onclick="ordinaLista(3, true)">Quotazione</th>
+          <th onclick="ordinaLista(4)">U21</th>
+        </tr>
+      </thead>
+      <tbody id="lista-giocatori"></tbody>
+    </table>
+  </div>
+</aside>
+</section>
+
+<section id="summary-panel" class="summary-section">
+  <div class="summary-topbar">
+    <div class="summary-title-wrap">
+      <h2 class="summary-title">📋 Riepilogo Pick per Squadra</h2>
+      <p class="summary-subtitle">Tutte le rose draftate, squadra per squadra</p>
+    </div>
+
+    <button class="btn-riepilogo" onclick="aggiornaChiamatePerSquadra()">
+      🔄 Ricarica Riepilogo
+    </button>
+  </div>
+
+  <div id="riepilogo-squadre"></div>
+</section>
+
+<section id="admin-panel" class="panel" style="display:none; margin-top:20px;">
+  <div class="panel-header">
+    <div class="panel-title-wrap">
+      <h2 class="panel-title">🛠️ Admin Panel</h2>
+      <p class="panel-subtitle">Strumenti di correzione draft</p>
+    </div>
+  </div>
+
+  <div style="padding:16px; display:grid; gap:12px; max-width:500px;">
+    <div>
+      <label for="admin-pick-number"><strong>Pick number</strong></label><br>
+      <input
+        id="admin-pick-number"
+        type="number"
+        min="1"
+        placeholder="Es. 17"
+        style="width:100%; padding:8px; margin-top:6px;"
+      >
+    </div>
+
+    <div>
+      <label for="admin-new-player"><strong>Nuovo giocatore</strong> (solo per modifica)</label><br>
+      <input
+        id="admin-new-player"
+        type="text"
+        placeholder="Nome giocatore"
+        style="width:100%; padding:8px; margin-top:6px;"
+      >
+    </div>
+
+    <div style="display:flex; gap:10px; flex-wrap:wrap;">
+      <button id="admin-cancel-pick-btn" type="button">❌ Annulla pick</button>
+      <button id="admin-edit-pick-btn" type="button">✏️ Modifica pick</button>
+      <button id="admin-force-pick-btn" type="button">➕ Forza pick</button>
+      <button id="admin-set-pick-btn" type="button">⏭️ Vai a questa pick</button>
+      <button id="admin-reset-draft-btn" class="danger-btn" type="button">🔥 Reset Draft</button>
+    </div>
+
+    <p id="admin-status" style="margin:0; font-weight:600;"></p>
+  </div>
+</section>
+
+<section id="admin-trade-panel" class="panel" style="display:none; margin-top:20px;">
   <div class="panel-header">
     <div class="panel-title-wrap">
       <h2 class="panel-title">🔁 Admin Trade Picks</h2>
@@ -260,12 +293,24 @@
     <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
       <div>
         <label for="trade-pick-a"><strong>Pick A</strong></label><br>
-        <input id="trade-pick-a" type="number" min="1" placeholder="Es. 7" style="width:100%; padding:8px; margin-top:6px;">
+        <input
+          id="trade-pick-a"
+          type="number"
+          min="1"
+          placeholder="Es. 7"
+          style="width:100%; padding:8px; margin-top:6px;"
+        >
       </div>
 
       <div>
         <label for="trade-pick-b"><strong>Pick B</strong></label><br>
-        <input id="trade-pick-b" type="number" min="1" placeholder="Es. 12" style="width:100%; padding:8px; margin-top:6px;">
+        <input
+          id="trade-pick-b"
+          type="number"
+          min="1"
+          placeholder="Es. 12"
+          style="width:100%; padding:8px; margin-top:6px;"
+        >
       </div>
     </div>
 
@@ -276,22 +321,7 @@
     <p id="admin-trade-status" style="margin:0; font-weight:600;"></p>
   </div>
 </section>
-    </section>
-    <section id="summary-panel" class="summary-section">
-      <div class="summary-topbar">
-        <div class="summary-title-wrap">
-          <h2 class="summary-title">📋 Riepilogo Pick per Squadra</h2>
-          <p class="summary-subtitle">Tutte le rose draftate, squadra per squadra</p>
-        </div>
-
-        <button class="btn-riepilogo" onclick="aggiornaChiamatePerSquadra()">
-          🔄 Ricarica Riepilogo
-        </button>
-      </div>
-
-      <div id="riepilogo-squadre"></div>
-    </section>
-  </main>
+    </main>
 
 
   <nav class="mobile-bottom-nav" aria-label="Navigazione Draft mobile">
