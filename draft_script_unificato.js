@@ -1941,18 +1941,18 @@ if (openTeams.has(team)) {
       });
 
 riga.innerHTML = `
-  <span class="team-player-main">
+riga.innerHTML = `
+  <span class="team-player-left">
     <span class="team-player-number">${p.n}</span>
-    <span class="team-player-info">
-      <strong>${escapeHtml(p.nome)}</strong>
-      <small>${escapeHtml(p.ruolo || "-")}</small>
-    </span>
+    <span class="team-player-pick">Pick #${p.pickNum}</span>
   </span>
 
-  <span class="team-player-side">
-    <span class="team-player-pick">Pick #${p.pickNum}</span>
-    <span class="team-player-badges">${badgeHtml}</span>
+  <span class="team-player-info">
+    <strong>${escapeHtml(p.nome)}</strong>
+    <small>${escapeHtml(p.ruolo || "-")}</small>
   </span>
+
+  <span class="team-player-badges">${badgeHtml}</span>
 `;
 
       body.appendChild(riga);
