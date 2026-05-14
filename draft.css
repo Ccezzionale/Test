@@ -1670,3 +1670,98 @@ h1, h2, h3, h4, p{
     background: rgba(255,255,255,.08);
   }
 }
+
+/* =========================
+   MOBILE NEXT POLISH
+   ========================= */
+@media (max-width: 768px){
+
+  body{
+    padding-bottom: 96px;
+  }
+
+  /* Bottom nav più premium */
+  .mobile-bottom-nav{
+    background: rgba(0, 31, 63, 0.88) !important;
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    border: 1px solid rgba(255,255,255,0.10);
+    box-shadow:
+      0 10px 28px rgba(0,31,63,0.28),
+      inset 0 1px 0 rgba(255,255,255,0.08);
+  }
+
+  .mobile-bottom-nav a{
+    opacity: .78;
+  }
+
+  .mobile-bottom-nav a.active{
+    opacity: 1;
+    color: #ffd54a !important;
+  }
+
+  /* Player Pool: filtri più compatti */
+  .filters-wrap{
+    padding: 14px 14px 8px !important;
+  }
+
+  .filters-grid{
+    gap: 10px !important;
+  }
+
+  .filter-field{
+    gap: 5px !important;
+  }
+
+  .filter-label{
+    font-size: .86rem !important;
+  }
+
+  input[type="text"],
+  select{
+    min-height: 48px !important;
+    border-radius: 16px !important;
+    font-size: .95rem !important;
+  }
+
+  /* Card giocatori più compatte */
+  #lista-giocatori tr{
+    border-radius: 22px !important;
+    margin-bottom: 12px !important;
+  }
+
+  #lista-giocatori td:first-child{
+    font-size: 1.25rem !important;
+  }
+
+  /* Draft board meno gigante */
+  .table-scroll{
+    max-height: 390px !important;
+  }
+
+  #tabella-pick th,
+  #tabella-pick td{
+    font-size: .95rem !important;
+    padding: 10px 8px !important;
+  }
+
+  /* Riepilogo squadre */
+  .summary-title{
+    font-size: 2.2rem !important;
+    line-height: 1.05 !important;
+  }
+
+  .card-pick{
+    border-radius: 26px !important;
+  }
+
+  .highlight-pick{
+    font-size: 1.02rem !important;
+    padding: 10px 12px !important;
+    border-radius: 16px !important;
+  }
+
+  .card-pick div:not(.highlight-pick){
+    font-size: 1rem !important;
+  }
+}
