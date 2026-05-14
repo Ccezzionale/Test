@@ -1834,3 +1834,12 @@ h1, h2, h3, h4, p{
     font-weight:700;
   }
 }
+@media (max-width: 768px){
+  .hero{
+    display: none !important;
+  }
+
+  .mobile-live-draft{
+    margin-top: 12px !important;
+  }
+}
