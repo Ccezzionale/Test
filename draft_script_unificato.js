@@ -1905,16 +1905,20 @@ function aggiornaChiamatePerSquadra() {
         is_rfa_matched: p.isRfaMatched
       });
 
-      riga.innerHTML = `
-        <span class="team-player-main">
-          <span class="team-player-number">${p.n}</span>
-          <span class="team-player-info">
-            <strong>${escapeHtml(p.nome)}</strong>
-            <small>${escapeHtml(p.ruolo || "-")}</small>
-          </span>
-        </span>
-        <span class="team-player-badges">${badgeHtml}</span>
-      `;
+riga.innerHTML = `
+  <span class="team-player-main">
+    <span class="team-player-number">${p.n}</span>
+    <span class="team-player-info">
+      <strong>${escapeHtml(p.nome)}</strong>
+      <small>${escapeHtml(p.ruolo || "-")}</small>
+    </span>
+  </span>
+
+  <span class="team-player-side">
+    <span class="team-player-pick">Pick #${p.pickNum}</span>
+    <span class="team-player-badges">${badgeHtml}</span>
+  </span>
+`;
 
       body.appendChild(riga);
     });
