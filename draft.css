@@ -2875,3 +2875,47 @@ h1, h2, h3, h4, p{
     text-overflow: ellipsis !important;
   }
 }
+
+/* =========================
+   MOBILE DRAFT BOARD - DARK SPORT CARDS
+   ========================= */
+@media (max-width: 768px){
+
+  #tabella-pick tbody tr{
+    background:
+      linear-gradient(135deg, #09294d 0%, #061a33 100%) !important;
+    border: 1px solid rgba(255, 213, 74, .22) !important;
+    box-shadow:
+      0 8px 18px rgba(0,0,0,.22),
+      inset 0 1px 0 rgba(255,255,255,.08) !important;
+  }
+
+  #tabella-pick tbody tr:nth-child(odd){
+    background:
+      linear-gradient(135deg, #0b315d 0%, #061d38 100%) !important;
+  }
+
+  #tabella-pick tbody tr.next-pick{
+    background:
+      linear-gradient(135deg, #ffe36a 0%, #ffcc00 100%) !important;
+    border: 1px solid rgba(255,255,255,.55) !important;
+  }
+
+  #tabella-pick tbody td:nth-child(2){
+    color: #ffffff !important;
+    text-shadow: 0 1px 2px rgba(0,0,0,.25);
+  }
+
+  #tabella-pick tbody td:nth-child(3){
+    color: rgba(255,255,255,.72) !important;
+  }
+
+  #tabella-pick tbody tr.next-pick td:nth-child(2){
+    color: #001f3f !important;
+    text-shadow: none !important;
+  }
+
+  #tabella-pick tbody tr.next-pick td:nth-child(3){
+    color: #5b4500 !important;
+  }
+}
