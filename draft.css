@@ -2919,3 +2919,71 @@ h1, h2, h3, h4, p{
     color: #5b4500 !important;
   }
 }
+
+/* =========================
+   MOBILE TEAM SUMMARY - PICK LEFT / BADGES RIGHT
+   ========================= */
+@media (max-width: 768px){
+
+  .team-player-row{
+    display: grid !important;
+    grid-template-columns: auto minmax(0, 1fr) auto !important;
+    align-items: center !important;
+    column-gap: 10px !important;
+  }
+
+  .team-player-left{
+    display: flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+    flex: 0 0 auto !important;
+  }
+
+  .team-player-number{
+    width: 34px !important;
+    height: 34px !important;
+    flex: 0 0 auto !important;
+  }
+
+  .team-player-pick{
+    font-size: .68rem !important;
+    padding: 4px 7px !important;
+    white-space: nowrap !important;
+  }
+
+  .team-player-info{
+    min-width: 0 !important;
+    text-align: left !important;
+  }
+
+  .team-player-info strong{
+    max-width: 100% !important;
+    display: block !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+  }
+
+  .team-player-info small{
+    display: block !important;
+  }
+
+  .team-player-badges{
+    justify-self: end !important;
+    min-width: 42px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: flex-end !important;
+    gap: 4px !important;
+  }
+
+  .team-player-badges:empty{
+    min-width: 0 !important;
+    display: none !important;
+  }
+
+  .team-player-main,
+  .team-player-side{
+    display: contents !important;
+  }
+}
