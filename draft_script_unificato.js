@@ -1941,7 +1941,6 @@ if (openTeams.has(team)) {
       });
 
 riga.innerHTML = `
-riga.innerHTML = `
   <span class="team-player-left">
     <span class="team-player-number">${p.n}</span>
     <span class="team-player-pick">Pick #${p.pickNum}</span>
