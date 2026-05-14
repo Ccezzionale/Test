@@ -488,32 +488,46 @@ async function loadAdminConflicts() {
   container.innerHTML = Object.entries(groups).map(([groupId, rows]) => {
     const first = rows[0];
     const playerName = first.players?.name || "Giocatore";
-    const typeLabel = TYPE_LABELS[first.selection_type] || first.selection_type;
     const conference = first.teams?.conference || "-";
     const role = first.players?.role || first.players?.role_mantra || "-";
     const serieA = first.players?.serie_a_team || "-";
 
     return `
-      <div class="predraft-card" style="margin-bottom:14px; border:1px solid #ffd591; background:#fff7e6;">
-        <h4 style="margin-top:0;">
-          ⚠️ Conflitto ${escapeHtml(typeLabel)}: ${escapeHtml(playerName)}
+      <div class="predraft-card conflict-card">
+        <h4 class="conflict-title">
+          ⚠️ Conflitto: ${escapeHtml(playerName)}
         </h4>
 
-        <p style="margin:4px 0;">
+        <p class="conflict-meta">
           ${escapeHtml(role)} · ${escapeHtml(serieA)} · ${escapeHtml(conference)}
         </p>
 
-        <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:10px;">
-          ${rows.map(row => `
-            <button
-              class="predraft-btn"
-              type="button"
-              data-resolve-conflict="${escapeHtml(groupId)}"
-              data-winner-selection="${escapeHtml(row.id)}"
-            >
-              Assegna a ${escapeHtml(row.teams?.name || "Squadra")}
-            </button>
-          `).join("")}
+        <div class="conflict-teams">
+          ${rows.map(row => {
+            const rowTypeLabel = TYPE_LABELS[row.selection_type] || row.selection_type;
+            const rowBadgeClass = TYPE_BADGES[row.selection_type] || "badge-muted";
+            const teamName = row.teams?.name || "Squadra";
+
+            return `
+              <div class="conflict-team-option">
+                <div class="conflict-team-info">
+                  <strong>${escapeHtml(teamName)}</strong>
+                  <span class="badge ${rowBadgeClass}">
+                    ${escapeHtml(rowTypeLabel)}
+                  </span>
+                </div>
+
+                <button
+                  class="predraft-btn"
+                  type="button"
+                  data-resolve-conflict="${escapeHtml(groupId)}"
+                  data-winner-selection="${escapeHtml(row.id)}"
+                >
+                  Assegna a ${escapeHtml(teamName)}
+                </button>
+              </div>
+            `;
+          }).join("")}
         </div>
       </div>
     `;
