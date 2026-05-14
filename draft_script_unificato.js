@@ -462,7 +462,10 @@ function renderPicks(dati) {
 
     if (currentPick !== null && pick === currentPick) {
       prossimaIndex = index;
-      prossima = { fantaTeam: riga["Fanta Team"], pick: riga["Pick"] };
+      prossima = {
+        fantaTeam: riga["Fanta Team"],
+        pick: riga["Pick"]
+      };
     }
   });
 
@@ -485,7 +488,6 @@ function renderPicks(dati) {
     corpoTabella.appendChild(tr);
   });
 
-
   if (prossimaIndex >= 0) {
     const rigaCorrente = document.querySelectorAll("#tabella-pick tbody tr")[prossimaIndex];
     if (rigaCorrente) {
@@ -497,43 +499,47 @@ function renderPicks(dati) {
   if (window.innerWidth <= 768 && prossimaIndex >= 0) {
     const start = Math.max(0, prossimaIndex - 2);
     const end = prossimaIndex + 3;
+
     document.querySelectorAll("#tabella-pick tbody tr").forEach((riga, i) => {
-      if (i >= start && i < end) riga.classList.add("show-mobile");
+      if (i >= start && i < end) {
+        riga.classList.add("show-mobile");
+      }
     });
   }
 
-const turnoEl = document.getElementById("turno-attuale");
+  const turnoEl = document.getElementById("turno-attuale");
 
-if (currentDraftState?.is_open === false) {
-  if (turnoEl) {
-    turnoEl.textContent = "🛑 Draft fermo: decisione RFA in attesa.";
-  }
-} else {
-  if (turnoEl) {
-    turnoEl.textContent = prossima
-      ? `🎯 È il turno di: ${prossima.fantaTeam} (Pick ${prossima.pick})`
-      : "✅ Draft completato!";
-  }
-}
-
-/* Mobile live hero */
-const mobileLivePick = document.getElementById("mobile-live-pick");
-const mobileLiveTeam = document.getElementById("mobile-live-team");
-const mobileLiveSub = document.getElementById("mobile-live-sub");
-
-if (mobileLivePick && mobileLiveTeam && mobileLiveSub) {
   if (currentDraftState?.is_open === false) {
-    mobileLivePick.textContent = "RFA";
-    mobileLiveTeam.textContent = "Draft fermo";
-    mobileLiveSub.textContent = "Decisione RFA in attesa";
-  } else if (prossima) {
-    mobileLivePick.textContent = `Pick #${prossima.pick}`;
-    mobileLiveTeam.textContent = prossima.fantaTeam;
-    mobileLiveSub.textContent = "È il turno di questa squadra";
+    if (turnoEl) {
+      turnoEl.textContent = "🛑 Draft fermo: decisione RFA in attesa.";
+    }
   } else {
-    mobileLivePick.textContent = "Fine";
-    mobileLiveTeam.textContent = "Draft completato";
-    mobileLiveSub.textContent = "Tutte le pick sono state effettuate";
+    if (turnoEl) {
+      turnoEl.textContent = prossima
+        ? `🎯 È il turno di: ${prossima.fantaTeam} (Pick ${prossima.pick})`
+        : "✅ Draft completato!";
+    }
+  }
+
+  /* Mobile live hero */
+  const mobileLivePick = document.getElementById("mobile-live-pick");
+  const mobileLiveTeam = document.getElementById("mobile-live-team");
+  const mobileLiveSub = document.getElementById("mobile-live-sub");
+
+  if (mobileLivePick && mobileLiveTeam && mobileLiveSub) {
+    if (currentDraftState?.is_open === false) {
+      mobileLivePick.textContent = "RFA";
+      mobileLiveTeam.textContent = "Draft fermo";
+      mobileLiveSub.textContent = "Decisione RFA in attesa";
+    } else if (prossima) {
+      mobileLivePick.textContent = `Pick #${prossima.pick}`;
+      mobileLiveTeam.textContent = prossima.fantaTeam;
+      mobileLiveSub.textContent = "È il turno di questa squadra";
+    } else {
+      mobileLivePick.textContent = "Fine";
+      mobileLiveTeam.textContent = "Draft completato";
+      mobileLiveSub.textContent = "Tutte le pick sono state effettuate";
+    }
   }
 }
 // ========== caricaPick con Retry + Abort + Spinner + Fallback ==========
