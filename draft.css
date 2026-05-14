@@ -2153,3 +2153,46 @@ h1, h2, h3, h4, p{
     font-size: .72rem !important;
   }
 }
+
+@media (max-width: 768px){
+  .team-player-side{
+    margin-left:auto;
+    display:flex;
+    flex-direction:column;
+    align-items:flex-end;
+    justify-content:center;
+    gap:4px;
+    min-width:72px;
+    flex:0 0 auto;
+  }
+
+  .team-player-pick{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    padding:4px 8px;
+    border-radius:999px;
+    background:#eef4ff;
+    color:var(--navy);
+    font-size:.72rem;
+    font-weight:900;
+    white-space:nowrap;
+    border:1px solid #dbe7f5;
+  }
+
+  .team-player-badges{
+    min-width:0 !important;
+    display:flex !important;
+    align-items:center !important;
+    justify-content:flex-end !important;
+    gap:3px !important;
+  }
+
+  .team-player-badges:empty{
+    display:none !important;
+  }
+
+  .team-player-info strong{
+    max-width:170px !important;
+  }
+}
