@@ -364,3 +364,49 @@ body{
     flex-direction:column;
   }
 }
+
+.conflict-card{
+  margin-bottom:14px;
+  border:1px solid #ffd591;
+  background:#fff7e6;
+}
+
+.conflict-title{
+  margin-top:0;
+  color:var(--navy);
+}
+
+.conflict-meta{
+  margin:4px 0 14px;
+  color:#49617f;
+  font-weight:600;
+}
+
+.conflict-teams{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+
+.conflict-team-option{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  flex-wrap:wrap;
+  padding:12px;
+  border:1px solid #ffe1aa;
+  border-radius:14px;
+  background:rgba(255,255,255,.72);
+}
+
+.conflict-team-info{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  flex-wrap:wrap;
+}
+
+.conflict-team-info strong{
+  color:var(--navy);
+}
