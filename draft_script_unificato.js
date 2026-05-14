@@ -505,13 +505,19 @@ function renderPicks(dati) {
 const turnoEl = document.getElementById("turno-attuale");
 
 if (currentDraftState?.is_open === false) {
-  turnoEl.textContent = "🛑 Draft fermo: decisione RFA in attesa.";
+  if (turnoEl) {
+    turnoEl.textContent = "🛑 Draft fermo: decisione RFA in attesa.";
+  }
 } else {
-  turnoEl.textContent = prossima
-    ? `🎯 È il turno di: ${prossima.fantaTeam} (Pick ${prossima.pick})`
-    : "✅ Draft completato!";
+  if (turnoEl) {
+    turnoEl.textContent = prossima
+      ? `🎯 È il turno di: ${prossima.fantaTeam} (Pick ${prossima.pick})`
+      : "✅ Draft completato!";
+  }
 }
-  const mobileLivePick = document.getElementById("mobile-live-pick");
+
+/* Mobile live hero */
+const mobileLivePick = document.getElementById("mobile-live-pick");
 const mobileLiveTeam = document.getElementById("mobile-live-team");
 const mobileLiveSub = document.getElementById("mobile-live-sub");
 
@@ -529,7 +535,7 @@ if (mobileLivePick && mobileLiveTeam && mobileLiveSub) {
     mobileLiveTeam.textContent = "Draft completato";
     mobileLiveSub.textContent = "Tutte le pick sono state effettuate";
   }
-  }
+}
 // ========== caricaPick con Retry + Abort + Spinner + Fallback ==========
 async function caricaPick() {
   showSpinner(true);
