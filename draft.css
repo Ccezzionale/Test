@@ -1891,3 +1891,13 @@ h1, h2, h3, h4, p{
     padding: 5px 10px !important;
   }
 }
+
+@media (max-width: 768px){
+  #mobile-live-draft,
+  #draft-board-section,
+  #pool-section,
+  #rose-section,
+  #admin-panel{
+    scroll-margin-top: 14px;
+  }
+}
