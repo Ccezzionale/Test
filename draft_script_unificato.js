@@ -488,13 +488,29 @@ function renderPicks(dati) {
     corpoTabella.appendChild(tr);
   });
 
-  if (prossimaIndex >= 0) {
-    const rigaCorrente = document.querySelectorAll("#tabella-pick tbody tr")[prossimaIndex];
-    if (rigaCorrente) {
-      rigaCorrente.style.backgroundColor = "#ffcc00";
-      rigaCorrente.classList.add("next-pick");
+if (prossimaIndex >= 0) {
+  const rigaCorrente = document.querySelectorAll("#tabella-pick tbody tr")[prossimaIndex];
+
+  if (rigaCorrente) {
+    rigaCorrente.style.backgroundColor = "#ffcc00";
+    rigaCorrente.classList.add("next-pick");
+
+    const tableScroll = document.querySelector("#draft-board-panel .table-scroll");
+
+    if (tableScroll) {
+      setTimeout(() => {
+        const rowTop = rigaCorrente.offsetTop;
+        const containerHeight = tableScroll.clientHeight;
+        const rowHeight = rigaCorrente.offsetHeight;
+
+        tableScroll.scrollTo({
+          top: Math.max(0, rowTop - containerHeight / 2 + rowHeight / 2),
+          behavior: "smooth"
+        });
+      }, 120);
     }
   }
+}
 
   if (window.innerWidth <= 768 && prossimaIndex >= 0) {
     const start = Math.max(0, prossimaIndex - 2);
