@@ -1559,6 +1559,7 @@ giocatoriOrdinati.forEach((player) => {
 
 const tr = document.createElement("tr");
 tr.dataset.playerId = id;
+tr.dataset.isU21 = player.is_u21 === true ? "true" : "false";
 
 /* Valori nascosti per ordinare correttamente la colonna badge */
 if (player.is_fp_keeper) {
@@ -1671,17 +1672,11 @@ function filtraLista() {
     const nome = row.children[0]?.textContent.toLowerCase() || "";
     const r = row.children[1]?.textContent.toLowerCase() || "";
     const s = row.children[2]?.textContent.toLowerCase() || "";
-    const badgeCell = row.children[4];
-
+const hasU21 = row.dataset.isU21 === "true";
     const ruoliGiocatore = r
       .split(/[,;\s]+/)
       .map(part => part.trim())
       .filter(Boolean);
-
-    const hasU21 = Boolean(
-      badgeCell?.querySelector('img[src*="u21"]') ||
-      badgeCell?.textContent.toLowerCase().includes("u21")
-    );
 
     const matchInput =
       !ruoloTesto ||
