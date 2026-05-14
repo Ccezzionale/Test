@@ -1916,10 +1916,6 @@ function aggiornaChiamatePerSquadra() {
         <span class="team-player-badges">${badgeHtml}</span>
       `;
 
-      if (p.n <= 6) {
-        riga.classList.add("highlight-pick");
-      }
-
       body.appendChild(riga);
     });
 
