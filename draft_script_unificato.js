@@ -37,6 +37,11 @@ function escapeHtml(value) {
     .replaceAll("'", "&#039;");
 }
 
+function getTeamNameFromDraftCell(cell) {
+  if (!cell) return "";
+  return cell.childNodes?.[0]?.textContent?.trim() || cell.textContent?.trim() || "";
+}
+
 async function logoutUtente() {
   await supabase.auth.signOut();
   window.location.href = 'login.html';
@@ -716,7 +721,7 @@ function isMioTurno() {
   for (let r of righe) {
     const celle = r.querySelectorAll("td");
     const pick = parseInt(celle[0]?.textContent || "0");
-    const squadra = (celle[1]?.textContent || "").trim();
+    const squadra = getTeamNameFromDraftCell(celle[1]);
 
     if (pick === pickCorrente) {
       return squadra === currentTeamName;
@@ -1657,10 +1662,10 @@ let fantaTeam = "";
 for (let r of righe) {
   const celle = r.querySelectorAll("td");
   const pickCella = parseInt(celle[0]?.textContent || "0");
-  if (pickCella === pick) {
-    fantaTeam = celle[1]?.textContent || "";
-    break;
-  }
+if (pickCella === pick) {
+  fantaTeam = getTeamNameFromDraftCell(celle[1]);
+  break;
+}
 }
 
 if (!fantaTeam) {
@@ -1836,7 +1841,7 @@ function mappaIndiceAssolutoPerTeam() {
   righe.forEach(r => {
     const celle = r.querySelectorAll("td");
     const pick = parseInt(celle[0]?.textContent);
-    const team = (celle[1]?.textContent || "").trim();
+    const team = getTeamNameFromDraftCell(celle[1]);
     if (!team || isNaN(pick)) return;
     if (!picksPerTeam[team]) picksPerTeam[team] = [];
     picksPerTeam[team].push(pick);
@@ -1860,7 +1865,7 @@ function aggiornaChiamatePerSquadra() {
   righe.forEach(r => {
     const celle = r.querySelectorAll("td");
 const pickNum = parseInt(celle[0]?.textContent);
-const team = celle[1]?.childNodes?.[0]?.textContent?.trim() || celle[1]?.textContent?.trim();
+const team = getTeamNameFromDraftCell(celle[1]);
 const nome = celle[2]?.textContent?.trim();
 const isTradedPick = r.dataset.tradedPick === "true";
 
