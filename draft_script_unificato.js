@@ -1,4 +1,4 @@
-import { supabase, supabaseUrl, supabaseKey } from './supabase.js';
+mport { supabase, supabaseUrl, supabaseKey } from './supabase.js';
 
 
 // ========== Helper & Global ==========
@@ -593,7 +593,288 @@ if (prossimaIndex >= 0) {
       mobileLiveSub.textContent = "Tutte le pick sono state effettuate";
     }
   }
+
+  aggiornaDesktopDraftRoom(dati, prossima);
 }
+
+
+// ========== Desktop Draft Room visuale ==========
+let desktopDraftRoomReady = false;
+let desktopResizeTimer = null;
+
+function getDraftTeamLogoPath(team) {
+  return `img/${team}.png`;
+}
+
+function getDraftPlayerInfoByName(nome) {
+  const key = normalize(nome || "");
+  return mappaGiocatoriDraft[key] || mappaGiocatori[key] || {};
+}
+
+function ensureDesktopDraftRoomShell() {
+  const page = document.querySelector(".page-shell") || document.querySelector("main") || document.body;
+  const container = document.querySelector(".container");
+  if (!page || !container) return null;
+
+  let shell = document.getElementById("desktop-draft-room");
+
+  if (!shell) {
+    shell = document.createElement("section");
+    shell.id = "desktop-draft-room";
+    shell.className = "desktop-draft-room";
+    shell.innerHTML = `
+      <div class="desktop-live-bar">
+        <div class="desktop-live-main">
+          <div class="desktop-live-icon">⏱️</div>
+          <div>
+            <span class="desktop-live-kicker">ON THE CLOCK</span>
+            <strong id="desktop-live-team">-</strong>
+          </div>
+        </div>
+        <div class="desktop-live-stat">
+          <span>Pick attuale</span>
+          <strong id="desktop-live-pick">-</strong>
+        </div>
+        <div class="desktop-live-queue">
+          <span>Prossimi in ordine</span>
+          <div id="desktop-next-queue" class="desktop-next-queue"></div>
+        </div>
+        <div class="desktop-live-stat desktop-live-stat-small">
+          <span>Round</span>
+          <strong id="desktop-live-round">-</strong>
+        </div>
+        <div class="desktop-live-stat desktop-live-stat-small">
+          <span>Chiamate</span>
+          <strong id="desktop-live-progress">-</strong>
+        </div>
+      </div>
+
+      <div class="desktop-draft-grid">
+        <aside class="desktop-recent-panel panel">
+          <div class="desktop-mini-header">
+            <strong>Ultime chiamate</strong>
+            <span id="desktop-recent-count">Live</span>
+          </div>
+          <div id="desktop-recent-list" class="desktop-recent-list"></div>
+        </aside>
+
+        <section class="desktop-board-panel panel">
+          <div class="desktop-board-header">
+            <div>
+              <h2 id="desktop-board-title">Draft Room</h2>
+              <p>Tabellone dinamico completo delle chiamate</p>
+            </div>
+            <button type="button" class="desktop-board-refresh" onclick="caricaPick(); aggiornaChiamatePerSquadra();">↻ Ricarica</button>
+          </div>
+          <div id="desktop-draft-board-grid" class="desktop-draft-board-grid"></div>
+        </section>
+
+        <aside id="desktop-player-pool-slot" class="desktop-player-pool-slot"></aside>
+      </div>
+    `;
+
+    const hero = document.querySelector(".hero");
+    if (hero && hero.parentNode) {
+      hero.insertAdjacentElement("afterend", shell);
+    } else {
+      page.insertBefore(shell, container);
+    }
+  }
+
+  document.body.classList.add("desktop-draft-v2");
+  placePlayerPoolForViewport();
+
+  if (!desktopDraftRoomReady) {
+    desktopDraftRoomReady = true;
+    window.addEventListener("resize", () => {
+      clearTimeout(desktopResizeTimer);
+      desktopResizeTimer = setTimeout(placePlayerPoolForViewport, 120);
+    });
+  }
+
+  return shell;
+}
+
+function placePlayerPoolForViewport() {
+  const pool = document.querySelector(".lista-container");
+  const desktopSlot = document.getElementById("desktop-player-pool-slot");
+  const container = document.querySelector(".container");
+  if (!pool || !desktopSlot || !container) return;
+
+  if (window.innerWidth >= 1101) {
+    if (pool.parentElement !== desktopSlot) desktopSlot.appendChild(pool);
+  } else {
+    if (pool.parentElement !== container) container.appendChild(pool);
+  }
+}
+
+function renderDesktopBadgesForPlayer(playerInfo) {
+  return renderDraftBadgeImages({
+    is_fp: playerInfo.is_fp,
+    is_fp_keeper: playerInfo.is_fp_keeper,
+    fp_keeper_year: playerInfo.fp_keeper_year,
+    is_u21: playerInfo.is_u21,
+    is_u21_slot: playerInfo.is_u21_slot || playerInfo.is_u21,
+    is_u21_keeper: playerInfo.is_u21_keeper,
+    u21_keeper_year: playerInfo.u21_keeper_year,
+    is_top6_protected: playerInfo.is_top6_protected,
+    is_rfa_matched: playerInfo.is_rfa_matched
+  }, { showEligibleU21: true });
+}
+
+function aggiornaDesktopDraftRoom(dati = [], prossima = null) {
+  const shell = ensureDesktopDraftRoomShell();
+  if (!shell || !Array.isArray(dati)) return;
+
+  const totalPicks = dati.length;
+  const picked = dati.filter(r => (r["Giocatore"] || "").trim()).length;
+  const currentPick = Number(currentDraftState?.current_pick || 0);
+
+  const title = document.getElementById("desktop-board-title");
+  if (title) title.textContent = tab || "Draft Room";
+
+  const liveTeam = document.getElementById("desktop-live-team");
+  const livePick = document.getElementById("desktop-live-pick");
+  const liveRound = document.getElementById("desktop-live-round");
+  const liveProgress = document.getElementById("desktop-live-progress");
+
+  const teamsOrder = [];
+  const grouped = {};
+
+  dati.forEach(row => {
+    const team = row["Fanta Team"] || "";
+    if (!team) return;
+    if (!grouped[team]) {
+      grouped[team] = [];
+      teamsOrder.push(team);
+    }
+    grouped[team].push(row);
+  });
+
+  const maxRounds = Math.max(1, ...Object.values(grouped).map(rows => rows.length));
+  const currentRound = currentPick && teamsOrder.length
+    ? Math.ceil(currentPick / teamsOrder.length)
+    : "-";
+
+  if (currentDraftState?.is_open === false) {
+    if (liveTeam) liveTeam.textContent = "Draft fermo";
+    if (livePick) livePick.textContent = "RFA";
+  } else if (prossima) {
+    if (liveTeam) liveTeam.textContent = prossima.fantaTeam || "-";
+    if (livePick) livePick.textContent = `Pick #${prossima.pick}`;
+  } else {
+    if (liveTeam) liveTeam.textContent = "Draft completato";
+    if (livePick) livePick.textContent = "Fine";
+  }
+
+  if (liveRound) liveRound.textContent = `${currentRound}/${maxRounds}`;
+  if (liveProgress) liveProgress.textContent = `${picked}/${totalPicks}`;
+
+  const queueEl = document.getElementById("desktop-next-queue");
+  if (queueEl) {
+    const queueRows = dati
+      .filter(r => Number(r["Pick"]) >= currentPick && !(r["Giocatore"] || "").trim())
+      .slice(0, 6);
+
+    queueEl.innerHTML = queueRows.map((r, index) => {
+      const team = r["Fanta Team"] || "";
+      const arrow = index === 0 ? "" : `<span class="desktop-queue-arrow">›</span>`;
+      return `
+        ${arrow}
+        <span class="desktop-queue-logo" title="${escapeHtml(team)}">
+          <img src="${getDraftTeamLogoPath(team)}" alt="${escapeHtml(team)}" onerror="this.style.display='none'">
+        </span>
+      `;
+    }).join("") || `<span class="desktop-empty-muted">Completato</span>`;
+  }
+
+  const recentEl = document.getElementById("desktop-recent-list");
+  const recentCount = document.getElementById("desktop-recent-count");
+  if (recentEl) {
+    const recent = dati
+      .filter(r => (r["Giocatore"] || "").trim())
+      .slice(-8)
+      .reverse();
+
+    if (recentCount) recentCount.textContent = `${recent.length}`;
+
+    recentEl.innerHTML = recent.length
+      ? recent.map(r => {
+          const nome = r["Giocatore"] || "";
+          const team = r["Fanta Team"] || "";
+          const info = getDraftPlayerInfoByName(nome);
+          return `
+            <div class="desktop-recent-row">
+              <span class="desktop-recent-pick">#${escapeHtml(r["Pick"])}</span>
+              <img src="${getDraftTeamLogoPath(team)}" alt="${escapeHtml(team)}" onerror="this.style.display='none'">
+              <span class="desktop-recent-info">
+                <strong>${escapeHtml(nome)}</strong>
+                <small>${escapeHtml(team)} · ${escapeHtml(info.ruolo || "-")}${info.squadra ? ` · ${escapeHtml(info.squadra)}` : ""}</small>
+              </span>
+              <span class="desktop-recent-badges">${renderDesktopBadgesForPlayer(info)}</span>
+            </div>
+          `;
+        }).join("")
+      : `<div class="desktop-empty-state">Nessuna chiamata ancora.</div>`;
+  }
+
+  const boardEl = document.getElementById("desktop-draft-board-grid");
+  if (!boardEl) return;
+  boardEl.style.setProperty("--desktop-rounds", String(maxRounds));
+
+  const roundLabels = Array.from({ length: maxRounds }, (_, i) => `<div class="desktop-round-label">R${i + 1}</div>`).join("");
+
+  const teamColumns = teamsOrder.map(team => {
+    const rows = grouped[team] || [];
+    const logo = getDraftTeamLogoPath(team);
+
+    const slots = rows.map((row, i) => {
+      const pickNum = row["Pick"];
+      const nome = (row["Giocatore"] || "").trim();
+      const isCurrent = Number(pickNum) === currentPick && currentDraftState?.is_open !== false;
+      const isTradedPick = row["IsTradedPick"] === true;
+      const info = nome ? getDraftPlayerInfoByName(nome) : {};
+      const filledClass = nome ? "is-filled" : "is-empty";
+      const currentClass = isCurrent ? "is-current" : "";
+
+      return `
+        <div class="desktop-pick-slot ${filledClass} ${currentClass}" title="Pick #${escapeHtml(pickNum)}">
+          <div class="desktop-pick-topline">
+            <span class="desktop-pick-number">${escapeHtml(pickNum)}</span>
+            ${isTradedPick ? '<span class="desktop-pick-trade" title="Pick acquisita via trade">↔</span>' : ''}
+          </div>
+          ${nome ? `
+            <strong>${escapeHtml(nome)}</strong>
+            <small>${escapeHtml(info.ruolo || "-")}${info.squadra ? ` · ${escapeHtml(info.squadra)}` : ""}${info.quotazione !== undefined && info.quotazione !== "" ? ` · Q${escapeHtml(info.quotazione)}` : ""}</small>
+            <span class="desktop-pick-badges">${renderDesktopBadgesForPlayer(info)}</span>
+          ` : `
+            <strong>Pick #${escapeHtml(pickNum)}</strong>
+            <small>In attesa</small>
+          `}
+        </div>
+      `;
+    }).join("");
+
+    return `
+      <article class="desktop-team-column">
+        <div class="desktop-team-head">
+          <img src="${logo}" alt="${escapeHtml(team)}" onerror="this.style.visibility='hidden'">
+          <strong>${escapeHtml(team)}</strong>
+        </div>
+        <div class="desktop-team-slots">${slots}</div>
+      </article>
+    `;
+  }).join("");
+
+  boardEl.innerHTML = `
+    <div class="desktop-round-rail">
+      <div class="desktop-round-spacer"></div>
+      ${roundLabels}
+    </div>
+    <div class="desktop-teams-track">${teamColumns}</div>
+  `;
+}
+
 // ========== caricaPick con Retry + Abort + Spinner + Fallback ==========
 async function caricaPick() {
   showSpinner(true);
@@ -643,7 +924,9 @@ is_fp,
 is_fp_keeper,
 fp_keeper_year,
 is_top6_protected,
-is_rfa_matched
+is_rfa_matched,
+serie_a_team,
+quotation
     `)
     .in("id", draftPlayerIds);
 
@@ -664,7 +947,9 @@ is_fp_keeper: !!p.is_fp_keeper,
 fp_keeper_year: p.fp_keeper_year,
       is_top6_protected: !!p.is_top6_protected,
       u21_keeper_year: p.u21_keeper_year,
-      is_rfa_matched: !!p.is_rfa_matched
+      is_rfa_matched: !!p.is_rfa_matched,
+      squadra: p.serie_a_team || "",
+      quotazione: p.quotation ?? ""
     };
   });
 }
