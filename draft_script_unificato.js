@@ -1930,8 +1930,16 @@ if (openTeams.has(team)) {
     body.className = "team-accordion-body";
 
     picks.forEach(p => {
-      const riga = document.createElement("div");
-      riga.className = "team-player-row";
+     const riga = document.createElement("div");
+riga.className = "team-player-row";
+
+if (p.nome.length >= 14) {
+  riga.classList.add("long-player-name");
+}
+
+if (p.nome.length >= 18) {
+  riga.classList.add("very-long-player-name");
+}
 
       const badgeHtml = renderDraftBadgeImages({
         is_fp: p.isFp,
