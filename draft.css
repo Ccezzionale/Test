@@ -4528,3 +4528,85 @@ h1, h2, h3, h4, p{
     display: none !important;
   }
 }
+
+
+/* =========================================================
+   DESKTOP CONCEPT A.5 - visible badges without widening board
+   Badges moved to floating tray inside each pick card
+   ========================================================= */
+@media (min-width: 1101px){
+  .desktop-pick-slot{
+    position: relative !important;
+    padding-right: 58px !important;
+    grid-template-columns: 1fr !important;
+    grid-template-areas:
+      "top"
+      "name"
+      "meta" !important;
+    gap: 2px !important;
+  }
+
+  .desktop-pick-badges{
+    position: absolute !important;
+    top: 7px !important;
+    right: 7px !important;
+    display: inline-flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    gap: 3px !important;
+    padding: 4px 4px !important;
+    border-radius: 11px !important;
+    background: rgba(255,255,255,.92) !important;
+    border: 1px solid #e3ecf7 !important;
+    box-shadow: 0 4px 10px rgba(0,31,63,.08) !important;
+    min-width: 34px !important;
+  }
+
+  .desktop-pick-slot.is-current .desktop-pick-badges{
+    background: rgba(255,255,255,.95) !important;
+    border-color: rgba(216,170,0,.55) !important;
+  }
+
+  .desktop-pick-badges .badge-img-star{
+    width: 22px !important;
+    height: 22px !important;
+    filter: drop-shadow(0 1px 3px rgba(0,0,0,.16));
+  }
+
+  .desktop-pick-badges .badge-img-pill{
+    width: 34px !important;
+    height: 20px !important;
+    filter: drop-shadow(0 1px 3px rgba(0,0,0,.14));
+  }
+
+  .desktop-pick-badges .badge-img-protected{
+    width: 20px !important;
+    height: 20px !important;
+    filter: drop-shadow(0 1px 3px rgba(0,0,0,.16));
+  }
+
+  .desktop-pick-badges:empty{
+    display: none !important;
+  }
+
+  /* recent picks can stay more readable but compact */
+  .desktop-recent-badges{
+    gap: 3px !important;
+  }
+
+  .desktop-recent-badges .badge-img-star{
+    width: 22px !important;
+    height: 22px !important;
+  }
+
+  .desktop-recent-badges .badge-img-pill{
+    width: 34px !important;
+    height: 20px !important;
+  }
+
+  .desktop-recent-badges .badge-img-protected{
+    width: 20px !important;
+    height: 20px !important;
+  }
+}
