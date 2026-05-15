@@ -1203,17 +1203,20 @@ async function inviaPickAlFoglio(pick, fantaTeam, nome, ruolo, squadra, quotazio
     if (!response.ok) {
       console.error("❌ ERRORE submit-pick:", result);
 
-      if (result?.error === "RFA_PENDING") {
-        alert(result.message || "Questo giocatore è un RFA. Il draft è stato fermato in attesa della decisione.");
-      } else {
-        alert(result?.error || "Errore nell'invio della pick.");
-      }
+if (!response.ok) {
+  console.error("❌ ERRORE submit-pick:", result);
 
-      pickInInvio = false;
-      await caricaPick();
-      aggiornaStatoInterattivoLista();
-      return;
-    }
+  if (result?.error === "RFA_PENDING") {
+    alert(result.message || "Questo giocatore è un RFA. Il draft è stato fermato in attesa della decisione.");
+  } else {
+    alert(result?.message || result?.error || "Errore nell'invio della pick.");
+  }
+
+  pickInInvio = false;
+  await caricaPick();
+  aggiornaStatoInterattivoLista();
+  return;
+}
 
     console.log("✅ submit-pick OK:", result);
 
