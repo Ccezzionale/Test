@@ -1937,7 +1937,7 @@ container.innerHTML = "";
   Object.entries(riepilogo).forEach(([team, picks], index) => {
     picks.sort((a, b) => a.n - b.n);
 
-    const u21Count = picks.filter(p => p.isU21 || p.isU21Keeper).length;
+    const u21Count = picks.filter(p => p.isU21).length;
 const goalkeeperCount = picks.filter(p => isGoalkeeperRole(p.ruolo)).length;
 
 const u21Missing = Math.max(0, 4 - u21Count);
