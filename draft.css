@@ -4610,3 +4610,189 @@ h1, h2, h3, h4, p{
     height: 20px !important;
   }
 }
+
+
+/* =========================================================
+   DESKTOP CONCEPT A.6 - SPORT BROADCAST COLORS
+   Theme: deep navy, electric blue, bright gold
+   Layout unchanged.
+   ========================================================= */
+@media (min-width: 1101px){
+  body.desktop-draft-v2{
+    background:
+      radial-gradient(circle at top, rgba(18, 93, 255, .12), transparent 24%),
+      linear-gradient(180deg, #f3f7fd 0%, #eaf1f8 100%) !important;
+  }
+
+  .desktop-live-bar{
+    background:
+      radial-gradient(circle at 14% 0%, rgba(0, 176, 255, .20), transparent 22%),
+      linear-gradient(135deg, #021a4a 0%, #00183d 45%, #00122e 100%) !important;
+    border: 1px solid rgba(38, 123, 255, .55) !important;
+    box-shadow:
+      0 18px 36px rgba(0, 22, 68, .24),
+      0 0 0 1px rgba(0, 136, 255, .15) inset,
+      0 0 18px rgba(0, 110, 255, .18) !important;
+  }
+
+  .desktop-live-kicker,
+  .desktop-live-stat span,
+  .desktop-live-queue > span{
+    color: rgba(255,255,255,.78) !important;
+  }
+
+  #desktop-live-team,
+  .desktop-live-stat strong{
+    color: #ffffff !important;
+  }
+
+  .desktop-live-stat-small strong{
+    color: #ffca28 !important;
+    text-shadow: 0 0 8px rgba(255,202,40,.14);
+  }
+
+  .desktop-queue-logo{
+    background: rgba(255,255,255,.08) !important;
+    border: 1px solid rgba(55, 136, 255, .38) !important;
+    box-shadow: 0 0 0 1px rgba(255,255,255,.04) inset;
+  }
+
+  .desktop-board-panel,
+  .desktop-recent-panel,
+  .desktop-player-pool-slot .lista-container{
+    border: 1px solid rgba(36, 94, 198, .16) !important;
+    box-shadow:
+      0 16px 34px rgba(0,31,63,.10),
+      0 0 0 1px rgba(35, 101, 218, .04) inset !important;
+  }
+
+  .desktop-board-header h2{
+    color: #031847 !important;
+    text-shadow: 3px 3px 0 rgba(255, 200, 25, .55) !important;
+  }
+
+  .desktop-board-refresh{
+    border: 1px solid rgba(41, 111, 230, .28) !important;
+    color: #0b3d91 !important;
+    box-shadow: 0 6px 16px rgba(0,31,63,.07) !important;
+  }
+
+  .desktop-board-refresh:hover{
+    box-shadow: 0 10px 22px rgba(0,31,63,.12), 0 0 0 2px rgba(41, 111, 230, .08) !important;
+  }
+
+  .desktop-round-label{
+    background: linear-gradient(180deg, #123f8a 0%, #062b63 100%) !important;
+    color: #ffffff !important;
+    border: 1px solid rgba(37, 104, 216, .30) !important;
+    box-shadow:
+      inset 4px 0 0 #ffca28,
+      0 6px 14px rgba(0,31,63,.10) !important;
+  }
+
+  .desktop-team-head{
+    background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%) !important;
+    border: 1px solid rgba(28, 91, 191, .14) !important;
+    box-shadow: 0 10px 18px rgba(0,31,63,.06) !important;
+  }
+
+  .desktop-team-head::before{
+    background: linear-gradient(90deg, #ffca28 0%, #2b78ff 100%) !important;
+  }
+
+  .desktop-team-head strong{
+    color: #032255 !important;
+  }
+
+  .desktop-pick-slot{
+    background: linear-gradient(180deg, #ffffff 0%, #f9fbff 100%) !important;
+    border: 1px solid #d7e4f6 !important;
+    box-shadow: 0 4px 12px rgba(0,31,63,.045) !important;
+  }
+
+  .desktop-pick-slot:hover{
+    border-color: #bfd4f2 !important;
+    box-shadow: 0 8px 18px rgba(0,31,63,.09), 0 0 0 2px rgba(43, 120, 255, .05) !important;
+  }
+
+  .desktop-pick-slot strong{
+    color: #032255 !important;
+  }
+
+  .desktop-pick-slot small{
+    color: #536b90 !important;
+  }
+
+  .desktop-pick-number{
+    background: linear-gradient(180deg, #e7f0ff 0%, #dce9ff 100%) !important;
+    color: #1045a3 !important;
+    border: 1px solid rgba(43,120,255,.10) !important;
+  }
+
+  .desktop-pick-trade{
+    background: linear-gradient(180deg, #ffe58f 0%, #ffca28 100%) !important;
+    color: #3d2a00 !important;
+  }
+
+  .desktop-pick-slot.is-current{
+    background: linear-gradient(180deg, #ffe67b 0%, #ffc928 100%) !important;
+    border-color: #e2ab00 !important;
+    box-shadow:
+      0 12px 26px rgba(255, 187, 0, .24),
+      inset 0 0 0 2px rgba(255,255,255,.34) !important;
+  }
+
+  .desktop-pick-slot.is-current strong,
+  .desktop-pick-slot.is-current small{
+    color: #102247 !important;
+  }
+
+  .desktop-pick-slot.is-current .desktop-pick-number{
+    background: #082b69 !important;
+    color: #ffca28 !important;
+    border-color: rgba(255,202,40,.35) !important;
+  }
+
+  .desktop-pick-badges{
+    background: linear-gradient(180deg, rgba(255,255,255,.98) 0%, rgba(245,249,255,.95) 100%) !important;
+    border: 1px solid rgba(23, 86, 190, .14) !important;
+    box-shadow: 0 6px 14px rgba(0,31,63,.08) !important;
+  }
+
+  .desktop-recent-pick{
+    background: linear-gradient(180deg, #ffe58f 0%, #ffca28 100%) !important;
+    color: #031847 !important;
+  }
+
+  .desktop-mini-header,
+  .desktop-player-pool-slot .lista-container .panel-header{
+    background: linear-gradient(180deg, #ffffff 0%, #f7faff 100%) !important;
+  }
+
+  .desktop-mini-header strong,
+  .desktop-player-pool-slot .lista-container .panel-title,
+  .desktop-player-pool-slot .filter-label,
+  .desktop-player-pool-slot .results-pill{
+    color: #032255 !important;
+  }
+
+  .desktop-player-pool-slot .results-pill{
+    background: #eef5ff !important;
+    border-color: #d5e3f6 !important;
+  }
+
+  .desktop-player-pool-slot input[type="text"],
+  .desktop-player-pool-slot select{
+    border-color: #c9d9ee !important;
+    background: #ffffff !important;
+  }
+
+  .desktop-player-pool-slot #lista-giocatori-table thead th{
+    background: linear-gradient(180deg, #062b69 0%, #001f4d 100%) !important;
+    color: #ffffff !important;
+  }
+
+  .desktop-player-pool-slot #lista-giocatori-table tbody tr:hover{
+    background: #f4f8ff !important;
+  }
+}
