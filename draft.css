@@ -3229,3 +3229,32 @@ h1, h2, h3, h4, p{
     height: 22px !important;
   }
 }
+
+/* =========================
+   MOBILE SUMMARY - LONG NAME FIX
+   ========================= */
+@media (max-width: 768px){
+
+  .team-player-row.long-player-name .team-player-info strong{
+    font-size: .88rem !important;
+    letter-spacing: -.03em !important;
+  }
+
+  .team-player-row.very-long-player-name .team-player-info strong{
+    font-size: .78rem !important;
+    letter-spacing: -.04em !important;
+  }
+
+  .team-player-row.very-long-player-name .team-player-info{
+    line-height: 1.05 !important;
+  }
+}
+
+@media (max-width: 768px){
+  .team-player-info strong{
+    white-space: normal !important;
+    overflow: visible !important;
+    text-overflow: clip !important;
+    line-height: 1.05 !important;
+  }
+}
