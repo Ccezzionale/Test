@@ -42,6 +42,20 @@ function getTeamNameFromDraftCell(cell) {
   return cell.childNodes?.[0]?.textContent?.trim() || cell.textContent?.trim() || "";
 }
 
+function isGoalkeeperRole(ruolo) {
+  const parts = String(ruolo || "")
+    .toLowerCase()
+    .split(/[,;\s/]+/)
+    .map(x => x.trim())
+    .filter(Boolean);
+
+  return (
+    parts.includes("p") ||
+    parts.includes("por") ||
+    parts.includes("portiere")
+  );
+}
+
 async function logoutUtente() {
   await supabase.auth.signOut();
   window.location.href = 'login.html';
@@ -1923,6 +1937,12 @@ container.innerHTML = "";
   Object.entries(riepilogo).forEach(([team, picks], index) => {
     picks.sort((a, b) => a.n - b.n);
 
+    const u21Count = picks.filter(p => p.isU21 || p.isU21Keeper).length;
+const goalkeeperCount = picks.filter(p => isGoalkeeperRole(p.ruolo)).length;
+
+const u21Missing = Math.max(0, 4 - u21Count);
+const goalkeeperMissing = Math.max(0, 2 - goalkeeperCount);
+
 const div = document.createElement("div");
 div.className = "card-pick team-accordion";
 div.dataset.teamName = team;
@@ -1954,6 +1974,18 @@ if (openTeams.has(team)) {
 
     const body = document.createElement("div");
     body.className = "team-accordion-body";
+
+    const rulesStatus = document.createElement("div");
+rulesStatus.className = "team-rules-status";
+
+rulesStatus.innerHTML = `
+  <span class="team-rule-chip ${u21Missing === 0 ? "ok" : "warn"}">
+    U21 ${Math.min(u21Count, 4)}/4
+  </span>
+  <span class="team-rule-chip ${goalkeeperMissing === 0 ? "ok" : "warn"}">
+    POR ${goalkeeperCount}/2
+  </span>
+`;
 
     picks.forEach(p => {
      const riga = document.createElement("div");
@@ -2004,9 +2036,10 @@ riga.innerHTML = `
       div.classList.toggle("is-open");
     });
 
-    div.appendChild(header);
-    div.appendChild(body);
-    container.appendChild(div);
+div.appendChild(header);
+div.appendChild(rulesStatus);
+div.appendChild(body);
+container.appendChild(div);
   });
 }
 
