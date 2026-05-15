@@ -3307,3 +3307,50 @@ h1, h2, h3, h4, p{
     font-size:.74rem;
   }
 }
+
+/* =========================
+   TEAM REQUIREMENTS CHIPS
+   ========================= */
+.team-rules-status{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  flex-wrap:wrap;
+  padding:8px 12px 10px;
+}
+
+.team-rule-chip{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-width:78px;
+  padding:5px 10px;
+  border-radius:999px;
+  font-size:.78rem;
+  font-weight:900;
+  border:1px solid rgba(0,31,63,.12);
+}
+
+.team-rule-chip.ok{
+  background:linear-gradient(180deg, #dff8e8 0%, #bff0d0 100%);
+  color:#064e2b;
+}
+
+.team-rule-chip.warn{
+  background:linear-gradient(180deg, #fff2b8 0%, #ffd54a 100%);
+  color:#4b3700;
+}
+
+@media (max-width: 768px){
+  .team-rules-status{
+    justify-content:flex-start;
+    padding:0 14px 10px 74px;
+  }
+
+  .team-rule-chip{
+    min-width:66px;
+    padding:4px 8px;
+    font-size:.72rem;
+  }
+}
