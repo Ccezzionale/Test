@@ -4796,3 +4796,14 @@ h1, h2, h3, h4, p{
     background: #f4f8ff !important;
   }
 }
+
+/* =========================================================
+   DESKTOP: evita il flash della vecchia Draft Room
+   ========================================================= */
+@media (min-width: 1101px){
+  body:not(.desktop-draft-v2) .hero,
+  body:not(.desktop-draft-v2) .container,
+  body:not(.desktop-draft-v2) .summary-section{
+    display: none !important;
+  }
+}
