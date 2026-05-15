@@ -278,6 +278,96 @@
     </div>
 
     <p id="admin-status" style="margin:0; font-weight:600;"></p>
+
+  <hr style="width:100%; border:0; border-top:1px solid #dbe3f0; margin:10px 0;">
+
+<div id="admin-player-flags-panel" style="display:grid; gap:12px;">
+  <h3 style="margin:0;">🎛️ Gestione Giocatore</h3>
+  <p style="margin:0; color:#64748b;">
+    Modifica manualmente FP, U21, keeper, RFA e protezione P6.
+  </p>
+
+  <div>
+    <label for="admin-flags-player"><strong>Giocatore</strong></label><br>
+    <select
+      id="admin-flags-player"
+      style="width:100%; padding:8px; margin-top:6px;"
+    >
+      <option value="">-- Seleziona giocatore --</option>
+    </select>
+  </div>
+
+  <div>
+    <label for="admin-flags-team"><strong>Squadra keeper / protetto</strong></label><br>
+    <select
+      id="admin-flags-team"
+      style="width:100%; padding:8px; margin-top:6px;"
+    >
+      <option value="">-- Seleziona squadra --</option>
+    </select>
+  </div>
+
+  <div style="display:grid; grid-template-columns:repeat(2, minmax(0, 1fr)); gap:10px;">
+    <label>
+      <input type="checkbox" id="admin-flag-is-fp">
+      FP
+    </label>
+
+    <label>
+      <input type="checkbox" id="admin-flag-is-fp-keeper">
+      FP keeper
+    </label>
+
+    <label>
+      Anno FP keeper
+      <select id="admin-flag-fp-year" style="width:100%; padding:6px; margin-top:4px;">
+        <option value="1">1° anno</option>
+        <option value="2">2° anno</option>
+      </select>
+    </label>
+
+    <label>
+      <input type="checkbox" id="admin-flag-is-top6">
+      Protetto P6 🔒
+    </label>
+
+    <label>
+      <input type="checkbox" id="admin-flag-is-u21">
+      U21 eleggibile
+    </label>
+
+    <label>
+      <input type="checkbox" id="admin-flag-is-u21-slot">
+      U21 slot draft
+    </label>
+
+    <label>
+      <input type="checkbox" id="admin-flag-is-u21-keeper">
+      U21 keeper
+    </label>
+
+    <label>
+      Anno U21 keeper
+      <select id="admin-flag-u21-year" style="width:100%; padding:6px; margin-top:4px;">
+        <option value="1">1° anno</option>
+        <option value="2">2° anno</option>
+      </select>
+    </label>
+
+    <label>
+      <input type="checkbox" id="admin-flag-is-rfa-matched">
+      RFA pareggiato
+    </label>
+  </div>
+
+  <div style="display:flex; gap:10px; flex-wrap:wrap;">
+    <button id="admin-save-player-flags-btn" type="button">
+      💾 Salva modifiche giocatore
+    </button>
+  </div>
+
+  <p id="admin-player-flags-status" style="margin:0; font-weight:600;"></p>
+</div>
   </div>
 </section>
 
