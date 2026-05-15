@@ -25,6 +25,8 @@ let pickInInvio = false;
 let isAdmin = false;
 let keeperSelections = [];
 let pendingRfaClaim = null;
+let allTeams = [];
+let adminFlagPlayers = [];
 
 function normalize(nome) { return nome.trim().toLowerCase(); }
 
@@ -125,6 +127,8 @@ isAdmin = profile.role === 'admin';
     alert('Errore nel caricamento squadre.');
     return false;
   }
+
+  allTeams = teams || [];
 
   const myTeam = teams.find(t => t.id === currentTeamId);
 
@@ -1498,6 +1502,269 @@ async function adminEditPick() {
   }
 }
 
+function getAdminFlagPlayerSelected() {
+  const playerSelect = document.getElementById("admin-flags-player");
+  const playerId = playerSelect?.value;
+  if (!playerId) return null;
+
+  return adminFlagPlayers.find(p => String(p.id) === String(playerId)) || null;
+}
+
+function setAdminCheckbox(id, value) {
+  const el = document.getElementById(id);
+  if (el) el.checked = value === true;
+}
+
+function getAdminCheckbox(id) {
+  const el = document.getElementById(id);
+  return el ? el.checked === true : false;
+}
+
+function setAdminSelectValue(id, value, fallback = "") {
+  const el = document.getElementById(id);
+  if (el) el.value = value ?? fallback;
+}
+
+function populateAdminTeamSelect() {
+  const teamSelect = document.getElementById("admin-flags-team");
+  if (!teamSelect) return;
+
+  teamSelect.innerHTML = `<option value="">-- Seleziona squadra --</option>`;
+
+  allTeams
+    .slice()
+    .sort((a, b) => String(a.name || "").localeCompare(String(b.name || "")))
+    .forEach(team => {
+      const opt = document.createElement("option");
+      opt.value = team.id;
+      opt.textContent = team.name;
+      teamSelect.appendChild(opt);
+    });
+}
+
+function syncAdminPlayerFlagsForm() {
+  const player = getAdminFlagPlayerSelected();
+
+  const statusEl = document.getElementById("admin-player-flags-status");
+
+  if (!player) {
+    setAdminSelectValue("admin-flags-team", "");
+    setAdminCheckbox("admin-flag-is-fp", false);
+    setAdminCheckbox("admin-flag-is-fp-keeper", false);
+    setAdminSelectValue("admin-flag-fp-year", "1");
+    setAdminCheckbox("admin-flag-is-top6", false);
+    setAdminCheckbox("admin-flag-is-u21", false);
+    setAdminCheckbox("admin-flag-is-u21-slot", false);
+    setAdminCheckbox("admin-flag-is-u21-keeper", false);
+    setAdminSelectValue("admin-flag-u21-year", "1");
+    setAdminCheckbox("admin-flag-is-rfa-matched", false);
+
+    if (statusEl) statusEl.textContent = "";
+    return;
+  }
+
+  const suggestedTeamId =
+    player.top6_protected_team_id ||
+    player.owner_team_id ||
+    "";
+
+  setAdminSelectValue("admin-flags-team", suggestedTeamId);
+  setAdminCheckbox("admin-flag-is-fp", player.is_fp === true);
+  setAdminCheckbox("admin-flag-is-fp-keeper", player.is_fp_keeper === true);
+  setAdminSelectValue("admin-flag-fp-year", String(player.fp_keeper_year || 1), "1");
+  setAdminCheckbox("admin-flag-is-top6", player.is_top6_protected === true);
+  setAdminCheckbox("admin-flag-is-u21", player.is_u21 === true);
+  setAdminCheckbox("admin-flag-is-u21-slot", player.is_u21_slot === true);
+  setAdminCheckbox("admin-flag-is-u21-keeper", player.is_u21_keeper === true);
+  setAdminSelectValue("admin-flag-u21-year", String(player.u21_keeper_year || 1), "1");
+  setAdminCheckbox("admin-flag-is-rfa-matched", player.is_rfa_matched === true);
+
+  if (statusEl) {
+    statusEl.textContent = `Selezionato: ${player.name}`;
+  }
+}
+
+async function caricaAdminPlayerFlagsPanel() {
+  if (!isAdmin) return;
+
+  const playerSelect = document.getElementById("admin-flags-player");
+  if (!playerSelect) return;
+
+  populateAdminTeamSelect();
+
+  const { data, error } = await supabase
+    .from("players")
+    .select(`
+      id,
+      name,
+      role,
+      role_mantra,
+      serie_a_team,
+      pool,
+      owner_team_id,
+      is_fp,
+      is_fp_keeper,
+      fp_keeper_year,
+      is_u21,
+      is_u21_slot,
+      is_u21_keeper,
+      u21_keeper_year,
+      is_top6_protected,
+      top6_protected_team_id,
+      is_rfa_matched
+    `)
+    .eq("pool", draftPool)
+    .order("name", { ascending: true });
+
+  if (error) {
+    console.error("Errore caricamento admin player flags:", error);
+    const statusEl = document.getElementById("admin-player-flags-status");
+    if (statusEl) statusEl.textContent = "❌ Errore caricamento giocatori.";
+    return;
+  }
+
+  adminFlagPlayers = data || [];
+
+  playerSelect.innerHTML = `<option value="">-- Seleziona giocatore --</option>`;
+
+  adminFlagPlayers.forEach(player => {
+    const opt = document.createElement("option");
+    opt.value = player.id;
+
+    const role = player.role || player.role_mantra || "-";
+    const serieA = player.serie_a_team || "-";
+
+    opt.textContent = `${player.name} · ${role} · ${serieA}`;
+    playerSelect.appendChild(opt);
+  });
+
+  playerSelect.onchange = syncAdminPlayerFlagsForm;
+
+  const fpKeeperCheckbox = document.getElementById("admin-flag-is-fp-keeper");
+  const fpYearSelect = document.getElementById("admin-flag-fp-year");
+  const top6Checkbox = document.getElementById("admin-flag-is-top6");
+
+  function applyFpSecondYearVisualRule() {
+    const isFpKeeper = fpKeeperCheckbox?.checked === true;
+    const fpYear = Number(fpYearSelect?.value || 1);
+
+    if (isFpKeeper && fpYear === 2 && top6Checkbox) {
+      top6Checkbox.checked = true;
+    }
+  }
+
+  fpKeeperCheckbox?.addEventListener("change", applyFpSecondYearVisualRule);
+  fpYearSelect?.addEventListener("change", applyFpSecondYearVisualRule);
+
+  const saveBtn = document.getElementById("admin-save-player-flags-btn");
+  if (saveBtn && !saveBtn.dataset.bound) {
+    saveBtn.addEventListener("click", adminSavePlayerFlags);
+    saveBtn.dataset.bound = "1";
+  }
+}
+
+async function adminSavePlayerFlags() {
+  if (!isAdmin) {
+    alert("Solo admin.");
+    return;
+  }
+
+  const statusEl = document.getElementById("admin-player-flags-status");
+  const player = getAdminFlagPlayerSelected();
+
+  if (!player) {
+    if (statusEl) statusEl.textContent = "Seleziona un giocatore.";
+    return;
+  }
+
+  const teamId = document.getElementById("admin-flags-team")?.value || null;
+
+  const isFpKeeper = getAdminCheckbox("admin-flag-is-fp-keeper");
+  const isU21Keeper = getAdminCheckbox("admin-flag-is-u21-keeper");
+  const isTop6 = getAdminCheckbox("admin-flag-is-top6");
+  const fpYear = Number(document.getElementById("admin-flag-fp-year")?.value || 1);
+
+  if ((isFpKeeper || isU21Keeper || isTop6 || fpYear === 2) && !teamId) {
+    if (statusEl) {
+      statusEl.textContent = "❌ Seleziona una squadra per keeper/P6.";
+    }
+    return;
+  }
+
+  const finalTop6 = isTop6 || (isFpKeeper && fpYear === 2);
+
+  const confirmMessage =
+    `Vuoi aggiornare ${player.name}?\n\n` +
+    `Nota: se è FP keeper 2° anno, verrà protetto P6 automaticamente.`;
+
+  if (!confirm(confirmMessage)) return;
+
+  if (statusEl) statusEl.textContent = "⏳ Salvataggio modifiche giocatore...";
+
+  try {
+    const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
+
+    if (sessionError || !sessionData?.session?.access_token) {
+      if (statusEl) statusEl.textContent = "❌ Sessione non valida.";
+      return;
+    }
+
+    const response = await fetch(
+      `${supabaseUrl}/functions/v1/admin-update-player-flags`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${sessionData.session.access_token}`,
+          "apikey": supabaseKey
+        },
+        body: JSON.stringify({
+          player_id: player.id,
+          keeper_team_id: teamId,
+
+          is_fp: getAdminCheckbox("admin-flag-is-fp"),
+          is_fp_keeper: isFpKeeper,
+          fp_keeper_year: fpYear,
+
+          is_u21: getAdminCheckbox("admin-flag-is-u21"),
+          is_u21_slot: getAdminCheckbox("admin-flag-is-u21-slot"),
+          is_u21_keeper: isU21Keeper,
+          u21_keeper_year: Number(document.getElementById("admin-flag-u21-year")?.value || 1),
+
+          is_top6_protected: finalTop6,
+          is_rfa_matched: getAdminCheckbox("admin-flag-is-rfa-matched")
+        })
+      }
+    );
+
+    const result = await response.json();
+
+    if (!response.ok) {
+      console.error("Errore admin-update-player-flags:", result);
+      if (statusEl) statusEl.textContent = `❌ ${result?.error || "Errore salvataggio"}`;
+      return;
+    }
+
+    if (statusEl) {
+      statusEl.textContent = result.forced_top6_by_fp_second_year
+        ? `✅ ${result.message}. FP 2° anno protetto automaticamente 🔒`
+        : `✅ ${result.message}`;
+    }
+
+    await caricaKeeperSelectionsDraft();
+    await caricaGiocatori();
+    await caricaPick();
+    popolaListaDisponibili();
+    aggiornaChiamatePerSquadra();
+    aggiornaStatoInterattivoLista();
+    await caricaAdminPlayerFlagsPanel();
+
+  } catch (err) {
+    console.error("Errore salvataggio player flags:", err);
+    if (statusEl) statusEl.textContent = "❌ Errore durante il salvataggio.";
+  }
+}
+
 
 function renderDraftBadgeImages(player, options = {}) {
   const badges = [];
@@ -1839,6 +2106,7 @@ ensureRfaPanel();
 await caricaKeeperSelectionsDraft();
 await caricaGiocatori();
 await caricaPick();
+    await caricaAdminPlayerFlagsPanel();
 popolaListaDisponibili();
 aggiornaChiamatePerSquadra();
 aggiornaStatoInterattivoLista();
