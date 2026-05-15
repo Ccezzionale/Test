@@ -471,11 +471,24 @@ function renderPicks(dati) {
 
   dati.forEach((riga, i) => {
     const tr = document.createElement("tr");
-    const nome = riga["Giocatore"]?.trim() || "";
-    const fantaTeam = riga["Fanta Team"];
-    const pick = riga["Pick"];
+const nome = riga["Giocatore"]?.trim() || "";
+const fantaTeam = riga["Fanta Team"];
+const pick = riga["Pick"];
+const isTradedPick = riga["IsTradedPick"] === true;
 
-    tr.innerHTML = `<td>${pick}</td><td>${fantaTeam}</td><td>${nome}</td>`;
+if (isTradedPick) {
+  tr.classList.add("traded-pick-row");
+  tr.dataset.tradedPick = "true";
+}
+
+tr.innerHTML = `
+  <td>${pick}</td>
+  <td>
+    ${escapeHtml(fantaTeam)}
+    ${isTradedPick ? '<span class="trade-pick-badge" title="Pick acquisita via trade">🔁</span>' : ''}
+  </td>
+  <td>${escapeHtml(nome)}</td>
+`;
 
     if (i === prossimaIndex) {
       tr.classList.add("next-pick");
@@ -653,10 +666,16 @@ const dati = orderRows.map(r => {
   const teamIdToShow = pick?.team_id || r.team_id;
   const team = teams.find(t => t.id === teamIdToShow);
 
+  const isTradedPick =
+    r.original_team_id &&
+    r.team_id &&
+    String(r.original_team_id) !== String(r.team_id);
+
   return {
     "Pick": r.pick_number,
     "Fanta Team": team ? team.name : "",
-    "Giocatore": pick ? pick.player_name : ""
+    "Giocatore": pick ? pick.player_name : "",
+    "IsTradedPick": isTradedPick
   };
 });
 
@@ -1840,9 +1859,10 @@ function aggiornaChiamatePerSquadra() {
 
   righe.forEach(r => {
     const celle = r.querySelectorAll("td");
-    const pickNum = parseInt(celle[0]?.textContent);
-    const team = celle[1]?.textContent?.trim();
-    const nome = celle[2]?.textContent?.trim();
+const pickNum = parseInt(celle[0]?.textContent);
+const team = celle[1]?.childNodes?.[0]?.textContent?.trim() || celle[1]?.textContent?.trim();
+const nome = celle[2]?.textContent?.trim();
+const isTradedPick = r.dataset.tradedPick === "true";
 
     if (!team || !nome || isNaN(pickNum)) return;
 
@@ -1878,7 +1898,8 @@ function aggiornaChiamatePerSquadra() {
       fpKeeperYear,
       isTop6Protected,
       isRfaMatched,
-      pickNum
+      pickNum,
+isTradedPick
     });
   });
 
@@ -1953,6 +1974,10 @@ if (p.nome.length >= 18) {
         is_rfa_matched: p.isRfaMatched
       });
 
+      const tradeBadgeHtml = p.isTradedPick
+  ? '<span class="summary-trade-badge" title="Pick acquisita via trade">🔁</span>'
+  : "";
+
 riga.innerHTML = `
   <span class="team-player-left">
     <span class="team-player-number">${p.n}</span>
@@ -1964,7 +1989,7 @@ riga.innerHTML = `
     <small>${escapeHtml(p.ruolo || "-")}</small>
   </span>
 
-  <span class="team-player-badges">${badgeHtml}</span>
+ <span class="team-player-badges">${tradeBadgeHtml}${badgeHtml}</span>
 `;
 
       body.appendChild(riga);
