@@ -4479,3 +4479,52 @@ h1, h2, h3, h4, p{
     min-width: 154px !important;
   }
 }
+
+
+/* =========================================================
+   DESKTOP CONCEPT A.4 - bigger, more visible badges
+   ========================================================= */
+@media (min-width: 1101px){
+  .desktop-pick-slot{
+    grid-template-columns: minmax(0, 1fr) auto !important;
+    gap: 2px 8px !important;
+  }
+
+  .desktop-pick-badges,
+  .desktop-recent-badges{
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: flex-end !important;
+    gap: 4px !important;
+  }
+
+  .desktop-pick-badges{
+    padding-left: 6px !important;
+  }
+
+  .desktop-pick-badges .badge-img-star,
+  .desktop-recent-badges .badge-img-star{
+    width: 26px !important;
+    height: 26px !important;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,.18));
+  }
+
+  .desktop-pick-badges .badge-img-pill,
+  .desktop-recent-badges .badge-img-pill{
+    width: 42px !important;
+    height: 25px !important;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,.16));
+  }
+
+  .desktop-pick-badges .badge-img-protected,
+  .desktop-recent-badges .badge-img-protected{
+    width: 24px !important;
+    height: 24px !important;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,.18));
+  }
+
+  .desktop-pick-badges:empty,
+  .desktop-recent-badges:empty{
+    display: none !important;
+  }
+}
