@@ -1487,19 +1487,22 @@ body{
 }
 
 /* =========================================================
-   PLAYOFF V3.7 - RIMUOVE I CONNETTORI SEMIFINALE -> FINALE
+   PLAYOFF V3.7B - HARD REMOVE SEMI -> FINALE
    ========================================================= */
 @media (min-width: 1024px){
 
-  /* spegne la lineetta orizzontale in uscita dalle semifinali */
+  .s-sx .match-pair::after,
+  .s-dx .match-pair::after,
   .bracket > .blocco-colonna:nth-of-type(3) .match-pair::after,
   .bracket > .blocco-colonna:nth-of-type(5) .match-pair::after{
     content: none !important;
     display: none !important;
+    opacity: 0 !important;
     width: 0 !important;
     height: 0 !important;
     background: none !important;
     box-shadow: none !important;
+    border: 0 !important;
   }
 
 }
