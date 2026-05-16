@@ -4878,3 +4878,46 @@ h1, h2, h3, h4, p{
     font-size: 1.65rem !important;
   }
 }
+
+/* =========================================================
+   DESKTOP - LOGHI "PROSSIMI IN ORDINE" PIÙ CHIARI
+   ========================================================= */
+@media (min-width: 1101px){
+
+  .desktop-queue-logo{
+    position: relative !important;
+    width: 56px !important;
+    height: 56px !important;
+    border-radius: 999px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    background: linear-gradient(180deg, #123f8a 0%, #062b63 100%) !important;
+    border: 2px solid rgba(255,255,255,.18) !important;
+    box-shadow:
+      0 4px 12px rgba(0,31,63,.22),
+      inset 0 1px 0 rgba(255,255,255,.08) !important;
+    overflow: hidden !important;
+  }
+
+  .desktop-queue-logo::before{
+    content: "";
+    position: absolute;
+    width: 40px;
+    height: 40px;
+    border-radius: 999px;
+    background: #ffffff;
+    box-shadow:
+      0 2px 6px rgba(0,31,63,.10),
+      inset 0 1px 0 rgba(255,255,255,.9);
+  }
+
+  .desktop-queue-logo img{
+    position: relative;
+    z-index: 1;
+    width: 34px !important;
+    height: 34px !important;
+    object-fit: contain !important;
+    filter: drop-shadow(0 1px 2px rgba(0,0,0,.12));
+  }
+}
