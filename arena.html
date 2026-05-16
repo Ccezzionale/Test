@@ -3,113 +3,82 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Highlander Cup - Arena</title>
-  <link href="https://fonts.googleapis.com/css2?family=Pirata+One&display=swap" rel="stylesheet">
-   <link rel="stylesheet" href="navbar.css">
-  <link rel="stylesheet" href="arena.css" />
+  <title>Highlander Arena</title>
+  <link rel="stylesheet" href="highlander.css" />
 </head>
-<body>
-  <nav class="site-nav">
-    <div class="nav-inner">
-      <div class="nav-left">
-        <span id="hamburger" class="hamburger" aria-label="Apri menu">☰</span>
-        <a href="index.html" class="brand-home" aria-label="Home">
-          <img src="icons/nav/home.webp" alt="" class="nav-home-icon">
-        </a>
-      </div>
-
-      <ul class="navbar" id="mainMenu">
-        <li><a href="rose.html">Rose</a></li>
-
-        <li class="dropdown">
-          <a href="#" class="toggle-submenu">
-            Draft <span class="caret">▾</span>
-          </a>
-          <ul class="submenu">
-            <li><a href="pre-draft.html"><img src="icons/nav/pre-draft.webp" class="menu-icon" alt="">Pre-Draft</a></li>
-            <li><a href="draft_championship.html"><img src="icons/nav/conf-championship.webp" class="menu-icon" alt="">Conf. Championship</a></li>
-            <li><a href="draft_conference.html"><img src="icons/nav/conf-league.webp" class="menu-icon" alt="">Conf. League</a></li>
-            <li><a href="dinamico-draft.html"><img src="icons/nav/draft-2026.webp" class="menu-icon" alt="">Draft 2027</a></li>
-          </ul>
-        </li>
-
-        <li class="dropdown competizioni">
-          <a href="#" class="toggle-submenu">
-            Competizioni <span class="caret">▾</span>
-          </a>
-          <ul class="submenu">
-            <li><a href="classifica.html"><img src="icons/nav/classifiche.webp" class="menu-icon" alt="">Classifiche</a></li>
-            <li><a href="playoff.html"><img src="icons/nav/playoff.webp" class="menu-icon" alt="">Playoff</a></li>
-            <li><a href="arena.html"><img src="icons/nav/highlander.webp" class="menu-icon" alt="">Highlander</a></li>
-            <li><a href="crashoutcup.html"><img src="icons/nav/crashout-cup.webp" class="menu-icon" alt="">Crash Out Cup</a></li>
-            <li><a href="crashoutplayoff.html"><img src="icons/nav/crashout-playoff.webp" class="menu-icon" alt="">Crash Out Cup - Playoff</a></li>
-            <li><a href="supercoppa.html"><img src="icons/nav/supercoppa.webp" class="menu-icon" alt="">Supercoppa</a></li>
-            <li><a href="statistiche.html"><img src="icons/nav/statistiche.webp" class="menu-icon" alt="">Statistiche</a></li>
-          </ul>
-        </li>
-
-
-        <li><a href="waiver.html">Waiver Wire</a></li>
-
-        <li class="dropdown">
-          <a href="#" class="toggle-submenu">
-            Hall of Fame <span class="caret">▾</span>
-          </a>
-          <ul class="submenu">
-            <li><a href="medagliere.html"><img src="icons/nav/albo-oro.webp" class="menu-icon" alt="">Albo d'Oro</a></li>
-            <li><a href="albo.html"><img src="icons/nav/medagliere.webp" class="menu-icon" alt="">Medagliere</a></li>
-          </ul>
-        </li>
-
-        <li><a href="regolamento.html">Regolamento</a></li>
-      </ul>
-
-      <div class="nav-right hero-actions">
-        <a id="trade-badge" href="trade-room.html" class="btn-hero trade-badge" aria-label="Trade Room">
-          <img src="icons/nav/trade-room.webp" class="action-icon" alt="">
-          <span class="btn-label">Trade Room</span>
-        </a>
-
-        <a id="login-btn" href="login.html" class="btn-hero" style="display:none;" aria-label="Login">
-          <img src="icons/nav/login-logout.webp" class="action-icon" alt="">
-          <span class="btn-label">Login</span>
-        </a>
-
-        <button id="logout-btn" type="button" class="btn-hero" style="display:none;" aria-label="Logout">
-          <img src="icons/nav/login-logout.webp" class="action-icon" alt="">
-          <span class="btn-label">Logout</span>
-        </button>
-
-        <button id="attiva-notifiche-btn" type="button" class="btn-hero warning" aria-label="Attiva notifiche">
-          <img src="icons/nav/notifications.webp" class="action-icon" alt="">
-          <span class="btn-label">Attiva notifiche</span>
-        </button>
-      </div>
-    </div>
+<body class="highlander-page">
+  <nav class="top-navbar">
+    <a class="home-btn" href="index.html">🏠</a>
+    <a href="rose.html">Rose</a>
+    <a href="draft.html">Draft <span>⌄</span></a>
+    <a href="competizioni.html">Competizioni <span>⌄</span></a>
+    <a href="waiver.html">Waiver Wire</a>
+    <a href="halloffame.html">Hall of Fame <span>⌄</span></a>
+    <a href="regolamento.html">Regolamento</a>
+    <div class="nav-spacer"></div>
+    <a class="nav-pill" href="trade-room.html">💼 Trade Room</a>
+    <button class="nav-pill">🚪 Logout</button>
+    <button class="nav-pill user-pill">👑 Admin ⌄</button>
   </nav>
 
-  <header class="hero-arena">
-    <h1>🏟️ Highlander Arena</h1>
-    <p class="sottotitolo">Ogni settimana cade una squadra. Nell’arena ne resterà soltanto una.</p>
+  <main class="highlander-shell">
+    <aside class="highlander-sidebar">
+      <a href="classifiche.html">📊 <span>Classifiche</span></a>
+      <a href="playoff.html">🏆 <span>Playoff</span></a>
+      <a class="active" href="highlander.html">🗡️ <span>Highlander</span></a>
+      <a href="crashout.html">🛡️ <span>Crash Out Cup</span></a>
+      <a href="crashout-playoff.html">⚔️ <span>Crash Out Cup - Playoff</span></a>
+      <a href="supercoppa.html">🏆 <span>Supercoppa</span></a>
+      <a href="statistiche.html">🔎 <span>Statistiche</span></a>
 
-    <div class="arena-stats" id="arena-stats">
-      <div class="stat-chip">Turno attuale: <strong id="turno-attuale">--</strong></div>
-      <div class="stat-chip">Sopravvissute: <strong id="vive-attuali">--</strong></div>
-      <div class="stat-chip">Eliminate: <strong id="eliminate-attuali">--</strong></div>
-    </div>
-  </header>
-
-  <main class="arena-page">
-    <section class="arena-shell">
-      <div class="arena-glow"></div>
-      <div class="arena">
-        <div id="arena-center"></div>
+      <div class="side-trophy">
+        <img src="img/highlander-trophy.png" alt="Highlander Trophy" />
       </div>
+    </aside>
+
+    <section class="highlander-stage">
+      <div class="mist mist-one"></div>
+      <div class="mist mist-two"></div>
+      <div class="torch torch-left"></div>
+      <div class="torch torch-right"></div>
+
+      <header class="arena-header">
+        <h1>Highlander Arena</h1>
+        <p>Ogni settimana cade una squadra. Nell’arena ne resterà soltanto una.</p>
+        <div class="arena-stats">
+          <div class="stat-card"><span>Turno attuale</span><strong id="current-turn">15</strong></div>
+          <div class="stat-card"><span>Sopravvissute</span><strong id="alive-count">1</strong></div>
+          <div class="stat-card danger"><span>Eliminate</span><strong id="dead-count">15</strong></div>
+        </div>
+      </header>
+
+      <section class="arena-wrap" aria-label="Highlander Arena">
+        <div class="arena-ring" id="arena-ring">
+          <div class="ring ring-outer"></div>
+          <div class="ring ring-mid"></div>
+          <div class="ring ring-inner"></div>
+          <div class="rune rune-a">✦</div>
+          <div class="rune rune-b">✧</div>
+          <div class="rune rune-c">✦</div>
+          <div class="rune rune-d">✧</div>
+
+          <div class="champion-card" id="champion-card">
+            <div class="champion-logo-wrap">
+              <img id="champion-logo" src="img/logos/Golden Knights.png" alt="Golden Knights" onerror="this.style.display='none'; this.parentElement.classList.add('placeholder');" />
+            </div>
+            <div class="champion-label">Ultimo sopravvissuto</div>
+            <div class="champion-name">Golden Knights</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="recent-strip">
+        <h2>Eliminazioni recenti</h2>
+        <div class="recent-list" id="recent-list"></div>
+      </section>
     </section>
   </main>
 
-  <script src="arena.js"></script>
-   <script src="navbar.js"></script>
-  
+  <script src="highlander.js"></script>
 </body>
 </html>

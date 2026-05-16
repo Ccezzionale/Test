@@ -1,120 +1,103 @@
-const squadre = [
-  { nome: "Rubinkebab", logo: "img/Rubinkebab.png", eliminata: true, ultimaEliminata: false },
-  { nome: "Bayern Christiansen", logo: "img/Bayern Christiansen.png", eliminata: true, ultimaEliminata: false },
-  { nome: "Team Bartowski", logo: "img/Team Bartowski.png", eliminata: true, ultimaEliminata: false },
-  { nome: "Golden Knights", logo: "img/Golden Knights.png", eliminata: false, ultimaEliminata: true },
-  { nome: "Ibla", logo: "img/Ibla.png", eliminata: true, ultimaEliminata: false },
-  { nome: "Fantaugusta", logo: "img/Fantaugusta.png", eliminata: true, ultimaEliminata: false },
-  { nome: "Riverfilo", logo: "img/Riverfilo.png", eliminata: true, ultimaEliminata: false },
-  { nome: "Desperados", logo: "img/Desperados.png", eliminata: true, ultimaEliminata: false },
-  { nome: "Wildboys 78", logo: "img/wildboys78.png", eliminata: true, ultimaEliminata: false },
-  { nome: "Pandinicoccolosini", logo: "img/Pandinicoccolosini.png", eliminata: true, ultimaEliminata: false },
-  { nome: "Pokermantra", logo: "img/PokerMantra.png", eliminata: true, ultimaEliminata: false },
-  { nome: "Minnesode Timberland", logo: "img/Minnesode Timberland.png", eliminata: true, ultimaEliminata: false },
-  { nome: "Minnesota Snakes", logo: "img/MinneSota Snakes.png", eliminata: true, ultimaEliminata: false },
-  { nome: "Eintracht Franco 126", logo: "img/Eintracht Franco 126.png", eliminata: true, ultimaEliminata: false },
-  { nome: "FC Disoneste", logo: "img/FC Disoneste.png", eliminata: true, ultimaEliminata: false },
-  { nome: "Athletic Pongao", logo: "img/Athletic Pongao.png", eliminata: true, ultimaEliminata: false }
+const teams = [
+  { name: "Golden Knights", logo: "Golden Knights.png", status: "alive" },
+  { name: "FC Disoneste", logo: "FC Disoneste.png", status: "eliminated", eliminatedTurn: 15, recent: true },
+  { name: "Rubin Kebab", logo: "Rubin Kebab.png", status: "eliminated", eliminatedTurn: 14 },
+  { name: "Bayern Christiansen", logo: "Bayern Christiansen.png", status: "eliminated", eliminatedTurn: 13 },
+  { name: "Team Bartowski", logo: "Team Bartowski.png", status: "eliminated", eliminatedTurn: 12 },
+  { name: "Ibla", logo: "Ibla.png", status: "eliminated", eliminatedTurn: 11 },
+  { name: "Fantaquesta", logo: "Fantaquesta.png", status: "eliminated", eliminatedTurn: 10 },
+  { name: "Riverfilo", logo: "Riverfilo.png", status: "eliminated", eliminatedTurn: 9 },
+  { name: "Esperados", logo: "Esperados.png", status: "eliminated", eliminatedTurn: 8 },
+  { name: "Wildboys", logo: "Wildboys.png", status: "eliminated", eliminatedTurn: 7 },
+  { name: "Pokermantra", logo: "Pokermantra.png", status: "eliminated", eliminatedTurn: 6 },
+  { name: "I Porcini di Riccardo", logo: "I Porcini di Riccardo.png", status: "eliminated", eliminatedTurn: 5 },
+  { name: "Panificio FC", logo: "Panificio FC.png", status: "eliminated", eliminatedTurn: 4 },
+  { name: "Atletico Fanta", logo: "Atletico Fanta.png", status: "eliminated", eliminatedTurn: 3 },
+  { name: "Dolci e Gabbana", logo: "Dolci e Gabbana.png", status: "eliminated", eliminatedTurn: 2 },
+  { name: "Controfigura", logo: "Controfigura.png", status: "eliminated", eliminatedTurn: 1 }
 ];
 
-const center = document.getElementById("arena-center");
-const arena = document.querySelector(".arena");
+const ring = document.getElementById("arena-ring");
+const recentList = document.getElementById("recent-list");
 
-const ultimaEliminata = squadre.find(s => s.ultimaEliminata);
-const inGioco = squadre.filter(s => !s.eliminata);
-const eliminate = squadre.filter(s => s.eliminata);
-
-const turnoAttualeEl = document.getElementById("turno-attuale");
-const viveAttualiEl = document.getElementById("vive-attuali");
-const eliminateAttualiEl = document.getElementById("eliminate-attuali");
-
-const totaleSquadre = squadre.length;
-const sopravvissute = inGioco.length;
-const eliminateCount = eliminate.length;
-const turnoAttuale = eliminateCount > 0 ? eliminateCount : 1;
-
-if (turnoAttualeEl) turnoAttualeEl.textContent = turnoAttuale;
-if (viveAttualiEl) viveAttualiEl.textContent = sopravvissute;
-if (eliminateAttualiEl) eliminateAttualiEl.textContent = eliminateCount;
-
-function renderCenter() {
-  if (inGioco.length === 1) {
-    const vincitore = inGioco[0];
-    center.innerHTML = `
-      <div class="eliminata-wrapper">
-        <div class="center-ring"></div>
-        <img src="${vincitore.logo}" class="eliminata-logo" alt="${vincitore.nome}" />
-        <div class="eliminata-testo vincitore-box">
-          <span class="label-top">🏆 Ultimo sopravvissuto</span>
-          <span class="main-name">${vincitore.nome}</span>
-        </div>
-        <div class="centro-caption">L’arena ha emesso il suo verdetto finale</div>
-      </div>
-    `;
-    return;
-  }
-
-  if (ultimaEliminata) {
-    center.innerHTML = `
-      <div class="eliminata-wrapper">
-        <div class="center-ring"></div>
-        <img src="${ultimaEliminata.logo}" class="eliminata-logo" alt="${ultimaEliminata.nome}" />
-        <div class="eliminata-testo">
-          <span class="label-top">❌ Ultima eliminata</span>
-          <span class="main-name">${ultimaEliminata.nome}</span>
-        </div>
-        <div class="centro-caption">Il cerchio si stringe. La sopravvivenza no.</div>
-      </div>
-    `;
-    return;
-  }
-
-  center.innerHTML = `
-    <div class="eliminata-wrapper">
-      <div class="center-ring"></div>
-      <div class="eliminata-testo">
-        <span class="label-top">⚔️ Sfida in corso</span>
-        <span class="main-name">Nessun verdetto ancora</span>
-      </div>
-    </div>
-  `;
+function logoPath(team){
+  return `img/logos/${team.logo}`;
 }
 
-function renderArenaTeams() {
-  const cx = 350;
-  const cy = 350;
-  const r = 255;
+function initials(name){
+  return name.split(/\s+/).slice(0,2).map(w => w[0]).join("").toUpperCase();
+}
 
-  squadre.forEach((s, i) => {
-    const angle = (-Math.PI / 2) + (2 * Math.PI / squadre.length) * i;
-    const x = cx + r * Math.cos(angle);
-    const y = cy + r * Math.sin(angle);
+function createTeamMedallions(){
+  const eliminated = teams.filter(t => t.status !== "alive");
+  const radius = 39;
+  const start = -92;
 
-    const div = document.createElement("div");
-    div.className = "squadra";
+  eliminated.forEach((team, index) => {
+    const angle = (start + index * (360 / eliminated.length)) * Math.PI / 180;
+    const x = 50 + radius * Math.cos(angle);
+    const y = 50 + radius * Math.sin(angle);
 
-    if (s.eliminata) {
-      div.classList.add("eliminata");
-    } else {
-      div.classList.add("in-gioco");
-    }
-
-    if (s.ultimaEliminata) {
-      div.classList.add("recente");
-    }
-
-    div.style.left = `${x}px`;
-    div.style.top = `${y}px`;
-    div.title = s.nome;
+    const medallion = document.createElement("div");
+    medallion.className = `team-medallion ${team.recent ? "recent" : ""}`;
+    medallion.style.setProperty("--x", `${x}%`);
+    medallion.style.setProperty("--y", `${y}%`);
+    medallion.title = team.name;
 
     const img = document.createElement("img");
-    img.src = s.logo;
-    img.alt = s.nome;
+    img.src = logoPath(team);
+    img.alt = team.name;
+    img.onerror = () => {
+      img.remove();
+      const fallback = document.createElement("div");
+      fallback.className = "fallback";
+      fallback.textContent = initials(team.name);
+      medallion.appendChild(fallback);
+    };
 
-    div.appendChild(img);
-    arena.appendChild(div);
+    medallion.appendChild(img);
+    ring.appendChild(medallion);
   });
 }
 
-renderCenter();
-renderArenaTeams();
+function createRecentTimeline(){
+  const recent = [...teams]
+    .filter(t => t.status !== "alive")
+    .sort((a,b) => b.eliminatedTurn - a.eliminatedTurn)
+    .slice(0, 10);
+
+  recent.forEach(team => {
+    const card = document.createElement("article");
+    card.className = `recent-card ${team.recent ? "recent" : ""}`;
+
+    const img = document.createElement("img");
+    img.src = logoPath(team);
+    img.alt = team.name;
+    img.onerror = () => {
+      img.remove();
+      const fallback = document.createElement("div");
+      fallback.className = "recent-icon";
+      fallback.textContent = initials(team.name);
+      card.prepend(fallback);
+    };
+
+    const text = document.createElement("div");
+    text.innerHTML = `<span>Turno ${team.eliminatedTurn}</span><strong>${team.name}</strong>`;
+
+    card.appendChild(img);
+    card.appendChild(text);
+    recentList.appendChild(card);
+  });
+}
+
+function updateCounters(){
+  const alive = teams.filter(t => t.status === "alive").length;
+  const dead = teams.length - alive;
+  document.getElementById("alive-count").textContent = alive;
+  document.getElementById("dead-count").textContent = dead;
+  document.getElementById("current-turn").textContent = Math.max(...teams.filter(t => t.eliminatedTurn).map(t => t.eliminatedTurn));
+}
+
+createTeamMedallions();
+createRecentTimeline();
+updateCounters();
