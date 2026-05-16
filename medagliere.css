@@ -576,6 +576,35 @@ body::after {
   background: linear-gradient(90deg, rgba(204, 130, 54, 0.29), rgba(204, 130, 54, 0.07));
 }
 
+/* ===== FIX MAJOR TROPHY POSITION ===== */
+
+.blocco-major {
+  min-height: 400px;
+}
+
+.blocco-major .coppa-box {
+  align-self: end;
+  justify-self: center;
+  min-height: 330px;
+  padding-top: 58px;
+  padding-bottom: 0;
+  margin-top: 20px;
+}
+
+.blocco-major .coppa-img {
+  max-height: 315px;
+  transform: translateY(36px);
+}
+
+.blocco-major:hover .coppa-img {
+  transform: translateY(30px) scale(1.025);
+}
+
+/* Abbassa solo il primo anno dopo la coppa, cioè 2025-2026 */
+.blocco-major .coppa-box + .anno {
+  margin-top: 46px;
+}
+
 /* ===== RESPONSIVE ===== */
 
 @media (max-width: 1280px) {
