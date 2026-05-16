@@ -30,6 +30,8 @@ let adminFlagPlayers = [];
 let lastDraftOrderRows = [];
 let lastDraftPickRows = [];
 let lastDraftTeams = [];
+let lastDraftVisualRows = [];
+
 
 function normalize(nome) { return nome.trim().toLowerCase(); }
 
@@ -737,9 +739,78 @@ function getTeamByIdDesktop(teamId) {
 }
 
 function buildDesktopFixedBoardColumns() {
+  const visualRows = lastDraftVisualRows || [];
+  const orderRows = lastDraftOrderRows || [];
+  const pickRows = lastDraftPickRows || [];
+
+  const picksMap = {};
+  pickRows.forEach(pick => {
+    picksMap[Number(pick.pick_number)] = pick;
+  });
+
+  const orderMap = {};
+  orderRows.forEach(row => {
+    orderMap[Number(row.pick_number)] = row;
+  });
+
+  // Se esiste draft_visual_order, usiamo quello.
+  // È la fonte del tabellone stile anno scorso.
+  if (visualRows.length) {
+    const roundOneRows = visualRows
+      .filter(row => Number(row.visual_round) === 1)
+      .sort((a, b) => Number(a.pick_number) - Number(b.pick_number));
+
+    const teamsOrder = roundOneRows
+      .map(row => getTeamByIdDesktop(row.team_id))
+      .filter(Boolean);
+
+    return teamsOrder.map(team => {
+      const teamVisualRows = visualRows
+        .filter(row => String(row.team_id) === String(team.id))
+        .sort((a, b) => Number(a.visual_round) - Number(b.visual_round))
+        .slice(0, DESKTOP_FIXED_ROUNDS);
+
+      const rounds = Array.from({ length: DESKTOP_FIXED_ROUNDS }, (_, index) => {
+        const visualRound = index + 1;
+        const visualRow = teamVisualRows.find(
+          row => Number(row.visual_round) === visualRound
+        );
+
+        if (!visualRow) {
+          return {
+            round: visualRound,
+            pick_number: null,
+            pickData: null,
+            isTradedPick: false
+          };
+        }
+
+        const pickNumber = Number(visualRow.pick_number);
+        const orderRow = orderMap[pickNumber];
+
+        const isTradedPick =
+          orderRow?.original_team_id &&
+          String(orderRow.original_team_id) !== String(orderRow.team_id);
+
+        return {
+          round: visualRound,
+          pick_number: pickNumber,
+          pickData: picksMap[pickNumber] || null,
+          isTradedPick
+        };
+      });
+
+      return {
+        team,
+        rounds
+      };
+    });
+  }
+
+  // Fallback vecchio: se manca draft_visual_order, usa draft_order.
   const teamsOrder = [];
 
-  (lastDraftOrderRows || []).forEach(row => {
+  orderRows.forEach(row => {
     const originalTeamId = row.original_team_id || row.team_id;
     if (!originalTeamId) return;
 
@@ -749,18 +820,13 @@ function buildDesktopFixedBoardColumns() {
     }
   });
 
-  const picksMap = {};
-  (lastDraftPickRows || []).forEach(pick => {
-    picksMap[Number(pick.pick_number)] = pick;
-  });
-
   return teamsOrder.map(team => {
-    const baseSlots = (lastDraftOrderRows || [])
+    const baseSlots = orderRows
       .filter(row => String(row.original_team_id || row.team_id) === String(team.id))
       .sort((a, b) => Number(a.pick_number) - Number(b.pick_number))
       .slice(0, DESKTOP_FIXED_ROUNDS);
 
-    const ownedPicks = (lastDraftOrderRows || [])
+    const ownedPicks = orderRows
       .filter(row => String(row.team_id) === String(team.id))
       .sort((a, b) => Number(a.pick_number) - Number(b.pick_number));
 
@@ -823,6 +889,8 @@ function aggiornaDesktopDraftRoom(dati = [], prossima = null) {
   const liveProgress = document.getElementById("desktop-live-progress");
 
   const fixedColumns = buildDesktopFixedBoardColumns();
+  console.log("VISUAL ORDER ROWS:", lastDraftVisualRows.length);
+console.log("FIXED COLUMNS:", fixedColumns);
   const maxRounds = DESKTOP_FIXED_ROUNDS;
 
   const currentRound = currentPick && fixedColumns.length
@@ -990,15 +1058,27 @@ async function caricaPick() {
 
     if (orderError) throw orderError;
 
-    const { data: pickRows, error: picksError } = await supabase
-      .from('draft_picks')
-      .select('*')
-      .eq('draft_name', tab)
-      .order('pick_number', { ascending: true });
+  const { data: pickRows, error: picksError } = await supabase
+  .from('draft_picks')
+  .select('*')
+  .eq('draft_name', tab)
+  .order('pick_number', { ascending: true });
+
 if (picksError) throw picksError;
+
+const { data: visualRows, error: visualError } = await supabase
+  .from("draft_visual_order")
+  .select("*")
+  .eq("draft_name", tab)
+  .order("visual_round", { ascending: true });
+
+if (visualError) throw visualError;
+
 lastDraftTeams = teams || [];
 lastDraftOrderRows = orderRows || [];
 lastDraftPickRows = pickRows || [];
+lastDraftVisualRows = visualRows || [];
+
 Object.keys(mappaGiocatoriDraft).forEach(k => delete mappaGiocatoriDraft[k]);
 
 const draftPlayerIds = [...new Set(
