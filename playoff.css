@@ -919,3 +919,154 @@ body{
   .colonna{ gap: 11px; }
   .coppa-img{ width: clamp(175px, 13vw, 225px) !important; }
 }
+
+/* =========================================================
+   PLAYOFF V3.1 - CONNETTORI + ALLINEAMENTO FINALE
+   ========================================================= */
+
+@media (min-width: 1024px){
+
+  :root{
+    --po-col-gap: 46px;
+  }
+
+  .bracket{
+    width: min(1680px, calc(100vw - 42px));
+    grid-template-columns: 1.05fr 1.05fr 1fr 1.55fr;
+    column-gap: var(--po-col-gap);
+    align-items: start;
+  }
+
+  /* Finale un filo più centrata rispetto al bracket */
+  .bracket > .blocco-colonna:nth-of-type(4){
+    transform: translateY(8px);
+  }
+
+  .finale-stage{
+    min-height: 600px;
+  }
+
+  .coppa-img{
+    width: 250px !important;
+    margin-top: 14px;
+  }
+
+  /* Card più distese senza tornare enormi */
+  .match-pair:not(.finale-pair),
+  .pair-offset:not(.finale-pair){
+    min-height: 104px;
+  }
+
+  .match-pair:not(.finale-pair) .match,
+  .pair-offset:not(.finale-pair) .match{
+    min-height: 104px !important;
+    height: 104px !important;
+  }
+
+  .match-pair:not(.finale-pair) .team-logo-wrap,
+  .pair-offset:not(.finale-pair) .team-logo-wrap{
+    width: 62px;
+    height: 62px;
+  }
+
+  .match-pair:not(.finale-pair) .squadra.orizzontale img,
+  .pair-offset:not(.finale-pair) .squadra.orizzontale img{
+    width: 54px !important;
+    height: 54px !important;
+  }
+
+  /* Reset dei vecchi connettori piccoli */
+  .wc-sx .match-pair::after,
+  .wc-dx .match-pair::after,
+  .q-sx .pair-offset::after,
+  .q-dx .pair-offset::after,
+  .s-sx .match-pair::after,
+  .s-dx .match-pair::after{
+    display: none !important;
+  }
+
+  /* Linea in uscita da Wildcard verso Quarti */
+  .bracket > .blocco-colonna:nth-of-type(1) .match-pair::after,
+  .bracket > .blocco-colonna:nth-of-type(7) .match-pair::after{
+    content: "";
+    display: block !important;
+    position: absolute;
+    right: calc(-1 * var(--po-col-gap) + 8px);
+    top: 50%;
+    width: calc(var(--po-col-gap) - 16px);
+    height: 3px;
+    transform: translateY(-50%);
+    background: linear-gradient(90deg, rgba(255,255,255,.75), rgba(255,211,107,.95));
+    box-shadow: 0 0 12px rgba(255,211,107,.45);
+    border-radius: 999px;
+    z-index: 1;
+  }
+
+  /* Linea in uscita dai Quarti verso Semifinali */
+  .bracket > .blocco-colonna:nth-of-type(2) .pair-offset::after,
+  .bracket > .blocco-colonna:nth-of-type(6) .pair-offset::after{
+    content: "";
+    display: block !important;
+    position: absolute;
+    right: calc(-1 * var(--po-col-gap) + 8px);
+    top: 50%;
+    width: calc(var(--po-col-gap) - 16px);
+    height: 3px;
+    transform: translateY(-50%);
+    background: linear-gradient(90deg, rgba(255,255,255,.75), rgba(255,211,107,.95));
+    box-shadow: 0 0 12px rgba(255,211,107,.45);
+    border-radius: 999px;
+    z-index: 1;
+  }
+
+  /* Linea in uscita dalle Semifinali verso Finale */
+  .bracket > .blocco-colonna:nth-of-type(3) .match-pair::after,
+  .bracket > .blocco-colonna:nth-of-type(5) .match-pair::after{
+    content: "";
+    display: block !important;
+    position: absolute;
+    right: calc(-1 * var(--po-col-gap) + 8px);
+    top: 50%;
+    width: calc(var(--po-col-gap) - 16px);
+    height: 3px;
+    transform: translateY(-50%);
+    background: linear-gradient(90deg, rgba(255,255,255,.75), rgba(255,211,107,.95));
+    box-shadow: 0 0 12px rgba(255,211,107,.45);
+    border-radius: 999px;
+    z-index: 1;
+  }
+
+  /* Mini raccordo verticale elegante nelle colonne intermedie */
+  .bracket > .blocco-colonna:nth-of-type(2) .colonna::before,
+  .bracket > .blocco-colonna:nth-of-type(6) .colonna::before,
+  .bracket > .blocco-colonna:nth-of-type(3) .colonna::before,
+  .bracket > .blocco-colonna:nth-of-type(5) .colonna::before{
+    content: "";
+    position: absolute;
+    left: -24px;
+    top: 50%;
+    width: 2px;
+    height: 58%;
+    transform: translateY(-50%);
+    background: linear-gradient(
+      180deg,
+      transparent,
+      rgba(255,255,255,.55),
+      rgba(255,211,107,.85),
+      rgba(255,255,255,.55),
+      transparent
+    );
+    box-shadow: 0 0 10px rgba(255,211,107,.35);
+    border-radius: 999px;
+    pointer-events: none;
+  }
+
+  /* Finale più leggibile */
+  .match.finale{
+    min-height: 86px !important;
+  }
+
+  .finale-pair{
+    row-gap: 14px !important;
+  }
+}
