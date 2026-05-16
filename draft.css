@@ -4938,8 +4938,8 @@ h1, h2, h3, h4, p{
   }
 
   .desktop-team-head img{
-    width: 64px !important;
-    height: 64px !important;
+    width: 100px !important;
+    height: 100px !important;
     object-fit: contain !important;
     filter: drop-shadow(0 4px 6px rgba(0,31,63,.16));
   }
