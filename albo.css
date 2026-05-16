@@ -96,11 +96,24 @@ body.medagliere-page::after{
   font-weight:1000;
   letter-spacing:.08em;
   line-height:.95;
-  color:transparent;
-  background:linear-gradient(180deg, #fff5c6 0%, #ffd45a 35%, #e29c13 68%, #8f5b05 100%);
-  -webkit-background-clip:text;
-  background-clip:text;
-  filter:drop-shadow(0 8px 13px rgba(0,0,0,0.45));
+  color:#ffd45a;
+  text-shadow:0 8px 13px rgba(0,0,0,0.45);
+}
+
+.titolo-albo span{
+  position:relative;
+  display:inline-block;
+  color:inherit;
+}
+
+@supports ((-webkit-background-clip:text) or (background-clip:text)) {
+  .titolo-albo span{
+    background:linear-gradient(180deg, #fff5c6 0%, #ffd45a 35%, #e29c13 68%, #8f5b05 100%);
+    -webkit-background-clip:text;
+    background-clip:text;
+    -webkit-text-fill-color:transparent;
+    color:transparent;
+  }
 }
 
 .titolo-albo span{
