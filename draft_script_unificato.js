@@ -889,8 +889,6 @@ function aggiornaDesktopDraftRoom(dati = [], prossima = null) {
   const liveProgress = document.getElementById("desktop-live-progress");
 
   const fixedColumns = buildDesktopFixedBoardColumns();
-  console.log("VISUAL ORDER ROWS:", lastDraftVisualRows.length);
-console.log("FIXED COLUMNS:", fixedColumns);
   const maxRounds = DESKTOP_FIXED_ROUNDS;
 
   const currentRound = currentPick && fixedColumns.length
