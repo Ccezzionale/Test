@@ -2133,3 +2133,20 @@ body{
     margin-top: 2px;
   }
 }
+
+/* =========================================================
+   MOBILE FINAL FIX - NASCONDE ROAD TO THE CROWN
+   ========================================================= */
+@media (max-width: 768px){
+
+  .mobile-road-chip,
+  .mobile-road-badge,
+  .mobile-road-pill,
+  .mobile-playoff-chip{
+    display: none !important;
+  }
+
+  .mobile-playoff-top{
+    padding-bottom: 8px !important;
+  }
+}
