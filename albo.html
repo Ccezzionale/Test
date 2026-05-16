@@ -7,7 +7,7 @@
   <link rel="stylesheet" href="navbar.css">
   <link rel="stylesheet" href="albo.css">
 </head>
-<body>
+<body class="medagliere-page">
   <nav class="site-nav">
     <div class="nav-inner">
       <div class="nav-left">
@@ -47,11 +47,10 @@
           </ul>
         </li>
 
-
         <li><a href="waiver.html">Waiver Wire</a></li>
 
         <li class="dropdown">
-          <a href="#" class="toggle-submenu">
+          <a href="#" class="toggle-submenu active-hof">
             Hall of Fame <span class="caret">▾</span>
           </a>
           <ul class="submenu">
@@ -88,31 +87,32 @@
   </nav>
 
   <header class="hero-medagliere">
-    <h1 class="titolo-albo">Medagliere</h1>
+    <div class="hero-kicker">Hall of Fame</div>
+    <h1 class="titolo-albo"><span>Medagliere</span></h1>
     <p class="sottotitolo-albo">La gerarchia eterna della Lega degli Eroi</p>
   </header>
 
   <main class="hall-wrapper">
-
-    <section class="podio-section">
-      <div class="section-title">👑 Vertice del Medagliere</div>
+    <section class="podio-section hall-panel">
+      <div class="section-title">
+        <span class="section-icon">👑</span>
+        <span>Vertice del Medagliere</span>
+      </div>
       <div class="podio" id="podio"></div>
     </section>
 
-    <section class="tabella-section">
-      <div class="section-title">🏅 Medagliere Storico</div>
+    <section class="tabella-section hall-panel">
+      <div class="section-title">
+        <span class="section-icon">🏅</span>
+        <span>Medagliere Storico</span>
+      </div>
 
       <div class="table-shell">
         <table id="medagliere">
           <thead>
             <tr>
               <th>Pos</th>
-              <th>
-                <div class="squadra-wrapper">
-                  <span class="logo-placeholder"></span>
-                  <span>Squadra</span>
-                </div>
-              </th>
+              <th>Squadra</th>
               <th>🥇 Oro</th>
               <th>🥈 Argento</th>
               <th>🥉 Bronzo</th>
@@ -125,7 +125,6 @@
         <div class="accordion" id="accordion"></div>
       </div>
     </section>
-
   </main>
 
 <script>
@@ -166,40 +165,43 @@
   const accordion = document.getElementById("accordion");
   const podio = document.getElementById("podio");
 
+  const getLogoPath = squadra => `img/${squadra}.png`;
   const podioOrder = [1, 0, 2];
 
   podioOrder.forEach(index => {
     const s = medagliere[index];
     if (!s) return;
 
+    const rank = index + 1;
+    const rankClass = rank === 1 ? "first" : rank === 2 ? "second" : "third";
     const card = document.createElement("div");
-    card.className = "podio-card " + (index === 0 ? "first" : index === 1 ? "second" : "third");
+    card.className = `podio-card ${rankClass}`;
 
     card.innerHTML = `
-      <div class="podio-rank">${index + 1}°</div>
-      <img src="img/${s.squadra}.png" alt="${s.squadra}" class="podio-logo">
+      <div class="podio-rank">${rank}°</div>
+      <div class="podio-glow"></div>
+      <img src="${getLogoPath(s.squadra)}" alt="${s.squadra}" class="podio-logo">
       <div class="podio-team">${s.squadra}</div>
-      <div class="podio-stats">
-        <span>🥇 ${s.oro}</span>
-        <span>🥈 ${s.argento}</span>
-        <span>🥉 ${s.bronzo}</span>
+      <div class="podio-stats" aria-label="Medaglie vinte">
+        <span class="stat-pill oro"><span>🥇</span><strong>${s.oro}</strong></span>
+        <span class="stat-pill argento"><span>🥈</span><strong>${s.argento}</strong></span>
+        <span class="stat-pill bronzo"><span>🥉</span><strong>${s.bronzo}</strong></span>
       </div>
-      <div class="podio-total">Totale trofei: <strong>${s.totale}</strong></div>
+      <div class="podio-total"><span>🏆</span> Totale trofei: <strong>${s.totale}</strong></div>
     `;
     podio.appendChild(card);
   });
 
   medagliere.forEach((s, i) => {
+    const rank = i + 1;
+    const topClass = i === 0 ? "top1" : i === 1 ? "top2" : i === 2 ? "top3" : "";
+    const logoPath = getLogoPath(s.squadra);
+
     const tr = document.createElement("tr");
-
-    if (i === 0) tr.classList.add("top1");
-    else if (i === 1) tr.classList.add("top2");
-    else if (i === 2) tr.classList.add("top3");
-
-    const logoPath = `img/${s.squadra}.png`;
+    if (topClass) tr.classList.add(topClass);
 
     tr.innerHTML = `
-      <td>${i + 1}</td>
+      <td><span class="rank-badge ${topClass || "rank-normal"}">${rank}</span></td>
       <td>
         <div class="squadra-wrapper">
           <img src="${logoPath}" alt="${s.squadra}" class="logo-squadra">
@@ -209,29 +211,26 @@
       <td>${s.oro}</td>
       <td>${s.argento}</td>
       <td>${s.bronzo}</td>
-      <td class="totale-cell">${s.totale}</td>
+      <td><span class="totale-pill">${s.totale}</span></td>
     `;
 
     tbody.appendChild(tr);
 
     const acc = document.createElement("div");
-    acc.className = "accordion-item";
-
-    if (i === 0) acc.classList.add("top1");
-    else if (i === 1) acc.classList.add("top2");
-    else if (i === 2) acc.classList.add("top3");
+    acc.className = `accordion-item ${topClass}`.trim();
 
     acc.innerHTML = `
-      <div class="accordion-header">
+      <button class="accordion-header" type="button" aria-expanded="false">
         <div class="accordion-left">
+          <span class="rank-badge ${topClass || "rank-normal"}">${rank}</span>
           <img src="${logoPath}" alt="${s.squadra}">
           <div>
-            <div class="accordion-rank">#${i + 1}</div>
+            <div class="accordion-rank">Posizione #${rank}</div>
             <div class="accordion-team">${s.squadra}</div>
           </div>
         </div>
         <div class="accordion-total">🏆 ${s.totale}</div>
-      </div>
+      </button>
       <div class="accordion-content">
         <div class="mobile-stat-row"><span>🥇 Oro</span><strong>${s.oro}</strong></div>
         <div class="mobile-stat-row"><span>🥈 Argento</span><strong>${s.argento}</strong></div>
@@ -246,7 +245,8 @@
   document.querySelectorAll(".accordion-header").forEach(header => {
     header.addEventListener("click", () => {
       const item = header.parentElement;
-      item.classList.toggle("open");
+      const isOpen = item.classList.toggle("open");
+      header.setAttribute("aria-expanded", String(isOpen));
     });
   });
 </script>
@@ -254,4 +254,3 @@
 <script src="navbar.js"></script>
 </body>
 </html>
-
