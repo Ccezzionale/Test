@@ -211,7 +211,8 @@ async function loadRoster() {
 
   if (error) throw error;
 
-  roster = (data || []).map(row => {
+roster = (data || [])
+  .map(row => {
     const linkedPlayer = row.players || {};
 
     return {
@@ -226,7 +227,8 @@ async function loadRoster() {
       is_fp: !!row.is_fp,
       snapshot_season: row.season
     };
-  });
+  })
+  .sort(sortRosterByMantraLine);
 }
 
 async function loadEligiblePlayers() {
@@ -1198,6 +1200,66 @@ function hideMainSections() {
 
 function getTeamLogoPath(teamName) {
   return `img/${encodeURIComponent(teamName)}.png`;
+}
+
+function sortRosterByMantraLine(a, b) {
+  const aRank = getMainRoleRank(a.role || a.role_mantra || "");
+  const bRank = getMainRoleRank(b.role || b.role_mantra || "");
+
+  if (aRank !== bRank) {
+    return aRank - bRank;
+  }
+
+  const aRole = String(a.role || a.role_mantra || "");
+  const bRole = String(b.role || b.role_mantra || "");
+
+  const roleCompare = aRole.localeCompare(bRole, "it", {
+    sensitivity: "base"
+  });
+
+  if (roleCompare !== 0) {
+    return roleCompare;
+  }
+
+  return String(a.name || "").localeCompare(String(b.name || ""), "it", {
+    sensitivity: "base"
+  });
+}
+
+function getMainRoleRank(roleValue) {
+  const roles = String(roleValue || "")
+    .toUpperCase()
+    .split(/[;,/|\s]+/)
+    .map(role => role.trim())
+    .filter(Boolean);
+
+  if (roles.includes("P")) return 1;
+
+  if (
+    roles.some(role =>
+      ["DD", "DC", "DS", "B", "E"].includes(role)
+    )
+  ) {
+    return 2;
+  }
+
+  if (
+    roles.some(role =>
+      ["M", "C", "T", "W"].includes(role)
+    )
+  ) {
+    return 3;
+  }
+
+  if (
+    roles.some(role =>
+      ["A", "PC"].includes(role)
+    )
+  ) {
+    return 4;
+  }
+
+  return 99;
 }
 
 function escapeHtml(value) {
