@@ -627,7 +627,6 @@ body{
   }
 
   .predraft-hero,
-  .predraft-status,
   #keeper-team-box{
     grid-column:1 / -1;
   }
