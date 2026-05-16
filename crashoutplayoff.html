@@ -47,7 +47,6 @@
           </ul>
         </li>
 
-     
         <li><a href="waiver.html">Waiver Wire</a></li>
 
         <li class="dropdown">
@@ -88,48 +87,96 @@
   </nav>
 
   <header class="page-header">
-    <div class="page-kicker">Lega degli Eroi</div>
-    <h1>Crash Out Cup — Playoff</h1>
-    <div class="page-subtitle">Knockout Stage</div>
+    <div class="page-title-block">
+      <div class="page-kicker">Lega degli Eroi</div>
+      <h1>Crash Out <span>Cup</span></h1>
+      <div class="page-subtitle">Best of 5 Series • Road to the Crash</div>
+    </div>
+
+    <div class="crash-stats" aria-label="Crash Out Cup stats">
+      <div class="stat-card"><strong>16</strong><span>Teams</span></div>
+      <div class="stat-card"><strong>Best of 5</strong><span>Series</span></div>
+      <div class="stat-card"><strong>4</strong><span>Rounds</span></div>
+      <div class="stat-card"><strong>1</strong><span>Champion</span></div>
+    </div>
   </header>
 
   <main class="cup-container">
-    <div id="bracket" class="bracket">
-      <section class="conference left">
-        <div class="round-label round-label-r1">Round 1</div>
-        <div class="round-label round-label-r2">Semifinali</div>
-        <div class="round-label round-label-r3">Finale</div>
+    <div class="desktop-shell">
+      <div id="bracket" class="bracket">
+        <section class="conference left">
+          <div class="round-label round-label-r1">Ottavi</div>
+          <div class="round-label round-label-r2">Quarti</div>
+          <div class="round-label round-label-r3">Semifinali</div>
 
-        <div class="round round-1" id="left-round-1" aria-label="Left Round 1"></div>
-        <div class="round round-2" id="left-round-2" aria-label="Left Semifinals"></div>
-        <div class="round round-3" id="left-round-3" aria-label="Left Conference Finals"></div>
-      </section>
+          <div class="round round-1" id="left-round-1" aria-label="Ottavi sinistra"></div>
+          <div class="round round-2" id="left-round-2" aria-label="Quarti sinistra"></div>
+          <div class="round round-3" id="left-round-3" aria-label="Semifinale sinistra"></div>
+        </section>
 
-      <section class="finals" aria-label="Finals">
-        <div class="finals-title">Finals</div>
+        <section class="finals" aria-label="Finale">
+          <div class="finals-title">Finale</div>
 
-        <div id="finals-split" class="finals-split">
-          <div id="finals-top" class="round round-final" aria-label="Finals Top"></div>
+          <div id="finals-split" class="finals-split">
+            <div id="finals-top" class="round round-final" aria-label="Finalista alto"></div>
 
-          <div id="finals-centerpiece" class="finals-centerpiece" aria-hidden="true">
-            <div class="trophy-glow"></div>
-            <div id="finals-trophy" class="trophy"></div>
-            <div class="trophy-caption">Crash Out Cup</div>
+            <div id="finals-centerpiece" class="finals-centerpiece" aria-hidden="true">
+              <div class="trophy-glow"></div>
+              <div id="finals-trophy" class="trophy"></div>
+              <div class="trophy-caption">Crash Out Cup</div>
+            </div>
+
+            <div id="finals-bottom" class="round round-final" aria-label="Finalista basso"></div>
           </div>
+        </section>
 
-          <div id="finals-bottom" class="round round-final" aria-label="Finals Bottom"></div>
+        <section class="conference right">
+          <div class="round-label round-label-r1">Ottavi</div>
+          <div class="round-label round-label-r2">Quarti</div>
+          <div class="round-label round-label-r3">Semifinali</div>
+
+          <div class="round round-1" id="right-round-1" aria-label="Ottavi destra"></div>
+          <div class="round round-2" id="right-round-2" aria-label="Quarti destra"></div>
+          <div class="round round-3" id="right-round-3" aria-label="Semifinale destra"></div>
+        </section>
+      </div>
+
+      <aside class="crash-sidebar" aria-label="Crash Out Cup extra info">
+        <section class="side-panel spotlight-panel">
+          <div class="panel-kicker">Series Spotlight</div>
+          <div class="spotlight-versus">
+            <div class="spot-logo placeholder-a"></div>
+            <div class="spot-vs">VS</div>
+            <div class="spot-logo placeholder-b"></div>
+          </div>
+          <div class="spot-score">2 - 1</div>
+          <div class="spot-label">Serie</div>
+          <div class="next-game">Prossima partita</div>
+          <div class="next-row">Dom, 18 Mag • 21:00</div>
+        </section>
+
+        <section class="side-panel crashed-panel">
+          <div class="panel-kicker">Crashed Out</div>
+          <div class="crashed-grid" aria-hidden="true">
+            <span></span><span></span><span></span><span></span>
+            <span></span><span></span><span></span><span></span>
+            <span></span><span></span><span></span><span></span>
+          </div>
+          <a href="#" class="see-all">Vedi tutti gli eliminati →</a>
+        </section>
+      </aside>
+    </div>
+
+    <div class="crash-footer-strip">
+      <div class="crash-quote">“ Nella distruzione, nascono le leggende. ”</div>
+      <div class="rewards-card">
+        <div class="reward-icon">♔</div>
+        <div>
+          <strong>Playoff Rewards</strong>
+          <span>Il campione conquisterà la gloria.</span>
         </div>
-      </section>
-
-      <section class="conference right">
-        <div class="round-label round-label-r1">Round 1</div>
-        <div class="round-label round-label-r2">Semifinali</div>
-        <div class="round-label round-label-r3">Finale</div>
-
-        <div class="round round-1" id="right-round-1" aria-label="Right Round 1"></div>
-        <div class="round round-2" id="right-round-2" aria-label="Right Semifinals"></div>
-        <div class="round round-3" id="right-round-3" aria-label="Right Conference Finals"></div>
-      </section>
+        <button type="button">Scopri i premi</button>
+      </div>
     </div>
 
     <div id="bracket-mobile" class="bracket-mobile"></div>
@@ -154,6 +201,6 @@
   </template>
 
   <script src="crashoutplayoff.js" defer></script>
-   <script src="navbar.js"></script>
+  <script src="navbar.js"></script>
 </body>
 </html>
