@@ -46,7 +46,6 @@ body{
   overflow-x: hidden;
 }
 
-
 /* HERO */
 .hero-playoff{
   text-align: center;
@@ -123,26 +122,28 @@ body{
 .legend-gold{ background: var(--gold); box-shadow: 0 0 10px var(--gold-glow); }
 .legend-blue{ background: #8ac5ff; box-shadow: 0 0 10px rgba(138,197,255,.45); }
 
-/* ====== FULL WIDTH LAYOUT V3 ====== */
-
+/* BRACKET WRAP */
 .bracket-wrap{
   width: 100%;
-  overflow-x: hidden;
+  overflow-x: auto;
   overflow-y: visible;
-  padding: 8px 24px 34px;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: 26px;
+}
+
+.bracket-wrap::-webkit-scrollbar{ height: 10px; }
+.bracket-wrap::-webkit-scrollbar-thumb{
+  background: rgba(255,255,255,.18);
+  border-radius: 999px;
 }
 
 .bracket{
-  width: min(1720px, calc(100vw - 48px));
-  min-width: 0;
-  margin: 0 auto;
-  padding: 24px 0 40px;
-  display: grid;
-  grid-template-columns: 1.15fr 1.05fr 0.95fr 1.35fr;
-  grid-template-rows: auto auto;
-  column-gap: 22px;
-  row-gap: 54px;
-  align-items: start;
+  display: flex;
+  align-items: flex-start;
+  gap: var(--col-gap);
+  width: max-content;
+  padding: 28px 40px 46px;
+  min-width: 100%;
 }
 
 /* COLONNE */
@@ -194,8 +195,7 @@ body{
   max-width: var(--card-w);
   min-height: var(--team-card-h);
   color: #031d3c;
-  background:
-    linear-gradient(180deg, rgba(255,255,255,1) 0%, rgba(247,250,255,1) 100%);
+  background: linear-gradient(180deg, rgba(255,255,255,1) 0%, rgba(247,250,255,1) 100%);
   border: 2px solid rgba(0,31,63,.70);
   border-radius: 14px;
   box-shadow: var(--card-shadow);
@@ -224,9 +224,7 @@ body{
 }
 
 /* CONTENUTO INTERNO */
-.squadra.orizzontale{
-  display: contents;
-}
+.squadra.orizzontale{ display: contents; }
 
 .team-logo-wrap{
   grid-column: 1;
@@ -324,10 +322,7 @@ body{
     0 0 22px var(--winner-glow);
 }
 
-.match.vincente .team-status{
-  color: #9a6a00;
-}
-
+.match.vincente .team-status{ color: #9a6a00; }
 .match.vincente .team-flag{
   background: linear-gradient(180deg, #fff2b8, #ffd36b);
   color: #4d3300;
@@ -339,9 +334,7 @@ body{
   border-color: rgba(255, 211, 107, .55);
 }
 
-.match.finale .team-name{
-  font-size: 1.02rem;
-}
+.match.finale .team-name{ font-size: 1.02rem; }
 
 @keyframes winnerPulse {
   0%   { box-shadow: 0 0 0 0 rgba(255,211,107,.55); }
@@ -349,9 +342,7 @@ body{
   100% { box-shadow: 0 0 0 0 rgba(255,211,107,0); }
 }
 
-.match.vincente{
-  animation: winnerPulse 1.2s ease-out 2;
-}
+.match.vincente{ animation: winnerPulse 1.2s ease-out 2; }
 
 /* QUARTI/SEMIFINALI LAYOUT */
 .pair-offset{
@@ -388,9 +379,7 @@ body{
 }
 
 /* FINALE STAGE */
-.blocco-finale{
-  min-width: 370px;
-}
+.blocco-finale{ min-width: 370px; }
 
 .finale-stage{
   position: relative;
@@ -419,9 +408,7 @@ body{
   align-items: center;
 }
 
-.finale-pair{
-  z-index: 2;
-}
+.finale-pair{ z-index: 2; }
 
 .coppa-vittoria{
   display:flex;
@@ -480,37 +467,18 @@ body{
 
 /* MOBILE */
 @media (max-width: 768px) {
-
-
-  .hero-playoff{
-    padding-top: 28px;
-  }
-
-  .playoff-intro{
-    width: 94%;
-  }
-
-  .intro-chip{
-    width: 100%;
-    text-align: center;
-  }
-
-  .intro-legend{
-    width: 100%;
-  }
+  .hero-playoff{ padding-top: 28px; }
+  .playoff-intro{ width: 94%; }
+  .intro-chip{ width: 100%; text-align: center; }
+  .intro-legend{ width: 100%; }
 
   .bracket{
     padding: 22px 20px 40px;
     gap: 28px;
   }
 
-  .blocco-finale{
-    min-width: 340px;
-  }
-
-  .coppa-img{
-    width: 230px !important;
-  }
+  .blocco-finale{ min-width: 340px; }
+  .coppa-img{ width: 230px !important; }
 
   .match{
     width: 270px;
@@ -524,13 +492,11 @@ body{
     max-width: 280px;
   }
 
-  .team-name{
-    font-size: .93rem;
-  }
+  .team-name{ font-size: .93rem; }
 }
 
 /* =========================================================
-   PLAYOFF DESKTOP COMPACT - LOGHI ONLY V2
+   PLAYOFF DESKTOP V3 - FULL WIDTH LOGO BRACKET
    ---------------------------------------------------------
    Solo CSS: non tocca playoff.js né i data-match.
    Trasforma il desktop in flusso unico:
@@ -539,24 +505,23 @@ body{
    ========================================================= */
 @media (min-width: 1024px) {
   :root{
-    --po-logo-card-w: 176px;
-    --po-logo-card-h: 58px;
-    --po-logo-size: 46px;
-    --po-col-gap: 28px;
-    --po-row-gap: 16px;
-    --po-final-w: 330px;
+    --po-logo-card-w: clamp(210px, 14.2vw, 270px);
+    --po-logo-card-h: clamp(72px, 5.2vw, 92px);
+    --po-logo-size: clamp(52px, 3.8vw, 68px);
+    --po-col-gap: clamp(34px, 4vw, 72px);
+    --po-row-gap: clamp(64px, 7vh, 105px);
+    --po-final-w: clamp(360px, 25vw, 470px);
+    --po-connector: clamp(18px, 1.8vw, 34px);
   }
 
-  body{
-    overflow-x: hidden;
-  }
+  body{ overflow-x: hidden; }
 
   .hero-playoff{
-    padding: 18px 20px 2px;
+    padding: 20px 20px 2px;
   }
 
   .titolo-pagina{
-    font-size: clamp(2rem, 3.25vw, 3.25rem);
+    font-size: clamp(2.35rem, 3.65vw, 4.05rem);
   }
 
   .sottotitolo-pagina{
@@ -566,24 +531,25 @@ body{
 
   .playoff-intro{
     justify-content: center;
-    margin: 4px auto 2px;
+    margin: 5px auto 2px;
   }
 
   .intro-chip{
-    padding: 7px 16px;
-    font-size: .92rem;
+    padding: 7px 17px;
+    font-size: .94rem;
   }
 
   .bracket-wrap{
+    width: 100%;
     overflow: hidden;
-    padding-bottom: 10px;
+    padding: 8px clamp(18px, 2.2vw, 42px) 22px;
   }
 
   .bracket{
-    width: min(1180px, 98vw);
+    width: min(1660px, 100%);
     min-width: 0;
     margin: 0 auto;
-    padding: 16px 14px 22px;
+    padding: 18px 0 28px;
     display: grid;
     grid-template-columns: var(--po-logo-card-w) var(--po-logo-card-w) var(--po-logo-card-w) var(--po-final-w);
     grid-template-rows: auto auto;
@@ -593,25 +559,31 @@ body{
     justify-content: center;
   }
 
-  /* Vecchio sx/dx trasformato in flusso unico verticale */
+  /* Flusso unico: Wildcard -> Quarti -> Semifinale -> Finale */
   .bracket > .blocco-colonna:nth-of-type(1){ grid-column: 1; grid-row: 1; }
   .bracket > .blocco-colonna:nth-of-type(7){ grid-column: 1; grid-row: 2; }
   .bracket > .blocco-colonna:nth-of-type(2){ grid-column: 2; grid-row: 1; }
   .bracket > .blocco-colonna:nth-of-type(6){ grid-column: 2; grid-row: 2; }
   .bracket > .blocco-colonna:nth-of-type(3){ grid-column: 3; grid-row: 1; }
   .bracket > .blocco-colonna:nth-of-type(5){ grid-column: 3; grid-row: 2; }
-  .bracket > .blocco-colonna:nth-of-type(4){ grid-column: 4; grid-row: 1 / span 2; }
+  .bracket > .blocco-colonna:nth-of-type(4){ grid-column: 4; grid-row: 1 / span 2; align-self: stretch; }
 
-  /* Un solo titolo per colonna */
+  /* Un solo titolo per ogni colonna */
   .bracket > .blocco-colonna:nth-of-type(7) h2,
   .bracket > .blocco-colonna:nth-of-type(6) h2,
   .bracket > .blocco-colonna:nth-of-type(5) h2{
     display: none;
   }
 
+  .blocco-colonna{
+    width: 100%;
+    align-items: stretch;
+  }
+
   .blocco-colonna h2{
-    margin: 0 0 9px;
-    font-size: 1rem;
+    margin: 0 0 12px;
+    text-align: center;
+    font-size: 1.04rem;
   }
 
   .colonna,
@@ -619,6 +591,7 @@ body{
   .col--center,
   .semifinale-sx,
   .semifinale-dx{
+    width: 100%;
     height: auto !important;
     min-height: 0 !important;
     justify-content: flex-start !important;
@@ -627,26 +600,24 @@ body{
     transform: none !important;
   }
 
-  .colonna{
-    gap: 12px;
-  }
+  .colonna{ gap: 13px; }
 
-  /* Q1/Q2 ecc. vengono trasformati dal JS in .pair-offset: trattiamoli come le WC */
+  /* Il JS trasforma i quarti in .pair-offset: stessa resa delle WC */
   .match-pair:not(.finale-pair),
   .pair-offset:not(.finale-pair){
-    width: var(--po-logo-card-w);
+    width: 100%;
     min-height: var(--po-logo-card-h);
     display: grid !important;
     grid-template-columns: 1fr 1fr !important;
     grid-template-rows: 1fr !important;
     row-gap: 0 !important;
     position: relative;
-    border-radius: 16px;
+    border-radius: 18px;
     background:
-      radial-gradient(circle at 50% 0%, rgba(255,255,255,.14), transparent 55%),
-      linear-gradient(180deg, rgba(12,54,108,.90), rgba(5,29,66,.88));
-    border: 1px solid rgba(214,235,255,.28);
-    box-shadow: 0 10px 20px rgba(0,0,0,.22), inset 0 1px 0 rgba(255,255,255,.10);
+      radial-gradient(circle at 50% 0%, rgba(255,255,255,.16), transparent 55%),
+      linear-gradient(180deg, rgba(13,57,116,.90), rgba(5,29,66,.90));
+    border: 1px solid rgba(214,235,255,.30);
+    box-shadow: 0 13px 24px rgba(0,0,0,.24), inset 0 1px 0 rgba(255,255,255,.12);
     overflow: visible;
   }
 
@@ -658,11 +629,11 @@ body{
     top: 50%;
     transform: translate(-50%, -50%);
     z-index: 5;
-    color: rgba(255,255,255,.92);
-    font-size: .72rem;
+    color: rgba(255,255,255,.94);
+    font-size: .82rem;
     font-weight: 900;
-    letter-spacing: .7px;
-    text-shadow: 0 2px 8px rgba(0,0,0,.48);
+    letter-spacing: .8px;
+    text-shadow: 0 2px 8px rgba(0,0,0,.50);
     pointer-events: none;
   }
 
@@ -671,11 +642,11 @@ body{
     content: "";
     position: absolute;
     left: 50%;
-    top: 10px;
-    bottom: 10px;
+    top: 12px;
+    bottom: 12px;
     width: 1px;
-    background: linear-gradient(180deg, transparent, rgba(255,211,107,.45), transparent);
-    opacity: .85;
+    background: linear-gradient(180deg, transparent, rgba(255,211,107,.48), transparent);
+    opacity: .9;
     pointer-events: none;
   }
 
@@ -728,15 +699,15 @@ body{
     background:
       radial-gradient(circle at 34% 28%, rgba(255,255,255,.98), rgba(255,255,255,.84) 68%, rgba(214,235,255,.78));
     border: 1px solid rgba(255,255,255,.72);
-    box-shadow: 0 7px 14px rgba(0,0,0,.24), 0 0 0 3px rgba(255,255,255,.06);
+    box-shadow: 0 8px 16px rgba(0,0,0,.25), 0 0 0 3px rgba(255,255,255,.06);
     position: relative;
     z-index: 3;
   }
 
   .match-pair:not(.finale-pair) .squadra.orizzontale img,
   .pair-offset:not(.finale-pair) .squadra.orizzontale img{
-    width: calc(var(--po-logo-size) - 7px) !important;
-    height: calc(var(--po-logo-size) - 7px) !important;
+    width: calc(var(--po-logo-size) - 8px) !important;
+    height: calc(var(--po-logo-size) - 8px) !important;
     padding: 0 !important;
     background: transparent !important;
     border-radius: 50%;
@@ -745,10 +716,10 @@ body{
   .match-pair:not(.finale-pair) .team-logo-wrap:empty::after,
   .pair-offset:not(.finale-pair) .team-logo-wrap:empty::after{
     content: "";
-    width: 16px;
-    height: 16px;
+    width: 22px;
+    height: 22px;
     border-radius: 50%;
-    border: 2px solid rgba(255,255,255,.28);
+    border: 2px solid rgba(255,255,255,.30);
     background: rgba(255,255,255,.08);
     box-shadow: inset 0 1px 0 rgba(255,255,255,.18);
   }
@@ -771,21 +742,20 @@ body{
   .match-pair:not(.finale-pair) .seed-badge,
   .pair-offset:not(.finale-pair) .seed-badge{
     position: absolute;
-    top: 5px;
-    left: 5px;
-    min-height: 18px;
-    padding: 1px 6px;
-    font-size: .63rem;
+    top: 7px;
+    left: 7px;
+    min-height: 20px;
+    padding: 1px 7px;
+    font-size: .68rem;
     z-index: 6;
   }
 
   .match-pair:not(.finale-pair) .match:nth-child(2) .seed-badge,
   .pair-offset:not(.finale-pair) .match:nth-child(2) .seed-badge{
     left: auto;
-    right: 5px;
+    right: 7px;
   }
 
-  /* Nomi e stati restano nel DOM ma spariscono fuori dalla finale */
   .match-pair:not(.finale-pair) .team-name,
   .match-pair:not(.finale-pair) .team-status,
   .match-pair:not(.finale-pair) .team-flag,
@@ -812,92 +782,140 @@ body{
   .pair-offset:not(.finale-pair) .match.vincente .team-logo-wrap{
     border-color: rgba(255,211,107,.95);
     box-shadow:
-      0 7px 14px rgba(0,0,0,.24),
+      0 8px 16px rgba(0,0,0,.25),
       0 0 0 3px rgba(255,211,107,.30),
-      0 0 18px rgba(255,211,107,.55);
+      0 0 18px rgba(255,211,107,.58);
   }
 
-  /* Finale: nomi visibili solo qui */
+  /* Connettori orizzontali tra i round */
+  .wc-sx .match-pair::after,
+  .wc-dx .match-pair::after,
+  .q-sx .pair-offset::after,
+  .q-dx .pair-offset::after,
+  .s-sx .match-pair::after,
+  .s-dx .match-pair::after{
+    content: "";
+    position: absolute;
+    right: calc(-1 * var(--po-col-gap) / 2 - 1px);
+    top: 50%;
+    width: calc(var(--po-col-gap) / 2 + 2px);
+    height: 2px;
+    background: linear-gradient(90deg, rgba(214,235,255,.78), rgba(255,211,107,.95));
+    transform: translateY(-50%);
+    box-shadow: 0 0 12px rgba(255,211,107,.34);
+    z-index: 1;
+  }
+
+  /* Ripristina il VS dentro le card dopo la regola dei connettori */
+  .match-pair:not(.finale-pair)::after,
+  .pair-offset:not(.finale-pair)::after{
+    content: "VS";
+    right: auto;
+    width: auto;
+    height: auto;
+    background: none;
+    box-shadow: none;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 5;
+    color: rgba(255,255,255,.94);
+    font-size: .82rem;
+    font-weight: 900;
+    letter-spacing: .8px;
+    text-shadow: 0 2px 8px rgba(0,0,0,.50);
+  }
+
+  /* Linee di collegamento esterne: usiamo ::before sui blocchi, così non rubiamo il VS */
+  .bracket > .blocco-colonna:nth-of-type(1)::after,
+  .bracket > .blocco-colonna:nth-of-type(7)::after,
+  .bracket > .blocco-colonna:nth-of-type(2)::after,
+  .bracket > .blocco-colonna:nth-of-type(6)::after,
+  .bracket > .blocco-colonna:nth-of-type(3)::after,
+  .bracket > .blocco-colonna:nth-of-type(5)::after{
+    content:"";
+    position:absolute;
+    right: calc(-1 * var(--po-col-gap) + 8px);
+    top: calc(50% + 14px);
+    width: calc(var(--po-col-gap) - 16px);
+    height: 2px;
+    background: linear-gradient(90deg, rgba(214,235,255,.76), rgba(255,211,107,.95));
+    box-shadow: 0 0 12px rgba(255,211,107,.30);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .bracket > .blocco-colonna:nth-of-type(3)::after,
+  .bracket > .blocco-colonna:nth-of-type(5)::after{
+    right: calc(-1 * var(--po-col-gap) + 2px);
+    width: calc(var(--po-col-gap) + 10px);
+  }
+
+  /* Finale */
   .blocco-finale{
     min-width: 0 !important;
-    width: var(--po-final-w);
+    width: 100%;
   }
 
   .finale-stage{
     width: 100%;
-    padding: 12px 14px 14px;
-    border-radius: 22px;
-    border-color: rgba(255,211,107,.28);
+    min-height: 100%;
+    padding: 16px 18px 18px;
+    border-radius: 26px;
+    border-color: rgba(255,211,107,.30);
   }
 
   .finale-pair{
     width: 100%;
     display: grid !important;
     grid-template-columns: 1fr !important;
-    grid-template-rows: repeat(2, minmax(68px, auto));
-    row-gap: 11px !important;
+    grid-template-rows: repeat(2, minmax(76px, auto));
+    row-gap: 12px !important;
   }
 
   .match.finale{
     width: 100% !important;
     min-width: 0 !important;
     max-width: none !important;
-    min-height: 68px;
-    grid-template-columns: 70px 1fr;
+    min-height: 76px;
+    grid-template-columns: 76px 1fr;
   }
 
-  .match.finale::before{
-    width: 70px;
-  }
-
-  .match.finale .team-main{
-    padding: 8px 12px;
-  }
-
-  .match.finale .team-name{
-    display: -webkit-box;
-    font-size: .98rem;
-  }
-
-  .match.finale .team-status{
-    display: inline;
-  }
+  .match.finale::before{ width: 76px; }
+  .match.finale .team-main{ padding: 9px 13px; }
+  .match.finale .team-name{ display: -webkit-box; font-size: 1rem; }
+  .match.finale .team-status{ display: inline; }
 
   .match.finale .team-flag{
     position: static !important;
     width: auto !important;
-    height: 30px !important;
+    height: 32px !important;
     margin: 0 !important;
     overflow: visible !important;
     clip: auto !important;
     white-space: normal !important;
   }
 
-  .coppa-vittoria{
-    margin-top: 9px;
-  }
-
-  .coppa-img{
-    width: 190px !important;
-  }
+  .coppa-vittoria{ margin-top: 12px; }
+  .coppa-img{ width: clamp(200px, 15vw, 270px) !important; }
 }
 
 @media (min-width: 1024px) and (max-height: 850px) {
   :root{
-    --po-logo-card-w: 168px;
-    --po-logo-card-h: 54px;
-    --po-logo-size: 43px;
-    --po-col-gap: 24px;
-    --po-row-gap: 12px;
-    --po-final-w: 318px;
+    --po-logo-card-w: clamp(196px, 13vw, 245px);
+    --po-logo-card-h: clamp(64px, 4.7vw, 80px);
+    --po-logo-size: clamp(46px, 3.4vw, 60px);
+    --po-col-gap: clamp(28px, 3.2vw, 58px);
+    --po-row-gap: clamp(42px, 5.5vh, 76px);
+    --po-final-w: clamp(330px, 23vw, 420px);
   }
 
   .hero-playoff{ padding-top: 12px; }
-  .titolo-pagina{ font-size: clamp(1.9rem, 2.9vw, 3rem); }
-  .sottotitolo-pagina{ font-size: .94rem; }
+  .titolo-pagina{ font-size: clamp(2rem, 3.1vw, 3.45rem); }
+  .sottotitolo-pagina{ font-size: .93rem; }
   .intro-chip{ padding: 6px 14px; }
   .bracket{ padding-top: 10px; padding-bottom: 16px; }
-  .blocco-colonna h2{ margin-bottom: 7px; }
-  .colonna{ gap: 10px; }
-  .coppa-img{ width: 165px !important; }
+  .blocco-colonna h2{ margin-bottom: 8px; }
+  .colonna{ gap: 11px; }
+  .coppa-img{ width: clamp(175px, 13vw, 225px) !important; }
 }
