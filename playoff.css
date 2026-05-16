@@ -1216,3 +1216,125 @@ body{
     overflow: visible !important;
   }
 }
+
+/* =========================================================
+   PLAYOFF V3.4 - FIX SEMIFINALI + VS + HEADERS
+   ========================================================= */
+@media (min-width: 1024px){
+
+  :root{
+    --semi-top-offset: 56px;      /* S1 un po' più su */
+    --semi-bottom-offset: 74px;   /* S2 leggermente più giù */
+    --semi-stem-h: 168px;
+  }
+
+  /* =====================================================
+     1) NON spostare più l'intero blocco semifinale
+        altrimenti si abbassa anche il titolo h2
+     ===================================================== */
+  .bracket > .blocco-colonna:nth-of-type(3),
+  .bracket > .blocco-colonna:nth-of-type(5){
+    margin-top: 0 !important;
+    transform: none !important;
+  }
+
+  /* Titolo Semifinale riallineato agli altri */
+  .bracket > .blocco-colonna:nth-of-type(3) h2{
+    margin: 0 0 9px !important;
+  }
+
+  /* =====================================================
+     2) Spostiamo solo il CONTENUTO delle semifinali
+     ===================================================== */
+  .bracket > .blocco-colonna:nth-of-type(3) .colonna{
+    margin-top: var(--semi-top-offset) !important;
+    position: relative;
+  }
+
+  .bracket > .blocco-colonna:nth-of-type(5) .colonna{
+    margin-top: var(--semi-bottom-offset) !important;
+    position: relative;
+  }
+
+  /* Spegne eventuali vecchi steli applicati al blocco */
+  .bracket > .blocco-colonna:nth-of-type(3)::before,
+  .bracket > .blocco-colonna:nth-of-type(5)::before{
+    display: none !important;
+  }
+
+  /* Nuovo stelo verticale centrato sulla card semifinale */
+  .bracket > .blocco-colonna:nth-of-type(3) .colonna::before,
+  .bracket > .blocco-colonna:nth-of-type(5) .colonna::before{
+    content: "";
+    position: absolute;
+    left: calc(-1 * var(--po-col-gap) / 2);
+    top: 50%;
+    transform: translateY(-50%);
+    width: 2px;
+    height: var(--semi-stem-h);
+    background: linear-gradient(
+      180deg,
+      transparent 0%,
+      rgba(255,255,255,.55) 18%,
+      rgba(255,211,107,.95) 50%,
+      rgba(255,255,255,.55) 82%,
+      transparent 100%
+    );
+    box-shadow: 0 0 10px rgba(255,211,107,.35);
+    border-radius: 999px;
+    pointer-events: none;
+  }
+
+  /* =====================================================
+     3) Connettori quarti -> semifinale un po' più puliti
+     ===================================================== */
+  .bracket > .blocco-colonna:nth-of-type(2) .pair-offset::after,
+  .bracket > .blocco-colonna:nth-of-type(6) .pair-offset::after{
+    right: calc(-1 * var(--po-col-gap) / 2 + 8px) !important;
+    width: calc(var(--po-col-gap) / 2 - 14px) !important;
+    z-index: 0 !important;
+  }
+
+  .bracket > .blocco-colonna:nth-of-type(3) .match-pair::after,
+  .bracket > .blocco-colonna:nth-of-type(5) .match-pair::after{
+    right: calc(-1 * var(--po-col-gap) + 14px) !important;
+    width: calc(var(--po-col-gap) - 24px) !important;
+    z-index: 0 !important;
+  }
+
+  /* =====================================================
+     4) Ripristino VS pulito: sopra le linee, con mini pill
+     ===================================================== */
+  .match-pair:not(.finale-pair) .match:first-child,
+  .pair-offset:not(.finale-pair) .match:first-child{
+    position: relative;
+    overflow: visible !important;
+    z-index: 2;
+  }
+
+  .match-pair:not(.finale-pair) .match:first-child::after,
+  .pair-offset:not(.finale-pair) .match:first-child::after{
+    content: "VS";
+    position: absolute;
+    right: -14px;
+    top: 50%;
+    transform: translate(50%, -50%);
+    z-index: 8;
+    padding: 1px 7px 2px;
+    background: linear-gradient(
+      180deg,
+      rgba(9,39,92,.96),
+      rgba(5,25,63,.96)
+    );
+    color: rgba(255,255,255,.96);
+    font-size: .72rem;
+    font-weight: 900;
+    letter-spacing: .7px;
+    border-radius: 999px;
+    box-shadow:
+      0 0 0 2px rgba(9,39,92,.96),
+      0 2px 8px rgba(0,0,0,.28);
+    text-shadow: none;
+    pointer-events: none;
+  }
+}
