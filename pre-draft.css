@@ -633,6 +633,7 @@ body{
 
   #keeper-selections{
     grid-column:1;
+    grid-row:3;
     display:flex;
     flex-direction:column;
     gap:18px;
@@ -647,9 +648,9 @@ body{
     margin-bottom:0;
   }
 
-  .predraft-page > .predraft-card:not(#keeper-team-box):not(#keeper-admin):not(#keeper-closed-box){
+  .roster-card{
     grid-column:2;
-    grid-row:4;
+    grid-row:3;
     align-self:start;
   }
 
@@ -657,6 +658,15 @@ body{
   #keeper-closed-box{
     grid-column:1 / -1;
   }
+
+  .choice-card{
+    min-height:auto;
+  }
+
+  .choice-card p{
+    min-height:auto;
+  }
+}
 
   .choice-card{
     min-height:auto;
