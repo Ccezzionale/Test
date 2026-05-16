@@ -1227,14 +1227,25 @@ function sortRosterByMantraLine(a, b) {
 }
 
 function getMainRoleRank(roleValue) {
-  const roles = String(roleValue || "")
-    .toUpperCase()
+  const rawRole = String(roleValue || "").toUpperCase().trim();
+
+  const roles = rawRole
     .split(/[;,/|\s]+/)
     .map(role => role.trim())
     .filter(Boolean);
 
-  if (roles.includes("P")) return 1;
+  // Portieri: copre P, POR, PORTIERE, PORTIERI
+  if (
+    roles.includes("P") ||
+    roles.includes("POR") ||
+    roles.includes("PORTIERE") ||
+    roles.includes("PORTIERI") ||
+    rawRole.startsWith("P ")
+  ) {
+    return 1;
+  }
 
+  // Difesa
   if (
     roles.some(role =>
       ["DD", "DC", "DS", "B", "E"].includes(role)
@@ -1243,6 +1254,7 @@ function getMainRoleRank(roleValue) {
     return 2;
   }
 
+  // Centrocampo
   if (
     roles.some(role =>
       ["M", "C", "T", "W"].includes(role)
@@ -1251,6 +1263,7 @@ function getMainRoleRank(roleValue) {
     return 3;
   }
 
+  // Attacco
   if (
     roles.some(role =>
       ["A", "PC"].includes(role)
