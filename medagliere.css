@@ -758,12 +758,10 @@ body::after {
     min-height: 430px !important;
   }
 
-  /* Abbassa tutti i menu anni dei due major */
   .blocco-major .anno {
     transform: translateY(70px) !important;
   }
 
-  /* Abbassa e centra meglio i trofei */
   .blocco-major .coppa-box {
     align-self: end !important;
     justify-self: center !important;
