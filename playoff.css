@@ -1401,3 +1401,87 @@ body{
     opacity: .55;
   }
 }
+
+/* =========================================================
+   PLAYOFF V3.6 - CLEAN FINALE CONNECTORS + REMOVE YELLOW TICKS
+   ========================================================= */
+@media (min-width: 1024px){
+
+  /* 1) Spegne definitivamente i connettori Semifinale -> Finale */
+  .bracket > .blocco-colonna:nth-of-type(3) .match-pair::after,
+  .bracket > .blocco-colonna:nth-of-type(5) .match-pair::after,
+  .s-sx .match-pair::after,
+  .s-dx .match-pair::after,
+  .semifinale-sx .match-pair::after,
+  .semifinale-dx .match-pair::after{
+    display: none !important;
+    content: none !important;
+    width: 0 !important;
+    height: 0 !important;
+    opacity: 0 !important;
+  }
+
+  /* 2) Toglie le lineette gialle dentro/accanto alle Wildcard */
+  .bracket > .blocco-colonna:nth-of-type(1) .match-pair::after,
+  .bracket > .blocco-colonna:nth-of-type(7) .match-pair::after,
+  .wc-sx .match-pair::after,
+  .wc-dx .match-pair::after{
+    display: none !important;
+    content: none !important;
+    width: 0 !important;
+    height: 0 !important;
+    opacity: 0 !important;
+  }
+
+  /* 3) Toglie anche la mini lineetta interna centrale che può sembrare connettore */
+  .match-pair:not(.finale-pair)::before,
+  .pair-offset:not(.finale-pair)::before{
+    display: none !important;
+    content: none !important;
+  }
+
+  /* 4) VS centrato esattamente tra i due loghi */
+  .match-pair:not(.finale-pair) .match:first-child::after,
+  .pair-offset:not(.finale-pair) .match:first-child::after{
+    content: "VS" !important;
+    position: absolute;
+    left: 100%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 30;
+    min-width: 34px;
+    height: 25px;
+    padding: 0 8px;
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    border-radius: 999px;
+    background:
+      linear-gradient(180deg, rgba(18,60,122,.98), rgba(4,25,61,.98));
+    border: 1px solid rgba(255,255,255,.18);
+    color: #ffffff;
+    font-size: .76rem;
+    font-weight: 900;
+    letter-spacing: .35px;
+    text-shadow: none;
+    box-shadow:
+      0 4px 10px rgba(0,0,0,.30),
+      inset 0 1px 0 rgba(255,255,255,.16),
+      0 0 0 2px rgba(4,25,61,.82);
+    pointer-events: none;
+  }
+
+  /* 5) Leggerissimo spazio visivo attorno al VS */
+  .match-pair:not(.finale-pair) .match:first-child,
+  .pair-offset:not(.finale-pair) .match:first-child{
+    position: relative;
+    overflow: visible !important;
+    z-index: 4;
+  }
+
+  .match-pair:not(.finale-pair) .match:nth-child(2),
+  .pair-offset:not(.finale-pair) .match:nth-child(2){
+    position: relative;
+    z-index: 3;
+  }
+}
