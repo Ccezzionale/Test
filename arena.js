@@ -1,103 +1,195 @@
-const teams = [
-  { name: "Golden Knights", logo: "Golden Knights.png", status: "alive" },
-  { name: "FC Disoneste", logo: "FC Disoneste.png", status: "eliminated", eliminatedTurn: 15, recent: true },
-  { name: "Rubin Kebab", logo: "Rubin Kebab.png", status: "eliminated", eliminatedTurn: 14 },
-  { name: "Bayern Christiansen", logo: "Bayern Christiansen.png", status: "eliminated", eliminatedTurn: 13 },
-  { name: "Team Bartowski", logo: "Team Bartowski.png", status: "eliminated", eliminatedTurn: 12 },
-  { name: "Ibla", logo: "Ibla.png", status: "eliminated", eliminatedTurn: 11 },
-  { name: "Fantaquesta", logo: "Fantaquesta.png", status: "eliminated", eliminatedTurn: 10 },
-  { name: "Riverfilo", logo: "Riverfilo.png", status: "eliminated", eliminatedTurn: 9 },
-  { name: "Esperados", logo: "Esperados.png", status: "eliminated", eliminatedTurn: 8 },
-  { name: "Wildboys", logo: "Wildboys.png", status: "eliminated", eliminatedTurn: 7 },
-  { name: "Pokermantra", logo: "Pokermantra.png", status: "eliminated", eliminatedTurn: 6 },
-  { name: "I Porcini di Riccardo", logo: "I Porcini di Riccardo.png", status: "eliminated", eliminatedTurn: 5 },
-  { name: "Panificio FC", logo: "Panificio FC.png", status: "eliminated", eliminatedTurn: 4 },
-  { name: "Atletico Fanta", logo: "Atletico Fanta.png", status: "eliminated", eliminatedTurn: 3 },
-  { name: "Dolci e Gabbana", logo: "Dolci e Gabbana.png", status: "eliminated", eliminatedTurn: 2 },
-  { name: "Controfigura", logo: "Controfigura.png", status: "eliminated", eliminatedTurn: 1 }
+const squadre = [
+  { nome: "Rubinkebab", logo: "img/Rubinkebab.png", eliminata: true, ultimaEliminata: false },
+  { nome: "Bayern Christiansen", logo: "img/Bayern Christiansen.png", eliminata: true, ultimaEliminata: false },
+  { nome: "Team Bartowski", logo: "img/Team Bartowski.png", eliminata: true, ultimaEliminata: false },
+  { nome: "Golden Knights", logo: "img/Golden Knights.png", eliminata: false, ultimaEliminata: true },
+  { nome: "Ibla", logo: "img/Ibla.png", eliminata: true, ultimaEliminata: false },
+  { nome: "Fantaugusta", logo: "img/Fantaugusta.png", eliminata: true, ultimaEliminata: false },
+  { nome: "Riverfilo", logo: "img/Riverfilo.png", eliminata: true, ultimaEliminata: false },
+  { nome: "Desperados", logo: "img/Desperados.png", eliminata: true, ultimaEliminata: false },
+  { nome: "Wildboys 78", logo: "img/wildboys78.png", eliminata: true, ultimaEliminata: false },
+  { nome: "Pandinicoccolosini", logo: "img/Pandinicoccolosini.png", eliminata: true, ultimaEliminata: false },
+  { nome: "Pokermantra", logo: "img/PokerMantra.png", eliminata: true, ultimaEliminata: false },
+  { nome: "Minnesode Timberland", logo: "img/Minnesode Timberland.png", eliminata: true, ultimaEliminata: false },
+  { nome: "Minnesota Snakes", logo: "img/MinneSota Snakes.png", eliminata: true, ultimaEliminata: false },
+  { nome: "Eintracht Franco 126", logo: "img/Eintracht Franco 126.png", eliminata: true, ultimaEliminata: false },
+  { nome: "FC Disoneste", logo: "img/FC Disoneste.png", eliminata: true, ultimaEliminata: false },
+  { nome: "Athletic Pongao", logo: "img/Athletic Pongao.png", eliminata: true, ultimaEliminata: false }
 ];
 
-const ring = document.getElementById("arena-ring");
-const recentList = document.getElementById("recent-list");
+const mapPositions = [
+  { x: 20, y: 25 }, { x: 36, y: 18 }, { x: 54, y: 19 }, { x: 70, y: 24 },
+  { x: 82, y: 38 }, { x: 75, y: 56 }, { x: 62, y: 70 }, { x: 47, y: 77 },
+  { x: 32, y: 70 }, { x: 18, y: 56 }, { x: 15, y: 39 }, { x: 28, y: 43 },
+  { x: 41, y: 34 }, { x: 59, y: 35 }, { x: 68, y: 45 }, { x: 35, y: 57 }
+];
 
-function logoPath(team){
-  return `img/${team.logo}`;
+const fallbackRounds = [15, 14, 14, 15, 13, 15, 11, 9, 10, 8, 10, 7, 6, 5, 12, 4];
+
+const inGioco = squadre.filter(s => !s.eliminata);
+const eliminate = squadre.filter(s => s.eliminata);
+const latestEliminated = squadre.find(s => s.eliminata && s.ultimaEliminata) || eliminate[eliminate.length - 1] || null;
+const champion = inGioco[0] || null;
+const totalTeams = squadre.length;
+const currentTurn = eliminate.length || 1;
+
+const els = {
+  total: document.getElementById("totale-squadre"),
+  alive: document.getElementById("vive-attuali"),
+  eliminated: document.getElementById("eliminate-attuali"),
+  turn: document.getElementById("turno-attuale"),
+  mapStatus: document.getElementById("map-status"),
+  lastCard: document.getElementById("ultima-eliminata-card"),
+  layer: document.getElementById("territories-layer"),
+  championCore: document.getElementById("champion-core"),
+  historyList: document.getElementById("history-list"),
+  historyCount: document.getElementById("history-count"),
+  recentItems: document.getElementById("recent-items")
+};
+
+function setText(el, value) {
+  if (el) el.textContent = value;
 }
 
-function initials(name){
-  return name.split(/\s+/).slice(0,2).map(w => w[0]).join("").toUpperCase();
+function getRound(team, index) {
+  if (!team.eliminata) return currentTurn;
+  return team.turno || fallbackRounds[index] || index + 1;
 }
 
-function createTeamMedallions(){
-  const eliminated = teams.filter(t => t.status !== "alive");
-  const radius = 39;
-  const start = -92;
+function shortName(name) {
+  return name.length > 18 ? `${name.slice(0, 16)}…` : name;
+}
 
-  eliminated.forEach((team, index) => {
-    const angle = (start + index * (360 / eliminated.length)) * Math.PI / 180;
-    const x = 50 + radius * Math.cos(angle);
-    const y = 50 + radius * Math.sin(angle);
+function renderStats() {
+  setText(els.total, totalTeams);
+  setText(els.alive, inGioco.length);
+  setText(els.eliminated, eliminate.length);
+  setText(els.turn, `${currentTurn} di ${totalTeams - 1}`);
+  setText(els.mapStatus, inGioco.length === 1 ? "Verdetto finale" : "Battaglia in corso");
+}
 
-    const medallion = document.createElement("div");
-    medallion.className = `team-medallion ${team.recent ? "recent" : ""}`;
-    medallion.style.setProperty("--x", `${x}%`);
-    medallion.style.setProperty("--y", `${y}%`);
-    medallion.title = team.name;
+function renderLastEliminated() {
+  if (!els.lastCard) return;
 
-    const img = document.createElement("img");
-    img.src = logoPath(team);
-    img.alt = team.name;
-    img.onerror = () => {
-      img.remove();
-      const fallback = document.createElement("div");
-      fallback.className = "fallback";
-      fallback.textContent = initials(team.name);
-      medallion.appendChild(fallback);
-    };
+  if (!latestEliminated) {
+    els.lastCard.innerHTML = `
+      <span class="panel-title">Ultima eliminata</span>
+      <div class="empty-state">Nessuna eliminazione registrata.</div>
+    `;
+    return;
+  }
 
-    medallion.appendChild(img);
-    ring.appendChild(medallion);
+  const index = squadre.indexOf(latestEliminated);
+  const round = getRound(latestEliminated, index);
+
+  els.lastCard.innerHTML = `
+    <span class="panel-title">Ultima eliminata</span>
+    <div class="last-team-card">
+      <img src="${latestEliminated.logo}" alt="${latestEliminated.nome}" loading="lazy">
+      <div>
+        <h2 class="last-team-name">${latestEliminated.nome}</h2>
+        <p class="last-team-meta">Eliminata al turno ${round}<br>Il territorio si è spento.</p>
+      </div>
+      <p class="last-quote">“Combattuta fino alla fine.”</p>
+    </div>
+  `;
+}
+
+function renderChampion() {
+  if (!els.championCore) return;
+
+  if (!champion) {
+    els.championCore.innerHTML = `
+      <div class="champion-card">
+        <span class="champion-label">⚔️ In corso</span>
+        <h2 class="champion-name">Nessun sopravvissuto</h2>
+        <p class="champion-sub">La mappa attende il suo verdetto.</p>
+      </div>
+    `;
+    return;
+  }
+
+  els.championCore.innerHTML = `
+    <div class="champion-card">
+      <span class="champion-label">🏆 Ultimo sopravvissuto</span>
+      <img src="${champion.logo}" alt="${champion.nome}" loading="lazy">
+      <h2 class="champion-name">${champion.nome}</h2>
+      <p class="champion-sub">La leggenda continua.</p>
+    </div>
+  `;
+}
+
+function renderTerritories() {
+  if (!els.layer) return;
+  els.layer.innerHTML = "";
+
+  squadre.forEach((team, index) => {
+    if (team === champion) return;
+
+    const pos = mapPositions[index] || { x: 50, y: 50 };
+    const isLatest = latestEliminated && latestEliminated.nome === team.nome;
+    const territory = document.createElement("button");
+    territory.type = "button";
+    territory.className = `territory ${team.eliminata ? "eliminata" : "in-gioco"} ${isLatest ? "recente" : ""}`;
+    territory.style.left = `${pos.x}%`;
+    territory.style.top = `${pos.y}%`;
+    territory.title = team.eliminata
+      ? `${team.nome} - eliminata al turno ${getRound(team, index)}`
+      : `${team.nome} - ancora in gioco`;
+
+    territory.innerHTML = `
+      <img src="${team.logo}" alt="${team.nome}" loading="lazy">
+      <span class="territory-name">${shortName(team.nome)}</span>
+    `;
+
+    els.layer.appendChild(territory);
   });
 }
 
-function createRecentTimeline(){
-  const recent = [...teams]
-    .filter(t => t.status !== "alive")
-    .sort((a,b) => b.eliminatedTurn - a.eliminatedTurn)
-    .slice(0, 10);
-
-  recent.forEach(team => {
-    const card = document.createElement("article");
-    card.className = `recent-card ${team.recent ? "recent" : ""}`;
-
-    const img = document.createElement("img");
-    img.src = logoPath(team);
-    img.alt = team.name;
-    img.onerror = () => {
-      img.remove();
-      const fallback = document.createElement("div");
-      fallback.className = "recent-icon";
-      fallback.textContent = initials(team.name);
-      card.prepend(fallback);
-    };
-
-    const text = document.createElement("div");
-    text.innerHTML = `<span>Turno ${team.eliminatedTurn}</span><strong>${team.name}</strong>`;
-
-    card.appendChild(img);
-    card.appendChild(text);
-    recentList.appendChild(card);
-  });
+function getHistoryItems() {
+  return eliminate
+    .map((team, index) => ({ team, index: squadre.indexOf(team), round: getRound(team, squadre.indexOf(team)) }))
+    .sort((a, b) => b.round - a.round || a.team.nome.localeCompare(b.team.nome));
 }
 
-function updateCounters(){
-  const alive = teams.filter(t => t.status === "alive").length;
-  const dead = teams.length - alive;
-  document.getElementById("alive-count").textContent = alive;
-  document.getElementById("dead-count").textContent = dead;
-  document.getElementById("current-turn").textContent = Math.max(...teams.filter(t => t.eliminatedTurn).map(t => t.eliminatedTurn));
+function renderHistory() {
+  if (!els.historyList) return;
+  const items = getHistoryItems();
+  setText(els.historyCount, `${items.length} cadute`);
+
+  els.historyList.innerHTML = items.map(({ team, round }) => {
+    const latest = latestEliminated && latestEliminated.nome === team.nome;
+    return `
+      <div class="history-item ${latest ? "latest" : ""}">
+        <img src="${team.logo}" alt="${team.nome}" loading="lazy">
+        <div>
+          <span class="history-turn">Turno ${round}</span>
+          <span class="history-name">${team.nome}</span>
+        </div>
+        <span class="history-badge">${latest ? "Ultima" : "Caduta"}</span>
+      </div>
+    `;
+  }).join("");
 }
 
-createTeamMedallions();
-createRecentTimeline();
-updateCounters();
+function renderRecent() {
+  if (!els.recentItems) return;
+  const recent = getHistoryItems().slice(0, 5);
+
+  els.recentItems.innerHTML = recent.map(({ team, round }) => `
+    <div class="recent-card">
+      <img src="${team.logo}" alt="${team.nome}" loading="lazy">
+      <div>
+        <b>T${round}</b>
+        <span>${team.nome}</span>
+      </div>
+    </div>
+  `).join("");
+}
+
+renderStats();
+renderLastEliminated();
+renderChampion();
+renderTerritories();
+renderHistory();
+renderRecent();
