@@ -755,21 +755,28 @@ body::after {
 
 @media (min-width: 761px) {
   .blocco-major {
-    min-height: 365px;
+    min-height: 390px;
   }
 
-  /* Avvicina 2025-2026 al testo */
+  /* Abbassa solo il primo anno dei major: 2025-2026 */
   .blocco-major .coppa-box + .anno {
-    transform: translateY(24px);
+    transform: translateY(58px);
   }
 
-  /* Trofeo un po' più basso ma meno “isolato” */
+  /* Lascia gli altri anni fermi */
+  .blocco-major .coppa-box + .anno + .anno,
+  .blocco-major .coppa-box + .anno + .anno + .anno,
+  .blocco-major .coppa-box + .anno + .anno + .anno + .anno {
+    transform: none;
+  }
+
+  /* Abbassa solo il trofeo */
   .blocco-major .coppa-img {
-    max-height: 300px;
-    transform: translateY(24px);
+    max-height: 305px;
+    transform: translateY(38px);
   }
 
   .blocco-major:hover .coppa-img {
-    transform: translateY(18px) scale(1.025);
+    transform: translateY(32px) scale(1.025);
   }
 }
