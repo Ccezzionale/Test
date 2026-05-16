@@ -4921,3 +4921,31 @@ h1, h2, h3, h4, p{
     filter: drop-shadow(0 1px 2px rgba(0,0,0,.12));
   }
 }
+
+/* =========================================================
+   DESKTOP - LOGHI SQUADRE PIÙ GRANDI NELLA TESTATA BOARD
+   ========================================================= */
+@media (min-width: 1101px){
+
+  .desktop-team-column{
+    grid-template-rows: 118px auto !important;
+  }
+
+  .desktop-team-head{
+    height: 118px !important;
+    padding: 10px 10px 12px !important;
+    gap: 8px !important;
+  }
+
+  .desktop-team-head img{
+    width: 64px !important;
+    height: 64px !important;
+    object-fit: contain !important;
+    filter: drop-shadow(0 4px 6px rgba(0,31,63,.16));
+  }
+
+  .desktop-team-head strong{
+    font-size: 1rem !important;
+    line-height: 1.05 !important;
+  }
+}
