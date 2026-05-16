@@ -27,6 +27,9 @@ let keeperSelections = [];
 let pendingRfaClaim = null;
 let allTeams = [];
 let adminFlagPlayers = [];
+let lastDraftOrderRows = [];
+let lastDraftPickRows = [];
+let lastDraftTeams = [];
 
 function normalize(nome) { return nome.trim().toLowerCase(); }
 
@@ -722,6 +725,87 @@ function renderDesktopBadgesForPlayer(playerInfo) {
   }, { showEligibleU21: true });
 }
 
+const DESKTOP_FIXED_ROUNDS = 23;
+
+function getTeamIdByNameDesktop(teamName) {
+  const team = (lastDraftTeams || []).find(t => String(t.name || "") === String(teamName || ""));
+  return team?.id || null;
+}
+
+function getTeamByIdDesktop(teamId) {
+  return (lastDraftTeams || []).find(t => String(t.id) === String(teamId)) || null;
+}
+
+function buildDesktopFixedBoardColumns() {
+  const teamsOrder = [];
+
+  (lastDraftOrderRows || []).forEach(row => {
+    const originalTeamId = row.original_team_id || row.team_id;
+    if (!originalTeamId) return;
+
+    if (!teamsOrder.some(t => String(t.id) === String(originalTeamId))) {
+      const team = getTeamByIdDesktop(originalTeamId);
+      if (team) teamsOrder.push(team);
+    }
+  });
+
+  const picksMap = {};
+  (lastDraftPickRows || []).forEach(pick => {
+    picksMap[Number(pick.pick_number)] = pick;
+  });
+
+  return teamsOrder.map(team => {
+    const baseSlots = (lastDraftOrderRows || [])
+      .filter(row => String(row.original_team_id || row.team_id) === String(team.id))
+      .sort((a, b) => Number(a.pick_number) - Number(b.pick_number))
+      .slice(0, DESKTOP_FIXED_ROUNDS);
+
+    const ownedPicks = (lastDraftOrderRows || [])
+      .filter(row => String(row.team_id) === String(team.id))
+      .sort((a, b) => Number(a.pick_number) - Number(b.pick_number));
+
+    const rounds = baseSlots.map((slot, index) => {
+      const ownedPick = ownedPicks[index] || null;
+
+      if (!ownedPick) {
+        return {
+          round: index + 1,
+          pick_number: null,
+          pickData: null,
+          isTradedPick: false
+        };
+      }
+
+      const isTradedPick =
+        ownedPick.original_team_id &&
+        String(ownedPick.original_team_id) !== String(ownedPick.team_id);
+
+      return {
+        round: index + 1,
+        pick_number: Number(ownedPick.pick_number),
+        pickData: picksMap[Number(ownedPick.pick_number)] || null,
+        isTradedPick
+      };
+    });
+
+    return {
+      team,
+      rounds
+    };
+  });
+}
+
+function getDesktopCurrentPickOwnerTeamName(currentPick) {
+  const orderRow = (lastDraftOrderRows || []).find(
+    row => Number(row.pick_number) === Number(currentPick)
+  );
+
+  if (!orderRow) return "";
+
+  const team = getTeamByIdDesktop(orderRow.team_id);
+  return team?.name || "";
+}
+
 function aggiornaDesktopDraftRoom(dati = [], prossima = null) {
   const shell = ensureDesktopDraftRoomShell();
   if (!shell || !Array.isArray(dati)) return;
@@ -738,29 +822,18 @@ function aggiornaDesktopDraftRoom(dati = [], prossima = null) {
   const liveRound = document.getElementById("desktop-live-round");
   const liveProgress = document.getElementById("desktop-live-progress");
 
-  const teamsOrder = [];
-  const grouped = {};
+  const fixedColumns = buildDesktopFixedBoardColumns();
+  const maxRounds = DESKTOP_FIXED_ROUNDS;
 
-  dati.forEach(row => {
-    const team = row["Fanta Team"] || "";
-    if (!team) return;
-    if (!grouped[team]) {
-      grouped[team] = [];
-      teamsOrder.push(team);
-    }
-    grouped[team].push(row);
-  });
-
-  const maxRounds = Math.max(1, ...Object.values(grouped).map(rows => rows.length));
-  const currentRound = currentPick && teamsOrder.length
-    ? Math.ceil(currentPick / teamsOrder.length)
+  const currentRound = currentPick && fixedColumns.length
+    ? Math.ceil(currentPick / fixedColumns.length)
     : "-";
 
   if (currentDraftState?.is_open === false) {
     if (liveTeam) liveTeam.textContent = "Draft fermo";
     if (livePick) livePick.textContent = "RFA";
   } else if (prossima) {
-    if (liveTeam) liveTeam.textContent = prossima.fantaTeam || "-";
+    if (liveTeam) liveTeam.textContent = prossima.fantaTeam || getDesktopCurrentPickOwnerTeamName(currentPick) || "-";
     if (livePick) livePick.textContent = `Pick #${prossima.pick}`;
   } else {
     if (liveTeam) liveTeam.textContent = "Draft completato";
@@ -779,6 +852,7 @@ function aggiornaDesktopDraftRoom(dati = [], prossima = null) {
     queueEl.innerHTML = queueRows.map((r, index) => {
       const team = r["Fanta Team"] || "";
       const arrow = index === 0 ? "" : `<span class="desktop-queue-arrow">›</span>`;
+
       return `
         ${arrow}
         <span class="desktop-queue-logo" title="${escapeHtml(team)}">
@@ -790,6 +864,7 @@ function aggiornaDesktopDraftRoom(dati = [], prossima = null) {
 
   const recentEl = document.getElementById("desktop-recent-list");
   const recentCount = document.getElementById("desktop-recent-count");
+
   if (recentEl) {
     const recent = dati
       .filter(r => (r["Giocatore"] || "").trim())
@@ -803,6 +878,7 @@ function aggiornaDesktopDraftRoom(dati = [], prossima = null) {
           const nome = r["Giocatore"] || "";
           const team = r["Fanta Team"] || "";
           const info = getDraftPlayerInfoByName(nome);
+
           return `
             <div class="desktop-recent-row">
               <span class="desktop-recent-pick">#${escapeHtml(r["Pick"])}</span>
@@ -820,36 +896,55 @@ function aggiornaDesktopDraftRoom(dati = [], prossima = null) {
 
   const boardEl = document.getElementById("desktop-draft-board-grid");
   if (!boardEl) return;
+
   boardEl.style.setProperty("--desktop-rounds", String(maxRounds));
 
-  const roundLabels = Array.from({ length: maxRounds }, (_, i) => `<div class="desktop-round-label">R${i + 1}</div>`).join("");
+  const roundLabels = Array.from(
+    { length: maxRounds },
+    (_, i) => `<div class="desktop-round-label">R${i + 1}</div>`
+  ).join("");
 
-  const teamColumns = teamsOrder.map(team => {
-    const rows = grouped[team] || [];
-    const logo = getDraftTeamLogoPath(team);
+  const teamColumns = fixedColumns.map(column => {
+    const team = column.team;
+    const teamName = team.name || "";
+    const logo = getDraftTeamLogoPath(teamName);
 
-    const slots = rows.map((row, i) => {
-      const pickNum = row["Pick"];
-      const nome = (row["Giocatore"] || "").trim();
+    const slots = column.rounds.map(cell => {
+      const pickNum = cell.pick_number;
+      const pick = cell.pickData;
+      const nome = (pick?.player_name || "").trim();
       const isCurrent = Number(pickNum) === currentPick && currentDraftState?.is_open !== false;
-      const isTradedPick = row["IsTradedPick"] === true;
       const info = nome ? getDraftPlayerInfoByName(nome) : {};
+
       const filledClass = nome ? "is-filled" : "is-empty";
       const currentClass = isCurrent ? "is-current" : "";
+      const tradedClass = cell.isTradedPick ? "is-traded" : "";
 
       return `
-        <div class="desktop-pick-slot ${filledClass} ${currentClass}" title="Pick #${escapeHtml(pickNum)}">
+        <div class="desktop-pick-slot ${filledClass} ${currentClass} ${tradedClass}" title="${pickNum ? `Pick #${escapeHtml(pickNum)}` : `Round ${cell.round}`}">
           <div class="desktop-pick-topline">
-            <span class="desktop-pick-number">${escapeHtml(pickNum)}</span>
-            ${isTradedPick ? '<span class="desktop-pick-trade" title="Pick acquisita via trade">↔</span>' : ''}
+            <span class="desktop-pick-number">
+              ${pickNum ? escapeHtml(pickNum) : "—"}
+            </span>
+            ${cell.isTradedPick ? '<span class="desktop-pick-trade" title="Pick acquisita via trade">↔</span>' : ''}
           </div>
-          ${nome ? `
-            <strong>${escapeHtml(nome)}</strong>
-            <small>${escapeHtml(info.ruolo || "-")}${info.squadra ? ` · ${escapeHtml(info.squadra)}` : ""}${info.quotazione !== undefined && info.quotazione !== "" ? ` · Q${escapeHtml(info.quotazione)}` : ""}</small>
-            <span class="desktop-pick-badges">${renderDesktopBadgesForPlayer(info)}</span>
-          ` : `
-            <strong>Pick #${escapeHtml(pickNum)}</strong>
-            <small>In attesa</small>
+
+          ${pickNum ? (
+            nome ? `
+              <strong>${escapeHtml(nome)}</strong>
+              <small>
+                ${escapeHtml(info.ruolo || "-")}
+                ${info.squadra ? ` · ${escapeHtml(info.squadra)}` : ""}
+                ${info.quotazione !== undefined && info.quotazione !== "" ? ` · Q${escapeHtml(info.quotazione)}` : ""}
+              </small>
+              <span class="desktop-pick-badges">${renderDesktopBadgesForPlayer(info)}</span>
+            ` : `
+              <strong>Pick #${escapeHtml(pickNum)}</strong>
+              <small>In attesa</small>
+            `
+          ) : `
+            <strong>Pick ceduta</strong>
+            <small>Nessuna pick in questo slot</small>
           `}
         </div>
       `;
@@ -858,8 +953,8 @@ function aggiornaDesktopDraftRoom(dati = [], prossima = null) {
     return `
       <article class="desktop-team-column">
         <div class="desktop-team-head">
-          <img src="${logo}" alt="${escapeHtml(team)}" onerror="this.style.visibility='hidden'">
-          <strong>${escapeHtml(team)}</strong>
+          <img src="${logo}" alt="${escapeHtml(teamName)}" onerror="this.style.visibility='hidden'">
+          <strong>${escapeHtml(teamName)}</strong>
         </div>
         <div class="desktop-team-slots">${slots}</div>
       </article>
@@ -874,6 +969,7 @@ function aggiornaDesktopDraftRoom(dati = [], prossima = null) {
     <div class="desktop-teams-track">${teamColumns}</div>
   `;
 }
+
 
 // ========== caricaPick con Retry + Abort + Spinner + Fallback ==========
 async function caricaPick() {
@@ -900,7 +996,10 @@ async function caricaPick() {
       .eq('draft_name', tab)
       .order('pick_number', { ascending: true });
 if (picksError) throw picksError;
-    Object.keys(mappaGiocatoriDraft).forEach(k => delete mappaGiocatoriDraft[k]);
+lastDraftTeams = teams || [];
+lastDraftOrderRows = orderRows || [];
+lastDraftPickRows = pickRows || [];
+Object.keys(mappaGiocatoriDraft).forEach(k => delete mappaGiocatoriDraft[k]);
 
 const draftPlayerIds = [...new Set(
   (pickRows || [])
