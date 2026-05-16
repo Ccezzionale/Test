@@ -21,7 +21,7 @@ const ring = document.getElementById("arena-ring");
 const recentList = document.getElementById("recent-list");
 
 function logoPath(team){
-  return `img/logos/${team.logo}`;
+  return `img/${team.logo}`;
 }
 
 function initials(name){
