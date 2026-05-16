@@ -162,21 +162,48 @@
       </article>
     </section>
 
-    <section class="predraft-card">
-      <div class="section-title-row">
-        <div>
-          <h2>La tua rosa</h2>
-          <p>
-            Qui vedi i giocatori attualmente assegnati alla tua squadra.
-            Gli U21 di rosa restano separati dagli U21 confermati.
-          </p>
-        </div>
-      </div>
+<section class="predraft-card roster-card">
+  <div class="section-title-row">
+    <div>
+      <h2>La tua rosa</h2>
+      <p>
+        Qui vedi i giocatori attualmente assegnati alla tua squadra.
+        Gli U21 di rosa restano separati dagli U21 confermati.
+      </p>
+    </div>
+  </div>
 
-      <div id="keeper-roster" class="predraft-table-wrap">
-        Caricamento rosa...
-      </div>
-    </section>
+  <div id="predraft-summary" class="predraft-summary-grid">
+    Caricamento riepilogo...
+  </div>
+
+  <div class="roster-toolbar">
+    <div class="roster-search-box">
+      <span>🔎</span>
+      <input id="roster-search" type="search" placeholder="Cerca giocatore..." />
+    </div>
+
+    <select id="roster-role-filter">
+      <option value="all">Tutti i ruoli</option>
+    </select>
+
+    <select id="roster-status-filter">
+      <option value="all">Tutti gli status</option>
+      <option value="standard">Standard</option>
+      <option value="u21_roster">U21 rosa</option>
+      <option value="selected">Selezionati Pre-Draft</option>
+      <option value="fp_current">FP attuale</option>
+    </select>
+
+    <button id="btn-reset-roster-filters" type="button" class="predraft-btn ghost">
+      Reset filtri
+    </button>
+  </div>
+
+  <div id="keeper-roster" class="predraft-table-wrap">
+    Caricamento rosa...
+  </div>
+</section>
 
     <section id="keeper-admin" class="predraft-card hidden">
       <h2>Admin Pre-Draft</h2>
