@@ -2074,3 +2074,62 @@ body{
     padding-top: 4px;
   }
 }
+
+/* =========================================================
+   MOBILE FINAL FIX - TOGLIE FRECCIA/HAMBURGER FINTI
+   + RESTYLE TITOLO MOBILE
+   ========================================================= */
+@media (max-width: 768px){
+
+  /* 1) via i bottoni finti del concept */
+  .mobile-playoff-back,
+  .mobile-playoff-menu,
+  .mobile-back-btn,
+  .mobile-menu-btn,
+  .mobile-top-btn{
+    display: none !important;
+  }
+
+  /* 2) header mobile più pulito */
+  .mobile-playoff-top{
+    padding-top: 4px !important;
+    gap: 10px;
+    align-items: center;
+    text-align: center;
+  }
+
+  /* 3) titolo mobile nuovo stile */
+  .mobile-playoff-title{
+    margin: 0 auto !important;
+    max-width: 340px;
+    text-align: center;
+    font-size: clamp(2rem, 8vw, 2.8rem);
+    line-height: 0.96;
+    font-weight: 900;
+    letter-spacing: -0.8px;
+
+    /* stile più premium */
+    background: linear-gradient(
+      180deg,
+      #fff8da 0%,
+      #ffe79a 42%,
+      #ffd36b 72%,
+      #f1b94d 100%
+    );
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+
+    text-shadow:
+      0 2px 0 rgba(0,0,0,.22),
+      0 0 18px rgba(255,211,107,.18);
+  }
+
+  /* 4) se vuoi meno "mattone", un filo di spazio sotto */
+  .mobile-road-chip,
+  .mobile-road-badge,
+  .mobile-road-pill{
+    margin-top: 2px;
+  }
+}
