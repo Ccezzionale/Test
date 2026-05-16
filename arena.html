@@ -3,12 +3,12 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Highlander Cup - Arena</title>
-  <link href="https://fonts.googleapis.com/css2?family=Pirata+One&display=swap" rel="stylesheet">
+  <title>Highlander Cup</title>
+  <link href="https://fonts.googleapis.com/css2?family=Pirata+One&family=Cinzel:wght@500;600;700;800;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="navbar.css">
   <link rel="stylesheet" href="arena.css" />
 </head>
-<body>
+<body class="highlander-wall-page">
   <nav class="site-nav">
     <div class="nav-inner">
       <div class="nav-left">
@@ -87,54 +87,49 @@
     </div>
   </nav>
 
-  <main class="highlander-page">
-    <header class="highlander-hero">
+  <main class="wall-layout">
+    <header class="wall-hero">
+      <p class="eyebrow">Lega degli Eroi presenta</p>
       <h1>Highlander Cup</h1>
-      <p>Solo uno resterà in piedi. L’ultimo Highlander conquisterà la coppa.</p>
+      <p class="wall-subtitle">Solo uno resterà in piedi. L'ultimo Highlander conquisterà la coppa.</p>
     </header>
 
-    <section class="highlander-board" aria-label="Dashboard Highlander Cup">
-      <aside class="side-column side-left">
-        <article class="rune-panel stats-panel">
+    <section class="wall-grid">
+      <aside class="side-column left-column">
+        <article class="stat-panel survivors-panel">
           <h2>Sopravvissuti</h2>
           <div class="survivor-number"><span id="vive-attuali">--</span><small>di <b id="totale-squadre">--</b></small></div>
-          <dl class="panel-stats">
-            <div><dt>Turno attuale</dt><dd><span id="turno-attuale">--</span> di <span id="turni-totali">--</span></dd></div>
-            <div><dt>Eliminate</dt><dd id="eliminate-attuali">--</dd></div>
-            <div><dt>Inizio</dt><dd>Stagione 2024/25</dd></div>
-          </dl>
+          <div class="panel-row"><span>Turno attuale</span><strong><span id="turno-attuale">--</span> di <span id="turni-totali">--</span></strong></div>
+          <div class="panel-row"><span>Eliminate</span><strong id="eliminate-attuali">--</strong></div>
+          <div class="panel-row"><span>Inizio</span><strong>Stagione 2024/25</strong></div>
         </article>
 
-        <article class="rune-panel last-panel" id="last-eliminated-panel"></article>
+        <article class="stat-panel last-out-panel" id="last-out-panel"></article>
       </aside>
 
-      <section class="map-stage" aria-label="Mappa Highlander">
-        <div class="map-title-row">
-          <span>Battle Royale Map</span>
-          <strong id="map-status">Verdetto finale</strong>
-        </div>
-        <div class="map-surface" id="territory-map">
-          <div class="map-energy"></div>
-          <div class="champion-core" id="champion-core"></div>
-        </div>
+      <section class="main-wall">
+        <article class="champion-banner" id="champion-banner"></article>
+
+        <div class="section-title"><span></span><h2>I caduti</h2><span></span></div>
+        <section class="fallen-grid" id="fallen-grid" aria-label="Squadre eliminate"></section>
       </section>
 
-      <aside class="side-column side-right">
-        <article class="rune-panel timeline-panel">
-          <div class="timeline-head">
-            <h2>Cronologia eliminazioni</h2>
-            <span><b id="timeline-count">--</b> cadute</span>
+      <aside class="side-column right-column">
+        <article class="chronology-panel">
+          <div class="chronology-head">
+            <h2>Cronologia<br>eliminazioni</h2>
+            <span><b id="chrono-count">--</b><small>cadute</small></span>
           </div>
-          <div class="timeline-list" id="timeline-list"></div>
-          <button class="gold-button" type="button">Vedi tutta la cronologia</button>
+          <div class="chronology-list" id="chronology-list"></div>
+          <button type="button" class="gold-button">Vedi tutta la cronologia</button>
         </article>
       </aside>
     </section>
 
-    <section class="latest-strip" aria-label="Ultime eliminazioni">
-      <h2>Ultime<br>eliminazioni</h2>
-      <div class="latest-list" id="latest-list"></div>
-      <button class="gold-button compact" type="button">Vedi storico completo</button>
+    <section class="timeline-panel">
+      <div class="timeline-title">Ultime eliminazioni</div>
+      <div class="timeline-track" id="timeline-track"></div>
+      <button type="button" class="timeline-button">Vedi storico completo</button>
     </section>
   </main>
 
