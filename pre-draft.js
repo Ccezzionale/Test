@@ -698,16 +698,6 @@ function renderPredraftSummary() {
     RFA: selections.find(s => s.selection_type === "RFA")
   };
 
-  const selectionByPlayerId = {};
-  selections.forEach(s => {
-    selectionByPlayerId[s.player_id] = s.selection_type;
-  });
-
-  const u21CountForRoster = roster.filter(player => {
-    const selectedType = selectionByPlayerId[player.id];
-    return player.is_u21 && selectedType !== "U21_KEEPER";
-  }).length;
-
   const fpText = getSummaryPlayerText(selectionByType.FP);
   const u21Text = getSummaryPlayerText(selectionByType.U21_KEEPER);
   const rfaText = getSummaryPlayerText(selectionByType.RFA);
@@ -737,15 +727,6 @@ function renderPredraftSummary() {
         <span class="summary-label">RFA</span>
         <strong>${escapeHtml(rfaText.main)}</strong>
         <small>${escapeHtml(rfaText.meta)}</small>
-      </div>
-    </div>
-
-    <div class="summary-card summary-count ${u21CountForRoster >= 4 ? "is-ok" : "is-warning"}">
-      <div class="summary-icon">👥</div>
-      <div>
-        <span class="summary-label">U21 obbligatori</span>
-        <strong>${u21CountForRoster}/4</strong>
-        <small>${u21CountForRoster >= 4 ? "Requisito rispettato" : "Da completare"}</small>
       </div>
     </div>
   `;
