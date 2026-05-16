@@ -1507,3 +1507,530 @@ body{
   }
 
 }
+
+
+
+/* =========================================================
+   PLAYOFF MOBILE APP VIEW
+   ========================================================= */
+
+.playoff-mobile-app{
+  display: none;
+}
+
+@media (max-width: 768px){
+
+  body{
+    background:
+      radial-gradient(circle at 50% 0%, rgba(255,255,255,.12), transparent 28%),
+      radial-gradient(circle at 20% 28%, rgba(0,116,217,.16), transparent 34%),
+      radial-gradient(circle at 80% 80%, rgba(0,116,217,.16), transparent 36%),
+      #06183a url("img/champions-bg.png") center / cover no-repeat fixed;
+    overflow-x: hidden;
+  }
+
+  .site-nav,
+  .hero-playoff,
+  .playoff-intro,
+  .bracket-wrap{
+    display: none !important;
+  }
+
+  .playoff-mobile-app{
+    display: block;
+    min-height: 100vh;
+    padding: 18px 14px 30px;
+  }
+
+  .mobile-playoff-shell{
+    width: min(100%, 520px);
+    margin: 0 auto;
+  }
+
+  .mobile-playoff-topbar{
+    display: grid;
+    grid-template-columns: 48px 1fr 48px;
+    align-items: start;
+    gap: 10px;
+    margin-bottom: 18px;
+  }
+
+  .mobile-playoff-icon-btn{
+    width: 44px;
+    height: 44px;
+    border-radius: 14px;
+    border: 1px solid rgba(255,255,255,.20);
+    background: linear-gradient(180deg, rgba(255,255,255,.12), rgba(255,255,255,.05));
+    color: #ffffff;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    font-size: 2rem;
+    line-height: 1;
+    font-weight: 900;
+    box-shadow: 0 8px 18px rgba(0,0,0,.25), inset 0 1px 0 rgba(255,255,255,.12);
+  }
+
+  button.mobile-playoff-icon-btn{
+    font-size: 1.25rem;
+    cursor: pointer;
+  }
+
+  .mobile-playoff-heading{
+    text-align: center;
+    min-width: 0;
+  }
+
+  .mobile-playoff-title{
+    margin: 2px 0 10px;
+    color: #ffffff;
+    font-size: clamp(1.72rem, 7.4vw, 2.35rem);
+    line-height: 1.02;
+    font-weight: 950;
+    letter-spacing: -.5px;
+    text-shadow: 0 3px 16px rgba(0,0,0,.35);
+  }
+
+  .mobile-road-chip{
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 9px 16px;
+    border-radius: 999px;
+    color: var(--gold);
+    font-weight: 900;
+    font-size: .98rem;
+    background: linear-gradient(180deg, rgba(255,255,255,.12), rgba(255,255,255,.04));
+    border: 1px solid rgba(255,211,107,.42);
+    box-shadow: 0 8px 18px rgba(0,0,0,.24), inset 0 1px 0 rgba(255,255,255,.10);
+    white-space: nowrap;
+  }
+
+  .mobile-stage-tabs{
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0;
+    margin: 0 0 14px;
+    padding: 5px;
+    border-radius: 18px;
+    background: rgba(2,22,55,.62);
+    border: 1px solid rgba(255,255,255,.16);
+    box-shadow: 0 10px 24px rgba(0,0,0,.22), inset 0 1px 0 rgba(255,255,255,.08);
+    overflow: hidden;
+  }
+
+  .stage-tab{
+    appearance: none;
+    border: 0;
+    background: transparent;
+    color: rgba(215,232,255,.72);
+    border-radius: 14px;
+    min-height: 44px;
+    padding: 0 6px;
+    font: inherit;
+    font-size: clamp(.82rem, 3.5vw, .98rem);
+    font-weight: 900;
+    cursor: pointer;
+    position: relative;
+  }
+
+  .stage-tab.active{
+    color: var(--gold);
+    background: linear-gradient(180deg, rgba(255,211,107,.13), rgba(255,211,107,.03));
+    text-shadow: 0 0 12px rgba(255,211,107,.32);
+  }
+
+  .stage-tab.active::after{
+    content: "";
+    position: absolute;
+    left: 22%;
+    right: 22%;
+    bottom: 5px;
+    height: 3px;
+    border-radius: 999px;
+    background: linear-gradient(90deg, transparent, var(--gold), #fff6c7, var(--gold), transparent);
+    box-shadow: 0 0 12px rgba(255,211,107,.48);
+  }
+
+  .mobile-hero-card{
+    display: grid;
+    grid-template-columns: minmax(0, 1.1fr) 120px;
+    min-height: 170px;
+    gap: 10px;
+    align-items: center;
+    padding: 18px 16px;
+    margin: 0 0 14px;
+    border-radius: 22px;
+    border: 1px solid rgba(255,211,107,.55);
+    background:
+      radial-gradient(circle at 78% 42%, rgba(0,116,217,.28), transparent 38%),
+      linear-gradient(135deg, rgba(4,26,66,.95), rgba(8,49,105,.74));
+    box-shadow: 0 16px 30px rgba(0,0,0,.28), inset 0 1px 0 rgba(255,255,255,.09);
+    overflow: hidden;
+    position: relative;
+  }
+
+  .mobile-hero-card::before{
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(120deg, transparent 0 42%, rgba(255,255,255,.06) 52%, transparent 62%),
+      radial-gradient(circle at 70% 20%, rgba(255,211,107,.18), transparent 28%);
+    pointer-events: none;
+  }
+
+  .mobile-hero-text,
+  .mobile-hero-trophy{
+    position: relative;
+    z-index: 1;
+  }
+
+  .mobile-hero-text h2{
+    margin: 0 0 10px;
+    color: #ffe18a;
+    font-size: clamp(1.25rem, 5.2vw, 1.65rem);
+    line-height: 1.18;
+    font-weight: 950;
+    text-shadow: 0 2px 12px rgba(0,0,0,.28);
+  }
+
+  .mobile-hero-text p{
+    margin: 0;
+    color: rgba(222,235,255,.85);
+    font-size: .92rem;
+    line-height: 1.35;
+    font-weight: 600;
+  }
+
+  .mobile-hero-trophy{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .mobile-hero-trophy img{
+    width: 132px;
+    max-width: 132px;
+    height: auto;
+    filter: drop-shadow(0 12px 18px rgba(0,0,0,.35)) drop-shadow(0 0 20px rgba(255,211,107,.18));
+    transform: translateX(7px) scale(1.06);
+  }
+
+  .mobile-stage-title-row{
+    display: flex;
+    justify-content: space-between;
+    align-items: end;
+    margin: 16px 2px 10px;
+  }
+
+  .mobile-stage-title-row h2{
+    margin: 0;
+    color: #fff2b8;
+    font-size: 1.25rem;
+    font-weight: 950;
+    text-shadow: 0 2px 10px rgba(0,0,0,.28);
+  }
+
+  .mobile-stage-title-row span{
+    color: rgba(214,235,255,.70);
+    font-size: .82rem;
+    font-weight: 800;
+  }
+
+  .mobile-stage-content{
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .mobile-match-card{
+    position: relative;
+    overflow: hidden;
+    border-radius: 22px;
+    border: 1px solid rgba(214,235,255,.26);
+    background:
+      radial-gradient(circle at 50% 0%, rgba(255,255,255,.12), transparent 48%),
+      linear-gradient(180deg, rgba(10,48,101,.90), rgba(3,25,61,.95));
+    box-shadow:
+      0 14px 26px rgba(0,0,0,.26),
+      inset 0 1px 0 rgba(255,255,255,.08);
+  }
+
+  .mobile-match-card::before{
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, rgba(255,211,107,.08), transparent 18%, transparent 82%, rgba(255,211,107,.08));
+    pointer-events: none;
+  }
+
+  .mobile-match-code{
+    position: absolute;
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: rgba(255,211,107,.72);
+    font-size: .72rem;
+    font-weight: 900;
+    letter-spacing: .8px;
+    z-index: 2;
+  }
+
+  .mobile-match-main{
+    position: relative;
+    z-index: 1;
+    display: grid;
+    grid-template-columns: 1fr 104px 1fr;
+    gap: 8px;
+    align-items: center;
+    min-height: 168px;
+    padding: 22px 14px 14px;
+  }
+
+  .mobile-team-side{
+    position: relative;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 9px;
+  }
+
+  .mobile-seed{
+    position: absolute;
+    top: -8px;
+    min-width: 40px;
+    min-height: 28px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2px 8px;
+    border-radius: 10px;
+    background: rgba(5,27,67,.85);
+    border: 1px solid rgba(255,211,107,.25);
+    color: #ffffff;
+    font-weight: 950;
+    font-size: .9rem;
+    box-shadow: 0 6px 12px rgba(0,0,0,.18);
+    z-index: 3;
+  }
+
+  .mobile-team-side.left .mobile-seed{ left: 0; }
+  .mobile-team-side.right .mobile-seed{ right: 0; }
+
+  .mobile-team-logo-wrap{
+    width: 76px;
+    height: 76px;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    background:
+      radial-gradient(circle at 34% 28%, rgba(255,255,255,.99), rgba(255,255,255,.84) 70%, rgba(214,235,255,.80));
+    border: 1px solid rgba(255,255,255,.75);
+    box-shadow: 0 9px 18px rgba(0,0,0,.28), 0 0 0 4px rgba(255,255,255,.07);
+  }
+
+  .mobile-team-logo-wrap img{
+    width: 66px;
+    height: 66px;
+    object-fit: contain;
+    border-radius: 50%;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,.22));
+  }
+
+  .mobile-team-side.is-placeholder .mobile-team-logo-wrap::after{
+    content: "";
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    border: 2px solid rgba(5,27,67,.22);
+    background: rgba(5,27,67,.08);
+  }
+
+  .mobile-team-side.is-winner .mobile-team-logo-wrap{
+    border-color: rgba(255,211,107,.96);
+    box-shadow:
+      0 9px 18px rgba(0,0,0,.28),
+      0 0 0 4px rgba(255,211,107,.22),
+      0 0 20px rgba(255,211,107,.44);
+  }
+
+  .mobile-team-name{
+    width: 100%;
+    min-height: 2.35em;
+    color: #ffffff;
+    font-size: .93rem;
+    line-height: 1.15;
+    font-weight: 900;
+    text-align: center;
+    text-shadow: 0 2px 8px rgba(0,0,0,.32);
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .mobile-team-side.is-placeholder .mobile-team-name{
+    color: rgba(214,235,255,.60);
+  }
+
+  .mobile-vs-center{
+    align-self: stretch;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+    min-width: 0;
+  }
+
+  .mobile-match-label{
+    color: #ffdf78;
+    font-weight: 950;
+    font-size: .91rem;
+    text-align: center;
+    white-space: nowrap;
+    text-shadow: 0 0 12px rgba(255,211,107,.24);
+  }
+
+  .mobile-vs-pill{
+    width: 76px;
+    height: 42px;
+    border-radius: 999px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #ffffff;
+    font-weight: 950;
+    font-size: 1.18rem;
+    letter-spacing: .8px;
+    background: linear-gradient(180deg, #12417e, #061f50);
+    border: 1px solid rgba(255,211,107,.38);
+    box-shadow:
+      0 0 24px rgba(255,211,107,.25),
+      0 6px 14px rgba(0,0,0,.25),
+      inset 0 1px 0 rgba(255,255,255,.16);
+    position: relative;
+  }
+
+  .mobile-vs-pill::before,
+  .mobile-vs-pill::after{
+    content: "";
+    position: absolute;
+    top: 50%;
+    width: 42px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255,211,107,.80));
+  }
+
+  .mobile-vs-pill::before{
+    right: 100%;
+  }
+
+  .mobile-vs-pill::after{
+    left: 100%;
+    transform: rotate(180deg);
+  }
+
+  .mobile-match-status{
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    color: rgba(214,235,255,.78);
+    font-weight: 800;
+    font-size: .82rem;
+    white-space: nowrap;
+  }
+
+  .mobile-match-footer{
+    position: relative;
+    z-index: 1;
+    min-height: 42px;
+    padding: 0 16px;
+    border-top: 1px solid rgba(255,211,107,.18);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    color: #ffdf78;
+    font-weight: 950;
+    font-size: .96rem;
+    background: rgba(2,20,50,.30);
+  }
+
+  .mobile-match-footer strong{
+    color: #fff7cf;
+    font-size: 1.1rem;
+    margin: 0 4px;
+  }
+
+  .mobile-footer-arrow{
+    position: absolute;
+    right: 16px;
+    color: #ffdf78;
+    font-size: 1.55rem;
+    line-height: 1;
+  }
+
+  .mobile-match-card.is-final{
+    border-color: rgba(255,211,107,.55);
+    background:
+      radial-gradient(circle at 50% 0%, rgba(255,211,107,.16), transparent 48%),
+      linear-gradient(180deg, rgba(14,53,104,.94), rgba(4,25,60,.96));
+  }
+}
+
+@media (max-width: 390px){
+  .playoff-mobile-app{
+    padding-inline: 10px;
+  }
+
+  .mobile-playoff-topbar{
+    grid-template-columns: 40px 1fr 40px;
+  }
+
+  .mobile-playoff-icon-btn{
+    width: 38px;
+    height: 38px;
+    border-radius: 12px;
+  }
+
+  .mobile-hero-card{
+    grid-template-columns: 1fr 98px;
+    min-height: 154px;
+    padding: 16px 13px;
+  }
+
+  .mobile-hero-trophy img{
+    width: 112px;
+    max-width: 112px;
+  }
+
+  .mobile-match-main{
+    grid-template-columns: 1fr 88px 1fr;
+    padding-inline: 10px;
+  }
+
+  .mobile-team-logo-wrap{
+    width: 68px;
+    height: 68px;
+  }
+
+  .mobile-team-logo-wrap img{
+    width: 59px;
+    height: 59px;
+  }
+
+  .mobile-vs-pill{
+    width: 66px;
+    height: 38px;
+  }
+
+  .mobile-match-label{
+    font-size: .82rem;
+  }
+}
