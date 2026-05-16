@@ -1827,24 +1827,63 @@ function populateAdminTeamSelect() {
     });
 }
 
+function getStatusFromPlayerFlags(player) {
+  if (!player) return "normal";
+
+  if (player.is_fp_keeper === true) {
+    return Number(player.fp_keeper_year) === 2 ? "fp_2" : "fp_1";
+  }
+
+  if (player.is_u21_keeper === true) {
+    return Number(player.u21_keeper_year) === 2 ? "u21_keeper_2" : "u21_keeper_1";
+  }
+
+  if (player.is_top6_protected === true) {
+    return "p6";
+  }
+
+  if (player.is_rfa_matched === true) {
+    return "rfa_matched";
+  }
+
+  if (player.is_u21 === true) {
+    return "u21_classic";
+  }
+
+  return "normal";
+}
+
+function updateAdminStatusNote() {
+  const statusSelect = document.getElementById("admin-player-status");
+  const noteEl = document.getElementById("admin-player-status-note");
+  if (!statusSelect || !noteEl) return;
+
+  const status = statusSelect.value;
+
+  const notes = {
+    normal: "Rimuove tutti i badge/status speciali dal giocatore.",
+    fp_1: "Franchise Player primo anno.",
+    fp_2: "Franchise Player secondo anno. Verrà impostato automaticamente anche come Protetto P6 🔒.",
+    u21_classic: "Giocatore eleggibile U21 nel listone, senza essere keeper o slot draft.",
+    u21_keeper_1: "U21 confermato primo anno.",
+    u21_keeper_2: "U21 confermato secondo anno.",
+    p6: "Giocatore protetto P6.",
+    rfa_matched: "RFA pareggiato."
+  };
+
+  noteEl.textContent = notes[status] || "Seleziona uno status.";
+}
+
 function syncAdminPlayerFlagsForm() {
   const player = getAdminFlagPlayerSelected();
-
   const statusEl = document.getElementById("admin-player-flags-status");
+  const statusSelect = document.getElementById("admin-player-status");
 
   if (!player) {
     setAdminSelectValue("admin-flags-team", "");
-    setAdminCheckbox("admin-flag-is-fp", false);
-    setAdminCheckbox("admin-flag-is-fp-keeper", false);
-    setAdminSelectValue("admin-flag-fp-year", "1");
-    setAdminCheckbox("admin-flag-is-top6", false);
-    setAdminCheckbox("admin-flag-is-u21", false);
-    setAdminCheckbox("admin-flag-is-u21-slot", false);
-    setAdminCheckbox("admin-flag-is-u21-keeper", false);
-    setAdminSelectValue("admin-flag-u21-year", "1");
-    setAdminCheckbox("admin-flag-is-rfa-matched", false);
-
+    if (statusSelect) statusSelect.value = "normal";
     if (statusEl) statusEl.textContent = "";
+    updateAdminStatusNote();
     return;
   }
 
@@ -1854,19 +1893,16 @@ function syncAdminPlayerFlagsForm() {
     "";
 
   setAdminSelectValue("admin-flags-team", suggestedTeamId);
-  setAdminCheckbox("admin-flag-is-fp", player.is_fp === true);
-  setAdminCheckbox("admin-flag-is-fp-keeper", player.is_fp_keeper === true);
-  setAdminSelectValue("admin-flag-fp-year", String(player.fp_keeper_year || 1), "1");
-  setAdminCheckbox("admin-flag-is-top6", player.is_top6_protected === true);
-  setAdminCheckbox("admin-flag-is-u21", player.is_u21 === true);
-  setAdminCheckbox("admin-flag-is-u21-slot", player.is_u21_slot === true);
-  setAdminCheckbox("admin-flag-is-u21-keeper", player.is_u21_keeper === true);
-  setAdminSelectValue("admin-flag-u21-year", String(player.u21_keeper_year || 1), "1");
-  setAdminCheckbox("admin-flag-is-rfa-matched", player.is_rfa_matched === true);
+
+  if (statusSelect) {
+    statusSelect.value = getStatusFromPlayerFlags(player);
+  }
 
   if (statusEl) {
     statusEl.textContent = `Selezionato: ${player.name}`;
   }
+
+  updateAdminStatusNote();
 }
 
 async function caricaAdminPlayerFlagsPanel() {
@@ -1925,21 +1961,11 @@ async function caricaAdminPlayerFlagsPanel() {
 
   playerSelect.onchange = syncAdminPlayerFlagsForm;
 
-  const fpKeeperCheckbox = document.getElementById("admin-flag-is-fp-keeper");
-  const fpYearSelect = document.getElementById("admin-flag-fp-year");
-  const top6Checkbox = document.getElementById("admin-flag-is-top6");
-
-  function applyFpSecondYearVisualRule() {
-    const isFpKeeper = fpKeeperCheckbox?.checked === true;
-    const fpYear = Number(fpYearSelect?.value || 1);
-
-    if (isFpKeeper && fpYear === 2 && top6Checkbox) {
-      top6Checkbox.checked = true;
-    }
-  }
-
-  fpKeeperCheckbox?.addEventListener("change", applyFpSecondYearVisualRule);
-  fpYearSelect?.addEventListener("change", applyFpSecondYearVisualRule);
+const statusSelect = document.getElementById("admin-player-status");
+if (statusSelect && !statusSelect.dataset.bound) {
+  statusSelect.addEventListener("change", updateAdminStatusNote);
+  statusSelect.dataset.bound = "1";
+}
 
   const saveBtn = document.getElementById("admin-save-player-flags-btn");
   if (saveBtn && !saveBtn.dataset.bound) {
@@ -1963,28 +1989,88 @@ async function adminSavePlayerFlags() {
   }
 
   const teamId = document.getElementById("admin-flags-team")?.value || null;
+  const status = document.getElementById("admin-player-status")?.value || "normal";
 
-  const isFpKeeper = getAdminCheckbox("admin-flag-is-fp-keeper");
-  const isU21Keeper = getAdminCheckbox("admin-flag-is-u21-keeper");
-  const isTop6 = getAdminCheckbox("admin-flag-is-top6");
-  const fpYear = Number(document.getElementById("admin-flag-fp-year")?.value || 1);
+  const statusesThatNeedTeam = [
+    "fp_1",
+    "fp_2",
+    "u21_keeper_1",
+    "u21_keeper_2",
+    "p6"
+  ];
 
-  if ((isFpKeeper || isU21Keeper || isTop6 || fpYear === 2) && !teamId) {
+  if (statusesThatNeedTeam.includes(status) && !teamId) {
     if (statusEl) {
-      statusEl.textContent = "❌ Seleziona una squadra per keeper/P6.";
+      statusEl.textContent = "❌ Seleziona una squadra per questo status.";
     }
     return;
   }
 
-  const finalTop6 = isTop6 || (isFpKeeper && fpYear === 2);
+  const payload = {
+    player_id: player.id,
+    keeper_team_id: teamId,
+
+    is_fp: false,
+    is_fp_keeper: false,
+    fp_keeper_year: null,
+
+    is_u21: false,
+    is_u21_slot: false,
+    is_u21_keeper: false,
+    u21_keeper_year: null,
+
+    is_top6_protected: false,
+    is_rfa_matched: false
+  };
+
+  if (status === "fp_1") {
+    payload.is_fp = true;
+    payload.is_fp_keeper = true;
+    payload.fp_keeper_year = 1;
+  }
+
+  if (status === "fp_2") {
+    payload.is_fp = true;
+    payload.is_fp_keeper = true;
+    payload.fp_keeper_year = 2;
+    payload.is_top6_protected = true;
+  }
+
+  if (status === "u21_classic") {
+    payload.is_u21 = true;
+  }
+
+  if (status === "u21_keeper_1") {
+    payload.is_u21 = true;
+    payload.is_u21_keeper = true;
+    payload.u21_keeper_year = 1;
+  }
+
+  if (status === "u21_keeper_2") {
+    payload.is_u21 = true;
+    payload.is_u21_keeper = true;
+    payload.u21_keeper_year = 2;
+  }
+
+  if (status === "p6") {
+    payload.is_top6_protected = true;
+  }
+
+  if (status === "rfa_matched") {
+    payload.is_rfa_matched = true;
+  }
+
+  const statusLabel = document
+    .querySelector(`#admin-player-status option[value="${status}"]`)
+    ?.textContent || status;
 
   const confirmMessage =
     `Vuoi aggiornare ${player.name}?\n\n` +
-    `Nota: se è FP keeper 2° anno, verrà protetto P6 automaticamente.`;
+    `Nuovo status: ${statusLabel}`;
 
   if (!confirm(confirmMessage)) return;
 
-  if (statusEl) statusEl.textContent = "⏳ Salvataggio modifiche giocatore...";
+  if (statusEl) statusEl.textContent = "⏳ Salvataggio status giocatore...";
 
   try {
     const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
@@ -2003,22 +2089,7 @@ async function adminSavePlayerFlags() {
           "Authorization": `Bearer ${sessionData.session.access_token}`,
           "apikey": supabaseKey
         },
-        body: JSON.stringify({
-          player_id: player.id,
-          keeper_team_id: teamId,
-
-          is_fp: getAdminCheckbox("admin-flag-is-fp"),
-          is_fp_keeper: isFpKeeper,
-          fp_keeper_year: fpYear,
-
-          is_u21: getAdminCheckbox("admin-flag-is-u21"),
-          is_u21_slot: getAdminCheckbox("admin-flag-is-u21-slot"),
-          is_u21_keeper: isU21Keeper,
-          u21_keeper_year: Number(document.getElementById("admin-flag-u21-year")?.value || 1),
-
-          is_top6_protected: finalTop6,
-          is_rfa_matched: getAdminCheckbox("admin-flag-is-rfa-matched")
-        })
+        body: JSON.stringify(payload)
       }
     );
 
@@ -2031,9 +2102,10 @@ async function adminSavePlayerFlags() {
     }
 
     if (statusEl) {
-      statusEl.textContent = result.forced_top6_by_fp_second_year
-        ? `✅ ${result.message}. FP 2° anno protetto automaticamente 🔒`
-        : `✅ ${result.message}`;
+      statusEl.textContent =
+        status === "fp_2"
+          ? `✅ Status aggiornato. FP 2° anno protetto automaticamente 🔒`
+          : `✅ Status aggiornato: ${statusLabel}`;
     }
 
     await caricaKeeperSelectionsDraft();
@@ -2045,11 +2117,10 @@ async function adminSavePlayerFlags() {
     await caricaAdminPlayerFlagsPanel();
 
   } catch (err) {
-    console.error("Errore salvataggio player flags:", err);
+    console.error("Errore salvataggio player status:", err);
     if (statusEl) statusEl.textContent = "❌ Errore durante il salvataggio.";
   }
 }
-
 
 function renderDraftBadgeImages(player, options = {}) {
   const badges = [];
