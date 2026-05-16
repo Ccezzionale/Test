@@ -1129,3 +1129,90 @@ body{
     width: calc(var(--po-col-gap) / 2 - 4px) !important;
   }
 }
+
+/* =========================================================
+   PLAYOFF V3.3 - FIX SEMIFINALE 2 + RIPRISTINO VS
+   ========================================================= */
+@media (min-width: 1024px){
+
+  :root{
+    --semi-center-offset: 78px;
+    --semi-stem-h: 172px;
+  }
+
+  /* S1 corretta: scende */
+  .bracket > .blocco-colonna:nth-of-type(3){
+    position: relative;
+    margin-top: var(--semi-center-offset) !important;
+  }
+
+  /* S2 FIX: deve scendere anche lei, NON salire */
+  .bracket > .blocco-colonna:nth-of-type(5){
+    position: relative;
+    margin-top: var(--semi-center-offset) !important;
+  }
+
+  /* spegne il vecchio raccordo verticale sulle semifinali */
+  .bracket > .blocco-colonna:nth-of-type(3) .colonna::before,
+  .bracket > .blocco-colonna:nth-of-type(5) .colonna::before{
+    display: none !important;
+  }
+
+  /* stelo verticale centrale prima delle semifinali */
+  .bracket > .blocco-colonna:nth-of-type(3)::before,
+  .bracket > .blocco-colonna:nth-of-type(5)::before{
+    content: "";
+    position: absolute;
+    left: calc(-1 * var(--po-col-gap) / 2);
+    top: 50%;
+    transform: translateY(-50%);
+    width: 2px;
+    height: var(--semi-stem-h);
+    background: linear-gradient(
+      180deg,
+      transparent 0%,
+      rgba(255,255,255,.55) 18%,
+      rgba(255,211,107,.95) 50%,
+      rgba(255,255,255,.55) 82%,
+      transparent 100%
+    );
+    box-shadow: 0 0 10px rgba(255,211,107,.35);
+    border-radius: 999px;
+    pointer-events: none;
+  }
+
+  /* allunga le linee dai quarti verso lo stelo centrale */
+  .bracket > .blocco-colonna:nth-of-type(2) .pair-offset::after,
+  .bracket > .blocco-colonna:nth-of-type(6) .pair-offset::after{
+    right: calc(-1 * var(--po-col-gap) / 2 + 2px) !important;
+    width: calc(var(--po-col-gap) / 2 - 4px) !important;
+  }
+
+  /* =====================================================
+     RIPRISTINO "VS"
+     I connettori usano ::after del pair, quindi il VS
+     lo rimettiamo sul primo .match di ogni pair
+     ===================================================== */
+  .match-pair:not(.finale-pair) .match:first-child::after,
+  .pair-offset:not(.finale-pair) .match:first-child::after{
+    content: "VS";
+    position: absolute;
+    right: -13px;
+    top: 50%;
+    transform: translate(50%, -50%);
+    z-index: 10;
+    color: rgba(255,255,255,.95);
+    font-size: .72rem;
+    font-weight: 900;
+    letter-spacing: .7px;
+    text-shadow: 0 2px 8px rgba(0,0,0,.48);
+    pointer-events: none;
+  }
+
+  /* evita che il VS finisca troppo vicino ai bordi */
+  .match-pair:not(.finale-pair) .match:first-child,
+  .pair-offset:not(.finale-pair) .match:first-child{
+    position: relative;
+    overflow: visible !important;
+  }
+}
