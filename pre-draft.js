@@ -316,13 +316,28 @@ function renderPage() {
 
   document.getElementById("keeper-team-box")?.classList.remove("hidden");
 
-  const teamNameEl = document.getElementById("keeper-team-name");
-  const seasonLabelEl = document.getElementById("keeper-season-label");
+const teamNameEl = document.getElementById("keeper-team-name");
+const seasonLabelEl = document.getElementById("keeper-season-label");
+const teamLogoEl = document.getElementById("keeper-team-logo");
 
-  if (teamNameEl) teamNameEl.textContent = currentTeam.name;
-  if (seasonLabelEl) {
-    seasonLabelEl.textContent = `${currentTeam.conference || "Conference N/A"} · Stagione ${keeperSettings.season}`;
-  }
+if (teamNameEl) teamNameEl.textContent = currentTeam.name;
+
+if (seasonLabelEl) {
+  seasonLabelEl.textContent = `${currentTeam.conference || "Conference N/A"} · Stagione ${keeperSettings.season}`;
+}
+
+if (teamLogoEl) {
+  teamLogoEl.src = getTeamLogoPath(currentTeam.name);
+  teamLogoEl.alt = `Logo ${currentTeam.name}`;
+
+  teamLogoEl.onerror = () => {
+    teamLogoEl.style.display = "none";
+  };
+
+  teamLogoEl.onload = () => {
+    teamLogoEl.style.display = "block";
+  };
+}
 
   const closedBox = document.getElementById("keeper-closed-box");
   const selectionsBox = document.getElementById("keeper-selections");
@@ -1173,6 +1188,10 @@ function hideMainSections() {
   document.getElementById("keeper-team-box")?.classList.add("hidden");
   document.getElementById("keeper-selections")?.classList.add("hidden");
   document.getElementById("keeper-admin")?.classList.add("hidden");
+}
+
+function getTeamLogoPath(teamName) {
+  return `img/${encodeURIComponent(teamName)}.png`;
 }
 
 function escapeHtml(value) {
