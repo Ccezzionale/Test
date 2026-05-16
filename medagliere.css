@@ -759,3 +759,69 @@ body::after {
     display: block;
   }
 }
+
+/* ===== FIX DEFINITIVO MAJOR: TROFEO A DESTRA, ANNI NORMALI ===== */
+
+@media (min-width: 761px) {
+  .blocco-major {
+    display: block !important;
+    position: relative !important;
+    min-height: 390px !important;
+    padding: 24px !important;
+  }
+
+  .blocco-major .card-heading {
+    width: 47% !important;
+  }
+
+  .blocco-major .card-desc {
+    width: 47% !important;
+    max-width: none !important;
+    margin: 58px 0 38px !important;
+  }
+
+  .blocco-major .coppa-box {
+    position: absolute !important;
+    top: 104px !important;
+    right: 24px !important;
+    bottom: 22px !important;
+    width: 50% !important;
+    min-height: auto !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
+
+  .blocco-major .coppa-img {
+    max-height: 305px !important;
+    transform: translateY(22px) !important;
+  }
+
+  .blocco-major:hover .coppa-img {
+    transform: translateY(16px) scale(1.025) !important;
+  }
+
+  .blocco-major .anno {
+    width: 47% !important;
+    margin-top: 9px !important;
+    transform: none !important;
+  }
+
+  .blocco-major .anno:first-of-type {
+    margin-top: 0 !important;
+  }
+
+  .blocco-major .contenuto-anno {
+    display: grid;
+    grid-template-rows: 0fr;
+    overflow: hidden;
+    opacity: 0;
+  }
+
+  .blocco-major .anno.attivo .contenuto-anno {
+    grid-template-rows: 1fr;
+    opacity: 1;
+  }
+}
