@@ -1,206 +1,534 @@
-/* ===== ALBO D'ORO - LAYOUT GLOBALE ===== */
+/* ===== ALBO D'ORO - HALL OF FAME CINEMATIC ===== */
 
 * {
   box-sizing: border-box;
 }
 
+:root {
+  --navy-950: #020914;
+  --navy-900: #03142a;
+  --navy-850: #041d3b;
+  --navy-800: #06274d;
+  --navy-700: #073765;
+  --gold: #ffd45a;
+  --gold-strong: #ffbf00;
+  --gold-soft: rgba(255, 212, 90, 0.22);
+  --paper: rgba(255, 255, 255, 0.94);
+  --text-soft: #dbe8f8;
+  --shadow-heavy: 0 28px 70px rgba(0, 0, 0, 0.35);
+  --shadow-card: 0 18px 40px rgba(0, 0, 0, 0.32);
+}
+
+html,
 body {
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background:
-    radial-gradient(circle at top, #ffffff 0, #e8eef6 34%, #d7e0eb 70%, #cfd8e3 100%);
-  color: #222;
   margin: 0;
   padding: 0;
+  min-height: 100%;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: #f7fbff;
+  background:
+    radial-gradient(circle at 50% 0%, rgba(255, 204, 77, 0.22) 0, transparent 22rem),
+    radial-gradient(circle at 14% 18%, rgba(34, 111, 190, 0.32) 0, transparent 27rem),
+    radial-gradient(circle at 87% 28%, rgba(0, 168, 126, 0.18) 0, transparent 24rem),
+    linear-gradient(180deg, #020914 0%, #061b36 42%, #031124 100%);
+  overflow-x: hidden;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 66px 0 0;
+  z-index: -3;
+  pointer-events: none;
+  background:
+    linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px),
+    linear-gradient(180deg, rgba(255,255,255,0.035) 1px, transparent 1px);
+  background-size: 80px 80px;
+  mask-image: radial-gradient(circle at 50% 15%, black 0%, transparent 70%);
+}
+
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -2;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 25% 58%, rgba(255, 191, 0, 0.08) 0 1px, transparent 2px),
+    radial-gradient(circle at 70% 35%, rgba(255, 255, 255, 0.08) 0 1px, transparent 2px),
+    radial-gradient(circle at 42% 72%, rgba(255, 212, 90, 0.07) 0 1px, transparent 2px);
+  background-size: 120px 120px, 170px 170px, 210px 210px;
+  opacity: 0.7;
 }
 
 /* ===== HERO PAGINA ===== */
 
 .hero-albo {
+  position: relative;
+  isolation: isolate;
   text-align: center;
-  padding: 28px 20px 10px;
+  padding: clamp(34px, 5vw, 74px) 20px 18px;
+  overflow: hidden;
+}
+
+.hero-hall-bg {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background:
+    linear-gradient(90deg, rgba(255, 212, 90, 0.08), transparent 25%, transparent 75%, rgba(255, 212, 90, 0.08)),
+    radial-gradient(ellipse at center top, rgba(255, 210, 86, 0.22), transparent 58%);
+}
+
+.hero-hall-bg::before,
+.hero-hall-bg::after {
+  content: "";
+  position: absolute;
+  top: 8%;
+  width: min(170px, 18vw);
+  height: 72%;
+  opacity: 0.18;
+  border: 1px solid rgba(255, 212, 90, 0.34);
+  border-top: 8px solid rgba(255, 212, 90, 0.18);
+  border-bottom: 8px solid rgba(255, 212, 90, 0.18);
+  filter: blur(0.1px);
+}
+
+.hero-hall-bg::before {
+  left: 7%;
+  transform: skewY(-4deg);
+}
+
+.hero-hall-bg::after {
+  right: 7%;
+  transform: skewY(4deg);
+}
+
+.hero-albo-inner {
+  position: relative;
+  width: min(1180px, 100%);
+  margin: 0 auto;
+}
+
+.hero-kicker {
+  display: grid;
+  grid-template-columns: minmax(40px, 180px) auto minmax(40px, 180px);
+  align-items: center;
+  gap: 16px;
+  width: min(720px, 100%);
+  margin: 0 auto 8px;
+  color: var(--gold);
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  font-weight: 900;
+  font-size: 0.78rem;
+}
+
+.hero-kicker span {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
 }
 
 .titolo-pagina {
-  color: #001f3f;
-  font-size: clamp(2.3rem, 4vw, 3.4rem);
   margin: 0;
+  color: #ffe69a;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: clamp(3rem, 7vw, 6.8rem);
   font-weight: 900;
-  letter-spacing: 0.08em;
+  line-height: 0.92;
+  letter-spacing: 0.055em;
   text-transform: uppercase;
-  text-shadow: 2px 2px 8px rgba(255, 215, 0, 0.75);
+  text-shadow:
+    0 2px 0 #7a4a00,
+    0 7px 18px rgba(0,0,0,0.7),
+    0 0 34px rgba(255, 204, 0, 0.42);
 }
 
 .sottotitolo-pagina {
-  margin: 12px auto 0;
-  color: #35506d;
-  font-size: 1rem;
-  font-weight: 600;
+  margin: 20px auto 0;
+  color: #dce9f7;
+  font-size: clamp(1rem, 1.4vw, 1.25rem);
+  font-weight: 650;
+  letter-spacing: 0.02em;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.6);
+}
+
+.hall-container {
+  width: min(1500px, calc(100% - 44px));
+  margin: 0 auto 58px;
 }
 
 /* ===== GRIGLIA CARD ===== */
 
 .blocchi-medagliere {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-  gap: 24px;
-  width: min(1500px, calc(100% - 40px));
-  margin: 20px auto 50px;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: 22px;
   align-items: start;
 }
 
 /* ===== CARD COMPETIZIONE ===== */
 
 .blocco-competizione {
-  background: linear-gradient(160deg, #00244a 0%, #00386d 100%);
-  color: white;
-  padding: 18px 18px 16px;
-  border-radius: 18px;
-  box-shadow: 0 10px 24px rgba(0,0,0,0.22);
+  grid-column: span 3;
   position: relative;
   overflow: hidden;
-  border: 1px solid rgba(255,255,255,0.12);
-  transition: transform 0.18s ease, box-shadow 0.18s ease;
+  min-height: 100%;
+  padding: 17px 17px 15px;
+  border-radius: 18px;
+  color: #fff;
+  background:
+    linear-gradient(155deg, rgba(7, 45, 86, 0.94) 0%, rgba(2, 19, 41, 0.96) 58%, rgba(4, 34, 66, 0.96) 100%);
+  border: 1px solid rgba(255, 212, 90, 0.46);
+  box-shadow: var(--shadow-card), inset 0 1px 0 rgba(255, 255, 255, 0.11);
+  transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease;
+}
+
+.blocco-competizione::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 85% 8%, rgba(255, 211, 85, 0.22), transparent 20%),
+    radial-gradient(circle at 20% 105%, rgba(73, 148, 255, 0.14), transparent 34%),
+    linear-gradient(120deg, rgba(255,255,255,0.08), transparent 22%, transparent 78%, rgba(255,255,255,0.04));
 }
 
 .blocco-competizione::after {
   content: "";
   position: absolute;
-  top: -40px;
-  right: -40px;
-  width: 130px;
-  height: 130px;
-  background: radial-gradient(circle, rgba(255,204,0,0.35) 0%, transparent 65%);
+  top: 54px;
+  left: 16px;
+  right: 16px;
+  height: 1px;
   pointer-events: none;
+  background: linear-gradient(90deg, transparent, rgba(255, 212, 90, 0.95), transparent);
 }
 
 .blocco-competizione:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 14px 30px rgba(0,0,0,0.28);
+  transform: translateY(-5px);
+  border-color: rgba(255, 231, 150, 0.82);
+  box-shadow: 0 24px 55px rgba(0,0,0,0.44), 0 0 26px rgba(255, 191, 0, 0.12);
+}
+
+.card-heading {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 30px;
+  margin-bottom: 18px;
 }
 
 .blocco-competizione h2 {
-  margin: 0 0 14px;
-  padding-bottom: 10px;
-  font-size: 1.18rem;
-  font-weight: 800;
-  color: #ffcc00;
-  border-bottom: 2px solid rgba(255, 204, 0, 0.85);
-  text-shadow: 1px 1px 3px rgba(0,0,0,0.6);
+  margin: 0;
+  color: var(--gold-strong);
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 1.05rem;
+  font-weight: 900;
+  letter-spacing: 0.015em;
+  line-height: 1.05;
+  text-transform: uppercase;
+  text-shadow: 0 3px 10px rgba(0,0,0,0.65);
+}
+
+.trophy-badge {
+  flex: 0 0 auto;
+  padding: 5px 9px;
+  border-radius: 999px;
+  color: #2d1a00;
+  background: linear-gradient(180deg, #ffe38b, #ffb800);
+  box-shadow: 0 8px 18px rgba(0,0,0,0.24), inset 0 1px 0 rgba(255,255,255,0.65);
+  font-size: 0.67rem;
+  font-weight: 950;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.card-desc {
+  position: relative;
+  z-index: 1;
+  max-width: 300px;
+  margin: -4px 0 12px;
+  color: #dbe8f8;
+  font-size: 0.87rem;
+  font-weight: 650;
+  line-height: 1.45;
+}
+
+/* ===== CARD MAJOR ===== */
+
+.blocco-major {
+  grid-column: span 6;
+  min-height: 330px;
+  padding: 24px;
+  display: grid;
+  grid-template-columns: minmax(240px, 0.95fr) minmax(250px, 1.05fr);
+  grid-template-areas:
+    "head trophy"
+    "desc trophy"
+    "years trophy";
+  column-gap: 20px;
+  background:
+    linear-gradient(150deg, rgba(5, 33, 66, 0.98), rgba(2, 16, 34, 0.98) 58%, rgba(12, 46, 86, 0.96)),
+    radial-gradient(circle at 85% 50%, rgba(255, 191, 0, 0.2), transparent 40%);
+  box-shadow: var(--shadow-heavy), inset 0 1px 0 rgba(255,255,255,0.12);
+}
+
+.blocco-major::after {
+  top: 76px;
+  left: 24px;
+  right: 24px;
+}
+
+.blocco-major .card-heading {
+  grid-area: head;
+  align-self: start;
+}
+
+.blocco-major .card-desc {
+  grid-area: desc;
+}
+
+.blocco-major .coppa-box {
+  grid-area: trophy;
+}
+
+.blocco-major .anno {
+  grid-column: 1;
+}
+
+.blocco-major h2 {
+  font-size: clamp(1.55rem, 2.2vw, 2rem);
+}
+
+.blocco-playoff {
+  background:
+    radial-gradient(circle at 82% 48%, rgba(255, 214, 89, 0.16), transparent 35%),
+    radial-gradient(circle at 70% 20%, rgba(51, 122, 255, 0.16), transparent 28%),
+    linear-gradient(150deg, #06234b 0%, #020d20 62%, #092a57 100%);
+}
+
+.blocco-campionato {
+  background:
+    radial-gradient(circle at 78% 45%, rgba(255, 191, 0, 0.22), transparent 38%),
+    linear-gradient(150deg, #092448 0%, #020d20 58%, #402807 100%);
 }
 
 /* ===== AREA COPPA ===== */
 
 .coppa-box {
-  min-height: 220px;
+  position: relative;
+  z-index: 1;
+  min-height: 170px;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 10px 0 18px;
-  margin-bottom: 10px;
+  padding: 4px 0 14px;
+  margin: 0 0 4px;
+}
+
+.coppa-box::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: 8px;
+  width: 72%;
+  height: 22px;
+  transform: translateX(-50%);
+  background: radial-gradient(ellipse, rgba(255, 211, 90, 0.22), transparent 70%);
+  filter: blur(3px);
 }
 
 .coppa-img {
-  max-width: 100%;
-  max-height: 210px;
-  object-fit: contain;
+  position: relative;
+  z-index: 1;
   display: block;
-  filter: drop-shadow(0 8px 18px rgba(0,0,0,0.35));
+  max-width: 100%;
+  max-height: 175px;
+  object-fit: contain;
+  filter:
+    drop-shadow(0 18px 18px rgba(0,0,0,0.42))
+    drop-shadow(0 0 18px rgba(255, 211, 90, 0.15));
+  transition: transform 0.22s ease, filter 0.22s ease;
+}
+
+.blocco-competizione:hover .coppa-img {
+  transform: translateY(-3px) scale(1.025);
+  filter:
+    drop-shadow(0 20px 24px rgba(0,0,0,0.48))
+    drop-shadow(0 0 22px rgba(255, 211, 90, 0.24));
+}
+
+.blocco-major .coppa-box {
+  min-height: 280px;
+  padding: 0;
+}
+
+.blocco-major .coppa-img {
+  max-height: 285px;
 }
 
 .coppa-box-highlander {
-  min-height: 260px;
-  padding-top: 0;
+  min-height: 180px;
 }
 
 .coppa-highlander {
-  max-height: 250px;
+  max-height: 205px;
   filter:
-    drop-shadow(0 10px 18px rgba(0,0,0,0.35))
-    drop-shadow(0 0 10px rgba(112, 255, 112, 0.18));
+    drop-shadow(0 18px 18px rgba(0,0,0,0.42))
+    drop-shadow(0 0 16px rgba(112, 255, 112, 0.2));
 }
 
 .blocco-epico {
-  background: linear-gradient(160deg, #01233f 0%, #073154 65%, #123d22 100%);
+  background:
+    radial-gradient(circle at 56% 36%, rgba(105, 255, 144, 0.12), transparent 32%),
+    linear-gradient(155deg, #05263e 0%, #031626 58%, #0d351d 100%);
 }
 
-.blocco-epico::after {
-  background: radial-gradient(circle, rgba(110,255,110,0.25) 0%, transparent 65%);
+.blocco-crashout {
+  background:
+    radial-gradient(circle at 54% 37%, rgba(212, 65, 255, 0.16), transparent 32%),
+    linear-gradient(155deg, #061e45 0%, #04152f 60%, #2b0b40 100%);
 }
 
-/* ===== ANNI ===== */
+.blocco-conference-league {
+  background:
+    radial-gradient(circle at 54% 38%, rgba(255, 76, 48, 0.14), transparent 32%),
+    linear-gradient(155deg, #061f3d 0%, #061428 58%, #3d1408 100%);
+}
+
+.blocco-conference-championship {
+  background:
+    radial-gradient(circle at 54% 38%, rgba(109, 211, 255, 0.16), transparent 32%),
+    linear-gradient(155deg, #061f3d 0%, #061428 58%, #082a43 100%);
+}
+
+.blocco-round-robin {
+  background:
+    radial-gradient(circle at 54% 38%, rgba(74, 178, 255, 0.18), transparent 32%),
+    linear-gradient(155deg, #061f3d 0%, #061428 58%, #052b56 100%);
+}
+
+.blocco-supercoppa {
+  background:
+    radial-gradient(circle at 54% 38%, rgba(255, 216, 91, 0.17), transparent 32%),
+    linear-gradient(155deg, #061f3d 0%, #061428 58%, #381c58 100%);
+}
+
+/* ===== ANNI / ACCORDION ===== */
 
 .anno {
-  background: rgba(255,255,255,0.97);
-  color: #1f2d3d;
-  border-radius: 12px;
-  padding: 10px 12px;
-  margin-top: 10px;
-  border: 1px solid #d7dee8;
-  box-shadow: inset 0 1px 0 rgba(255,255,255,0.7);
+  position: relative;
+  z-index: 1;
+  margin-top: 9px;
+  color: #f7fbff;
+  background: linear-gradient(180deg, rgba(4, 25, 51, 0.84), rgba(2, 14, 31, 0.9));
+  border: 1px solid rgba(255, 212, 90, 0.34);
+  border-radius: 10px;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.08), 0 9px 16px rgba(0,0,0,0.16);
+  overflow: hidden;
 }
 
 .titolo-anno {
-  font-weight: 800;
+  min-height: 39px;
+  padding: 0 13px;
+  font-weight: 900;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  color: #17385e;
+  gap: 12px;
+  color: #f8fbff;
   font-size: 0.92rem;
+  letter-spacing: 0.015em;
 }
 
 .titolo-anno::after {
-  content: "▾";
-  font-size: 0.8rem;
-  color: #17385e;
+  content: "⌄";
+  width: 22px;
+  height: 22px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  color: #1b1200;
+  background: linear-gradient(180deg, #ffe38b, #ffbd00);
+  font-size: 0.95rem;
+  line-height: 1;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.22);
+  transition: transform 0.22s ease;
 }
 
 .anno.attivo .titolo-anno::after {
-  content: "▴";
+  transform: rotate(180deg);
 }
 
 .contenuto-anno {
-  display: none;
-  margin-top: 8px;
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.24s ease;
+}
+
+.contenuto-anno > ol {
+  overflow: hidden;
 }
 
 .anno.attivo .contenuto-anno {
-  display: block;
+  grid-template-rows: 1fr;
 }
 
 /* ===== PODIO ===== */
 
 .blocco-competizione ol {
   list-style: none;
-  padding: 0;
+  padding: 0 10px 10px;
   margin: 0;
 }
 
 .blocco-competizione li {
-  font-weight: 700;
-  padding: 8px 10px;
-  display: grid;
-  grid-template-columns: 26px 34px 1fr;
-  align-items: center;
-  gap: 8px;
-  border-radius: 10px;
-  margin-bottom: 6px;
   position: relative;
-  font-size: 0.92rem;
+  min-height: 42px;
+  margin-bottom: 7px;
+  padding: 7px 10px 7px 42px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border-radius: 12px;
+  color: #f9fbff;
+  font-size: 0.9rem;
+  font-weight: 850;
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,0.08);
+}
+
+.blocco-competizione li:last-child {
+  margin-bottom: 0;
 }
 
 .blocco-competizione li::before {
   content: attr(data-pos);
+  position: absolute;
+  left: 10px;
+  top: 50%;
   width: 24px;
   height: 24px;
+  transform: translateY(-50%);
   border-radius: 999px;
-  background: rgba(0,0,0,0.65);
-  border: 1px solid rgba(255,255,255,0.45);
+  background: rgba(0,0,0,0.56);
+  border: 1px solid rgba(255,255,255,0.35);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 0.8rem;
+  font-size: 0.78rem;
   color: #fff;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.28);
 }
 
 .blocco-competizione li img {
@@ -208,77 +536,164 @@ body {
   height: 30px;
   object-fit: contain;
   flex-shrink: 0;
+  filter: drop-shadow(0 3px 4px rgba(0,0,0,0.35));
 }
 
 .oro {
-  background: linear-gradient(90deg, rgba(255,215,0,0.16), rgba(255,215,0,0.05));
+  background: linear-gradient(90deg, rgba(255, 207, 51, 0.32), rgba(255, 207, 51, 0.08));
 }
 
 .argento {
-  background: linear-gradient(90deg, rgba(192,192,192,0.18), rgba(192,192,192,0.06));
+  background: linear-gradient(90deg, rgba(213, 225, 235, 0.27), rgba(213, 225, 235, 0.07));
 }
 
 .bronzo {
-  background: linear-gradient(90deg, rgba(205,127,50,0.18), rgba(205,127,50,0.06));
+  background: linear-gradient(90deg, rgba(204, 130, 54, 0.29), rgba(204, 130, 54, 0.07));
 }
-
-
 
 /* ===== RESPONSIVE ===== */
 
-@media (max-width: 900px) {
-  .blocchi-medagliere {
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    width: min(100%, calc(100% - 24px));
-    gap: 18px;
+@media (max-width: 1280px) {
+  .blocco-competizione {
+    grid-column: span 4;
   }
 
-  .coppa-img {
-    max-height: 130px;
-  }
-
-  .coppa-highlander {
-    max-height: 220px;
-  }
-
-  .coppa-box-highlander {
-    min-height: 230px;
+  .blocco-major {
+    grid-column: span 6;
   }
 }
 
-@media (max-width: 768px) {
-  
+@media (max-width: 1040px) {
+  .hall-container {
+    width: min(980px, calc(100% - 28px));
+  }
 
+  .blocchi-medagliere {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    gap: 18px;
+  }
+
+  .blocco-competizione {
+    grid-column: span 3;
+  }
+
+  .blocco-major {
+    grid-column: span 6;
+    grid-template-columns: minmax(0, 1fr) minmax(220px, 0.8fr);
+  }
+}
+
+@media (max-width: 760px) {
   .hero-albo {
-    padding: 24px 16px 8px;
+    padding: 32px 14px 14px;
+  }
+
+  .hero-kicker {
+    grid-template-columns: 1fr auto 1fr;
+    gap: 9px;
+    letter-spacing: 0.08em;
+    font-size: 0.68rem;
   }
 
   .titolo-pagina {
-    font-size: 2.2rem;
+    font-size: clamp(2.7rem, 13vw, 4rem);
+    letter-spacing: 0.035em;
+  }
+
+  .sottotitolo-pagina {
+    margin-top: 14px;
+    font-size: 0.95rem;
+  }
+
+  .hall-container {
+    width: calc(100% - 18px);
+    margin-bottom: 36px;
   }
 
   .blocchi-medagliere {
     grid-template-columns: 1fr;
-    width: calc(100% - 20px);
+    gap: 16px;
   }
 
-  .blocco-competizione {
+  .blocco-competizione,
+  .blocco-major {
+    grid-column: 1;
     padding: 16px 14px 14px;
   }
 
-  .coppa-box {
-    min-height: 220px;
+  .blocco-major {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "head"
+      "desc"
+      "trophy"
+      "years";
+    min-height: auto;
   }
 
-  .coppa-img {
-    max-height: 300px;
+  .card-heading {
+    margin-bottom: 17px;
   }
 
-  .coppa-box-highlander {
-    min-height: 220px;
+  .blocco-competizione::after {
+    top: 55px;
+    left: 14px;
+    right: 14px;
   }
 
-  .coppa-highlander {
-    max-height: 300px;
+  .blocco-major::after {
+    top: 55px;
+    left: 14px;
+    right: 14px;
+  }
+
+  .trophy-badge {
+    font-size: 0.62rem;
+    padding: 4px 7px;
+  }
+
+  .card-desc {
+    max-width: none;
+    font-size: 0.84rem;
+    margin-bottom: 10px;
+  }
+
+  .coppa-box,
+  .coppa-box-highlander,
+  .blocco-major .coppa-box {
+    min-height: 205px;
+    padding: 4px 0 12px;
+  }
+
+  .coppa-img,
+  .coppa-highlander,
+  .blocco-major .coppa-img {
+    max-height: 225px;
+  }
+
+  .blocco-competizione h2 {
+    font-size: 1rem;
+  }
+
+  .blocco-major h2 {
+    font-size: 1.45rem;
   }
 }
+
+@media (max-width: 420px) {
+  .card-heading {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .blocco-competizione::after,
+  .blocco-major::after {
+    top: 82px;
+  }
+
+  .blocco-competizione:not(.blocco-major)::after {
+    top: 56px;
+  }
+}
+
