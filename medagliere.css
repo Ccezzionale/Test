@@ -275,6 +275,7 @@ body::after {
     "desc trophy"
     "years trophy";
   column-gap: 20px;
+  align-items: start;
   background:
     linear-gradient(150deg, rgba(5, 33, 66, 0.98), rgba(2, 16, 34, 0.98) 58%, rgba(12, 46, 86, 0.96)),
     radial-gradient(circle at 85% 50%, rgba(255, 191, 0, 0.2), transparent 40%);
@@ -298,6 +299,11 @@ body::after {
 
 .blocco-major .coppa-box {
   grid-area: trophy;
+  align-self: end;
+  justify-self: center;
+  width: 100%;
+  min-height: 300px;
+  padding-top: 34px;
 }
 
 .blocco-major .anno {
@@ -372,7 +378,12 @@ body::after {
 }
 
 .blocco-major .coppa-img {
-  max-height: 285px;
+  max-height: 315px;
+  transform: translateY(16px);
+}
+
+.blocco-major:hover .coppa-img {
+  transform: translateY(10px) scale(1.025);
 }
 
 .coppa-box-highlander {
