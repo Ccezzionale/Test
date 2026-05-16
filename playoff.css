@@ -1338,3 +1338,66 @@ body{
     pointer-events: none;
   }
 }
+
+/* =========================================================
+   PLAYOFF V3.5 - NO CONNECTOR SEMI -> FINALE + VS CENTRATI
+   ========================================================= */
+@media (min-width: 1024px){
+
+  /* -----------------------------------------------------
+     1) Niente connettori tra Semifinale e Finale
+     ----------------------------------------------------- */
+  .bracket > .blocco-colonna:nth-of-type(3) .match-pair::after,
+  .bracket > .blocco-colonna:nth-of-type(5) .match-pair::after{
+    display: none !important;
+    content: none !important;
+  }
+
+  /* -----------------------------------------------------
+     2) VS più puliti e centrati
+     ----------------------------------------------------- */
+  .match-pair:not(.finale-pair) .match:first-child::after,
+  .pair-offset:not(.finale-pair) .match:first-child::after{
+    content: "VS";
+    position: absolute;
+    left: calc(100% - 1px);
+    top: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 20;
+    min-width: 34px;
+    height: 26px;
+    padding: 0 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 999px;
+    background: linear-gradient(180deg, #123c7a 0%, #08254c 100%);
+    border: 1px solid rgba(255,255,255,.14);
+    color: #ffffff;
+    font-size: .78rem;
+    font-weight: 900;
+    letter-spacing: .4px;
+    text-shadow: none;
+    box-shadow:
+      0 4px 10px rgba(0,0,0,.28),
+      0 0 0 2px rgba(8,37,76,.92);
+    pointer-events: none;
+  }
+
+  /* Tiene il primo blocco come riferimento del VS */
+  .match-pair:not(.finale-pair) .match:first-child,
+  .pair-offset:not(.finale-pair) .match:first-child{
+    position: relative;
+    overflow: visible !important;
+    z-index: 3;
+  }
+
+  /* Se vuoi un look ancora più pulito, accorciamo un filo
+     la lineetta divisoria centrale dentro i pair */
+  .match-pair:not(.finale-pair)::before,
+  .pair-offset:not(.finale-pair)::before{
+    top: 16px;
+    bottom: 16px;
+    opacity: .55;
+  }
+}
