@@ -720,3 +720,49 @@ window.addEventListener("resize", () => {
 document.addEventListener("DOMContentLoaded", () => {
   buildBracket();
 });
+
+// =========================================================
+// FIX NAVBAR MOBILE - CRASH OUT CUP
+// =========================================================
+
+document.addEventListener("DOMContentLoaded", () => {
+  const hamburger = document.getElementById("hamburger");
+  const mainMenu = document.getElementById("mainMenu");
+
+  if (!hamburger || !mainMenu) return;
+
+  hamburger.addEventListener("click", (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+
+    mainMenu.classList.toggle("show");
+  });
+
+  document.querySelectorAll("#mainMenu .toggle-submenu").forEach(toggle => {
+    toggle.addEventListener("click", (event) => {
+      if (window.innerWidth > 900) return;
+
+      event.preventDefault();
+      event.stopPropagation();
+
+      const dropdown = toggle.closest(".dropdown");
+      if (!dropdown) return;
+
+      dropdown.classList.toggle("show");
+    });
+  });
+
+  document.addEventListener("click", (event) => {
+    if (window.innerWidth > 900) return;
+
+    const clickedInsideNav = event.target.closest(".site-nav");
+
+    if (!clickedInsideNav) {
+      mainMenu.classList.remove("show");
+
+      document.querySelectorAll("#mainMenu .dropdown.show").forEach(dropdown => {
+        dropdown.classList.remove("show");
+      });
+    }
+  });
+});
