@@ -751,32 +751,32 @@ body::after {
   }
 }
 
-/* ===== FIX DEFINITIVO MAJOR DESKTOP ===== */
+/* ===== FIX MAJOR TROPHY + SOLO 2025-2026 ===== */
 
 @media (min-width: 761px) {
   .blocco-major {
-    min-height: 430px !important;
+    min-height: 390px;
   }
 
-  .blocco-major .anno {
-    transform: translateY(70px) !important;
+  /* Abbassa solo il primo anno dei major: 2025-2026 */
+  .blocco-major .coppa-box + .anno {
+    transform: translateY(58px);
   }
 
-  .blocco-major .coppa-box {
-    align-self: end !important;
-    justify-self: center !important;
-    min-height: 340px !important;
-    padding-top: 80px !important;
-    padding-bottom: 0 !important;
-    margin-top: 40px !important;
+  /* Lascia gli altri anni fermi */
+  .blocco-major .coppa-box + .anno + .anno,
+  .blocco-major .coppa-box + .anno + .anno + .anno,
+  .blocco-major .coppa-box + .anno + .anno + .anno + .anno {
+    transform: none;
   }
 
+  /* Abbassa solo il trofeo */
   .blocco-major .coppa-img {
-    max-height: 320px !important;
-    transform: translateY(54px) !important;
+    max-height: 305px;
+    transform: translateY(38px);
   }
 
   .blocco-major:hover .coppa-img {
-    transform: translateY(48px) scale(1.025) !important;
+    transform: translateY(32px) scale(1.025);
   }
 }
