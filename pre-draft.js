@@ -820,10 +820,6 @@ function renderRoster() {
     selectionByPlayerId[s.player_id] = s.selection_type;
   });
 
-  const u21CountForRoster = roster.filter(player => {
-    const selectedType = selectionByPlayerId[player.id];
-    return player.is_u21 && selectedType !== "U21_KEEPER";
-  }).length;
 
   const u21KeeperCount = roster.filter(player => {
     const selectedType = selectionByPlayerId[player.id];
@@ -861,17 +857,14 @@ function renderRoster() {
   });
 
   container.innerHTML = `
-    <div class="roster-summary">
-      <span class="badge ${u21CountForRoster >= 4 ? "badge-u21" : "badge-rfa"}">
-        U21 obbligatori: ${u21CountForRoster}/4
-      </span>
-      <span class="badge badge-u21-keeper">
-        U21 confermati: ${u21KeeperCount}
-      </span>
-      <span class="badge badge-muted">
-        Giocatori mostrati: ${filteredRoster.length}/${roster.length}
-      </span>
-    </div>
+<div class="roster-summary">
+  <span class="badge badge-u21-keeper">
+    U21 confermati: ${u21KeeperCount}
+  </span>
+  <span class="badge badge-muted">
+    Giocatori mostrati: ${filteredRoster.length}/${roster.length}
+  </span>
+</div>
 
     ${
       !filteredRoster.length
