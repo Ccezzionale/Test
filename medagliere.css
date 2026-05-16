@@ -266,23 +266,25 @@ body::after {
 
 .blocco-major {
   grid-column: span 6;
-  min-height: 330px;
-  padding: 24px;
+  min-height: 470px;
+  padding: 24px 24px 26px;
   display: grid;
-  grid-template-columns: minmax(240px, 0.95fr) minmax(250px, 1.05fr);
+  grid-template-columns: minmax(270px, 0.88fr) minmax(320px, 1.12fr);
   grid-template-areas:
-    "head trophy"
-    "desc trophy"
+    "head head"
+    "desc desc"
     "years trophy";
-  column-gap: 20px;
+  column-gap: 18px;
+  row-gap: 4px;
+  align-items: start;
   background:
     linear-gradient(150deg, rgba(5, 33, 66, 0.98), rgba(2, 16, 34, 0.98) 58%, rgba(12, 46, 86, 0.96)),
-    radial-gradient(circle at 85% 50%, rgba(255, 191, 0, 0.2), transparent 40%);
+    radial-gradient(circle at 85% 58%, rgba(255, 191, 0, 0.2), transparent 42%);
   box-shadow: var(--shadow-heavy), inset 0 1px 0 rgba(255,255,255,0.12);
 }
 
 .blocco-major::after {
-  top: 76px;
+  top: 86px;
   left: 24px;
   right: 24px;
 }
@@ -290,18 +292,25 @@ body::after {
 .blocco-major .card-heading {
   grid-area: head;
   align-self: start;
+  margin-bottom: 14px;
 }
 
 .blocco-major .card-desc {
   grid-area: desc;
+  max-width: 520px;
+  margin: -2px 0 4px;
 }
 
 .blocco-major .coppa-box {
   grid-area: trophy;
+  align-self: end;
+  justify-self: center;
+  width: 100%;
 }
 
 .blocco-major .anno {
   grid-column: 1;
+  max-width: 350px;
 }
 
 .blocco-major h2 {
@@ -310,14 +319,14 @@ body::after {
 
 .blocco-playoff {
   background:
-    radial-gradient(circle at 82% 48%, rgba(255, 214, 89, 0.16), transparent 35%),
-    radial-gradient(circle at 70% 20%, rgba(51, 122, 255, 0.16), transparent 28%),
+    radial-gradient(circle at 74% 64%, rgba(255, 214, 89, 0.17), transparent 34%),
+    radial-gradient(circle at 72% 24%, rgba(51, 122, 255, 0.16), transparent 28%),
     linear-gradient(150deg, #06234b 0%, #020d20 62%, #092a57 100%);
 }
 
 .blocco-campionato {
   background:
-    radial-gradient(circle at 78% 45%, rgba(255, 191, 0, 0.22), transparent 38%),
+    radial-gradient(circle at 74% 64%, rgba(255, 191, 0, 0.24), transparent 37%),
     linear-gradient(150deg, #092448 0%, #020d20 58%, #402807 100%);
 }
 
@@ -367,12 +376,20 @@ body::after {
 }
 
 .blocco-major .coppa-box {
-  min-height: 280px;
-  padding: 0;
+  min-height: 360px;
+  padding: 26px 0 0;
+  margin-top: 4px;
+}
+
+.blocco-major .coppa-box::before {
+  bottom: 16px;
+  width: 78%;
+  height: 30px;
+  background: radial-gradient(ellipse, rgba(255, 211, 90, 0.28), transparent 72%);
 }
 
 .blocco-major .coppa-img {
-  max-height: 285px;
+  max-height: 360px;
 }
 
 .coppa-box-highlander {
@@ -473,23 +490,32 @@ body::after {
 .contenuto-anno {
   display: grid;
   grid-template-rows: 0fr;
-  transition: grid-template-rows 0.24s ease;
+  overflow: hidden;
+  opacity: 0;
+  transition: grid-template-rows 0.24s ease, opacity 0.18s ease;
 }
 
 .contenuto-anno > ol {
+  min-height: 0;
   overflow: hidden;
 }
 
 .anno.attivo .contenuto-anno {
   grid-template-rows: 1fr;
+  opacity: 1;
 }
 
 /* ===== PODIO ===== */
 
 .blocco-competizione ol {
   list-style: none;
-  padding: 0 10px 10px;
+  padding: 0 10px;
   margin: 0;
+}
+
+.anno.attivo .blocco-competizione ol,
+.anno.attivo ol {
+  padding-bottom: 10px;
 }
 
 .blocco-competizione li {
@@ -579,7 +605,8 @@ body::after {
 
   .blocco-major {
     grid-column: span 6;
-    grid-template-columns: minmax(0, 1fr) minmax(220px, 0.8fr);
+    min-height: 430px;
+    grid-template-columns: minmax(240px, 0.9fr) minmax(260px, 1.1fr);
   }
 }
 
@@ -631,11 +658,6 @@ body::after {
     min-height: auto;
   }
 
-  .blocco-major .anni-list,
-  .blocco-major .anno {
-    max-width: none;
-  }
-
   .card-heading {
     margin-bottom: 17px;
   }
@@ -670,10 +692,19 @@ body::after {
     padding: 4px 0 12px;
   }
 
+  .blocco-major .coppa-box {
+    min-height: 250px;
+    padding-top: 10px;
+  }
+
   .coppa-img,
   .coppa-highlander,
   .blocco-major .coppa-img {
     max-height: 225px;
+  }
+
+  .blocco-major .coppa-img {
+    max-height: 255px;
   }
 
   .blocco-competizione h2 {
