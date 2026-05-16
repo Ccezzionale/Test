@@ -2034,3 +2034,43 @@ body{
     font-size: .82rem;
   }
 }
+
+/* =========================================================
+   MOBILE FIX - RIPRISTINA NAVBAR REALE
+   ========================================================= */
+@media (max-width: 768px){
+
+  /* Rimette la navbar originale */
+  .site-nav{
+    display: block !important;
+    position: sticky;
+    top: 0;
+    z-index: 9999;
+  }
+
+  .nav-inner{
+    min-height: 58px;
+  }
+
+  /* Nasconde i bottoni finti del concept mobile */
+  .mobile-top-btn,
+  .mobile-back-btn,
+  .mobile-menu-btn,
+  .mobile-playoff-back,
+  .mobile-playoff-menu{
+    display: none !important;
+  }
+
+  /* Diamo un po' di respiro sotto la navbar */
+  .playoff-mobile-app{
+    padding-top: 18px;
+  }
+
+  .mobile-playoff-shell{
+    padding-top: 0;
+  }
+
+  .mobile-playoff-top{
+    padding-top: 4px;
+  }
+}
