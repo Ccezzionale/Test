@@ -1486,15 +1486,16 @@ body{
   }
 }
 
+
 /* =========================================================
-   PLAYOFF V3.7B - HARD REMOVE SEMI -> FINALE
+   PLAYOFF V3.8 - RIMUOVE DAVVERO I CONNETTORI SEMI -> FINALE
    ========================================================= */
 @media (min-width: 1024px){
 
-  .s-sx .match-pair::after,
-  .s-dx .match-pair::after,
-  .bracket > .blocco-colonna:nth-of-type(3) .match-pair::after,
-  .bracket > .blocco-colonna:nth-of-type(5) .match-pair::after{
+  /* Questi sono i veri connettori verso la Finale:
+     sono applicati alla colonna Semifinale, non alle card */
+  .bracket > .blocco-colonna:nth-of-type(3)::after,
+  .bracket > .blocco-colonna:nth-of-type(5)::after{
     content: none !important;
     display: none !important;
     opacity: 0 !important;
