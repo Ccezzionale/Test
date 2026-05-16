@@ -4949,3 +4949,41 @@ h1, h2, h3, h4, p{
     line-height: 1.05 !important;
   }
 }
+
+/* =========================================================
+   DESKTOP - FIX ALLINEAMENTO ROUND DOPO LOGHI GRANDI
+   ========================================================= */
+@media (min-width: 1101px){
+
+  .desktop-round-rail{
+    grid-template-rows: 118px repeat(var(--desktop-rounds, 12), 72px) !important;
+    gap: 10px !important;
+  }
+
+  .desktop-round-spacer{
+    height: 118px !important;
+  }
+
+  .desktop-round-label{
+    height: 72px !important;
+    min-height: 72px !important;
+  }
+
+  .desktop-team-column{
+    grid-template-rows: 118px auto !important;
+    gap: 10px !important;
+  }
+
+  .desktop-team-head{
+    height: 118px !important;
+  }
+
+  .desktop-team-slots{
+    gap: 10px !important;
+  }
+
+  .desktop-pick-slot{
+    height: 72px !important;
+    min-height: 72px !important;
+  }
+}
