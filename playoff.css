@@ -533,3 +533,389 @@ body{
     font-size: .93rem;
   }
 }
+
+/* =========================================================
+   DESKTOP FIT MODE - LOGO ONLY BRACKET
+   ---------------------------------------------------------
+   Solo CSS: non modifica il JS né i data-match.
+   Da desktop trasforma il bracket in un flusso unico:
+   Wildcard -> Quarti -> Semifinali -> Finale.
+   I nomi restano nel DOM per il JS/colori, ma sono nascosti
+   visivamente fino alla Finale.
+   ========================================================= */
+@media (min-width: 1024px) {
+  :root{
+    --logo-only-card-w: 190px;
+    --logo-only-card-h: 66px;
+    --logo-only-logo: 52px;
+    --logo-only-col-gap: 34px;
+  }
+
+  body{
+    overflow-x: hidden;
+  }
+
+  .hero-playoff{
+    padding: 24px 20px 4px;
+  }
+
+  .titolo-pagina{
+    font-size: clamp(2.2rem, 3.6vw, 3.9rem);
+  }
+
+  .sottotitolo-pagina{
+    margin-top: 6px;
+  }
+
+  .playoff-intro{
+    justify-content: center;
+    margin: 6px auto 4px;
+  }
+
+  .intro-chip{
+    padding: 8px 18px;
+  }
+
+  .bracket-wrap{
+    overflow: hidden;
+    padding-bottom: 14px;
+  }
+
+  .bracket{
+    width: min(1540px, 98vw);
+    min-width: 0;
+    margin: 0 auto;
+    padding: 18px 20px 28px;
+    display: grid;
+    grid-template-columns:
+      var(--logo-only-card-w)
+      var(--logo-only-card-w)
+      var(--logo-only-card-w)
+      minmax(310px, 360px);
+    grid-template-rows: auto auto;
+    column-gap: var(--logo-only-col-gap);
+    row-gap: 22px;
+    align-items: start;
+    justify-content: center;
+  }
+
+  /* Trasforma la vecchia struttura sx/dx in un unico flusso verticale */
+  .bracket > .blocco-colonna:nth-of-type(1){ grid-column: 1; grid-row: 1; }
+  .bracket > .blocco-colonna:nth-of-type(7){ grid-column: 1; grid-row: 2; }
+  .bracket > .blocco-colonna:nth-of-type(2){ grid-column: 2; grid-row: 1; }
+  .bracket > .blocco-colonna:nth-of-type(6){ grid-column: 2; grid-row: 2; }
+  .bracket > .blocco-colonna:nth-of-type(3){ grid-column: 3; grid-row: 1; }
+  .bracket > .blocco-colonna:nth-of-type(5){ grid-column: 3; grid-row: 2; }
+  .bracket > .blocco-colonna:nth-of-type(4){ grid-column: 4; grid-row: 1 / span 2; }
+
+  /* Evita titoli doppi nella seconda riga */
+  .bracket > .blocco-colonna:nth-of-type(7) h2,
+  .bracket > .blocco-colonna:nth-of-type(6) h2,
+  .bracket > .blocco-colonna:nth-of-type(5) h2{
+    display: none;
+  }
+
+  .blocco-colonna h2{
+    margin-bottom: 10px;
+    font-size: 1.08rem;
+  }
+
+  .colonna{
+    gap: 18px;
+  }
+
+  .col--spread,
+  .col--center{
+    height: auto !important;
+    min-height: 0 !important;
+    justify-content: flex-start;
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+  }
+
+  .semifinale-sx,
+  .semifinale-dx{
+    transform: none !important;
+  }
+
+  /* Ogni serie diventa una card unica: logo vs logo */
+  .match-pair:not(.finale-pair){
+    width: var(--logo-only-card-w);
+    min-height: var(--logo-only-card-h);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr;
+    row-gap: 0;
+    position: relative;
+    border-radius: 18px;
+    background:
+      radial-gradient(circle at 50% 0%, rgba(255,255,255,.14), transparent 52%),
+      linear-gradient(180deg, rgba(10,49,101,.88), rgba(5,28,63,.86));
+    border: 1px solid rgba(214,235,255,.30);
+    box-shadow: 0 12px 24px rgba(0,0,0,.23), inset 0 1px 0 rgba(255,255,255,.10);
+    overflow: visible;
+  }
+
+  .match-pair:not(.finale-pair)::after{
+    content: "VS";
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 4;
+    color: rgba(255,255,255,.88);
+    font-size: .78rem;
+    font-weight: 900;
+    letter-spacing: .7px;
+    text-shadow: 0 2px 8px rgba(0,0,0,.45);
+    pointer-events: none;
+  }
+
+  .match-pair:not(.finale-pair)::before{
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: 12px;
+    bottom: 12px;
+    width: 1px;
+    background: linear-gradient(180deg, transparent, rgba(255,211,107,.45), transparent);
+    opacity: .85;
+    pointer-events: none;
+  }
+
+  .match-pair:not(.finale-pair) .match{
+    width: auto;
+    min-width: 0;
+    max-width: none;
+    min-height: var(--logo-only-card-h);
+    height: var(--logo-only-card-h);
+    display: grid;
+    grid-template-columns: 1fr;
+    place-items: center;
+    background: transparent;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+    overflow: visible;
+    padding: 0;
+    color: #ffffff;
+  }
+
+  .match-pair:not(.finale-pair) .match:hover{
+    transform: none;
+    box-shadow: none;
+  }
+
+  .match-pair:not(.finale-pair) .match::before{
+    display: none;
+  }
+
+  .match-pair:not(.finale-pair) .squadra.orizzontale{
+    display: grid;
+    grid-template-columns: 1fr;
+    place-items: center;
+    width: 100%;
+    height: 100%;
+    position: relative;
+  }
+
+  .match-pair:not(.finale-pair) .team-logo-wrap{
+    grid-column: 1;
+    width: var(--logo-only-logo);
+    height: var(--logo-only-logo);
+    border-radius: 50%;
+    background:
+      radial-gradient(circle at 35% 28%, rgba(255,255,255,.96), rgba(255,255,255,.82) 68%, rgba(214,235,255,.76));
+    border: 1px solid rgba(255,255,255,.70);
+    box-shadow: 0 8px 16px rgba(0,0,0,.24), 0 0 0 3px rgba(255,255,255,.06);
+  }
+
+  .match-pair:not(.finale-pair) .squadra.orizzontale img{
+    width: calc(var(--logo-only-logo) - 8px);
+    height: calc(var(--logo-only-logo) - 8px);
+    padding: 0;
+    background: transparent;
+    border-radius: 50%;
+  }
+
+  /* Placeholder pulito quando manca ancora il vincitore */
+  .match-pair:not(.finale-pair) .team-logo-wrap:empty::after{
+    content: "";
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    border: 2px solid rgba(255,255,255,.28);
+    background: rgba(255,255,255,.08);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.18);
+  }
+
+  .match-pair:not(.finale-pair) .team-main{
+    grid-column: 1;
+    position: absolute;
+    inset: 0;
+    display: block;
+    padding: 0;
+    pointer-events: none;
+  }
+
+  .match-pair:not(.finale-pair) .team-text{
+    display: contents;
+  }
+
+  .match-pair:not(.finale-pair) .seed-badge{
+    position: absolute;
+    top: 6px;
+    left: 6px;
+    min-height: 19px;
+    padding: 1px 6px;
+    font-size: .66rem;
+    z-index: 5;
+  }
+
+  .match-pair:not(.finale-pair) .match:nth-child(2) .seed-badge{
+    left: auto;
+    right: 6px;
+  }
+
+  .match-pair:not(.finale-pair) .team-name,
+  .match-pair:not(.finale-pair) .team-status,
+  .match-pair:not(.finale-pair) .team-flag{
+    position: absolute !important;
+    width: 1px !important;
+    height: 1px !important;
+    padding: 0 !important;
+    margin: -1px !important;
+    overflow: hidden !important;
+    clip: rect(0, 0, 0, 0) !important;
+    white-space: nowrap !important;
+    border: 0 !important;
+  }
+
+  .match-pair:not(.finale-pair) .match.vincente{
+    animation: none;
+  }
+
+  .match-pair:not(.finale-pair) .match.vincente .team-logo-wrap{
+    border-color: rgba(255,211,107,.92);
+    box-shadow:
+      0 8px 16px rgba(0,0,0,.24),
+      0 0 0 3px rgba(255,211,107,.30),
+      0 0 18px rgba(255,211,107,.55);
+  }
+
+  /* Piccoli connettori visivi, senza toccare il calcolo turni */
+  .bracket > .blocco-colonna:not(.blocco-finale) .match-pair{
+    position: relative;
+  }
+
+  .bracket > .blocco-colonna:nth-of-type(1) .match-pair::marker,
+  .bracket > .blocco-colonna:nth-of-type(2) .match-pair::marker,
+  .bracket > .blocco-colonna:nth-of-type(3) .match-pair::marker{
+    content: "";
+  }
+
+  .bracket > .blocco-colonna:nth-of-type(1) .match-pair::before,
+  .bracket > .blocco-colonna:nth-of-type(2) .match-pair::before,
+  .bracket > .blocco-colonna:nth-of-type(3) .match-pair::before,
+  .bracket > .blocco-colonna:nth-of-type(6) .match-pair::before,
+  .bracket > .blocco-colonna:nth-of-type(7) .match-pair::before{
+    box-shadow: none;
+  }
+
+  /* Finale: qui rimangono i nomi */
+  .blocco-finale{
+    min-width: 0;
+  }
+
+  .finale-stage{
+    width: 100%;
+    padding: 14px 16px 16px;
+    border-color: rgba(255,211,107,.28);
+  }
+
+  .finale-pair{
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: repeat(2, minmax(74px, auto));
+    row-gap: 12px;
+  }
+
+  .match.finale{
+    width: 100%;
+    min-width: 0;
+    max-width: none;
+    min-height: 74px;
+    grid-template-columns: 76px 1fr;
+  }
+
+  .match.finale::before{
+    width: 76px;
+  }
+
+  .match.finale .team-main{
+    padding: 9px 14px;
+  }
+
+  .match.finale .team-name{
+    display: -webkit-box;
+    font-size: 1rem;
+  }
+
+  .match.finale .team-status{
+    display: inline;
+  }
+
+  .match.finale .team-flag{
+    position: static !important;
+    width: auto !important;
+    height: 32px !important;
+    margin: 0 !important;
+    overflow: visible !important;
+    clip: auto !important;
+    white-space: normal !important;
+  }
+
+  .coppa-vittoria{
+    margin-top: 10px;
+  }
+
+  .coppa-img{
+    width: 210px !important;
+  }
+}
+
+@media (min-width: 1024px) and (max-height: 850px) {
+  .hero-playoff{
+    padding-top: 16px;
+  }
+
+  .titolo-pagina{
+    font-size: clamp(2rem, 3vw, 3.1rem);
+  }
+
+  .sottotitolo-pagina{
+    font-size: .98rem;
+  }
+
+  .intro-chip{
+    padding: 7px 16px;
+  }
+
+  .bracket{
+    padding-top: 12px;
+    row-gap: 16px;
+  }
+
+  .blocco-colonna h2{
+    margin-bottom: 8px;
+  }
+
+  .colonna{
+    gap: 14px;
+  }
+
+  .coppa-img{
+    width: 180px !important;
+  }
+}
