@@ -539,134 +539,479 @@ body::before{
 .mobile-final-hero{ display:none; }
 
 @media (max-width:900px){
-  body{ background-attachment:scroll; }
+  body{
+    background-attachment:scroll;
+    background:
+      radial-gradient(circle at 50% 14%, rgba(255,49,223,.28), transparent 34%),
+      radial-gradient(circle at 50% 36%, rgba(32,199,255,.22), transparent 32%),
+      linear-gradient(180deg, rgba(4,5,16,.78), rgba(4,5,16,.98)),
+      url("img/sfondocrash.jpg") center top/cover no-repeat;
+  }
+
+  body::before{
+    opacity:.92;
+    background:
+      radial-gradient(circle at 50% 18%, rgba(255,49,223,.20), transparent 38%),
+      radial-gradient(circle at 50% 62%, rgba(32,199,255,.12), transparent 36%);
+  }
+
   .site-nav{
     width:100%;
     margin:0;
     border-radius:0;
   }
+
   .page-header{
     width:100%;
-    margin:18px 0 14px;
+    margin:18px 0 10px;
     padding:0 14px;
     display:block;
     text-align:center;
   }
-  .page-header h1{
-    font-size:2.5rem;
-    letter-spacing:-.05em;
+
+  .page-kicker{
+    display:none;
   }
-  .page-subtitle{ font-size:.92rem; }
+
+  .page-header h1{
+    font-size:clamp(2.45rem, 12vw, 4.15rem);
+    letter-spacing:-.06em;
+    line-height:.92;
+  }
+
+  .page-header h1 span{
+    text-shadow:0 0 24px rgba(255,49,223,.76);
+  }
+
+  .page-subtitle{
+    margin-top:8px;
+    font-size:.95rem;
+    letter-spacing:.08em;
+  }
+
   .crash-stats{
     width:100%;
-    grid-template-columns:repeat(2, minmax(0, 1fr));
+    grid-template-columns:repeat(4, minmax(0, 1fr));
+    gap:8px;
     margin-top:14px;
   }
+
+  .stat-card{
+    min-height:56px;
+    padding:8px 5px;
+    border-radius:14px;
+    background:linear-gradient(180deg, rgba(20,22,56,.82), rgba(7,10,27,.78));
+    border-color:rgba(255,49,223,.36);
+    box-shadow:
+      0 0 18px rgba(255,49,223,.15),
+      inset 0 1px 0 rgba(255,255,255,.08);
+  }
+
+  .stat-card strong{
+    font-size:1.05rem;
+  }
+
+  .stat-card span{
+    font-size:.56rem;
+    letter-spacing:.08em;
+  }
+
   .desktop-shell,
-  .crash-footer-strip{ display:none; }
+  .crash-footer-strip{
+    display:none;
+  }
+
   .cup-container{
     width:100%;
     margin:0;
-    padding:0 12px 28px;
+    padding:0 10px 28px;
   }
-  .bracket{ display:none !important; }
+
+  .bracket{
+    display:none !important;
+  }
+
   .bracket-mobile{
     display:flex;
     flex-direction:column;
-    gap:14px;
+    gap:12px;
   }
+
   .mobile-trophy-hero{
     display:block;
+    position:relative;
+    overflow:hidden;
     text-align:center;
-    border-radius:22px;
-    border:1px solid rgba(255,49,223,.18);
-    background:rgba(10,14,34,.74);
-    padding:18px 14px;
-    box-shadow:0 12px 26px rgba(0,0,0,.22);
+    border-radius:24px;
+    border:1px solid rgba(255,49,223,.24);
+    background:
+      radial-gradient(circle at 50% 24%, rgba(255,49,223,.20), transparent 42%),
+      radial-gradient(circle at 50% 78%, rgba(32,199,255,.13), transparent 38%),
+      rgba(10,14,34,.70);
+    padding:12px 14px 14px;
+    box-shadow:
+      0 18px 34px rgba(0,0,0,.28),
+      0 0 26px rgba(255,49,223,.10),
+      inset 0 1px 0 rgba(255,255,255,.07);
   }
-  .mobile-trophy-kicker{
-    color:var(--crash-blue);
-    font-size:.7rem;
-    font-weight:900;
+
+  .mobile-trophy-kicker,
+  .mobile-trophy-title,
+  .mobile-trophy-subtitle{
+    display:none;
+  }
+
+  .mobile-trophy-image{
+    width:min(250px, 70vw);
+    height:min(250px, 70vw);
+    margin:0 auto;
+    background:url("img/Crashoutcup.png") center/contain no-repeat;
+    filter:
+      drop-shadow(0 0 26px rgba(255,49,223,.44))
+      drop-shadow(0 0 20px rgba(32,199,255,.24));
+  }
+
+  .round-mobile{
+    position:relative;
+    border:1px solid rgba(255,49,223,.22);
+    border-radius:22px;
+    background:
+      linear-gradient(180deg, rgba(12,15,38,.82), rgba(5,7,20,.84));
+    padding:14px 10px 12px;
+    box-shadow:
+      0 16px 30px rgba(0,0,0,.24),
+      0 0 20px rgba(255,49,223,.08),
+      inset 0 1px 0 rgba(255,255,255,.06);
+    backdrop-filter:blur(12px);
+  }
+
+  .round-mobile h3{
+    margin:0 0 14px;
+    color:#ffd6ff;
+    font-size:.78rem;
+    font-weight:950;
     letter-spacing:.18em;
     text-transform:uppercase;
+    text-align:center;
+    text-shadow:0 0 14px rgba(255,49,223,.36);
   }
-  .mobile-trophy-image{
-    width:118px;
-    height:118px;
-    margin:8px auto 6px;
-    background:url("img/Crashoutcup.png") center/contain no-repeat;
-    filter:drop-shadow(0 0 20px rgba(255,49,223,.32));
+
+  .round-mobile h3::after{
+    content:"";
+    display:block;
+    width:76px;
+    height:3px;
+    margin:8px auto 0;
+    border-radius:999px;
+    background:linear-gradient(90deg, transparent, var(--crash-pink), var(--crash-blue), transparent);
+    box-shadow:0 0 12px rgba(255,49,223,.46);
   }
-  .mobile-trophy-title{
-    margin:0;
-    font-size:1rem;
-    text-transform:uppercase;
-    letter-spacing:.1em;
-  }
-  .mobile-trophy-subtitle{
-    margin-top:4px;
-    color:#ff95ef;
-    font-size:.74rem;
-    text-transform:uppercase;
-    letter-spacing:.14em;
-  }
-  .round-mobile{
-    border:1px solid rgba(255,49,223,.16);
-    border-radius:18px;
-    background:rgba(10,14,34,.74);
-    padding:13px 11px;
-    box-shadow:0 12px 24px rgba(0,0,0,.18);
-  }
-  .round-mobile h3{
-    margin:0 0 10px;
-    color:#ffd6ff;
-    font-size:.72rem;
-    font-weight:950;
-    letter-spacing:.16em;
-    text-transform:uppercase;
-  }
+
+  /* Mobile: card capsule compatte, stile finale mini */
   .round-mobile .match{
     width:100%;
-    min-height:72px;
-    margin-bottom:10px;
+    min-height:58px;
+    margin:0 0 11px;
+    padding:13px 10px 9px;
+    display:grid;
+    grid-template-columns:minmax(0, 1fr) 34px minmax(0, 1fr);
+    align-items:center;
+    gap:4px;
+    border-radius:18px;
+    border:1px solid rgba(255,49,223,.32);
+    background:
+      radial-gradient(circle at 50% 50%, rgba(32,199,255,.10), transparent 34%),
+      linear-gradient(135deg, rgba(255,49,223,.13), rgba(7,10,27,.82) 48%, rgba(32,199,255,.09)),
+      rgba(7,10,27,.80);
+    box-shadow:
+      0 10px 22px rgba(0,0,0,.26),
+      0 0 18px rgba(255,49,223,.12),
+      inset 0 1px 0 rgba(255,255,255,.07);
   }
-  .round-mobile .match:last-child{ margin-bottom:0; }
-  .round-mobile .team{
-    grid-template-columns:26px 54px 1fr 38px !important;
-    min-height:38px;
+
+  .round-mobile .match:last-child{
+    margin-bottom:0;
   }
-  .round-mobile .team-name{
-    display:block !important;
-    color:#f8f4ff;
-    min-width:0;
-    font-size:.82rem;
-    font-weight:800;
-    overflow-wrap:anywhere;
+
+  .round-mobile .match::before{
+    content:"SERIE " attr(data-series);
+    position:absolute;
+    left:50%;
+    top:-10px;
+    transform:translateX(-50%);
+    padding:2px 13px 3px;
+    border-radius:999px;
+    background:rgba(7,10,27,.96);
+    border:1px solid rgba(255,49,223,.25);
+    color:#ffd6ff;
+    font-size:.58rem;
+    font-weight:950;
+    letter-spacing:.22em;
     text-transform:uppercase;
+    text-shadow:0 0 10px rgba(255,49,223,.44);
+    z-index:4;
   }
-  .round-mobile .logo-wrap{ width:42px; height:42px; }
-  .round-mobile .score-box{ width:34px; height:30px; }
-  .round-mobile .match.one-team .team{
-    grid-template-columns:54px 1fr 38px !important;
+
+  .round-mobile .match::after{
+    content:"VS";
+    grid-column:2;
+    grid-row:1;
+    justify-self:center;
+    align-self:center;
+    width:30px;
+    height:30px;
+    display:grid;
+    place-items:center;
+    border-radius:9px;
+    border:1px solid rgba(255,49,223,.20);
+    background:rgba(4,5,16,.56);
+    color:#ffb8f7;
+    font-size:.64rem;
+    font-weight:950;
+    letter-spacing:.08em;
+    text-shadow:0 0 10px rgba(255,49,223,.42);
+    transform:rotate(45deg);
   }
-  .round-mobile .match.one-team .seed{ display:none; }
+
+  .round-mobile .match::after{
+    line-height:1;
+  }
+
+  .round-mobile .match::after{
+    /* Il testo resta leggibile dentro il rombo tramite un piccolo trick visivo. */
+  }
+
+  .round-mobile .team{
+    min-height:48px;
+    display:grid !important;
+    align-items:center;
+    gap:4px;
+    position:relative;
+    z-index:2;
+  }
+
+  .round-mobile .team.home{
+    grid-column:1;
+    grid-row:1;
+    grid-template-columns:27px 48px 34px !important;
+    justify-self:end;
+  }
+
+  .round-mobile .team.away{
+    grid-column:3;
+    grid-row:1;
+    grid-template-columns:34px 48px 27px !important;
+    justify-self:start;
+  }
+
+  .round-mobile .team-name{
+    display:none !important;
+  }
+
+  .round-mobile .seed{
+    width:27px;
+    height:27px;
+    display:grid;
+    place-items:center;
+    border-radius:8px;
+    background:rgba(7,10,27,.70);
+    border:1px solid rgba(255,49,223,.28);
+    color:#f0b8ff;
+    font-size:.64rem;
+    font-weight:800;
+    line-height:1;
+    text-align:center;
+    text-shadow:0 0 8px rgba(255,49,223,.32);
+    opacity:.90;
+  }
+
+  .round-mobile .logo-wrap{
+    width:48px;
+    height:48px;
+    justify-self:center;
+  }
+
+  .round-mobile .logo-wrap .logo{
+    filter:
+      drop-shadow(0 4px 5px rgba(0,0,0,.42))
+      drop-shadow(0 0 10px rgba(32,199,255,.18));
+  }
+
+  .round-mobile .score-box{
+    width:34px;
+    height:34px;
+    border-radius:9px;
+    font-size:1.15rem;
+    font-weight:950;
+    border-color:rgba(255,49,223,.48);
+    background:linear-gradient(180deg, rgba(255,49,223,.28), rgba(7,10,27,.76));
+    box-shadow:
+      0 0 15px rgba(255,49,223,.24),
+      inset 0 1px 0 rgba(255,255,255,.10);
+  }
+
+  .round-mobile .team.away .score-box{
+    order:1;
+  }
+
+  .round-mobile .team.away .logo-wrap{
+    order:2;
+  }
+
+  .round-mobile .team.away .seed{
+    order:3;
+  }
+
+  .round-mobile .team.is-winner .logo-wrap{
+    transform:scale(1.12);
+    filter:drop-shadow(0 0 14px rgba(255,49,223,.42));
+  }
+
+  .round-mobile .team.is-winner .score-box{
+    color:#fff;
+    border-color:rgba(32,199,255,.62);
+    background:linear-gradient(180deg, rgba(32,199,255,.38), rgba(255,49,223,.22));
+    box-shadow:
+      0 0 18px rgba(32,199,255,.30),
+      0 0 12px rgba(255,49,223,.20),
+      inset 0 1px 0 rgba(255,255,255,.14);
+  }
+
+  .round-mobile .team.is-winner::after{
+    display:none;
+  }
+
   .mobile-final-hero{
     display:grid;
     place-items:center;
-    margin:4px 0 12px;
+    margin:0 0 10px;
   }
+
   .mini-trophy{
-    width:84px;
-    height:84px;
+    width:96px;
+    height:96px;
     background:url("img/Crashoutcup.png") center/contain no-repeat;
-    filter:drop-shadow(0 0 18px rgba(255,49,223,.26));
+    filter:
+      drop-shadow(0 0 22px rgba(255,49,223,.36))
+      drop-shadow(0 0 16px rgba(32,199,255,.18));
   }
+
   .mini-caption{
     color:#ff95ef;
     font-size:.68rem;
     font-weight:900;
     letter-spacing:.16em;
     text-transform:uppercase;
+    margin-top:-4px;
+  }
+
+  .round-mobile.round-mobile-finale{
+    padding:14px 10px 12px;
+    border-color:rgba(255,49,223,.42);
+    background:
+      radial-gradient(circle at 50% 34%, rgba(255,49,223,.20), transparent 42%),
+      radial-gradient(circle at 50% 82%, rgba(32,199,255,.18), transparent 44%),
+      rgba(7,10,27,.84);
+    box-shadow:
+      0 18px 36px rgba(0,0,0,.30),
+      0 0 26px rgba(255,49,223,.18),
+      inset 0 1px 0 rgba(255,255,255,.08);
+  }
+
+  .round-mobile.round-mobile-finale .match{
+    min-height:112px;
+    padding:20px 10px 16px;
+    grid-template-columns:minmax(0, 1fr) 54px minmax(0, 1fr);
+    background:
+      radial-gradient(circle at 50% 50%, rgba(255,49,223,.20), transparent 34%),
+      radial-gradient(circle at 50% 78%, rgba(32,199,255,.18), transparent 38%),
+      linear-gradient(135deg, rgba(255,49,223,.18), rgba(7,10,27,.86));
+  }
+
+  .round-mobile.round-mobile-finale .match::before{
+    content:"FINALE";
+  }
+
+  .round-mobile.round-mobile-finale .match::after{
+    content:"SERIE";
+    width:48px;
+    height:48px;
+    border-radius:14px;
+    transform:none;
+    background:
+      radial-gradient(circle, rgba(255,49,223,.24), rgba(7,10,27,.82));
+    color:#ffccfb;
+    font-size:.55rem;
+    letter-spacing:.22em;
+  }
+
+  .round-mobile.round-mobile-finale .team{
+    min-height:74px;
+  }
+
+  .round-mobile.round-mobile-finale .team.home{
+    grid-template-columns:24px 66px 38px !important;
+  }
+
+  .round-mobile.round-mobile-finale .team.away{
+    grid-template-columns:38px 66px 24px !important;
+  }
+
+  .round-mobile.round-mobile-finale .logo-wrap{
+    width:66px;
+    height:66px;
+  }
+
+  .round-mobile.round-mobile-finale .score-box{
+    width:38px;
+    height:38px;
+    font-size:1.28rem;
+  }
+
+  .round-mobile.round-mobile-finale .seed{
+    font-size:.58rem;
+    width:24px;
+    height:24px;
+    opacity:.72;
+  }
+}
+
+@media (max-width:380px){
+  .round-mobile .match{
+    grid-template-columns:minmax(0, 1fr) 28px minmax(0, 1fr);
+    gap:2px;
+    padding-left:7px;
+    padding-right:7px;
+  }
+
+  .round-mobile .match::after{
+    width:26px;
+    height:26px;
+    font-size:.56rem;
+  }
+
+  .round-mobile .team.home{
+    grid-template-columns:24px 42px 31px !important;
+  }
+
+  .round-mobile .team.away{
+    grid-template-columns:31px 42px 24px !important;
+  }
+
+  .round-mobile .seed{
+    width:24px;
+    height:24px;
+    font-size:.58rem;
+  }
+
+  .round-mobile .logo-wrap{
+    width:42px;
+    height:42px;
+  }
+
+  .round-mobile .score-box{
+    width:31px;
+    height:31px;
+    font-size:1.02rem;
   }
 }
