@@ -60,13 +60,14 @@ body::after{
 .arena-page{
   width:min(1780px, 100%);
   margin:0 auto;
-  padding:28px clamp(12px, 2vw, 28px) 28px;
+  /* spazio di sicurezza per la navbar fissa: evita il titolo tagliato */
+  padding:86px clamp(14px, 2vw, 28px) 26px;
 }
 
 .arena-hero{
   position:relative;
   text-align:center;
-  padding:4px 16px 20px;
+  padding:0 16px 16px;
 }
 
 .hero-kicker{
@@ -84,7 +85,7 @@ body::after{
   font-weight:900;
   text-transform:uppercase;
   letter-spacing:.075em;
-  font-size:clamp(2.45rem, 4.45vw, 4.75rem);
+  font-size:clamp(2.05rem, 3.65vw, 3.95rem);
   line-height:1.06;
   color:transparent;
   background:linear-gradient(180deg, #fff7c4 0%, #ffd86a 38%, #a56b1f 72%, #fff0a0 100%);
@@ -94,7 +95,7 @@ body::after{
 }
 
 .sottotitolo{
-  margin:8px auto 0;
+  margin:6px auto 0;
   max-width:860px;
   color:#f1e5cc;
   font-size:clamp(.94rem, 1.05vw, 1.10rem);
@@ -103,8 +104,8 @@ body::after{
 
 .arena-layout{
   display:grid;
-  grid-template-columns:minmax(250px, 320px) minmax(720px, 1fr) minmax(280px, 360px);
-  gap:20px;
+  grid-template-columns:minmax(270px, 340px) minmax(760px, 1fr) minmax(290px, 370px);
+  gap:18px;
   align-items:stretch;
 }
 
@@ -145,7 +146,7 @@ body::after{
 }
 
 .panel-stats{
-  min-height:206px;
+  min-height:190px;
   text-align:left;
 }
 
@@ -163,7 +164,7 @@ body::after{
 .panel-stats > strong{
   display:block;
   margin-top:8px;
-  font-size:3.8rem;
+  font-size:3.55rem;
   line-height:.86;
   color:var(--green);
   text-shadow:0 0 28px rgba(105,255,148,.30);
@@ -205,7 +206,7 @@ body::after{
 
 .panel-last{
   flex:1;
-  min-height:260px;
+  min-height:225px;
   text-align:left;
 }
 
@@ -256,6 +257,7 @@ body::after{
   border-radius:22px;
   padding:14px;
   overflow:hidden;
+  min-height:0;
 }
 
 .map-title-row{
@@ -289,16 +291,16 @@ body::after{
 
 .battle-map{
   position:relative;
-  height:clamp(560px, 60vh, 700px);
-  min-height:560px;
+  height:clamp(510px, 54vh, 610px);
+  min-height:510px;
   border-radius:20px;
   overflow:hidden;
   border:1px solid rgba(255,216,106,.24);
   background:
-    radial-gradient(circle at 50% 50%, rgba(105,255,148,.32), rgba(105,255,148,.12) 20%, transparent 37%),
+    radial-gradient(circle at 50% 50%, rgba(105,255,148,.42), rgba(105,255,148,.17) 20%, transparent 39%),
     radial-gradient(circle at 18% 70%, rgba(255,92,37,.13), transparent 28%),
     radial-gradient(circle at 85% 30%, rgba(255,160,45,.12), transparent 28%),
-    linear-gradient(145deg, rgba(35,41,37,.98), rgba(12,17,16,.97));
+    linear-gradient(145deg, rgba(45,50,42,.98), rgba(13,18,16,.97));
   box-shadow:inset 0 0 54px rgba(0,0,0,.56), 0 20px 38px rgba(0,0,0,.32);
 }
 
@@ -309,7 +311,7 @@ body::after{
   background:
     conic-gradient(from 10deg at 50% 50%, rgba(255,151,45,.16), transparent 10%, rgba(61,255,145,.16) 18%, transparent 28%, rgba(255,85,25,.15) 37%, transparent 47%, rgba(255,216,106,.10) 59%, transparent 70%, rgba(82,255,147,.15) 82%, transparent 100%),
     repeating-linear-gradient(35deg, rgba(255,255,255,.030) 0 2px, transparent 2px 48px);
-  opacity:.66;
+  opacity:.46;
   filter:contrast(1.1);
 }
 
@@ -317,9 +319,9 @@ body::after{
   content:"";
   position:absolute;
   inset:0;
-  background:radial-gradient(circle at center, transparent 56%, rgba(0,0,0,.22) 80%, rgba(0,0,0,.56) 100%);
+  background:radial-gradient(circle at center, transparent 60%, rgba(0,0,0,.16) 82%, rgba(0,0,0,.46) 100%);
   pointer-events:none;
-  z-index:5;
+  z-index:3;
 }
 
 .map-glow{
@@ -330,8 +332,8 @@ body::after{
   top:50%;
   transform:translate(-50%, -50%);
   border-radius:50%;
-  background:radial-gradient(circle, rgba(84,255,148,.58), rgba(84,255,148,.20) 38%, transparent 70%);
-  filter:blur(7px);
+  background:radial-gradient(circle, rgba(84,255,148,.50), rgba(84,255,148,.18) 38%, transparent 72%);
+  filter:blur(8px);
   z-index:1;
 }
 
@@ -366,13 +368,13 @@ body::after{
 .territories-layer{
   position:absolute;
   inset:0;
-  z-index:4;
+  z-index:7;
 }
 
 .territory{
   position:absolute;
-  width:clamp(90px, 7.5vw, 124px);
-  min-height:clamp(82px, 7vw, 114px);
+  width:clamp(96px, 7.8vw, 132px);
+  min-height:clamp(88px, 7.2vw, 118px);
   transform:translate(-50%, -50%);
   display:flex;
   flex-direction:column;
@@ -383,9 +385,9 @@ body::after{
   color:#ddd4bf;
   border:1px solid rgba(255,255,255,.18);
   background:
-    linear-gradient(145deg, rgba(255,255,255,.075), rgba(0,0,0,.36)),
-    radial-gradient(circle at 50% 35%, rgba(255,216,106,.10), transparent 62%);
-  box-shadow:0 14px 22px rgba(0,0,0,.24), inset 0 0 22px rgba(255,255,255,.045);
+    linear-gradient(145deg, rgba(255,255,255,.105), rgba(0,0,0,.28)),
+    radial-gradient(circle at 50% 35%, rgba(255,216,106,.13), transparent 62%);
+  box-shadow:0 16px 26px rgba(0,0,0,.30), inset 0 0 24px rgba(255,255,255,.060);
   clip-path:polygon(13% 0, 88% 3%, 100% 22%, 93% 84%, 72% 100%, 16% 94%, 0 73%, 5% 16%);
   transition:transform .18s ease, filter .18s ease, opacity .18s ease, box-shadow .18s ease;
 }
@@ -400,8 +402,8 @@ body::after{
   height:60px;
   max-width:66%;
   object-fit:contain;
-  filter:grayscale(.9) drop-shadow(0 6px 10px rgba(0,0,0,.48));
-  opacity:.78;
+  filter:grayscale(.82) drop-shadow(0 6px 10px rgba(0,0,0,.50));
+  opacity:.92;
 }
 
 .territory-name{
@@ -409,16 +411,19 @@ body::after{
   overflow:hidden;
   text-overflow:ellipsis;
   white-space:nowrap;
-  color:#efe6cf;
+  color:#fff3cf;
   font-family:'Cinzel', serif;
   font-size:.64rem;
   font-weight:900;
   text-transform:uppercase;
   letter-spacing:.02em;
   text-shadow:0 2px 8px #000;
+  background:rgba(0,0,0,.24);
+  border-radius:999px;
+  padding:2px 6px;
 }
 
-.territory.eliminata{ opacity:.78; }
+.territory.eliminata{ opacity:.90; }
 
 .territory.recente{
   opacity:1;
@@ -442,7 +447,7 @@ body::after{
   left:50%;
   top:50%;
   z-index:12;
-  width:clamp(150px, 14.4vw, 205px);
+  width:clamp(145px, 13.4vw, 192px);
   transform:translate(-50%, -50%);
   text-align:center;
 }
@@ -463,7 +468,7 @@ body::after{
 
 .champion-card{
   position:relative;
-  padding:15px 14px 14px;
+  padding:13px 13px 13px;
   border-radius:20px;
   border:1px solid rgba(255,216,106,.60);
   background:linear-gradient(180deg, rgba(15,31,22,.88), rgba(3,6,6,.90));
@@ -471,8 +476,8 @@ body::after{
 }
 
 .champion-card img{
-  width:96px;
-  height:96px;
+  width:88px;
+  height:88px;
   object-fit:contain;
   filter:drop-shadow(0 12px 20px rgba(0,0,0,.55));
 }
@@ -524,7 +529,7 @@ body::after{
   position:relative;
   display:grid;
   gap:8px;
-  max-height:600px;
+  max-height:520px;
   overflow:auto;
   padding-right:6px;
   scrollbar-width:thin;
@@ -543,7 +548,7 @@ body::after{
   grid-template-columns:42px 1fr auto;
   gap:10px;
   align-items:center;
-  padding:8px 8px;
+  padding:9px 9px;
   border:1px solid rgba(255,255,255,.10);
   background:rgba(255,255,255,.045);
   border-radius:13px;
@@ -588,7 +593,7 @@ body::after{
   grid-template-columns:auto 1fr auto;
   gap:16px;
   align-items:center;
-  margin-top:18px;
+  margin-top:14px;
   padding:13px 16px;
   border-radius:18px;
   overflow:hidden;
@@ -667,13 +672,26 @@ body::after{
 }
 
 @media (max-width: 760px){
-  .arena-page{ padding:16px 10px 22px; }
+  .arena-page{ padding:82px 10px 22px; }
   .arena-hero h1{ font-size:2.35rem; }
   .arena-side{ grid-template-columns:1fr; }
-  .battle-map{ min-height:640px; height:640px; }
+  .battle-map{ min-height:620px; height:620px; }
   .territory{ width:82px; min-height:76px; }
   .territory img{ width:46px; height:46px; }
   .territory-name{ font-size:.55rem; }
   .champion-card img{ width:84px; height:84px; }
   .recent-strip{ grid-template-columns:1fr; }
+}
+
+
+/* ===== V3 polish: leggibilità mappa + navbar sempre sopra ===== */
+.site-nav{ position:relative; z-index:1000; }
+.navbar .submenu{ z-index:1200; }
+.map-stage{ isolation:isolate; }
+.panel-history{ display:flex; flex-direction:column; }
+.panel-history .history-list{ flex:1; }
+
+@media (min-width: 1301px){
+  .arena-layout{ min-height:0; }
+  .panel-history{ max-height:640px; }
 }
