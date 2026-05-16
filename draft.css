@@ -4809,69 +4809,72 @@ h1, h2, h3, h4, p{
 }
 
 /* =========================================================
-   DESKTOP - LIVE BAR PIÙ GRANDE / SPORT BROADCAST
+   DESKTOP - LIVE BAR XL / BROADCAST MODE
    ========================================================= */
 @media (min-width: 1101px){
 
   .desktop-live-bar{
-    padding: 22px 28px !important;
-    gap: 24px !important;
-    border-radius: 22px !important;
-    margin-bottom: 20px !important;
+    padding: 30px 36px !important;
+    gap: 34px !important;
+    border-radius: 26px !important;
+    margin-bottom: 26px !important;
+    min-height: 142px !important;
   }
 
   .desktop-live-main{
-    gap: 16px !important;
+    gap: 22px !important;
   }
 
   .desktop-live-icon{
-    width: 56px !important;
-    height: 56px !important;
-    font-size: 1.6rem !important;
+    width: 74px !important;
+    height: 74px !important;
+    font-size: 2rem !important;
+    border-width: 2px !important;
   }
 
   .desktop-live-kicker,
   .desktop-live-stat span,
   .desktop-live-queue > span{
-    font-size: .82rem !important;
-    margin-bottom: 6px !important;
-    letter-spacing: .09em !important;
+    font-size: .95rem !important;
+    margin-bottom: 8px !important;
+    letter-spacing: .1em !important;
   }
 
   #desktop-live-team{
-    font-size: clamp(2rem, 2.5vw, 2.8rem) !important;
-    line-height: 1 !important;
+    font-size: clamp(2.7rem, 3.4vw, 3.8rem) !important;
+    line-height: .95 !important;
   }
 
   .desktop-live-stat{
-    padding-left: 22px !important;
+    padding-left: 30px !important;
   }
 
   .desktop-live-stat strong{
-    font-size: 2rem !important;
-    line-height: 1 !important;
+    font-size: 2.7rem !important;
+    line-height: .95 !important;
   }
 
   .desktop-live-stat-small strong{
-    font-size: 2.1rem !important;
+    font-size: 2.9rem !important;
   }
 
   .desktop-next-queue{
-    gap: 9px !important;
-    min-height: 42px !important;
+    gap: 12px !important;
+    min-height: 58px !important;
   }
 
   .desktop-queue-logo{
-    width: 42px !important;
-    height: 42px !important;
+    width: 56px !important;
+    height: 56px !important;
+    border-width: 2px !important;
   }
 
   .desktop-queue-logo img{
-    width: 34px !important;
-    height: 34px !important;
+    width: 46px !important;
+    height: 46px !important;
   }
 
   .desktop-queue-arrow{
-    font-size: 1.25rem !important;
+    font-size: 1.65rem !important;
   }
 }
