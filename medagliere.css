@@ -751,37 +751,39 @@ body::after {
   }
 }
 
-/* ===== FIX MAJOR TROPHY + SOLO 2025-2026 ===== */
+/* ===== FIX PULITO MAJOR DESKTOP ===== */
 
 @media (min-width: 761px) {
   .blocco-major {
     min-height: 390px;
   }
 
-  /* Abbassa solo il primo anno dei major: 2025-2026 */
-.blocco-major .coppa-box + .anno {
-  transform: none !important;
-  margin-top: 58px !important;
-}
-
-  .blocco-major .coppa-box + .anno.attivo {
-  margin-bottom: 12px;
-}
-
-  /* Lascia gli altri anni fermi */
-  .blocco-major .coppa-box + .anno + .anno,
-  .blocco-major .coppa-box + .anno + .anno + .anno,
-  .blocco-major .coppa-box + .anno + .anno + .anno + .anno {
-    transform: none;
+  /* Crea spazio sopra la lista anni senza rompere gli accordion */
+  .blocco-major .coppa-box + .anno {
+    margin-top: 46px;
   }
 
-  /* Abbassa solo il trofeo */
+  /* Importante: nessun transform sugli anni */
+  .blocco-major .anno {
+    transform: none !important;
+  }
+
+  /* Abbassa solo il trofeo, non gli accordion */
   .blocco-major .coppa-img {
     max-height: 305px;
-    transform: translateY(38px);
+    transform: translateY(34px);
   }
 
   .blocco-major:hover .coppa-img {
-    transform: translateY(32px) scale(1.025);
+    transform: translateY(28px) scale(1.025);
+  }
+
+  /* Accordion più stabile: quando si apre, spinge gli altri sotto */
+  .blocco-major .contenuto-anno {
+    display: none;
+  }
+
+  .blocco-major .anno.attivo .contenuto-anno {
+    display: block;
   }
 }
