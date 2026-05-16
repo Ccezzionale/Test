@@ -8,6 +8,11 @@ let roster = [];
 let selections = [];
 let eligiblePlayers = [];
 let previousKeeperSelections = [];
+let rosterFilters = {
+  search: "",
+  role: "all",
+  status: "all"
+};
 
 const TYPE_LABELS = {
   FP: "Franchise Player",
@@ -66,8 +71,40 @@ function bindEvents() {
   document.getElementById("btn-save-settings")?.addEventListener("click", saveKeeperSettings);
   document.getElementById("btn-scan-conflicts")?.addEventListener("click", scanKeeperConflicts);
   document.getElementById("btn-apply-predraft")?.addEventListener("click", applyPreDraftToDraft);
-}
 
+  document.getElementById("roster-search")?.addEventListener("input", event => {
+    rosterFilters.search = event.target.value || "";
+    renderRoster();
+  });
+
+  document.getElementById("roster-role-filter")?.addEventListener("change", event => {
+    rosterFilters.role = event.target.value || "all";
+    renderRoster();
+  });
+
+  document.getElementById("roster-status-filter")?.addEventListener("change", event => {
+    rosterFilters.status = event.target.value || "all";
+    renderRoster();
+  });
+
+  document.getElementById("btn-reset-roster-filters")?.addEventListener("click", () => {
+    rosterFilters = {
+      search: "",
+      role: "all",
+      status: "all"
+    };
+
+    const searchInput = document.getElementById("roster-search");
+    const roleFilter = document.getElementById("roster-role-filter");
+    const statusFilter = document.getElementById("roster-status-filter");
+
+    if (searchInput) searchInput.value = "";
+    if (roleFilter) roleFilter.value = "all";
+    if (statusFilter) statusFilter.value = "all";
+
+    renderRoster();
+  });
+}
 async function applyPreDraftToDraft() {
   if (!isAdmin()) return;
 
@@ -298,9 +335,11 @@ function renderPage() {
     selectionsBox?.classList.add("hidden");
   }
 
-  renderSelects();
-  renderCurrentSelections();
-  renderRoster();
+ renderSelects();
+renderCurrentSelections();
+renderPredraftSummary();
+renderRosterFilters();
+renderRoster();
 
   if (isAdmin()) {
     renderAdminControls();
@@ -649,24 +688,151 @@ ${selection.actual_paid_round ? `· Round ${selection.actual_paid_round}` : ""}
   });
 }
 
+function renderPredraftSummary() {
+  const container = document.getElementById("predraft-summary");
+  if (!container) return;
+
+  const selectionByType = {
+    FP: selections.find(s => s.selection_type === "FP"),
+    U21_KEEPER: selections.find(s => s.selection_type === "U21_KEEPER"),
+    RFA: selections.find(s => s.selection_type === "RFA")
+  };
+
+  const selectionByPlayerId = {};
+  selections.forEach(s => {
+    selectionByPlayerId[s.player_id] = s.selection_type;
+  });
+
+  const u21CountForRoster = roster.filter(player => {
+    const selectedType = selectionByPlayerId[player.id];
+    return player.is_u21 && selectedType !== "U21_KEEPER";
+  }).length;
+
+  const fpText = getSummaryPlayerText(selectionByType.FP);
+  const u21Text = getSummaryPlayerText(selectionByType.U21_KEEPER);
+  const rfaText = getSummaryPlayerText(selectionByType.RFA);
+
+  container.innerHTML = `
+    <div class="summary-card summary-fp">
+      <div class="summary-icon">⭐</div>
+      <div>
+        <span class="summary-label">Franchise Player</span>
+        <strong>${escapeHtml(fpText.main)}</strong>
+        <small>${escapeHtml(fpText.meta)}</small>
+      </div>
+    </div>
+
+    <div class="summary-card summary-u21">
+      <div class="summary-icon">🐣</div>
+      <div>
+        <span class="summary-label">U21 confermato</span>
+        <strong>${escapeHtml(u21Text.main)}</strong>
+        <small>${escapeHtml(u21Text.meta)}</small>
+      </div>
+    </div>
+
+    <div class="summary-card summary-rfa">
+      <div class="summary-icon">🛡️</div>
+      <div>
+        <span class="summary-label">RFA</span>
+        <strong>${escapeHtml(rfaText.main)}</strong>
+        <small>${escapeHtml(rfaText.meta)}</small>
+      </div>
+    </div>
+
+    <div class="summary-card summary-count ${u21CountForRoster >= 4 ? "is-ok" : "is-warning"}">
+      <div class="summary-icon">👥</div>
+      <div>
+        <span class="summary-label">U21 obbligatori</span>
+        <strong>${u21CountForRoster}/4</strong>
+        <small>${u21CountForRoster >= 4 ? "Requisito rispettato" : "Da completare"}</small>
+      </div>
+    </div>
+  `;
+}
+
+function getSummaryPlayerText(selection) {
+  if (!selection) {
+    return {
+      main: "Nessuno",
+      meta: "Non selezionato"
+    };
+  }
+
+  const player = selection.players || {};
+  const role = player.role || player.role_mantra || "-";
+  const team = player.serie_a_team || "-";
+
+  return {
+    main: player.name || "Giocatore",
+    meta: `${role} · ${team}`
+  };
+}
+
+function renderRosterFilters() {
+  const roleFilter = document.getElementById("roster-role-filter");
+  if (!roleFilter) return;
+
+  const currentValue = rosterFilters.role || roleFilter.value || "all";
+
+  const roles = [...new Set(
+    roster
+      .map(player => player.role || player.role_mantra || "")
+      .filter(Boolean)
+  )].sort((a, b) => a.localeCompare(b));
+
+  roleFilter.innerHTML = `
+    <option value="all">Tutti i ruoli</option>
+    ${roles.map(role => `
+      <option value="${escapeHtml(role)}">${escapeHtml(role)}</option>
+    `).join("")}
+  `;
+
+  roleFilter.value = roles.includes(currentValue) ? currentValue : "all";
+  rosterFilters.role = roleFilter.value;
+}
+
+function getPlayerStatusKeys(player, selectedType) {
+  const keys = [];
+
+  if (player.is_fp) {
+    keys.push("fp_current");
+  }
+
+  if (player.is_u21 && selectedType !== "U21_KEEPER") {
+    keys.push("u21_roster");
+  }
+
+  if (selectedType) {
+    keys.push("selected");
+    keys.push(selectedType);
+  }
+
+  if (!player.is_fp && !player.is_u21 && !selectedType) {
+    keys.push("standard");
+  }
+
+  return keys;
+}
+
 function renderRoster() {
   const container = document.getElementById("keeper-roster");
   if (!container) return;
 
-if (!roster.length) {
-  const snapshotSeason = Number(keeperSettings.season) - 1;
+  if (!roster.length) {
+    const snapshotSeason = Number(keeperSettings.season) - 1;
 
-  container.innerHTML = `
-    <p>
-      Nessuna rosa finale trovata per <strong>${escapeHtml(currentTeam.name)}</strong>
-      nella stagione ${snapshotSeason}.
-    </p>
-    <p>
-      Il Pre-Draft ${keeperSettings.season} legge le rose finali ${snapshotSeason}.
-    </p>
-  `;
-  return;
-}
+    container.innerHTML = `
+      <p>
+        Nessuna rosa finale trovata per <strong>${escapeHtml(currentTeam.name)}</strong>
+        nella stagione ${snapshotSeason}.
+      </p>
+      <p>
+        Il Pre-Draft ${keeperSettings.season} legge le rose finali ${snapshotSeason}.
+      </p>
+    `;
+    return;
+  }
 
   const selectionByPlayerId = {};
   selections.forEach(s => {
@@ -683,6 +849,36 @@ if (!roster.length) {
     return selectedType === "U21_KEEPER";
   }).length;
 
+  const searchTerm = String(rosterFilters.search || "").toLowerCase().trim();
+  const roleFilter = rosterFilters.role || "all";
+  const statusFilter = rosterFilters.status || "all";
+
+  const filteredRoster = roster.filter(player => {
+    const selectedType = selectionByPlayerId[player.id];
+
+    const playerName = String(player.name || "").toLowerCase();
+    const playerTeam = String(player.serie_a_team || "").toLowerCase();
+    const playerRole = String(player.role || player.role_mantra || "");
+
+    const matchesSearch =
+      !searchTerm ||
+      playerName.includes(searchTerm) ||
+      playerTeam.includes(searchTerm) ||
+      playerRole.toLowerCase().includes(searchTerm);
+
+    const matchesRole =
+      roleFilter === "all" ||
+      playerRole === roleFilter;
+
+    const statusKeys = getPlayerStatusKeys(player, selectedType);
+
+    const matchesStatus =
+      statusFilter === "all" ||
+      statusKeys.includes(statusFilter);
+
+    return matchesSearch && matchesRole && matchesStatus;
+  });
+
   container.innerHTML = `
     <div class="roster-summary">
       <span class="badge ${u21CountForRoster >= 4 ? "badge-u21" : "badge-rfa"}">
@@ -691,51 +887,66 @@ if (!roster.length) {
       <span class="badge badge-u21-keeper">
         U21 confermati: ${u21KeeperCount}
       </span>
+      <span class="badge badge-muted">
+        Giocatori mostrati: ${filteredRoster.length}/${roster.length}
+      </span>
     </div>
 
-    <table>
-      <thead>
-        <tr>
-          <th>Ruolo</th>
-          <th>Nome</th>
-          <th>Squadra</th>
-          <th>Quotazione</th>
-          <th>Status</th>
-        </tr>
-      </thead>
-      <tbody>
-        ${roster.map(player => {
-          const type = selectionByPlayerId[player.id];
+    ${
+      !filteredRoster.length
+        ? `
+          <div class="empty-roster-filter">
+            Nessun giocatore trovato con questi filtri.
+          </div>
+        `
+        : `
+          <table>
+            <thead>
+              <tr>
+                <th>Ruolo</th>
+                <th>Nome</th>
+                <th>Squadra</th>
+                <th>Quotazione</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${filteredRoster.map(player => {
+                const type = selectionByPlayerId[player.id];
 
-          return `
-            <tr>
-              <td>${escapeHtml(player.role || player.role_mantra || "-")}</td>
-              <td>${escapeHtml(player.name || "-")}</td>
-              <td>${escapeHtml(player.serie_a_team || "-")}</td>
-              <td>${escapeHtml(player.quotation ?? "-")}</td>
-              <td>
-                ${player.is_fp ? `<span class="badge badge-fp">FP attuale</span>` : ""}
-                ${
-                  player.is_u21 && type !== "U21_KEEPER"
-                    ? `<span class="badge badge-u21">U21 rosa</span>`
-                    : ""
-                }
-                ${
-                  type
-                    ? `<span class="badge ${TYPE_BADGES[type]}">${TYPE_LABELS[type]}</span>`
-                    : ""
-                }
-                ${
-                  !player.is_fp && !player.is_u21 && !type
-                    ? `<span class="badge badge-muted">Standard</span>`
-                    : ""
-                }
-              </td>
-            </tr>
-          `;
-        }).join("")}
-      </tbody>
-    </table>
+                return `
+                  <tr>
+                    <td>${escapeHtml(player.role || player.role_mantra || "-")}</td>
+                    <td>
+                      <span class="roster-player-name">${escapeHtml(player.name || "-")}</span>
+                    </td>
+                    <td>${escapeHtml(player.serie_a_team || "-")}</td>
+                    <td>${escapeHtml(player.quotation ?? "-")}</td>
+                    <td>
+                      ${player.is_fp ? `<span class="badge badge-fp">FP attuale</span>` : ""}
+                      ${
+                        player.is_u21 && type !== "U21_KEEPER"
+                          ? `<span class="badge badge-u21">U21 rosa</span>`
+                          : ""
+                      }
+                      ${
+                        type
+                          ? `<span class="badge ${TYPE_BADGES[type]}">${TYPE_LABELS[type]}</span>`
+                          : ""
+                      }
+                      ${
+                        !player.is_fp && !player.is_u21 && !type
+                          ? `<span class="badge badge-muted">Standard</span>`
+                          : ""
+                      }
+                    </td>
+                  </tr>
+                `;
+              }).join("")}
+            </tbody>
+          </table>
+        `
+    }
   `;
 }
 
