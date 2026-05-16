@@ -668,15 +668,6 @@ body{
   }
 }
 
-  .choice-card{
-    min-height:auto;
-  }
-
-  .choice-card p{
-    min-height:auto;
-  }
-}
-
 /* TABLET AND MOBILE */
 
 @media (max-width:1099px){
