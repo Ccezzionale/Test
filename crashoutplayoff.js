@@ -348,50 +348,216 @@ function createMobileTrophyHero() {
   const hero = document.createElement("section");
   hero.className = "mobile-trophy-hero";
   hero.innerHTML = `
-    <div class="mobile-trophy-kicker">Crash Out Cup</div>
+    <div class="mobile-trophy-kicker">Lega degli Eroi</div>
     <div class="mobile-trophy-image" aria-hidden="true"></div>
-    <h2 class="mobile-trophy-title">Playoff</h2>
-    <div class="mobile-trophy-subtitle">Knockout Stage</div>
+    <h2 class="mobile-trophy-title">Crash Out Cup</h2>
+    <div class="mobile-trophy-subtitle">Best of 5 Series</div>
   `;
   return hero;
+}
+
+function createMobileLogo(teamObj) {
+  const wrap = document.createElement("span");
+  wrap.className = "mobile-logo-wrap";
+
+  const img = document.createElement("img");
+  img.className = "mobile-logo";
+  img.alt = safeTeamName(teamObj?.team);
+
+  if (teamObj?.team && teamObj.team !== "TBD") {
+    img.src = logoSrc(teamObj.team);
+  } else {
+    img.classList.add("hidden");
+    wrap.classList.add("no-logo");
+  }
+
+  img.onerror = () => {
+    img.classList.add("hidden");
+    wrap.classList.add("no-logo");
+  };
+
+  wrap.appendChild(img);
+  return wrap;
+}
+
+function createMobileSeriesCard(match, label, isFinal = false) {
+  const score = getScoreFor(match.id);
+  const homeWon = score.home >= 3 && score.home > score.away;
+  const awayWon = score.away >= 3 && score.away > score.home;
+
+  const card = document.createElement("article");
+  card.className = isFinal ? "mobile-series-card mobile-series-final" : "mobile-series-card";
+  card.dataset.series = match.id;
+
+  if (homeWon) card.classList.add("winner-home");
+  if (awayWon) card.classList.add("winner-away");
+
+  const title = document.createElement("div");
+  title.className = "mobile-series-label";
+  title.textContent = label;
+  card.appendChild(title);
+
+  if (isFinal) {
+    const finalInner = document.createElement("div");
+    finalInner.className = "mobile-final-card-inner";
+
+    const homeSide = document.createElement("div");
+    homeSide.className = "mobile-final-logo-side";
+    homeSide.appendChild(createMobileLogo(match.home));
+
+    const center = document.createElement("div");
+    center.className = "mobile-final-score-block";
+    center.innerHTML = `
+      <div class="mobile-final-mini-trophy" aria-hidden="true"></div>
+      <div class="mobile-final-score">${score.home} - ${score.away}</div>
+      <div class="mobile-final-serie">SERIE</div>
+    `;
+
+    const awaySide = document.createElement("div");
+    awaySide.className = "mobile-final-logo-side";
+    awaySide.appendChild(createMobileLogo(match.away));
+
+    finalInner.append(homeSide, center, awaySide);
+    card.appendChild(finalInner);
+
+    const cta = document.createElement("div");
+    cta.className = "mobile-final-cta";
+    cta.textContent = "Verso la gloria";
+    card.appendChild(cta);
+    return card;
+  }
+
+  const row = document.createElement("div");
+  row.className = "mobile-series-row";
+
+  const home = document.createElement("div");
+  home.className = "mobile-team-side mobile-home" + (homeWon ? " is-winner" : "");
+  home.innerHTML = `
+    <span class="mobile-seed">${match.home.seed || ""}</span>
+    <span class="mobile-score">${score.home}</span>
+  `;
+  home.insertBefore(createMobileLogo(match.home), home.querySelector(".mobile-score"));
+
+  const vs = document.createElement("div");
+  vs.className = "mobile-vs";
+  vs.textContent = "VS";
+
+  const away = document.createElement("div");
+  away.className = "mobile-team-side mobile-away" + (awayWon ? " is-winner" : "");
+  away.innerHTML = `
+    <span class="mobile-score">${score.away}</span>
+    <span class="mobile-seed">${match.away.seed || ""}</span>
+  `;
+  away.insertBefore(createMobileLogo(match.away), away.querySelector(".mobile-seed"));
+
+  row.append(home, vs, away);
+  card.appendChild(row);
+  return card;
 }
 
 function renderMobileList(bracket) {
   const mob = document.getElementById("bracket-mobile");
   if (!mob) return;
 
-  const makeGroup = (title, matches, extraClass = "") => {
-    const wrp = document.createElement("section");
-    wrp.className = `round-mobile ${extraClass}`.trim();
-    wrp.innerHTML = `<h3>${title}</h3>`;
-
-    matches.forEach(match => {
-      wrp.appendChild(createMatchElement(match));
-    });
-
-    mob.appendChild(wrp);
-  };
+  const panels = [
+    {
+      id: "ottavi",
+      label: "Ottavi",
+      title: "Ottavi di finale",
+      matches: [...bracket.r1.left, ...bracket.r1.right]
+    },
+    {
+      id: "quarti",
+      label: "Quarti",
+      title: "Quarti di finale",
+      matches: [...bracket.leftSF, ...bracket.rightSF]
+    },
+    {
+      id: "semifinali",
+      label: "Semifinali",
+      title: "Semifinali",
+      matches: [...bracket.leftCF, ...bracket.rightCF]
+    },
+    {
+      id: "finale",
+      label: "Finale",
+      title: "Finale",
+      matches: bracket.finals,
+      isFinal: true
+    }
+  ];
 
   mob.innerHTML = "";
   mob.appendChild(createMobileTrophyHero());
 
-  makeGroup("Ottavi di Finale", bracket.r1.left);
-  makeGroup("Ottavi di Finale", bracket.r1.right);
-  makeGroup("Quarti di Finale", bracket.leftSF);
-  makeGroup("Quarti di Finale", bracket.rightSF);
-  makeGroup("Semifinali", [...bracket.leftCF, ...bracket.rightCF]);
+  const board = document.createElement("section");
+  board.className = "mobile-playoff-board";
 
-  const finalSection = document.createElement("section");
-  finalSection.className = "round-mobile round-mobile-finale";
-  finalSection.innerHTML = `
-    <h3>Finale</h3>
-    <div class="mobile-final-hero">
-      <div class="mini-trophy" aria-hidden="true"></div>
-      <div class="mini-caption">Crash Out Cup Finals</div>
-    </div>
-  `;
-  bracket.finals.forEach(match => finalSection.appendChild(createMatchElement(match)));
-  mob.appendChild(finalSection);
+  const tabs = document.createElement("div");
+  tabs.className = "mobile-round-tabs";
+  tabs.setAttribute("role", "tablist");
+
+  const content = document.createElement("div");
+  content.className = "mobile-round-content";
+
+  panels.forEach((panel, panelIndex) => {
+    const active = panelIndex === 0;
+
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = `mobile-round-tab${active ? " is-active" : ""}`;
+    btn.dataset.mobileTab = panel.id;
+    btn.setAttribute("role", "tab");
+    btn.setAttribute("aria-selected", active ? "true" : "false");
+    btn.textContent = panel.label;
+    tabs.appendChild(btn);
+
+    const section = document.createElement("section");
+    section.className = `mobile-round-panel${active ? " is-active" : ""}`;
+    section.dataset.mobilePanel = panel.id;
+    section.setAttribute("role", "tabpanel");
+    section.innerHTML = `<h3>${panel.title}</h3>`;
+
+    panel.matches.forEach((match, matchIndex) => {
+      const prefix = panel.id === "ottavi"
+        ? "Serie"
+        : panel.id === "quarti"
+          ? "Quarto"
+          : panel.id === "semifinali"
+            ? "Semifinale"
+            : "Finale";
+
+      section.appendChild(
+        createMobileSeriesCard(
+          match,
+          panel.isFinal ? "Finale" : `${prefix} ${matchIndex + 1}`,
+          !!panel.isFinal
+        )
+      );
+    });
+
+    content.appendChild(section);
+  });
+
+  board.append(tabs, content);
+  mob.appendChild(board);
+
+  tabs.addEventListener("click", event => {
+    const btn = event.target.closest(".mobile-round-tab");
+    if (!btn) return;
+
+    const selected = btn.dataset.mobileTab;
+
+    tabs.querySelectorAll(".mobile-round-tab").forEach(tab => {
+      const isSelected = tab.dataset.mobileTab === selected;
+      tab.classList.toggle("is-active", isSelected);
+      tab.setAttribute("aria-selected", isSelected ? "true" : "false");
+    });
+
+    content.querySelectorAll(".mobile-round-panel").forEach(panel => {
+      panel.classList.toggle("is-active", panel.dataset.mobilePanel === selected);
+    });
+  });
 }
 
 // ======== WIRES ========
