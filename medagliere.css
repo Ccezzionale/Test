@@ -750,3 +750,35 @@ body::after {
     top: 56px;
   }
 }
+
+/* ===== FIX DEFINITIVO MAJOR DESKTOP ===== */
+
+@media (min-width: 761px) {
+  .blocco-major {
+    min-height: 430px !important;
+  }
+
+  /* Abbassa tutti i menu anni dei due major */
+  .blocco-major .anno {
+    transform: translateY(70px) !important;
+  }
+
+  /* Abbassa e centra meglio i trofei */
+  .blocco-major .coppa-box {
+    align-self: end !important;
+    justify-self: center !important;
+    min-height: 340px !important;
+    padding-top: 80px !important;
+    padding-bottom: 0 !important;
+    margin-top: 40px !important;
+  }
+
+  .blocco-major .coppa-img {
+    max-height: 320px !important;
+    transform: translateY(54px) !important;
+  }
+
+  .blocco-major:hover .coppa-img {
+    transform: translateY(48px) scale(1.025) !important;
+  }
+}
