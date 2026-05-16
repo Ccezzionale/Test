@@ -1070,3 +1070,62 @@ body{
     row-gap: 14px !important;
   }
 }
+
+/* =========================================================
+   PLAYOFF V3.2 - SEMIFINALI CENTRATE TRA I QUARTI
+   ========================================================= */
+@media (min-width: 1024px){
+
+  :root{
+    --semi-center-offset: 78px;   /* quanto abbasso S1 / alzo S2 */
+    --semi-stem-h: 172px;         /* altezza del connettore verticale centrale */
+  }
+
+  /* S1 più giù, in mezzo tra Q1 e Q4 */
+  .bracket > .blocco-colonna:nth-of-type(3){
+    position: relative;
+    margin-top: var(--semi-center-offset);
+  }
+
+  /* S2 più su, in mezzo tra Q2 e Q3 */
+  .bracket > .blocco-colonna:nth-of-type(5){
+    position: relative;
+    margin-top: calc(-1 * var(--semi-center-offset));
+  }
+
+  /* spegne l’eventuale vecchio raccordo verticale delle semifinali */
+  .bracket > .blocco-colonna:nth-of-type(3) .colonna::before,
+  .bracket > .blocco-colonna:nth-of-type(5) .colonna::before{
+    display: none !important;
+  }
+
+  /* stelo verticale centrale tra i due quarti e la semifinale */
+  .bracket > .blocco-colonna:nth-of-type(3)::before,
+  .bracket > .blocco-colonna:nth-of-type(5)::before{
+    content: "";
+    position: absolute;
+    left: calc(-1 * var(--po-col-gap) / 2);
+    top: 50%;
+    transform: translateY(-50%);
+    width: 2px;
+    height: var(--semi-stem-h);
+    background: linear-gradient(
+      180deg,
+      transparent 0%,
+      rgba(255,255,255,.55) 18%,
+      rgba(255,211,107,.95) 50%,
+      rgba(255,255,255,.55) 82%,
+      transparent 100%
+    );
+    box-shadow: 0 0 10px rgba(255,211,107,.35);
+    border-radius: 999px;
+    pointer-events: none;
+  }
+
+  /* allunga le linee dai quarti fino allo stelo centrale */
+  .bracket > .blocco-colonna:nth-of-type(2) .pair-offset::after,
+  .bracket > .blocco-colonna:nth-of-type(6) .pair-offset::after{
+    right: calc(-1 * var(--po-col-gap) / 2 + 2px) !important;
+    width: calc(var(--po-col-gap) / 2 - 4px) !important;
+  }
+}
