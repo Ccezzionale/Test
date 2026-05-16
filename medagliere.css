@@ -266,7 +266,7 @@ body::after {
 
 .blocco-major {
   grid-column: span 6;
-  min-height: 330px;
+  min-height: 360px;
   padding: 24px;
   display: grid;
   grid-template-columns: minmax(240px, 0.95fr) minmax(250px, 1.05fr);
@@ -308,6 +308,10 @@ body::after {
 
 .blocco-major .anno {
   grid-column: 1;
+}
+
+.blocco-major .anno:first-of-type {
+  margin-top: 34px;
 }
 
 .blocco-major h2 {
@@ -373,13 +377,14 @@ body::after {
 }
 
 .blocco-major .coppa-box {
-  min-height: 280px;
-  padding: 0;
+  min-height: 300px;
+  padding-top: 28px;
+  align-items: flex-end;
 }
 
 .blocco-major .coppa-img {
-  max-height: 315px;
-  transform: translateY(16px);
+  max-height: 300px;
+  transform: translateY(14px);
 }
 
 .blocco-major:hover .coppa-img {
