@@ -719,7 +719,9 @@ function renderPredraftSummary() {
 
   container.innerHTML = `
     <div class="summary-card summary-fp">
-      <div class="summary-icon">⭐</div>
+     <div class="summary-icon summary-badge-icon">
+  <img src="img/badges/fp.webp" alt="Franchise Player">
+</div>
       <div>
         <span class="summary-label">Franchise Player</span>
         <strong>${escapeHtml(fpText.main)}</strong>
@@ -728,7 +730,9 @@ function renderPredraftSummary() {
     </div>
 
     <div class="summary-card summary-u21">
-      <div class="summary-icon">🐣</div>
+      <div class="summary-icon summary-badge-icon">
+  <img src="img/badges/u21-confermato.webp" alt="Under 21 confermato">
+</div>
       <div>
         <span class="summary-label">U21 confermato</span>
         <strong>${escapeHtml(u21Text.main)}</strong>
@@ -737,7 +741,9 @@ function renderPredraftSummary() {
     </div>
 
     <div class="summary-card summary-rfa">
-      <div class="summary-icon">🛡️</div>
+      <div class="summary-icon summary-badge-icon">
+  <img src="img/badges/rfa.webp" alt="Restricted Free Agent">
+</div>
       <div>
         <span class="summary-label">RFA</span>
         <strong>${escapeHtml(rfaText.main)}</strong>
