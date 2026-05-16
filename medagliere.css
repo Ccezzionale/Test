@@ -473,23 +473,32 @@ body::after {
 .contenuto-anno {
   display: grid;
   grid-template-rows: 0fr;
-  transition: grid-template-rows 0.24s ease;
+  overflow: hidden;
+  opacity: 0;
+  transition: grid-template-rows 0.24s ease, opacity 0.18s ease;
 }
 
 .contenuto-anno > ol {
+  min-height: 0;
   overflow: hidden;
 }
 
 .anno.attivo .contenuto-anno {
   grid-template-rows: 1fr;
+  opacity: 1;
 }
 
 /* ===== PODIO ===== */
 
 .blocco-competizione ol {
   list-style: none;
-  padding: 0 10px 10px;
+  padding: 0 10px;
   margin: 0;
+}
+
+.anno.attivo .blocco-competizione ol,
+.anno.attivo ol {
+  padding-bottom: 10px;
 }
 
 .blocco-competizione li {
@@ -696,4 +705,5 @@ body::after {
     top: 56px;
   }
 }
+
 
