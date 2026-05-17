@@ -2151,25 +2151,42 @@ body{
   }
 }
 
+
 /* =========================================================
-   PLAYOFF DESKTOP REBOOT - V7
-   Nuovo desktop separato. Mobile invariata.
+   PLAYOFF DESKTOP REBOOT - V9 TRUE DESKTOP
+   Vista desktop nuova, separata. Mobile invariata.
    ========================================================= */
 .playoff-desktop-reboot{
   display:none;
 }
 
 @media (min-width:1024px){
-  body{
-    min-height:100vh;
-    background:
-      radial-gradient(circle at 18% 8%, rgba(255,211,107,.18), transparent 22%),
-      radial-gradient(circle at 72% 16%, rgba(0,116,217,.24), transparent 24%),
-      radial-gradient(circle at 50% 54%, rgba(255,255,255,.07), transparent 34%),
-      linear-gradient(180deg, rgba(1,14,37,.98), rgba(0,24,68,.98) 48%, rgba(1,10,30,.98)),
-      url("img/champions-bg.png") center / cover fixed no-repeat;
+  :root{
+    --v9-gold:#ffd66b;
+    --v9-gold-soft:#fff2b4;
+    --v9-blue:#0b3f82;
+    --v9-blue-2:#031f4b;
+    --v9-ink:#020b22;
+    --v9-card-h:86px;
+    --v9-card-radius:18px;
   }
 
+  html, body{
+    min-height:100%;
+    overflow-x:hidden;
+  }
+
+  body{
+    background:
+      radial-gradient(circle at 48% 0%, rgba(255,255,255,.10), transparent 26%),
+      radial-gradient(circle at 15% 28%, rgba(0,116,217,.18), transparent 32%),
+      radial-gradient(circle at 84% 72%, rgba(0,116,217,.16), transparent 34%),
+      linear-gradient(180deg, rgba(2,16,43,.96), rgba(0,28,78,.96) 42%, rgba(1,10,30,.98)),
+      url("img/champions-bg.png") center / cover fixed no-repeat;
+    color:#fff;
+  }
+
+  /* Sul desktop si usa solo la nuova vista. La mobile resta intatta sotto 768px. */
   .hero-playoff,
   .playoff-intro,
   .bracket-wrap{
@@ -2177,9 +2194,9 @@ body{
   }
 
   .playoff-desktop-reboot{
-    display:block;
-    min-height:calc(100vh - 68px);
-    padding:18px clamp(18px,2.2vw,42px) 34px;
+    display:block !important;
+    min-height:calc(100vh - 62px);
+    padding:0 clamp(18px,2.4vw,42px) 20px;
     position:relative;
     overflow:hidden;
   }
@@ -2189,73 +2206,61 @@ body{
     position:absolute;
     inset:0;
     background:
-      linear-gradient(90deg, rgba(255,211,107,.06), transparent 16%, transparent 84%, rgba(255,211,107,.06)),
-      radial-gradient(circle at 50% 2%, rgba(255,255,255,.12), transparent 20%);
+      radial-gradient(circle at 50% 48%, rgba(255,255,255,.055), transparent 28%),
+      linear-gradient(90deg, rgba(255,211,107,.055), transparent 14%, transparent 86%, rgba(255,211,107,.055));
     pointer-events:none;
   }
 
   .desktop-playoff-shell{
     position:relative;
     z-index:1;
-    width:min(1740px,100%);
+    width:min(1720px,100%);
     margin:0 auto;
   }
 
   .desktop-reboot-header{
-    text-align:center;
-    margin:0 auto 18px;
+    height:48px;
+    display:flex;
+    align-items:flex-start;
+    justify-content:center;
+    margin-bottom:14px;
+  }
+
+  .desktop-reboot-header h1,
+  .desktop-reboot-header p{
+    display:none !important;
   }
 
   .desktop-kicker{
+    height:42px;
+    min-width:330px;
+    padding:0 44px;
     display:inline-flex;
     align-items:center;
     justify-content:center;
-    min-width:260px;
-    min-height:38px;
-    padding:0 30px;
-    color:#fff2b8;
-    font-weight:950;
-    letter-spacing:.12em;
+    color:#fff2bd;
     text-transform:uppercase;
-    background:
-      linear-gradient(180deg, rgba(255,255,255,.12), rgba(255,255,255,.02)),
-      linear-gradient(90deg, transparent, rgba(255,211,107,.20), transparent);
-    border:1px solid rgba(255,211,107,.36);
-    border-top:0;
-    border-radius:0 0 18px 18px;
-    box-shadow:0 12px 22px rgba(0,0,0,.26), inset 0 1px 0 rgba(255,255,255,.12);
-  }
-
-  .desktop-reboot-header h1{
-    margin:14px 0 5px;
-    font-size:clamp(2.2rem,3.5vw,4.1rem);
+    font-size:.95rem;
     line-height:1;
     font-weight:950;
-    letter-spacing:-1px;
-    color:#fff4c8;
-    background:linear-gradient(180deg,#fff9dd 0%,#ffe59b 45%,#d6aa47 100%);
-    -webkit-background-clip:text;
-    background-clip:text;
-    -webkit-text-fill-color:transparent;
-    text-shadow:0 8px 30px rgba(0,0,0,.36);
-  }
-
-  .desktop-reboot-header p{
-    margin:0;
-    color:rgba(220,235,255,.82);
-    font-weight:700;
-    font-size:1rem;
-  }
-
-  .desktop-reboot-board{
-    margin-top:8px;
+    letter-spacing:.08em;
+    background:
+      linear-gradient(180deg, rgba(255,255,255,.12), rgba(255,255,255,.03)),
+      linear-gradient(90deg, rgba(255,211,107,.05), rgba(255,211,107,.17), rgba(255,211,107,.05));
+    border:1px solid rgba(255,211,107,.42);
+    border-top:0;
+    border-radius:0 0 18px 18px;
+    box-shadow:0 12px 28px rgba(0,0,0,.36), inset 0 1px 0 rgba(255,255,255,.13);
   }
 
   .desktop-reboot-grid{
     display:grid;
-    grid-template-columns:minmax(250px,.95fr) minmax(250px,.95fr) minmax(260px,.9fr) minmax(360px,1.18fr);
-    gap:clamp(18px,2.1vw,38px);
-    align-items:stretch;
+    grid-template-columns:minmax(295px,355px) minmax(295px,355px) minmax(270px,330px) minmax(390px,480px);
+    column-gap:clamp(26px,3.2vw,54px);
+    align-items:start;
+    justify-content:center;
+    height:calc(100vh - 126px);
+    min-height:640px;
   }
 
   .desktop-stage,
@@ -2264,97 +2269,90 @@ body{
     position:relative;
   }
 
+  .desktop-stage-head{
+    height:64px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:flex-end;
+    margin:0 0 12px;
+    text-align:center;
+  }
+
+  .desktop-stage-head h2{
+    margin:0;
+    color:#fff2aa;
+    text-transform:uppercase;
+    font-size:clamp(1.28rem,1.55vw,1.85rem);
+    line-height:1;
+    font-weight:1000;
+    letter-spacing:.045em;
+    text-shadow:0 2px 0 rgba(0,0,0,.34), 0 0 14px rgba(255,211,107,.34);
+    display:flex;
+    align-items:center;
+    gap:18px;
+    white-space:nowrap;
+  }
+
+  .desktop-stage-head h2::before,
+  .desktop-stage-head h2::after{
+    content:"";
+    width:64px;
+    height:1px;
+    background:linear-gradient(90deg, transparent, rgba(255,211,107,.82), transparent);
+    box-shadow:0 0 10px rgba(255,211,107,.28);
+  }
+
+  .desktop-stage-head p{
+    display:none;
+  }
+
   .desktop-stage::after{
     content:"";
     position:absolute;
-    top:92px;
-    right:calc(-1 * clamp(18px,2.1vw,38px) / 2 - 1px);
-    width:2px;
-    height:calc(100% - 118px);
-    border-radius:999px;
-    background:linear-gradient(180deg, transparent, rgba(255,211,107,.76) 20%, rgba(255,255,255,.44) 50%, rgba(255,211,107,.76) 80%, transparent);
-    box-shadow:0 0 18px rgba(255,211,107,.32);
-    opacity:.72;
+    top:118px;
+    bottom:72px;
+    right:calc(-1 * clamp(26px,3.2vw,54px) / 2);
+    width:1px;
+    background:linear-gradient(180deg, transparent, rgba(255,255,255,.22), rgba(255,211,107,.55), rgba(255,255,255,.18), transparent);
+    box-shadow:0 0 12px rgba(255,211,107,.18);
+    pointer-events:none;
   }
 
   .desktop-stage-semifinali::after{
     display:none;
   }
 
-  .desktop-stage-head{
-    height:72px;
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    justify-content:flex-end;
-    text-align:center;
-    margin-bottom:12px;
-  }
-
-  .desktop-stage-head h2{
-    margin:0;
-    color:#fff1ac;
-    font-size:clamp(1.15rem,1.35vw,1.55rem);
-    line-height:1;
-    font-weight:950;
-    letter-spacing:.04em;
-    text-transform:uppercase;
-    text-shadow:0 2px 14px rgba(255,211,107,.28), 0 2px 8px rgba(0,0,0,.4);
-  }
-
-  .desktop-stage-head h2::after{
-    content:"";
-    display:block;
-    width:104px;
-    height:2px;
-    margin:9px auto 0;
-    background:linear-gradient(90deg, transparent, rgba(255,211,107,.75), #fff7cf, rgba(255,211,107,.75), transparent);
-    box-shadow:0 0 12px rgba(255,211,107,.32);
-    border-radius:999px;
-  }
-
-  .desktop-stage-head p{
-    margin:8px 0 0;
-    min-height:17px;
-    color:rgba(214,235,255,.62);
-    font-size:.8rem;
-    font-weight:800;
-    text-transform:uppercase;
-    letter-spacing:.06em;
-  }
-
   .desktop-stage-stack{
     display:flex;
     flex-direction:column;
-    gap:clamp(12px,1.45vw,20px);
+    gap:16px;
   }
 
   .desktop-stage-semifinali .desktop-stage-stack{
-    padding-top:clamp(82px,10.2vh,132px);
-    gap:clamp(120px,17vh,190px);
+    padding-top:92px;
+    gap:clamp(150px,20vh,218px);
   }
 
   .desktop-reboot-match{
+    height:var(--v9-card-h);
+    min-height:var(--v9-card-h);
     position:relative;
-    min-height:132px;
-    border-radius:24px;
-    overflow:hidden;
-    border:1px solid rgba(131,187,255,.32);
+    overflow:visible;
+    border-radius:var(--v9-card-radius);
     background:
-      radial-gradient(circle at 50% 0%, rgba(255,255,255,.15), transparent 44%),
-      linear-gradient(180deg, rgba(12,58,122,.88), rgba(4,24,61,.94));
-    box-shadow:
-      0 18px 30px rgba(0,0,0,.30),
-      inset 0 1px 0 rgba(255,255,255,.12);
+      radial-gradient(circle at 50% -28%, rgba(255,255,255,.22), transparent 48%),
+      linear-gradient(180deg, rgba(15,68,138,.86), rgba(4,25,62,.96));
+    border:1px solid rgba(132,198,255,.33);
+    box-shadow:0 14px 24px rgba(0,0,0,.30), inset 0 1px 0 rgba(255,255,255,.13);
   }
 
   .desktop-reboot-match::before{
     content:"";
     position:absolute;
     inset:0;
-    background:
-      linear-gradient(90deg, rgba(255,211,107,.08), transparent 18%, transparent 82%, rgba(255,211,107,.08)),
-      radial-gradient(circle at 50% 50%, rgba(255,211,107,.08), transparent 28%);
+    border-radius:inherit;
+    background:linear-gradient(90deg, rgba(255,211,107,.05), transparent 25%, transparent 75%, rgba(255,211,107,.05));
     pointer-events:none;
   }
 
@@ -2362,217 +2360,184 @@ body{
     content:"";
     position:absolute;
     left:50%;
-    top:42px;
+    top:18px;
     bottom:18px;
     width:1px;
-    transform:translateX(-50%);
-    background:linear-gradient(180deg, transparent, rgba(255,211,107,.45), transparent);
-    opacity:.75;
+    background:linear-gradient(180deg, transparent, rgba(255,211,107,.34), transparent);
+    opacity:.55;
+    pointer-events:none;
   }
 
   .desktop-match-bar{
-    position:relative;
-    z-index:2;
-    height:32px;
+    position:absolute;
+    inset:7px 10px auto 10px;
+    height:22px;
     display:flex;
-    justify-content:space-between;
     align-items:center;
-    padding:7px 12px 0;
-    color:rgba(218,235,255,.72);
-    font-size:.72rem;
-    font-weight:950;
-    letter-spacing:.05em;
-    text-transform:uppercase;
+    justify-content:space-between;
+    z-index:7;
+    pointer-events:none;
   }
 
   .desktop-match-bar span:first-child{
-    color:#ffffff;
     min-width:42px;
-    height:24px;
+    height:22px;
+    padding:0 9px;
     display:inline-flex;
     align-items:center;
     justify-content:center;
     border-radius:999px;
-    background:linear-gradient(180deg, rgba(25,89,166,.95), rgba(6,38,91,.95));
-    border:1px solid rgba(255,255,255,.15);
-    box-shadow:0 5px 12px rgba(0,0,0,.24);
+    color:#fff;
+    font-size:.72rem;
+    font-weight:950;
+    background:linear-gradient(180deg, #1761ad, #07346f);
+    border:1px solid rgba(255,255,255,.18);
+    box-shadow:0 6px 12px rgba(0,0,0,.24), inset 0 1px 0 rgba(255,255,255,.18);
+  }
+
+  .desktop-match-bar span:last-child{
+    display:none;
   }
 
   .desktop-match-body{
-    position:relative;
-    z-index:2;
+    min-height:var(--v9-card-h);
+    height:var(--v9-card-h);
     display:grid;
-    grid-template-columns:1fr 64px 1fr;
-    gap:8px;
+    grid-template-columns:1fr 62px 1fr;
     align-items:center;
-    min-height:82px;
-    padding:0 14px 12px;
+    gap:12px;
+    padding:10px 20px;
   }
 
   .desktop-team{
-    min-width:0;
     position:relative;
     display:flex;
-    flex-direction:column;
+    justify-content:center;
     align-items:center;
-    gap:8px;
+    min-width:0;
+  }
+
+  .desktop-team-name{
+    display:none !important;
   }
 
   .desktop-seed{
     position:absolute;
-    top:-8px;
-    min-width:34px;
-    height:24px;
-    display:inline-flex;
-    align-items:center;
-    justify-content:center;
-    border-radius:10px;
-    color:#ffffff;
-    font-size:.78rem;
-    font-weight:950;
-    background:linear-gradient(180deg, #14549d, #062c69);
-    border:1px solid rgba(255,255,255,.15);
-    box-shadow:0 5px 10px rgba(0,0,0,.22);
-    z-index:5;
-  }
-
-  .desktop-team.home .desktop-seed{ left:0; }
-  .desktop-team.away .desktop-seed{ right:0; }
-
-  .desktop-logo-ring{
-    width:68px;
-    height:68px;
-    border-radius:50%;
-    display:grid;
-    place-items:center;
-    background:
-      radial-gradient(circle at 34% 28%, rgba(255,255,255,1), rgba(255,255,255,.84) 70%, rgba(207,225,247,.74));
-    border:1px solid rgba(255,255,255,.75);
-    box-shadow:
-      0 10px 18px rgba(0,0,0,.28),
-      0 0 0 4px rgba(255,255,255,.06);
-  }
-
-  .desktop-logo-ring img{
-    width:58px;
-    height:58px;
-    object-fit:contain;
-    border-radius:50%;
-    filter:drop-shadow(0 2px 4px rgba(0,0,0,.22));
-  }
-
-  .desktop-team.is-placeholder .desktop-logo-ring{
-    background:linear-gradient(180deg, rgba(4,18,44,.98), rgba(10,36,78,.96));
-    border-color:rgba(255,211,107,.38);
-    box-shadow:0 10px 18px rgba(0,0,0,.24), inset 0 1px 0 rgba(255,255,255,.08);
-  }
-
-  .desktop-team.is-placeholder .desktop-logo-ring span{
-    color:rgba(255,255,255,.88);
-    font-weight:950;
-    letter-spacing:.05em;
-    font-size:.88rem;
-  }
-
-  .desktop-team.is-winner .desktop-logo-ring{
-    border-color:rgba(255,211,107,.98);
-    box-shadow:
-      0 10px 18px rgba(0,0,0,.28),
-      0 0 0 4px rgba(255,211,107,.26),
-      0 0 24px rgba(255,211,107,.48);
-  }
-
-  .desktop-team-name{
-    width:100%;
-    min-height:2.2em;
-    color:#ffffff;
-    font-size:.82rem;
-    line-height:1.1;
-    font-weight:950;
-    text-align:center;
-    text-transform:uppercase;
-    text-shadow:0 2px 8px rgba(0,0,0,.36);
-    display:-webkit-box;
-    -webkit-line-clamp:2;
-    -webkit-box-orient:vertical;
-    overflow:hidden;
-  }
-
-  .desktop-team.is-placeholder .desktop-team-name{
-    color:rgba(214,235,255,.58);
-  }
-
-  .desktop-vs-core{
-    display:flex;
-    justify-content:center;
-    align-items:center;
-  }
-
-  .desktop-vs-core span{
-    width:54px;
-    height:34px;
+    top:-4px;
+    min-width:32px;
+    height:22px;
+    padding:0 7px;
     border-radius:999px;
     display:flex;
     align-items:center;
     justify-content:center;
-    color:#ffffff;
+    color:#fff;
+    font-size:.72rem;
     font-weight:950;
-    letter-spacing:.06em;
-    background:linear-gradient(180deg, rgba(21,77,145,.96), rgba(4,24,61,.98));
-    border:1px solid rgba(255,211,107,.34);
-    box-shadow:0 8px 14px rgba(0,0,0,.28), inset 0 1px 0 rgba(255,255,255,.16);
+    background:linear-gradient(180deg, #1761ad, #07346f);
+    border:1px solid rgba(255,255,255,.18);
+    box-shadow:0 6px 12px rgba(0,0,0,.22), inset 0 1px 0 rgba(255,255,255,.16);
+    z-index:5;
   }
 
-  .desktop-match-route{
+  .desktop-team.home .desktop-seed{ left:calc(50% - 43px); }
+  .desktop-team.away .desktop-seed{ right:calc(50% - 43px); }
+
+  .desktop-logo-ring{
+    width:62px;
+    height:62px;
+    border-radius:50%;
+    display:grid;
+    place-items:center;
+    background:radial-gradient(circle at 34% 24%, rgba(255,255,255,1), rgba(255,255,255,.86) 70%, rgba(214,235,255,.78));
+    border:1px solid rgba(255,255,255,.74);
+    box-shadow:0 9px 16px rgba(0,0,0,.30), 0 0 0 4px rgba(255,255,255,.055);
     position:relative;
     z-index:2;
-    min-height:34px;
+  }
+
+  .desktop-logo-ring img{
+    width:54px;
+    height:54px;
+    object-fit:contain;
+    border-radius:50%;
+    filter:drop-shadow(0 2px 3px rgba(0,0,0,.25));
+  }
+
+  .desktop-team.is-placeholder .desktop-logo-ring{
+    background:radial-gradient(circle at 35% 24%, rgba(255,255,255,.08), rgba(5,18,43,.94) 68%);
+    border-color:rgba(255,211,107,.50);
+    box-shadow:0 9px 16px rgba(0,0,0,.30), inset 0 1px 0 rgba(255,255,255,.08);
+  }
+
+  .desktop-team.is-placeholder .desktop-logo-ring span{
+    color:#fff;
+    font-size:.82rem;
+    font-weight:1000;
+    letter-spacing:.06em;
+  }
+
+  .desktop-vs-core{
+    width:54px;
+    height:31px;
+    border-radius:999px;
     display:flex;
     align-items:center;
     justify-content:center;
-    gap:6px;
-    padding:0 12px;
-    color:#ffe49d;
+    justify-self:center;
+    color:#fff;
+    background:linear-gradient(180deg, #124b8b, #061f50);
+    border:1px solid rgba(255,211,107,.31);
+    box-shadow:0 8px 14px rgba(0,0,0,.32), inset 0 1px 0 rgba(255,255,255,.16);
+    position:relative;
+    z-index:4;
+  }
+
+  .desktop-vs-core span{
     font-size:.78rem;
-    font-weight:900;
+    line-height:1;
+    font-weight:1000;
     letter-spacing:.04em;
-    text-transform:uppercase;
-    border-top:1px solid rgba(255,211,107,.16);
-    background:rgba(2,14,37,.28);
   }
 
-  .desktop-match-route strong{
-    color:#ffffff;
+  .desktop-match-route{
+    display:none !important;
   }
 
+  .desktop-reboot-match.has-winner .desktop-logo-ring{
+    border-color:rgba(255,211,107,.98);
+    box-shadow:0 9px 16px rgba(0,0,0,.30), 0 0 0 4px rgba(255,211,107,.20), 0 0 22px rgba(255,211,107,.46);
+  }
+
+  /* Finale: pannello evento separato, più simile al concept */
   .desktop-final-temple{
-    display:flex;
-    flex-direction:column;
+    height:100%;
+  }
+
+  .desktop-final-temple .desktop-stage-head{
+    height:64px;
+    margin-bottom:12px;
   }
 
   .desktop-final-card{
-    flex:1;
-    min-height:640px;
-    border-radius:30px;
+    height:calc(100% - 76px);
+    min-height:560px;
     position:relative;
     overflow:hidden;
-    border:1px solid rgba(255,211,107,.38);
+    border-radius:24px;
+    border:1px solid rgba(255,211,107,.34);
     background:
-      radial-gradient(circle at 50% 22%, rgba(255,255,255,.14), transparent 28%),
-      radial-gradient(circle at 50% 70%, rgba(255,211,107,.16), transparent 28%),
-      linear-gradient(180deg, rgba(12,55,112,.92), rgba(2,15,43,.96));
-    box-shadow:
-      0 22px 40px rgba(0,0,0,.34),
-      inset 0 1px 0 rgba(255,255,255,.10);
+      radial-gradient(circle at 50% 38%, rgba(255,255,255,.20), rgba(255,211,107,.08) 23%, transparent 44%),
+      radial-gradient(circle at 50% 88%, rgba(0,116,217,.26), transparent 37%),
+      linear-gradient(180deg, rgba(13,55,112,.84), rgba(2,14,41,.96));
+    box-shadow:0 24px 42px rgba(0,0,0,.36), inset 0 1px 0 rgba(255,255,255,.10);
   }
 
   .desktop-final-card::before{
     content:"";
     position:absolute;
     inset:0;
-    background:
-      linear-gradient(180deg, transparent 0 44%, rgba(255,211,107,.08) 60%, transparent 100%),
-      linear-gradient(90deg, rgba(255,211,107,.10), transparent 18%, transparent 82%, rgba(255,211,107,.10));
+    background:linear-gradient(180deg, rgba(255,211,107,.055), transparent 28%, transparent 72%, rgba(255,211,107,.06));
     pointer-events:none;
   }
 
@@ -2586,25 +2551,23 @@ body{
   }
 
   .desktop-final-slot{
-    min-height:86px;
+    min-height:78px;
     display:grid;
-    grid-template-columns:76px 1fr;
+    grid-template-columns:82px 1fr;
     align-items:center;
-    gap:15px;
-    border-radius:18px;
     overflow:hidden;
-    border:1px solid rgba(255,211,107,.58);
-    background:linear-gradient(180deg, rgba(255,255,255,.98), rgba(242,247,255,.96));
-    box-shadow:0 12px 22px rgba(0,0,0,.22);
+    border-radius:15px;
+    background:linear-gradient(180deg, rgba(255,255,255,.97), rgba(244,248,255,.97));
+    border:1px solid rgba(255,211,107,.82);
+    box-shadow:0 10px 20px rgba(0,0,0,.24), inset 0 1px 0 rgba(255,255,255,.16);
   }
 
   .desktop-final-mark{
-    width:76px;
-    height:100%;
-    min-height:86px;
+    width:82px;
+    min-height:78px;
     display:grid;
     place-items:center;
-    background:linear-gradient(180deg, rgba(24,76,143,.98), rgba(9,44,97,.98));
+    background:linear-gradient(180deg, rgba(26,78,143,.98), rgba(10,51,111,.98));
   }
 
   .desktop-final-mark span{
@@ -2613,71 +2576,83 @@ body{
     border-radius:50%;
     display:grid;
     place-items:center;
-    border:1px solid rgba(255,211,107,.45);
-    color:#ffe49d;
-    font-size:1.7rem;
-    font-weight:950;
+    color:#fff2aa;
+    font-size:1.55rem;
+    font-weight:1000;
+    border:1px solid rgba(255,211,107,.55);
+    background:rgba(0,0,0,.12);
   }
 
   .desktop-final-mark img{
-    width:56px;
-    height:56px;
+    width:58px;
+    height:58px;
     object-fit:contain;
-    background:rgba(255,255,255,.90);
+    background:rgba(255,255,255,.92);
     border-radius:50%;
     padding:4px;
   }
 
+  .desktop-final-slot > div:last-child{
+    padding:0 18px;
+    min-width:0;
+  }
+
   .desktop-final-slot strong{
     display:block;
-    color:#05254e;
+    color:#05234e;
     font-size:1.02rem;
-    font-weight:950;
+    line-height:1.08;
+    font-weight:1000;
+    letter-spacing:.01em;
   }
 
   .desktop-final-slot span{
     display:block;
     margin-top:5px;
-    color:#506984;
-    font-size:.78rem;
-    font-weight:950;
-    letter-spacing:.06em;
+    color:#526b8b;
     text-transform:uppercase;
+    font-size:.82rem;
+    font-weight:900;
+    letter-spacing:.05em;
   }
 
   .desktop-final-slot.is-winner{
-    border-color:rgba(255,211,107,.98);
-    box-shadow:0 0 0 3px rgba(255,211,107,.22), 0 16px 28px rgba(0,0,0,.26), 0 0 28px rgba(255,211,107,.25);
+    border-color:rgba(255,211,107,1);
+    box-shadow:0 0 0 3px rgba(255,211,107,.22), 0 14px 24px rgba(0,0,0,.28);
   }
 
   .desktop-trophy-stage{
     position:absolute;
-    inset:210px 0 0;
+    z-index:1;
+    left:0;
+    right:0;
+    top:198px;
+    bottom:18px;
     display:flex;
     flex-direction:column;
     align-items:center;
     justify-content:flex-end;
-    padding:0 22px 24px;
+    padding:0 18px 24px;
   }
 
   .desktop-trophy-light{
     position:absolute;
+    width:75%;
+    height:48%;
+    top:4%;
     left:50%;
-    top:0;
     transform:translateX(-50%);
-    width:72%;
-    height:52%;
     border-radius:50%;
-    background:radial-gradient(circle, rgba(255,255,255,.22), rgba(255,211,107,.10) 32%, transparent 70%);
+    background:radial-gradient(circle, rgba(255,255,255,.30), rgba(255,211,107,.08) 34%, transparent 69%);
     filter:blur(2px);
   }
 
   .desktop-trophy-img{
     position:relative;
     z-index:2;
-    width:min(330px,72%);
+    width:min(285px,68%);
     height:auto;
-    filter:drop-shadow(0 18px 26px rgba(0,0,0,.46)) drop-shadow(0 0 30px rgba(255,211,107,.22));
+    filter:drop-shadow(0 16px 22px rgba(0,0,0,.46)) drop-shadow(0 0 24px rgba(255,211,107,.16));
   }
 
   .desktop-trophy-caption,
@@ -2686,410 +2661,75 @@ body{
     z-index:3;
     margin-top:10px;
     text-align:center;
+    color:#fff2b7;
+    text-transform:uppercase;
+    letter-spacing:.08em;
+    font-weight:1000;
+    text-shadow:0 2px 12px rgba(0,0,0,.38);
   }
 
   .desktop-trophy-caption span,
   .desktop-champion-card span{
     display:block;
-    color:rgba(214,235,255,.72);
-    font-size:.76rem;
-    font-weight:950;
-    text-transform:uppercase;
-    letter-spacing:.12em;
+    color:#9fc8ff;
+    font-size:.72rem;
+    margin-bottom:6px;
   }
 
   .desktop-trophy-caption strong,
   .desktop-champion-card strong{
     display:block;
-    margin-top:5px;
-    color:#fff1ac;
-    font-size:1.14rem;
-    font-weight:950;
-    text-transform:uppercase;
-    text-shadow:0 2px 14px rgba(255,211,107,.28);
+    color:#fff2aa;
+    font-size:1.02rem;
   }
 
   .desktop-champion-card img{
-    width:76px;
-    height:76px;
-    object-fit:contain;
-    margin:0 auto 8px;
-    background:rgba(255,255,255,.92);
-    border-radius:50%;
-    padding:6px;
-    box-shadow:0 12px 22px rgba(0,0,0,.26), 0 0 22px rgba(255,211,107,.32);
-  }
-}
-
-@media (min-width:1024px) and (max-height:850px){
-  .desktop-reboot-header h1{
-    font-size:clamp(1.9rem,3vw,3.2rem);
-  }
-
-  .desktop-stage-head{
-    height:58px;
-  }
-
-  .desktop-stage-head p{
-    display:none;
-  }
-
-  .desktop-reboot-grid{
-    grid-template-columns:minmax(240px,.95fr) minmax(240px,.95fr) minmax(250px,.88fr) minmax(340px,1.14fr);
-    gap:22px;
-  }
-
-  .desktop-reboot-match{
-    min-height:118px;
-  }
-
-  .desktop-match-body{
-    min-height:74px;
-  }
-
-  .desktop-logo-ring{
-    width:60px;
-    height:60px;
-  }
-
-  .desktop-logo-ring img{
-    width:51px;
-    height:51px;
-  }
-
-  .desktop-stage-stack{
-    gap:12px;
-  }
-
-  .desktop-stage-semifinali .desktop-stage-stack{
-    padding-top:78px;
-    gap:112px;
-  }
-
-  .desktop-final-card{
-    min-height:560px;
-  }
-
-  .desktop-trophy-stage{
-    inset:185px 0 0;
-  }
-
-  .desktop-trophy-img{
-    width:min(270px,68%);
-  }
-}
-
-@media (max-width:1023px){
-  .playoff-desktop-reboot{
-    display:none !important;
-  }
-}
-
-/* =========================================================
-   PLAYOFF DESKTOP REBOOT - V8 BROADCAST BRACKET
-   Obiettivo: non più card stile mobile, ma layout desktop
-   tipo schermata TV: loghi, VS, bracket compatto, finale evento.
-   Mobile invariata: solo min-width 1024px.
-   ========================================================= */
-@media (min-width:1024px){
-
-  body{
-    background:
-      radial-gradient(circle at 50% -8%, rgba(255,255,255,.16), transparent 26%),
-      radial-gradient(circle at 18% 20%, rgba(0,116,217,.24), transparent 30%),
-      radial-gradient(circle at 78% 68%, rgba(0,116,217,.20), transparent 32%),
-      linear-gradient(180deg, rgba(2,18,49,.98), rgba(0,30,83,.96) 44%, rgba(1,10,31,.99) 100%),
-      url("img/champions-bg.png") center / cover fixed no-repeat !important;
-  }
-
-  .playoff-desktop-reboot{
-    min-height:calc(100vh - 68px);
-    padding:0 clamp(22px,2vw,38px) 28px !important;
-    overflow:hidden !important;
-  }
-
-  .playoff-desktop-reboot::before{
-    background:
-      radial-gradient(900px 260px at 50% 0%, rgba(255,255,255,.13), transparent 62%),
-      radial-gradient(720px 360px at 79% 56%, rgba(255,211,107,.10), transparent 62%),
-      linear-gradient(90deg, rgba(255,211,107,.05), transparent 18%, transparent 82%, rgba(255,211,107,.05)) !important;
-  }
-
-  .desktop-playoff-shell{
-    width:min(1760px,100%) !important;
-  }
-
-  /* Header ridotto: niente effetto pagina mobile/landing */
-  .desktop-reboot-header{
-    height:64px;
-    margin:0 auto 10px !important;
-    display:flex;
-    align-items:flex-start;
-    justify-content:center;
-    text-align:center;
-  }
-
-  .desktop-reboot-header h1,
-  .desktop-reboot-header p{
-    display:none !important;
-  }
-
-  .desktop-kicker{
-    min-width:310px !important;
-    height:44px !important;
-    min-height:44px !important;
-    padding:0 42px !important;
-    border-radius:0 0 20px 20px !important;
-    border:1px solid rgba(255,211,107,.42) !important;
-    border-top:0 !important;
-    color:#fff1b2 !important;
-    font-size:.98rem !important;
-    letter-spacing:.08em !important;
-    background:
-      linear-gradient(180deg, rgba(255,255,255,.10), rgba(255,255,255,.02)),
-      linear-gradient(90deg, rgba(255,211,107,.04), rgba(255,211,107,.18), rgba(255,211,107,.04)) !important;
-    box-shadow:0 14px 28px rgba(0,0,0,.34), inset 0 1px 0 rgba(255,255,255,.13) !important;
-  }
-
-  .desktop-reboot-board{
-    margin-top:0 !important;
-  }
-
-  /* Layout desktop vero: colonne larghe, finale monumentale */
-  .desktop-reboot-grid{
-    display:grid !important;
-    grid-template-columns:minmax(330px,1.02fr) minmax(330px,1.02fr) minmax(300px,.92fr) minmax(430px,1.34fr) !important;
-    gap:clamp(30px,3.2vw,56px) !important;
-    align-items:start !important;
-    min-height:calc(100vh - 150px);
-  }
-
-  .desktop-stage-head{
-    height:64px !important;
-    margin-bottom:10px !important;
-    justify-content:flex-end !important;
-  }
-
-  .desktop-stage-head h2{
-    font-size:clamp(1.25rem,1.45vw,1.7rem) !important;
-    letter-spacing:.045em !important;
-  }
-
-  .desktop-stage-head p{
-    display:none !important;
-  }
-
-  .desktop-stage-head h2::before,
-  .desktop-stage-head h2::after{
-    content:"";
-    display:inline-block;
     width:64px;
-    height:1px;
-    margin:0 15px 6px;
-    background:linear-gradient(90deg, transparent, rgba(255,211,107,.75), transparent);
-    box-shadow:0 0 10px rgba(255,211,107,.28);
-    vertical-align:middle;
-  }
-
-  .desktop-stage-head h2::after{
-    display:inline-block !important;
-  }
-
-  .desktop-stage::after{
-    top:118px !important;
-    height:calc(100% - 190px) !important;
-    right:calc(-1 * clamp(30px,3.2vw,56px) / 2) !important;
-    opacity:.58 !important;
-  }
-
-  .desktop-stage-stack{
-    gap:18px !important;
-  }
-
-  /* Semifinali: due blocchi larghi, distanti e centrati tra i quarti */
-  .desktop-stage-semifinali .desktop-stage-stack{
-    padding-top:94px !important;
-    gap:clamp(170px,21vh,250px) !important;
-  }
-
-  /* Card desktop: niente nomi, niente footer, solo sfida visuale */
-  .desktop-reboot-match{
-    min-height:112px !important;
-    border-radius:20px !important;
-    border:1px solid rgba(124,188,255,.34) !important;
-    background:
-      radial-gradient(circle at 50% -18%, rgba(255,255,255,.22), transparent 48%),
-      linear-gradient(180deg, rgba(14,63,129,.82), rgba(4,26,67,.94)) !important;
-    box-shadow:0 18px 30px rgba(0,0,0,.28), inset 0 1px 0 rgba(255,255,255,.13) !important;
-  }
-
-  .desktop-reboot-match::after{
-    top:25px !important;
-    bottom:24px !important;
-    opacity:.45 !important;
-  }
-
-  .desktop-match-bar{
-    position:absolute !important;
-    inset:8px 10px auto 10px !important;
-    height:24px !important;
-    padding:0 !important;
-    z-index:8 !important;
-  }
-
-  .desktop-match-bar span:first-child{
-    min-width:42px !important;
-    height:24px !important;
-    font-size:.74rem !important;
-  }
-
-  .desktop-match-bar span:last-child{
-    display:none !important;
-  }
-
-  .desktop-match-body{
-    grid-template-columns:1fr 72px 1fr !important;
-    min-height:112px !important;
-    padding:16px 22px 14px !important;
-    gap:14px !important;
-  }
-
-  .desktop-team{
-    gap:0 !important;
-  }
-
-  .desktop-team-name{
-    display:none !important;
-  }
-
-  .desktop-seed{
-    top:-5px !important;
-    min-width:34px !important;
-    height:24px !important;
-    font-size:.78rem !important;
-    z-index:8 !important;
-  }
-
-  .desktop-team.home .desktop-seed{ left:-7px !important; }
-  .desktop-team.away .desktop-seed{ right:-7px !important; }
-
-  .desktop-logo-ring{
-    width:72px !important;
-    height:72px !important;
-    border:1px solid rgba(255,255,255,.78) !important;
-    box-shadow:0 10px 20px rgba(0,0,0,.32), 0 0 0 4px rgba(255,255,255,.06) !important;
-  }
-
-  .desktop-logo-ring img{
-    width:62px !important;
-    height:62px !important;
-  }
-
-  .desktop-team.is-placeholder .desktop-logo-ring{
-    background:radial-gradient(circle at 35% 25%, rgba(255,255,255,.08), rgba(5,18,43,.92) 70%) !important;
-    border-color:rgba(255,211,107,.48) !important;
-  }
-
-  .desktop-team.is-placeholder .desktop-logo-ring span{
-    font-size:.9rem !important;
-    letter-spacing:.05em !important;
-    color:rgba(255,255,255,.92) !important;
-  }
-
-  .desktop-vs-core{
-    width:58px !important;
-    height:34px !important;
-    border-radius:999px !important;
-    align-self:center !important;
-    justify-self:center !important;
-    background:linear-gradient(180deg, #124682, #061e4b) !important;
-    border:1px solid rgba(255,211,107,.30) !important;
-    box-shadow:0 8px 16px rgba(0,0,0,.30), inset 0 1px 0 rgba(255,255,255,.16) !important;
-  }
-
-  .desktop-vs-core span{
-    font-size:.85rem !important;
-  }
-
-  .desktop-match-route{
-    display:none !important;
-  }
-
-  .desktop-reboot-match.has-winner .desktop-logo-ring{
-    border-color:rgba(255,211,107,.98) !important;
-    box-shadow:0 10px 20px rgba(0,0,0,.32), 0 0 0 4px rgba(255,211,107,.20), 0 0 22px rgba(255,211,107,.44) !important;
-  }
-
-  /* Finale più vicina al concept: pannello evento, non lista mobile */
-  .desktop-final-temple .desktop-stage-head{
-    height:64px !important;
-  }
-
-  .desktop-final-card{
-    min-height:calc(100vh - 220px) !important;
-    border-radius:26px !important;
-    border:1px solid rgba(255,211,107,.38) !important;
-    background:
-      radial-gradient(circle at 50% 32%, rgba(255,255,255,.20), rgba(255,211,107,.08) 26%, transparent 48%),
-      radial-gradient(circle at 50% 82%, rgba(0,116,217,.22), transparent 36%),
-      linear-gradient(180deg, rgba(12,54,112,.86), rgba(2,14,42,.96)) !important;
-    box-shadow:0 24px 42px rgba(0,0,0,.34), inset 0 1px 0 rgba(255,255,255,.11) !important;
-  }
-
-  .desktop-final-slots{
-    gap:14px !important;
-    padding:22px 22px 0 !important;
-  }
-
-  .desktop-final-slot{
-    min-height:86px !important;
-    grid-template-columns:92px 1fr !important;
-    border-radius:16px !important;
-    border:1px solid rgba(255,211,107,.70) !important;
-  }
-
-  .desktop-final-mark{
-    width:92px !important;
-    min-height:86px !important;
-  }
-
-  .desktop-final-mark span{
-    width:54px !important;
-    height:54px !important;
-    font-size:1.7rem !important;
-  }
-
-  .desktop-final-slot strong{
-    font-size:1.08rem !important;
-  }
-
-  .desktop-trophy-stage{
-    inset:205px 0 0 !important;
-    padding-bottom:26px !important;
-  }
-
-  .desktop-trophy-img{
-    width:min(350px,72%) !important;
-  }
-
-  .desktop-trophy-caption strong,
-  .desktop-champion-card strong{
-    font-size:1.18rem !important;
+    height:64px;
+    object-fit:contain;
+    border-radius:50%;
+    background:rgba(255,255,255,.93);
+    padding:5px;
+    margin:0 auto 8px;
   }
 }
 
 @media (min-width:1024px) and (max-height:850px){
-  .desktop-reboot-header{ height:46px !important; margin-bottom:8px !important; }
-  .desktop-kicker{ height:38px !important; min-height:38px !important; }
-  .desktop-stage-head{ height:48px !important; margin-bottom:8px !important; }
-  .desktop-reboot-grid{ min-height:calc(100vh - 120px) !important; gap:32px !important; }
-  .desktop-reboot-match{ min-height:96px !important; }
-  .desktop-match-body{ min-height:96px !important; padding:12px 20px 10px !important; }
-  .desktop-logo-ring{ width:62px !important; height:62px !important; }
-  .desktop-logo-ring img{ width:54px !important; height:54px !important; }
-  .desktop-stage-stack{ gap:14px !important; }
-  .desktop-stage-semifinali .desktop-stage-stack{ padding-top:76px !important; gap:130px !important; }
-  .desktop-final-card{ min-height:calc(100vh - 160px) !important; }
-  .desktop-trophy-stage{ inset:184px 0 0 !important; }
-  .desktop-trophy-img{ width:min(300px,68%) !important; }
+  .playoff-desktop-reboot{ padding-bottom:12px; }
+  .desktop-reboot-header{ height:40px; margin-bottom:8px; }
+  .desktop-kicker{ height:36px; min-width:300px; font-size:.86rem; }
+  .desktop-reboot-grid{ height:calc(100vh - 110px); min-height:560px; column-gap:32px; }
+  .desktop-stage-head{ height:52px; margin-bottom:8px; }
+  .desktop-stage-head h2{ font-size:1.24rem; }
+  .desktop-stage-head h2::before,
+  .desktop-stage-head h2::after{ width:48px; }
+  .desktop-reboot-match{ height:74px; min-height:74px; }
+  .desktop-match-body{ height:74px; min-height:74px; padding:8px 18px; grid-template-columns:1fr 54px 1fr; }
+  .desktop-logo-ring{ width:54px; height:54px; }
+  .desktop-logo-ring img{ width:47px; height:47px; }
+  .desktop-vs-core{ width:48px; height:28px; }
+  .desktop-stage-stack{ gap:13px; }
+  .desktop-stage-semifinali .desktop-stage-stack{ padding-top:74px; gap:128px; }
+  .desktop-final-card{ min-height:500px; }
+  .desktop-final-slots{ padding:18px 18px 0; }
+  .desktop-final-slot{ min-height:70px; grid-template-columns:74px 1fr; }
+  .desktop-final-mark{ width:74px; min-height:70px; }
+  .desktop-final-mark span{ width:44px; height:44px; }
+  .desktop-trophy-stage{ top:170px; padding-bottom:18px; }
+  .desktop-trophy-img{ width:min(240px,64%); }
+}
+
+@media (min-width:1024px) and (max-width:1280px){
+  .desktop-reboot-grid{
+    grid-template-columns:minmax(260px,1fr) minmax(260px,1fr) minmax(240px,.9fr) minmax(330px,1.22fr);
+    column-gap:24px;
+  }
+  .desktop-stage-head h2::before,
+  .desktop-stage-head h2::after{ width:34px; }
+  .desktop-reboot-match{ height:76px; min-height:76px; }
+  .desktop-match-body{ height:76px; min-height:76px; grid-template-columns:1fr 50px 1fr; padding:8px 14px; }
+  .desktop-logo-ring{ width:54px; height:54px; }
+  .desktop-logo-ring img{ width:47px; height:47px; }
+  .desktop-vs-core{ width:46px; height:28px; }
+  .desktop-final-slot strong{ font-size:.94rem; }
 }
