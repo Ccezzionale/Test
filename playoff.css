@@ -2152,868 +2152,635 @@ body{
 }
 
 /* =========================================================
-   PLAYOFF DESKTOP V5 - BROADCAST / ROAD TO THE CROWN
-   Solo desktop. Mobile intoccabile.
+   PLAYOFF DESKTOP REBOOT - V7
+   Nuovo desktop separato. Mobile invariata.
    ========================================================= */
-@media (min-width: 1024px){
-  :root{
-    --v5-card-h: clamp(92px, 6.4vw, 116px);
-    --v5-logo: clamp(62px, 4.35vw, 78px);
-    --v5-gap-x: clamp(44px, 4.2vw, 76px);
-    --v5-final-w: clamp(430px, 30vw, 560px);
-    --v5-gold: #ffd56f;
-    --v5-gold-2: #fff1b6;
-    --v5-blue-1: rgba(6, 30, 72, .94);
-    --v5-blue-2: rgba(10, 58, 125, .82);
-  }
+.playoff-desktop-reboot{
+  display:none;
+}
 
+@media (min-width:1024px){
   body{
-    min-height: 100vh;
+    min-height:100vh;
     background:
-      radial-gradient(circle at 72% 58%, rgba(255,213,111,.12), transparent 24%),
-      radial-gradient(circle at 43% 10%, rgba(255,255,255,.13), transparent 20%),
-      radial-gradient(circle at 18% 28%, rgba(0,116,217,.25), transparent 34%),
-      linear-gradient(90deg, rgba(2,12,34,.96), rgba(3,30,85,.92) 42%, rgba(1,14,42,.98)),
-      url("img/champions-bg.png") center / cover no-repeat fixed !important;
+      radial-gradient(circle at 18% 8%, rgba(255,211,107,.18), transparent 22%),
+      radial-gradient(circle at 72% 16%, rgba(0,116,217,.24), transparent 24%),
+      radial-gradient(circle at 50% 54%, rgba(255,255,255,.07), transparent 34%),
+      linear-gradient(180deg, rgba(1,14,37,.98), rgba(0,24,68,.98) 48%, rgba(1,10,30,.98)),
+      url("img/champions-bg.png") center / cover fixed no-repeat;
   }
 
-  body::before{
-    content:"";
-    position: fixed;
-    inset: 70px 0 0;
-    pointer-events: none;
-    background:
-      linear-gradient(90deg, transparent 0 26%, rgba(255,213,111,.10) 47%, rgba(255,213,111,.16) 65%, transparent 86%),
-      radial-gradient(ellipse at 82% 72%, rgba(255,213,111,.20), transparent 38%),
-      radial-gradient(ellipse at 54% 50%, rgba(255,255,255,.055), transparent 42%);
-    opacity: .95;
-    z-index: -1;
-  }
-
-  /* La pagina diventa più broadcast: meno titolo gigante, più evento. */
-  .hero-playoff{
-    padding: 12px 20px 0 !important;
-  }
-
-  .titolo-pagina{
-    position: absolute !important;
-    width: 1px !important;
-    height: 1px !important;
-    overflow: hidden !important;
-    clip: rect(0,0,0,0) !important;
-    white-space: nowrap !important;
-  }
-
-  .sottotitolo-pagina{
-    display: none !important;
-  }
-
-  .playoff-intro{
-    width: min(1600px, calc(100vw - 48px));
-    margin: 10px auto 0 !important;
-    min-height: 48px;
-    justify-content: center;
-    position: relative;
-  }
-
-  .intro-chip{
-    position: relative;
-    padding: 12px 54px !important;
-    border-radius: 0 0 18px 18px !important;
-    clip-path: polygon(8% 0, 92% 0, 100% 100%, 0 100%);
-    color: var(--v5-gold-2) !important;
-    background:
-      linear-gradient(180deg, rgba(255,213,111,.20), rgba(255,213,111,.045)),
-      linear-gradient(180deg, rgba(4,26,66,.98), rgba(2,16,43,.98)) !important;
-    border: 1px solid rgba(255,213,111,.46) !important;
-    box-shadow: 0 12px 24px rgba(0,0,0,.28), 0 0 22px rgba(255,213,111,.12) !important;
-    text-transform: uppercase;
-    letter-spacing: 1.1px;
-  }
-
+  .hero-playoff,
+  .playoff-intro,
   .bracket-wrap{
-    overflow: hidden !important;
-    padding: 18px clamp(20px, 2.6vw, 46px) 30px !important;
-  }
-
-  .bracket{
-    width: min(1720px, calc(100vw - 56px)) !important;
-    min-width: 0 !important;
-    margin: 0 auto !important;
-    padding: 0 !important;
-    display: grid !important;
-    grid-template-columns: 1.08fr 1.08fr 1fr var(--v5-final-w) !important;
-    grid-template-rows: auto auto !important;
-    column-gap: var(--v5-gap-x) !important;
-    row-gap: clamp(64px, 8vh, 106px) !important;
-    align-items: start !important;
-  }
-
-  .bracket > .blocco-colonna:nth-of-type(1){ grid-column: 1 !important; grid-row: 1 !important; }
-  .bracket > .blocco-colonna:nth-of-type(7){ grid-column: 1 !important; grid-row: 2 !important; }
-  .bracket > .blocco-colonna:nth-of-type(2){ grid-column: 2 !important; grid-row: 1 !important; }
-  .bracket > .blocco-colonna:nth-of-type(6){ grid-column: 2 !important; grid-row: 2 !important; }
-  .bracket > .blocco-colonna:nth-of-type(3){ grid-column: 3 !important; grid-row: 1 !important; }
-  .bracket > .blocco-colonna:nth-of-type(5){ grid-column: 3 !important; grid-row: 2 !important; }
-  .bracket > .blocco-colonna:nth-of-type(4){ grid-column: 4 !important; grid-row: 1 / span 2 !important; align-self: stretch !important; }
-
-  .bracket > .blocco-colonna:nth-of-type(7) h2,
-  .bracket > .blocco-colonna:nth-of-type(6) h2,
-  .bracket > .blocco-colonna:nth-of-type(5) h2{ display:none !important; }
-
-  .blocco-colonna{
-    width: 100% !important;
-    align-items: stretch !important;
-  }
-
-  .blocco-colonna h2{
-    width: 100%;
-    margin: 0 0 14px !important;
-    text-align: center;
-    color: var(--v5-gold-2) !important;
-    font-size: clamp(1.18rem, 1.35vw, 1.46rem) !important;
-    font-weight: 950 !important;
-    text-transform: uppercase;
-    letter-spacing: .5px;
-    text-shadow: 0 2px 0 rgba(0,0,0,.42), 0 0 16px rgba(255,213,111,.36) !important;
-  }
-
-  .blocco-colonna h2::before,
-  .blocco-colonna h2::after{
-    content:"";
-    display:inline-block;
-    vertical-align:middle;
-    width: 44px;
-    height: 1px;
-    margin: 0 12px;
-    background: linear-gradient(90deg, transparent, var(--v5-gold), transparent);
-    opacity:.88;
-  }
-  .blocco-colonna h2::after{ display:inline-block !important; }
-
-  .colonna,
-  .col--spread,
-  .col--center,
-  .semifinale-sx,
-  .semifinale-dx{
-    width: 100% !important;
-    height: auto !important;
-    min-height: 0 !important;
-    padding: 0 !important;
-    transform: none !important;
-    justify-content: flex-start !important;
-  }
-
-  .colonna{ gap: 14px !important; }
-
-  .bracket > .blocco-colonna:nth-of-type(3) .colonna,
-  .bracket > .blocco-colonna:nth-of-type(5) .colonna{
-    margin-top: clamp(62px, 7vh, 88px) !important;
-    position: relative;
-  }
-
-  .match-pair:not(.finale-pair),
-  .pair-offset:not(.finale-pair){
-    width: 100% !important;
-    min-height: var(--v5-card-h) !important;
-    display: grid !important;
-    grid-template-columns: 1fr 1fr !important;
-    grid-template-rows: 1fr !important;
-    row-gap: 0 !important;
-    position: relative !important;
-    overflow: visible !important;
-    border-radius: 22px !important;
-    background:
-      radial-gradient(circle at 50% 0%, rgba(255,255,255,.15), transparent 52%),
-      linear-gradient(180deg, var(--v5-blue-2), var(--v5-blue-1)) !important;
-    border: 1px solid rgba(255,213,111,.34) !important;
-    box-shadow:
-      0 16px 30px rgba(0,0,0,.34),
-      inset 0 1px 0 rgba(255,255,255,.14),
-      0 0 0 1px rgba(255,255,255,.04) !important;
-  }
-
-  .match-pair:not(.finale-pair)::before,
-  .pair-offset:not(.finale-pair)::before{
-    content:"" !important;
-    display:block !important;
-    position:absolute;
-    left:50%; top:15px; bottom:15px;
-    width:1px;
-    background: linear-gradient(180deg, transparent, rgba(255,213,111,.58), transparent);
-    opacity:.9;
-    z-index: 3;
-  }
-
-  .match-pair:not(.finale-pair) .match,
-  .pair-offset:not(.finale-pair) .match{
-    width:auto !important;
-    min-width:0 !important;
-    max-width:none !important;
-    min-height: var(--v5-card-h) !important;
-    height: var(--v5-card-h) !important;
-    display:grid !important;
-    grid-template-columns:1fr !important;
-    place-items:center !important;
-    background: transparent !important;
-    border:0 !important;
-    box-shadow:none !important;
-    border-radius:0 !important;
-    padding:0 !important;
-    overflow: visible !important;
-  }
-
-  .match-pair:not(.finale-pair) .match::before,
-  .pair-offset:not(.finale-pair) .match::before{ display:none !important; }
-
-  .match-pair:not(.finale-pair) .squadra.orizzontale,
-  .pair-offset:not(.finale-pair) .squadra.orizzontale{
-    display:grid !important;
-    grid-template-columns:1fr !important;
-    place-items:center !important;
-    width:100%; height:100%;
-    position:relative;
-  }
-
-  .match-pair:not(.finale-pair) .team-logo-wrap,
-  .pair-offset:not(.finale-pair) .team-logo-wrap{
-    grid-column:1 !important;
-    width: var(--v5-logo) !important;
-    height: var(--v5-logo) !important;
-    display:grid !important;
-    place-items:center !important;
-    border-radius: 50%;
-    background:
-      radial-gradient(circle at 34% 26%, #fff 0 38%, #eaf3ff 72%, #c7d7ea 100%) !important;
-    border: 1px solid rgba(255,255,255,.72) !important;
-    box-shadow:
-      0 10px 18px rgba(0,0,0,.34),
-      0 0 0 4px rgba(255,255,255,.055),
-      inset 0 1px 0 rgba(255,255,255,.90) !important;
-    position: relative;
-    z-index: 4;
-  }
-
-  .match-pair:not(.finale-pair) .squadra.orizzontale img,
-  .pair-offset:not(.finale-pair) .squadra.orizzontale img{
-    width: calc(var(--v5-logo) - 9px) !important;
-    height: calc(var(--v5-logo) - 9px) !important;
-    padding:0 !important;
-    background:transparent !important;
-    object-fit: contain !important;
-  }
-
-  .match-pair:not(.finale-pair) .team-main,
-  .pair-offset:not(.finale-pair) .team-main{
-    grid-column:1 !important;
-    position:absolute !important;
-    inset:0 !important;
-    display:block !important;
-    padding:0 !important;
-    pointer-events:none !important;
-  }
-
-  .match-pair:not(.finale-pair) .team-text,
-  .pair-offset:not(.finale-pair) .team-text{ display: contents !important; }
-
-  .match-pair:not(.finale-pair) .seed-badge,
-  .pair-offset:not(.finale-pair) .seed-badge{
-    position:absolute !important;
-    top: 9px !important;
-    left: 10px !important;
-    z-index:8;
-    min-height:22px;
-    padding:2px 8px;
-    color:#fff;
-    background: linear-gradient(180deg, #12417e, #041b45) !important;
-    border: 1px solid rgba(255,255,255,.16);
-    box-shadow: 0 5px 12px rgba(0,0,0,.24);
-  }
-  .match-pair:not(.finale-pair) .match:nth-child(2) .seed-badge,
-  .pair-offset:not(.finale-pair) .match:nth-child(2) .seed-badge{ left:auto !important; right:10px !important; }
-
-  .match-pair:not(.finale-pair) .team-name,
-  .match-pair:not(.finale-pair) .team-status,
-  .match-pair:not(.finale-pair) .team-flag,
-  .pair-offset:not(.finale-pair) .team-name,
-  .pair-offset:not(.finale-pair) .team-status,
-  .pair-offset:not(.finale-pair) .team-flag{
-    position:absolute !important;
-    width:1px !important; height:1px !important;
-    margin:-1px !important; padding:0 !important;
-    overflow:hidden !important;
-    clip:rect(0,0,0,0) !important;
-    white-space:nowrap !important;
-    border:0 !important;
-  }
-
-  .match-pair:not(.finale-pair) .match:first-child::after,
-  .pair-offset:not(.finale-pair) .match:first-child::after{
-    content:"VS" !important;
-    position:absolute !important;
-    left:100% !important; top:50% !important;
-    transform:translate(-50%, -50%) !important;
-    z-index:20 !important;
-    width:50px; height:32px;
-    display:grid !important; place-items:center;
-    color:#fff;
-    font-weight:950;
-    font-size:.82rem;
-    letter-spacing:.5px;
-    border-radius:999px;
-    background: linear-gradient(180deg, #123f7c, #061d4d) !important;
-    border:1px solid rgba(255,213,111,.38) !important;
-    box-shadow: 0 6px 14px rgba(0,0,0,.35), 0 0 16px rgba(255,213,111,.18), inset 0 1px 0 rgba(255,255,255,.14) !important;
-  }
-
-  .match-pair:not(.finale-pair) .match.placeholder .team-logo-wrap,
-  .pair-offset:not(.finale-pair) .match.placeholder .team-logo-wrap{
-    background: linear-gradient(180deg, rgba(21,35,61,.96), rgba(8,18,38,.98)) !important;
-    border: 1px solid rgba(255,213,111,.38) !important;
-    box-shadow: inset 0 1px 0 rgba(255,255,255,.10), 0 10px 18px rgba(0,0,0,.30), 0 0 14px rgba(255,213,111,.10) !important;
-  }
-
-  .match-pair:not(.finale-pair) .match.placeholder .team-logo-wrap::after,
-  .pair-offset:not(.finale-pair) .match.placeholder .team-logo-wrap::after{
-    content:"TBD";
-    color: rgba(255,255,255,.86);
-    font-size: .92rem;
-    font-weight: 950;
-    letter-spacing: .8px;
-  }
-
-  .match-pair:not(.finale-pair) .match.placeholder .team-logo-wrap img,
-  .pair-offset:not(.finale-pair) .match.placeholder .team-logo-wrap img{ display:none !important; }
-
-  /* Connettori solo fino alle semifinali: linee oro più intenzionali. */
-  .bracket > .blocco-colonna:nth-of-type(1)::after,
-  .bracket > .blocco-colonna:nth-of-type(7)::after,
-  .bracket > .blocco-colonna:nth-of-type(2)::after,
-  .bracket > .blocco-colonna:nth-of-type(6)::after{
-    content:"" !important;
-    position:absolute;
-    right: calc(-1 * var(--v5-gap-x) + 8px);
-    top: calc(50% + 16px);
-    width: calc(var(--v5-gap-x) - 16px);
-    height:3px;
-    border-radius:999px;
-    background: linear-gradient(90deg, rgba(255,255,255,.70), var(--v5-gold)) !important;
-    box-shadow: 0 0 16px rgba(255,213,111,.42);
-    z-index:0;
-    pointer-events:none;
-  }
-
-  .bracket > .blocco-colonna:nth-of-type(3)::after,
-  .bracket > .blocco-colonna:nth-of-type(5)::after,
-  .bracket > .blocco-colonna:nth-of-type(3) .match-pair::after,
-  .bracket > .blocco-colonna:nth-of-type(5) .match-pair::after{
     display:none !important;
-    content:none !important;
   }
 
-  .bracket > .blocco-colonna:nth-of-type(3) .colonna::before,
-  .bracket > .blocco-colonna:nth-of-type(5) .colonna::before{
-    content:"" !important;
-    display:block !important;
+  .playoff-desktop-reboot{
+    display:block;
+    min-height:calc(100vh - 68px);
+    padding:18px clamp(18px,2.2vw,42px) 34px;
+    position:relative;
+    overflow:hidden;
+  }
+
+  .playoff-desktop-reboot::before{
+    content:"";
     position:absolute;
-    left: calc(-1 * var(--v5-gap-x) / 2);
-    top:50%;
-    transform:translateY(-50%);
-    width:2px;
-    height: clamp(150px, 18vh, 210px);
-    border-radius:999px;
-    background: linear-gradient(180deg, transparent, rgba(255,255,255,.55), var(--v5-gold), rgba(255,255,255,.55), transparent);
-    box-shadow: 0 0 14px rgba(255,213,111,.34);
+    inset:0;
+    background:
+      linear-gradient(90deg, rgba(255,211,107,.06), transparent 16%, transparent 84%, rgba(255,211,107,.06)),
+      radial-gradient(circle at 50% 2%, rgba(255,255,255,.12), transparent 20%);
     pointer-events:none;
   }
 
-  /* Finale più “tempio”, non solo scatolone. */
-  .blocco-finale{ min-width:0 !important; width:100% !important; }
-
-  .finale-stage{
-    width:100% !important;
-    min-height: clamp(610px, 78vh, 780px) !important;
-    padding: 20px 22px 24px !important;
-    border-radius: 30px !important;
-    overflow:hidden;
+  .desktop-playoff-shell{
     position:relative;
-    background:
-      radial-gradient(circle at 50% 70%, rgba(255,213,111,.24), transparent 32%),
-      radial-gradient(circle at 50% 22%, rgba(255,255,255,.12), transparent 25%),
-      linear-gradient(155deg, rgba(18,72,140,.70), rgba(4,22,58,.94) 55%, rgba(2,14,38,.98)) !important;
-    border:1px solid rgba(255,213,111,.42) !important;
-    box-shadow: 0 24px 48px rgba(0,0,0,.42), inset 0 1px 0 rgba(255,255,255,.12), 0 0 30px rgba(255,213,111,.08) !important;
+    z-index:1;
+    width:min(1740px,100%);
+    margin:0 auto;
   }
 
-  .finale-stage::before{
-    content:"LA GLORIA È IN PALIO" !important;
-    position:absolute;
-    top: 214px;
-    left:50%;
-    transform:translateX(-50%);
-    z-index:3;
-    color: var(--v5-gold-2);
-    font-size:.86rem;
+  .desktop-reboot-header{
+    text-align:center;
+    margin:0 auto 18px;
+  }
+
+  .desktop-kicker{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    min-width:260px;
+    min-height:38px;
+    padding:0 30px;
+    color:#fff2b8;
     font-weight:950;
-    letter-spacing:1.2px;
-    text-shadow:0 2px 12px rgba(0,0,0,.46);
-    white-space:nowrap;
+    letter-spacing:.12em;
+    text-transform:uppercase;
+    background:
+      linear-gradient(180deg, rgba(255,255,255,.12), rgba(255,255,255,.02)),
+      linear-gradient(90deg, transparent, rgba(255,211,107,.20), transparent);
+    border:1px solid rgba(255,211,107,.36);
+    border-top:0;
+    border-radius:0 0 18px 18px;
+    box-shadow:0 12px 22px rgba(0,0,0,.26), inset 0 1px 0 rgba(255,255,255,.12);
   }
 
-  .finale-pair{
-    width:100% !important;
-    display:grid !important;
-    grid-template-columns:1fr !important;
-    grid-template-rows: repeat(2, minmax(92px, auto)) !important;
-    row-gap: 14px !important;
+  .desktop-reboot-header h1{
+    margin:14px 0 5px;
+    font-size:clamp(2.2rem,3.5vw,4.1rem);
+    line-height:1;
+    font-weight:950;
+    letter-spacing:-1px;
+    color:#fff4c8;
+    background:linear-gradient(180deg,#fff9dd 0%,#ffe59b 45%,#d6aa47 100%);
+    -webkit-background-clip:text;
+    background-clip:text;
+    -webkit-text-fill-color:transparent;
+    text-shadow:0 8px 30px rgba(0,0,0,.36);
+  }
+
+  .desktop-reboot-header p{
+    margin:0;
+    color:rgba(220,235,255,.82);
+    font-weight:700;
+    font-size:1rem;
+  }
+
+  .desktop-reboot-board{
+    margin-top:8px;
+  }
+
+  .desktop-reboot-grid{
+    display:grid;
+    grid-template-columns:minmax(250px,.95fr) minmax(250px,.95fr) minmax(260px,.9fr) minmax(360px,1.18fr);
+    gap:clamp(18px,2.1vw,38px);
+    align-items:stretch;
+  }
+
+  .desktop-stage,
+  .desktop-final-temple{
+    min-width:0;
     position:relative;
-    z-index:4;
   }
 
-  .match.finale{
-    width:100% !important;
-    min-width:0 !important;
-    max-width:none !important;
-    min-height:92px !important;
-    display:grid !important;
-    grid-template-columns: 86px 1fr !important;
-    border-radius: 17px !important;
-    background: linear-gradient(180deg, rgba(255,255,255,.99), rgba(244,248,255,.97)) !important;
-    border:2px solid rgba(255,213,111,.86) !important;
-    box-shadow: 0 14px 26px rgba(0,0,0,.32), 0 0 18px rgba(255,213,111,.15) !important;
+  .desktop-stage::after{
+    content:"";
+    position:absolute;
+    top:92px;
+    right:calc(-1 * clamp(18px,2.1vw,38px) / 2 - 1px);
+    width:2px;
+    height:calc(100% - 118px);
+    border-radius:999px;
+    background:linear-gradient(180deg, transparent, rgba(255,211,107,.76) 20%, rgba(255,255,255,.44) 50%, rgba(255,211,107,.76) 80%, transparent);
+    box-shadow:0 0 18px rgba(255,211,107,.32);
+    opacity:.72;
   }
 
-  .match.finale::before{
-    display:block !important;
-    width:86px !important;
-    background: linear-gradient(180deg, color-mix(in srgb, var(--team-color) 90%, #ffffff 10%), color-mix(in srgb, var(--team-color) 72%, #000000 28%)) !important;
+  .desktop-stage-semifinali::after{
+    display:none;
   }
 
-  .match.finale.placeholder .team-logo-wrap::after{
-    content:"?";
+  .desktop-stage-head{
+    height:72px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:flex-end;
+    text-align:center;
+    margin-bottom:12px;
+  }
+
+  .desktop-stage-head h2{
+    margin:0;
+    color:#fff1ac;
+    font-size:clamp(1.15rem,1.35vw,1.55rem);
+    line-height:1;
+    font-weight:950;
+    letter-spacing:.04em;
+    text-transform:uppercase;
+    text-shadow:0 2px 14px rgba(255,211,107,.28), 0 2px 8px rgba(0,0,0,.4);
+  }
+
+  .desktop-stage-head h2::after{
+    content:"";
+    display:block;
+    width:104px;
+    height:2px;
+    margin:9px auto 0;
+    background:linear-gradient(90deg, transparent, rgba(255,211,107,.75), #fff7cf, rgba(255,211,107,.75), transparent);
+    box-shadow:0 0 12px rgba(255,211,107,.32);
+    border-radius:999px;
+  }
+
+  .desktop-stage-head p{
+    margin:8px 0 0;
+    min-height:17px;
+    color:rgba(214,235,255,.62);
+    font-size:.8rem;
+    font-weight:800;
+    text-transform:uppercase;
+    letter-spacing:.06em;
+  }
+
+  .desktop-stage-stack{
+    display:flex;
+    flex-direction:column;
+    gap:clamp(12px,1.45vw,20px);
+  }
+
+  .desktop-stage-semifinali .desktop-stage-stack{
+    padding-top:clamp(82px,10.2vh,132px);
+    gap:clamp(120px,17vh,190px);
+  }
+
+  .desktop-reboot-match{
+    position:relative;
+    min-height:132px;
+    border-radius:24px;
+    overflow:hidden;
+    border:1px solid rgba(131,187,255,.32);
+    background:
+      radial-gradient(circle at 50% 0%, rgba(255,255,255,.15), transparent 44%),
+      linear-gradient(180deg, rgba(12,58,122,.88), rgba(4,24,61,.94));
+    box-shadow:
+      0 18px 30px rgba(0,0,0,.30),
+      inset 0 1px 0 rgba(255,255,255,.12);
+  }
+
+  .desktop-reboot-match::before{
+    content:"";
+    position:absolute;
+    inset:0;
+    background:
+      linear-gradient(90deg, rgba(255,211,107,.08), transparent 18%, transparent 82%, rgba(255,211,107,.08)),
+      radial-gradient(circle at 50% 50%, rgba(255,211,107,.08), transparent 28%);
+    pointer-events:none;
+  }
+
+  .desktop-reboot-match::after{
+    content:"";
+    position:absolute;
+    left:50%;
+    top:42px;
+    bottom:18px;
+    width:1px;
+    transform:translateX(-50%);
+    background:linear-gradient(180deg, transparent, rgba(255,211,107,.45), transparent);
+    opacity:.75;
+  }
+
+  .desktop-match-bar{
+    position:relative;
+    z-index:2;
+    height:32px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:7px 12px 0;
+    color:rgba(218,235,255,.72);
+    font-size:.72rem;
+    font-weight:950;
+    letter-spacing:.05em;
+    text-transform:uppercase;
+  }
+
+  .desktop-match-bar span:first-child{
+    color:#ffffff;
+    min-width:42px;
+    height:24px;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    border-radius:999px;
+    background:linear-gradient(180deg, rgba(25,89,166,.95), rgba(6,38,91,.95));
+    border:1px solid rgba(255,255,255,.15);
+    box-shadow:0 5px 12px rgba(0,0,0,.24);
+  }
+
+  .desktop-match-body{
+    position:relative;
+    z-index:2;
+    display:grid;
+    grid-template-columns:1fr 64px 1fr;
+    gap:8px;
+    align-items:center;
+    min-height:82px;
+    padding:0 14px 12px;
+  }
+
+  .desktop-team{
+    min-width:0;
+    position:relative;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:8px;
+  }
+
+  .desktop-seed{
+    position:absolute;
+    top:-8px;
+    min-width:34px;
+    height:24px;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    border-radius:10px;
+    color:#ffffff;
+    font-size:.78rem;
+    font-weight:950;
+    background:linear-gradient(180deg, #14549d, #062c69);
+    border:1px solid rgba(255,255,255,.15);
+    box-shadow:0 5px 10px rgba(0,0,0,.22);
+    z-index:5;
+  }
+
+  .desktop-team.home .desktop-seed{ left:0; }
+  .desktop-team.away .desktop-seed{ right:0; }
+
+  .desktop-logo-ring{
+    width:68px;
+    height:68px;
+    border-radius:50%;
     display:grid;
     place-items:center;
-    width:54px; height:54px;
-    border-radius:50%;
-    color:var(--v5-gold-2);
-    font-size:1.5rem;
-    font-weight:950;
-    background: linear-gradient(180deg, #123f7c, #061d4d);
-    border:1px solid rgba(255,213,111,.42);
-  }
-
-  .match.finale .team-name,
-  .match.finale .team-status,
-  .match.finale .team-flag{
-    position:static !important;
-    width:auto !important;
-    height:auto !important;
-    margin:0 !important;
-    padding:0 !important;
-    clip:auto !important;
-    overflow:visible !important;
-    white-space:normal !important;
-  }
-
-  .match.finale .team-name{
-    display:-webkit-box !important;
-    -webkit-line-clamp:1;
-    -webkit-box-orient:vertical;
-    overflow:hidden !important;
-    color:#06254c !important;
-    font-size:1.08rem !important;
-    font-weight:950 !important;
-  }
-
-  .match.finale .team-status{
-    margin-top:5px !important;
-    color:#55708e !important;
-    font-size:.78rem !important;
-    font-weight:900 !important;
-    letter-spacing:.55px;
-  }
-
-  .match.finale .team-flag{
-    width:38px !important;
-    height:38px !important;
-    display:grid !important;
-    place-items:center !important;
-    border-radius:50%;
-    background: rgba(6,37,76,.07) !important;
-  }
-
-  .coppa-vittoria{
-    margin-top: 66px !important;
-    position: relative;
-    z-index:2;
-  }
-
-  .coppa-img{
-    width: clamp(270px, 19vw, 350px) !important;
-    filter: drop-shadow(0 18px 28px rgba(0,0,0,.48)) drop-shadow(0 0 30px rgba(255,213,111,.24)) !important;
-  }
-}
-
-@media (min-width: 1024px) and (max-height: 850px){
-  .playoff-intro{ min-height: 38px !important; }
-  .intro-chip{ padding: 9px 44px !important; }
-  .bracket{ row-gap: 58px !important; }
-  .match-pair:not(.finale-pair),
-  .pair-offset:not(.finale-pair),
-  .match-pair:not(.finale-pair) .match,
-  .pair-offset:not(.finale-pair) .match{
-    min-height: 94px !important;
-    height: 94px !important;
-  }
-  .finale-stage{ min-height: 560px !important; }
-  .finale-stage::before{ top: 204px !important; }
-  .coppa-vittoria{ margin-top: 50px !important; }
-  .coppa-img{ width: clamp(225px, 16vw, 285px) !important; }
-}
-
-/* =========================================================
-   PLAYOFF DESKTOP V6 - CINEMATIC REBALANCE
-   Solo desktop: mobile protetto sotto 768px.
-   ========================================================= */
-@media (min-width: 1024px){
-  :root{
-    --v6-gold:#f6d36f;
-    --v6-gold-soft:#fff0b0;
-    --v6-card:#06265d;
-    --v6-card-2:#020f2b;
-    --v6-gap-x: clamp(36px, 3.1vw, 56px);
-  }
-
-  /* Via il faro grigio centrale della V5: era lui che ammazzava l'atmosfera. */
-  body::before{ display:none !important; content:none !important; }
-
-  body{
     background:
-      radial-gradient(circle at 50% -6%, rgba(68,145,255,.26), transparent 30%),
-      radial-gradient(circle at 84% 28%, rgba(246,211,111,.10), transparent 24%),
-      radial-gradient(circle at 17% 42%, rgba(0,116,217,.18), transparent 32%),
-      linear-gradient(180deg, rgba(4,18,50,.96), rgba(0,22,71,.96) 48%, rgba(2,10,30,.98)),
-      url("img/champions-bg.png") center / cover no-repeat fixed !important;
-  }
-
-  .hero-playoff{ padding: 6px 20px 0 !important; }
-  .titolo-pagina,
-  .sottotitolo-pagina{ display:none !important; }
-
-  .playoff-intro{
-    margin: 0 auto 6px !important;
-    min-height: 42px !important;
-  }
-
-  .intro-chip{
-    padding: 10px 52px !important;
-    border-radius: 0 0 17px 17px !important;
-    font-size: .92rem !important;
-    background:
-      linear-gradient(180deg, rgba(246,211,111,.18), rgba(246,211,111,.04)),
-      linear-gradient(180deg, rgba(14,32,64,.98), rgba(5,15,38,.98)) !important;
-    border: 1px solid rgba(246,211,111,.46) !important;
-    color: var(--v6-gold-soft) !important;
-    box-shadow: 0 10px 22px rgba(0,0,0,.26), 0 0 22px rgba(246,211,111,.11) !important;
-  }
-
-  .bracket-wrap{
-    padding: 0 26px 24px !important;
-    overflow:hidden !important;
-  }
-
-  .bracket{
-    width: min(1760px, calc(100vw - 44px)) !important;
-    min-width: 0 !important;
-    margin: 0 auto !important;
-    padding: 12px 0 28px !important;
-    display:grid !important;
-    grid-template-columns: minmax(300px, 1.05fr) minmax(300px, 1.05fr) minmax(280px, .95fr) minmax(430px, 1.45fr) !important;
-    grid-template-rows: auto auto !important;
-    column-gap: var(--v6-gap-x) !important;
-    row-gap: clamp(42px, 5.5vh, 72px) !important;
-    align-items:start !important;
-    justify-content:center !important;
-  }
-
-  .bracket > .blocco-colonna:nth-of-type(1){ grid-column:1 !important; grid-row:1 !important; }
-  .bracket > .blocco-colonna:nth-of-type(7){ grid-column:1 !important; grid-row:2 !important; }
-  .bracket > .blocco-colonna:nth-of-type(2){ grid-column:2 !important; grid-row:1 !important; }
-  .bracket > .blocco-colonna:nth-of-type(6){ grid-column:2 !important; grid-row:2 !important; }
-  .bracket > .blocco-colonna:nth-of-type(3){ grid-column:3 !important; grid-row:1 !important; }
-  .bracket > .blocco-colonna:nth-of-type(5){ grid-column:3 !important; grid-row:2 !important; }
-  .bracket > .blocco-colonna:nth-of-type(4){ grid-column:4 !important; grid-row:1 / span 2 !important; align-self:stretch !important; transform:none !important; }
-
-  .bracket > .blocco-colonna:nth-of-type(7) h2,
-  .bracket > .blocco-colonna:nth-of-type(6) h2,
-  .bracket > .blocco-colonna:nth-of-type(5) h2{ display:none !important; }
-
-  .blocco-colonna h2{
-    margin: 0 0 14px !important;
-    font-size: clamp(1.03rem, 1.35vw, 1.36rem) !important;
-    text-transform: uppercase !important;
-    color: var(--v6-gold-soft) !important;
-    letter-spacing:.7px !important;
-    text-shadow: 0 2px 12px rgba(0,0,0,.44), 0 0 14px rgba(246,211,111,.22) !important;
-  }
-
-  .blocco-colonna h2::before,
-  .blocco-colonna h2::after{
-    content:"" !important;
-    display:inline-block !important;
-    width:44px !important;
-    height:1px !important;
-    margin:0 14px 5px !important;
-    background:linear-gradient(90deg, transparent, var(--v6-gold), transparent) !important;
-    opacity:.72 !important;
-    vertical-align:middle !important;
-  }
-
-  .blocco-colonna h2::after{ margin-top:0 !important; }
-
-  .colonna,
-  .col--spread,
-  .col--center,
-  .semifinale-sx,
-  .semifinale-dx{
-    height:auto !important;
-    min-height:0 !important;
-    width:100% !important;
-    transform:none !important;
-    padding:0 !important;
-  }
-
-  .colonna{ gap: 12px !important; }
-
-  .bracket > .blocco-colonna:nth-of-type(3) .colonna,
-  .bracket > .blocco-colonna:nth-of-type(5) .colonna{
-    margin-top: clamp(46px, 6.2vh, 78px) !important;
-  }
-
-  .match-pair:not(.finale-pair),
-  .pair-offset:not(.finale-pair){
-    width:100% !important;
-    min-height: 96px !important;
-    height: 96px !important;
-    display:grid !important;
-    grid-template-columns: 1fr 1fr !important;
-    grid-template-rows: 1fr !important;
-    border-radius: 20px !important;
-    overflow: visible !important;
-    background:
-      radial-gradient(circle at 50% 0%, rgba(255,255,255,.16), transparent 56%),
-      linear-gradient(180deg, rgba(14,62,126,.92), rgba(3,22,58,.98)) !important;
-    border: 1px solid rgba(144,198,255,.34) !important;
+      radial-gradient(circle at 34% 28%, rgba(255,255,255,1), rgba(255,255,255,.84) 70%, rgba(207,225,247,.74));
+    border:1px solid rgba(255,255,255,.75);
     box-shadow:
-      0 14px 30px rgba(0,0,0,.34),
-      inset 0 1px 0 rgba(255,255,255,.12),
-      0 0 0 1px rgba(246,211,111,.06) !important;
+      0 10px 18px rgba(0,0,0,.28),
+      0 0 0 4px rgba(255,255,255,.06);
   }
 
-  .match-pair:not(.finale-pair)::before,
-  .pair-offset:not(.finale-pair)::before{
-    display:block !important;
-    content:"" !important;
-    position:absolute !important;
-    left:50% !important;
-    top:16px !important;
-    bottom:16px !important;
-    width:1px !important;
-    background:linear-gradient(180deg, transparent, rgba(246,211,111,.45), transparent) !important;
-    z-index:2 !important;
-    opacity:.85 !important;
+  .desktop-logo-ring img{
+    width:58px;
+    height:58px;
+    object-fit:contain;
+    border-radius:50%;
+    filter:drop-shadow(0 2px 4px rgba(0,0,0,.22));
   }
 
-  .match-pair:not(.finale-pair) .match,
-  .pair-offset:not(.finale-pair) .match{
-    width:auto !important;
-    min-width:0 !important;
-    max-width:none !important;
-    min-height:96px !important;
-    height:96px !important;
-    display:grid !important;
-    grid-template-columns:1fr !important;
-    place-items:center !important;
-    background:transparent !important;
-    border:0 !important;
-    box-shadow:none !important;
-    padding:0 !important;
-    overflow:visible !important;
+  .desktop-team.is-placeholder .desktop-logo-ring{
+    background:linear-gradient(180deg, rgba(4,18,44,.98), rgba(10,36,78,.96));
+    border-color:rgba(255,211,107,.38);
+    box-shadow:0 10px 18px rgba(0,0,0,.24), inset 0 1px 0 rgba(255,255,255,.08);
   }
 
-  .match-pair:not(.finale-pair) .match::before,
-  .pair-offset:not(.finale-pair) .match::before{ display:none !important; }
-
-  .match-pair:not(.finale-pair) .team-logo-wrap,
-  .pair-offset:not(.finale-pair) .team-logo-wrap{
-    width:66px !important;
-    height:66px !important;
-    border-radius:50% !important;
-    display:grid !important;
-    place-items:center !important;
-    background:radial-gradient(circle at 35% 28%, #fff, #edf4ff 66%, #ccd9eb) !important;
-    border:1px solid rgba(255,255,255,.78) !important;
-    box-shadow: 0 10px 20px rgba(0,0,0,.34), 0 0 0 4px rgba(255,255,255,.06) !important;
+  .desktop-team.is-placeholder .desktop-logo-ring span{
+    color:rgba(255,255,255,.88);
+    font-weight:950;
+    letter-spacing:.05em;
+    font-size:.88rem;
   }
 
-  .match-pair:not(.finale-pair) .squadra.orizzontale img,
-  .pair-offset:not(.finale-pair) .squadra.orizzontale img{
-    width:58px !important;
-    height:58px !important;
-    padding:0 !important;
-    background:transparent !important;
+  .desktop-team.is-winner .desktop-logo-ring{
+    border-color:rgba(255,211,107,.98);
+    box-shadow:
+      0 10px 18px rgba(0,0,0,.28),
+      0 0 0 4px rgba(255,211,107,.26),
+      0 0 24px rgba(255,211,107,.48);
   }
 
-  .match-pair:not(.finale-pair) .match.placeholder .team-logo-wrap,
-  .pair-offset:not(.finale-pair) .match.placeholder .team-logo-wrap{
-    background: linear-gradient(180deg, #152238, #071126) !important;
-    border:1px solid rgba(246,211,111,.50) !important;
+  .desktop-team-name{
+    width:100%;
+    min-height:2.2em;
+    color:#ffffff;
+    font-size:.82rem;
+    line-height:1.1;
+    font-weight:950;
+    text-align:center;
+    text-transform:uppercase;
+    text-shadow:0 2px 8px rgba(0,0,0,.36);
+    display:-webkit-box;
+    -webkit-line-clamp:2;
+    -webkit-box-orient:vertical;
+    overflow:hidden;
   }
 
-  .match-pair:not(.finale-pair) .match.placeholder .team-logo-wrap::after,
-  .pair-offset:not(.finale-pair) .match.placeholder .team-logo-wrap::after{
-    content:"TBD" !important;
-    color:#e9eef8 !important;
-    font-size:.84rem !important;
-    font-weight:950 !important;
-    letter-spacing:.85px !important;
+  .desktop-team.is-placeholder .desktop-team-name{
+    color:rgba(214,235,255,.58);
   }
 
-  .match-pair:not(.finale-pair) .seed-badge,
-  .pair-offset:not(.finale-pair) .seed-badge{
-    top:9px !important;
-    left:10px !important;
-    min-height:22px !important;
-    padding:2px 8px !important;
-    font-size:.72rem !important;
-    background:linear-gradient(180deg, #15519a, #06254f) !important;
-    border:1px solid rgba(255,255,255,.12) !important;
+  .desktop-vs-core{
+    display:flex;
+    justify-content:center;
+    align-items:center;
   }
 
-  .match-pair:not(.finale-pair) .match:nth-child(2) .seed-badge,
-  .pair-offset:not(.finale-pair) .match:nth-child(2) .seed-badge{
-    left:auto !important;
-    right:10px !important;
+  .desktop-vs-core span{
+    width:54px;
+    height:34px;
+    border-radius:999px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    color:#ffffff;
+    font-weight:950;
+    letter-spacing:.06em;
+    background:linear-gradient(180deg, rgba(21,77,145,.96), rgba(4,24,61,.98));
+    border:1px solid rgba(255,211,107,.34);
+    box-shadow:0 8px 14px rgba(0,0,0,.28), inset 0 1px 0 rgba(255,255,255,.16);
   }
 
-  .match-pair:not(.finale-pair) .match:first-child::after,
-  .pair-offset:not(.finale-pair) .match:first-child::after{
-    content:"VS" !important;
-    position:absolute !important;
-    left:100% !important;
-    top:50% !important;
-    transform:translate(-50%, -50%) !important;
-    z-index:30 !important;
-    width:48px !important;
-    height:30px !important;
-    display:grid !important;
-    place-items:center !important;
-    border-radius:999px !important;
-    background:linear-gradient(180deg, #154782, #061c49) !important;
-    border:1px solid rgba(246,211,111,.36) !important;
-    color:#fff !important;
-    font-size:.78rem !important;
-    font-weight:950 !important;
-    box-shadow: 0 6px 15px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.13) !important;
+  .desktop-match-route{
+    position:relative;
+    z-index:2;
+    min-height:34px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:6px;
+    padding:0 12px;
+    color:#ffe49d;
+    font-size:.78rem;
+    font-weight:900;
+    letter-spacing:.04em;
+    text-transform:uppercase;
+    border-top:1px solid rgba(255,211,107,.16);
+    background:rgba(2,14,37,.28);
   }
 
-  /* connettori più discreti, non la ragnatela gialla */
-  .bracket > .blocco-colonna:nth-of-type(1)::after,
-  .bracket > .blocco-colonna:nth-of-type(7)::after,
-  .bracket > .blocco-colonna:nth-of-type(2)::after,
-  .bracket > .blocco-colonna:nth-of-type(6)::after{
-    right: calc(-1 * var(--v6-gap-x) + 10px) !important;
-    top: calc(50% + 15px) !important;
-    width: calc(var(--v6-gap-x) - 20px) !important;
-    height:2px !important;
-    background:linear-gradient(90deg, rgba(155,204,255,.55), rgba(246,211,111,.84)) !important;
-    box-shadow:0 0 10px rgba(246,211,111,.26) !important;
+  .desktop-match-route strong{
+    color:#ffffff;
   }
 
-  .bracket > .blocco-colonna:nth-of-type(3)::after,
-  .bracket > .blocco-colonna:nth-of-type(5)::after,
-  .bracket > .blocco-colonna:nth-of-type(3) .match-pair::after,
-  .bracket > .blocco-colonna:nth-of-type(5) .match-pair::after{
-    display:none !important;
-    content:none !important;
+  .desktop-final-temple{
+    display:flex;
+    flex-direction:column;
   }
 
-  .bracket > .blocco-colonna:nth-of-type(3) .colonna::before,
-  .bracket > .blocco-colonna:nth-of-type(5) .colonna::before{
-    left: calc(-1 * var(--v6-gap-x) / 2) !important;
-    height: 150px !important;
-    opacity:.78 !important;
-  }
-
-  /* Finale: più poster/arena, meno blocco grigio. */
-  .finale-stage{
-    min-height: clamp(520px, 69vh, 675px) !important;
-    padding: 20px 22px 22px !important;
-    border-radius: 28px !important;
+  .desktop-final-card{
+    flex:1;
+    min-height:640px;
+    border-radius:30px;
+    position:relative;
+    overflow:hidden;
+    border:1px solid rgba(255,211,107,.38);
     background:
-      radial-gradient(circle at 50% 74%, rgba(246,211,111,.28), transparent 31%),
-      radial-gradient(circle at 50% 27%, rgba(255,255,255,.09), transparent 23%),
-      linear-gradient(180deg, rgba(8,44,101,.82), rgba(3,17,50,.96) 54%, rgba(1,8,25,.98)) !important;
-    border:1px solid rgba(246,211,111,.44) !important;
-    box-shadow: 0 22px 46px rgba(0,0,0,.42), inset 0 1px 0 rgba(255,255,255,.12) !important;
+      radial-gradient(circle at 50% 22%, rgba(255,255,255,.14), transparent 28%),
+      radial-gradient(circle at 50% 70%, rgba(255,211,107,.16), transparent 28%),
+      linear-gradient(180deg, rgba(12,55,112,.92), rgba(2,15,43,.96));
+    box-shadow:
+      0 22px 40px rgba(0,0,0,.34),
+      inset 0 1px 0 rgba(255,255,255,.10);
   }
 
-  .finale-stage::before{
-    top: 205px !important;
-    font-size:.82rem !important;
-    color:var(--v6-gold-soft) !important;
+  .desktop-final-card::before{
+    content:"";
+    position:absolute;
+    inset:0;
+    background:
+      linear-gradient(180deg, transparent 0 44%, rgba(255,211,107,.08) 60%, transparent 100%),
+      linear-gradient(90deg, rgba(255,211,107,.10), transparent 18%, transparent 82%, rgba(255,211,107,.10));
+    pointer-events:none;
   }
 
-  .finale-pair{
-    row-gap: 12px !important;
-    grid-template-rows: repeat(2, minmax(84px, auto)) !important;
+  .desktop-final-slots{
+    position:relative;
+    z-index:2;
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+    padding:22px 22px 0;
   }
 
-  .match.finale{
-    min-height:84px !important;
-    grid-template-columns: 84px 1fr !important;
-    border-radius:17px !important;
+  .desktop-final-slot{
+    min-height:86px;
+    display:grid;
+    grid-template-columns:76px 1fr;
+    align-items:center;
+    gap:15px;
+    border-radius:18px;
+    overflow:hidden;
+    border:1px solid rgba(255,211,107,.58);
+    background:linear-gradient(180deg, rgba(255,255,255,.98), rgba(242,247,255,.96));
+    box-shadow:0 12px 22px rgba(0,0,0,.22);
   }
 
-  .match.finale::before{ width:84px !important; }
+  .desktop-final-mark{
+    width:76px;
+    height:100%;
+    min-height:86px;
+    display:grid;
+    place-items:center;
+    background:linear-gradient(180deg, rgba(24,76,143,.98), rgba(9,44,97,.98));
+  }
 
-  .coppa-vittoria{ margin-top: 54px !important; }
-  .coppa-img{
-    width: clamp(245px, 17vw, 325px) !important;
-    filter: drop-shadow(0 18px 28px rgba(0,0,0,.48)) drop-shadow(0 0 26px rgba(246,211,111,.24)) !important;
+  .desktop-final-mark span{
+    width:48px;
+    height:48px;
+    border-radius:50%;
+    display:grid;
+    place-items:center;
+    border:1px solid rgba(255,211,107,.45);
+    color:#ffe49d;
+    font-size:1.7rem;
+    font-weight:950;
+  }
+
+  .desktop-final-mark img{
+    width:56px;
+    height:56px;
+    object-fit:contain;
+    background:rgba(255,255,255,.90);
+    border-radius:50%;
+    padding:4px;
+  }
+
+  .desktop-final-slot strong{
+    display:block;
+    color:#05254e;
+    font-size:1.02rem;
+    font-weight:950;
+  }
+
+  .desktop-final-slot span{
+    display:block;
+    margin-top:5px;
+    color:#506984;
+    font-size:.78rem;
+    font-weight:950;
+    letter-spacing:.06em;
+    text-transform:uppercase;
+  }
+
+  .desktop-final-slot.is-winner{
+    border-color:rgba(255,211,107,.98);
+    box-shadow:0 0 0 3px rgba(255,211,107,.22), 0 16px 28px rgba(0,0,0,.26), 0 0 28px rgba(255,211,107,.25);
+  }
+
+  .desktop-trophy-stage{
+    position:absolute;
+    inset:210px 0 0;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:flex-end;
+    padding:0 22px 24px;
+  }
+
+  .desktop-trophy-light{
+    position:absolute;
+    left:50%;
+    top:0;
+    transform:translateX(-50%);
+    width:72%;
+    height:52%;
+    border-radius:50%;
+    background:radial-gradient(circle, rgba(255,255,255,.22), rgba(255,211,107,.10) 32%, transparent 70%);
+    filter:blur(2px);
+  }
+
+  .desktop-trophy-img{
+    position:relative;
+    z-index:2;
+    width:min(330px,72%);
+    height:auto;
+    filter:drop-shadow(0 18px 26px rgba(0,0,0,.46)) drop-shadow(0 0 30px rgba(255,211,107,.22));
+  }
+
+  .desktop-trophy-caption,
+  .desktop-champion-card{
+    position:relative;
+    z-index:3;
+    margin-top:10px;
+    text-align:center;
+  }
+
+  .desktop-trophy-caption span,
+  .desktop-champion-card span{
+    display:block;
+    color:rgba(214,235,255,.72);
+    font-size:.76rem;
+    font-weight:950;
+    text-transform:uppercase;
+    letter-spacing:.12em;
+  }
+
+  .desktop-trophy-caption strong,
+  .desktop-champion-card strong{
+    display:block;
+    margin-top:5px;
+    color:#fff1ac;
+    font-size:1.14rem;
+    font-weight:950;
+    text-transform:uppercase;
+    text-shadow:0 2px 14px rgba(255,211,107,.28);
+  }
+
+  .desktop-champion-card img{
+    width:76px;
+    height:76px;
+    object-fit:contain;
+    margin:0 auto 8px;
+    background:rgba(255,255,255,.92);
+    border-radius:50%;
+    padding:6px;
+    box-shadow:0 12px 22px rgba(0,0,0,.26), 0 0 22px rgba(255,211,107,.32);
   }
 }
 
-@media (min-width: 1024px) and (max-height: 850px){
-  .playoff-intro{ min-height: 34px !important; }
-  .intro-chip{ padding: 8px 42px !important; }
-  .bracket{
-    padding-top: 6px !important;
-    row-gap: 36px !important;
+@media (min-width:1024px) and (max-height:850px){
+  .desktop-reboot-header h1{
+    font-size:clamp(1.9rem,3vw,3.2rem);
   }
-  .match-pair:not(.finale-pair),
-  .pair-offset:not(.finale-pair),
-  .match-pair:not(.finale-pair) .match,
-  .pair-offset:not(.finale-pair) .match{
-    min-height: 82px !important;
-    height: 82px !important;
+
+  .desktop-stage-head{
+    height:58px;
   }
-  .match-pair:not(.finale-pair) .team-logo-wrap,
-  .pair-offset:not(.finale-pair) .team-logo-wrap{
-    width:58px !important;
-    height:58px !important;
+
+  .desktop-stage-head p{
+    display:none;
   }
-  .match-pair:not(.finale-pair) .squadra.orizzontale img,
-  .pair-offset:not(.finale-pair) .squadra.orizzontale img{
-    width:51px !important;
-    height:51px !important;
+
+  .desktop-reboot-grid{
+    grid-template-columns:minmax(240px,.95fr) minmax(240px,.95fr) minmax(250px,.88fr) minmax(340px,1.14fr);
+    gap:22px;
   }
-  .bracket > .blocco-colonna:nth-of-type(3) .colonna,
-  .bracket > .blocco-colonna:nth-of-type(5) .colonna{
-    margin-top: 44px !important;
+
+  .desktop-reboot-match{
+    min-height:118px;
   }
-  .finale-stage{ min-height: 505px !important; }
-  .finale-stage::before{ top: 192px !important; }
-  .coppa-vittoria{ margin-top: 45px !important; }
-  .coppa-img{ width: clamp(220px, 15vw, 275px) !important; }
+
+  .desktop-match-body{
+    min-height:74px;
+  }
+
+  .desktop-logo-ring{
+    width:60px;
+    height:60px;
+  }
+
+  .desktop-logo-ring img{
+    width:51px;
+    height:51px;
+  }
+
+  .desktop-stage-stack{
+    gap:12px;
+  }
+
+  .desktop-stage-semifinali .desktop-stage-stack{
+    padding-top:78px;
+    gap:112px;
+  }
+
+  .desktop-final-card{
+    min-height:560px;
+  }
+
+  .desktop-trophy-stage{
+    inset:185px 0 0;
+  }
+
+  .desktop-trophy-img{
+    width:min(270px,68%);
+  }
+}
+
+@media (max-width:1023px){
+  .playoff-desktop-reboot{
+    display:none !important;
+  }
 }
