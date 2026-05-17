@@ -2791,3 +2791,251 @@ body{
     display: none !important;
   }
 }
+
+/* =========================================================
+   PLAYOFF CROWN V11 - DESKTOP BRACKET REFINEMENT
+   ---------------------------------------------------------
+   Modifica solo la parte desktop da Wildcard a Semifinali.
+   Mobile e Final Stage restano invariati.
+   ========================================================= */
+@media (min-width: 1024px){
+
+  .crown-bracket-board{
+    grid-template-columns:
+      minmax(320px, 1.04fr)
+      minmax(320px, 1.04fr)
+      minmax(310px, .98fr)
+      minmax(330px, .98fr);
+    gap: clamp(28px, 2.7vw, 52px);
+    align-items: stretch;
+  }
+
+  .crown-round-title{
+    margin-bottom: 16px;
+  }
+
+  .crown-round-title h2{
+    font-size: clamp(1.18rem, 1.45vw, 1.75rem);
+    letter-spacing: .075em;
+  }
+
+  .crown-round-stack{
+    display: grid;
+    grid-template-rows: 1fr 1fr;
+    align-content: stretch;
+    gap: clamp(34px, 6.2vh, 88px);
+  }
+
+  .crown-round-stack-semis{
+    padding-block: 0;
+    gap: clamp(92px, 17vh, 190px);
+    align-content: center;
+  }
+
+  .crown-bracket-group{
+    position: relative;
+    display: grid;
+    grid-template-rows: repeat(2, auto);
+    align-content: center;
+    gap: clamp(18px, 2.45vh, 34px);
+  }
+
+  /* stelo verticale stile tabellone broadcast */
+  .crown-round-wildcard .crown-bracket-group::before,
+  .crown-round-quarti .crown-bracket-group::before{
+    content:"";
+    position: absolute;
+    right: calc(-1 * clamp(15px, 1.35vw, 26px));
+    top: 25%;
+    bottom: 25%;
+    width: 2px;
+    border-radius: 999px;
+    background: linear-gradient(
+      180deg,
+      transparent,
+      rgba(255,255,255,.38) 16%,
+      rgba(255,211,107,.95) 50%,
+      rgba(255,255,255,.38) 84%,
+      transparent
+    );
+    box-shadow: 0 0 14px rgba(255,211,107,.34);
+    pointer-events: none;
+  }
+
+  /* uscita centrale dello stelo verso il round successivo */
+  .crown-round-wildcard .crown-bracket-group::after,
+  .crown-round-quarti .crown-bracket-group::after,
+  .crown-semi-node::after{
+    content:"";
+    position:absolute;
+    right: calc(-1 * clamp(28px, 2.7vw, 52px));
+    top: 50%;
+    width: clamp(28px, 2.7vw, 52px);
+    height: 2px;
+    transform: translateY(-50%);
+    border-radius: 999px;
+    background: linear-gradient(90deg, rgba(255,211,107,.95), rgba(255,211,107,.08));
+    box-shadow: 0 0 13px rgba(255,211,107,.28);
+    pointer-events:none;
+  }
+
+  /* linee card -> stelo */
+  .crown-round-wildcard .crown-match::after,
+  .crown-round-quarti .crown-match::after{
+    content:"";
+    position:absolute;
+    right: calc(-1 * clamp(15px, 1.35vw, 26px));
+    top: 50%;
+    width: clamp(15px, 1.35vw, 26px);
+    height: 2px;
+    transform: translateY(-50%);
+    border-radius: 999px;
+    background: linear-gradient(90deg, rgba(255,211,107,.80), rgba(255,211,107,.22));
+    box-shadow: 0 0 11px rgba(255,211,107,.24);
+    pointer-events:none;
+  }
+
+  .crown-round-semifinali .crown-match::after{
+    display: none !important;
+  }
+
+  .crown-semi-node{
+    position: relative;
+  }
+
+  /* match più da desktop: bassi, scuri, preziosi */
+  .crown-match{
+    min-height: clamp(72px, 7.1vh, 96px);
+    border-radius: 16px;
+    border: 1px solid rgba(255,211,107,.46);
+    background:
+      linear-gradient(90deg, rgba(255,211,107,.09), transparent 13%, transparent 87%, rgba(255,211,107,.09)),
+      radial-gradient(circle at 20% 0%, rgba(255,255,255,.14), transparent 34%),
+      radial-gradient(circle at 72% 48%, rgba(0,116,217,.20), transparent 38%),
+      linear-gradient(180deg, rgba(7,38,85,.90), rgba(2,14,38,.97));
+    box-shadow:
+      0 14px 24px rgba(0,0,0,.30),
+      inset 0 1px 0 rgba(255,255,255,.10),
+      inset 0 -1px 0 rgba(255,211,107,.14);
+    overflow: visible;
+  }
+
+  .crown-match::before{
+    left: 12px;
+    right: 12px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(0,156,235,.80), rgba(255,255,255,.72), rgba(0,156,235,.80), transparent);
+    opacity: .66;
+  }
+
+  .crown-match-inner{
+    min-height: inherit;
+    padding: 11px clamp(15px, 1.2vw, 22px);
+    grid-template-columns: 1fr clamp(46px, 3.2vw, 58px) 1fr;
+    gap: clamp(10px, 1vw, 16px);
+  }
+
+  .crown-match-code{
+    min-width: 42px;
+    height: 25px;
+    border-radius: 0 0 11px 0;
+    color: #ffe48d;
+    font-size: .76rem;
+    background:
+      linear-gradient(180deg, rgba(255,211,107,.20), rgba(255,211,107,.05)),
+      rgba(2,11,29,.98);
+  }
+
+  .crown-team-logo,
+  .crown-placeholder{
+    width: clamp(54px, 3.85vw, 72px);
+    height: clamp(54px, 3.85vw, 72px);
+  }
+
+  .crown-team-logo{
+    background:
+      radial-gradient(circle at 35% 28%, #fff, rgba(255,255,255,.86) 67%, rgba(222,237,255,.75));
+    border: 1px solid rgba(255,255,255,.78);
+    box-shadow:
+      0 9px 18px rgba(0,0,0,.30),
+      0 0 0 3px rgba(255,255,255,.06),
+      inset 0 1px 0 rgba(255,255,255,.55);
+  }
+
+  .crown-placeholder{
+    background:
+      radial-gradient(circle at 45% 24%, rgba(255,255,255,.12), transparent 34%),
+      linear-gradient(180deg, rgba(6,26,60,.96), rgba(2,10,27,.98));
+    border: 1px solid rgba(255,211,107,.66);
+    color: #fff3c4;
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,.10),
+      0 0 0 3px rgba(255,211,107,.05),
+      0 10px 18px rgba(0,0,0,.28);
+  }
+
+  .crown-seed{
+    top: -8px;
+    min-width: 34px;
+    height: 22px;
+    font-size: .72rem;
+  }
+
+  .crown-vs{
+    width: clamp(42px, 3.05vw, 56px);
+    height: clamp(29px, 2.1vw, 36px);
+    font-size: .78rem;
+    border-color: rgba(255,211,107,.50);
+    box-shadow:
+      0 8px 16px rgba(0,0,0,.30),
+      inset 0 1px 0 rgba(255,255,255,.16),
+      0 0 14px rgba(0,156,235,.18);
+  }
+
+  .crown-vs::before,
+  .crown-vs::after{
+    width: clamp(30px, 2.4vw, 46px);
+    opacity: .78;
+  }
+
+  /* riduce l'effetto "colonne a blocchi" e crea più respiro */
+  .crown-round-wildcard,
+  .crown-round-quarti,
+  .crown-round-semifinali{
+    padding-top: 4px;
+  }
+
+  .crown-round-wildcard .crown-round-stack,
+  .crown-round-quarti .crown-round-stack{
+    padding-top: 2px;
+  }
+
+  /* manteniamo finale com'è: solo micro allineamento visivo con il nuovo bracket */
+  .crown-final-stage{
+    transform: translateY(0);
+  }
+}
+
+@media (min-width: 1024px) and (max-height: 850px){
+  .crown-round-stack{
+    gap: clamp(24px, 5vh, 58px);
+  }
+
+  .crown-bracket-group{
+    gap: clamp(12px, 2vh, 24px);
+  }
+
+  .crown-round-stack-semis{
+    gap: clamp(60px, 13vh, 120px);
+  }
+
+  .crown-match{
+    min-height: clamp(64px, 6.6vh, 82px);
+  }
+
+  .crown-team-logo,
+  .crown-placeholder{
+    width: clamp(48px, 3.45vw, 62px);
+    height: clamp(48px, 3.45vw, 62px);
+  }
+}
