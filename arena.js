@@ -1,3 +1,5 @@
+import { supabase } from './supabase.js';
+
 /* =========================
    HIGHLANDER ARENA - SUPABASE VERSION
    ========================= */
@@ -59,23 +61,7 @@ const adminMsg = document.getElementById("admin-highlander-msg");
    SUPABASE HELPER
    ========================= */
 
-function getSupabaseClient() {
-  if (typeof supabase !== "undefined" && supabase && typeof supabase.from === "function") {
-    return supabase;
-  }
-
-  if (window.supabaseClient && typeof window.supabaseClient.from === "function") {
-    return window.supabaseClient;
-  }
-
-  if (window.supabase && typeof window.supabase.from === "function") {
-    return window.supabase;
-  }
-
-  return null;
-}
-
-const db = getSupabaseClient();
+const db = supabase;
 
 /* =========================
    DATA
