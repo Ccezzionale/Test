@@ -750,20 +750,36 @@ function crownTeamSlot(team, side, isWinner = false) {
   `;
 }
 
+const CROWN_SEMI_ORIGINS = {
+  S1: { home: "Vincente Q1", away: "Vincente Q4" },
+  S2: { home: "Vincente Q2", away: "Vincente Q3" }
+};
+
 function crownMatchCard(P, code) {
   const home = P[code]?.home || { name: "TBD" };
   const away = P[code]?.away || { name: "TBD" };
   const winnerSide = getMatchWinnerSide(code);
   const hasWinner = !!winnerSide;
+  const isSemi = !!CROWN_SEMI_ORIGINS[code];
+  const origins = CROWN_SEMI_ORIGINS[code] || null;
 
   return `
-    <article class="crown-match ${hasWinner ? "is-decided" : ""}" data-crown-match="${escapeHTML(code)}">
+    <article class="crown-match ${isSemi ? "crown-semi-match" : ""} ${hasWinner ? "is-decided" : ""}" data-crown-match="${escapeHTML(code)}">
       <div class="crown-match-code">${escapeHTML(code)}</div>
       <div class="crown-match-inner">
         ${crownTeamSlot(home, "home", winnerSide === "home")}
-        <div class="crown-vs">VS</div>
+        <div class="crown-vs-wrap">
+          <div class="crown-vs">VS</div>
+          ${isSemi ? `<div class="crown-semi-center-note">Accesso alla Finale</div>` : ""}
+        </div>
         ${crownTeamSlot(away, "away", winnerSide === "away")}
       </div>
+      ${isSemi ? `
+        <div class="crown-semi-origins">
+          <span>${escapeHTML(origins.home)}</span>
+          <span>${escapeHTML(origins.away)}</span>
+        </div>
+      ` : ""}
     </article>
   `;
 }
