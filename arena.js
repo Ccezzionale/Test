@@ -137,6 +137,58 @@ function renderArenaTeams() {
   });
 }
 
+function renderMobileDashboard() {
+  const mobileVerdict = document.getElementById("mobile-verdict");
+  const mobileGrid = document.getElementById("mobile-teams-grid");
+
+  if (!mobileVerdict || !mobileGrid) return;
+
+  if (inGioco.length === 1) {
+    const vincitore = inGioco[0];
+
+    mobileVerdict.innerHTML = `
+      <div class="mobile-verdict-icon">🏆</div>
+      <div class="mobile-verdict-kicker">Ultimo sopravvissuto</div>
+      <div class="mobile-verdict-name">${vincitore.nome}</div>
+      <div class="mobile-verdict-subtitle">L’arena ha emesso il suo verdetto finale.</div>
+    `;
+  } else if (ultimaEliminata) {
+    mobileVerdict.innerHTML = `
+      <img src="${ultimaEliminata.logo}" alt="${ultimaEliminata.nome}" class="mobile-verdict-logo">
+      <div class="mobile-verdict-kicker danger">Ultima eliminata</div>
+      <div class="mobile-verdict-name">${ultimaEliminata.nome}</div>
+      <div class="mobile-verdict-subtitle">L’arena reclama un’altra vittima.</div>
+    `;
+  } else {
+    mobileVerdict.innerHTML = `
+      <div class="mobile-verdict-icon">⚔️</div>
+      <div class="mobile-verdict-kicker">Sfida in corso</div>
+      <div class="mobile-verdict-name">Nessun verdetto ancora</div>
+      <div class="mobile-verdict-subtitle">Sedici entrano. Una resterà.</div>
+    `;
+  }
+
+  mobileGrid.innerHTML = "";
+
+  squadre.forEach(s => {
+    const card = document.createElement("div");
+    card.className = "mobile-team-card";
+
+    if (s.eliminata) card.classList.add("is-out");
+    if (!s.eliminata) card.classList.add("is-alive");
+    if (s.ultimaEliminata) card.classList.add("is-latest");
+
+    card.innerHTML = `
+      <img src="${s.logo}" alt="${s.nome}">
+      <span>${s.nome}</span>
+    `;
+
+    mobileGrid.appendChild(card);
+  });
+}
+
+renderMobileDashboard();
+
 function formatPunti(value) {
   if (value === null || value === undefined || value === "") return "--";
   return String(value).replace(".", ",");
