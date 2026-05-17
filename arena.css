@@ -626,21 +626,12 @@ h1 {
     padding:8px 7px;
     font-size:.78rem;
   }
-
+  
+@media (max-width: 768px){
   .arena-shell{
-    width:100%;
-    overflow:hidden;
-    min-height:520px;
+    display:none;
   }
-
-  .arena {
-    width:620px;
-    height:620px;
-    transform:scale(.78);
-    transform-origin:top center;
-    margin-left:50%;
-    translate:-50% 0;
-  }
+}
 
   #arena-center{
     width:280px;
@@ -745,20 +736,14 @@ h1 {
 
 @media (max-width: 768px){
 
-  .mobile-arena-dashboard{
-    display:block;
-    width:100%;
-    max-width:100%;
-    margin: 20px auto 28px;
-    overflow:hidden;
-  }
+@media (max-width: 768px){
 
   .mobile-teams-grid{
     width:100%;
     max-width:100%;
     display:grid;
     grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 8px;
+    gap: 10px;
     padding: 10px;
     border-radius: 22px;
     overflow:hidden;
@@ -767,28 +752,31 @@ h1 {
   .mobile-team-card{
     width:100%;
     min-width:0;
-    min-height: 104px;
-    padding: 8px 4px 7px;
-    border-radius: 15px;
+    aspect-ratio: 1 / 1;
+    min-height:0;
+    padding:8px;
+    border-radius:18px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
   }
 
   .mobile-team-card img{
-    width: 54px;
-    height: 54px;
-    max-width:100%;
-    object-fit: contain;
+    width:78%;
+    height:78%;
+    max-width:72px;
+    max-height:72px;
+    object-fit:contain;
   }
 
   .mobile-team-card span{
-    max-width:100%;
-    font-size: .64rem;
-    line-height: 1.05;
-    overflow-wrap: anywhere;
-    word-break: normal;
+    display:none;
   }
 
-  .arena-extra-grid,
-  .arena-panels,
+  .arena-panels{
+    margin-top: 24px;
+  }
+}
   .highlander-panels{
     display:grid;
     grid-template-columns: 1fr;
