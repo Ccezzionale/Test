@@ -91,11 +91,49 @@
     <h1>Highlander Arena</h1>
     <p class="sottotitolo" id="arena-subtitle">Ogni settimana cade una squadra. Nell’arena ne resterà soltanto una.</p>
 
-    <div class="arena-stats" id="arena-stats">
-      <div class="stat-chip"><span class="stat-icon">📅</span> Turno attuale: <strong id="turno-attuale">--</strong></div>
-      <div class="stat-chip"><span class="stat-icon">🛡️</span> Sopravvissute: <strong id="vive-attuali">--</strong></div>
-      <div class="stat-chip"><span class="stat-icon">💀</span> Eliminate: <strong id="eliminate-attuali">--</strong></div>
-    </div>
+<div class="arena-stats" id="arena-stats">
+  <div class="stat-chip stat-turno">
+    <span class="stat-icon" aria-hidden="true">
+      <svg viewBox="0 0 24 24">
+        <path d="M7 3v3"></path>
+        <path d="M17 3v3"></path>
+        <path d="M4 9h16"></path>
+        <path d="M5 5h14a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2Z"></path>
+        <path d="M8 13h.01"></path>
+        <path d="M12 13h.01"></path>
+        <path d="M16 13h.01"></path>
+      </svg>
+    </span>
+    <span class="stat-text">Turno attuale</span>
+    <strong id="turno-attuale">--</strong>
+  </div>
+
+  <div class="stat-chip stat-live">
+    <span class="stat-icon" aria-hidden="true">
+      <svg viewBox="0 0 24 24">
+        <path d="M12 3l7 3v5c0 5-3.5 8.5-7 10-3.5-1.5-7-5-7-10V6l7-3Z"></path>
+        <path d="M9 12l2 2 4-5"></path>
+      </svg>
+    </span>
+    <span class="stat-text">Sopravvissute</span>
+    <strong id="vive-attuali">--</strong>
+  </div>
+
+  <div class="stat-chip stat-out">
+    <span class="stat-icon" aria-hidden="true">
+      <svg viewBox="0 0 24 24">
+        <path d="M12 3c-4 0-7 3-7 7 0 2.4 1.2 4.4 3 5.7V20h8v-4.3c1.8-1.3 3-3.3 3-5.7 0-4-3-7-7-7Z"></path>
+        <path d="M9 10h.01"></path>
+        <path d="M15 10h.01"></path>
+        <path d="M10 15h4"></path>
+        <path d="M9 20v2"></path>
+        <path d="M15 20v2"></path>
+      </svg>
+    </span>
+    <span class="stat-text">Eliminate</span>
+    <strong id="eliminate-attuali">--</strong>
+  </div>
+</div>
   </header>
 
   <main class="arena-page">
