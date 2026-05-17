@@ -2793,249 +2793,285 @@ body{
 }
 
 /* =========================================================
-   PLAYOFF CROWN V11 - DESKTOP BRACKET REFINEMENT
+   PLAYOFF CROWN V12 - DESKTOP POD BRACKET RESET
    ---------------------------------------------------------
-   Modifica solo la parte desktop da Wildcard a Semifinali.
-   Mobile e Final Stage restano invariati.
+   Mantiene il Final Stage della V10 e ricostruisce solo
+   Wildcard -> Quarti -> Semifinali in modalità desktop.
+   Mobile intatta: tutto resta sopra i 1024px.
    ========================================================= */
 @media (min-width: 1024px){
 
+  .playoff-desktop-crown{
+    min-height: calc(100vh - 68px);
+    padding: 10px clamp(10px, 1.25vw, 22px) 20px;
+    overflow: hidden;
+  }
+
+  .crown-page-head{
+    margin: 0 auto 12px;
+  }
+
+  .crown-page-head h1{
+    font-size: clamp(2.1rem, 3vw, 3.7rem);
+    line-height: .9;
+  }
+
+  .crown-eyebrow{
+    display: none;
+  }
+
+  .crown-road-badge{
+    padding: 7px 26px 8px;
+    font-size: .8rem;
+  }
+
   .crown-bracket-board{
+    width: min(1780px, calc(100vw - 28px));
+    min-width: 0;
+    margin: 0 auto;
+    display: grid;
     grid-template-columns:
-      minmax(320px, 1.04fr)
-      minmax(320px, 1.04fr)
-      minmax(310px, .98fr)
-      minmax(330px, .98fr);
-    gap: clamp(28px, 2.7vw, 52px);
+      minmax(0, 1.02fr)
+      minmax(0, 1.02fr)
+      minmax(0, .92fr)
+      minmax(315px, .98fr);
+    gap: clamp(14px, 1.45vw, 26px);
     align-items: stretch;
   }
 
+  .crown-round{
+    min-width: 0;
+  }
+
   .crown-round-title{
-    margin-bottom: 16px;
+    margin-bottom: 12px;
+    gap: 10px;
   }
 
   .crown-round-title h2{
-    font-size: clamp(1.18rem, 1.45vw, 1.75rem);
-    letter-spacing: .075em;
+    font-size: clamp(1.1rem, 1.55vw, 1.85rem);
+    letter-spacing: .07em;
   }
 
   .crown-round-stack{
+    height: min(62vh, 590px);
+    min-height: 430px;
     display: grid;
     grid-template-rows: 1fr 1fr;
+    gap: clamp(34px, 6vh, 74px);
     align-content: stretch;
-    gap: clamp(34px, 6.2vh, 88px);
   }
 
   .crown-round-stack-semis{
-    padding-block: 0;
-    gap: clamp(92px, 17vh, 190px);
-    align-content: center;
+    padding-block: 0 !important;
   }
 
-  .crown-bracket-group{
+  .crown-match-pod{
     position: relative;
     display: grid;
-    grid-template-rows: repeat(2, auto);
+    grid-template-rows: 1fr 1fr;
+    gap: clamp(12px, 1.45vh, 20px);
     align-content: center;
-    gap: clamp(18px, 2.45vh, 34px);
+    min-width: 0;
   }
 
-  /* stelo verticale stile tabellone broadcast */
-  .crown-round-wildcard .crown-bracket-group::before,
-  .crown-round-quarti .crown-bracket-group::before{
+  .crown-match-pod.pod-semi{
+    grid-template-rows: 1fr;
+    align-content: center;
+  }
+
+  .crown-match-pod::before{
     content:"";
-    position: absolute;
-    right: calc(-1 * clamp(15px, 1.35vw, 26px));
-    top: 25%;
-    bottom: 25%;
+    position:absolute;
+    right: calc(-1 * clamp(10px, .72vw, 14px));
+    top: 24%;
+    bottom: 24%;
     width: 2px;
     border-radius: 999px;
-    background: linear-gradient(
-      180deg,
-      transparent,
-      rgba(255,255,255,.38) 16%,
-      rgba(255,211,107,.95) 50%,
-      rgba(255,255,255,.38) 84%,
-      transparent
-    );
-    box-shadow: 0 0 14px rgba(255,211,107,.34);
-    pointer-events: none;
-  }
-
-  /* uscita centrale dello stelo verso il round successivo */
-  .crown-round-wildcard .crown-bracket-group::after,
-  .crown-round-quarti .crown-bracket-group::after,
-  .crown-semi-node::after{
-    content:"";
-    position:absolute;
-    right: calc(-1 * clamp(28px, 2.7vw, 52px));
-    top: 50%;
-    width: clamp(28px, 2.7vw, 52px);
-    height: 2px;
-    transform: translateY(-50%);
-    border-radius: 999px;
-    background: linear-gradient(90deg, rgba(255,211,107,.95), rgba(255,211,107,.08));
-    box-shadow: 0 0 13px rgba(255,211,107,.28);
+    background: linear-gradient(180deg, transparent, rgba(255,211,107,.82), rgba(255,255,255,.44), rgba(255,211,107,.82), transparent);
+    box-shadow: 0 0 12px rgba(255,211,107,.24);
     pointer-events:none;
   }
 
-  /* linee card -> stelo */
-  .crown-round-wildcard .crown-match::after,
-  .crown-round-quarti .crown-match::after{
+  .crown-round-semifinali .crown-match-pod::before{
+    display: none;
+  }
+
+  .crown-match-pod::after{
     content:"";
     position:absolute;
-    right: calc(-1 * clamp(15px, 1.35vw, 26px));
+    right: calc(-1 * clamp(14px, 1.45vw, 26px));
     top: 50%;
-    width: clamp(15px, 1.35vw, 26px);
+    width: clamp(14px, 1.45vw, 26px);
     height: 2px;
     transform: translateY(-50%);
     border-radius: 999px;
-    background: linear-gradient(90deg, rgba(255,211,107,.80), rgba(255,211,107,.22));
-    box-shadow: 0 0 11px rgba(255,211,107,.24);
+    background: linear-gradient(90deg, rgba(255,211,107,.85), rgba(255,211,107,.06));
+    box-shadow: 0 0 11px rgba(255,211,107,.22);
     pointer-events:none;
   }
 
-  .crown-round-semifinali .crown-match::after{
-    display: none !important;
+  .crown-round-semifinali .crown-match-pod::after{
+    right: calc(-1 * clamp(12px, 1.25vw, 24px));
+    width: clamp(12px, 1.25vw, 24px);
+    opacity: .68;
   }
 
-  .crown-semi-node{
-    position: relative;
-  }
-
-  /* match più da desktop: bassi, scuri, preziosi */
   .crown-match{
-    min-height: clamp(72px, 7.1vh, 96px);
-    border-radius: 16px;
-    border: 1px solid rgba(255,211,107,.46);
+    width: 100%;
+    min-height: clamp(68px, 7.2vh, 86px);
+    border-radius: 14px;
+    border: 1px solid rgba(255,211,107,.34);
     background:
-      linear-gradient(90deg, rgba(255,211,107,.09), transparent 13%, transparent 87%, rgba(255,211,107,.09)),
-      radial-gradient(circle at 20% 0%, rgba(255,255,255,.14), transparent 34%),
-      radial-gradient(circle at 72% 48%, rgba(0,116,217,.20), transparent 38%),
-      linear-gradient(180deg, rgba(7,38,85,.90), rgba(2,14,38,.97));
+      linear-gradient(90deg, rgba(255,211,107,.08), transparent 12%, transparent 88%, rgba(255,211,107,.08)),
+      radial-gradient(circle at 18% 0%, rgba(255,255,255,.15), transparent 35%),
+      linear-gradient(180deg, rgba(9,42,91,.88), rgba(2,16,43,.96));
     box-shadow:
-      0 14px 24px rgba(0,0,0,.30),
-      inset 0 1px 0 rgba(255,255,255,.10),
-      inset 0 -1px 0 rgba(255,211,107,.14);
+      0 13px 22px rgba(0,0,0,.30),
+      inset 0 1px 0 rgba(255,255,255,.09),
+      inset 0 -1px 0 rgba(255,211,107,.12);
     overflow: visible;
   }
 
   .crown-match::before{
-    left: 12px;
-    right: 12px;
     height: 1px;
-    background: linear-gradient(90deg, transparent, rgba(0,156,235,.80), rgba(255,255,255,.72), rgba(0,156,235,.80), transparent);
-    opacity: .66;
+    left: 10px;
+    right: 10px;
+    background: linear-gradient(90deg, transparent, rgba(0,156,235,.88), rgba(255,255,255,.50), rgba(0,156,235,.88), transparent);
+    opacity: .56;
+  }
+
+  .crown-match::after{
+    content:"";
+    position:absolute;
+    right: calc(-1 * clamp(10px, .72vw, 14px));
+    top: 50%;
+    width: clamp(10px, .72vw, 14px);
+    height: 2px;
+    transform: translateY(-50%);
+    background: linear-gradient(90deg, rgba(255,211,107,.68), rgba(255,211,107,.14));
+    box-shadow: 0 0 9px rgba(255,211,107,.18);
+    pointer-events:none;
+  }
+
+  .crown-round-semifinali .crown-match::after{
+    display: none;
   }
 
   .crown-match-inner{
     min-height: inherit;
-    padding: 11px clamp(15px, 1.2vw, 22px);
-    grid-template-columns: 1fr clamp(46px, 3.2vw, 58px) 1fr;
-    gap: clamp(10px, 1vw, 16px);
+    padding: 10px clamp(12px, 1vw, 17px);
+    grid-template-columns: 1fr clamp(42px, 3vw, 52px) 1fr;
+    gap: clamp(8px, .8vw, 14px);
   }
 
   .crown-match-code{
     min-width: 42px;
     height: 25px;
     border-radius: 0 0 11px 0;
-    color: #ffe48d;
     font-size: .76rem;
-    background:
-      linear-gradient(180deg, rgba(255,211,107,.20), rgba(255,211,107,.05)),
-      rgba(2,11,29,.98);
   }
 
   .crown-team-logo,
   .crown-placeholder{
-    width: clamp(54px, 3.85vw, 72px);
-    height: clamp(54px, 3.85vw, 72px);
+    width: clamp(52px, 3.75vw, 68px);
+    height: clamp(52px, 3.75vw, 68px);
   }
 
-  .crown-team-logo{
-    background:
-      radial-gradient(circle at 35% 28%, #fff, rgba(255,255,255,.86) 67%, rgba(222,237,255,.75));
-    border: 1px solid rgba(255,255,255,.78);
-    box-shadow:
-      0 9px 18px rgba(0,0,0,.30),
-      0 0 0 3px rgba(255,255,255,.06),
-      inset 0 1px 0 rgba(255,255,255,.55);
+  .crown-team-logo img{
+    width: calc(100% - 8px);
+    height: calc(100% - 8px);
   }
 
   .crown-placeholder{
+    font-size: .84rem;
     background:
-      radial-gradient(circle at 45% 24%, rgba(255,255,255,.12), transparent 34%),
-      linear-gradient(180deg, rgba(6,26,60,.96), rgba(2,10,27,.98));
-    border: 1px solid rgba(255,211,107,.66);
-    color: #fff3c4;
-    box-shadow:
-      inset 0 1px 0 rgba(255,255,255,.10),
-      0 0 0 3px rgba(255,211,107,.05),
-      0 10px 18px rgba(0,0,0,.28);
+      radial-gradient(circle at 45% 24%, rgba(255,255,255,.10), transparent 34%),
+      linear-gradient(180deg, rgba(5,23,56,.96), rgba(1,8,24,.98));
+    border-color: rgba(255,211,107,.58);
   }
 
   .crown-seed{
-    top: -8px;
-    min-width: 34px;
+    top: -9px;
+    min-width: 33px;
     height: 22px;
-    font-size: .72rem;
+    font-size: .70rem;
   }
 
   .crown-vs{
-    width: clamp(42px, 3.05vw, 56px);
-    height: clamp(29px, 2.1vw, 36px);
-    font-size: .78rem;
-    border-color: rgba(255,211,107,.50);
-    box-shadow:
-      0 8px 16px rgba(0,0,0,.30),
-      inset 0 1px 0 rgba(255,255,255,.16),
-      0 0 14px rgba(0,156,235,.18);
+    width: clamp(40px, 2.8vw, 50px);
+    height: clamp(28px, 2vw, 34px);
+    font-size: .76rem;
   }
 
   .crown-vs::before,
   .crown-vs::after{
-    width: clamp(30px, 2.4vw, 46px);
-    opacity: .78;
+    width: clamp(18px, 1.45vw, 28px);
+    opacity: .62;
   }
 
-  /* riduce l'effetto "colonne a blocchi" e crea più respiro */
-  .crown-round-wildcard,
-  .crown-round-quarti,
-  .crown-round-semifinali{
-    padding-top: 4px;
-  }
-
-  .crown-round-wildcard .crown-round-stack,
-  .crown-round-quarti .crown-round-stack{
-    padding-top: 2px;
-  }
-
-  /* manteniamo finale com'è: solo micro allineamento visivo con il nuovo bracket */
   .crown-final-stage{
-    transform: translateY(0);
+    min-width: 0;
+  }
+
+  .crown-final-card{
+    min-height: min(62vh, 590px);
+    height: min(62vh, 590px);
+    padding: 18px clamp(14px, 1.1vw, 20px) 20px;
+  }
+
+  .crown-trophy-img{
+    width: min(83%, 360px);
+    max-height: 390px;
+  }
+
+  .crown-final-slots{
+    gap: 8px;
+  }
+
+  .crown-final-slot-label{
+    font-size: .82rem;
   }
 }
 
-@media (min-width: 1024px) and (max-height: 850px){
+@media (min-width: 1024px) and (max-width: 1380px){
+  .crown-bracket-board{
+    grid-template-columns:
+      minmax(0, 1fr)
+      minmax(0, 1fr)
+      minmax(0, .92fr)
+      minmax(290px, .92fr);
+    gap: 14px;
+  }
+
   .crown-round-stack{
-    gap: clamp(24px, 5vh, 58px);
-  }
-
-  .crown-bracket-group{
-    gap: clamp(12px, 2vh, 24px);
-  }
-
-  .crown-round-stack-semis{
-    gap: clamp(60px, 13vh, 120px);
+    min-height: 390px;
+    height: min(60vh, 540px);
+    gap: 44px;
   }
 
   .crown-match{
-    min-height: clamp(64px, 6.6vh, 82px);
+    min-height: 66px;
   }
 
   .crown-team-logo,
   .crown-placeholder{
-    width: clamp(48px, 3.45vw, 62px);
-    height: clamp(48px, 3.45vw, 62px);
+    width: 54px;
+    height: 54px;
+  }
+
+  .crown-vs{
+    width: 38px;
+    height: 28px;
+  }
+
+  .crown-final-card{
+    min-height: min(60vh, 540px);
+    height: min(60vh, 540px);
+  }
+
+  .crown-trophy-img{
+    width: min(82%, 310px);
+    max-height: 340px;
   }
 }

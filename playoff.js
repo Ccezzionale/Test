@@ -768,15 +768,6 @@ function crownMatchCard(P, code) {
   `;
 }
 
-
-function crownGroupedRound(P, groups) {
-  return groups.map((codes, index) => `
-    <div class="crown-bracket-group crown-bracket-group-${index + 1}">
-      ${codes.map(code => crownMatchCard(P, code)).join("")}
-    </div>
-  `).join("");
-}
-
 function crownFinalSlot(team, label, side, isWinner = false) {
   const cleanName = stripSeed(team?.name || label);
   const placeholder = crownIsPlaceholder(team);
@@ -793,6 +784,14 @@ function crownFinalSlot(team, label, side, isWinner = false) {
   `;
 }
 
+function crownMatchGroup(P, codes, groupClass = "") {
+  return `
+    <div class="crown-match-pod ${escapeHTML(groupClass)}">
+      ${codes.map(code => crownMatchCard(P, code)).join("")}
+    </div>
+  `;
+}
+
 function renderDesktopCrown(P) {
   const root = document.getElementById("playoff-desktop-crown");
   if (!root || !P || !Object.keys(P).length) return;
@@ -803,23 +802,21 @@ function renderDesktopCrown(P) {
   const finalSlots = document.getElementById("crown-final-slots");
 
   if (wildcard) {
-    wildcard.innerHTML = crownGroupedRound(P, [
-      ["WC1", "WC3"],
-      ["WC2", "WC4"]
-    ]);
+    wildcard.innerHTML =
+      crownMatchGroup(P, ["WC1", "WC3"], "pod-top") +
+      crownMatchGroup(P, ["WC2", "WC4"], "pod-bottom");
   }
 
   if (quarti) {
-    quarti.innerHTML = crownGroupedRound(P, [
-      ["Q1", "Q4"],
-      ["Q2", "Q3"]
-    ]);
+    quarti.innerHTML =
+      crownMatchGroup(P, ["Q1", "Q4"], "pod-top") +
+      crownMatchGroup(P, ["Q2", "Q3"], "pod-bottom");
   }
 
   if (semifinali) {
-    semifinali.innerHTML = CROWN_ROUNDS.semifinali
-      .map(item => `<div class="crown-semi-node">${crownMatchCard(P, item.code)}</div>`)
-      .join("");
+    semifinali.innerHTML =
+      crownMatchGroup(P, ["S1"], "pod-semi pod-top") +
+      crownMatchGroup(P, ["S2"], "pod-semi pod-bottom");
   }
 
   if (finalSlots) {
