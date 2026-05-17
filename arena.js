@@ -1,20 +1,20 @@
 const squadre = [
-  { nome: "Rubinkebab", logo: "img/Rubinkebab.png", eliminata: true, ultimaEliminata: false, turnoEliminazione: 1, magicPunti: 61.5 },
-  { nome: "Bayern Christiansen", logo: "img/Bayern Christiansen.png", eliminata: true, ultimaEliminata: false, turnoEliminazione: 2, magicPunti: 63 },
-  { nome: "Team Bartowski", logo: "img/Team Bartowski.png", eliminata: true, ultimaEliminata: false, turnoEliminazione: 3, magicPunti: 64 },
-  { nome: "Golden Knights", logo: "img/Golden Knights.png", eliminata: false, ultimaEliminata: false, turnoEliminazione: null, magicPunti: 78.5 },
-  { nome: "Ibla", logo: "img/Ibla.png", eliminata: true, ultimaEliminata: false, turnoEliminazione: 4, magicPunti: 65 },
-  { nome: "Fantaugusta", logo: "img/Fantaugusta.png", eliminata: true, ultimaEliminata: false, turnoEliminazione: 5, magicPunti: 62 },
-  { nome: "Riverfilo", logo: "img/Riverfilo.png", eliminata: true, ultimaEliminata: false, turnoEliminazione: 6, magicPunti: 66 },
-  { nome: "Desperados", logo: "img/Desperados.png", eliminata: true, ultimaEliminata: false, turnoEliminazione: 7, magicPunti: 63.5 },
-  { nome: "Wildboys 78", logo: "img/wildboys78.png", eliminata: true, ultimaEliminata: false, turnoEliminazione: 8, magicPunti: 67 },
-  { nome: "Pandinicoccolosini", logo: "img/Pandinicoccolosini.png", eliminata: true, ultimaEliminata: false, turnoEliminazione: 9, magicPunti: 64.5 },
-  { nome: "Pokermantra", logo: "img/PokerMantra.png", eliminata: true, ultimaEliminata: false, turnoEliminazione: 10, magicPunti: 66.5 },
-  { nome: "Minnesode Timberland", logo: "img/Minnesode Timberland.png", eliminata: true, ultimaEliminata: false, turnoEliminazione: 11, magicPunti: 65.5 },
-  { nome: "Minnesota Snakes", logo: "img/MinneSota Snakes.png", eliminata: true, ultimaEliminata: false, turnoEliminazione: 12, magicPunti: 62.5 },
-  { nome: "Eintracht Franco 126", logo: "img/Eintracht Franco 126.png", eliminata: true, ultimaEliminata: false, turnoEliminazione: 13, magicPunti: 64 },
-  { nome: "FC Disoneste", logo: "img/FC Disoneste.png", eliminata: true, ultimaEliminata: true, turnoEliminazione: 14, magicPunti: 63 },
-  { nome: "Athletic Pongao", logo: "img/Athletic Pongao.png", eliminata: true, ultimaEliminata: false, turnoEliminazione: 15, magicPunti: 60.5 }
+  { nome: "Rubinkebab", logo: "img/Rubinkebab.png", eliminata: false, ultimaEliminata: false, turnoEliminazione: null, magicPunti: null },
+  { nome: "Bayern Christiansen", logo: "img/Bayern Christiansen.png", eliminata: false, ultimaEliminata: false, turnoEliminazione: null, magicPunti: null },
+  { nome: "Team Bartowski", logo: "img/Team Bartowski.png", eliminata: false, ultimaEliminata: false, turnoEliminazione: null, magicPunti: null },
+  { nome: "Golden Knights", logo: "img/Golden Knights.png", eliminata: false, ultimaEliminata: false, turnoEliminazione: null, magicPunti: null },
+  { nome: "Ibla", logo: "img/Ibla.png", eliminata: false, ultimaEliminata: false, turnoEliminazione: null, magicPunti: null },
+  { nome: "Fantaugusta", logo: "img/Fantaugusta.png", eliminata: false, ultimaEliminata: false, turnoEliminazione: null, magicPunti: null },
+  { nome: "Riverfilo", logo: "img/Riverfilo.png", eliminata: false, ultimaEliminata: false, turnoEliminazione: null, magicPunti: null },
+  { nome: "Desperados", logo: "img/Desperados.png", eliminata: false, ultimaEliminata: false, turnoEliminazione: null, magicPunti: null },
+  { nome: "Wildboys 78", logo: "img/wildboys78.png", eliminata: false, ultimaEliminata: false, turnoEliminazione: null, magicPunti: null },
+  { nome: "Pandinicoccolosini", logo: "img/Pandinicoccolosini.png", eliminata: false, ultimaEliminata: false, turnoEliminazione: null, magicPunti: null },
+  { nome: "Pokermantra", logo: "img/PokerMantra.png", eliminata: false, ultimaEliminata: false, turnoEliminazione: null, magicPunti: null },
+  { nome: "Minnesode Timberland", logo: "img/Minnesode Timberland.png", eliminata: false, ultimaEliminata: false, turnoEliminazione: null, magicPunti: null },
+  { nome: "Minnesota Snakes", logo: "img/MinneSota Snakes.png", eliminata: false, ultimaEliminata: false, turnoEliminazione: null, magicPunti: null },
+  { nome: "Eintracht Franco 126", logo: "img/Eintracht Franco 126.png", eliminata: false, ultimaEliminata: false, turnoEliminazione: null, magicPunti: null },
+  { nome: "FC Disoneste", logo: "img/FC Disoneste.png", eliminata: false, ultimaEliminata: false, turnoEliminazione: null, magicPunti: null },
+  { nome: "Athletic Pongao", logo: "img/Athletic Pongao.png", eliminata: false, ultimaEliminata: false, turnoEliminazione: null, magicPunti: null }
 ];
 
 /*
