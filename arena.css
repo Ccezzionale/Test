@@ -713,14 +713,8 @@ h1 {
 
 .stat-chip strong{
   font-size:1.5rem;
-}ont-size:.78rem;
-  }
-  
-@media (max-width: 768px){
-  .arena-shell{
-    display:none;
-  }
 }
+
 
   #arena-center{
     width:280px;
