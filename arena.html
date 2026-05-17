@@ -131,6 +131,37 @@
         <div id="registro-eliminazioni" class="registro-eliminazioni"></div>
       </article>
     </section>
+
+    <section id="highlander-admin-panel" class="arena-panel admin-highlander-panel" style="display:none;">
+  <div class="panel-title-row">
+    <span class="panel-line"></span>
+    <h2>Admin Highlander</h2>
+    <span class="panel-line"></span>
+  </div>
+
+  <div class="admin-highlander-form">
+    <label>
+      Turno
+      <input id="admin-turno" type="number" min="1" max="15">
+    </label>
+
+    <label>
+      Squadra eliminata
+      <select id="admin-squadra-eliminata"></select>
+    </label>
+
+    <label>
+      Magic Punti
+      <input id="admin-magic-punti" type="number" step="0.5">
+    </label>
+
+    <button id="admin-salva-eliminazione" type="button">
+      Salva eliminazione
+    </button>
+  </div>
+
+  <p id="admin-highlander-msg" class="admin-highlander-msg"></p>
+</section>
   </main>
 
   <script src="arena.js"></script>
