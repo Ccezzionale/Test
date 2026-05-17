@@ -63,6 +63,7 @@ const adminRiskTeam3 = document.getElementById("admin-risk-team-3");
 const adminRiskPoints1 = document.getElementById("admin-risk-points-1");
 const adminRiskPoints2 = document.getElementById("admin-risk-points-2");
 const adminRiskPoints3 = document.getElementById("admin-risk-points-3");
+const adminResetBtn = document.getElementById("admin-reset-highlander");
 
 /* =========================
    SUPABASE HELPER
@@ -73,6 +74,61 @@ const db = supabase;
 /* =========================
    DATA
    ========================= */
+async function resetHighlander() {
+  if (!db) {
+    setAdminMsg("Supabase non trovato: impossibile resettare.", "error");
+    return;
+  }
+
+  const conferma = confirm(
+    "Vuoi davvero resettare la Highlander Cup?\n\nQuesta azione cancellerà tutte le eliminazioni salvate per questa stagione."
+  );
+
+  if (!conferma) return;
+
+  if (adminResetBtn) {
+    adminResetBtn.disabled = true;
+    adminResetBtn.textContent = "Reset in corso...";
+  }
+
+  setAdminMsg("Sto resettando l’arena...", "");
+
+  const { error } = await db
+    .from("highlander_eliminations")
+    .delete()
+    .eq("season", HIGHLANDER_SEASON);
+
+  if (error) {
+    console.error(error);
+    setAdminMsg("Errore durante il reset. Controlla Supabase/RLS.", "error");
+
+    if (adminResetBtn) {
+      adminResetBtn.disabled = false;
+      adminResetBtn.textContent = "Reset Highlander";
+    }
+
+    return;
+  }
+
+  if (adminMagicInput) adminMagicInput.value = "";
+
+  if (adminRiskTeam1) adminRiskTeam1.value = "";
+  if (adminRiskTeam2) adminRiskTeam2.value = "";
+  if (adminRiskTeam3) adminRiskTeam3.value = "";
+
+  if (adminRiskPoints1) adminRiskPoints1.value = "";
+  if (adminRiskPoints2) adminRiskPoints2.value = "";
+  if (adminRiskPoints3) adminRiskPoints3.value = "";
+
+  setAdminMsg("Reset completato. L’arena è tornata al turno 1.", "ok");
+
+  await refreshArena();
+
+  if (adminResetBtn) {
+    adminResetBtn.disabled = false;
+    adminResetBtn.textContent = "Reset Highlander";
+  }
+}
 
 async function loadEliminazioni() {
   if (!db) {
@@ -632,6 +688,9 @@ if (adminSaveBtn) {
 function initAdminEvents() {
   if (adminSaveBtn) {
     adminSaveBtn.addEventListener("click", salvaEliminazione);
+  }
+     if (adminResetBtn) {
+    adminResetBtn.addEventListener("click", resetHighlander);
   }
 }
 
