@@ -69,31 +69,99 @@ h1 {
 }
 
 .arena-stats{
-  margin:16px auto 0;
-  display:flex;
-  justify-content:center;
-  gap:12px;
-  flex-wrap:wrap;
+  width:min(900px, 100%);
+  margin:18px auto 0;
+  display:grid;
+  grid-template-columns:repeat(3, minmax(0, 1fr));
+  gap:14px;
 }
 
 .stat-chip{
-  min-width:170px;
-  padding:9px 15px;
-  border-radius:11px;
-  background:linear-gradient(180deg, rgba(7,16,29,.86), rgba(0,0,0,.43));
-  border:1px solid rgba(255,215,0,.30);
+  position:relative;
+  display:grid;
+  grid-template-columns:46px 1fr auto;
+  align-items:center;
+  gap:12px;
+  min-width:0;
+  padding:13px 15px;
+  border-radius:18px;
+  background:
+    radial-gradient(circle at 0% 0%, rgba(255,215,0,.10), transparent 35%),
+    linear-gradient(180deg, rgba(7,18,32,.92), rgba(2,8,16,.88));
+  border:1px solid rgba(255,215,0,.34);
   color:#fff2c8;
-  font-size:.95rem;
-  box-shadow:0 10px 20px rgba(0,0,0,.24), inset 0 1px 0 rgba(255,255,255,.05);
+  box-shadow:
+    0 12px 26px rgba(0,0,0,.28),
+    inset 0 1px 0 rgba(255,255,255,.05);
+  overflow:hidden;
+}
+
+.stat-chip::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:linear-gradient(90deg, transparent, rgba(255,255,255,.045), transparent);
+  pointer-events:none;
 }
 
 .stat-icon{
-  margin-right:5px;
+  width:46px;
+  height:46px;
+  border-radius:50%;
+  display:grid;
+  place-items:center;
+  background:
+    radial-gradient(circle at 35% 28%, rgba(255,215,0,.26), rgba(255,215,0,.08));
+  border:1px solid rgba(255,215,0,.42);
+  box-shadow:
+    0 0 18px rgba(255,215,0,.14),
+    inset 0 0 12px rgba(255,255,255,.04);
+}
+
+.stat-icon svg{
+  width:23px;
+  height:23px;
+  fill:none;
+  stroke:var(--gold);
+  stroke-width:1.9;
+  stroke-linecap:round;
+  stroke-linejoin:round;
+  filter:drop-shadow(0 2px 4px rgba(0,0,0,.42));
+}
+
+.stat-text{
+  color:#f4e3ba;
+  font-size:.96rem;
+  font-weight:800;
+  text-align:left;
+  white-space:nowrap;
 }
 
 .stat-chip strong{
   color:var(--gold);
-  margin-left:2px;
+  font-size:1.55rem;
+  font-weight:950;
+  line-height:1;
+  text-shadow:
+    0 2px 8px rgba(0,0,0,.55),
+    0 0 12px rgba(255,215,0,.20);
+}
+
+.stat-out .stat-icon{
+  background:
+    radial-gradient(circle at 35% 28%, rgba(255,90,55,.26), rgba(255,90,55,.08));
+  border-color:rgba(255,100,75,.44);
+  box-shadow:
+    0 0 18px rgba(255,75,46,.16),
+    inset 0 0 12px rgba(255,255,255,.04);
+}
+
+.stat-out .stat-icon svg{
+  stroke:#ff8d73;
+}
+
+.stat-live .stat-icon svg{
+  stroke:#ffe78b;
 }
 
 .arena-page{
@@ -616,15 +684,36 @@ h1 {
     padding-top:18px;
   }
 
-  .arena-stats{
-    gap:8px;
-  }
+.arena-stats{
+  grid-template-columns:1fr;
+  gap:10px;
+  margin-top:16px;
+}
 
-  .stat-chip{
-    min-width:0;
-    width:calc(33.333% - 6px);
-    padding:8px 7px;
-    font-size:.78rem;
+.stat-chip{
+  grid-template-columns:42px 1fr auto;
+  width:100%;
+  padding:12px 14px;
+  border-radius:16px;
+}
+
+.stat-icon{
+  width:42px;
+  height:42px;
+}
+
+.stat-icon svg{
+  width:21px;
+  height:21px;
+}
+
+.stat-text{
+  font-size:.98rem;
+}
+
+.stat-chip strong{
+  font-size:1.5rem;
+}ont-size:.78rem;
   }
   
 @media (max-width: 768px){
@@ -913,12 +1002,9 @@ h1 {
     line-height:1.35;
   }
 
-  .stat-chip{
-    width:100%;
-    min-width:0;
-    font-size:.94rem;
-    padding:9px 10px;
-  }
+.stat-chip{
+  width:100%;
+}
 
   .mobile-team-card{
     border-radius:15px;
@@ -941,70 +1027,6 @@ h1 {
     font-size:1.3rem;
   }
 }
-
-create table if not exists highlander_eliminations (
-  id uuid primary key default gen_random_uuid(),
-  season text not null default '2026',
-  turno int not null,
-  team_name text not null,
-  logo text not null,
-  magic_punti numeric,
-  created_at timestamptz default now(),
-  updated_at timestamptz default now(),
-  unique(season, turno),
-  unique(season, team_name)
-);
-
-alter table highlander_eliminations enable row level security;
-
-create policy "Anyone can read highlander eliminations"
-on highlander_eliminations
-for select
-using (true);
-
-create policy "Admins can insert highlander eliminations"
-on highlander_eliminations
-for insert
-with check (
-  exists (
-    select 1
-    from profiles
-    where profiles.id = auth.uid()
-    and profiles.role = 'admin'
-  )
-);
-
-create policy "Admins can update highlander eliminations"
-on highlander_eliminations
-for update
-using (
-  exists (
-    select 1
-    from profiles
-    where profiles.id = auth.uid()
-    and profiles.role = 'admin'
-  )
-)
-with check (
-  exists (
-    select 1
-    from profiles
-    where profiles.id = auth.uid()
-    and profiles.role = 'admin'
-  )
-);
-
-create policy "Admins can delete highlander eliminations"
-on highlander_eliminations
-for delete
-using (
-  exists (
-    select 1
-    from profiles
-    where profiles.id = auth.uid()
-    and profiles.role = 'admin'
-  )
-);
 
 .admin-danger-zone{
   grid-column:1 / -1;
