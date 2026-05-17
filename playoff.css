@@ -3229,3 +3229,143 @@ body{
     font-size:.64rem;
   }
 }
+
+/* =========================================================
+   PLAYOFF CROWN V14 - SEMIFINALI SCENOGRAFICHE MA PIENE
+   ---------------------------------------------------------
+   Solo desktop: mobile intatta.
+   Le semifinali mantengono il riquadro grande ma diventano
+   un vero pannello-evento: ribbon alto, provenienze vicine
+   agli slot, meno vuoto al centro.
+   ========================================================= */
+@media (min-width: 1024px){
+  .crown-semi-match{
+    min-height: clamp(158px, 18vh, 216px) !important;
+    isolation:isolate;
+  }
+
+  .crown-semi-match .crown-match-inner{
+    position:relative;
+    padding: clamp(42px, 4.5vh, 54px) clamp(22px, 1.6vw, 32px) clamp(46px, 4.6vh, 58px) !important;
+    align-items:center;
+  }
+
+  /* Ribbon alto: riempie il pannello e gli dà senso da semifinale */
+  .crown-semi-match .crown-match-inner::before{
+    content:"DUE STRADE, UNA FINALE";
+    position:absolute;
+    left:50%;
+    top: clamp(13px, 1.45vh, 18px);
+    transform:translateX(-50%);
+    padding:4px 14px 5px;
+    border-radius:999px;
+    color:rgba(255,239,170,.92);
+    font-size:clamp(.58rem, .60vw, .72rem);
+    font-weight:950;
+    letter-spacing:.14em;
+    text-transform:uppercase;
+    background:linear-gradient(180deg, rgba(255,211,107,.10), rgba(255,211,107,.02));
+    border:1px solid rgba(255,211,107,.22);
+    box-shadow:0 7px 16px rgba(0,0,0,.20), inset 0 1px 0 rgba(255,255,255,.08);
+    white-space:nowrap;
+    z-index:5;
+  }
+
+  /* I cerchi restano importanti, ma non galleggiano più nel vuoto */
+  .crown-semi-match .crown-team-logo,
+  .crown-semi-match .crown-placeholder{
+    width: clamp(72px, 5vw, 92px) !important;
+    height: clamp(72px, 5vw, 92px) !important;
+  }
+
+  .crown-semi-match .crown-vs-wrap{
+    transform: translateY(2px);
+  }
+
+  .crown-semi-center-note{
+    margin-top:2px;
+    padding:6px 14px 7px;
+    background:linear-gradient(180deg, rgba(255,211,107,.10), rgba(1,12,32,.52));
+    border-color:rgba(255,211,107,.34);
+  }
+
+  /* Provenienze sotto i rispettivi slot, non più incollate al fondo */
+  .crown-semi-origins{
+    left: clamp(32px, 2.4vw, 52px) !important;
+    right: clamp(32px, 2.4vw, 52px) !important;
+    bottom: clamp(17px, 2vh, 24px) !important;
+    top:auto !important;
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    align-items:center;
+    gap:clamp(48px, 6vw, 110px);
+    z-index:7;
+  }
+
+  .crown-semi-origins::before{
+    display:none !important;
+  }
+
+  .crown-semi-origins span{
+    width:max-content;
+    max-width:100%;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    padding:5px 10px 6px;
+    border-radius:999px;
+    color:rgba(214,235,255,.86);
+    background:rgba(3,18,48,.42);
+    border:1px solid rgba(214,235,255,.16);
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.06);
+  }
+
+  .crown-semi-origins span:first-child{
+    justify-self:start;
+  }
+
+  .crown-semi-origins span:last-child{
+    justify-self:end;
+  }
+
+  /* Linee sottili verso la pill centrale: riempiono senza appesantire */
+  .crown-semi-match .crown-vs-wrap::after{
+    content:"";
+    position:absolute;
+    left:50%;
+    top:50%;
+    width: clamp(170px, 15vw, 260px);
+    height:1px;
+    transform:translate(-50%, -50%);
+    background:linear-gradient(90deg, transparent, rgba(255,211,107,.32), rgba(0,156,235,.32), rgba(255,211,107,.32), transparent);
+    z-index:-1;
+    pointer-events:none;
+  }
+}
+
+@media (min-width: 1024px) and (max-width: 1380px){
+  .crown-semi-match{
+    min-height: 162px !important;
+  }
+
+  .crown-semi-match .crown-match-inner{
+    padding: 40px 18px 44px !important;
+  }
+
+  .crown-semi-match .crown-match-inner::before{
+    font-size:.55rem;
+    padding:3px 10px 4px;
+  }
+
+  .crown-semi-origins{
+    left: 28px !important;
+    right: 28px !important;
+    bottom: 14px !important;
+    gap: 36px;
+  }
+
+  .crown-semi-origins span{
+    font-size:.58rem;
+    padding:4px 8px 5px;
+  }
+}
