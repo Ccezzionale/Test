@@ -179,6 +179,7 @@ function aggiornaPlayoff() {
     const isPlaceholder = !data.seed && /vincente/i.test(data.name || "");
     el.innerHTML = creaHTMLSquadra(data.name, data.seed || "", isPlaceholder, !!isWinner);
     el.classList.toggle("vincente", !!isWinner);
+    el.classList.toggle("placeholder", !!isPlaceholder);
 
     applyTeamColorFromCard(el);
   };
