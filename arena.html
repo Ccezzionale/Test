@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Highlander Cup - Arena</title>
   <link href="https://fonts.googleapis.com/css2?family=Pirata+One&display=swap" rel="stylesheet">
-   <link rel="stylesheet" href="navbar.css">
+  <link rel="stylesheet" href="navbar.css">
   <link rel="stylesheet" href="arena.css" />
 </head>
 <body>
@@ -48,7 +48,6 @@
           </ul>
         </li>
 
-
         <li><a href="waiver.html">Waiver Wire</a></li>
 
         <li class="dropdown">
@@ -89,13 +88,13 @@
   </nav>
 
   <header class="hero-arena">
-    <h1>🏟️ Highlander Arena</h1>
-    <p class="sottotitolo">Ogni settimana cade una squadra. Nell’arena ne resterà soltanto una.</p>
+    <h1>🏰 Highlander Arena</h1>
+    <p class="sottotitolo" id="arena-subtitle">Ogni settimana cade una squadra. Nell’arena ne resterà soltanto una.</p>
 
     <div class="arena-stats" id="arena-stats">
-      <div class="stat-chip">Turno attuale: <strong id="turno-attuale">--</strong></div>
-      <div class="stat-chip">Sopravvissute: <strong id="vive-attuali">--</strong></div>
-      <div class="stat-chip">Eliminate: <strong id="eliminate-attuali">--</strong></div>
+      <div class="stat-chip"><span class="stat-icon">📅</span> Turno attuale: <strong id="turno-attuale">--</strong></div>
+      <div class="stat-chip"><span class="stat-icon">🛡️</span> Sopravvissute: <strong id="vive-attuali">--</strong></div>
+      <div class="stat-chip"><span class="stat-icon">💀</span> Eliminate: <strong id="eliminate-attuali">--</strong></div>
     </div>
   </header>
 
@@ -106,10 +105,29 @@
         <div id="arena-center"></div>
       </div>
     </section>
+
+    <section class="arena-panels" aria-label="Dettagli Highlander Cup">
+      <article class="arena-panel danger-panel">
+        <div class="panel-title-row">
+          <span class="panel-line"></span>
+          <h2 id="zona-title">Zona Pericolo</h2>
+          <span class="panel-line"></span>
+        </div>
+        <div id="zona-pericolo" class="zona-pericolo"></div>
+      </article>
+
+      <article class="arena-panel registro-panel">
+        <div class="panel-title-row">
+          <span class="panel-line"></span>
+          <h2>Registro Eliminazioni</h2>
+          <span class="panel-line"></span>
+        </div>
+        <div id="registro-eliminazioni" class="registro-eliminazioni"></div>
+      </article>
+    </section>
   </main>
 
   <script src="arena.js"></script>
-   <script src="navbar.js"></script>
-  
+  <script src="navbar.js"></script>
 </body>
 </html>
