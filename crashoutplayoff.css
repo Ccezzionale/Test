@@ -35,13 +35,9 @@ body{
   color:var(--crash-text);
   font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   background:
-    radial-gradient(circle at 50% 42%, rgba(255,49,223,.24), transparent 24%),
-    radial-gradient(circle at 49% 50%, rgba(32,199,255,.16), transparent 28%),
-    radial-gradient(circle at 18% 38%, rgba(139,77,255,.16), transparent 26%),
-    radial-gradient(circle at 82% 42%, rgba(32,199,255,.12), transparent 25%),
-    linear-gradient(180deg, rgba(3,5,17,.92), rgba(8,7,18,.98)),
-    url("img/sfondocrash.jpg") center/cover fixed no-repeat;
-  background-blend-mode:screen, screen, screen, screen, normal, normal;
+    radial-gradient(circle at 50% 28%, rgba(255,49,223,.18), transparent 34%),
+    radial-gradient(circle at 47% 62%, rgba(32,199,255,.13), transparent 30%),
+    linear-gradient(180deg, #040510 0%, #07081a 48%, #03040d 100%);
 }
 
 body::before{
@@ -543,6 +539,15 @@ body::before{
 .mobile-final-hero{ display:none; }
 
 @media (max-width:900px){
+
+  body{
+  background:
+    radial-gradient(circle at 50% 18%, rgba(255,49,223,.22), transparent 34%),
+    radial-gradient(circle at 50% 42%, rgba(32,199,255,.16), transparent 32%),
+    linear-gradient(180deg, #040510 0%, #07081a 46%, #03040d 100%) !important;
+  background-attachment:scroll !important;
+}
+  
   body{ background-attachment:scroll; }
   .site-nav{
     width:100%;
