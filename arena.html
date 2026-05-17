@@ -3,12 +3,12 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Highlander Cup</title>
-  <link href="https://fonts.googleapis.com/css2?family=Pirata+One&family=Cinzel:wght@500;600;700;800;900&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="navbar.css">
+  <title>Highlander Cup - Arena</title>
+  <link href="https://fonts.googleapis.com/css2?family=Pirata+One&display=swap" rel="stylesheet">
+   <link rel="stylesheet" href="navbar.css">
   <link rel="stylesheet" href="arena.css" />
 </head>
-<body class="highlander-wall-page">
+<body>
   <nav class="site-nav">
     <div class="nav-inner">
       <div class="nav-left">
@@ -47,6 +47,7 @@
             <li><a href="statistiche.html"><img src="icons/nav/statistiche.webp" class="menu-icon" alt="">Statistiche</a></li>
           </ul>
         </li>
+
 
         <li><a href="waiver.html">Waiver Wire</a></li>
 
@@ -87,53 +88,28 @@
     </div>
   </nav>
 
-  <main class="wall-layout">
-    <header class="wall-hero">
-      <p class="eyebrow">Lega degli Eroi presenta</p>
-      <h1>Highlander Cup</h1>
-      <p class="wall-subtitle">Solo uno resterà in piedi. L'ultimo Highlander conquisterà la coppa.</p>
-    </header>
+  <header class="hero-arena">
+    <h1>🏟️ Highlander Arena</h1>
+    <p class="sottotitolo">Ogni settimana cade una squadra. Nell’arena ne resterà soltanto una.</p>
 
-    <section class="wall-grid">
-      <aside class="side-column left-column">
-        <article class="stat-panel survivors-panel">
-          <h2>Sopravvissuti</h2>
-          <div class="survivor-number"><span id="vive-attuali">--</span><small>di <b id="totale-squadre">--</b></small></div>
-          <div class="panel-row"><span>Turno attuale</span><strong><span id="turno-attuale">--</span> di <span id="turni-totali">--</span></strong></div>
-          <div class="panel-row"><span>Eliminate</span><strong id="eliminate-attuali">--</strong></div>
-          <div class="panel-row"><span>Inizio</span><strong>Stagione 2024/25</strong></div>
-        </article>
+    <div class="arena-stats" id="arena-stats">
+      <div class="stat-chip">Turno attuale: <strong id="turno-attuale">--</strong></div>
+      <div class="stat-chip">Sopravvissute: <strong id="vive-attuali">--</strong></div>
+      <div class="stat-chip">Eliminate: <strong id="eliminate-attuali">--</strong></div>
+    </div>
+  </header>
 
-        <article class="stat-panel last-out-panel" id="last-out-panel"></article>
-      </aside>
-
-      <section class="main-wall">
-        <article class="champion-banner" id="champion-banner"></article>
-
-        <div class="section-title"><span></span><h2>I caduti</h2><span></span></div>
-        <section class="fallen-grid" id="fallen-grid" aria-label="Squadre eliminate"></section>
-      </section>
-
-      <aside class="side-column right-column">
-        <article class="chronology-panel">
-          <div class="chronology-head">
-            <h2>Cronologia<br>eliminazioni</h2>
-            <span><b id="chrono-count">--</b><small>cadute</small></span>
-          </div>
-          <div class="chronology-list" id="chronology-list"></div>
-          <button type="button" class="gold-button">Vedi tutta la cronologia</button>
-        </article>
-      </aside>
-    </section>
-
-    <section class="timeline-panel">
-      <div class="timeline-title">Ultime eliminazioni</div>
-      <div class="timeline-track" id="timeline-track"></div>
-      <button type="button" class="timeline-button">Vedi storico completo</button>
+  <main class="arena-page">
+    <section class="arena-shell">
+      <div class="arena-glow"></div>
+      <div class="arena">
+        <div id="arena-center"></div>
+      </div>
     </section>
   </main>
 
   <script src="arena.js"></script>
-  <script src="navbar.js"></script>
+   <script src="navbar.js"></script>
+  
 </body>
 </html>
