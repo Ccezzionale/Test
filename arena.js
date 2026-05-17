@@ -686,11 +686,20 @@ if (adminSaveBtn) {
 }
 
 function initAdminEvents() {
-  if (adminSaveBtn) {
-    adminSaveBtn.addEventListener("click", salvaEliminazione);
+  const saveBtn = document.getElementById("admin-salva-eliminazione");
+  const resetBtn = document.getElementById("admin-reset-highlander");
+
+  if (saveBtn && !saveBtn.dataset.bound) {
+    saveBtn.addEventListener("click", salvaEliminazione);
+    saveBtn.dataset.bound = "1";
   }
-     if (adminResetBtn) {
-    adminResetBtn.addEventListener("click", resetHighlander);
+
+  if (resetBtn && !resetBtn.dataset.bound) {
+    resetBtn.addEventListener("click", resetHighlander);
+    resetBtn.dataset.bound = "1";
+    console.log("✅ Bottone Reset Highlander collegato");
+  } else {
+    console.warn("⚠️ Bottone Reset Highlander non trovato");
   }
 }
 
