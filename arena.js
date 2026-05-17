@@ -56,6 +56,13 @@ const adminSquadraSelect = document.getElementById("admin-squadra-eliminata");
 const adminMagicInput = document.getElementById("admin-magic-punti");
 const adminSaveBtn = document.getElementById("admin-salva-eliminazione");
 const adminMsg = document.getElementById("admin-highlander-msg");
+const adminRiskTeam1 = document.getElementById("admin-risk-team-1");
+const adminRiskTeam2 = document.getElementById("admin-risk-team-2");
+const adminRiskTeam3 = document.getElementById("admin-risk-team-3");
+
+const adminRiskPoints1 = document.getElementById("admin-risk-points-1");
+const adminRiskPoints2 = document.getElementById("admin-risk-points-2");
+const adminRiskPoints3 = document.getElementById("admin-risk-points-3");
 
 /* =========================
    SUPABASE HELPER
@@ -335,61 +342,51 @@ function renderZonaPericolo() {
           <p>Ha attraversato tutti i turni ed è rimasta l’unica squadra in piedi.</p>
         </div>
       </div>
-
-      <div class="danger-table">
-        <div class="danger-row danger-row-final">
-          <span>Ultima caduta</span>
-          <strong>${ultimaEliminata ? ultimaEliminata.nome : eliminateOrdinate[0]?.nome || "--"}</strong>
-          <em>${formatPunti(ultimaEliminata?.magicPunti ?? eliminateOrdinate[0]?.magicPunti)} MP</em>
-        </div>
-        <div class="danger-row">
-          <span>Squadre eliminate</span>
-          <strong>${eliminateCount}</strong>
-          <em>su ${squadre.length}</em>
-        </div>
-      </div>
     `;
     return;
   }
 
-  const ultima = ultimaEliminata || eliminateOrdinate[0];
+  const latestRow = eliminazioniDb
+    .slice()
+    .sort((a, b) => Number(b.turno) - Number(a.turno))[0];
 
-  const salvatePerPoco = inGioco
-    .filter(s => typeof s.magicPunti === "number")
-    .sort((a, b) => a.magicPunti - b.magicPunti)
-    .slice(0, 3);
+  const eliminata = ultimaEliminata || eliminateOrdinate[0];
+  const dangerZone = Array.isArray(latestRow?.danger_zone)
+    ? latestRow.danger_zone
+    : [];
 
-  const sogliaSalvezza = salvatePerPoco[0];
-
-  const distanza = sogliaSalvezza && ultima?.magicPunti !== null && ultima?.magicPunti !== undefined
-    ? (sogliaSalvezza.magicPunti - ultima.magicPunti).toFixed(1).replace(".", ",")
+  const sogliaSalvezza = typeof eliminata?.magicPunti === "number"
+    ? eliminata.magicPunti + 0.5
     : null;
 
   if (zonaTitle) zonaTitle.textContent = "Zona Pericolo";
 
   zonaPericoloEl.innerHTML = `
-    <div class="danger-head">
-      <img src="${ultima.logo}" alt="${ultima.nome}">
+    <div class="danger-head neutral">
+      <div class="danger-icon">🛡️</div>
       <div>
-        <span class="mini-label">Eliminata del turno ${ultima.turnoEliminazione || turnoAttuale}</span>
-        <h3>${ultima.nome}</h3>
-        <p>${formatPunti(ultima.magicPunti)} Magic Punti. ${distanza ? `Salvezza mancata per ${distanza} punti.` : "Il margine è stato sottilissimo."}</p>
+        <span class="mini-label">Soglia salvezza turno ${eliminata?.turnoEliminazione || turnoAttuale}</span>
+        <h3>${formatPunti(sogliaSalvezza)} MP</h3>
+        <p>
+          ${eliminata?.nome || "La squadra eliminata"} è caduta con ${formatPunti(eliminata?.magicPunti)} MP.
+          Bastava mezzo punto in più per restare nell’arena.
+        </p>
       </div>
     </div>
 
     <div class="danger-table">
       ${
-        salvatePerPoco.length
-          ? salvatePerPoco.map((s, index) => `
+        dangerZone.length
+          ? dangerZone.map((s, index) => `
               <div class="danger-row ${index === 0 ? "safe-line" : ""}">
-                <span>${index === 0 ? "Soglia salvezza" : "A rischio"}</span>
-                <strong>${s.nome}</strong>
-                <em>${formatPunti(s.magicPunti)} MP</em>
+                <span>${index === 0 ? "Prima salva" : "A rischio"}</span>
+                <strong>${s.team_name}</strong>
+                <em>${formatPunti(s.magic_punti)} MP</em>
               </div>
             `).join("")
           : `
               <div class="danger-row">
-                <span>Soglia salvezza</span>
+                <span>Squadre a rischio</span>
                 <strong>Dati non ancora inseriti</strong>
                 <em>-- MP</em>
               </div>
@@ -470,7 +467,9 @@ function populateAdminPanel() {
 
   const prossimoTurno = eliminateCount + 1;
 
-  adminTurnoInput.value = prossimoTurno <= squadreBase.length - 1 ? prossimoTurno : squadreBase.length - 1;
+  adminTurnoInput.value = prossimoTurno <= squadreBase.length - 1
+    ? prossimoTurno
+    : squadreBase.length - 1;
 
   const squadreSelezionabili = squadre.filter(s => !s.eliminata);
 
@@ -478,10 +477,33 @@ function populateAdminPanel() {
     <option value="${s.nome}">${s.nome}</option>
   `).join("");
 
+  const riskSelects = [
+    adminRiskTeam1,
+    adminRiskTeam2,
+    adminRiskTeam3
+  ];
+
+  riskSelects.forEach(select => {
+    if (!select) return;
+
+    select.innerHTML = `
+      <option value="">-- Seleziona squadra --</option>
+      ${squadreSelezionabili.map(s => `
+        <option value="${s.nome}">${s.nome}</option>
+      `).join("")}
+    `;
+  });
+
   if (!squadreSelezionabili.length || squadreSelezionabili.length === 1) {
     adminSquadraSelect.innerHTML = `
       <option value="">Torneo concluso</option>
     `;
+
+    riskSelects.forEach(select => {
+      if (select) {
+        select.innerHTML = `<option value="">Torneo concluso</option>`;
+      }
+    });
 
     if (adminSaveBtn) adminSaveBtn.disabled = true;
   } else if (adminSaveBtn) {
@@ -529,13 +551,39 @@ async function salvaEliminazione() {
 
   setAdminMsg("Sto salvando l’eliminazione...", "");
 
-  const payload = {
-    season: HIGHLANDER_SEASON,
-    turno,
-    team_name: team.nome,
-    logo: team.logo,
-    magic_punti: magicPunti
-  };
+const dangerZone = [
+  {
+    team_name: adminRiskTeam1?.value || "",
+    magic_punti: adminRiskPoints1?.value === "" ? null : Number(adminRiskPoints1?.value)
+  },
+  {
+    team_name: adminRiskTeam2?.value || "",
+    magic_punti: adminRiskPoints2?.value === "" ? null : Number(adminRiskPoints2?.value)
+  },
+  {
+    team_name: adminRiskTeam3?.value || "",
+    magic_punti: adminRiskPoints3?.value === "" ? null : Number(adminRiskPoints3?.value)
+  }
+]
+  .filter(row => row.team_name)
+  .map(row => {
+    const baseTeam = squadreBase.find(s => s.nome === row.team_name);
+
+    return {
+      team_name: row.team_name,
+      logo: baseTeam?.logo || "",
+      magic_punti: row.magic_punti
+    };
+  });
+   
+const payload = {
+  season: HIGHLANDER_SEASON,
+  turno,
+  team_name: team.nome,
+  logo: team.logo,
+  magic_punti: magicPunti,
+  danger_zone: dangerZone
+};
 
   const { error } = await db
     .from("highlander_eliminations")
@@ -560,16 +608,25 @@ async function salvaEliminazione() {
     return;
   }
 
-  setAdminMsg("Eliminazione salvata. L’arena si aggiorna.", "ok");
+setAdminMsg("Eliminazione salvata. L’arena si aggiorna.", "ok");
 
-  if (adminMagicInput) adminMagicInput.value = "";
+/* Pulisce i campi admin dopo il salvataggio */
+if (adminMagicInput) adminMagicInput.value = "";
 
-  await refreshArena();
+if (adminRiskTeam1) adminRiskTeam1.value = "";
+if (adminRiskTeam2) adminRiskTeam2.value = "";
+if (adminRiskTeam3) adminRiskTeam3.value = "";
 
-  if (adminSaveBtn) {
-    adminSaveBtn.disabled = false;
-    adminSaveBtn.textContent = "Salva eliminazione";
-  }
+if (adminRiskPoints1) adminRiskPoints1.value = "";
+if (adminRiskPoints2) adminRiskPoints2.value = "";
+if (adminRiskPoints3) adminRiskPoints3.value = "";
+
+await refreshArena();
+
+if (adminSaveBtn) {
+  adminSaveBtn.disabled = false;
+  adminSaveBtn.textContent = "Salva eliminazione";
+}
 }
 
 function initAdminEvents() {
