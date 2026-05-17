@@ -1055,3 +1055,18 @@ h1 {
     grid-template-columns:1fr;
   }
 }
+
+.admin-reset-highlander-btn{
+  border:1px solid rgba(255,75,46,.55);
+  border-radius:11px;
+  background:linear-gradient(180deg, rgba(255,75,46,.24), rgba(120,20,10,.24));
+  color:#ffb3a4;
+  padding:11px 15px;
+  font-weight:900;
+  cursor:pointer;
+}
+
+.admin-reset-highlander-btn:hover{
+  background:linear-gradient(180deg, rgba(255,75,46,.34), rgba(120,20,10,.32));
+  color:#fff;
+}
