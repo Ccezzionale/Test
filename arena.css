@@ -941,3 +941,67 @@ h1 {
     font-size:1.3rem;
   }
 }
+
+create table if not exists highlander_eliminations (
+  id uuid primary key default gen_random_uuid(),
+  season text not null default '2026',
+  turno int not null,
+  team_name text not null,
+  logo text not null,
+  magic_punti numeric,
+  created_at timestamptz default now(),
+  updated_at timestamptz default now(),
+  unique(season, turno),
+  unique(season, team_name)
+);
+
+alter table highlander_eliminations enable row level security;
+
+create policy "Anyone can read highlander eliminations"
+on highlander_eliminations
+for select
+using (true);
+
+create policy "Admins can insert highlander eliminations"
+on highlander_eliminations
+for insert
+with check (
+  exists (
+    select 1
+    from profiles
+    where profiles.id = auth.uid()
+    and profiles.role = 'admin'
+  )
+);
+
+create policy "Admins can update highlander eliminations"
+on highlander_eliminations
+for update
+using (
+  exists (
+    select 1
+    from profiles
+    where profiles.id = auth.uid()
+    and profiles.role = 'admin'
+  )
+)
+with check (
+  exists (
+    select 1
+    from profiles
+    where profiles.id = auth.uid()
+    and profiles.role = 'admin'
+  )
+);
+
+create policy "Admins can delete highlander eliminations"
+on highlander_eliminations
+for delete
+using (
+  exists (
+    select 1
+    from profiles
+    where profiles.id = auth.uid()
+    and profiles.role = 'admin'
+  )
+);
