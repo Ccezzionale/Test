@@ -35,10 +35,13 @@ body{
   color:var(--crash-text);
   font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   background:
-    radial-gradient(circle at 50% 28%, rgba(255,49,223,.18), transparent 34%),
-    radial-gradient(circle at 47% 62%, rgba(32,199,255,.13), transparent 30%),
-    linear-gradient(180deg, rgba(4,5,16,.70), rgba(4,5,16,.96)),
+    radial-gradient(circle at 50% 42%, rgba(255,49,223,.24), transparent 24%),
+    radial-gradient(circle at 49% 50%, rgba(32,199,255,.16), transparent 28%),
+    radial-gradient(circle at 18% 38%, rgba(139,77,255,.16), transparent 26%),
+    radial-gradient(circle at 82% 42%, rgba(32,199,255,.12), transparent 25%),
+    linear-gradient(180deg, rgba(3,5,17,.92), rgba(8,7,18,.98)),
     url("img/sfondocrash.jpg") center/cover fixed no-repeat;
+  background-blend-mode:screen, screen, screen, screen, normal, normal;
 }
 
 body::before{
@@ -47,10 +50,11 @@ body::before{
   inset:0;
   pointer-events:none;
   background:
-    linear-gradient(90deg, rgba(255,49,223,.09), transparent 18%, transparent 82%, rgba(32,199,255,.08)),
-    radial-gradient(circle at 50% 100%, rgba(255,49,223,.18), transparent 44%);
-  mix-blend-mode:screen;
-  opacity:.82;
+    radial-gradient(ellipse at center, transparent 0%, transparent 44%, rgba(0,0,0,.46) 100%),
+    linear-gradient(90deg, rgba(0,0,0,.38), transparent 24%, transparent 76%, rgba(0,0,0,.42)),
+    radial-gradient(circle at 50% 64%, rgba(255,49,223,.18), transparent 34%);
+  mix-blend-mode:multiply;
+  opacity:.92;
   z-index:-1;
 }
 
