@@ -189,10 +189,10 @@ function aggiornaPlayoff() {
   });
 
   renderCampione(P);
-  renderDesktopReboot(P);
   placeQuarterPairs();
   alignLikeExcel();
   renderMobilePlayoff(P);
+  renderDesktopCrown(P);
 }
 
 /* =========================================
@@ -327,187 +327,6 @@ function centerSemiColumn(col, targetHeight){
 
   col.style.paddingTop = topPad + "px";
   col.style.paddingBottom = bottomPad + "px";
-}
-
-
-/* =========================================
-   DESKTOP REBOOT VIEW
-   - Nuova struttura desktop separata.
-   - Non tocca la mobile app view.
-   ========================================= */
-const DESKTOP_REBOOT_STAGES = [
-  {
-    key: "wildcard",
-    title: "Wildcard",
-    subtitle: "L'ingresso nell'arena",
-    matches: [
-      { code: "WC1", next: "Quarti" },
-      { code: "WC3", next: "Quarti" },
-      { code: "WC2", next: "Quarti" },
-      { code: "WC4", next: "Quarti" }
-    ]
-  },
-  {
-    key: "quarti",
-    title: "Quarti",
-    subtitle: "Le teste di serie entrano in scena",
-    matches: [
-      { code: "Q1", next: "Semifinale" },
-      { code: "Q4", next: "Semifinale" },
-      { code: "Q2", next: "Semifinale" },
-      { code: "Q3", next: "Semifinale" }
-    ]
-  },
-  {
-    key: "semifinali",
-    title: "Semifinali",
-    subtitle: "Due porte verso la finale",
-    matches: [
-      { code: "S1", next: "Finale" },
-      { code: "S2", next: "Finale" }
-    ]
-  }
-];
-
-function getDesktopMatchData(P, code, next) {
-  return {
-    code,
-    next,
-    home: P[code]?.home || { name: "In attesa" },
-    away: P[code]?.away || { name: "In attesa" },
-    winnerSide: getMatchWinnerSide(code)
-  };
-}
-
-function createDesktopTeam(team, side, isWinner) {
-  const cleanName = stripSeed(team?.name || "In attesa");
-  const placeholder = isPlaceholderTeam(team);
-  const logo = `img/${cleanName}.png`;
-
-  return `
-    <div class="desktop-team ${side} ${isWinner ? "is-winner" : ""} ${placeholder ? "is-placeholder" : ""}">
-      ${team?.seed ? `<span class="desktop-seed">#${team.seed}</span>` : ""}
-      <div class="desktop-logo-ring">
-        ${!placeholder ? `<img src="${logo}" alt="${cleanName}" onerror="this.style.display='none'">` : `<span>TBD</span>`}
-      </div>
-      <div class="desktop-team-name">${placeholder ? "Da definire" : cleanName}</div>
-    </div>
-  `;
-}
-
-function createDesktopMatchCard(match) {
-  const homeWinner = match.winnerSide === "home";
-  const awayWinner = match.winnerSide === "away";
-  const hasWinner = !!match.winnerSide;
-
-  return `
-    <article class="desktop-reboot-match ${hasWinner ? "has-winner" : ""}" data-reboot-match="${match.code}">
-      <div class="desktop-match-bar">
-        <span>${match.code}</span>
-        <span>${hasWinner ? "Qualificata" : "In attesa"}</span>
-      </div>
-
-      <div class="desktop-match-body">
-        ${createDesktopTeam(match.home, "home", homeWinner)}
-        <div class="desktop-vs-core">
-          <span>VS</span>
-        </div>
-        ${createDesktopTeam(match.away, "away", awayWinner)}
-      </div>
-
-      <div class="desktop-match-route">Vincitore <strong>→</strong> ${match.next}</div>
-    </article>
-  `;
-}
-
-function createDesktopStage(stage, P) {
-  const cards = stage.matches
-    .map(item => createDesktopMatchCard(getDesktopMatchData(P, item.code, item.next)))
-    .join("");
-
-  return `
-    <section class="desktop-stage desktop-stage-${stage.key}">
-      <div class="desktop-stage-head">
-        <h2>${stage.title}</h2>
-        <p>${stage.subtitle}</p>
-      </div>
-      <div class="desktop-stage-stack">${cards}</div>
-    </section>
-  `;
-}
-
-function createDesktopFinalPanel(P) {
-  const finalMatch = getDesktopMatchData(P, "F", "Campione");
-  const finalPick = PICKS.F;
-  const winnerSide = finalPick && truthy(finalPick.home) !== truthy(finalPick.away)
-    ? (truthy(finalPick.home) ? "home" : "away")
-    : null;
-  const champ = winnerSide ? finalMatch[winnerSide]?.name : null;
-  const cleanChamp = champ ? stripSeed(champ) : "";
-
-  return `
-    <section class="desktop-final-temple">
-      <div class="desktop-stage-head final-head">
-        <h2>Finale</h2>
-        <p>La gloria è in palio</p>
-      </div>
-
-      <div class="desktop-final-card">
-        <div class="desktop-final-slots">
-          ${createDesktopFinalSlot(finalMatch.home, "Vincente S1", finalMatch.winnerSide === "home")}
-          ${createDesktopFinalSlot(finalMatch.away, "Vincente S2", finalMatch.winnerSide === "away")}
-        </div>
-
-        <div class="desktop-trophy-stage">
-          <div class="desktop-trophy-light"></div>
-          <img src="img/Playoffcup.png" alt="Coppa Playoff" class="desktop-trophy-img">
-          ${cleanChamp ? `
-            <div class="desktop-champion-card">
-              <img src="img/${cleanChamp}.png" alt="${cleanChamp}" onerror="this.style.display='none'">
-              <span>Campione dei Playoff</span>
-              <strong>${cleanChamp}</strong>
-            </div>
-          ` : `
-            <div class="desktop-trophy-caption">
-              <span>Road to the Crown</span>
-              <strong>Il trono attende</strong>
-            </div>
-          `}
-        </div>
-      </div>
-    </section>
-  `;
-}
-
-function createDesktopFinalSlot(team, fallback, isWinner) {
-  const cleanName = stripSeed(team?.name || fallback);
-  const placeholder = isPlaceholderTeam(team);
-  const label = placeholder ? fallback : cleanName;
-  const logo = `img/${cleanName}.png`;
-
-  return `
-    <div class="desktop-final-slot ${isWinner ? "is-winner" : ""} ${placeholder ? "is-placeholder" : ""}">
-      <div class="desktop-final-mark">
-        ${!placeholder ? `<img src="${logo}" alt="${cleanName}" onerror="this.style.display='none'">` : `<span>?</span>`}
-      </div>
-      <div>
-        <strong>${label}</strong>
-        <span>${isWinner ? "Qualificata" : "In attesa"}</span>
-      </div>
-    </div>
-  `;
-}
-
-function renderDesktopReboot(P) {
-  const board = document.getElementById("desktop-reboot-board");
-  if (!board || !P || !Object.keys(P).length) return;
-
-  board.innerHTML = `
-    <div class="desktop-reboot-grid">
-      ${DESKTOP_REBOOT_STAGES.map(stage => createDesktopStage(stage, P)).join("")}
-      ${createDesktopFinalPanel(P)}
-    </div>
-  `;
 }
 
 
@@ -867,3 +686,129 @@ fetch(URL_STATS_MASTER + "&nocache=" + Date.now(), { cache: "no-store" })
     });
   })
   .catch(err => console.error("Errore nel caricamento classifica playoff:", err));
+
+
+/* =========================================
+   DESKTOP CROWN VIEW
+   - Nuova vista desktop logo-only.
+   - Non modifica la mobile.
+   ========================================= */
+
+const CROWN_ROUNDS = {
+  wildcard: [
+    { code: "WC1" },
+    { code: "WC3" },
+    { code: "WC2" },
+    { code: "WC4" }
+  ],
+  quarti: [
+    { code: "Q1" },
+    { code: "Q4" },
+    { code: "Q2" },
+    { code: "Q3" }
+  ],
+  semifinali: [
+    { code: "S1" },
+    { code: "S2" }
+  ]
+};
+
+function escapeHTML(value) {
+  return String(value ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
+function crownIsPlaceholder(team) {
+  return isPlaceholderTeam(team);
+}
+
+function crownTeamSlot(team, side, isWinner = false) {
+  const cleanName = stripSeed(team?.name || "TBD");
+  const placeholder = crownIsPlaceholder(team);
+  const seed = team?.seed || "";
+  const logo = `img/${cleanName}.png`;
+
+  if (placeholder) {
+    return `
+      <div class="crown-team crown-team-${side} crown-team-placeholder ${isWinner ? "is-winner" : ""}">
+        <div class="crown-placeholder" aria-label="${escapeHTML(cleanName)}">TBD</div>
+      </div>
+    `;
+  }
+
+  return `
+    <div class="crown-team crown-team-${side} ${isWinner ? "is-winner" : ""}">
+      ${seed ? `<span class="crown-seed">#${escapeHTML(seed)}</span>` : ""}
+      <div class="crown-team-logo">
+        <img src="${escapeHTML(logo)}" alt="${escapeHTML(cleanName)}" onerror="this.style.display='none'">
+      </div>
+    </div>
+  `;
+}
+
+function crownMatchCard(P, code) {
+  const home = P[code]?.home || { name: "TBD" };
+  const away = P[code]?.away || { name: "TBD" };
+  const winnerSide = getMatchWinnerSide(code);
+  const hasWinner = !!winnerSide;
+
+  return `
+    <article class="crown-match ${hasWinner ? "is-decided" : ""}" data-crown-match="${escapeHTML(code)}">
+      <div class="crown-match-code">${escapeHTML(code)}</div>
+      <div class="crown-match-inner">
+        ${crownTeamSlot(home, "home", winnerSide === "home")}
+        <div class="crown-vs">VS</div>
+        ${crownTeamSlot(away, "away", winnerSide === "away")}
+      </div>
+    </article>
+  `;
+}
+
+function crownFinalSlot(team, label, side, isWinner = false) {
+  const cleanName = stripSeed(team?.name || label);
+  const placeholder = crownIsPlaceholder(team);
+
+  return `
+    <div class="crown-final-slot crown-final-slot-${side} ${isWinner ? "is-winner" : ""}">
+      <div class="crown-final-slot-label">${escapeHTML(label)}</div>
+      ${
+        placeholder
+          ? `<div class="crown-placeholder" aria-label="${escapeHTML(cleanName)}">TBD</div>`
+          : `<div class="crown-team-logo"><img src="img/${escapeHTML(cleanName)}.png" alt="${escapeHTML(cleanName)}" onerror="this.style.display='none'"></div>`
+      }
+    </div>
+  `;
+}
+
+function renderDesktopCrown(P) {
+  const root = document.getElementById("playoff-desktop-crown");
+  if (!root || !P || !Object.keys(P).length) return;
+
+  const wildcard = document.getElementById("crown-wildcard");
+  const quarti = document.getElementById("crown-quarti");
+  const semifinali = document.getElementById("crown-semifinali");
+  const finalSlots = document.getElementById("crown-final-slots");
+
+  if (wildcard) {
+    wildcard.innerHTML = CROWN_ROUNDS.wildcard.map(item => crownMatchCard(P, item.code)).join("");
+  }
+
+  if (quarti) {
+    quarti.innerHTML = CROWN_ROUNDS.quarti.map(item => crownMatchCard(P, item.code)).join("");
+  }
+
+  if (semifinali) {
+    semifinali.innerHTML = CROWN_ROUNDS.semifinali.map(item => crownMatchCard(P, item.code)).join("");
+  }
+
+  if (finalSlots) {
+    const winnerSide = getMatchWinnerSide("F");
+    finalSlots.innerHTML =
+      crownFinalSlot(P.F?.home || { name: "Vincente S1" }, "Vincente S1", "home", winnerSide === "home") +
+      crownFinalSlot(P.F?.away || { name: "Vincente S2" }, "Vincente S2", "away", winnerSide === "away");
+  }
+}

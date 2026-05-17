@@ -6,7 +6,7 @@
   <title>Playoff - Lega degli Eroi</title>
   <link rel="stylesheet" href="navbar.css">
   <link rel="stylesheet" href="playoff.css" />
- <script src="playoff.js?v=5" defer></script>
+ <script src="playoff.js?v=10" defer></script>
 </head>
 <body>
   <nav class="site-nav">
@@ -99,16 +99,64 @@
   </section>
 
 
-  <!-- Desktop Reboot View -->
-  <section class="playoff-desktop-reboot" id="playoff-desktop-reboot" aria-label="Playoff desktop">
-    <div class="desktop-playoff-shell">
-      <div class="desktop-reboot-header">
-        <div class="desktop-kicker">Road to the Crown</div>
-        <h1>Playoff Lega degli Eroi</h1>
-        <p>Il tabellone diventa arena: ogni turno stringe il sentiero verso la coppa.</p>
-      </div>
 
-      <div id="desktop-reboot-board" class="desktop-reboot-board" aria-live="polite"></div>
+  <!-- Desktop Crown View -->
+  <section class="playoff-desktop-crown" id="playoff-desktop-crown" aria-label="Playoff desktop">
+    <div class="crown-page-head">
+      <div class="crown-eyebrow">Lega degli Eroi</div>
+      <h1>Playoff</h1>
+      <div class="crown-road-badge">Road to the Crown</div>
+    </div>
+
+    <div class="crown-bracket-board">
+      <section class="crown-round crown-round-wildcard">
+        <div class="crown-round-title">
+          <span></span>
+          <h2>Wildcard</h2>
+          <span></span>
+        </div>
+        <div class="crown-round-stack" id="crown-wildcard"></div>
+      </section>
+
+      <section class="crown-round crown-round-quarti">
+        <div class="crown-round-title">
+          <span></span>
+          <h2>Quarti</h2>
+          <span></span>
+        </div>
+        <div class="crown-round-stack" id="crown-quarti"></div>
+      </section>
+
+      <section class="crown-round crown-round-semifinali">
+        <div class="crown-round-title">
+          <span></span>
+          <h2>Semifinali</h2>
+          <span></span>
+        </div>
+        <div class="crown-round-stack crown-round-stack-semis" id="crown-semifinali"></div>
+      </section>
+
+      <aside class="crown-final-stage" id="crown-final-stage">
+        <div class="crown-round-title crown-final-title">
+          <span></span>
+          <h2>Finale</h2>
+          <span></span>
+        </div>
+
+        <div class="crown-final-card">
+          <div class="crown-final-slots" id="crown-final-slots"></div>
+
+          <div class="crown-trophy-wrap">
+            <div class="crown-trophy-glow"></div>
+            <img src="img/Playoffcup.png" alt="Coppa Playoff" class="crown-trophy-img">
+          </div>
+
+          <div class="crown-final-tagline">
+            <span>La gloria è in palio</span>
+            <strong>Il trono attende</strong>
+          </div>
+        </div>
+      </aside>
     </div>
   </section>
 
