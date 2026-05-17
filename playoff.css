@@ -495,1020 +495,273 @@ body{
   .team-name{ font-size: .93rem; }
 }
 
+
+
 /* =========================================================
-   PLAYOFF DESKTOP V3 - FULL WIDTH LOGO BRACKET
+   DESKTOP CLEAN - ORIGINALE SOLO LOGHI
    ---------------------------------------------------------
-   Solo CSS: non tocca playoff.js né i data-match.
-   Trasforma il desktop in flusso unico:
-   Wildcard -> Quarti -> Semifinale -> Finale.
-   Nomi nascosti fino alla finale.
+   Riparte dalla struttura originale: nessun nuovo bracket,
+   nessun layout sperimentale. Su desktop nasconde i nomi
+   e compatta le card mantenendo i colori squadra.
+   La mobile resta gestita dai blocchi @media max-width.
    ========================================================= */
-@media (min-width: 1024px) {
+@media (min-width: 1024px){
   :root{
-    --po-logo-card-w: clamp(210px, 14.2vw, 270px);
-    --po-logo-card-h: clamp(72px, 5.2vw, 92px);
-    --po-logo-size: clamp(52px, 3.8vw, 68px);
-    --po-col-gap: clamp(34px, 4vw, 72px);
-    --po-row-gap: clamp(64px, 7vh, 105px);
-    --po-final-w: clamp(360px, 25vw, 470px);
-    --po-connector: clamp(18px, 1.8vw, 34px);
+    --card-w: clamp(116px, 7.3vw, 138px);
+    --team-card-h: clamp(58px, 4vw, 70px);
+    --team-logo: clamp(42px, 3vw, 52px);
+    --logo-slab: clamp(58px, 3.8vw, 70px);
+    --pair-gap: 12px;
+    --pair-margin: clamp(52px, 7vh, 88px);
+    --col-gap: clamp(16px, 1.65vw, 28px);
+    --semi-shift-left: 18px;
+    --semi-shift-right: 18px;
   }
 
-  body{ overflow-x: hidden; }
+  body{
+    overflow-x: hidden;
+  }
 
   .hero-playoff{
-    padding: 20px 20px 2px;
+    padding: 20px 16px 4px;
   }
 
   .titolo-pagina{
-    font-size: clamp(2.35rem, 3.65vw, 4.05rem);
+    font-size: clamp(2rem, 3.1vw, 3.3rem);
+    line-height: .95;
   }
 
   .sottotitolo-pagina{
-    margin-top: 5px;
-    font-size: .98rem;
+    margin-top: 7px;
+    font-size: .94rem;
   }
 
   .playoff-intro{
     justify-content: center;
-    margin: 5px auto 2px;
+    margin: 8px auto 4px;
   }
 
   .intro-chip{
-    padding: 7px 17px;
-    font-size: .94rem;
+    padding: 8px 16px;
+    font-size: .9rem;
   }
 
   .bracket-wrap{
-    width: 100%;
     overflow: hidden;
-    padding: 8px clamp(18px, 2.2vw, 42px) 22px;
+    padding: 12px clamp(10px, 1.2vw, 22px) 24px;
   }
 
   .bracket{
-    width: min(1660px, 100%);
+    width: min(100%, 1720px);
     min-width: 0;
     margin: 0 auto;
-    padding: 18px 0 28px;
-    display: grid;
-    grid-template-columns: var(--po-logo-card-w) var(--po-logo-card-w) var(--po-logo-card-w) var(--po-final-w);
-    grid-template-rows: auto auto;
-    column-gap: var(--po-col-gap);
-    row-gap: var(--po-row-gap);
-    align-items: start;
+    padding: 14px 0 24px;
+    gap: var(--col-gap);
     justify-content: center;
-  }
-
-  /* Flusso unico: Wildcard -> Quarti -> Semifinale -> Finale */
-  .bracket > .blocco-colonna:nth-of-type(1){ grid-column: 1; grid-row: 1; }
-  .bracket > .blocco-colonna:nth-of-type(7){ grid-column: 1; grid-row: 2; }
-  .bracket > .blocco-colonna:nth-of-type(2){ grid-column: 2; grid-row: 1; }
-  .bracket > .blocco-colonna:nth-of-type(6){ grid-column: 2; grid-row: 2; }
-  .bracket > .blocco-colonna:nth-of-type(3){ grid-column: 3; grid-row: 1; }
-  .bracket > .blocco-colonna:nth-of-type(5){ grid-column: 3; grid-row: 2; }
-  .bracket > .blocco-colonna:nth-of-type(4){ grid-column: 4; grid-row: 1 / span 2; align-self: stretch; }
-
-  /* Un solo titolo per ogni colonna */
-  .bracket > .blocco-colonna:nth-of-type(7) h2,
-  .bracket > .blocco-colonna:nth-of-type(6) h2,
-  .bracket > .blocco-colonna:nth-of-type(5) h2{
-    display: none;
-  }
-
-  .blocco-colonna{
-    width: 100%;
-    align-items: stretch;
+    align-items: flex-start;
   }
 
   .blocco-colonna h2{
-    margin: 0 0 12px;
-    text-align: center;
-    font-size: 1.04rem;
+    margin-bottom: 13px;
+    font-size: clamp(.92rem, 1.25vw, 1.16rem);
+    letter-spacing: .5px;
+    text-transform: uppercase;
   }
 
-  .colonna,
-  .col--spread,
-  .col--center,
-  .semifinale-sx,
-  .semifinale-dx{
-    width: 100%;
-    height: auto !important;
-    min-height: 0 !important;
-    justify-content: flex-start !important;
-    padding-top: 0 !important;
-    padding-bottom: 0 !important;
-    transform: none !important;
+  .colonna{
+    gap: var(--pair-margin);
   }
 
-  .colonna{ gap: 13px; }
+  .match-pair{
+    row-gap: var(--pair-gap);
+  }
 
-  /* Il JS trasforma i quarti in .pair-offset: stessa resa delle WC */
-  .match-pair:not(.finale-pair),
-  .pair-offset:not(.finale-pair){
-    width: 100%;
-    min-height: var(--po-logo-card-h);
-    display: grid !important;
-    grid-template-columns: 1fr 1fr !important;
-    grid-template-rows: 1fr !important;
-    row-gap: 0 !important;
-    position: relative;
-    border-radius: 18px;
+  .match{
+    width: var(--card-w);
+    min-width: var(--card-w);
+    max-width: var(--card-w);
+    min-height: var(--team-card-h);
+    height: var(--team-card-h);
+    grid-template-columns: var(--logo-slab) 1fr;
+    border-radius: 15px;
+    border: 1px solid rgba(255,255,255,.16);
+    background: linear-gradient(180deg, rgba(248,251,255,.98), rgba(237,244,255,.96));
+    box-shadow:
+      0 12px 22px rgba(0,0,0,.24),
+      inset 0 1px 0 rgba(255,255,255,.70);
+    overflow: hidden;
+  }
+
+  .match::before{
+    width: var(--logo-slab);
     background:
-      radial-gradient(circle at 50% 0%, rgba(255,255,255,.16), transparent 55%),
-      linear-gradient(180deg, rgba(13,57,116,.90), rgba(5,29,66,.90));
-    border: 1px solid rgba(214,235,255,.30);
-    box-shadow: 0 13px 24px rgba(0,0,0,.24), inset 0 1px 0 rgba(255,255,255,.12);
-    overflow: visible;
+      radial-gradient(circle at 38% 22%, rgba(255,255,255,.22), transparent 42%),
+      linear-gradient(180deg,
+        color-mix(in srgb, var(--team-color) 92%, #ffffff 8%),
+        color-mix(in srgb, var(--team-color) 72%, #000000 28%)
+      );
   }
 
-  .match-pair:not(.finale-pair)::after,
-  .pair-offset:not(.finale-pair)::after{
-    content: "VS";
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
-    z-index: 5;
-    color: rgba(255,255,255,.94);
-    font-size: .82rem;
-    font-weight: 900;
-    letter-spacing: .8px;
-    text-shadow: 0 2px 8px rgba(0,0,0,.50);
-    pointer-events: none;
+  .squadra.orizzontale img{
+    width: var(--team-logo);
+    height: var(--team-logo);
+    padding: 4px;
+    background: rgba(255,255,255,.94);
+    border-radius: 50%;
+    box-shadow: 0 6px 12px rgba(0,0,0,.24);
   }
 
-  .match-pair:not(.finale-pair)::before,
-  .pair-offset:not(.finale-pair)::before{
-    content: "";
-    position: absolute;
-    left: 50%;
-    top: 12px;
-    bottom: 12px;
-    width: 1px;
-    background: linear-gradient(180deg, transparent, rgba(255,211,107,.48), transparent);
-    opacity: .9;
-    pointer-events: none;
+  .team-main{
+    justify-content: center;
+    padding: 0 8px;
   }
 
-  .match-pair:not(.finale-pair) .match,
-  .pair-offset:not(.finale-pair) .match{
-    width: auto !important;
-    min-width: 0 !important;
-    max-width: none !important;
-    min-height: var(--po-logo-card-h) !important;
-    height: var(--po-logo-card-h) !important;
-    display: grid !important;
-    grid-template-columns: 1fr !important;
-    place-items: center;
-    background: transparent !important;
-    border: 0 !important;
-    border-radius: 0 !important;
-    box-shadow: none !important;
-    overflow: visible !important;
-    padding: 0 !important;
-    color: #ffffff;
+  .team-text{
+    align-items: center;
   }
 
-  .match-pair:not(.finale-pair) .match:hover,
-  .pair-offset:not(.finale-pair) .match:hover{
-    transform: none;
-    box-shadow: none;
-  }
-
-  .match-pair:not(.finale-pair) .match::before,
-  .pair-offset:not(.finale-pair) .match::before{
+  /* Nomi tolti: è l'unica vera modifica concettuale */
+  .team-name,
+  .team-status{
     display: none !important;
   }
 
-  .match-pair:not(.finale-pair) .squadra.orizzontale,
-  .pair-offset:not(.finale-pair) .squadra.orizzontale{
-    display: grid !important;
-    grid-template-columns: 1fr !important;
-    place-items: center;
-    width: 100%;
-    height: 100%;
-    position: relative;
-  }
-
-  .match-pair:not(.finale-pair) .team-logo-wrap,
-  .pair-offset:not(.finale-pair) .team-logo-wrap{
-    grid-column: 1 !important;
-    width: var(--po-logo-size);
-    height: var(--po-logo-size);
-    border-radius: 50%;
-    background:
-      radial-gradient(circle at 34% 28%, rgba(255,255,255,.98), rgba(255,255,255,.84) 68%, rgba(214,235,255,.78));
-    border: 1px solid rgba(255,255,255,.72);
-    box-shadow: 0 8px 16px rgba(0,0,0,.25), 0 0 0 3px rgba(255,255,255,.06);
-    position: relative;
-    z-index: 3;
-  }
-
-  .match-pair:not(.finale-pair) .squadra.orizzontale img,
-  .pair-offset:not(.finale-pair) .squadra.orizzontale img{
-    width: calc(var(--po-logo-size) - 8px) !important;
-    height: calc(var(--po-logo-size) - 8px) !important;
-    padding: 0 !important;
-    background: transparent !important;
-    border-radius: 50%;
-  }
-
-  .match-pair:not(.finale-pair) .team-logo-wrap:empty::after,
-  .pair-offset:not(.finale-pair) .team-logo-wrap:empty::after{
-    content: "";
-    width: 22px;
-    height: 22px;
-    border-radius: 50%;
-    border: 2px solid rgba(255,255,255,.30);
-    background: rgba(255,255,255,.08);
-    box-shadow: inset 0 1px 0 rgba(255,255,255,.18);
-  }
-
-  .match-pair:not(.finale-pair) .team-main,
-  .pair-offset:not(.finale-pair) .team-main{
-    grid-column: 1 !important;
+  .seed-badge{
     position: absolute;
-    inset: 0;
-    display: block !important;
-    padding: 0 !important;
-    pointer-events: none;
-  }
-
-  .match-pair:not(.finale-pair) .team-text,
-  .pair-offset:not(.finale-pair) .team-text{
-    display: contents !important;
-  }
-
-  .match-pair:not(.finale-pair) .seed-badge,
-  .pair-offset:not(.finale-pair) .seed-badge{
-    position: absolute;
-    top: 7px;
     left: 7px;
+    top: 6px;
     min-height: 20px;
-    padding: 1px 7px;
+    padding: 1px 7px 2px;
     font-size: .68rem;
-    z-index: 6;
+    background: linear-gradient(180deg, #0d5ba8, #073567);
+    border: 1px solid rgba(255,255,255,.20);
+    box-shadow: 0 5px 10px rgba(0,0,0,.22);
+    z-index: 4;
   }
 
-  .match-pair:not(.finale-pair) .match:nth-child(2) .seed-badge,
-  .pair-offset:not(.finale-pair) .match:nth-child(2) .seed-badge{
-    left: auto;
-    right: 7px;
+  .team-flag{
+    min-width: 28px;
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    font-size: .72rem;
+    color: #06254c;
+    background: rgba(3,37,76,.07);
   }
 
-  .match-pair:not(.finale-pair) .team-name,
-  .match-pair:not(.finale-pair) .team-status,
-  .match-pair:not(.finale-pair) .team-flag,
-  .pair-offset:not(.finale-pair) .team-name,
-  .pair-offset:not(.finale-pair) .team-status,
-  .pair-offset:not(.finale-pair) .team-flag{
-    position: absolute !important;
-    width: 1px !important;
-    height: 1px !important;
-    padding: 0 !important;
-    margin: -1px !important;
-    overflow: hidden !important;
-    clip: rect(0, 0, 0, 0) !important;
-    white-space: nowrap !important;
-    border: 0 !important;
-  }
-
-  .match-pair:not(.finale-pair) .match.vincente,
-  .pair-offset:not(.finale-pair) .match.vincente{
-    animation: none !important;
-  }
-
-  .match-pair:not(.finale-pair) .match.vincente .team-logo-wrap,
-  .pair-offset:not(.finale-pair) .match.vincente .team-logo-wrap{
-    border-color: rgba(255,211,107,.95);
-    box-shadow:
-      0 8px 16px rgba(0,0,0,.25),
-      0 0 0 3px rgba(255,211,107,.30),
-      0 0 18px rgba(255,211,107,.58);
-  }
-
-  /* Connettori orizzontali tra i round */
-  .wc-sx .match-pair::after,
-  .wc-dx .match-pair::after,
-  .q-sx .pair-offset::after,
-  .q-dx .pair-offset::after,
-  .s-sx .match-pair::after,
-  .s-dx .match-pair::after{
-    content: "";
-    position: absolute;
-    right: calc(-1 * var(--po-col-gap) / 2 - 1px);
-    top: 50%;
-    width: calc(var(--po-col-gap) / 2 + 2px);
-    height: 2px;
-    background: linear-gradient(90deg, rgba(214,235,255,.78), rgba(255,211,107,.95));
-    transform: translateY(-50%);
-    box-shadow: 0 0 12px rgba(255,211,107,.34);
-    z-index: 1;
-  }
-
-  /* Ripristina il VS dentro le card dopo la regola dei connettori */
-  .match-pair:not(.finale-pair)::after,
-  .pair-offset:not(.finale-pair)::after{
+  /* VS discreto fra le due card, mantenendo la struttura originale */
+  .match-pair::after,
+  .pair-offset::after{
     content: "VS";
-    right: auto;
-    width: auto;
-    height: auto;
-    background: none;
-    box-shadow: none;
+    position: absolute;
     left: 50%;
     top: 50%;
     transform: translate(-50%, -50%);
-    z-index: 5;
-    color: rgba(255,255,255,.94);
-    font-size: .82rem;
-    font-weight: 900;
-    letter-spacing: .8px;
-    text-shadow: 0 2px 8px rgba(0,0,0,.50);
-  }
-
-  /* Linee di collegamento esterne: usiamo ::before sui blocchi, così non rubiamo il VS */
-  .bracket > .blocco-colonna:nth-of-type(1)::after,
-  .bracket > .blocco-colonna:nth-of-type(7)::after,
-  .bracket > .blocco-colonna:nth-of-type(2)::after,
-  .bracket > .blocco-colonna:nth-of-type(6)::after,
-  .bracket > .blocco-colonna:nth-of-type(3)::after,
-  .bracket > .blocco-colonna:nth-of-type(5)::after{
-    content:"";
-    position:absolute;
-    right: calc(-1 * var(--po-col-gap) + 8px);
-    top: calc(50% + 14px);
-    width: calc(var(--po-col-gap) - 16px);
-    height: 2px;
-    background: linear-gradient(90deg, rgba(214,235,255,.76), rgba(255,211,107,.95));
-    box-shadow: 0 0 12px rgba(255,211,107,.30);
+    z-index: 20;
+    min-width: 36px;
+    height: 24px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 999px;
+    color: #ffffff;
+    font-size: .72rem;
+    font-weight: 950;
+    letter-spacing: .35px;
+    background: linear-gradient(180deg, rgba(17,73,139,.96), rgba(4,26,65,.98));
+    border: 1px solid rgba(255,211,107,.35);
+    box-shadow:
+      0 5px 12px rgba(0,0,0,.30),
+      inset 0 1px 0 rgba(255,255,255,.16);
     pointer-events: none;
-    z-index: 0;
   }
 
-  .bracket > .blocco-colonna:nth-of-type(3)::after,
-  .bracket > .blocco-colonna:nth-of-type(5)::after{
-    right: calc(-1 * var(--po-col-gap) + 2px);
-    width: calc(var(--po-col-gap) + 10px);
+  .pair-offset{
+    position: relative;
   }
 
-  /* Finale */
+  .match.vincente{
+    border: 2px solid rgba(255,211,107,.92);
+    background: linear-gradient(180deg, #fffdf3, #fff3c8);
+    box-shadow:
+      0 0 0 2px rgba(255,211,107,.24),
+      0 14px 24px rgba(0,0,0,.28),
+      0 0 20px rgba(255,211,107,.28);
+  }
+
+  .match.vincente .team-flag{
+    background: linear-gradient(180deg, #fff2b8, #ffd36b);
+    color: #4d3300;
+  }
+
+  /* Finale centrale: resta originale, solo più compatta e logo-only */
   .blocco-finale{
-    min-width: 0 !important;
-    width: 100%;
+    min-width: clamp(250px, 18vw, 340px);
   }
 
   .finale-stage{
-    width: 100%;
-    min-height: 100%;
-    padding: 16px 18px 18px;
-    border-radius: 26px;
-    border-color: rgba(255,211,107,.30);
+    padding: 14px 15px 18px;
+    border-radius: 23px;
+    background:
+      radial-gradient(circle at 50% 45%, rgba(255,211,107,.18), transparent 35%),
+      linear-gradient(180deg, rgba(12,55,111,.80), rgba(3,20,52,.88));
+    border: 1px solid rgba(255,211,107,.22);
   }
 
   .finale-pair{
-    width: 100%;
-    display: grid !important;
-    grid-template-columns: 1fr !important;
-    grid-template-rows: repeat(2, minmax(76px, auto));
     row-gap: 12px !important;
   }
 
   .match.finale{
-    width: 100% !important;
-    min-width: 0 !important;
-    max-width: none !important;
-    min-height: 76px;
-    grid-template-columns: 76px 1fr;
+    width: clamp(220px, 16vw, 300px);
+    min-width: clamp(220px, 16vw, 300px);
+    max-width: clamp(220px, 16vw, 300px);
+    min-height: 58px;
+    height: 58px;
   }
 
-  .match.finale::before{ width: 76px; }
-  .match.finale .team-main{ padding: 9px 13px; }
-  .match.finale .team-name{ display: -webkit-box; font-size: 1rem; }
-  .match.finale .team-status{ display: inline; }
+  .match.finale .team-main{
+    justify-content: flex-end;
+    padding-right: 16px;
+  }
 
   .match.finale .team-flag{
     position: static !important;
-    width: auto !important;
-    height: 32px !important;
-    margin: 0 !important;
-    overflow: visible !important;
     clip: auto !important;
+    overflow: visible !important;
     white-space: normal !important;
   }
 
-  .coppa-vittoria{ margin-top: 12px; }
-  .coppa-img{ width: clamp(200px, 15vw, 270px) !important; }
+  .coppa-img{
+    width: clamp(170px, 13vw, 245px) !important;
+    margin-top: 10px;
+    filter:
+      drop-shadow(0 14px 20px rgba(0,0,0,.34))
+      drop-shadow(0 0 22px rgba(255,211,107,.18));
+  }
 }
 
-@media (min-width: 1024px) and (max-height: 850px) {
+@media (min-width: 1024px) and (max-height: 850px){
   :root{
-    --po-logo-card-w: clamp(196px, 13vw, 245px);
-    --po-logo-card-h: clamp(64px, 4.7vw, 80px);
-    --po-logo-size: clamp(46px, 3.4vw, 60px);
-    --po-col-gap: clamp(28px, 3.2vw, 58px);
-    --po-row-gap: clamp(42px, 5.5vh, 76px);
-    --po-final-w: clamp(330px, 23vw, 420px);
+    --card-w: clamp(106px, 6.8vw, 126px);
+    --team-card-h: clamp(52px, 3.55vw, 62px);
+    --team-logo: clamp(38px, 2.65vw, 46px);
+    --logo-slab: clamp(52px, 3.35vw, 62px);
+    --pair-gap: 10px;
+    --pair-margin: clamp(38px, 5.2vh, 58px);
+    --col-gap: clamp(12px, 1.25vw, 22px);
   }
 
   .hero-playoff{ padding-top: 12px; }
-  .titolo-pagina{ font-size: clamp(2rem, 3.1vw, 3.45rem); }
-  .sottotitolo-pagina{ font-size: .93rem; }
+  .titolo-pagina{ font-size: clamp(1.75rem, 2.7vw, 2.8rem); }
+  .sottotitolo-pagina{ font-size: .86rem; margin-top: 4px; }
   .intro-chip{ padding: 6px 14px; }
-  .bracket{ padding-top: 10px; padding-bottom: 16px; }
-  .blocco-colonna h2{ margin-bottom: 8px; }
-  .colonna{ gap: 11px; }
-  .coppa-img{ width: clamp(175px, 13vw, 225px) !important; }
+  .bracket{ padding-top: 8px; }
+  .blocco-colonna h2{ margin-bottom: 9px; }
+  .match-pair::after,
+  .pair-offset::after{ height: 22px; min-width: 32px; font-size: .66rem; }
+  .coppa-img{ width: clamp(145px, 11vw, 200px) !important; }
 }
-
-/* =========================================================
-   PLAYOFF V3.1 - CONNETTORI + ALLINEAMENTO FINALE
-   ========================================================= */
-
-@media (min-width: 1024px){
-
-  :root{
-    --po-col-gap: 46px;
-  }
-
-  .bracket{
-    width: min(1680px, calc(100vw - 42px));
-    grid-template-columns: 1.05fr 1.05fr 1fr 1.55fr;
-    column-gap: var(--po-col-gap);
-    align-items: start;
-  }
-
-  /* Finale un filo più centrata rispetto al bracket */
-  .bracket > .blocco-colonna:nth-of-type(4){
-    transform: translateY(8px);
-  }
-
-  .finale-stage{
-    min-height: 600px;
-  }
-
-  .coppa-img{
-    width: 250px !important;
-    margin-top: 14px;
-  }
-
-  /* Card più distese senza tornare enormi */
-  .match-pair:not(.finale-pair),
-  .pair-offset:not(.finale-pair){
-    min-height: 104px;
-  }
-
-  .match-pair:not(.finale-pair) .match,
-  .pair-offset:not(.finale-pair) .match{
-    min-height: 104px !important;
-    height: 104px !important;
-  }
-
-  .match-pair:not(.finale-pair) .team-logo-wrap,
-  .pair-offset:not(.finale-pair) .team-logo-wrap{
-    width: 62px;
-    height: 62px;
-  }
-
-  .match-pair:not(.finale-pair) .squadra.orizzontale img,
-  .pair-offset:not(.finale-pair) .squadra.orizzontale img{
-    width: 54px !important;
-    height: 54px !important;
-  }
-
-  /* Reset dei vecchi connettori piccoli */
-  .wc-sx .match-pair::after,
-  .wc-dx .match-pair::after,
-  .q-sx .pair-offset::after,
-  .q-dx .pair-offset::after,
-  .s-sx .match-pair::after,
-  .s-dx .match-pair::after{
-    display: none !important;
-  }
-
-  /* Linea in uscita da Wildcard verso Quarti */
-  .bracket > .blocco-colonna:nth-of-type(1) .match-pair::after,
-  .bracket > .blocco-colonna:nth-of-type(7) .match-pair::after{
-    content: "";
-    display: block !important;
-    position: absolute;
-    right: calc(-1 * var(--po-col-gap) + 8px);
-    top: 50%;
-    width: calc(var(--po-col-gap) - 16px);
-    height: 3px;
-    transform: translateY(-50%);
-    background: linear-gradient(90deg, rgba(255,255,255,.75), rgba(255,211,107,.95));
-    box-shadow: 0 0 12px rgba(255,211,107,.45);
-    border-radius: 999px;
-    z-index: 1;
-  }
-
-  /* Linea in uscita dai Quarti verso Semifinali */
-  .bracket > .blocco-colonna:nth-of-type(2) .pair-offset::after,
-  .bracket > .blocco-colonna:nth-of-type(6) .pair-offset::after{
-    content: "";
-    display: block !important;
-    position: absolute;
-    right: calc(-1 * var(--po-col-gap) + 8px);
-    top: 50%;
-    width: calc(var(--po-col-gap) - 16px);
-    height: 3px;
-    transform: translateY(-50%);
-    background: linear-gradient(90deg, rgba(255,255,255,.75), rgba(255,211,107,.95));
-    box-shadow: 0 0 12px rgba(255,211,107,.45);
-    border-radius: 999px;
-    z-index: 1;
-  }
-
-  /* Linea in uscita dalle Semifinali verso Finale */
-  .bracket > .blocco-colonna:nth-of-type(3) .match-pair::after,
-  .bracket > .blocco-colonna:nth-of-type(5) .match-pair::after{
-    content: "";
-    display: block !important;
-    position: absolute;
-    right: calc(-1 * var(--po-col-gap) + 8px);
-    top: 50%;
-    width: calc(var(--po-col-gap) - 16px);
-    height: 3px;
-    transform: translateY(-50%);
-    background: linear-gradient(90deg, rgba(255,255,255,.75), rgba(255,211,107,.95));
-    box-shadow: 0 0 12px rgba(255,211,107,.45);
-    border-radius: 999px;
-    z-index: 1;
-  }
-
-  /* Mini raccordo verticale elegante nelle colonne intermedie */
-  .bracket > .blocco-colonna:nth-of-type(2) .colonna::before,
-  .bracket > .blocco-colonna:nth-of-type(6) .colonna::before,
-  .bracket > .blocco-colonna:nth-of-type(3) .colonna::before,
-  .bracket > .blocco-colonna:nth-of-type(5) .colonna::before{
-    content: "";
-    position: absolute;
-    left: -24px;
-    top: 50%;
-    width: 2px;
-    height: 58%;
-    transform: translateY(-50%);
-    background: linear-gradient(
-      180deg,
-      transparent,
-      rgba(255,255,255,.55),
-      rgba(255,211,107,.85),
-      rgba(255,255,255,.55),
-      transparent
-    );
-    box-shadow: 0 0 10px rgba(255,211,107,.35);
-    border-radius: 999px;
-    pointer-events: none;
-  }
-
-  /* Finale più leggibile */
-  .match.finale{
-    min-height: 86px !important;
-  }
-
-  .finale-pair{
-    row-gap: 14px !important;
-  }
-}
-
-/* =========================================================
-   PLAYOFF V3.2 - SEMIFINALI CENTRATE TRA I QUARTI
-   ========================================================= */
-@media (min-width: 1024px){
-
-  :root{
-    --semi-center-offset: 78px;   /* quanto abbasso S1 / alzo S2 */
-    --semi-stem-h: 172px;         /* altezza del connettore verticale centrale */
-  }
-
-  /* S1 più giù, in mezzo tra Q1 e Q4 */
-  .bracket > .blocco-colonna:nth-of-type(3){
-    position: relative;
-    margin-top: var(--semi-center-offset);
-  }
-
-  /* S2 più su, in mezzo tra Q2 e Q3 */
-  .bracket > .blocco-colonna:nth-of-type(5){
-    position: relative;
-    margin-top: calc(-1 * var(--semi-center-offset));
-  }
-
-  /* spegne l’eventuale vecchio raccordo verticale delle semifinali */
-  .bracket > .blocco-colonna:nth-of-type(3) .colonna::before,
-  .bracket > .blocco-colonna:nth-of-type(5) .colonna::before{
-    display: none !important;
-  }
-
-  /* stelo verticale centrale tra i due quarti e la semifinale */
-  .bracket > .blocco-colonna:nth-of-type(3)::before,
-  .bracket > .blocco-colonna:nth-of-type(5)::before{
-    content: "";
-    position: absolute;
-    left: calc(-1 * var(--po-col-gap) / 2);
-    top: 50%;
-    transform: translateY(-50%);
-    width: 2px;
-    height: var(--semi-stem-h);
-    background: linear-gradient(
-      180deg,
-      transparent 0%,
-      rgba(255,255,255,.55) 18%,
-      rgba(255,211,107,.95) 50%,
-      rgba(255,255,255,.55) 82%,
-      transparent 100%
-    );
-    box-shadow: 0 0 10px rgba(255,211,107,.35);
-    border-radius: 999px;
-    pointer-events: none;
-  }
-
-  /* allunga le linee dai quarti fino allo stelo centrale */
-  .bracket > .blocco-colonna:nth-of-type(2) .pair-offset::after,
-  .bracket > .blocco-colonna:nth-of-type(6) .pair-offset::after{
-    right: calc(-1 * var(--po-col-gap) / 2 + 2px) !important;
-    width: calc(var(--po-col-gap) / 2 - 4px) !important;
-  }
-}
-
-/* =========================================================
-   PLAYOFF V3.3 - FIX SEMIFINALE 2 + RIPRISTINO VS
-   ========================================================= */
-@media (min-width: 1024px){
-
-  :root{
-    --semi-center-offset: 78px;
-    --semi-stem-h: 172px;
-  }
-
-  /* S1 corretta: scende */
-  .bracket > .blocco-colonna:nth-of-type(3){
-    position: relative;
-    margin-top: var(--semi-center-offset) !important;
-  }
-
-  /* S2 FIX: deve scendere anche lei, NON salire */
-  .bracket > .blocco-colonna:nth-of-type(5){
-    position: relative;
-    margin-top: var(--semi-center-offset) !important;
-  }
-
-  /* spegne il vecchio raccordo verticale sulle semifinali */
-  .bracket > .blocco-colonna:nth-of-type(3) .colonna::before,
-  .bracket > .blocco-colonna:nth-of-type(5) .colonna::before{
-    display: none !important;
-  }
-
-  /* stelo verticale centrale prima delle semifinali */
-  .bracket > .blocco-colonna:nth-of-type(3)::before,
-  .bracket > .blocco-colonna:nth-of-type(5)::before{
-    content: "";
-    position: absolute;
-    left: calc(-1 * var(--po-col-gap) / 2);
-    top: 50%;
-    transform: translateY(-50%);
-    width: 2px;
-    height: var(--semi-stem-h);
-    background: linear-gradient(
-      180deg,
-      transparent 0%,
-      rgba(255,255,255,.55) 18%,
-      rgba(255,211,107,.95) 50%,
-      rgba(255,255,255,.55) 82%,
-      transparent 100%
-    );
-    box-shadow: 0 0 10px rgba(255,211,107,.35);
-    border-radius: 999px;
-    pointer-events: none;
-  }
-
-  /* allunga le linee dai quarti verso lo stelo centrale */
-  .bracket > .blocco-colonna:nth-of-type(2) .pair-offset::after,
-  .bracket > .blocco-colonna:nth-of-type(6) .pair-offset::after{
-    right: calc(-1 * var(--po-col-gap) / 2 + 2px) !important;
-    width: calc(var(--po-col-gap) / 2 - 4px) !important;
-  }
-
-  /* =====================================================
-     RIPRISTINO "VS"
-     I connettori usano ::after del pair, quindi il VS
-     lo rimettiamo sul primo .match di ogni pair
-     ===================================================== */
-  .match-pair:not(.finale-pair) .match:first-child::after,
-  .pair-offset:not(.finale-pair) .match:first-child::after{
-    content: "VS";
-    position: absolute;
-    right: -13px;
-    top: 50%;
-    transform: translate(50%, -50%);
-    z-index: 10;
-    color: rgba(255,255,255,.95);
-    font-size: .72rem;
-    font-weight: 900;
-    letter-spacing: .7px;
-    text-shadow: 0 2px 8px rgba(0,0,0,.48);
-    pointer-events: none;
-  }
-
-  /* evita che il VS finisca troppo vicino ai bordi */
-  .match-pair:not(.finale-pair) .match:first-child,
-  .pair-offset:not(.finale-pair) .match:first-child{
-    position: relative;
-    overflow: visible !important;
-  }
-}
-
-/* =========================================================
-   PLAYOFF V3.4 - FIX SEMIFINALI + VS + HEADERS
-   ========================================================= */
-@media (min-width: 1024px){
-
-  :root{
-    --semi-top-offset: 56px;      /* S1 un po' più su */
-    --semi-bottom-offset: 74px;   /* S2 leggermente più giù */
-    --semi-stem-h: 168px;
-  }
-
-  /* =====================================================
-     1) NON spostare più l'intero blocco semifinale
-        altrimenti si abbassa anche il titolo h2
-     ===================================================== */
-  .bracket > .blocco-colonna:nth-of-type(3),
-  .bracket > .blocco-colonna:nth-of-type(5){
-    margin-top: 0 !important;
-    transform: none !important;
-  }
-
-  /* Titolo Semifinale riallineato agli altri */
-  .bracket > .blocco-colonna:nth-of-type(3) h2{
-    margin: 0 0 9px !important;
-  }
-
-  /* =====================================================
-     2) Spostiamo solo il CONTENUTO delle semifinali
-     ===================================================== */
-  .bracket > .blocco-colonna:nth-of-type(3) .colonna{
-    margin-top: var(--semi-top-offset) !important;
-    position: relative;
-  }
-
-  .bracket > .blocco-colonna:nth-of-type(5) .colonna{
-    margin-top: var(--semi-bottom-offset) !important;
-    position: relative;
-  }
-
-  /* Spegne eventuali vecchi steli applicati al blocco */
-  .bracket > .blocco-colonna:nth-of-type(3)::before,
-  .bracket > .blocco-colonna:nth-of-type(5)::before{
-    display: none !important;
-  }
-
-  /* Nuovo stelo verticale centrato sulla card semifinale */
-  .bracket > .blocco-colonna:nth-of-type(3) .colonna::before,
-  .bracket > .blocco-colonna:nth-of-type(5) .colonna::before{
-    content: "";
-    position: absolute;
-    left: calc(-1 * var(--po-col-gap) / 2);
-    top: 50%;
-    transform: translateY(-50%);
-    width: 2px;
-    height: var(--semi-stem-h);
-    background: linear-gradient(
-      180deg,
-      transparent 0%,
-      rgba(255,255,255,.55) 18%,
-      rgba(255,211,107,.95) 50%,
-      rgba(255,255,255,.55) 82%,
-      transparent 100%
-    );
-    box-shadow: 0 0 10px rgba(255,211,107,.35);
-    border-radius: 999px;
-    pointer-events: none;
-  }
-
-  /* =====================================================
-     3) Connettori quarti -> semifinale un po' più puliti
-     ===================================================== */
-  .bracket > .blocco-colonna:nth-of-type(2) .pair-offset::after,
-  .bracket > .blocco-colonna:nth-of-type(6) .pair-offset::after{
-    right: calc(-1 * var(--po-col-gap) / 2 + 8px) !important;
-    width: calc(var(--po-col-gap) / 2 - 14px) !important;
-    z-index: 0 !important;
-  }
-
-  .bracket > .blocco-colonna:nth-of-type(3) .match-pair::after,
-  .bracket > .blocco-colonna:nth-of-type(5) .match-pair::after{
-    right: calc(-1 * var(--po-col-gap) + 14px) !important;
-    width: calc(var(--po-col-gap) - 24px) !important;
-    z-index: 0 !important;
-  }
-
-  /* =====================================================
-     4) Ripristino VS pulito: sopra le linee, con mini pill
-     ===================================================== */
-  .match-pair:not(.finale-pair) .match:first-child,
-  .pair-offset:not(.finale-pair) .match:first-child{
-    position: relative;
-    overflow: visible !important;
-    z-index: 2;
-  }
-
-  .match-pair:not(.finale-pair) .match:first-child::after,
-  .pair-offset:not(.finale-pair) .match:first-child::after{
-    content: "VS";
-    position: absolute;
-    right: -14px;
-    top: 50%;
-    transform: translate(50%, -50%);
-    z-index: 8;
-    padding: 1px 7px 2px;
-    background: linear-gradient(
-      180deg,
-      rgba(9,39,92,.96),
-      rgba(5,25,63,.96)
-    );
-    color: rgba(255,255,255,.96);
-    font-size: .72rem;
-    font-weight: 900;
-    letter-spacing: .7px;
-    border-radius: 999px;
-    box-shadow:
-      0 0 0 2px rgba(9,39,92,.96),
-      0 2px 8px rgba(0,0,0,.28);
-    text-shadow: none;
-    pointer-events: none;
-  }
-}
-
-/* =========================================================
-   PLAYOFF V3.5 - NO CONNECTOR SEMI -> FINALE + VS CENTRATI
-   ========================================================= */
-@media (min-width: 1024px){
-
-  /* -----------------------------------------------------
-     1) Niente connettori tra Semifinale e Finale
-     ----------------------------------------------------- */
-  .bracket > .blocco-colonna:nth-of-type(3) .match-pair::after,
-  .bracket > .blocco-colonna:nth-of-type(5) .match-pair::after{
-    display: none !important;
-    content: none !important;
-  }
-
-  /* -----------------------------------------------------
-     2) VS più puliti e centrati
-     ----------------------------------------------------- */
-  .match-pair:not(.finale-pair) .match:first-child::after,
-  .pair-offset:not(.finale-pair) .match:first-child::after{
-    content: "VS";
-    position: absolute;
-    left: calc(100% - 1px);
-    top: 50%;
-    transform: translate(-50%, -50%);
-    z-index: 20;
-    min-width: 34px;
-    height: 26px;
-    padding: 0 8px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 999px;
-    background: linear-gradient(180deg, #123c7a 0%, #08254c 100%);
-    border: 1px solid rgba(255,255,255,.14);
-    color: #ffffff;
-    font-size: .78rem;
-    font-weight: 900;
-    letter-spacing: .4px;
-    text-shadow: none;
-    box-shadow:
-      0 4px 10px rgba(0,0,0,.28),
-      0 0 0 2px rgba(8,37,76,.92);
-    pointer-events: none;
-  }
-
-  /* Tiene il primo blocco come riferimento del VS */
-  .match-pair:not(.finale-pair) .match:first-child,
-  .pair-offset:not(.finale-pair) .match:first-child{
-    position: relative;
-    overflow: visible !important;
-    z-index: 3;
-  }
-
-  /* Se vuoi un look ancora più pulito, accorciamo un filo
-     la lineetta divisoria centrale dentro i pair */
-  .match-pair:not(.finale-pair)::before,
-  .pair-offset:not(.finale-pair)::before{
-    top: 16px;
-    bottom: 16px;
-    opacity: .55;
-  }
-}
-
-/* =========================================================
-   PLAYOFF V3.6 - CLEAN FINALE CONNECTORS + REMOVE YELLOW TICKS
-   ========================================================= */
-@media (min-width: 1024px){
-
-  /* 1) Spegne definitivamente i connettori Semifinale -> Finale */
-  .bracket > .blocco-colonna:nth-of-type(3) .match-pair::after,
-  .bracket > .blocco-colonna:nth-of-type(5) .match-pair::after,
-  .s-sx .match-pair::after,
-  .s-dx .match-pair::after,
-  .semifinale-sx .match-pair::after,
-  .semifinale-dx .match-pair::after{
-    display: none !important;
-    content: none !important;
-    width: 0 !important;
-    height: 0 !important;
-    opacity: 0 !important;
-  }
-
-  /* 2) Toglie le lineette gialle dentro/accanto alle Wildcard */
-  .bracket > .blocco-colonna:nth-of-type(1) .match-pair::after,
-  .bracket > .blocco-colonna:nth-of-type(7) .match-pair::after,
-  .wc-sx .match-pair::after,
-  .wc-dx .match-pair::after{
-    display: none !important;
-    content: none !important;
-    width: 0 !important;
-    height: 0 !important;
-    opacity: 0 !important;
-  }
-
-  /* 3) Toglie anche la mini lineetta interna centrale che può sembrare connettore */
-  .match-pair:not(.finale-pair)::before,
-  .pair-offset:not(.finale-pair)::before{
-    display: none !important;
-    content: none !important;
-  }
-
-  /* 4) VS centrato esattamente tra i due loghi */
-  .match-pair:not(.finale-pair) .match:first-child::after,
-  .pair-offset:not(.finale-pair) .match:first-child::after{
-    content: "VS" !important;
-    position: absolute;
-    left: 100%;
-    top: 50%;
-    transform: translate(-50%, -50%);
-    z-index: 30;
-    min-width: 34px;
-    height: 25px;
-    padding: 0 8px;
-    display: flex !important;
-    align-items: center;
-    justify-content: center;
-    border-radius: 999px;
-    background:
-      linear-gradient(180deg, rgba(18,60,122,.98), rgba(4,25,61,.98));
-    border: 1px solid rgba(255,255,255,.18);
-    color: #ffffff;
-    font-size: .76rem;
-    font-weight: 900;
-    letter-spacing: .35px;
-    text-shadow: none;
-    box-shadow:
-      0 4px 10px rgba(0,0,0,.30),
-      inset 0 1px 0 rgba(255,255,255,.16),
-      0 0 0 2px rgba(4,25,61,.82);
-    pointer-events: none;
-  }
-
-  /* 5) Leggerissimo spazio visivo attorno al VS */
-  .match-pair:not(.finale-pair) .match:first-child,
-  .pair-offset:not(.finale-pair) .match:first-child{
-    position: relative;
-    overflow: visible !important;
-    z-index: 4;
-  }
-
-  .match-pair:not(.finale-pair) .match:nth-child(2),
-  .pair-offset:not(.finale-pair) .match:nth-child(2){
-    position: relative;
-    z-index: 3;
-  }
-}
-
-
-/* =========================================================
-   PLAYOFF V3.8 - RIMUOVE DAVVERO I CONNETTORI SEMI -> FINALE
-   ========================================================= */
-@media (min-width: 1024px){
-
-  /* Questi sono i veri connettori verso la Finale:
-     sono applicati alla colonna Semifinale, non alle card */
-  .bracket > .blocco-colonna:nth-of-type(3)::after,
-  .bracket > .blocco-colonna:nth-of-type(5)::after{
-    content: none !important;
-    display: none !important;
-    opacity: 0 !important;
-    width: 0 !important;
-    height: 0 !important;
-    background: none !important;
-    box-shadow: none !important;
-    border: 0 !important;
-  }
-
-}
-
-
 
 /* =========================================================
    PLAYOFF MOBILE APP VIEW
@@ -2149,488 +1402,4 @@ body{
   .mobile-playoff-top{
     padding-bottom: 8px !important;
   }
-}
-
-/* =========================================================
-   PLAYOFF V17 - ORIGINAL STYLE, VERTICAL TEAM CARDS
-   ---------------------------------------------------------
-   Desktop only. Mobile rules above remain untouched.
-   Back to the original bracket feeling:
-   - each team is a real vertical stacked card
-   - team color slab restored
-   - names hidden on desktop
-   - logos + seeds + VS only
-   ========================================================= */
-@media (min-width: 1024px){
-  :root{
-    --v17-card-w: clamp(142px, 10.1vw, 188px);
-    --v17-card-h: clamp(50px, 4.5vw, 70px);
-    --v17-logo-slab: clamp(48px, 3.8vw, 66px);
-    --v17-logo: clamp(35px, 3vw, 52px);
-    --v17-pair-gap: clamp(8px, 1.1vh, 13px);
-    --v17-col-gap: clamp(12px, 1.45vw, 28px);
-    --v17-final-w: clamp(270px, 20vw, 380px);
-    --v17-gold: #ffd36b;
-    --v17-blue-1: rgba(5, 28, 66, .92);
-    --v17-blue-2: rgba(12, 66, 132, .70);
-  }
-
-  body{
-    overflow-x: hidden;
-    background:
-      radial-gradient(circle at 50% 8%, rgba(255,255,255,.15), transparent 18%),
-      radial-gradient(circle at 22% 30%, rgba(0,116,217,.16), transparent 26%),
-      radial-gradient(circle at 80% 70%, rgba(0,116,217,.15), transparent 30%),
-      #06183a url("img/champions-bg.png") center / cover no-repeat fixed;
-  }
-
-  .hero-playoff{
-    padding: clamp(12px, 2vh, 22px) 18px 4px;
-  }
-
-  .titolo-pagina{
-    font-size: clamp(2rem, 3.2vw, 3.25rem);
-    line-height: 1;
-  }
-
-  .sottotitolo-pagina{
-    margin-top: 5px;
-    font-size: .92rem;
-  }
-
-  .playoff-intro{
-    justify-content: center;
-    margin: 7px auto 4px;
-  }
-
-  .intro-chip{
-    padding: 7px 17px;
-    font-size: .9rem;
-  }
-
-  .bracket-wrap{
-    overflow: hidden;
-    width: 100%;
-    padding: clamp(8px, 1vh, 14px) clamp(10px, 1.2vw, 24px) 18px;
-  }
-
-  .bracket{
-    width: min(1760px, 100%);
-    min-width: 0;
-    margin: 0 auto;
-    padding: 0;
-    display: grid !important;
-    grid-template-columns:
-      var(--v17-card-w)
-      var(--v17-card-w)
-      var(--v17-card-w)
-      var(--v17-final-w)
-      var(--v17-card-w)
-      var(--v17-card-w)
-      var(--v17-card-w);
-    column-gap: var(--v17-col-gap);
-    align-items: start;
-    justify-content: center;
-  }
-
-  .bracket > .blocco-colonna:nth-of-type(1){ grid-column: 1; }
-  .bracket > .blocco-colonna:nth-of-type(2){ grid-column: 2; }
-  .bracket > .blocco-colonna:nth-of-type(3){ grid-column: 3; }
-  .bracket > .blocco-colonna:nth-of-type(4){ grid-column: 4; }
-  .bracket > .blocco-colonna:nth-of-type(5){ grid-column: 5; }
-  .bracket > .blocco-colonna:nth-of-type(6){ grid-column: 6; }
-  .bracket > .blocco-colonna:nth-of-type(7){ grid-column: 7; }
-
-  .blocco-colonna{
-    width: 100%;
-    min-width: 0;
-    align-items: stretch;
-    position: relative;
-  }
-
-  .blocco-colonna h2{
-    height: 36px;
-    margin: 0 0 clamp(8px, 1.2vh, 14px);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    color: #fff3ad;
-    font-size: clamp(1rem, 1.35vw, 1.35rem);
-    font-weight: 950;
-    letter-spacing: .7px;
-    text-transform: uppercase;
-    text-shadow: 0 2px 10px rgba(0,0,0,.32), 0 0 14px rgba(255,211,107,.24);
-  }
-
-  .blocco-colonna h2::before,
-  .blocco-colonna h2::after{
-    content:"";
-    flex: 1;
-    max-width: 44px;
-    height: 1px;
-    margin: 0;
-    background: linear-gradient(90deg, transparent, rgba(255,211,107,.75), transparent);
-    opacity: .85;
-  }
-
-  .colonna,
-  .col--spread,
-  .col--center,
-  .semifinale-sx,
-  .semifinale-dx,
-  .colonna-finale{
-    width: 100%;
-    min-height: 0 !important;
-    height: auto !important;
-    padding: 0 !important;
-    transform: none !important;
-    display: flex !important;
-    flex-direction: column !important;
-    justify-content: flex-start !important;
-    gap: clamp(28px, 5.6vh, 74px) !important;
-  }
-
-  .s-sx .colonna,
-  .s-dx .colonna{
-    padding-top: clamp(62px, 12vh, 128px) !important;
-  }
-
-  .match-pair,
-  .pair-offset{
-    width: 100%;
-    min-height: calc((var(--v17-card-h) * 2) + var(--v17-pair-gap));
-    display: grid !important;
-    grid-template-columns: 1fr !important;
-    grid-template-rows: repeat(2, var(--v17-card-h)) !important;
-    row-gap: var(--v17-pair-gap) !important;
-    position: relative;
-    background: transparent !important;
-    border: 0 !important;
-    box-shadow: none !important;
-    overflow: visible !important;
-    margin: 0 !important;
-  }
-
-  .match{
-    width: 100% !important;
-    min-width: 0 !important;
-    max-width: none !important;
-    height: var(--v17-card-h) !important;
-    min-height: var(--v17-card-h) !important;
-    display: grid !important;
-    grid-template-columns: var(--v17-logo-slab) 1fr !important;
-    align-items: stretch !important;
-    padding: 0 !important;
-    position: relative;
-    overflow: hidden !important;
-    border-radius: 13px !important;
-    border: 1px solid rgba(255,211,107,.38) !important;
-    background:
-      radial-gradient(circle at 65% 0%, rgba(255,255,255,.16), transparent 42%),
-      linear-gradient(180deg, rgba(255,255,255,.96), rgba(241,247,255,.98)) !important;
-    box-shadow:
-      0 9px 19px rgba(0,0,0,.22),
-      inset 0 1px 0 rgba(255,255,255,.62) !important;
-    color: #06254c;
-  }
-
-  .match:hover{
-    transform: translateY(-1px);
-    box-shadow:
-      0 13px 22px rgba(0,0,0,.26),
-      0 0 18px rgba(255,211,107,.14),
-      inset 0 1px 0 rgba(255,255,255,.62) !important;
-  }
-
-  .match::before{
-    display: block !important;
-    content:"" !important;
-    position: absolute !important;
-    inset: 0 auto 0 0 !important;
-    width: var(--v17-logo-slab) !important;
-    background:
-      linear-gradient(180deg,
-        color-mix(in srgb, var(--team-color) 88%, #ffffff 12%),
-        color-mix(in srgb, var(--team-color) 78%, #000000 22%)
-      ) !important;
-    box-shadow: inset -1px 0 0 rgba(255,255,255,.18) !important;
-    z-index: 0;
-  }
-
-  .squadra.orizzontale{
-    display: contents !important;
-  }
-
-  .team-logo-wrap{
-    grid-column: 1 !important;
-    width: auto !important;
-    height: auto !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    position: relative !important;
-    z-index: 2 !important;
-    background: transparent !important;
-    border: 0 !important;
-    box-shadow: none !important;
-  }
-
-  .squadra.orizzontale img{
-    width: var(--v17-logo) !important;
-    height: var(--v17-logo) !important;
-    object-fit: contain !important;
-    border-radius: 50% !important;
-    padding: 3px !important;
-    background: rgba(255,255,255,.92) !important;
-    filter: drop-shadow(0 3px 5px rgba(0,0,0,.34)) !important;
-  }
-
-  .team-logo-wrap:empty::after{
-    content:"TBD";
-    width: calc(var(--v17-logo) + 2px);
-    height: calc(var(--v17-logo) + 2px);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: radial-gradient(circle at 34% 22%, rgba(35,82,150,.65), rgba(2,16,42,.98));
-    border: 1px solid rgba(255,211,107,.65);
-    color: #fff2af;
-    font-weight: 950;
-    font-size: clamp(.62rem, .72vw, .82rem);
-    letter-spacing: .3px;
-    box-shadow: inset 0 1px 0 rgba(255,255,255,.13), 0 0 14px rgba(255,211,107,.14);
-  }
-
-  .team-main{
-    grid-column: 2 !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    padding: 5px 8px !important;
-    min-width: 0;
-    position: relative !important;
-    inset: auto !important;
-    pointer-events: auto !important;
-  }
-
-  .team-text{
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    min-width: 0;
-  }
-
-  .team-name,
-  .team-status{
-    position: absolute !important;
-    width: 1px !important;
-    height: 1px !important;
-    padding: 0 !important;
-    margin: -1px !important;
-    overflow: hidden !important;
-    clip: rect(0,0,0,0) !important;
-    white-space: nowrap !important;
-    border: 0 !important;
-  }
-
-  .seed-badge{
-    position: static !important;
-    min-width: 32px;
-    min-height: 22px;
-    padding: 2px 8px;
-    display: inline-flex !important;
-    align-items: center;
-    justify-content: center;
-    border-radius: 999px;
-    background: linear-gradient(180deg, #0f5ba5, #062a61) !important;
-    color: #ffffff !important;
-    font-size: clamp(.68rem, .72vw, .78rem);
-    font-weight: 950;
-    line-height: 1;
-    box-shadow: 0 4px 9px rgba(0,0,0,.22), inset 0 1px 0 rgba(255,255,255,.18);
-  }
-
-  .team-flag{
-    position: absolute !important;
-    right: 8px;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 24px !important;
-    min-width: 24px !important;
-    height: 24px !important;
-    padding: 0 !important;
-    border-radius: 999px;
-    background: #edf3fb !important;
-    color: #05224d !important;
-    font-size: 0 !important;
-    box-shadow: inset 0 1px 0 rgba(255,255,255,.6);
-  }
-
-  .team-flag::after{
-    content:"•";
-    font-size: 1.05rem;
-    line-height: 1;
-    color: #05224d;
-  }
-
-  .match.vincente{
-    border-color: rgba(255,211,107,.98) !important;
-    background: linear-gradient(180deg, #fff9dc, #fff1b8) !important;
-    box-shadow:
-      0 0 0 2px rgba(255,211,107,.22),
-      0 10px 22px rgba(0,0,0,.24),
-      0 0 20px rgba(255,211,107,.28) !important;
-    animation: none !important;
-  }
-
-  .match.vincente .team-flag{
-    background: linear-gradient(180deg, #ffe893, #ffd36b) !important;
-  }
-
-  .match.vincente .team-flag::after{
-    content:"✓";
-    font-size: .9rem;
-    font-weight: 950;
-    color: #4d3300;
-  }
-
-  .match-pair::after,
-  .pair-offset::after{
-    content:"VS" !important;
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
-    z-index: 10;
-    min-width: 34px;
-    height: 24px;
-    display: flex !important;
-    align-items: center;
-    justify-content: center;
-    border-radius: 999px;
-    background: linear-gradient(180deg, #145698, #061f4d) !important;
-    border: 1px solid rgba(255,211,107,.38);
-    color: #ffffff;
-    font-size: .72rem;
-    font-weight: 950;
-    letter-spacing: .5px;
-    box-shadow: 0 6px 13px rgba(0,0,0,.28), inset 0 1px 0 rgba(255,255,255,.16);
-    pointer-events: none;
-  }
-
-  .match-pair::before,
-  .pair-offset::before{
-    content:"" !important;
-    position: absolute;
-    left: 50%;
-    top: 8px;
-    bottom: 8px;
-    width: 1px;
-    transform: translateX(-50%);
-    background: linear-gradient(180deg, transparent, rgba(255,211,107,.55), transparent);
-    opacity: .38;
-    z-index: 1;
-  }
-
-  /* Restore a light original-bracket path without dominating the page */
-  .bracket > .blocco-colonna:nth-of-type(1)::after,
-  .bracket > .blocco-colonna:nth-of-type(2)::after,
-  .bracket > .blocco-colonna:nth-of-type(3)::after,
-  .bracket > .blocco-colonna:nth-of-type(5)::before,
-  .bracket > .blocco-colonna:nth-of-type(6)::before,
-  .bracket > .blocco-colonna:nth-of-type(7)::before{
-    content:"";
-    position: absolute;
-    top: 50%;
-    width: calc(var(--v17-col-gap) + 4px);
-    height: 1px;
-    background: linear-gradient(90deg, transparent, rgba(255,211,107,.72), transparent);
-    box-shadow: 0 0 9px rgba(255,211,107,.24);
-    pointer-events: none;
-    z-index: 0;
-  }
-
-  .bracket > .blocco-colonna:nth-of-type(1)::after,
-  .bracket > .blocco-colonna:nth-of-type(2)::after,
-  .bracket > .blocco-colonna:nth-of-type(3)::after{
-    right: calc(-1 * var(--v17-col-gap) - 2px);
-  }
-
-  .bracket > .blocco-colonna:nth-of-type(5)::before,
-  .bracket > .blocco-colonna:nth-of-type(6)::before,
-  .bracket > .blocco-colonna:nth-of-type(7)::before{
-    left: calc(-1 * var(--v17-col-gap) - 2px);
-  }
-
-  .blocco-finale{
-    min-width: 0 !important;
-    width: 100%;
-  }
-
-  .finale-stage{
-    width: 100%;
-    min-height: clamp(430px, 58vh, 620px);
-    padding: 16px 16px 18px;
-    border-radius: 24px;
-    background:
-      radial-gradient(circle at 50% 34%, rgba(255,211,107,.15), transparent 36%),
-      linear-gradient(180deg, rgba(15,60,112,.58), rgba(3,18,45,.92));
-    border: 1px solid rgba(255,211,107,.34);
-    box-shadow: 0 18px 30px rgba(0,0,0,.28), inset 0 1px 0 rgba(255,255,255,.10);
-  }
-
-  .finale-pair{
-    width: 100%;
-    grid-template-rows: repeat(2, var(--v17-card-h)) !important;
-    row-gap: var(--v17-pair-gap) !important;
-  }
-
-  .match.finale{
-    width: 100% !important;
-    height: var(--v17-card-h) !important;
-    min-height: var(--v17-card-h) !important;
-    grid-template-columns: var(--v17-logo-slab) 1fr !important;
-  }
-
-  .match.finale::before{
-    width: var(--v17-logo-slab) !important;
-  }
-
-  .coppa-vittoria{
-    margin-top: clamp(16px, 4vh, 44px);
-  }
-
-  .coppa-img{
-    width: clamp(160px, 13.2vw, 245px) !important;
-    filter: drop-shadow(0 12px 22px rgba(0,0,0,.38)) drop-shadow(0 0 26px rgba(255,211,107,.10));
-  }
-
-  #vincitore-assoluto .nome-vincitore{
-    display: none;
-  }
-}
-
-@media (min-width: 1024px) and (max-height: 820px){
-  :root{
-    --v17-card-w: clamp(130px, 9.4vw, 162px);
-    --v17-card-h: clamp(45px, 3.85vw, 57px);
-    --v17-logo-slab: clamp(44px, 3.35vw, 56px);
-    --v17-logo: clamp(32px, 2.55vw, 44px);
-    --v17-col-gap: clamp(10px, 1.05vw, 20px);
-    --v17-final-w: clamp(230px, 18vw, 310px);
-  }
-
-  .hero-playoff{ padding-top: 7px; }
-  .titolo-pagina{ font-size: clamp(1.7rem, 2.75vw, 2.8rem); }
-  .sottotitolo-pagina{ font-size: .84rem; margin-top: 3px; }
-  .intro-chip{ padding: 5px 13px; font-size: .82rem; }
-  .bracket-wrap{ padding-top: 5px; }
-  .blocco-colonna h2{ height: 31px; margin-bottom: 8px; }
-  .colonna{ gap: clamp(22px, 4.6vh, 50px) !important; }
-  .s-sx .colonna, .s-dx .colonna{ padding-top: clamp(54px, 10.5vh, 104px) !important; }
-  .finale-stage{ min-height: clamp(350px, 54vh, 500px); }
-  .coppa-vittoria{ margin-top: clamp(10px, 3vh, 28px); }
-  .coppa-img{ width: clamp(145px, 12vw, 210px) !important; }
 }
