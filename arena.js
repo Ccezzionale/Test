@@ -1,29 +1,40 @@
-const squadre = [
-  { nome: "Rubinkebab", logo: "img/Rubinkebab.png", eliminata: false, ultimaEliminata: false, turnoEliminazione: null, magicPunti: null },
-  { nome: "Bayern Christiansen", logo: "img/Bayern Christiansen.png", eliminata: false, ultimaEliminata: false, turnoEliminazione: null, magicPunti: null },
-  { nome: "Team Bartowski", logo: "img/Team Bartowski.png", eliminata: false, ultimaEliminata: false, turnoEliminazione: null, magicPunti: null },
-  { nome: "Golden Knights", logo: "img/Golden Knights.png", eliminata: false, ultimaEliminata: false, turnoEliminazione: null, magicPunti: null },
-  { nome: "Ibla", logo: "img/Ibla.png", eliminata: false, ultimaEliminata: false, turnoEliminazione: null, magicPunti: null },
-  { nome: "Fantaugusta", logo: "img/Fantaugusta.png", eliminata: false, ultimaEliminata: false, turnoEliminazione: null, magicPunti: null },
-  { nome: "Riverfilo", logo: "img/Riverfilo.png", eliminata: false, ultimaEliminata: false, turnoEliminazione: null, magicPunti: null },
-  { nome: "Desperados", logo: "img/Desperados.png", eliminata: false, ultimaEliminata: false, turnoEliminazione: null, magicPunti: null },
-  { nome: "Wildboys 78", logo: "img/wildboys78.png", eliminata: false, ultimaEliminata: false, turnoEliminazione: null, magicPunti: null },
-  { nome: "Pandinicoccolosini", logo: "img/Pandinicoccolosini.png", eliminata: false, ultimaEliminata: false, turnoEliminazione: null, magicPunti: null },
-  { nome: "Pokermantra", logo: "img/PokerMantra.png", eliminata: false, ultimaEliminata: false, turnoEliminazione: null, magicPunti: null },
-  { nome: "Minnesode Timberland", logo: "img/Minnesode Timberland.png", eliminata: false, ultimaEliminata: false, turnoEliminazione: null, magicPunti: null },
-  { nome: "Minnesota Snakes", logo: "img/MinneSota Snakes.png", eliminata: false, ultimaEliminata: false, turnoEliminazione: null, magicPunti: null },
-  { nome: "Eintracht Franco 126", logo: "img/Eintracht Franco 126.png", eliminata: false, ultimaEliminata: false, turnoEliminazione: null, magicPunti: null },
-  { nome: "FC Disoneste", logo: "img/FC Disoneste.png", eliminata: false, ultimaEliminata: false, turnoEliminazione: null, magicPunti: null },
-  { nome: "Athletic Pongao", logo: "img/Athletic Pongao.png", eliminata: false, ultimaEliminata: false, turnoEliminazione: null, magicPunti: null }
+/* =========================
+   HIGHLANDER ARENA - SUPABASE VERSION
+   ========================= */
+
+const HIGHLANDER_SEASON = "2026";
+
+const squadreBase = [
+  { nome: "Rubinkebab", logo: "img/Rubinkebab.png" },
+  { nome: "Bayern Christiansen", logo: "img/Bayern Christiansen.png" },
+  { nome: "Team Bartowski", logo: "img/Team Bartowski.png" },
+  { nome: "Golden Knights", logo: "img/Golden Knights.png" },
+  { nome: "Ibla", logo: "img/Ibla.png" },
+  { nome: "Fantaugusta", logo: "img/Fantaugusta.png" },
+  { nome: "Riverfilo", logo: "img/Riverfilo.png" },
+  { nome: "Desperados", logo: "img/Desperados.png" },
+  { nome: "Wildboys 78", logo: "img/wildboys78.png" },
+  { nome: "Pandinicoccolosini", logo: "img/Pandinicoccolosini.png" },
+  { nome: "Pokermantra", logo: "img/PokerMantra.png" },
+  { nome: "Minnesode Timberland", logo: "img/Minnesode Timberland.png" },
+  { nome: "Minnesota Snakes", logo: "img/MinneSota Snakes.png" },
+  { nome: "Eintracht Franco 126", logo: "img/Eintracht Franco 126.png" },
+  { nome: "FC Disoneste", logo: "img/FC Disoneste.png" },
+  { nome: "Athletic Pongao", logo: "img/Athletic Pongao.png" }
 ];
 
-/*
-  Aggiornamento settimanale rapido:
-  - metti eliminata: true sulla squadra caduta
-  - metti ultimaEliminata: true solo sulla squadra appena eliminata
-  - aggiungi turnoEliminazione e magicPunti se vuoi popolare Registro e Zona Pericolo
-  - quando resta una sola squadra con eliminata:false, la pagina passa automaticamente alla modalità finale
-*/
+let squadre = [];
+let eliminazioniDb = [];
+
+let ultimaEliminata = null;
+let inGioco = [];
+let eliminate = [];
+let eliminateOrdinate = [];
+let sopravvissute = 0;
+let eliminateCount = 0;
+let ultimoTurno = 0;
+let turnoAttuale = 1;
+let isFinale = false;
 
 const center = document.getElementById("arena-center");
 const arena = document.querySelector(".arena");
@@ -32,36 +43,134 @@ const subtitle = document.getElementById("arena-subtitle");
 const turnoAttualeEl = document.getElementById("turno-attuale");
 const viveAttualiEl = document.getElementById("vive-attuali");
 const eliminateAttualiEl = document.getElementById("eliminate-attuali");
+
 const zonaTitle = document.getElementById("zona-title");
 const zonaPericoloEl = document.getElementById("zona-pericolo");
 const registroEl = document.getElementById("registro-eliminazioni");
 
-const ultimaEliminata = squadre.find(s => s.ultimaEliminata);
-const inGioco = squadre.filter(s => !s.eliminata);
-const eliminate = squadre.filter(s => s.eliminata);
-const eliminateOrdinate = [...eliminate].sort((a, b) => (b.turnoEliminazione || 0) - (a.turnoEliminazione || 0));
+const adminPanel = document.getElementById("highlander-admin-panel");
+const adminTurnoInput = document.getElementById("admin-turno");
+const adminSquadraSelect = document.getElementById("admin-squadra-eliminata");
+const adminMagicInput = document.getElementById("admin-magic-punti");
+const adminSaveBtn = document.getElementById("admin-salva-eliminazione");
+const adminMsg = document.getElementById("admin-highlander-msg");
 
-const sopravvissute = inGioco.length;
-const eliminateCount = eliminate.length;
-const ultimoTurno = Math.max(...eliminate.map(s => s.turnoEliminazione || 0), 0);
-const turnoAttuale = eliminateCount === 0 ? 1 : ultimoTurno;
-const isFinale = inGioco.length === 1;
+/* =========================
+   SUPABASE HELPER
+   ========================= */
 
-if (turnoAttualeEl) turnoAttualeEl.textContent = turnoAttuale;
-if (viveAttualiEl) viveAttualiEl.textContent = sopravvissute;
-if (eliminateAttualiEl) eliminateAttualiEl.textContent = eliminateCount;
+function getSupabaseClient() {
+  if (typeof supabase !== "undefined" && supabase && typeof supabase.from === "function") {
+    return supabase;
+  }
 
-if (subtitle) {
-  if (eliminateCount === 0) subtitle.textContent = "Sedici squadre entrano nell’arena. Da qui in poi, ogni punto pesa.";
-  if (!isFinale && eliminateCount > 0) subtitle.textContent = "Ogni settimana cade una squadra. Nell’arena ne resterà soltanto una.";
-  if (isFinale) subtitle.textContent = "Il cerchio si è chiuso. L’arena ha scelto il suo ultimo sopravvissuto.";
+  if (window.supabaseClient && typeof window.supabaseClient.from === "function") {
+    return window.supabaseClient;
+  }
+
+  if (window.supabase && typeof window.supabase.from === "function") {
+    return window.supabase;
+  }
+
+  return null;
 }
+
+const db = getSupabaseClient();
+
+/* =========================
+   DATA
+   ========================= */
+
+async function loadEliminazioni() {
+  if (!db) {
+    console.warn("Supabase client non trovato. Uso dati locali vuoti.");
+    eliminazioniDb = [];
+    return;
+  }
+
+  const { data, error } = await db
+    .from("highlander_eliminations")
+    .select("*")
+    .eq("season", HIGHLANDER_SEASON)
+    .order("turno", { ascending: true });
+
+  if (error) {
+    console.error("Errore caricamento eliminazioni Highlander:", error);
+    eliminazioniDb = [];
+    return;
+  }
+
+  eliminazioniDb = data || [];
+}
+
+function buildSquadreState() {
+  const eliminazioniByTeam = new Map();
+
+  eliminazioniDb.forEach(row => {
+    eliminazioniByTeam.set(row.team_name, row);
+  });
+
+  const maxTurno = eliminazioniDb.length
+    ? Math.max(...eliminazioniDb.map(row => Number(row.turno) || 0))
+    : 0;
+
+  squadre = squadreBase.map(team => {
+    const eliminazione = eliminazioniByTeam.get(team.nome);
+    const eliminata = Boolean(eliminazione);
+
+    return {
+      nome: team.nome,
+      logo: team.logo,
+      eliminata,
+      ultimaEliminata: eliminata && Number(eliminazione.turno) === maxTurno,
+      turnoEliminazione: eliminazione ? Number(eliminazione.turno) : null,
+      magicPunti: eliminazione && eliminazione.magic_punti !== null
+        ? Number(eliminazione.magic_punti)
+        : null
+    };
+  });
+
+  ultimaEliminata = squadre.find(s => s.ultimaEliminata) || null;
+  inGioco = squadre.filter(s => !s.eliminata);
+  eliminate = squadre.filter(s => s.eliminata);
+
+  eliminateOrdinate = [...eliminate].sort((a, b) => {
+    return (b.turnoEliminazione || 0) - (a.turnoEliminazione || 0);
+  });
+
+  sopravvissute = inGioco.length;
+  eliminateCount = eliminate.length;
+  ultimoTurno = Math.max(...eliminate.map(s => s.turnoEliminazione || 0), 0);
+  turnoAttuale = eliminateCount === 0 ? 1 : ultimoTurno;
+  isFinale = inGioco.length === 1;
+}
+
+function updateStatsAndSubtitle() {
+  if (turnoAttualeEl) turnoAttualeEl.textContent = turnoAttuale;
+  if (viveAttualiEl) viveAttualiEl.textContent = sopravvissute;
+  if (eliminateAttualiEl) eliminateAttualiEl.textContent = eliminateCount;
+
+  if (!subtitle) return;
+
+  if (eliminateCount === 0) {
+    subtitle.textContent = "Sedici squadre entrano nell’arena. Da qui in poi, ogni punto pesa.";
+  } else if (!isFinale) {
+    subtitle.textContent = "Ogni settimana cade una squadra. Nell’arena ne resterà soltanto una.";
+  } else {
+    subtitle.textContent = "Il cerchio si è chiuso. L’arena ha scelto il suo ultimo sopravvissuto.";
+  }
+}
+
+/* =========================
+   RENDER CENTER
+   ========================= */
 
 function renderCenter() {
   if (!center) return;
 
   if (isFinale) {
     const vincitore = inGioco[0];
+
     center.innerHTML = `
       <div class="eliminata-wrapper finale-wrapper">
         <div class="center-ring"></div>
@@ -104,8 +213,14 @@ function renderCenter() {
   `;
 }
 
+/* =========================
+   RENDER DESKTOP ARENA
+   ========================= */
+
 function renderArenaTeams() {
   if (!arena) return;
+
+  arena.querySelectorAll(".squadra").forEach(el => el.remove());
 
   const cx = 350;
   const cy = 350;
@@ -136,6 +251,10 @@ function renderArenaTeams() {
     arena.appendChild(div);
   });
 }
+
+/* =========================
+   RENDER MOBILE DASHBOARD
+   ========================= */
 
 function renderMobileDashboard() {
   const mobileVerdict = document.getElementById("mobile-verdict");
@@ -178,6 +297,8 @@ function renderMobileDashboard() {
     if (!s.eliminata) card.classList.add("is-alive");
     if (s.ultimaEliminata) card.classList.add("is-latest");
 
+    card.title = s.nome;
+
     card.innerHTML = `
       <img src="${s.logo}" alt="${s.nome}">
       <span>${s.nome}</span>
@@ -187,7 +308,9 @@ function renderMobileDashboard() {
   });
 }
 
-renderMobileDashboard();
+/* =========================
+   ZONA PERICOLO
+   ========================= */
 
 function formatPunti(value) {
   if (value === null || value === undefined || value === "") return "--";
@@ -199,6 +322,7 @@ function renderZonaPericolo() {
 
   if (eliminateCount === 0) {
     if (zonaTitle) zonaTitle.textContent = "Prima Battaglia";
+
     zonaPericoloEl.innerHTML = `
       <div class="danger-head neutral">
         <div class="danger-icon">⚔️</div>
@@ -213,7 +337,9 @@ function renderZonaPericolo() {
 
   if (isFinale) {
     const vincitore = inGioco[0];
+
     if (zonaTitle) zonaTitle.textContent = "Verdetto Finale";
+
     zonaPericoloEl.innerHTML = `
       <div class="danger-head champion">
         <img src="${vincitore.logo}" alt="${vincitore.nome}">
@@ -223,11 +349,12 @@ function renderZonaPericolo() {
           <p>Ha attraversato tutti i turni ed è rimasta l’unica squadra in piedi.</p>
         </div>
       </div>
+
       <div class="danger-table">
         <div class="danger-row danger-row-final">
           <span>Ultima caduta</span>
           <strong>${ultimaEliminata ? ultimaEliminata.nome : eliminateOrdinate[0]?.nome || "--"}</strong>
-          <em>${formatPunti(ultimaEliminata?.magicPunti || eliminateOrdinate[0]?.magicPunti)} MP</em>
+          <em>${formatPunti(ultimaEliminata?.magicPunti ?? eliminateOrdinate[0]?.magicPunti)} MP</em>
         </div>
         <div class="danger-row">
           <span>Squadre eliminate</span>
@@ -240,18 +367,19 @@ function renderZonaPericolo() {
   }
 
   const ultima = ultimaEliminata || eliminateOrdinate[0];
-  const sogliaSalvezza = inGioco
-    .filter(s => typeof s.magicPunti === "number")
-    .sort((a, b) => a.magicPunti - b.magicPunti)[0];
 
   const salvatePerPoco = inGioco
     .filter(s => typeof s.magicPunti === "number")
     .sort((a, b) => a.magicPunti - b.magicPunti)
     .slice(0, 3);
 
-  const distanza = sogliaSalvezza && ultima?.magicPunti !== undefined
+  const sogliaSalvezza = salvatePerPoco[0];
+
+  const distanza = sogliaSalvezza && ultima?.magicPunti !== null && ultima?.magicPunti !== undefined
     ? (sogliaSalvezza.magicPunti - ultima.magicPunti).toFixed(1).replace(".", ",")
     : null;
+
+  if (zonaTitle) zonaTitle.textContent = "Zona Pericolo";
 
   zonaPericoloEl.innerHTML = `
     <div class="danger-head">
@@ -262,17 +390,32 @@ function renderZonaPericolo() {
         <p>${formatPunti(ultima.magicPunti)} Magic Punti. ${distanza ? `Salvezza mancata per ${distanza} punti.` : "Il margine è stato sottilissimo."}</p>
       </div>
     </div>
+
     <div class="danger-table">
-      ${salvatePerPoco.map((s, index) => `
-        <div class="danger-row ${index === 0 ? "safe-line" : ""}">
-          <span>${index === 0 ? "Soglia salvezza" : "A rischio"}</span>
-          <strong>${s.nome}</strong>
-          <em>${formatPunti(s.magicPunti)} MP</em>
-        </div>
-      `).join("")}
+      ${
+        salvatePerPoco.length
+          ? salvatePerPoco.map((s, index) => `
+              <div class="danger-row ${index === 0 ? "safe-line" : ""}">
+                <span>${index === 0 ? "Soglia salvezza" : "A rischio"}</span>
+                <strong>${s.nome}</strong>
+                <em>${formatPunti(s.magicPunti)} MP</em>
+              </div>
+            `).join("")
+          : `
+              <div class="danger-row">
+                <span>Soglia salvezza</span>
+                <strong>Dati non ancora inseriti</strong>
+                <em>-- MP</em>
+              </div>
+            `
+      }
     </div>
   `;
 }
+
+/* =========================
+   REGISTRO ELIMINAZIONI
+   ========================= */
 
 function renderRegistroEliminazioni() {
   if (!registroEl) return;
@@ -295,7 +438,194 @@ function renderRegistroEliminazioni() {
   `).join("");
 }
 
-renderCenter();
-renderArenaTeams();
-renderZonaPericolo();
-renderRegistroEliminazioni();
+/* =========================
+   ADMIN PANEL
+   ========================= */
+
+function setAdminMsg(text, type = "") {
+  if (!adminMsg) return;
+
+  adminMsg.textContent = text;
+  adminMsg.classList.remove("ok", "error");
+
+  if (type) adminMsg.classList.add(type);
+}
+
+async function checkIsAdmin() {
+  if (!db || !adminPanel) return false;
+
+  const { data: userData, error: userError } = await db.auth.getUser();
+
+  if (userError || !userData?.user) {
+    adminPanel.style.display = "none";
+    return false;
+  }
+
+  const { data: profile, error: profileError } = await db
+    .from("profiles")
+    .select("role")
+    .eq("id", userData.user.id)
+    .single();
+
+  if (profileError) {
+    console.warn("Impossibile verificare ruolo admin:", profileError);
+    adminPanel.style.display = "none";
+    return false;
+  }
+
+  const isAdmin = profile?.role === "admin";
+
+  adminPanel.style.display = isAdmin ? "block" : "none";
+  return isAdmin;
+}
+
+function populateAdminPanel() {
+  if (!adminPanel || !adminSquadraSelect || !adminTurnoInput) return;
+
+  const prossimoTurno = eliminateCount + 1;
+
+  adminTurnoInput.value = prossimoTurno <= squadreBase.length - 1 ? prossimoTurno : squadreBase.length - 1;
+
+  const squadreSelezionabili = squadre.filter(s => !s.eliminata);
+
+  adminSquadraSelect.innerHTML = squadreSelezionabili.map(s => `
+    <option value="${s.nome}">${s.nome}</option>
+  `).join("");
+
+  if (!squadreSelezionabili.length || squadreSelezionabili.length === 1) {
+    adminSquadraSelect.innerHTML = `
+      <option value="">Torneo concluso</option>
+    `;
+
+    if (adminSaveBtn) adminSaveBtn.disabled = true;
+  } else if (adminSaveBtn) {
+    adminSaveBtn.disabled = false;
+  }
+}
+
+async function salvaEliminazione() {
+  if (!db) {
+    setAdminMsg("Supabase non trovato: impossibile salvare.", "error");
+    return;
+  }
+
+  const turno = Number(adminTurnoInput?.value);
+  const teamName = adminSquadraSelect?.value;
+  const magicPuntiRaw = adminMagicInput?.value;
+  const magicPunti = magicPuntiRaw === "" ? null : Number(magicPuntiRaw);
+
+  if (!turno || turno < 1 || turno > 15) {
+    setAdminMsg("Inserisci un turno valido da 1 a 15.", "error");
+    return;
+  }
+
+  if (!teamName) {
+    setAdminMsg("Seleziona una squadra da eliminare.", "error");
+    return;
+  }
+
+  if (magicPuntiRaw !== "" && Number.isNaN(magicPunti)) {
+    setAdminMsg("Inserisci Magic Punti validi.", "error");
+    return;
+  }
+
+  const team = squadreBase.find(s => s.nome === teamName);
+
+  if (!team) {
+    setAdminMsg("Squadra non trovata.", "error");
+    return;
+  }
+
+  if (adminSaveBtn) {
+    adminSaveBtn.disabled = true;
+    adminSaveBtn.textContent = "Salvataggio...";
+  }
+
+  setAdminMsg("Sto salvando l’eliminazione...", "");
+
+  const payload = {
+    season: HIGHLANDER_SEASON,
+    turno,
+    team_name: team.nome,
+    logo: team.logo,
+    magic_punti: magicPunti
+  };
+
+  const { error } = await db
+    .from("highlander_eliminations")
+    .upsert(payload, {
+      onConflict: "season,turno"
+    });
+
+  if (error) {
+    console.error(error);
+
+    if (String(error.message || "").includes("highlander_eliminations_season_team_name")) {
+      setAdminMsg("Questa squadra risulta già eliminata in un altro turno.", "error");
+    } else {
+      setAdminMsg("Errore nel salvataggio. Controlla Supabase/RLS.", "error");
+    }
+
+    if (adminSaveBtn) {
+      adminSaveBtn.disabled = false;
+      adminSaveBtn.textContent = "Salva eliminazione";
+    }
+
+    return;
+  }
+
+  setAdminMsg("Eliminazione salvata. L’arena si aggiorna.", "ok");
+
+  if (adminMagicInput) adminMagicInput.value = "";
+
+  await refreshArena();
+
+  if (adminSaveBtn) {
+    adminSaveBtn.disabled = false;
+    adminSaveBtn.textContent = "Salva eliminazione";
+  }
+}
+
+function initAdminEvents() {
+  if (adminSaveBtn) {
+    adminSaveBtn.addEventListener("click", salvaEliminazione);
+  }
+}
+
+/* =========================
+   RENDER ALL
+   ========================= */
+
+function renderAll() {
+  buildSquadreState();
+  updateStatsAndSubtitle();
+
+  renderCenter();
+  renderArenaTeams();
+  renderMobileDashboard();
+  renderZonaPericolo();
+  renderRegistroEliminazioni();
+  populateAdminPanel();
+}
+
+async function refreshArena() {
+  await loadEliminazioni();
+  renderAll();
+}
+
+/* =========================
+   INIT
+   ========================= */
+
+async function initHighlanderArena() {
+  await refreshArena();
+
+  const isAdmin = await checkIsAdmin();
+
+  if (isAdmin) {
+    populateAdminPanel();
+    initAdminEvents();
+  }
+}
+
+initHighlanderArena();
