@@ -46,12 +46,17 @@ body {
 }
 
 h1 {
-  margin:0;
-  font-size:clamp(2.25rem, 5vw, 3.65rem);
-  font-family:'Pirata One', cursive;
-  color:var(--gold);
-  text-shadow:2px 2px 12px #000, 0 0 18px rgba(255,196,0,.16);
-  letter-spacing:1px;
+  margin: 0;
+  font-size: clamp(2.3rem, 5vw, 3.6rem);
+  font-family: 'Cinzel Decorative', serif;
+  font-weight: 900;
+  color: var(--gold);
+  text-shadow:
+    0 3px 0 rgba(0,0,0,.85),
+    0 0 14px rgba(255, 190, 40, .34),
+    0 0 32px rgba(0,0,0,.75);
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
 }
 
 .sottotitolo{
