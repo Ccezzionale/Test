@@ -747,11 +747,11 @@ body::after {
 }
 
 .s1 {
-  margin-top: 92px;
+  margin-top: 0px;
 }
 
 .s2 {
-  margin-top: 74px;
+  margin-top: -110px;
 }
 
 /* ===== FIX CONNETTORI CON SEMIFINALI RIPOSIZIONATE ===== */
