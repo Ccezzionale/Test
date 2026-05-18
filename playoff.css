@@ -1789,3 +1789,241 @@ body{
     display: none !important;
   }
 }
+
+/* =========================================================
+   DESKTOP - 1 CARD VERA PER MATCH
+   ========================================================= */
+@media (min-width: 1024px){
+
+  :root{
+    --single-match-w: clamp(250px, 15.4vw, 320px);
+    --single-match-h: clamp(92px, 5.6vw, 116px);
+    --single-logo-slab: clamp(92px, 5.6vw, 118px);
+    --single-logo-size: clamp(70px, 4.5vw, 88px);
+    --single-score-w: clamp(46px, 2.9vw, 58px);
+  }
+
+  /* Manteniamo struttura generale, ma ogni pair diventa contenitore neutro */
+  .match-pair,
+  .pair-offset,
+  .finale-pair{
+    display: flex !important;
+    flex-direction: column;
+    gap: 0 !important;
+    background: none !important;
+    border: 0 !important;
+    box-shadow: none !important;
+    min-height: 0 !important;
+    width: auto !important;
+    overflow: visible !important;
+  }
+
+  /* LA CARD UNICA */
+  .playoff-match-card{
+    width: var(--single-match-w);
+    min-width: var(--single-match-w);
+    height: var(--single-match-h);
+    border-radius: 18px;
+    overflow: hidden;
+
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: stretch;
+
+    background:
+      radial-gradient(circle at 50% 0%, rgba(255,255,255,.16), transparent 50%),
+      linear-gradient(180deg, rgba(10,48,101,.94), rgba(4,25,61,.96));
+    border: 1px solid rgba(255,255,255,.20);
+    box-shadow:
+      0 14px 24px rgba(0,0,0,.24),
+      inset 0 1px 0 rgba(255,255,255,.10);
+
+    position: relative;
+  }
+
+  .match-team{
+    position: relative;
+    height: 100%;
+    display: grid;
+    align-items: center;
+    z-index: 1;
+  }
+
+  .match-team.left{
+    grid-template-columns: var(--single-logo-slab) var(--single-score-w);
+  }
+
+  .match-team.right{
+    grid-template-columns: var(--single-score-w) var(--single-logo-slab);
+  }
+
+  .match-team-color{
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: var(--single-logo-slab);
+    background:
+      linear-gradient(
+        180deg,
+        color-mix(in srgb, var(--team-color) 92%, #ffffff 8%),
+        color-mix(in srgb, var(--team-color) 78%, #000000 22%)
+      );
+    z-index: 0;
+  }
+
+  .match-team.left .match-team-color{
+    left: 0;
+  }
+
+  .match-team.right .match-team-color{
+    right: 0;
+  }
+
+  .match-logo-wrap{
+    position: relative;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: var(--single-logo-slab);
+    height: 100%;
+  }
+
+  .match-logo-wrap img{
+    width: var(--single-logo-size);
+    height: var(--single-logo-size);
+    object-fit: contain;
+    padding: 5px;
+    border-radius: 50%;
+    background: rgba(255,255,255,.92);
+    filter: drop-shadow(0 5px 8px rgba(0,0,0,.28));
+  }
+
+  .match-score{
+    position: relative;
+    z-index: 2;
+    width: var(--single-score-w);
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(246,250,255,.95);
+  }
+
+  .match-score::before{
+    content: "";
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    background: linear-gradient(180deg, #ffffff, #edf4ff);
+    border: 1px solid rgba(3,37,76,.14);
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,.9),
+      0 6px 14px rgba(0,0,0,.16);
+    position: absolute;
+  }
+
+  .match-score{
+    color: #06254c;
+    font-size: 1.3rem;
+    font-weight: 950;
+    line-height: 1;
+  }
+
+  .match-score span{
+    position: relative;
+    z-index: 2;
+  }
+
+  .match-team.placeholder .match-score{
+    background: rgba(246,250,255,.90);
+  }
+
+  .match-team.placeholder .match-score::before{
+    opacity: .55;
+  }
+
+  .match-vs-pill{
+    align-self: center;
+    justify-self: center;
+    width: 44px;
+    height: 32px;
+    border-radius: 999px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: linear-gradient(180deg, #15539a, #062b63);
+    border: 1px solid rgba(255,211,107,.36);
+    color: #ffffff;
+    font-size: .82rem;
+    font-weight: 950;
+    letter-spacing: .35px;
+
+    box-shadow:
+      0 7px 14px rgba(0,0,0,.32),
+      inset 0 1px 0 rgba(255,255,255,.18),
+      0 0 12px rgba(255,211,107,.18);
+
+    position: relative;
+    z-index: 5;
+  }
+
+  .match-seed{
+    position: absolute;
+    top: 7px;
+    left: 7px;
+    min-height: 22px;
+    padding: 2px 8px;
+    border-radius: 999px;
+    background: linear-gradient(180deg, #0f3f7a, #08254c);
+    color: #ffffff;
+    font-size: .74rem;
+    font-weight: 900;
+    letter-spacing: .2px;
+    box-shadow: 0 4px 10px rgba(0,0,0,.16);
+    z-index: 6;
+  }
+
+  .match-team.right .match-seed{
+    left: auto;
+    right: 7px;
+  }
+
+  .match-tbd{
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: radial-gradient(circle at 35% 25%, #173e78, #061c43 72%);
+    border: 1px solid rgba(255,211,107,.46);
+    color: #fff2b8;
+
+    font-size: .82rem;
+    font-weight: 950;
+    letter-spacing: .5px;
+
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,.12),
+      0 0 12px rgba(255,211,107,.18);
+  }
+
+  /* NASCONDE roba vecchia interna */
+  .team-name,
+  .team-status,
+  .team-flag,
+  .seed-badge,
+  .team-main,
+  .team-text{
+    display: none !important;
+  }
+
+  /* Finale leggermente più grande */
+  .blocco-finale .playoff-match-card{
+    width: clamp(290px, 18vw, 360px);
+  }
+}
