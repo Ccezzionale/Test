@@ -723,3 +723,25 @@ body::after {
     opacity: 0.9;
   }
 }
+
+/* ===== FIX SEMIFINALI TROPPO LUNGHE ===== */
+
+.round-semi {
+  justify-content: center;
+  gap: 78px;
+}
+
+.match-card.semi {
+  min-height: 150px;
+  height: 150px;
+  padding-top: 28px;
+  padding-bottom: 14px;
+}
+
+.match-card.semi .team-row {
+  height: 48px;
+}
+
+.match-card.semi small {
+  margin-top: 8px;
+}
