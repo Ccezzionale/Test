@@ -1,332 +1,559 @@
-<!DOCTYPE html>
-<html lang="it">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Lega degli Eroi</title>
+* {
+  box-sizing: border-box;
+}
 
-  <link rel="stylesheet" href="navbar.css">
+html,
+body {
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+}
 
-  <!-- PWA -->
-  <link rel="manifest" href="manifest.json">
+body {
+  min-height: 100vh;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  color: #ffffff;
+  background:
+    radial-gradient(900px 500px at 15% 0%, rgba(0, 116, 217, .25), transparent 60%),
+    radial-gradient(900px 500px at 85% 15%, rgba(255, 204, 0, .12), transparent 55%),
+    linear-gradient(135deg, #00152d 0%, #001f3f 45%, #031224 100%);
+}
 
-  <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
-  <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png">
-  <link rel="apple-touch-icon" href="apple-touch-icon.png">
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(90deg, rgba(255,255,255,.035) 1px, transparent 1px),
+    linear-gradient(0deg, rgba(255,255,255,.025) 1px, transparent 1px);
+  background-size: 48px 48px;
+  mask-image: linear-gradient(to bottom, rgba(0,0,0,.95), rgba(0,0,0,.25));
+}
 
-  <meta name="theme-color" content="#061326">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="Lega Eroi">
+.playoff-page {
+  width: min(1480px, 100%);
+  margin: 0 auto;
+  padding: 26px 22px 46px;
+}
 
-  <style>
-    * {
-      box-sizing: border-box;
-    }
+.playoff-hero {
+  display: grid;
+  grid-template-columns: 160px minmax(240px, 1fr) 520px;
+  align-items: center;
+  gap: 24px;
+  padding: 22px;
+  border: 1px solid rgba(255, 214, 90, .22);
+  border-radius: 28px;
+  background:
+    linear-gradient(135deg, rgba(4, 21, 43, .95), rgba(1, 38, 76, .82)),
+    radial-gradient(circle at 75% 20%, rgba(255, 204, 0, .20), transparent 28%);
+  box-shadow: 0 24px 60px rgba(0,0,0,.35);
+}
 
-    html,
-    body {
-      margin: 0;
-      padding: 0;
-      overflow-x: hidden;
-    }
+.hero-emblem {
+  display: grid;
+  place-items: center;
+  width: 150px;
+  height: 150px;
+  border: 2px solid #ffcc33;
+  border-radius: 28px;
+  background: linear-gradient(160deg, rgba(255,204,51,.18), rgba(0,0,0,.22));
+  box-shadow: inset 0 0 28px rgba(255,204,51,.10), 0 16px 40px rgba(0,0,0,.30);
+  transform: rotate(-2deg);
+}
 
-    body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      color: #222;
-      background:
-        radial-gradient(900px 500px at 15% 0%, rgba(0, 116, 217, .25), transparent 60%),
-        radial-gradient(900px 500px at 85% 15%, rgba(255, 204, 0, .10), transparent 55%),
-        #001f3f;
-    }
+.emblem-cup {
+  font-size: 56px;
+  filter: drop-shadow(0 8px 14px rgba(0,0,0,.45));
+}
 
-    a {
-      text-decoration: none;
-    }
+.hero-emblem span {
+  font-size: 1.2rem;
+  font-weight: 950;
+  letter-spacing: .08em;
+  color: #ffcc33;
+}
 
-    #app-content {
-      min-height: 100vh;
-      transition: opacity 0.18s ease;
-    }
+.eyebrow {
+  margin: 0 0 4px;
+  color: #ffcc33;
+  text-transform: uppercase;
+  letter-spacing: .22em;
+  font-weight: 900;
+  font-size: .78rem;
+}
 
-    #app-content.page-loading {
-      opacity: 0.96;
-    }
+.hero-copy h1 {
+  margin: 0;
+  font-size: clamp(3rem, 7vw, 6.2rem);
+  line-height: .86;
+  text-transform: uppercase;
+  letter-spacing: -.04em;
+  font-weight: 1000;
+  font-style: italic;
+  text-shadow: 0 10px 24px rgba(0,0,0,.45);
+}
 
-    .home-wrap {
-      overflow-x: hidden;
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 20px 16px 30px;
-      background: transparent;
-    }
+.hero-subtitle {
+  margin: 12px 0 0;
+  color: #ffcc33;
+  font-size: clamp(1.1rem, 2vw, 1.8rem);
+  font-weight: 900;
+  text-transform: uppercase;
+}
 
-    @media (min-width: 1200px) {
-      .home-wrap {
-        max-width: none;
-        width: 100%;
-        margin: 0;
-        padding: 20px 12px 30px;
-      }
-    }
+.hero-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  padding: 12px;
+  border: 1px solid rgba(255,255,255,.12);
+  border-radius: 22px;
+  background: rgba(0,0,0,.22);
+}
 
-    .gazzetta-frame {
-      width: 100%;
-      max-width: 100%;
-      border: 0;
-      border-radius: 14px;
-      background: transparent;
-      box-shadow: none;
-      overflow: hidden;
-      display: block;
-    }
+.stat-card {
+  min-height: 116px;
+  display: grid;
+  place-content: center;
+  text-align: center;
+  border-radius: 16px;
+  background: rgba(255,255,255,.055);
+  border: 1px solid rgba(255,255,255,.08);
+}
 
-    @media (max-width: 900px) {
-      .home-wrap {
-        padding: 14px 10px 20px;
-      }
+.stat-card strong {
+  display: block;
+  font-size: 4rem;
+  line-height: .85;
+  color: #ffffff;
+  font-weight: 1000;
+}
 
-      .gazzetta-frame {
-        height: 88vh;
-        border-radius: 12px;
-      }
+.stat-card span {
+  margin-top: 10px;
+  font-size: .82rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  color: #ffcc33;
+}
 
-      .splash-logo {
-        width: 150px;
-        height: 150px;
-        border-radius: 28px;
-      }
+.crown-card strong::before {
+  content: "♛";
+  display: block;
+  font-size: 1.9rem;
+  color: #ffcc33;
+  line-height: 1;
+}
 
-      .splash-content h1 {
-        font-size: 1.35rem;
-        letter-spacing: 0.10em;
-      }
-    }
-  </style>
-</head>
+.playoff-shell {
+  position: relative;
+  margin-top: 30px;
+  padding: 22px 16px 30px;
+  border-radius: 28px;
+  background: rgba(0, 14, 32, .38);
+  border: 1px solid rgba(255,255,255,.08);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.05);
+}
 
-<body>
+.round-labels {
+  display: grid;
+  grid-template-columns: 1.15fr 1.15fr 1fr .95fr;
+  gap: 38px;
+  padding: 0 6px 18px;
+}
 
-  <nav class="site-nav">
-    <div class="nav-inner">
-      <div class="nav-left">
-        <span id="hamburger" class="hamburger" aria-label="Apri menu">☰</span>
+.round-labels h2 {
+  margin: 0;
+  color: #ffcc33;
+  text-align: center;
+  font-size: 1.1rem;
+  font-weight: 1000;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+}
 
-        <a href="index.html" class="brand-home" aria-label="Home">
-          <img src="icons/nav/home.webp" alt="" class="nav-home-icon">
-        </a>
-      </div>
+.bracket-grid {
+  display: grid;
+  grid-template-columns: 1.15fr 1.15fr 1fr .95fr;
+  gap: 38px;
+  align-items: stretch;
+  position: relative;
+}
 
-      <ul class="navbar" id="mainMenu">
-        <li><a href="rose.html">Rose</a></li>
+.round {
+  display: grid;
+  gap: 20px;
+  position: relative;
+}
 
-        <li class="dropdown">
-          <a href="#" class="toggle-submenu">
-            Draft <span class="caret">▾</span>
-          </a>
+.round-wildcard,
+.round-quarter {
+  grid-template-rows: repeat(4, 154px);
+}
 
-          <ul class="submenu">
-            <li>
-              <a href="pre-draft.html">
-                <img src="icons/nav/pre-draft.webp" class="menu-icon" alt="">
-                Pre-Draft
-              </a>
-            </li>
+.round-semi {
+  grid-template-rows: 1fr 1fr;
+  align-content: center;
+  padding: 90px 0;
+}
 
-            <li>
-              <a href="draft_championship.html">
-                <img src="icons/nav/conf-championship.webp" class="menu-icon" alt="">
-                Conf. Championship
-              </a>
-            </li>
+.round-final {
+  align-content: center;
+  padding: 194px 0;
+}
 
-            <li>
-              <a href="draft_conference.html">
-                <img src="icons/nav/conf-league.webp" class="menu-icon" alt="">
-                Conf. League
-              </a>
-            </li>
+.match-card {
+  position: relative;
+  overflow: visible;
+  border-radius: 16px;
+  padding: 22px 14px 14px;
+  background:
+    linear-gradient(180deg, rgba(8, 34, 65, .96), rgba(2, 18, 37, .96));
+  border: 1px solid rgba(255,255,255,.24);
+  box-shadow: 0 16px 32px rgba(0,0,0,.30), inset 0 1px 0 rgba(255,255,255,.08);
+}
 
-            <li>
-              <a href="dinamico-draft.html">
-                <img src="icons/nav/draft-2026.webp" class="menu-icon" alt="">
-                Draft 2027
-              </a>
-            </li>
-          </ul>
-        </li>
+.match-card::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  right: -39px;
+  width: 39px;
+  height: 2px;
+  background: #ffcc33;
+  box-shadow: 0 0 14px rgba(255,204,51,.45);
+}
 
-        <li class="dropdown competizioni">
-          <a href="#" class="toggle-submenu">
-            Competizioni <span class="caret">▾</span>
-          </a>
+.round-final .match-card::after {
+  display: none;
+}
 
-          <ul class="submenu">
-            <li>
-              <a href="classifica.html">
-                <img src="icons/nav/classifiche.webp" class="menu-icon" alt="">
-                Classifiche
-              </a>
-            </li>
+.wc1::before,
+.wc2::before,
+.wc3::before,
+.wc4::before,
+.q1::before,
+.q2::before,
+.q3::before,
+.q4::before,
+.s1::before,
+.s2::before {
+  content: "";
+  position: absolute;
+  right: -39px;
+  width: 2px;
+  background: #ffcc33;
+  box-shadow: 0 0 14px rgba(255,204,51,.45);
+}
 
-            <li>
-              <a href="playoff.html">
-                <img src="icons/nav/playoff.webp" class="menu-icon" alt="">
-                Playoff
-              </a>
-            </li>
+.wc1::before { top: 50%; height: 86px; }
+.wc2::before { bottom: 50%; height: 86px; }
+.wc3::before { top: 50%; height: 86px; }
+.wc4::before { bottom: 50%; height: 86px; }
+.q1::before { top: 50%; height: 176px; }
+.q2::before { bottom: 50%; height: 176px; }
+.q3::before { top: 50%; height: 176px; }
+.q4::before { bottom: 50%; height: 176px; }
+.s1::before { top: 50%; height: 176px; }
+.s2::before { bottom: 50%; height: 176px; }
 
-            <li>
-              <a href="arena.html">
-                <img src="icons/nav/highlander.webp" class="menu-icon" alt="">
-                Highlander
-              </a>
-            </li>
+.match-tag {
+  position: absolute;
+  top: -1px;
+  left: -1px;
+  min-width: 52px;
+  padding: 7px 10px;
+  border-radius: 16px 0 14px 0;
+  background: linear-gradient(135deg, #ffd65a, #e6a400);
+  color: #061326;
+  font-weight: 1000;
+  font-size: .78rem;
+  text-align: center;
+  box-shadow: 0 8px 18px rgba(0,0,0,.22);
+}
 
-            <li>
-              <a href="crashoutcup.html">
-                <img src="icons/nav/crashout-cup.webp" class="menu-icon" alt="">
-                Crash Out Cup
-              </a>
-            </li>
+.seed-badge {
+  position: absolute;
+  top: 9px;
+  right: 10px;
+  padding: 4px 8px;
+  border-radius: 999px;
+  background: rgba(0,116,217,.28);
+  border: 1px solid rgba(255,255,255,.15);
+  color: #d8eeff;
+  font-size: .68rem;
+  font-weight: 900;
+  text-transform: uppercase;
+}
 
-            <li>
-              <a href="crashoutplayoff.html">
-                <img src="icons/nav/crashout-playoff.webp" class="menu-icon" alt="">
-                Crash Out Cup - Playoff
-              </a>
-            </li>
+.team-row {
+  display: grid;
+  grid-template-columns: 46px minmax(0, 1fr) 24px;
+  align-items: center;
+  gap: 10px;
+  min-height: 52px;
+  border-bottom: 1px solid rgba(255,255,255,.08);
+}
 
-            <li>
-              <a href="supercoppa.html">
-                <img src="icons/nav/supercoppa.webp" class="menu-icon" alt="">
-                Supercoppa
-              </a>
-            </li>
+.team-row:last-of-type {
+  border-bottom: 0;
+}
 
-            <li>
-              <a href="statistiche.html">
-                <img src="icons/nav/statistiche.webp" class="menu-icon" alt="">
-                Statistiche
-              </a>
-            </li>
-          </ul>
-        </li>
+.team-row img,
+.shield {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  object-fit: contain;
+  background: rgba(255,255,255,.92);
+  padding: 3px;
+}
 
-        <li><a href="waiver.html">Waiver Wire</a></li>
+.shield {
+  display: grid;
+  place-items: center;
+  color: #8ca8bf;
+  background: rgba(255,255,255,.08);
+  border: 1px solid rgba(255,255,255,.16);
+}
 
-        <li class="dropdown">
-          <a href="#" class="toggle-submenu">
-            Hall of Fame <span class="caret">▾</span>
-          </a>
+.team-row span:nth-child(2) {
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  font-weight: 950;
+  text-transform: uppercase;
+  font-size: .92rem;
+}
 
-          <ul class="submenu">
-            <li>
-              <a href="medagliere.html">
-                <img src="icons/nav/albo-oro.webp" class="menu-icon" alt="">
-                Albo d'Oro
-              </a>
-            </li>
+.team-row b {
+  font-size: 1.1rem;
+  text-align: right;
+  color: #ffffff;
+}
 
-            <li>
-              <a href="albo.html">
-                <img src="icons/nav/medagliere.webp" class="menu-icon" alt="">
-                Medagliere
-              </a>
-            </li>
-          </ul>
-        </li>
+.match-card small {
+  display: block;
+  margin-top: 8px;
+  color: rgba(255,255,255,.68);
+  font-size: .78rem;
+}
 
-        <li><a href="regolamento.html">Regolamento</a></li>
-      </ul>
+.placeholder {
+  opacity: .84;
+}
 
-      <div class="nav-right hero-actions">
-        <a id="trade-badge" href="trade-room.html" class="btn-hero trade-badge" aria-label="Trade Room">
-          <img src="icons/nav/trade-room.webp" class="action-icon" alt="">
-          <span class="btn-label">Trade Room</span>
-        </a>
+.final-card {
+  min-height: 260px;
+  padding-top: 46px;
+  border-color: rgba(255, 204, 51, .82);
+  box-shadow: 0 0 0 1px rgba(255,204,51,.18), 0 0 35px rgba(255,204,51,.22), 0 24px 50px rgba(0,0,0,.42);
+}
 
-        <a id="login-btn" href="login.html" class="btn-hero" style="display:none;" aria-label="Login">
-          <img src="icons/nav/login-logout.webp" class="action-icon" alt="">
-          <span class="btn-label">Login</span>
-        </a>
+.final-crown {
+  position: absolute;
+  top: 18px;
+  left: 50%;
+  transform: translateX(-50%);
+  color: #ffcc33;
+  font-size: 2.4rem;
+  line-height: 1;
+}
 
-        <button id="logout-btn" type="button" class="btn-hero" style="display:none;" aria-label="Logout">
-          <img src="icons/nav/login-logout.webp" class="action-icon" alt="">
-          <span class="btn-label">Logout</span>
-        </button>
+.final-card h2 {
+  margin: 6px 0 16px;
+  text-align: center;
+  color: #ffcc33;
+  text-transform: uppercase;
+  font-size: 1.15rem;
+  font-weight: 1000;
+}
 
-        <button id="attiva-notifiche-btn" type="button" class="btn-hero warning" aria-label="Attiva notifiche">
-          <img src="icons/nav/notifications.webp" class="action-icon" alt="">
-          <span class="btn-label">Attiva notifiche</span>
-        </button>
-      </div>
-    </div>
-  </nav>
+.mobile-playoff {
+  display: none;
+}
 
-    <main class="home-wrap">
-      <iframe
-        id="gazzettaFrame"
-        class="gazzetta-frame"
-        src="giornale.html"
-        title="La Gazzetta degli Eroi"
-        scrolling="no">
-      </iframe>
-    </section>
-  </main>
+@media (max-width: 1180px) {
+  .playoff-hero {
+    grid-template-columns: 120px 1fr;
+  }
 
-  <script>
-    function resizeGazzetta() {
-      const iframe = document.getElementById("gazzettaFrame");
-      if (!iframe) return;
+  .hero-emblem {
+    width: 112px;
+    height: 112px;
+    border-radius: 22px;
+  }
 
-      try {
-        const doc = iframe.contentDocument || iframe.contentWindow.document;
-        const h = Math.max(
-          doc.body.scrollHeight,
-          doc.documentElement.scrollHeight
-        );
+  .emblem-cup {
+    font-size: 40px;
+  }
 
-        iframe.style.height = (h + 20) + "px";
-      } catch (e) {
-        console.warn("Impossibile auto-resize iframe:", e);
-      }
-    }
+  .hero-stats {
+    grid-column: 1 / -1;
+  }
 
-    function initGazzettaFrame() {
-      const iframe = document.getElementById("gazzettaFrame");
+  .bracket-grid,
+  .round-labels {
+    gap: 26px;
+  }
 
-      if (iframe) {
-        iframe.addEventListener("load", () => {
-          resizeGazzetta();
-          setTimeout(resizeGazzetta, 400);
-          setTimeout(resizeGazzetta, 1200);
-          setTimeout(resizeGazzetta, 2500);
-        });
-      }
+  .match-card::after,
+  .wc1::before,
+  .wc2::before,
+  .wc3::before,
+  .wc4::before,
+  .q1::before,
+  .q2::before,
+  .q3::before,
+  .q4::before,
+  .s1::before,
+  .s2::before {
+    right: -27px;
+  }
 
-      window.addEventListener("resize", resizeGazzetta);
-    }
+  .match-card::after {
+    width: 27px;
+  }
+}
 
-    document.addEventListener("DOMContentLoaded", initGazzettaFrame);
-  </script>
+@media (max-width: 900px) {
+  .playoff-page {
+    padding: 14px 12px 32px;
+  }
 
-  <script>
-    if ("serviceWorker" in navigator) {
-      window.addEventListener("load", function () {
-        navigator.serviceWorker.register("./sw.js")
-          .then(function () {
-            console.log("SW registrato");
-          })
-          .catch(function (err) {
-            console.log("Errore SW:", err);
-          });
-      });
-    }
-  </script>
+  .playoff-hero {
+    grid-template-columns: 1fr;
+    text-align: center;
+    padding: 18px 14px;
+    border-radius: 22px;
+  }
 
-  <script type="module" src="home_auth.js"></script>
-  <script src="navbar.js"></script>
+  .hero-emblem {
+    display: none;
+  }
 
-</body>
-</html>
+  .eyebrow {
+    font-size: .68rem;
+  }
+
+  .hero-copy h1 {
+    font-size: 3.2rem;
+  }
+
+  .hero-subtitle {
+    font-size: 1rem;
+  }
+
+  .hero-stats {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    padding: 8px;
+  }
+
+  .stat-card {
+    min-height: 86px;
+  }
+
+  .stat-card strong {
+    font-size: 2.6rem;
+  }
+
+  .stat-card span {
+    font-size: .62rem;
+  }
+
+  .playoff-shell {
+    display: none;
+  }
+
+  .mobile-playoff {
+    display: grid;
+    gap: 14px;
+    margin-top: 18px;
+  }
+
+  .mobile-round {
+    border-radius: 18px;
+    overflow: hidden;
+    background: rgba(1, 21, 44, .72);
+    border: 1px solid rgba(255,255,255,.12);
+    box-shadow: 0 16px 32px rgba(0,0,0,.26);
+  }
+
+  .mobile-round-title {
+    width: 100%;
+    border: 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 15px;
+    background: rgba(3, 31, 62, .95);
+    color: #ffcc33;
+    font: inherit;
+    font-size: .95rem;
+    font-weight: 1000;
+    text-transform: uppercase;
+    letter-spacing: .03em;
+    cursor: pointer;
+  }
+
+  .mobile-round:not(.open) .mobile-round-body {
+    display: none;
+  }
+
+  .mobile-round:not(.open) .mobile-round-title span {
+    transform: rotate(-90deg);
+  }
+
+  .mobile-round-body {
+    display: grid;
+    gap: 10px;
+    padding: 12px;
+  }
+
+  .mobile-round-body .match-card {
+    padding: 22px 12px 12px;
+    border-radius: 14px;
+  }
+
+  .mobile-round-body .match-card::before,
+  .mobile-round-body .match-card::after {
+    display: none;
+  }
+
+  .mobile-round-body .team-row {
+    grid-template-columns: 42px minmax(0, 1fr) 22px;
+    min-height: 48px;
+  }
+
+  .mobile-round-body .team-row img,
+  .mobile-round-body .shield {
+    width: 38px;
+    height: 38px;
+  }
+
+  .mobile-round-body .team-row span:nth-child(2) {
+    font-size: .78rem;
+  }
+
+  .final-card {
+    min-height: 220px;
+  }
+}
+
+@media (max-width: 420px) {
+  .hero-copy h1 {
+    font-size: 2.7rem;
+  }
+
+  .stat-card strong {
+    font-size: 2.2rem;
+  }
+
+  .stat-card span {
+    font-size: .56rem;
+  }
+}
