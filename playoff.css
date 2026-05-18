@@ -1436,3 +1436,81 @@ body{
     padding-bottom: 8px !important;
   }
 }
+
+/* =========================================================
+   DESKTOP - LOGHI PIÙ GRANDI + RISULTATO AL POSTO DEL PALLINO
+   Non tocca la mobile
+   ========================================================= */
+@media (min-width: 1024px){
+
+  :root{
+    --po-logo-size: clamp(70px, 4.6vw, 92px);
+    --po-logo-card-w: clamp(150px, 9.4vw, 185px);
+    --po-logo-card-h: clamp(82px, 5.2vw, 104px);
+    --logo-slab: clamp(92px, 5.8vw, 118px);
+  }
+
+  .match{
+    min-height: var(--po-logo-card-h) !important;
+  }
+
+  .team-logo-wrap{
+    width: var(--logo-slab) !important;
+    min-width: var(--logo-slab) !important;
+  }
+
+  .squadra.orizzontale img{
+    width: var(--po-logo-size) !important;
+    height: var(--po-logo-size) !important;
+    padding: 5px !important;
+  }
+
+  /* Nasconde testi squadra su desktop */
+  .team-name,
+  .team-status{
+    display: none !important;
+  }
+
+  /* La parte bianca non è più un pallino inutile: diventa area risultato */
+  .team-main{
+    justify-content: center !important;
+    align-items: center !important;
+    padding: 0 12px !important;
+    min-width: 58px;
+  }
+
+  .team-text{
+    display: none !important;
+  }
+
+  .team-score{
+    min-width: 44px;
+    height: 44px;
+    border-radius: 14px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    background: linear-gradient(180deg, #ffffff 0%, #eef5ff 100%);
+    border: 1px solid rgba(3, 37, 76, 0.16);
+    color: #06254c;
+
+    font-size: 1.35rem;
+    font-weight: 950;
+    line-height: 1;
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,.85),
+      0 6px 14px rgba(0,0,0,.16);
+  }
+
+  .match.vincente .team-score{
+    background: linear-gradient(180deg, #fff2b8 0%, #ffd36b 100%);
+    color: #4d3300;
+    border-color: rgba(255,211,107,.55);
+  }
+
+  /* Placeholder tipo Vincente Q1 / TBD: niente numero, solo slot scuro */
+  .team-logo-wrap:empty + .team-main .team-score{
+    display: none;
+  }
+}
