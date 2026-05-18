@@ -10,15 +10,15 @@
   --line: rgba(99, 178, 255, 0.9);
   --shadow: 0 14px 30px rgba(0,0,0,0.28);
 
-  --card-w: 185px;
-  --card-h: 188px;
-  --card-w-semi: 175px;
-  --card-h-semi: 178px;
-  --card-w-final: 230px;
-  --card-h-final: 280px;
+--card-w: 178px;
+--card-h: 150px;
+--card-w-semi: 172px;
+--card-h-semi: 150px;
+--card-w-final: 230px;
+--card-h-final: 250px;
 
-  --logo-size: 56px;
-  --logo-size-final: 78px;
+--logo-size: 58px;
+--logo-size-final: 76px;
 
   --seed-size: 28px;
   --score-w: 42px;
@@ -37,6 +37,27 @@ body{
     radial-gradient(circle at 50% 0%, rgba(255,255,255,.10), transparent 28%),
     linear-gradient(180deg, rgba(3,16,39,.30), rgba(3,16,39,.75)),
     #031027 url("img/champions-bg.png") center top / cover no-repeat fixed;
+}
+
+body::after{
+  content:"";
+  position:fixed;
+  left:0;
+  right:0;
+  bottom:0;
+  height:42vh;
+  background:
+    linear-gradient(180deg, rgba(3,16,39,0) 0%, rgba(2,20,27,.35) 30%, rgba(1,19,16,.80) 100%),
+    repeating-linear-gradient(
+      90deg,
+      rgba(255,255,255,.035) 0px,
+      rgba(255,255,255,.035) 2px,
+      transparent 2px,
+      transparent 120px
+    );
+  opacity:.55;
+  pointer-events:none;
+  z-index:-1;
 }
 
 /* HERO */
@@ -197,7 +218,7 @@ body{
 
 .match-row{
   min-height:calc(var(--card-h) / 2);
-  padding:14px 12px;
+  padding:9px 10px;
   display:grid;
   grid-template-columns: 34px 1fr 44px;
   align-items:center;
@@ -210,8 +231,8 @@ body{
 }
 
 .game-card--finale .match-row{
-  min-height:120px;
-  padding:18px 14px;
+  min-height:105px;
+  padding:14px 14px;
   grid-template-columns: 36px 1fr 54px;
 }
 
@@ -220,8 +241,8 @@ body{
 }
 
 .seed-box{
-  width:34px;
-  height:34px;
+  width:31px;
+  height:31px;
   border-radius:10px;
   background:#0d2e67;
   color:#fff;
@@ -243,11 +264,11 @@ body{
   width:var(--logo-size);
   height:var(--logo-size);
   object-fit:contain;
-  filter:drop-shadow(0 3px 6px rgba(0,0,0,.28));
+  filter:drop-shadow(0 5px 8px rgba(0,0,0,.35));
   background:#fff;
   border-radius:50%;
-  padding:4px;
-  border:2px solid rgba(9,29,63,.12);
+  padding:3px;
+  border:2px solid rgba(9,29,63,.10);
 }
 
 .game-card--finale .team-logo{
@@ -257,8 +278,8 @@ body{
 }
 
 .score-box{
-  min-width:44px;
-  height:42px;
+  min-width:40px;
+  height:38px;
   border-radius:11px;
   background:#173c85;
   color:#fff;
@@ -336,11 +357,11 @@ body{
 .finale-trophy{
   position:relative;
   z-index:2;
-  margin-bottom:-8px;
+  margin-bottom:-2px;
 }
 
 .coppa-img{
-  width:94px;
+  width:86px;
   height:auto;
   filter:drop-shadow(0 10px 18px rgba(0,0,0,.35));
 }
