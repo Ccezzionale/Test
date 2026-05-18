@@ -271,24 +271,13 @@ function aggiornaPlayoff() {
   const P = computeParticipants();
   if (!Object.keys(P).length) return;
 
-  /*
-    Prima manteniamo la logica originale dei quarti,
-    perché placeQuarterPairs usa ancora i vecchi data-match.
-  */
+  // Mantiene l'ordine originale dei quarti nella struttura desktop.
   placeQuarterPairs();
 
-  /*
-    Poi trasformiamo il desktop in:
-    1 partita = 1 card unica.
-  */
+  // Desktop: 1 partita = 1 card vera.
   renderDesktopSingleBracket(P);
 
-  renderCampione(P);
-  alignLikeExcel();
-
-  /*
-    Mobile intatta: continua a usare il render mobile originale.
-  */
+  // Mobile: resta intatta, usa il render originale.
   renderMobilePlayoff(P);
 }
 
@@ -778,8 +767,6 @@ fetch(URL_STATS_MASTER + "&nocache=" + Date.now(), { cache: "no-store" })
 
     aggiornaPlayoff();
 
-    window.addEventListener("resize", () => {
-      alignLikeExcel();
-    });
+    // Nessun riallineamento JS sul desktop: il layout single-card è gestito dal CSS.
   })
   .catch(err => console.error("Errore nel caricamento classifica playoff:", err));
