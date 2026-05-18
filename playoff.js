@@ -52,7 +52,7 @@ function getLogoPath(nome) {
   return `img/${stripSeed(nome || "")}.png`;
 }
 
-function isPlaceholderTeam(nome) {
+function isPlaceholderName(nome) {
   const clean = stripSeed(nome || "").trim().toLowerCase();
   return (
     !clean ||
@@ -65,7 +65,7 @@ function isPlaceholderTeam(nome) {
 
 function createMatchTeamSide(nome, seed = "", score = "--", side = "left", isWinner = false) {
   const clean = stripSeed(nome || "");
-  const isPlaceholder = isPlaceholderTeam(clean);
+  const isPlaceholder = isPlaceholderName(clean);
   const teamColor = isPlaceholder ? "#163d78" : getTeamColor(clean);
   const logo = !isPlaceholder
     ? `<img src="${getLogoPath(clean)}" alt="${clean}" onerror="this.style.display='none'">`
@@ -75,19 +75,19 @@ function createMatchTeamSide(nome, seed = "", score = "--", side = "left", isWin
     <div class="match-team ${side} ${isWinner ? "winner" : ""} ${isPlaceholder ? "placeholder" : ""}" style="--team-color:${teamColor}">
       <span class="match-seed">${seed ? `#${seed}` : ""}</span>
 
-      ${
-        side === "left"
-          ? `
-            <div class="match-team-color"></div>
-            <div class="match-logo-wrap">${logo}</div>
-            <div class="match-score">${isPlaceholder ? "" : score}</div>
-          `
-          : `
-            <div class="match-score">${isPlaceholder ? "" : score}</div>
-            <div class="match-logo-wrap">${logo}</div>
-            <div class="match-team-color"></div>
-          `
-      }
+${
+  side === "left"
+    ? `
+      <div class="match-team-color"></div>
+      <div class="match-logo-wrap">${logo}</div>
+      <div class="match-score">${isPlaceholder ? "" : `<span>${score}</span>`}</div>
+    `
+    : `
+      <div class="match-score">${isPlaceholder ? "" : `<span>${score}</span>`}</div>
+      <div class="match-logo-wrap">${logo}</div>
+      <div class="match-team-color"></div>
+    `
+}
     </div>
   `;
 }
@@ -220,41 +220,75 @@ function computeParticipants() {
 /* =========================================
    RENDER
    ========================================= */
+function renderDesktopSingleMatch(P, code) {
+  const home = P[code]?.home;
+  const away = P[code]?.away;
+  if (!home || !away) return;
+
+  const a = document.querySelector(`.match[data-match="${code}-A"]`);
+  const b = document.querySelector(`.match[data-match="${code}-B"]`);
+  if (!a || !b) return;
+
+  const container = a.parentElement;
+  if (!container) return;
+
+  const pick = PICKS[code];
+
+  const winnerHome =
+    pick &&
+    truthy(pick.home) &&
+    !truthy(pick.away);
+
+  const winnerAway =
+    pick &&
+    truthy(pick.away) &&
+    !truthy(pick.home);
+
+  container.classList.add("single-match-container");
+  container.dataset.series = code;
+
+  container.innerHTML = createSingleMatchCard({
+    teamA: home.name,
+    seedA: home.seed || "",
+    scoreA: "--",
+    winnerA: !!winnerHome,
+
+    teamB: away.name,
+    seedB: away.seed || "",
+    scoreB: "--",
+    winnerB: !!winnerAway,
+
+    extraClass: code === "F" ? "final-card" : ""
+  });
+}
+
+function renderDesktopSingleBracket(P) {
+  const codes = ["WC1", "WC2", "WC3", "WC4", "Q1", "Q2", "Q3", "Q4", "S1", "S2", "F"];
+  codes.forEach(code => renderDesktopSingleMatch(P, code));
+}
+
 function aggiornaPlayoff() {
   const P = computeParticipants();
   if (!Object.keys(P).length) return;
 
-  const codes = ["WC1","WC2","WC3","WC4","Q1","Q2","Q3","Q4","S1","S2","F"];
+  /*
+    Prima manteniamo la logica originale dei quarti,
+    perché placeQuarterPairs usa ancora i vecchi data-match.
+  */
+  placeQuarterPairs();
 
-  const fill = (code, side) => {
-    const data = P[code]?.[side];
-    if (!data) return;
-
-    const slot = side === "home" ? "A" : "B";
-    const el = document.querySelector(`.match[data-match="${code}-${slot}"]`);
-    if (!el) return;
-
-    const pick = PICKS[code];
-    const isWinner =
-      pick &&
-      truthy(pick[side]) &&
-      !truthy(pick[side === "home" ? "away" : "home"]);
-
-    const isPlaceholder = !data.seed && /vincente/i.test(data.name || "");
-    el.innerHTML = creaHTMLSquadra(data.name, data.seed || "", isPlaceholder, !!isWinner);
-    el.classList.toggle("vincente", !!isWinner);
-
-    applyTeamColorFromCard(el);
-  };
-
-  codes.forEach(code => {
-    fill(code, "home");
-    fill(code, "away");
-  });
+  /*
+    Poi trasformiamo il desktop in:
+    1 partita = 1 card unica.
+  */
+  renderDesktopSingleBracket(P);
 
   renderCampione(P);
-  placeQuarterPairs();
   alignLikeExcel();
+
+  /*
+    Mobile intatta: continua a usare il render mobile originale.
+  */
   renderMobilePlayoff(P);
 }
 
