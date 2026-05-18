@@ -31,45 +31,61 @@ body::before {
   mask-image: linear-gradient(to bottom, rgba(0,0,0,.95), rgba(0,0,0,.25));
 }
 
+body::after {
+  content: "";
+  position: fixed;
+  inset: auto 0 0;
+  height: 34vh;
+  pointer-events: none;
+  opacity: .16;
+  background:
+    linear-gradient(90deg, rgba(255,204,91,.20) 1px, transparent 1px),
+    linear-gradient(0deg, rgba(255,204,91,.10) 1px, transparent 1px),
+    linear-gradient(120deg, rgba(255,204,91,.12), transparent 45%, rgba(255,255,255,.06));
+  background-size: 92px 92px, 92px 92px, 100% 100%;
+  transform: perspective(800px) rotateX(58deg);
+  transform-origin: bottom;
+}
+
 .playoff-page {
-  width: min(1480px, 100%);
+  width: min(1500px, 100%);
   margin: 0 auto;
-  padding: 26px 22px 46px;
+  padding: 18px 22px 42px;
 }
 
 .playoff-hero {
   display: grid;
-  grid-template-columns: 160px minmax(240px, 1fr) 520px;
+  grid-template-columns: 122px minmax(240px, 1fr) 480px;
   align-items: center;
-  gap: 24px;
-  padding: 22px;
+  gap: 22px;
+  padding: 16px 18px;
   border: 1px solid rgba(255, 214, 90, .22);
-  border-radius: 28px;
+  border-radius: 26px;
   background:
-    linear-gradient(135deg, rgba(4, 21, 43, .95), rgba(1, 38, 76, .82)),
-    radial-gradient(circle at 75% 20%, rgba(255, 204, 0, .20), transparent 28%);
-  box-shadow: 0 24px 60px rgba(0,0,0,.35);
+    linear-gradient(135deg, rgba(4, 21, 43, .96), rgba(1, 38, 76, .84)),
+    radial-gradient(circle at 75% 20%, rgba(255, 204, 0, .18), transparent 30%);
+  box-shadow: 0 18px 46px rgba(0,0,0,.32);
 }
 
 .hero-emblem {
   display: grid;
   place-items: center;
-  width: 150px;
-  height: 150px;
+  width: 112px;
+  height: 112px;
   border: 2px solid #ffcc33;
-  border-radius: 28px;
+  border-radius: 24px;
   background: linear-gradient(160deg, rgba(255,204,51,.18), rgba(0,0,0,.22));
   box-shadow: inset 0 0 28px rgba(255,204,51,.10), 0 16px 40px rgba(0,0,0,.30);
   transform: rotate(-2deg);
 }
 
 .emblem-cup {
-  font-size: 56px;
+  font-size: 42px;
   filter: drop-shadow(0 8px 14px rgba(0,0,0,.45));
 }
 
 .hero-emblem span {
-  font-size: 1.2rem;
+  font-size: .95rem;
   font-weight: 950;
   letter-spacing: .08em;
   color: #ffcc33;
@@ -86,7 +102,7 @@ body::before {
 
 .hero-copy h1 {
   margin: 0;
-  font-size: clamp(3rem, 7vw, 6.2rem);
+  font-size: clamp(3rem, 5.8vw, 5.2rem);
   line-height: .86;
   text-transform: uppercase;
   letter-spacing: -.04em;
@@ -96,9 +112,9 @@ body::before {
 }
 
 .hero-subtitle {
-  margin: 12px 0 0;
+  margin: 8px 0 0;
   color: #ffcc33;
-  font-size: clamp(1.1rem, 2vw, 1.8rem);
+  font-size: clamp(1.05rem, 1.7vw, 1.55rem);
   font-weight: 900;
   text-transform: uppercase;
 }
@@ -106,15 +122,15 @@ body::before {
 .hero-stats {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 12px;
-  padding: 12px;
+  gap: 10px;
+  padding: 10px;
   border: 1px solid rgba(255,255,255,.12);
   border-radius: 22px;
   background: rgba(0,0,0,.22);
 }
 
 .stat-card {
-  min-height: 116px;
+  min-height: 96px;
   display: grid;
   place-content: center;
   text-align: center;
@@ -125,7 +141,7 @@ body::before {
 
 .stat-card strong {
   display: block;
-  font-size: 4rem;
+  font-size: 3.35rem;
   line-height: .85;
   color: #ffffff;
   font-weight: 1000;
@@ -149,9 +165,9 @@ body::before {
 
 .playoff-shell {
   position: relative;
-  margin-top: 30px;
-  padding: 22px 16px 30px;
-  border-radius: 28px;
+  margin-top: 24px;
+  padding: 22px 18px 30px;
+  border-radius: 24px;
   background: rgba(0, 14, 32, .38);
   border: 1px solid rgba(255,255,255,.08);
   box-shadow: inset 0 1px 0 rgba(255,255,255,.05);
@@ -159,8 +175,8 @@ body::before {
 
 .round-labels {
   display: grid;
-  grid-template-columns: 1.15fr 1.15fr 1fr .95fr;
-  gap: 38px;
+  grid-template-columns: 1.12fr 1.12fr 1fr 1.08fr;
+  gap: 34px;
   padding: 0 6px 18px;
 }
 
@@ -176,43 +192,50 @@ body::before {
 
 .bracket-grid {
   display: grid;
-  grid-template-columns: 1.15fr 1.15fr 1fr .95fr;
-  gap: 38px;
+  grid-template-columns: 1.12fr 1.12fr 1fr 1.08fr;
+  gap: 34px;
   align-items: stretch;
   position: relative;
 }
 
 .round {
   display: grid;
-  gap: 20px;
+  gap: 22px;
   position: relative;
 }
 
 .round-wildcard,
 .round-quarter {
-  grid-template-rows: repeat(4, 154px);
+  grid-template-rows: repeat(4, 162px);
 }
 
 .round-semi {
   grid-template-rows: 1fr 1fr;
   align-content: center;
-  padding: 90px 0;
+  padding: 102px 0;
 }
 
 .round-final {
   align-content: center;
-  padding: 194px 0;
+  padding: 206px 0;
 }
 
 .match-card {
   position: relative;
   overflow: visible;
-  border-radius: 16px;
-  padding: 22px 14px 14px;
+  border-radius: 18px;
+  padding: 24px 16px 14px;
   background:
     linear-gradient(180deg, rgba(8, 34, 65, .96), rgba(2, 18, 37, .96));
-  border: 1px solid rgba(255,255,255,.24);
-  box-shadow: 0 16px 32px rgba(0,0,0,.30), inset 0 1px 0 rgba(255,255,255,.08);
+  border: 1px solid rgba(255,255,255,.22);
+  box-shadow: 0 18px 36px rgba(0,0,0,.32), inset 0 1px 0 rgba(255,255,255,.08);
+  transition: transform .18s ease, border-color .18s ease, box-shadow .18s ease;
+}
+
+.match-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(255, 204, 51, .52);
+  box-shadow: 0 22px 44px rgba(0,0,0,.38), 0 0 26px rgba(255,204,51,.10), inset 0 1px 0 rgba(255,255,255,.08);
 }
 
 .match-card::after {
@@ -222,8 +245,8 @@ body::before {
   right: -39px;
   width: 39px;
   height: 2px;
-  background: #ffcc33;
-  box-shadow: 0 0 14px rgba(255,204,51,.45);
+  background: linear-gradient(90deg, #ffcc33, rgba(255,204,51,.72));
+  box-shadow: 0 0 12px rgba(255,204,51,.38);
 }
 
 .round-final .match-card::after {
@@ -244,8 +267,8 @@ body::before {
   position: absolute;
   right: -39px;
   width: 2px;
-  background: #ffcc33;
-  box-shadow: 0 0 14px rgba(255,204,51,.45);
+  background: linear-gradient(180deg, #ffcc33, rgba(255,204,51,.72));
+  box-shadow: 0 0 12px rgba(255,204,51,.38);
 }
 
 .wc1::before { top: 50%; height: 86px; }
@@ -290,10 +313,10 @@ body::before {
 
 .team-row {
   display: grid;
-  grid-template-columns: 46px minmax(0, 1fr) 24px;
+  grid-template-columns: 56px minmax(0, 1fr) 32px;
   align-items: center;
   gap: 10px;
-  min-height: 52px;
+  min-height: 58px;
   border-bottom: 1px solid rgba(255,255,255,.08);
 }
 
@@ -303,12 +326,12 @@ body::before {
 
 .team-row img,
 .shield {
-  width: 42px;
-  height: 42px;
+  width: 52px;
+  height: 52px;
   border-radius: 50%;
   object-fit: contain;
   background: rgba(255,255,255,.92);
-  padding: 3px;
+  padding: 4px;
 }
 
 .shield {
@@ -324,9 +347,10 @@ body::before {
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
-  font-weight: 950;
+  font-weight: 1000;
   text-transform: uppercase;
-  font-size: .92rem;
+  font-size: .98rem;
+  letter-spacing: -.01em;
 }
 
 .team-row b {
@@ -347,29 +371,79 @@ body::before {
 }
 
 .final-card {
-  min-height: 260px;
-  padding-top: 46px;
+  min-height: 284px;
+  padding: 56px 18px 18px;
   border-color: rgba(255, 204, 51, .82);
   box-shadow: 0 0 0 1px rgba(255,204,51,.18), 0 0 35px rgba(255,204,51,.22), 0 24px 50px rgba(0,0,0,.42);
 }
 
 .final-crown {
   position: absolute;
-  top: 18px;
+  top: 16px;
   left: 50%;
   transform: translateX(-50%);
   color: #ffcc33;
-  font-size: 2.4rem;
+  font-size: 2.8rem;
   line-height: 1;
 }
 
 .final-card h2 {
-  margin: 6px 0 16px;
+  margin: 4px 0 20px;
   text-align: center;
   color: #ffcc33;
   text-transform: uppercase;
-  font-size: 1.15rem;
+  font-size: 1.28rem;
   font-weight: 1000;
+}
+
+
+.team-row {
+  border-radius: 14px;
+  padding-right: 7px;
+  padding-left: 2px;
+}
+
+.team-row.seeded {
+  background: linear-gradient(90deg, rgba(255,204,51,.08), transparent 70%);
+}
+
+.team-row[data-team="RAFA CASABLANCA"] { --team-accent: #123f32; }
+.team-row[data-team="UNION LIBRINO"] { --team-accent: #b893ff; }
+.team-row[data-team="GIODY"] { --team-accent: #08182f; }
+.team-row[data-team="GIULAY"] { --team-accent: #59c2ff; }
+.team-row[data-team="RUBINKEBAB"] { --team-accent: #c92020; }
+.team-row[data-team="TEAM BARTOWSKI"] { --team-accent: #7a1111; }
+.team-row[data-team="BAYERN CHRISTIANSEN"] { --team-accent: #7a1111; }
+.team-row[data-team="IBLA"] { --team-accent: #77d46b; }
+.team-row[data-team="MINNESODE TIMBERLAND"] { --team-accent: #e87923; }
+.team-row[data-team="POKERMANTRA"] { --team-accent: #4b1b78; }
+.team-row[data-team="WILDBOYS 78"] { --team-accent: #f0d047; }
+.team-row[data-team="REAL MIMMO"] { --team-accent: #ff8a1d; }
+
+.team-row[data-team]::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  width: 4px;
+  height: 38px;
+  border-radius: 999px;
+  background: var(--team-accent, #ffcc33);
+  box-shadow: 0 0 14px color-mix(in srgb, var(--team-accent, #ffcc33), transparent 55%);
+}
+
+.team-row {
+  position: relative;
+}
+
+.final-card::before {
+  content: "";
+  position: absolute;
+  inset: -2px;
+  border-radius: 20px;
+  pointer-events: none;
+  background: linear-gradient(135deg, rgba(255,204,51,.65), transparent 22%, transparent 70%, rgba(255,204,51,.35));
+  opacity: .55;
+  z-index: -1;
 }
 
 .mobile-playoff {
