@@ -495,68 +495,46 @@ body{
   .team-name{ font-size: .93rem; }
 }
 
-
-
 /* =========================================================
-   DESKTOP CLEAN - ORIGINALE SOLO LOGHI
+   DESKTOP SINGLE CARD - 1 PARTITA = 1 CARD VERA
    ---------------------------------------------------------
-   Riparte dalla struttura originale: nessun nuovo bracket,
-   nessun layout sperimentale. Su desktop nasconde i nomi
-   e compatta le card mantenendo i colori squadra.
-   La mobile resta gestita dai blocchi @media max-width.
+   Pulito: non fonde le vecchie card via CSS.
+   Il JS genera .playoff-match-card dentro ogni match-pair.
+   Mobile intatta nei blocchi max-width sotto.
    ========================================================= */
 @media (min-width: 1024px){
   :root{
-    /* V19: base desktop sicura, poi si allarga sui monitor grandi */
-    --card-w: clamp(120px, 8.6vw, 142px);
-    --team-card-h: clamp(60px, 4.6vw, 74px);
-    --team-logo: clamp(46px, 3.5vw, 58px);
-    --logo-slab: clamp(62px, 4.7vw, 78px);
-    --pair-gap: 12px;
-    --pair-margin: clamp(42px, 5.4vh, 68px);
-    --col-gap: clamp(12px, 1.35vw, 22px);
-    --semi-shift-left: 18px;
-    --semi-shift-right: 18px;
+    --single-card-w: clamp(194px, 11.7vw, 228px);
+    --single-card-h: clamp(76px, 4.8vw, 92px);
+    --single-logo-zone: clamp(62px, 4.1vw, 78px);
+    --single-logo-size: clamp(54px, 3.55vw, 70px);
+    --single-score-zone: clamp(32px, 2vw, 40px);
+    --single-vs-w: clamp(34px, 2vw, 40px);
+    --col-gap: clamp(14px, 1.35vw, 24px);
+    --pair-margin: clamp(48px, 6vh, 78px);
+    --pair-gap: 0px;
+    --semi-shift-left: 12px;
+    --semi-shift-right: 12px;
   }
 
-  body{
-    overflow-x: hidden;
-  }
+  body{ overflow-x: hidden; }
 
-  .hero-playoff{
-    padding: 20px 16px 4px;
-  }
-
-  .titolo-pagina{
-    font-size: clamp(2rem, 3.1vw, 3.3rem);
-    line-height: .95;
-  }
-
-  .sottotitolo-pagina{
-    margin-top: 7px;
-    font-size: .94rem;
-  }
-
-  .playoff-intro{
-    justify-content: center;
-    margin: 8px auto 4px;
-  }
-
-  .intro-chip{
-    padding: 8px 16px;
-    font-size: .9rem;
-  }
+  .hero-playoff{ padding: 18px 16px 4px; }
+  .titolo-pagina{ font-size: clamp(2rem, 3vw, 3.25rem); line-height: .95; }
+  .sottotitolo-pagina{ margin-top: 6px; font-size: .92rem; }
+  .playoff-intro{ justify-content: center; margin: 7px auto 4px; }
+  .intro-chip{ padding: 7px 16px; font-size: .9rem; }
 
   .bracket-wrap{
     overflow: hidden;
-    padding: 12px clamp(10px, 1.2vw, 22px) 24px;
+    padding: 12px clamp(8px, 1vw, 18px) 24px;
   }
 
   .bracket{
-    width: min(100%, 1780px);
+    width: min(100%, 1820px);
     min-width: 0;
     margin: 0 auto;
-    padding: 14px 0 24px;
+    padding: 12px 0 24px;
     gap: var(--col-gap);
     justify-content: center;
     align-items: flex-start;
@@ -564,237 +542,251 @@ body{
 
   .blocco-colonna h2{
     margin-bottom: 13px;
-    font-size: clamp(.92rem, 1.25vw, 1.16rem);
-    letter-spacing: .5px;
+    font-size: clamp(.9rem, 1.18vw, 1.12rem);
     text-transform: uppercase;
+    letter-spacing: .5px;
   }
 
-  .colonna{
-    gap: var(--pair-margin);
+  .colonna{ gap: var(--pair-margin); }
+
+  .match-pair,
+  .pair-offset{
+    position: relative;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 0 !important;
+    row-gap: 0 !important;
+    width: var(--single-card-w) !important;
+    min-width: var(--single-card-w) !important;
+    height: var(--single-card-h) !important;
+    min-height: var(--single-card-h) !important;
+    background: transparent !important;
+    border: 0 !important;
+    box-shadow: none !important;
+    overflow: visible !important;
   }
 
-  .match-pair{
-    row-gap: var(--pair-gap);
-  }
-
-  .match{
-    width: var(--card-w);
-    min-width: var(--card-w);
-    max-width: var(--card-w);
-    min-height: var(--team-card-h);
-    height: var(--team-card-h);
-    grid-template-columns: var(--logo-slab) 1fr;
-    border-radius: 15px;
-    border: 1px solid rgba(255,255,255,.16);
-    background: linear-gradient(180deg, rgba(248,251,255,.98), rgba(237,244,255,.96));
-    box-shadow:
-      0 12px 22px rgba(0,0,0,.24),
-      inset 0 1px 0 rgba(255,255,255,.70);
-    overflow: hidden;
-  }
-
-  .match::before{
-    width: var(--logo-slab);
-    background:
-      radial-gradient(circle at 38% 22%, rgba(255,255,255,.22), transparent 42%),
-      linear-gradient(180deg,
-        color-mix(in srgb, var(--team-color) 92%, #ffffff 8%),
-        color-mix(in srgb, var(--team-color) 72%, #000000 28%)
-      );
-  }
-
-  .squadra.orizzontale img{
-    width: var(--team-logo);
-    height: var(--team-logo);
-    padding: 5px;
-    background: rgba(255,255,255,.95);
-    border-radius: 50%;
-    box-shadow:
-      0 8px 16px rgba(0,0,0,.28),
-      0 0 0 1px rgba(255,255,255,.40);
-  }
-
-  .team-main{
-    justify-content: center;
-    padding: 0 8px;
-  }
-
-  .team-text{
-    align-items: center;
-  }
-
-  /* Nomi tolti: è l'unica vera modifica concettuale */
-  .team-name,
-  .team-status{
+  .match-pair::before,
+  .match-pair::after,
+  .pair-offset::before,
+  .pair-offset::after{
+    content: none !important;
     display: none !important;
   }
 
-  .seed-badge{
-    position: absolute;
-    left: 8px;
-    top: 7px;
-    min-height: 22px;
-    padding: 1px 8px 2px;
-    font-size: .74rem;
-    background: linear-gradient(180deg, #0d5ba8, #073567);
-    border: 1px solid rgba(255,255,255,.20);
-    box-shadow: 0 5px 10px rgba(0,0,0,.22);
-    z-index: 4;
+  .single-match-container .match{
+    display: none !important;
   }
 
-  .team-flag{
-    min-width: 30px;
-    width: 30px;
-    height: 30px;
-    padding: 0;
-    font-size: .75rem;
-    color: #06254c;
-    background: rgba(3,37,76,.07);
+  .playoff-match-card{
+    width: var(--single-card-w);
+    height: var(--single-card-h);
+    display: grid;
+    grid-template-columns: 1fr var(--single-vs-w) 1fr;
+    align-items: stretch;
+    overflow: hidden;
+    position: relative;
+    border-radius: 18px;
+    background:
+      radial-gradient(circle at 50% 0%, rgba(255,255,255,.16), transparent 52%),
+      linear-gradient(180deg, rgba(10,48,101,.94), rgba(4,25,61,.96));
+    border: 1px solid rgba(255,255,255,.22);
+    box-shadow:
+      0 13px 23px rgba(0,0,0,.25),
+      inset 0 1px 0 rgba(255,255,255,.12);
   }
 
-  /* VS discreto fra le due card, mantenendo la struttura originale */
-  .match-pair::after,
-  .pair-offset::after{
-    content: "VS";
+  .match-team{
+    height: 100%;
+    position: relative;
+    display: grid;
+    align-items: stretch;
+    min-width: 0;
+  }
+
+  .match-team.left{ grid-template-columns: minmax(0, var(--single-logo-zone)) var(--single-score-zone); }
+  .match-team.right{ grid-template-columns: var(--single-score-zone) minmax(0, var(--single-logo-zone)); }
+
+  .match-team-color{
     position: absolute;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
-    z-index: 20;
-    min-width: 42px;
-    height: 28px;
-    display: inline-flex;
+    top: 0;
+    bottom: 0;
+    width: var(--single-logo-zone);
+    background:
+      radial-gradient(circle at 38% 24%, rgba(255,255,255,.24), transparent 44%),
+      linear-gradient(180deg,
+        color-mix(in srgb, var(--team-color) 92%, #ffffff 8%),
+        color-mix(in srgb, var(--team-color) 74%, #000000 26%)
+      );
+    z-index: 0;
+  }
+  .match-team.left .match-team-color{ left: 0; box-shadow: inset -1px 0 0 rgba(255,255,255,.18); }
+  .match-team.right .match-team-color{ right: 0; box-shadow: inset 1px 0 0 rgba(255,255,255,.18); }
+
+  .match-logo-wrap{
+    position: relative;
+    z-index: 2;
+    width: var(--single-logo-zone);
+    height: 100%;
+    display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: 999px;
-    color: #ffffff;
-    font-size: .78rem;
-    font-weight: 950;
-    letter-spacing: .35px;
-    background: linear-gradient(180deg, rgba(17,73,139,.96), rgba(4,26,65,.98));
-    border: 1px solid rgba(255,211,107,.35);
+  }
+  .match-team.left .match-logo-wrap{ grid-column: 1; }
+  .match-team.right .match-logo-wrap{ grid-column: 2; }
+
+  .match-logo-wrap img{
+    width: var(--single-logo-size);
+    height: var(--single-logo-size);
+    object-fit: contain;
+    padding: 4px;
+    border-radius: 50%;
+    background: rgba(255,255,255,.94);
     box-shadow:
-      0 5px 12px rgba(0,0,0,.30),
-      inset 0 1px 0 rgba(255,255,255,.16);
-    pointer-events: none;
+      0 8px 16px rgba(0,0,0,.30),
+      0 0 0 1px rgba(255,255,255,.45);
   }
 
-  .pair-offset{
+  .match-score{
     position: relative;
+    z-index: 3;
+    height: 100%;
+    width: var(--single-score-zone);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(246,250,255,.95);
+  }
+  .match-team.left .match-score{ grid-column: 2; }
+  .match-team.right .match-score{ grid-column: 1; }
+
+  .match-score span{
+    width: clamp(28px, 1.85vw, 36px);
+    height: clamp(28px, 1.85vw, 36px);
+    border-radius: 11px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(180deg, #ffffff, #edf4ff);
+    border: 1px solid rgba(3,37,76,.14);
+    color: #06254c;
+    font-size: clamp(.95rem, 1.05vw, 1.18rem);
+    font-weight: 950;
+    line-height: 1;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.9), 0 6px 12px rgba(0,0,0,.16);
   }
 
-  .match.vincente{
-    border: 2px solid rgba(255,211,107,.92);
-    background: linear-gradient(180deg, #fffdf3, #fff3c8);
-    box-shadow:
-      0 0 0 2px rgba(255,211,107,.24),
-      0 14px 24px rgba(0,0,0,.28),
-      0 0 20px rgba(255,211,107,.28);
-  }
-
-  .match.vincente .team-flag{
+  .match-team.winner .match-score span{
     background: linear-gradient(180deg, #fff2b8, #ffd36b);
     color: #4d3300;
+    border-color: rgba(255,211,107,.70);
   }
 
-  /* Finale centrale: resta originale, solo più compatta e logo-only */
-  .blocco-finale{
-    min-width: clamp(250px, 18vw, 320px);
+  .match-vs-pill{
+    align-self: center;
+    justify-self: center;
+    width: var(--single-vs-w);
+    height: clamp(25px, 1.7vw, 31px);
+    border-radius: 999px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(180deg, #15539a, #062b63);
+    border: 1px solid rgba(255,211,107,.36);
+    color: #ffffff;
+    font-size: clamp(.64rem, .72vw, .78rem);
+    font-weight: 950;
+    letter-spacing: .35px;
+    box-shadow: 0 7px 14px rgba(0,0,0,.32), inset 0 1px 0 rgba(255,255,255,.18), 0 0 12px rgba(255,211,107,.18);
+    position: relative;
+    z-index: 6;
   }
 
+  .match-seed{
+    position: absolute;
+    top: 6px;
+    left: 6px;
+    min-height: 21px;
+    padding: 1px 7px 2px;
+    border-radius: 999px;
+    background: linear-gradient(180deg, #0d5ba8, #073567);
+    border: 1px solid rgba(255,255,255,.20);
+    color: #ffffff;
+    font-size: .70rem;
+    font-weight: 900;
+    box-shadow: 0 5px 10px rgba(0,0,0,.22);
+    z-index: 8;
+  }
+  .match-team.right .match-seed{ left: auto; right: 6px; }
+
+  .match-tbd{
+    width: clamp(46px, 3vw, 58px);
+    height: clamp(46px, 3vw, 58px);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: radial-gradient(circle at 35% 25%, #173e78, #061c43 72%);
+    border: 1px solid rgba(255,211,107,.46);
+    color: #fff2b8;
+    font-size: .78rem;
+    font-weight: 950;
+    letter-spacing: .5px;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.12), 0 0 12px rgba(255,211,107,.18);
+  }
+
+  .match-team.placeholder .match-score span,
+  .match-team.placeholder .match-score::before{
+    display: none !important;
+  }
+
+  .finale-pair,
+  .blocco-finale .single-match-container{
+    width: clamp(286px, 18vw, 360px) !important;
+    min-width: clamp(286px, 18vw, 360px) !important;
+    height: clamp(84px, 5vw, 104px) !important;
+  }
+  .blocco-finale .playoff-match-card{
+    width: 100%;
+    height: 100%;
+  }
+
+  .blocco-finale{ min-width: clamp(320px, 22vw, 410px); }
   .finale-stage{
     padding: 14px 15px 18px;
-    border-radius: 23px;
+    border-radius: 24px;
     background:
       radial-gradient(circle at 50% 45%, rgba(255,211,107,.18), transparent 35%),
       linear-gradient(180deg, rgba(12,55,111,.80), rgba(3,20,52,.88));
     border: 1px solid rgba(255,211,107,.22);
   }
-
-  .finale-pair{
-    row-gap: 12px !important;
-  }
-
-  .match.finale{
-    width: clamp(220px, 16vw, 290px);
-    min-width: clamp(220px, 16vw, 290px);
-    max-width: clamp(220px, 16vw, 290px);
-    min-height: 62px;
-    height: 62px;
-  }
-
-  .match.finale .team-main{
-    justify-content: flex-end;
-    padding-right: 16px;
-  }
-
-  .match.finale .team-flag{
-    position: static !important;
-    clip: auto !important;
-    overflow: visible !important;
-    white-space: normal !important;
-  }
-
   .coppa-img{
-    width: clamp(170px, 13vw, 235px) !important;
-    margin-top: 10px;
-    filter:
-      drop-shadow(0 14px 20px rgba(0,0,0,.34))
-      drop-shadow(0 0 22px rgba(255,211,107,.18));
-  }
-}
-
-
-@media (min-width: 1500px){
-  :root{
-    /* Monitor larghi: usiamo quasi tutto lo spazio disponibile, senza scroll orizzontale */
-    --card-w: clamp(150px, 8.9vw, 180px);
-    --team-card-h: clamp(74px, 4.9vw, 88px);
-    --team-logo: clamp(58px, 3.9vw, 74px);
-    --logo-slab: clamp(82px, 5vw, 96px);
-    --pair-gap: 15px;
-    --pair-margin: clamp(48px, 6.2vh, 78px);
-    --col-gap: clamp(18px, 1.8vw, 30px);
-  }
-
-  .blocco-finale{
-    min-width: clamp(300px, 20vw, 380px);
-  }
-
-  .match.finale{
-    width: clamp(260px, 17vw, 330px);
-    min-width: clamp(260px, 17vw, 330px);
-    max-width: clamp(260px, 17vw, 330px);
-    min-height: 70px;
-    height: 70px;
-  }
-
-  .coppa-img{
-    width: clamp(200px, 14vw, 270px) !important;
+    width: clamp(190px, 13vw, 265px) !important;
+    margin-top: 12px;
+    filter: drop-shadow(0 14px 20px rgba(0,0,0,.34)) drop-shadow(0 0 22px rgba(255,211,107,.18));
   }
 }
 
 @media (min-width: 1024px) and (max-height: 850px){
   :root{
-    --card-w: clamp(132px, 7.8vw, 158px);
-    --team-card-h: clamp(64px, 4.2vw, 74px);
-    --team-logo: clamp(50px, 3.25vw, 60px);
-    --logo-slab: clamp(70px, 4.25vw, 82px);
-    --pair-gap: 12px;
-    --pair-margin: clamp(34px, 4.6vh, 52px);
-    --col-gap: clamp(12px, 1.25vw, 22px);
+    --single-card-w: clamp(176px, 10.5vw, 208px);
+    --single-card-h: clamp(68px, 4.25vw, 82px);
+    --single-logo-zone: clamp(56px, 3.6vw, 68px);
+    --single-logo-size: clamp(48px, 3.1vw, 60px);
+    --single-score-zone: clamp(28px, 1.7vw, 34px);
+    --single-vs-w: clamp(30px, 1.8vw, 36px);
+    --pair-margin: clamp(36px, 4.8vh, 58px);
+    --col-gap: clamp(10px, 1vw, 18px);
   }
-
   .hero-playoff{ padding-top: 12px; }
-  .titolo-pagina{ font-size: clamp(1.75rem, 2.7vw, 2.8rem); }
+  .titolo-pagina{ font-size: clamp(1.8rem, 2.7vw, 2.85rem); }
   .sottotitolo-pagina{ font-size: .86rem; margin-top: 4px; }
   .intro-chip{ padding: 6px 14px; }
   .bracket{ padding-top: 8px; }
   .blocco-colonna h2{ margin-bottom: 9px; }
-  .match-pair::after,
-  .pair-offset::after{ height: 22px; min-width: 32px; font-size: .66rem; }
-  .coppa-img{ width: clamp(170px, 12vw, 220px) !important; }
+  .coppa-img{ width: clamp(170px, 11.5vw, 220px) !important; }
 }
+
 
 /* =========================================================
    PLAYOFF MOBILE APP VIEW
