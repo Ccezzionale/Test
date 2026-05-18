@@ -48,34 +48,68 @@ function getTeamColor(name) {
   return TEAM_COLORS[norm(name)] || "#123c7a";
 }
 
-function applyTeamColorFromCard(cardEl){
-  const teamName = cardEl.dataset.team || "";
-  if (!teamName) return;
-  cardEl.style.setProperty("--team-color", getTeamColor(teamName));
-}
 
 /* =========================================
    HTML CARD
    ========================================= */
-function creaHTMLSquadra(nome, seed = "", isPlaceholder = false, isVincente = false) {
-  const nomePulito = stripSeed(nome || "");
-  const mostraLogo = !isPlaceholder && !/vincente|classificata/i.test(nomePulito);
+function getScoreValue(value){
+  return value !== undefined && value !== null && value !== "" ? value : "–";
+}
+
+function isNumericScore(value){
+  return value !== "" && value !== null && value !== undefined && !isNaN(Number(value));
+}
+
+function getWinnerSide(code){
+  const pick = PICKS[code];
+  if (!pick) return null;
+
+  const h = pick.home;
+  const a = pick.away;
+
+  if (isNumericScore(h) && isNumericScore(a)) {
+    const hn = Number(h);
+    const an = Number(a);
+    if (hn > an) return "home";
+    if (an > hn) return "away";
+    return null;
+  }
+
+  if (truthy(h) && !truthy(a)) return "home";
+  if (truthy(a) && !truthy(h)) return "away";
+  return null;
+}
+
+function creaMatchRowHTML(team, score, isWinner = false, isPlaceholder = false, isFinal = false) {
+  const nomePulito = stripSeed(team?.name || "");
+  const seed = team?.seed || "";
   const fileLogo = `img/${nomePulito}.png`;
 
   return `
-    <div class="squadra orizzontale">
-      <div class="team-logo-wrap">
-        ${mostraLogo ? `<img src="${fileLogo}" alt="${nomePulito}" onerror="this.style.display='none'">` : ""}
+    <div class="match-row ${isWinner ? "is-winner" : ""} ${isPlaceholder ? "placeholder" : ""}">
+      <div class="seed-box">${seed ? `#${seed}` : ""}</div>
+
+      <div class="team-core">
+        ${!isPlaceholder ? `<img src="${fileLogo}" alt="${nomePulito}" class="team-logo" onerror="this.style.display='none'">` : ""}
       </div>
 
-      <div class="team-main only-essential">
-        <div class="team-seed-wrap">
-          ${seed ? `<span class="seed-badge">#${seed}</span>` : ""}
-        </div>
-
-        <span class="team-score">-</span>
-      </div>
+      <div class="score-box">${getScoreValue(score)}</div>
     </div>
+  `;
+}
+
+function creaHTMLPartita(code, matchData) {
+  const home = matchData?.home || {};
+  const away = matchData?.away || {};
+
+  const winnerSide = getWinnerSide(code);
+
+  const homePlaceholder = !home.seed && /vincente/i.test(home.name || "");
+  const awayPlaceholder = !away.seed && /vincente/i.test(away.name || "");
+
+  return `
+    ${creaMatchRowHTML(home, PICKS[code]?.home, winnerSide === "home", homePlaceholder, code === "F")}
+    ${creaMatchRowHTML(away, PICKS[code]?.away, winnerSide === "away", awayPlaceholder, code === "F")}
   `;
 }
 
@@ -158,38 +192,14 @@ function aggiornaPlayoff() {
 
   const codes = ["WC1","WC2","WC3","WC4","Q1","Q2","Q3","Q4","S1","S2","F"];
 
-  const fill = (code, side) => {
-    const data = P[code]?.[side];
-    if (!data) return;
-
-    const slot = side === "home" ? "A" : "B";
-    const el = document.querySelector(`.match[data-match="${code}-${slot}"]`);
-    if (!el) return;
-
-    const pick = PICKS[code];
-    const isWinner =
-      pick &&
-      truthy(pick[side]) &&
-      !truthy(pick[side === "home" ? "away" : "home"]);
-
-const isPlaceholder = !data.seed && /vincente/i.test(data.name || "");
-const nomePulito = stripSeed(data.name || "");
-
-el.dataset.team = nomePulito;
-el.innerHTML = creaHTMLSquadra(data.name, data.seed || "", isPlaceholder, !!isWinner);
-el.classList.toggle("vincente", !!isWinner);
-
-applyTeamColorFromCard(el);
-  };
-
   codes.forEach(code => {
-    fill(code, "home");
-    fill(code, "away");
+    const el = document.querySelector(`.game-card[data-series="${code}"]`);
+    if (!el || !P[code]) return;
+
+    el.innerHTML = creaHTMLPartita(code, P[code]);
   });
 
   renderCampione(P);
-  placeQuarterPairs();
-  alignLikeExcel();
 }
 
 /* =========================================
@@ -216,114 +226,6 @@ function renderCampione(P) {
     <div class="champion-chip">🏆 Campione dei Playoff</div>
     <div class="nome-vincitore">${champ}</div>
   `;
-}
-
-/* =========================================
-   HELPERS LAYOUT
-   ========================================= */
-function ensurePairWrap(code) {
-  const a = document.querySelector(`.match[data-match="${code}-A"]`);
-  const b = document.querySelector(`.match[data-match="${code}-B"]`);
-  if (!a || !b) return null;
-
-  if (
-    a.parentElement.classList.contains("pair-offset") &&
-    a.parentElement === b.parentElement
-  ) {
-    return a.parentElement;
-  }
-
-  const parent = a.parentElement;
-  if (parent !== b.parentElement) return null;
-
-  const w = document.createElement("div");
-  w.className = "pair-offset";
-  parent.insertBefore(w, a);
-  w.appendChild(a);
-  w.appendChild(b);
-  return w;
-}
-
-function getCol(selector, nthFallback){
-  return document.querySelector(`${selector} .colonna`)
-      || document.querySelector(`.bracket > .blocco-colonna:nth-of-type(${nthFallback}) .colonna`);
-}
-
-function placeQuarterPairs() {
-  const colQsx = getCol(".q-sx", 2);
-  const colQdx = getCol(".q-dx", 6);
-
-  if (colQsx) {
-    const q1 = ensurePairWrap("Q1");
-    const q4 = ensurePairWrap("Q4");
-    colQsx.innerHTML = "";
-    if (q1) colQsx.append(q1);
-    if (q4) colQsx.append(q4);
-  }
-
-  if (colQdx) {
-    const q2 = ensurePairWrap("Q2");
-    const q3 = ensurePairWrap("Q3");
-    colQdx.innerHTML = "";
-    if (q2) colQdx.append(q2);
-    if (q3) colQdx.append(q3);
-  }
-}
-
-function alignLikeExcel() {
-  const wcL = getCol(".wc-sx", 1);
-  const qL  = getCol(".q-sx", 2);
-  const sL  = getCol(".s-sx", 3);
-
-  const wcR = getCol(".wc-dx", 7);
-  const qR  = getCol(".q-dx", 6);
-  const sR  = getCol(".s-dx", 5);
-
-  [qL, qR].forEach(c => c && c.classList.add("col--spread"));
-  [sL, sR].forEach(c => c && c.classList.add("col--center"));
-
-  const hL = wcL ? wcL.offsetHeight : 0;
-  const hR = wcR ? wcR.offsetHeight : 0;
-
-  if (qL) { qL.style.height = hL + "px"; qL.style.minHeight = hL + "px"; }
-  if (sL) { sL.style.height = hL + "px"; sL.style.minHeight = hL + "px"; }
-
-  if (qR) { qR.style.height = hR + "px"; qR.style.minHeight = hR + "px"; }
-  if (sR) { sR.style.height = hR + "px"; sR.style.minHeight = hR + "px"; }
-
-  if (sL) centerSemiColumn(sL, hL);
-  if (sR) centerSemiColumn(sR, hR);
-}
-
-function centerSemiColumn(col, targetHeight){
-  if (!col) return;
-
-  col.style.paddingTop = "0px";
-  col.style.paddingBottom = "0px";
-
-  const items = Array.from(col.children).filter(el => el.nodeType === 1);
-  const cs = getComputedStyle(col);
-  const gap = parseFloat(cs.rowGap || cs.gap || 0) || 0;
-
-  let contentH = 0;
-  items.forEach((el, i) => {
-    contentH += el.offsetHeight;
-    if (i > 0) contentH += gap;
-  });
-
-  const pad = Math.max(0, (targetHeight - contentH) / 2);
-
-  const root = getComputedStyle(document.documentElement);
-  const bias =
-    col.closest(".s-sx") ? (parseFloat(root.getPropertyValue("--semi-shift-left")) || 0) :
-    col.closest(".s-dx") ? (parseFloat(root.getPropertyValue("--semi-shift-right")) || 0) :
-    0;
-
-  const topPad = Math.max(0, pad - bias);
-  const bottomPad = Math.max(0, pad + bias);
-
-  col.style.paddingTop = topPad + "px";
-  col.style.paddingBottom = bottomPad + "px";
 }
 
 /* =========================================
