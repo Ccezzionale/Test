@@ -61,7 +61,6 @@ function creaHTMLSquadra(nome, seed = "", isPlaceholder = false, isVincente = fa
   const nomePulito = stripSeed(nome || "");
   const mostraLogo = !isPlaceholder && !/vincente|classificata/i.test(nomePulito);
   const fileLogo = `img/${nomePulito}.png`;
-  const stato = isVincente ? "Qualificata" : (isPlaceholder ? "In attesa" : "Sfida playoff");
 
   return `
     <div class="squadra orizzontale">
@@ -69,10 +68,9 @@ function creaHTMLSquadra(nome, seed = "", isPlaceholder = false, isVincente = fa
         ${mostraLogo ? `<img src="${fileLogo}" alt="${nomePulito}" onerror="this.style.display='none'">` : ""}
       </div>
 
-      <div class="team-main">
-        <div class="team-text">
+      <div class="team-main only-essential">
+        <div class="team-seed-wrap">
           ${seed ? `<span class="seed-badge">#${seed}</span>` : ""}
-          <span class="team-status">${stato}</span>
         </div>
 
         <span class="team-score">-</span>
