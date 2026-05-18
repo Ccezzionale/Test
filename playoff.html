@@ -98,118 +98,105 @@
 
   </section>
 
-  <div class="bracket-wrap">
-    <div class="bracket">
+ <section class="playoff-stage">
+  <div class="playoff-board">
 
-      <!-- Wildcard SX -->
-      <div class="blocco-colonna">
-        <h2>Wildcard</h2>
-        <div class="colonna wc-sx">
-          <div class="match-pair" data-series="WC1">
-            <div class="match" data-match="WC1-A"></div>
-            <div class="match" data-match="WC1-B"></div>
-          </div>
-
-          <div class="match-pair spaziata" data-series="WC3">
-            <div class="match" data-match="WC3-A"></div>
-            <div class="match" data-match="WC3-B"></div>
-          </div>
+    <!-- WILD CARD SX -->
+    <div class="round-col round-col--outer">
+      <h2>Wild Card</h2>
+      <div class="round-stack round-stack--spread">
+        <div class="game-slot">
+          <div class="game-card" data-series="WC1"></div>
+        </div>
+        <div class="game-slot">
+          <div class="game-card" data-series="WC3"></div>
         </div>
       </div>
-
-      <!-- Quarti SX -->
-      <div class="blocco-colonna q-sx">
-        <h2>Quarti</h2>
-        <div class="colonna">
-          <div class="match-pair" data-series="Q1">
-            <div class="match" data-match="Q1-A"></div>
-            <div class="match" data-match="Q1-B"></div>
-          </div>
-
-          <div class="match-pair spaziata" data-series="Q4">
-            <div class="match" data-match="Q4-A"></div>
-            <div class="match" data-match="Q4-B"></div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Semifinale SX -->
-      <div class="blocco-colonna s-sx">
-        <h2>Semifinale</h2>
-        <div class="colonna semifinale-sx">
-          <div class="match-pair" data-series="S1">
-            <div class="match" data-match="S1-A"></div>
-            <div class="match" data-match="S1-B"></div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Finale -->
-      <div class="blocco-colonna blocco-finale">
-        <h2>Finale</h2>
-
-        <div class="finale-stage">
-          <div class="glow-ring"></div>
-
-          <div class="colonna colonna-finale">
-            <div class="match-pair finale-pair" data-series="F">
-              <div class="match finale" data-match="F-A"></div>
-              <div class="match finale" data-match="F-B"></div>
-            </div>
-          </div>
-
-          <div class="coppa-vittoria">
-            <img src="img/Playoffcup.png" alt="Coppa del Vincitore" class="coppa-img" />
-            <div id="vincitore-assoluto" class="vincitore-info"></div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Semifinale DX -->
-      <div class="blocco-colonna s-dx">
-        <h2>Semifinale</h2>
-        <div class="colonna semifinale-dx">
-          <div class="match-pair" data-series="S2">
-            <div class="match" data-match="S2-A"></div>
-            <div class="match" data-match="S2-B"></div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Quarti DX -->
-      <div class="blocco-colonna q-dx">
-        <h2>Quarti</h2>
-        <div class="colonna">
-          <div class="match-pair" data-series="Q2">
-            <div class="match" data-match="Q2-A"></div>
-            <div class="match" data-match="Q2-B"></div>
-          </div>
-
-          <div class="match-pair spaziata" data-series="Q3">
-            <div class="match" data-match="Q3-A"></div>
-            <div class="match" data-match="Q3-B"></div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Wildcard DX -->
-      <div class="blocco-colonna">
-        <h2>Wildcard</h2>
-        <div class="colonna wc-dx">
-          <div class="match-pair" data-series="WC2">
-            <div class="match" data-match="WC2-A"></div>
-            <div class="match" data-match="WC2-B"></div>
-          </div>
-
-          <div class="match-pair spaziata" data-series="WC4">
-            <div class="match" data-match="WC4-A"></div>
-            <div class="match" data-match="WC4-B"></div>
-          </div>
-        </div>
-      </div>
-
     </div>
+
+    <!-- QUARTI SX -->
+    <div class="round-col">
+      <h2>Quarti</h2>
+      <div class="round-stack round-stack--spread">
+        <div class="game-slot">
+          <div class="game-card" data-series="Q1"></div>
+        </div>
+        <div class="game-slot">
+          <div class="game-card" data-series="Q4"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SEMI SX -->
+    <div class="round-col round-col--semi">
+      <h2>Semifinali</h2>
+      <div class="round-stack round-stack--center">
+        <div class="game-slot">
+          <div class="game-card game-card--semi" data-series="S1"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- FINALE -->
+    <div class="round-col round-col--finale">
+      <h2>Finale</h2>
+
+      <div class="finale-stage">
+        <div class="finale-glow"></div>
+
+        <div class="finale-trophy">
+          <img src="img/Playoffcup.png" alt="Coppa Playoff" class="coppa-img">
+        </div>
+
+        <div class="game-slot game-slot--finale">
+          <div class="game-card game-card--finale" data-series="F"></div>
+        </div>
+
+        <div class="finale-bottom">
+          <div id="vincitore-assoluto" class="vincitore-info"></div>
+          <div class="tagline-finale">12 Squadre. 1 Campione.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SEMI DX -->
+    <div class="round-col round-col--semi">
+      <h2>Semifinali</h2>
+      <div class="round-stack round-stack--center">
+        <div class="game-slot">
+          <div class="game-card game-card--semi" data-series="S2"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- QUARTI DX -->
+    <div class="round-col">
+      <h2>Quarti</h2>
+      <div class="round-stack round-stack--spread">
+        <div class="game-slot">
+          <div class="game-card" data-series="Q2"></div>
+        </div>
+        <div class="game-slot">
+          <div class="game-card" data-series="Q3"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- WILD CARD DX -->
+    <div class="round-col round-col--outer">
+      <h2>Wild Card</h2>
+      <div class="round-stack round-stack--spread">
+        <div class="game-slot">
+          <div class="game-card" data-series="WC2"></div>
+        </div>
+        <div class="game-slot">
+          <div class="game-card" data-series="WC4"></div>
+        </div>
+      </div>
+    </div>
+
   </div>
+</section>
 
  <script src="navbar.js"></script>
 </body>
