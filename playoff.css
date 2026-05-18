@@ -753,3 +753,38 @@ body::after {
 .s2 {
   margin-top: 74px;
 }
+
+/* ===== FIX CONNETTORI CON SEMIFINALI RIPOSIZIONATE ===== */
+
+.match-card.semi {
+  position: relative;
+}
+
+/* linea orizzontale da S1 e S2 verso la finale */
+.match-card.semi::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  right: -42px;
+  width: 42px;
+  height: 2px;
+  background: #ffcc33;
+  box-shadow: 0 0 10px rgba(255, 204, 51, 0.55);
+}
+
+/* colonna semifinali: serve come riferimento per la linea verticale */
+.round-semi {
+  position: relative;
+}
+
+/* linea verticale tra S1 e S2 verso la finale */
+.round-semi::after {
+  content: "";
+  position: absolute;
+  right: -42px;
+  top: 205px;
+  width: 2px;
+  height: 245px;
+  background: #ffcc33;
+  box-shadow: 0 0 10px rgba(255, 204, 51, 0.45);
+}
