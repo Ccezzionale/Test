@@ -156,18 +156,63 @@ function computeParticipants() {
     };
   }
 
-  const winnerOf = (code) => {
-    const p = PICKS[code];
-    const m = P[code];
-    if (!p || !m) return null;
+const winnerOf = (code) => {
+  const p = PICKS[code];
+  const m = P[code];
+  if (!p || !m) return null;
 
-    const h = truthy(p.home);
-    const a = truthy(p.away);
+  const homeScore = p.home;
+  const awayScore = p.away;
 
-    if (h && !a) return { name: stripSeed(m.home.name), seed: m.home.seed };
-    if (a && !h) return { name: stripSeed(m.away.name), seed: m.away.seed };
+  const hasHomeScore =
+    homeScore !== "" &&
+    homeScore !== null &&
+    homeScore !== undefined &&
+    !isNaN(Number(homeScore));
+
+  const hasAwayScore =
+    awayScore !== "" &&
+    awayScore !== null &&
+    awayScore !== undefined &&
+    !isNaN(Number(awayScore));
+
+  if (hasHomeScore && hasAwayScore) {
+    const h = Number(homeScore);
+    const a = Number(awayScore);
+
+    if (h > a) {
+      return {
+        name: stripSeed(m.home.name),
+        seed: m.home.seed
+      };
+    }
+
+    if (a > h) {
+      return {
+        name: stripSeed(m.away.name),
+        seed: m.away.seed
+      };
+    }
+
     return null;
-  };
+  }
+
+  if (truthy(homeScore) && !truthy(awayScore)) {
+    return {
+      name: stripSeed(m.home.name),
+      seed: m.home.seed
+    };
+  }
+
+  if (truthy(awayScore) && !truthy(homeScore)) {
+    return {
+      name: stripSeed(m.away.name),
+      seed: m.away.seed
+    };
+  }
+
+  return null;
+};
 
   P.Q1 = { home: { name: S[0].nome, seed: 1 }, away: winnerOf("WC1") || { name: "Vincente WC1" } };
   P.Q4 = { home: { name: S[3].nome, seed: 4 }, away: winnerOf("WC3") || { name: "Vincente WC3" } };
