@@ -117,20 +117,20 @@ function creaHTMLPartita(code, matchData) {
    BRACKET MANUALE
    ========================================= */
 const PICKS = {
-  WC1: { home: '', away: '' },
-  WC2: { home: '', away: '' },
-  WC3: { home: '', away: '' },
-  WC4: { home: '', away: '' },
+  WC1: { home: 4, away: 6 },
+  WC2: { home: 5, away: 6 },
+  WC3: { home: 2, away: 5 },
+  WC4: { home: 7, away: 3 },
 
-  Q1:  { home: '', away: '' },
-  Q2:  { home: '', away: '' },
-  Q3:  { home: '', away: '' },
-  Q4:  { home: '', away: '' },
+  Q1:  { home: 3, away: 1 },
+  Q2:  { home: 1, away: 3 },
+  Q3:  { home: 7, away: 6 },
+  Q4:  { home: 7, away: 9 },
 
-  S1:  { home: '', away: '' },
-  S2:  { home: '', away: '' },
+  S1:  { home: 8, away: 6 },
+  S2:  { home: 5, away: 9 },
 
-  F:   { home: '', away: '' },
+  F:   { home: 4, away: 6 },
 };
 
 const WC_PAIRS = {
