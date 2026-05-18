@@ -631,3 +631,95 @@ body::after {
     font-size: .56rem;
   }
 }
+
+/* ===== HERO BADGE PULITO ===== */
+
+.playoff-season-badge {
+  width: 135px;
+  height: 105px;
+  border: 2px solid #ffcc33;
+  border-radius: 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  transform: rotate(-2deg);
+  background:
+    linear-gradient(145deg, rgba(255, 204, 51, 0.12), rgba(4, 18, 38, 0.92));
+  box-shadow:
+    0 0 24px rgba(255, 204, 51, 0.16),
+    inset 0 0 20px rgba(255, 255, 255, 0.04);
+}
+
+.playoff-season-badge span {
+  font-size: 0.72rem;
+  font-weight: 900;
+  letter-spacing: 0.16em;
+  color: #ffcc33;
+}
+
+.playoff-season-badge strong {
+  margin-top: 7px;
+  font-size: 2.05rem;
+  font-weight: 1000;
+  color: #ffffff;
+  line-height: 1;
+}
+
+/* Nasconde eventuale vecchia coppa emoji se rimasta da qualche parte */
+.hero-emblem,
+.emblem-cup {
+  display: none;
+}
+
+/* ===== COPPA FINALE ===== */
+
+.round-final {
+  align-items: center;
+}
+
+.final-trophy-wrap {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  margin-top: 22px;
+  pointer-events: none;
+}
+
+.final-trophy-img {
+  width: 230px;
+  max-width: 88%;
+  height: auto;
+  object-fit: contain;
+  filter:
+    drop-shadow(0 0 18px rgba(255, 204, 51, 0.38))
+    drop-shadow(0 0 34px rgba(0, 120, 255, 0.24));
+  opacity: 0.96;
+}
+
+@media (max-width: 800px) {
+  .playoff-season-badge {
+    width: 105px;
+    height: 78px;
+    border-radius: 18px;
+  }
+
+  .playoff-season-badge span {
+    font-size: 0.58rem;
+  }
+
+  .playoff-season-badge strong {
+    font-size: 1.45rem;
+  }
+
+  .final-trophy-wrap {
+    margin-top: 14px;
+    margin-bottom: 8px;
+  }
+
+  .final-trophy-img {
+    width: 150px;
+    max-width: 58%;
+    opacity: 0.9;
+  }
+}
