@@ -1,15 +1,15 @@
 :root{
-  --card-w: 290px;
-  --team-card-h: 78px;
-  --team-logo: 54px;
-  --team-pad-y: 10px;
-  --team-pad-x: 16px;
+:root{
+  --card-w: 230px;
+  --team-card-h: 72px;
+  --team-logo: 46px;
+  --team-pad-y: 8px;
+  --team-pad-x: 12px;
+  --logo-slab: 58px;
 
   --pair-gap: 10px;
   --pair-margin: 38px;
   --col-gap: 42px;
-
-  --logo-slab: 74px;
   --team-color: #123c7a;
 
   --navy: #001f3f;
@@ -282,12 +282,12 @@ body{
   align-items: center;
   justify-content: center;
   width: fit-content;
-  padding: 4px 10px;
-  min-height: 24px;
+  padding: 3px 9px;
+  min-height: 22px;
   border-radius: 999px;
   background: linear-gradient(180deg, #0f3f7a, #08254c);
   color: #ffffff;
-  font-size: .8rem;
+  font-size: .76rem;
   font-weight: 800;
   letter-spacing: .2px;
   box-shadow: 0 4px 10px rgba(0,0,0,.16);
@@ -296,9 +296,9 @@ body{
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-width: 56px;
-  height: 42px;
-  padding: 0 12px;
+  min-width: 46px;
+  height: 38px;
+  padding: 0 10px;
   border-radius: 12px;
   border: 2px solid rgba(3, 37, 76, 0.18);
   background: #f3f6fb;
