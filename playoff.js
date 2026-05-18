@@ -48,6 +48,70 @@ function getTeamColor(name) {
   return TEAM_COLORS[norm(name)] || "#123c7a";
 }
 
+function getLogoPath(nome) {
+  return `img/${stripSeed(nome || "")}.png`;
+}
+
+function isPlaceholderTeam(nome) {
+  const clean = stripSeed(nome || "").trim().toLowerCase();
+  return (
+    !clean ||
+    clean.includes("tbd") ||
+    clean.includes("vincente") ||
+    clean.includes("classificata") ||
+    clean.includes("in attesa")
+  );
+}
+
+function createMatchTeamSide(nome, seed = "", score = "--", side = "left", isWinner = false) {
+  const clean = stripSeed(nome || "");
+  const isPlaceholder = isPlaceholderTeam(clean);
+  const teamColor = isPlaceholder ? "#163d78" : getTeamColor(clean);
+  const logo = !isPlaceholder
+    ? `<img src="${getLogoPath(clean)}" alt="${clean}" onerror="this.style.display='none'">`
+    : `<span class="match-tbd">TBD</span>`;
+
+  return `
+    <div class="match-team ${side} ${isWinner ? "winner" : ""} ${isPlaceholder ? "placeholder" : ""}" style="--team-color:${teamColor}">
+      <span class="match-seed">${seed ? `#${seed}` : ""}</span>
+
+      ${
+        side === "left"
+          ? `
+            <div class="match-team-color"></div>
+            <div class="match-logo-wrap">${logo}</div>
+            <div class="match-score">${isPlaceholder ? "" : score}</div>
+          `
+          : `
+            <div class="match-score">${isPlaceholder ? "" : score}</div>
+            <div class="match-logo-wrap">${logo}</div>
+            <div class="match-team-color"></div>
+          `
+      }
+    </div>
+  `;
+}
+
+function createSingleMatchCard({
+  teamA,
+  seedA = "",
+  scoreA = "--",
+  winnerA = false,
+  teamB,
+  seedB = "",
+  scoreB = "--",
+  winnerB = false,
+  extraClass = ""
+}) {
+  return `
+    <div class="playoff-match-card ${extraClass}">
+      ${createMatchTeamSide(teamA, seedA, scoreA, "left", winnerA)}
+      <div class="match-vs-pill">VS</div>
+      ${createMatchTeamSide(teamB, seedB, scoreB, "right", winnerB)}
+    </div>
+  `;
+}
+
 function applyTeamColorFromCard(cardEl){
   const nameEl = cardEl.querySelector(".team-name");
   if (!nameEl) return;
