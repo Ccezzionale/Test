@@ -788,3 +788,23 @@ body::after {
   background: #ffcc33;
   box-shadow: 0 0 10px rgba(255, 204, 51, 0.45);
 }
+
+/* ===== RIMOZIONE COMPLETA CONNETTORI PLAYOFF ===== */
+
+.match-card::before,
+.match-card::after,
+.round::before,
+.round::after,
+.bracket-grid::before,
+.bracket-grid::after,
+.round-wildcard::before,
+.round-wildcard::after,
+.round-quarter::before,
+.round-quarter::after,
+.round-semi::before,
+.round-semi::after,
+.round-final::before,
+.round-final::after {
+  display: none !important;
+  content: none !important;
+}
