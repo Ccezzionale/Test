@@ -808,3 +808,94 @@ body::after {
   display: none !important;
   content: none !important;
 }
+
+/* ===== TEAM ROW STILE CARD COLORATA ===== */
+
+.team-row {
+  position: relative;
+  overflow: hidden;
+  height: 54px;
+  padding: 0 !important;
+  border-radius: 16px;
+  display: grid;
+  grid-template-columns: 64px 1fr 44px;
+  align-items: center;
+  background: transparent !important;
+  border: 1px solid rgba(255,255,255,0.10);
+}
+
+.team-row::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 76%;
+  background: var(--team-color, #12345a);
+  z-index: 0;
+}
+
+.team-row::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 24%;
+  height: 100%;
+  background: rgba(255,255,255,0.96);
+  z-index: 0;
+}
+
+.team-row img,
+.team-row .shield,
+.team-row span,
+.team-row b {
+  position: relative;
+  z-index: 1;
+}
+
+.team-row img,
+.team-row .shield {
+  width: 46px;
+  height: 46px;
+  margin-left: 8px;
+  border-radius: 50%;
+  background: #fff;
+  object-fit: contain;
+  padding: 3px;
+}
+
+.team-row span:not(.shield) {
+  color: #ffffff;
+  font-weight: 1000;
+  text-transform: uppercase;
+  letter-spacing: -0.02em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.team-row b {
+  color: #061326;
+  font-size: 1.1rem;
+  font-weight: 1000;
+  text-align: center;
+}
+
+.team-row.placeholder::before {
+  background: #1c314a;
+}
+
+.team-row.placeholder::after {
+  background: rgba(255,255,255,0.12);
+}
+
+.team-row.placeholder b {
+  color: #ffffff;
+}
+
+.team-row.placeholder .shield {
+  display: grid;
+  place-items: center;
+  color: #b8c7d9;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.12);
+}
