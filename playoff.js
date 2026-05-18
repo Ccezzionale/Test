@@ -49,9 +49,9 @@ function getTeamColor(name) {
 }
 
 function applyTeamColorFromCard(cardEl){
-  const nameEl = cardEl.querySelector(".team-name");
-  if (!nameEl) return;
-  cardEl.style.setProperty("--team-color", getTeamColor(nameEl.textContent));
+  const teamName = cardEl.dataset.team || "";
+  if (!teamName) return;
+  cardEl.style.setProperty("--team-color", getTeamColor(teamName));
 }
 
 /* =========================================
@@ -62,7 +62,6 @@ function creaHTMLSquadra(nome, seed = "", isPlaceholder = false, isVincente = fa
   const mostraLogo = !isPlaceholder && !/vincente|classificata/i.test(nomePulito);
   const fileLogo = `img/${nomePulito}.png`;
   const stato = isVincente ? "Qualificata" : (isPlaceholder ? "In attesa" : "Sfida playoff");
-  const flag = isVincente ? "✓" : "•";
 
   return `
     <div class="squadra orizzontale">
@@ -73,11 +72,10 @@ function creaHTMLSquadra(nome, seed = "", isPlaceholder = false, isVincente = fa
       <div class="team-main">
         <div class="team-text">
           ${seed ? `<span class="seed-badge">#${seed}</span>` : ""}
-          <span class="team-name">${nomePulito}</span>
           <span class="team-status">${stato}</span>
         </div>
 
-        <span class="team-flag">${flag}</span>
+        <span class="team-score">-</span>
       </div>
     </div>
   `;
@@ -176,11 +174,14 @@ function aggiornaPlayoff() {
       truthy(pick[side]) &&
       !truthy(pick[side === "home" ? "away" : "home"]);
 
-    const isPlaceholder = !data.seed && /vincente/i.test(data.name || "");
-    el.innerHTML = creaHTMLSquadra(data.name, data.seed || "", isPlaceholder, !!isWinner);
-    el.classList.toggle("vincente", !!isWinner);
+const isPlaceholder = !data.seed && /vincente/i.test(data.name || "");
+const nomePulito = stripSeed(data.name || "");
 
-    applyTeamColorFromCard(el);
+el.dataset.team = nomePulito;
+el.innerHTML = creaHTMLSquadra(data.name, data.seed || "", isPlaceholder, !!isWinner);
+el.classList.toggle("vincente", !!isWinner);
+
+applyTeamColorFromCard(el);
   };
 
   codes.forEach(code => {
