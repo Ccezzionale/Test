@@ -312,12 +312,12 @@ body::after{
 
 .match-row.placeholder .team-core::before{
   content:"?";
-  width:var(--logo-size);
-  height:var(--logo-size);
+  width:48px;
+  height:48px;
   border-radius:50%;
   background:rgba(13,46,103,.08);
   color:#0d2e67;
-  font-size:2rem;
+  font-size:1.55rem;
   font-weight:900;
   display:flex;
   align-items:center;
@@ -325,8 +325,8 @@ body::after{
 }
 
 .game-card--finale .match-row.placeholder .team-core::before{
-  width:var(--logo-size-final);
-  height:var(--logo-size-final);
+   width:64px;
+  height:64px;
 }
 
 /* FINALE */
