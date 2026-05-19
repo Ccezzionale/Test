@@ -47,7 +47,6 @@
           </ul>
         </li>
 
-        
         <li><a href="waiver.html">Waiver Wire</a></li>
 
         <li class="dropdown">
@@ -88,63 +87,48 @@
   </nav>
 
   <main class="page-wrap">
-    <section class="draft-section">
-      <div class="section-heading">
-        <h1 class="titolo">Draft Conference League</h1>
-        <p class="sottotitolo">Ordine dinamico completo delle chiamate 2026</p>
+    <section class="draft-page-hero">
+      <span class="hero-pill">🏀 Draft 2027</span>
+      <h1>Draft dinamico</h1>
+      <p>Ordine aggiornato in base alla classifica totale e agli scambi di pick.</p>
+    </section>
+
+    <section class="draft-board-panel draft-section">
+      <div class="board-header">
+        <div>
+          <h2>Draft Conference League</h2>
+          <p>Tabellone dinamico completo delle chiamate</p>
+        </div>
+        <button type="button" class="board-refresh" onclick="window.location.reload()">↻ Ricarica</button>
       </div>
 
       <div class="draft-block">
         <div class="rounds-col" id="rounds-league"></div>
-
         <div class="draft-scroll-x">
           <div id="draft-league" class="draft-container"></div>
         </div>
       </div>
     </section>
 
-    <section class="draft-section">
-      <div class="section-heading">
-        <h1 class="titolo">Draft Conference Championship</h1>
-        <p class="sottotitolo">Ordine dinamico completo delle chiamate 2026</p>
+    <section class="draft-board-panel draft-section">
+      <div class="board-header">
+        <div>
+          <h2>Draft Conference Championship</h2>
+          <p>Tabellone dinamico completo delle chiamate</p>
+        </div>
+        <button type="button" class="board-refresh" onclick="window.location.reload()">↻ Ricarica</button>
       </div>
 
       <div class="draft-block">
         <div class="rounds-col" id="rounds-championship"></div>
-
         <div class="draft-scroll-x">
           <div id="draft-championship" class="draft-container"></div>
         </div>
       </div>
     </section>
-
-    <section class="scambi-section">
-      <div class="divider"></div>
-
-      <div class="section-heading">
-        <h2 class="titolo titolo-scambi">📑 Elenco Scambi Draft 2026</h2>
-        <p class="sottotitolo">Movimenti, pick cedute e chiamate speciali</p>
-      </div>
-
-      <div id="scambi-manuali" class="scambi-box">
-        <ul>
-          <li><strong>Team Bartowski - Bayern</strong>: Leao per De Katelaere. Al Team Bartowski va il round 2, al Bayern, se Bartowski finisce nelle ultime 4 va il round 5, nelle prime 4 il round 4.</li>
-          <li><strong>Golden Knights - Riverfilo</strong>: Portieri Milan per Portieri Atalanta. Round 12 a Riverfilo, round 20 a Golden Knights.</li>
-          <li><strong>Golden Knights - Wildboys78</strong>: Gudmundsson per Hojlund. Round 6 a Wildboys.</li>
-          <li><strong>Golden Knights - Riverfilo</strong>: Barella e Castro per McTominay e Pio Esposito. Round 20 a Golden Knights, round 5 a Riverfilo.</li>
-          <li><strong>Golden Knights - Fantaugusta</strong>: Immobile per Lookman. Round 23 a Golden Knights, round 4 a Fantaugusta.</li>
-          <li><strong>Rubinkebab</strong>: il vincitore della Supercoppa guadagna la prima scelta del round 10, chiamata 73.</li>
-          <li><strong>Golden Knights - Eintracht</strong>: Zaccagni, Berardi e Buongiorno per Orsolini, Malinovski e Tomori. Round 23 a Golden Knights, round 15 a Eintracht.</li>
-          <li><strong>Team Bartowski - Minnesode Timberland</strong>: Portieri Lazio, David, Baturina, Ostigard e round 10 per Portieri Lazio, Zanoli, Miretti, Diego Carlos e round 5.</li>
-          <li><strong>Team Bartowski - Pandinicoccolosini</strong>: De Katelaere e round 12 per Ratkov e round 6.</li>
-          <li><strong>Team Bartowski - Bayern</strong>: Nkunku e round 11 per Simeone e round 8.</li>
-          <li><strong>Bayern - Desperados</strong>: Round 3 2026 e round 2 2027 a Desperados. Round 5 2026, round 4 2027 e Yildiz al Bayern.</li>
-        </ul>
-      </div>
-    </section>
   </main>
 
-<script type="module" src="dinamico-draft.js?v=20"></script>
+  <script type="module" src="dinamico-draft.js?v=21"></script>
   <script src="navbar.js"></script>
 </body>
 </html>

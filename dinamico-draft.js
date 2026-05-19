@@ -624,7 +624,7 @@ function generaTabellaVerticale(containerId, draftData, squadreOrdine) {
   const container = document.getElementById(containerId);
 
   if (!draftData || draftData.length === 0) {
-    container.innerHTML = "<p>⚠️ Nessun dato disponibile</p>";
+    container.innerHTML = "<p class="draft-error">⚠️ Nessun dato disponibile</p>";
     return;
   }
 
@@ -633,30 +633,22 @@ function generaTabellaVerticale(containerId, draftData, squadreOrdine) {
     : draftData[0].Picks.map(p => cleanTeamName(p.team));
 
   const maxRounds = Math.max(...draftData.map(r => Number(r.Round) || 0));
-
   const draftPerSquadra = {};
 
   squadre.forEach(s => {
     draftPerSquadra[s] = {};
-    for (let r = 1; r <= maxRounds; r++) {
-      draftPerSquadra[s][r] = [];
-    }
+    for (let r = 1; r <= maxRounds; r++) draftPerSquadra[s][r] = [];
   });
 
   draftData.forEach(round => {
     round.Picks.forEach(p => {
       const ownerCanonical = getCanonicalTeamName(p.team, squadre);
       const originalCanonical = getCanonicalTeamName(p.originalTeam, squadre);
-
-      const displayRound = Number(
-        p.displayRound || p.round || round.Round
-      );
+      const displayRound = Number(p.displayRound || p.round || round.Round);
 
       if (!draftPerSquadra[ownerCanonical]) {
         draftPerSquadra[ownerCanonical] = {};
-        for (let r = 1; r <= maxRounds; r++) {
-          draftPerSquadra[ownerCanonical][r] = [];
-        }
+        for (let r = 1; r <= maxRounds; r++) draftPerSquadra[ownerCanonical][r] = [];
         squadre.push(ownerCanonical);
       }
 
@@ -677,46 +669,48 @@ function generaTabellaVerticale(containerId, draftData, squadreOrdine) {
     });
   });
 
-  let html = '<div class="draft-scroll"><div class="draft-columns">';
+  let html = '<div class="draft-columns">';
 
   squadre.forEach(squadra => {
-    html += `<div class="draft-card">
-              <div class="draft-header">
-                <div class="draft-logo-wrapper">
-                  <img src="img/${squadra}.png" alt="${squadra}" class="draft-logo">
-                </div>
-                <h3>${squadra}</h3>
-              </div>
-              <div class="draft-picks">`;
+    html += `
+      <article class="draft-card" title="${squadra}">
+        <div class="draft-header">
+          <img src="img/${squadra}.png" alt="${squadra}" class="draft-logo" onerror="this.style.visibility='hidden'">
+        </div>
+        <div class="draft-picks">`;
 
     for (let r = 1; r <= maxRounds; r++) {
       const picksInRound = draftPerSquadra[squadra][r] || [];
 
       if (!picksInRound.length) {
-        html += `<div class="pick pick-empty"></div>`;
+        html += `<div class="pick pick-empty" aria-hidden="true"></div>`;
         continue;
       }
 
       picksInRound.forEach(pick => {
         const tradedClass = pick.traded ? "pick-traded" : "";
         const bonusClass = pick.bonus ? "pick-bonus" : "";
+        const source = pick.traded || pick.bonus
+          ? `<span class="pick-source">da ${shortTeamName(pick.originalTeam)}</span>`
+          : "";
 
         const title = pick.traded
           ? `Round visualizzato ${pick.displayRound}. Round originale ${pick.round}. Pick originale di ${pick.originalTeam}. ${pick.notes || ""} ${pick.protection_note || ""}`.trim()
           : `Round ${pick.displayRound}`;
 
-        const label = pick.traded
-          ? `Pick #${pick.pickNumber}<br><span class="bonus-source">da ${shortTeamName(pick.originalTeam)}</span>`
-          : `Pick #${pick.pickNumber}`;
-
-        html += `<div class="pick ${tradedClass} ${bonusClass}" title="${title}">${label}</div>`;
+        html += `
+          <div class="pick ${tradedClass} ${bonusClass}" title="${title}">
+            <span class="pick-bubble">${pick.pickNumber}</span>
+            <strong>Pick #${pick.pickNumber}</strong>
+            ${source}
+          </div>`;
       });
     }
 
-    html += `</div></div>`;
+    html += `</div></article>`;
   });
 
-  html += '</div></div>';
+  html += '</div>';
   container.innerHTML = html;
 }
 
@@ -768,6 +762,6 @@ Promise.all([
   const league = document.getElementById("draft-league");
   const championship = document.getElementById("draft-championship");
 
-  if (league) league.innerHTML = "<p>⚠️ Errore nel caricamento del draft futuro.</p>";
-  if (championship) championship.innerHTML = "<p>⚠️ Errore nel caricamento del draft futuro.</p>";
+  if (league) league.innerHTML = "<p class=\"draft-error\">⚠️ Errore nel caricamento del draft futuro.</p>";
+  if (championship) championship.innerHTML = "<p class=\"draft-error\">⚠️ Errore nel caricamento del draft futuro.</p>";
 });
