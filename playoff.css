@@ -245,8 +245,8 @@ body::after{
   left:50%;
   top:50%;
   transform:translate(-50%, -50%);
-  width:160px;
-  height:160px;
+  width:335px;
+  height:335px;
   background:url("img/Playoffcup.png") center/contain no-repeat;
   filter:drop-shadow(0 12px 22px rgba(0,0,0,.42));
   z-index:2;
@@ -279,13 +279,13 @@ body::after{
 }
 
 .game-card--finale .match-row:first-child{
-  top:42px;
+  top:0px;
   border-top:none;
   border-bottom:none;
 }
 
 .game-card--finale .match-row:last-child{
-  bottom:42px;
+  bottom:0px;
   border-top:none;
   border-bottom:none;
 }
