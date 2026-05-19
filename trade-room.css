@@ -696,3 +696,375 @@ body.modal-open {
     font-size:2.1rem;
   }
 }
+
+/* =====================================================
+   TRADE ROOM - RESTYLE CINEMATIC MARKET
+   Incolla in fondo a trade-room.css
+   ===================================================== */
+
+/* Sfondo più profondo e meno "pagina gestionale" */
+body{
+  background:
+    radial-gradient(900px 520px at 12% 4%, rgba(0,116,217,.34), transparent 60%),
+    radial-gradient(700px 420px at 88% 0%, rgba(255,204,0,.20), transparent 56%),
+    linear-gradient(180deg, #00172f 0%, #062b53 38%, #dce8f6 100%);
+}
+
+/* Header più compatto e più premium */
+.draft-header{
+  min-height: 150px;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  padding:34px 34px;
+  border-radius:30px;
+  background:
+    linear-gradient(135deg, rgba(0,31,63,.98), rgba(0,74,143,.88)),
+    radial-gradient(480px 260px at 86% 8%, rgba(255,204,0,.35), transparent 62%);
+}
+
+.draft-header h1{
+  font-size: clamp(2.4rem, 5vw, 4.4rem);
+  text-transform: uppercase;
+  letter-spacing: -0.06em;
+}
+
+.draft-header p{
+  font-size: 1.05rem;
+  max-width: 680px;
+}
+
+/* Card login più sottile */
+.user-card{
+  border-radius: 999px;
+  padding: 14px 22px;
+  background: rgba(255,255,255,.90);
+}
+
+.user-card #userInfo{
+  font-size:.96rem;
+}
+
+/* Admin più elegante */
+.admin-card{
+  position:relative;
+  overflow:hidden;
+  border-radius:26px;
+  padding:24px;
+  background:
+    linear-gradient(135deg, rgba(255,255,255,.97), rgba(255,248,220,.94));
+  border:1px solid rgba(255,204,0,.55);
+}
+
+.admin-card::before{
+  content:"ADMIN";
+  position:absolute;
+  right:22px;
+  top:10px;
+  font-size:4.4rem;
+  font-weight:1000;
+  letter-spacing:.08em;
+  color:rgba(0,31,63,.045);
+  pointer-events:none;
+}
+
+.admin-card h2{
+  position:relative;
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+
+.admin-card h2::before{
+  content:"⚙️";
+  font-size:1.15rem;
+}
+
+/* Layout principale più da trade desk */
+@media (min-width: 900px){
+  #tradeApp{
+    grid-template-columns: minmax(420px, .92fr) minmax(420px, 1.08fr);
+    gap:22px;
+  }
+
+  #tradeApp .draft-card:first-child{
+    top:96px;
+  }
+}
+
+/* Card proposta più importante */
+#tradeApp > .draft-card:first-child{
+  position:relative;
+  overflow:hidden;
+  border-radius:30px;
+  padding:26px;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.97), rgba(245,249,255,.96));
+  border:1px solid rgba(255,255,255,.72);
+}
+
+#tradeApp > .draft-card:first-child::before{
+  content:"TRADE DESK";
+  position:absolute;
+  right:18px;
+  top:14px;
+  font-size:3.2rem;
+  line-height:1;
+  font-weight:1000;
+  letter-spacing:.06em;
+  color:rgba(0,31,63,.045);
+  pointer-events:none;
+}
+
+#tradeApp > .draft-card:first-child h2{
+  font-size:1.55rem;
+  text-transform:uppercase;
+  letter-spacing:-.04em;
+}
+
+/* Riga squadra e draft più badge */
+#tradeApp > .draft-card:first-child > p{
+  display:flex;
+  align-items:center;
+  flex-wrap:wrap;
+  gap:8px;
+  margin:10px 0;
+}
+
+#activeDraftLabel{
+  display:inline-flex;
+  padding:5px 11px;
+  border-radius:999px;
+  color:#003366;
+  background:rgba(0,116,217,.08);
+  border:1px solid rgba(0,116,217,.18);
+}
+
+/* Form più moderno */
+.form-row{
+  margin:18px 0;
+}
+
+.form-row label{
+  font-size:.95rem;
+  text-transform:uppercase;
+  letter-spacing:.025em;
+}
+
+select,
+textarea,
+#adminFutureSeason,
+#adminMarketOpenAt,
+#adminMarketCloseAt{
+  border-radius:18px;
+  padding:14px 15px;
+  border:1px solid rgba(0,31,63,.13);
+  background:rgba(255,255,255,.94);
+}
+
+/* Dropdown asset più bello */
+.pick-dropdown{
+  border-radius:20px;
+  background:rgba(255,255,255,.96);
+  box-shadow:0 14px 28px rgba(15,23,42,.07);
+}
+
+.pick-dropdown summary{
+  min-height:58px;
+  padding:15px 18px;
+  background:
+    linear-gradient(180deg, #ffffff, #f3f7ff);
+}
+
+.pick-list{
+  max-height:310px;
+  gap:9px;
+  padding:14px;
+}
+
+/* Asset come chip/card */
+.pick-choice{
+  min-height:46px;
+  border-radius:16px;
+  background:
+    linear-gradient(180deg, #ffffff, #f8fbff);
+}
+
+.pick-choice:has(input:checked){
+  border-color:rgba(255,204,0,.85);
+  background:
+    linear-gradient(135deg, rgba(255,204,0,.20), rgba(255,255,255,.96));
+  box-shadow:0 10px 20px rgba(245,158,11,.15);
+}
+
+/* Bottone proposta più "call to action" */
+#sendTradeBtn{
+  min-height:54px;
+  border-radius:18px;
+  text-transform:uppercase;
+  letter-spacing:.03em;
+  background:
+    linear-gradient(135deg, #ffcc00 0%, #f59e0b 55%, #fb923c 100%);
+  box-shadow:0 16px 30px rgba(245,158,11,.26);
+}
+
+/* Card sezioni laterali */
+#pendingCutsPanel,
+#tradeApp > .draft-card:nth-of-type(3),
+#tradeApp > .draft-card:nth-of-type(4){
+  border-radius:28px;
+  padding:24px;
+}
+
+/* Titoli sezioni proposte */
+#pendingCutsPanel h2,
+#tradeApp > .draft-card:nth-of-type(3) h2,
+#tradeApp > .draft-card:nth-of-type(4) h2{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  text-transform:uppercase;
+  letter-spacing:-.03em;
+}
+
+#pendingCutsPanel h2::before{
+  content:"✂️";
+}
+
+#tradeApp > .draft-card:nth-of-type(3) h2::before{
+  content:"📥";
+}
+
+#tradeApp > .draft-card:nth-of-type(4) h2::before{
+  content:"📤";
+}
+
+/* Trade card come ticket */
+.trade-card{
+  border-radius:22px;
+  padding:20px;
+  background:
+    linear-gradient(135deg, rgba(255,255,255,.98), rgba(241,247,255,.96));
+  border:1px solid rgba(0,31,63,.10);
+  box-shadow:0 16px 34px rgba(15,23,42,.10);
+}
+
+.trade-card::before{
+  width:8px;
+  background:
+    linear-gradient(180deg, #ffcc00, #0a4d8f 70%, #001f3f);
+}
+
+.trade-card h3{
+  padding-left:10px;
+  margin-bottom:16px;
+  font-size:1.12rem;
+  text-transform:uppercase;
+  letter-spacing:-.02em;
+}
+
+.trade-card ul{
+  padding-left:0;
+  list-style:none;
+}
+
+.trade-card li{
+  display:flex;
+  align-items:center;
+  gap:7px;
+  margin:7px 0;
+  padding:8px 10px;
+  border-radius:12px;
+  background:rgba(0,31,63,.045);
+}
+
+.trade-card li::before{
+  content:"◆";
+  color:#ffcc00;
+  font-size:.72rem;
+}
+
+/* Azioni più pulite */
+.trade-actions button{
+  border-radius:999px;
+  padding:10px 16px;
+}
+
+/* Storico compatto e più elegante */
+.history-card{
+  border-radius:24px;
+  background:rgba(255,255,255,.95);
+}
+
+.history-dropdown summary{
+  min-height:62px;
+  padding:18px 24px;
+}
+
+.history-dropdown summary span:first-child{
+  font-size:1.02rem;
+  text-transform:uppercase;
+  letter-spacing:-.02em;
+}
+
+.history-summary-note{
+  padding:7px 13px;
+  background:rgba(0,31,63,.07);
+}
+
+/* Modal coerente col resto */
+.trade-modal-content{
+  border-radius:24px;
+  padding:26px;
+  border:1px solid rgba(255,255,255,.65);
+  box-shadow:0 28px 70px rgba(0,0,0,.34);
+}
+
+/* Mobile più respirabile */
+@media (max-width: 700px){
+  .draft-page{
+    padding:16px 10px 34px;
+  }
+
+  .draft-header{
+    min-height:130px;
+    padding:24px 20px;
+    border-radius:24px;
+  }
+
+  .draft-header::after{
+    font-size:3.2rem;
+    right:12px;
+    bottom:10px;
+  }
+
+  .user-card{
+    border-radius:20px;
+  }
+
+  .admin-card,
+  #tradeApp > .draft-card:first-child,
+  #pendingCutsPanel,
+  #tradeApp > .draft-card:nth-of-type(3),
+  #tradeApp > .draft-card:nth-of-type(4){
+    border-radius:22px;
+    padding:18px;
+  }
+
+  #tradeApp > .draft-card:first-child::before,
+  .admin-card::before{
+    display:none;
+  }
+
+  .pick-list{
+    max-height:240px;
+  }
+
+  .trade-card{
+    padding:17px;
+  }
+
+  .trade-card h3{
+    font-size:1rem;
+  }
+}
