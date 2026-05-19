@@ -267,7 +267,8 @@ function aggiornaPlayoff() {
   });
 
   renderCampione(P);
-   renderMobilePlayoff(P);
+  renderMobilePlayoff(P);
+  renderPlayoffAdminPanel(P);
 }
 
 /* =========================================
@@ -292,16 +293,11 @@ function getAdminMatchLabel(code) {
   return code;
 }
 
-function renderPlayoffAdminPanel() {
+function renderPlayoffAdminPanel(P) {
   const container = document.getElementById("admin-playoff-results");
   if (!container) return;
 
-  const P = computeParticipants();
-  if (!Object.keys(P).length) return;
-
-  container.innerHTML = ADMIN_MATCH_ORDER.map(code => {
-    const match = P[code];
-    if (!match) return "";
+  if (!P || !Object.keys(P).length) return;
 
     const homeName = stripSeed(match.home?.name || "In attesa");
     const awayName = stripSeed(match.away?.name || "In attesa");
@@ -568,7 +564,6 @@ fetch(URL_STATS_MASTER + "&nocache=" + Date.now(), { cache: "no-store" })
     window.squadre = classificaTotale.slice(0, 12);
 
     aggiornaPlayoff();
-     renderPlayoffAdminPanel();
 
     window.addEventListener("resize", () => {
       alignLikeExcel();
