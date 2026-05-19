@@ -3,17 +3,24 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
   <title>Playoff - Lega degli Eroi</title>
+
   <link rel="stylesheet" href="navbar.css">
   <link rel="stylesheet" href="playoff.css" />
- <script src="playoff.js?v=5" defer></script>
+
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Cinzel:wght@700;800&display=swap" rel="stylesheet">
+
+  <script src="playoff.js?v=5" defer></script>
 </head>
+
 <body>
+
   <nav class="site-nav">
     <div class="nav-inner">
       <div class="nav-left">
         <span id="hamburger" class="hamburger" aria-label="Apri menu">☰</span>
+
         <a href="index.html" class="brand-home" aria-label="Home">
           <img src="icons/nav/home.webp" alt="" class="nav-home-icon">
         </a>
@@ -26,6 +33,7 @@
           <a href="#" class="toggle-submenu">
             Draft <span class="caret">▾</span>
           </a>
+
           <ul class="submenu">
             <li><a href="pre-draft.html"><img src="icons/nav/pre-draft.webp" class="menu-icon" alt="">Pre-Draft</a></li>
             <li><a href="draft_championship.html"><img src="icons/nav/conf-championship.webp" class="menu-icon" alt="">Conf. Championship</a></li>
@@ -38,6 +46,7 @@
           <a href="#" class="toggle-submenu">
             Competizioni <span class="caret">▾</span>
           </a>
+
           <ul class="submenu">
             <li><a href="classifica.html"><img src="icons/nav/classifiche.webp" class="menu-icon" alt="">Classifiche</a></li>
             <li><a href="playoff.html"><img src="icons/nav/playoff.webp" class="menu-icon" alt="">Playoff</a></li>
@@ -49,13 +58,13 @@
           </ul>
         </li>
 
-    
         <li><a href="waiver.html">Waiver Wire</a></li>
 
         <li class="dropdown">
           <a href="#" class="toggle-submenu">
             Hall of Fame <span class="caret">▾</span>
           </a>
+
           <ul class="submenu">
             <li><a href="medagliere.html"><img src="icons/nav/albo-oro.webp" class="menu-icon" alt="">Albo d'Oro</a></li>
             <li><a href="albo.html"><img src="icons/nav/medagliere.webp" class="menu-icon" alt="">Medagliere</a></li>
@@ -89,125 +98,141 @@
     </div>
   </nav>
 
-<header class="hero-playoff cinematic-hero">
-  <div class="cinematic-panel">
+  <!-- HERO CINEMATICA -->
+  <header class="hero-playoff cinematic-hero">
+    <div class="cinematic-panel">
 
-    <div class="cinematic-kicker">
-      <span></span>
-      <strong>Road to the Crown</strong>
-      <span></span>
+      <div class="cinematic-kicker">
+        <span></span>
+        <strong>Road to the Crown</strong>
+        <span></span>
+      </div>
+
+      <h1 class="titolo-pagina">Playoff Lega degli Eroi</h1>
+
+      <p class="sottotitolo-pagina">
+        Il cammino verso la coppa comincia qui
+      </p>
+
+      <div class="cinematic-meta">
+        <div class="meta-pill">12 Squadre</div>
+        <div class="meta-dot"></div>
+        <div class="meta-pill meta-pill--gold">1 Campione</div>
+      </div>
+
     </div>
+  </header>
 
-    <h1 class="titolo-pagina">Playoff Lega degli Eroi</h1>
+  <!-- BRACKET -->
+  <section class="playoff-stage">
+    <div class="playoff-board">
 
-    <p class="sottotitolo-pagina">
-      Il cammino verso la coppa comincia qui
-    </p>
+      <!-- WILD CARD SX -->
+      <div class="round-col round-col--outer">
+        <h2>Wild Card</h2>
 
-    <div class="cinematic-meta">
-      <div class="meta-pill">12 Squadre</div>
-      <div class="meta-dot"></div>
-      <div class="meta-pill meta-pill--gold">1 Campione</div>
-    </div>
+        <div class="round-stack round-stack--spread">
+          <div class="game-slot">
+            <div class="game-card" data-series="WC1"></div>
+          </div>
 
-  </div>
-</header>
-
- <section class="playoff-stage">
-  <div class="playoff-board">
-
-    <!-- WILD CARD SX -->
-    <div class="round-col round-col--outer">
-      <h2>Wild Card</h2>
-      <div class="round-stack round-stack--spread">
-        <div class="game-slot">
-          <div class="game-card" data-series="WC1"></div>
-        </div>
-        <div class="game-slot">
-          <div class="game-card" data-series="WC3"></div>
+          <div class="game-slot">
+            <div class="game-card" data-series="WC3"></div>
+          </div>
         </div>
       </div>
-    </div>
 
-    <!-- QUARTI SX -->
-    <div class="round-col round-col--quarter round-col--quarter-left">
-      <h2>Quarti</h2>
-      <div class="round-stack round-stack--spread">
-        <div class="game-slot">
-          <div class="game-card" data-series="Q1"></div>
-        </div>
-        <div class="game-slot">
-          <div class="game-card" data-series="Q4"></div>
-        </div>
-      </div>
-    </div>
+      <!-- QUARTI SX -->
+      <div class="round-col round-col--quarter round-col--quarter-left">
+        <h2>Quarti</h2>
 
-    <!-- SEMI SX -->
-    <div class="round-col round-col--semi">
-      <h2>Semifinali</h2>
-      <div class="round-stack round-stack--center">
-        <div class="game-slot">
-          <div class="game-card game-card--semi" data-series="S1"></div>
+        <div class="round-stack round-stack--spread">
+          <div class="game-slot">
+            <div class="game-card" data-series="Q1"></div>
+          </div>
+
+          <div class="game-slot">
+            <div class="game-card" data-series="Q4"></div>
+          </div>
         </div>
       </div>
-    </div>
 
-    <!-- FINALE -->
-    <div class="round-col round-col--finale">
-      <h2>Finale</h2>
+      <!-- SEMIFINALE SX -->
+      <div class="round-col round-col--semi round-col--semi-left">
+        <h2>Semifinali</h2>
 
-<div class="finale-stage">
-  <div class="finale-glow"></div>
+        <div class="round-stack round-stack--center">
+          <div class="semi-bracket semi-bracket-left"></div>
 
-  <div class="game-slot game-slot--finale">
-    <div class="game-card game-card--finale" data-series="F"></div>
-  </div>
-
-  <div class="finale-bottom">
-    <div id="vincitore-assoluto" class="vincitore-info"></div>
-  </div>
-</div>
-    </div>
-
-    <!-- SEMI DX -->
-    <div class="round-col round-col--semi">
-      <h2>Semifinali</h2>
-      <div class="round-stack round-stack--center">
-        <div class="game-slot">
-          <div class="game-card game-card--semi" data-series="S2"></div>
+          <div class="game-slot">
+            <div class="game-card game-card--semi" data-series="S1"></div>
+          </div>
         </div>
       </div>
-    </div>
 
-    <!-- QUARTI DX -->
-    <div class="round-col round-col--quarter round-col--quarter-right">
-      <h2>Quarti</h2>
-      <div class="round-stack round-stack--spread">
-        <div class="game-slot">
-          <div class="game-card" data-series="Q2"></div>
-        </div>
-        <div class="game-slot">
-          <div class="game-card" data-series="Q3"></div>
-        </div>
-      </div>
-    </div>
+      <!-- FINALE -->
+      <div class="round-col round-col--finale">
+        <h2>Finale</h2>
 
-    <!-- WILD CARD DX -->
-    <div class="round-col round-col--outer">
-      <h2>Wild Card</h2>
-      <div class="round-stack round-stack--spread">
-        <div class="game-slot">
-          <div class="game-card" data-series="WC2"></div>
-        </div>
-        <div class="game-slot">
-          <div class="game-card" data-series="WC4"></div>
+        <div class="finale-stage">
+          <div class="finale-glow"></div>
+
+          <div class="game-slot game-slot--finale">
+            <div class="game-card game-card--finale" data-series="F"></div>
+          </div>
+
+          <div class="finale-bottom">
+            <div id="vincitore-assoluto" class="vincitore-info"></div>
+          </div>
         </div>
       </div>
+
+      <!-- SEMIFINALE DX -->
+      <div class="round-col round-col--semi round-col--semi-right">
+        <h2>Semifinali</h2>
+
+        <div class="round-stack round-stack--center">
+          <div class="semi-bracket semi-bracket-right"></div>
+
+          <div class="game-slot">
+            <div class="game-card game-card--semi" data-series="S2"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- QUARTI DX -->
+      <div class="round-col round-col--quarter round-col--quarter-right">
+        <h2>Quarti</h2>
+
+        <div class="round-stack round-stack--spread">
+          <div class="game-slot">
+            <div class="game-card" data-series="Q2"></div>
+          </div>
+
+          <div class="game-slot">
+            <div class="game-card" data-series="Q3"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- WILD CARD DX -->
+      <div class="round-col round-col--outer">
+        <h2>Wild Card</h2>
+
+        <div class="round-stack round-stack--spread">
+          <div class="game-slot">
+            <div class="game-card" data-series="WC2"></div>
+          </div>
+
+          <div class="game-slot">
+            <div class="game-card" data-series="WC4"></div>
+          </div>
+        </div>
+      </div>
+
     </div>
+  </section>
 
-  </div>
-</section>
-
- <script src="navbar.js"></script>
+  <script src="navbar.js"></script>
 </body>
 </html>
