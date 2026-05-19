@@ -2201,3 +2201,85 @@ textarea{
   color:#7f1d1d;
   border:1px solid #fecaca;
 }
+
+/* =====================================================
+   FIX DEFINITIVO SFONDO WAR ROOM
+   Deve stare ULTIMO nel CSS
+   ===================================================== */
+
+#tradeApp .trade-war-card{
+  background:
+    radial-gradient(520px 220px at 80% 0%, rgba(255,204,0,.14), transparent 64%),
+    linear-gradient(135deg, #05264a 0%, #082f59 52%, #0a3a6b 100%) !important;
+  color:#ffffff !important;
+  border:1px solid rgba(255,204,0,.28) !important;
+}
+
+/* Testi sopra leggibili */
+#tradeApp .trade-war-card .trade-kicker{
+  color:#ffcc00 !important;
+}
+
+#tradeApp .trade-war-card h2,
+#tradeApp .trade-war-card .trade-war-team-pill span,
+#tradeApp .trade-war-card .trade-war-team-pill strong,
+#tradeApp .trade-war-card #myTeamLabel,
+#tradeApp .trade-war-card .trade-market-strip span,
+#tradeApp .trade-war-card .trade-market-strip strong,
+#tradeApp .trade-war-card #activeDraftLabel{
+  color:#ffffff !important;
+}
+
+/* La scritta gigante dietro */
+#tradeApp .trade-war-card::after{
+  color:rgba(255,255,255,.055) !important;
+}
+
+/* Pannelli interni chiari */
+#tradeApp .trade-target-panel,
+#tradeApp .trade-message-panel,
+#tradeApp .trade-side-give,
+#tradeApp .trade-side-get{
+  background:linear-gradient(180deg, #ffffff 0%, #f7faff 100%) !important;
+  color:#0b2d55 !important;
+}
+
+/* Titoli nei pannelli */
+#tradeApp .trade-target-panel label,
+#tradeApp .trade-message-panel label,
+#tradeApp .trade-side-give h3,
+#tradeApp .trade-side-get h3{
+  color:#0b2d55 !important;
+}
+
+/* Sottotitoli nei pannelli */
+#tradeApp .trade-side-give p,
+#tradeApp .trade-side-get p{
+  color:#6f7f94 !important;
+}
+
+/* Barra draft */
+#tradeApp .trade-market-strip{
+  background:rgba(255,255,255,.09) !important;
+  border:1px solid rgba(255,255,255,.14) !important;
+}
+
+/* Pill squadra */
+#tradeApp .trade-war-team-pill{
+  background:rgba(255,255,255,.10) !important;
+  border:1px solid rgba(255,255,255,.15) !important;
+}
+
+/* Select e textarea */
+#tradeApp .trade-target-panel select,
+#tradeApp .trade-message-panel textarea{
+  background:#ffffff !important;
+  color:#1a2c45 !important;
+  border:1px solid rgba(11,45,85,.14) !important;
+}
+
+/* Dropdown asset */
+#tradeApp .trade-board-dropdown summary{
+  background:linear-gradient(180deg, #ffffff, #f4f8fd) !important;
+  color:#0b2d55 !important;
+}
