@@ -2477,3 +2477,164 @@ textarea{
     radial-gradient(620px 260px at 8% 0%, rgba(54,163,255,.16), transparent 60%),
     linear-gradient(135deg, #041f3d 0%, #073461 52%, #082f59 100%) !important;
 }
+
+/* RESET HEADER INTERNO WAR ROOM */
+
+#tradeApp .trade-war-header{
+  margin-bottom:16px !important;
+  padding:0 !important;
+  border-radius:0 !important;
+  background:transparent !important;
+  border:0 !important;
+  box-shadow:none !important;
+}
+
+#tradeApp .trade-war-header::before{
+  display:none !important;
+}
+
+#tradeApp .trade-kicker{
+  color:#ffcc00 !important;
+  background:transparent !important;
+  padding:0 !important;
+  box-shadow:none !important;
+}
+
+#tradeApp .trade-kicker::before{
+  display:none !important;
+}
+
+/* =====================================================
+   HEADER PRINCIPALE TRADE ROOM - VERSIONE PIÙ VIVA
+   ===================================================== */
+
+.draft-header{
+  min-height:210px;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  padding:42px 42px;
+  border-radius:32px;
+  overflow:hidden;
+  background:
+    radial-gradient(520px 320px at 88% 6%, rgba(255,204,0,.24), transparent 58%),
+    radial-gradient(520px 280px at 8% 0%, rgba(54,163,255,.20), transparent 60%),
+    linear-gradient(135deg, #031d39 0%, #064277 55%, #0a4d8f 100%) !important;
+  border:1px solid rgba(255,204,0,.24);
+  box-shadow:
+    0 22px 56px rgba(0,0,0,.28),
+    inset 0 1px 0 rgba(255,255,255,.10);
+}
+
+.draft-header::before{
+  content:"";
+  position:absolute;
+  right:-80px;
+  top:-100px;
+  width:360px;
+  height:360px;
+  border-radius:50%;
+  background:
+    radial-gradient(circle, rgba(255,204,0,.34), rgba(255,204,0,.08) 48%, transparent 68%);
+  filter:blur(2px);
+  opacity:.95;
+}
+
+.draft-header::after{
+  content:"TRADE ROOM";
+  right:28px;
+  bottom:18px;
+  font-size:clamp(3.2rem, 9vw, 8rem);
+  line-height:.8;
+  font-weight:1000;
+  letter-spacing:.06em;
+  color:rgba(255,255,255,.075);
+}
+
+.draft-header h1{
+  position:relative;
+  z-index:1;
+  margin:0 0 14px;
+  font-size:clamp(3rem, 6vw, 5.8rem);
+  line-height:.86;
+  font-weight:1000;
+  letter-spacing:-.08em;
+  text-transform:uppercase;
+  color:#ffffff;
+  text-shadow:0 14px 28px rgba(0,0,0,.24);
+}
+
+.draft-header h1::before{
+  content:"Mercato Lega degli Eroi";
+  display:inline-flex;
+  margin-bottom:16px;
+  padding:7px 12px;
+  border-radius:999px;
+  color:#08213d;
+  background:linear-gradient(135deg, #ffcc00, #f59e0b);
+  box-shadow:0 12px 24px rgba(245,158,11,.24);
+  font-size:.78rem;
+  line-height:1;
+  font-weight:1000;
+  letter-spacing:.12em;
+  text-transform:uppercase;
+}
+
+.draft-header p{
+  position:relative;
+  z-index:1;
+  max-width:760px;
+  margin:0;
+  color:rgba(255,255,255,.88);
+  font-size:1.15rem;
+  line-height:1.55;
+}
+
+/* Piccola barra decorativa */
+.draft-header p::after{
+  content:"";
+  display:block;
+  width:96px;
+  height:6px;
+  margin-top:22px;
+  border-radius:999px;
+  background:linear-gradient(90deg, #ffcc00, #36a3ff);
+  box-shadow:0 0 24px rgba(255,204,0,.25);
+}
+
+/* MOBILE */
+@media (max-width:700px){
+  .draft-header{
+    min-height:260px;
+    padding:32px 28px;
+    border-radius:28px;
+  }
+
+  .draft-header h1{
+    font-size:3.8rem;
+    line-height:.9;
+  }
+
+  .draft-header h1::before{
+    font-size:.66rem;
+    margin-bottom:14px;
+  }
+
+  .draft-header p{
+    font-size:1.25rem;
+    line-height:1.45;
+  }
+
+  .draft-header::after{
+    font-size:4.2rem;
+    right:16px;
+    bottom:18px;
+  }
+
+  .draft-header::before{
+    right:-130px;
+    top:-90px;
+    width:330px;
+    height:330px;
+  }
+}
