@@ -783,3 +783,43 @@ body::after{
     text-align:center;
   }
 }
+
+/* ===== HIGHLIGHT VINCITORI ===== */
+
+.match-row.is-winner{
+  background:
+    linear-gradient(90deg, rgba(243,195,91,.18), rgba(243,195,91,.04) 58%, transparent);
+}
+
+.match-row.is-winner .team-logo{
+  border-color:rgba(243,195,91,.75);
+  box-shadow:
+    0 0 0 3px rgba(243,195,91,.18),
+    0 0 22px rgba(243,195,91,.42),
+    0 8px 16px rgba(0,0,0,.25);
+}
+
+.match-row.is-winner .score-box{
+  background:linear-gradient(180deg, #f5c760, #c99123);
+  color:#061a3a;
+  box-shadow:
+    0 0 0 2px rgba(255,255,255,.35),
+    0 0 18px rgba(243,195,91,.45);
+}
+
+.match-row.is-winner .seed-box{
+  background:linear-gradient(180deg, #f5c760, #c99123);
+  color:#061a3a;
+}
+
+/* perdente leggermente spento */
+.game-card:has(.match-row.is-winner) .match-row:not(.is-winner){
+  opacity:.62;
+  filter:saturate(.75);
+}
+
+/* ma nella finale lasciamo il perdente più leggibile */
+.game-card--finale:has(.match-row.is-winner) .match-row:not(.is-winner){
+  opacity:.78;
+  filter:saturate(.85);
+}
