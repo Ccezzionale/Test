@@ -37,6 +37,7 @@ body{
     radial-gradient(circle at 50% 0%, rgba(255,255,255,.10), transparent 28%),
     linear-gradient(180deg, rgba(3,16,39,.30), rgba(3,16,39,.75)),
     #031027 url("img/champions-bg.png") center top / cover no-repeat fixed;
+  #071a3b url("img/champions-bg.png") center / cover no-repeat fixed;
 }
 
 body::before{
