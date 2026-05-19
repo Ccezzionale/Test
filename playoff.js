@@ -508,14 +508,40 @@ function isPlaceholderTeam(team) {
 }
 
 function getMatchWinnerSide(code) {
+  if (typeof getWinnerSide === "function") {
+    return getWinnerSide(code);
+  }
+
   const pick = PICKS[code];
   if (!pick) return null;
 
-  const home = truthy(pick.home);
-  const away = truthy(pick.away);
+  const homeScore = pick.home;
+  const awayScore = pick.away;
 
-  if (home && !away) return "home";
-  if (away && !home) return "away";
+  const hasHomeScore =
+    homeScore !== "" &&
+    homeScore !== null &&
+    homeScore !== undefined &&
+    !isNaN(Number(homeScore));
+
+  const hasAwayScore =
+    awayScore !== "" &&
+    awayScore !== null &&
+    awayScore !== undefined &&
+    !isNaN(Number(awayScore));
+
+  if (hasHomeScore && hasAwayScore) {
+    const h = Number(homeScore);
+    const a = Number(awayScore);
+
+    if (h > a) return "home";
+    if (a > h) return "away";
+    return null;
+  }
+
+  if (truthy(homeScore) && !truthy(awayScore)) return "home";
+  if (truthy(awayScore) && !truthy(homeScore)) return "away";
+
   return null;
 }
 
