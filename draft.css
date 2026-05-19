@@ -5009,3 +5009,36 @@ h1, h2, h3, h4, p{
     object-fit: contain !important;
   }
 }
+
+/* =========================
+   DESKTOP DRAFT BOARD - HEADER LOGHI PIÙ GRANDI
+   ========================= */
+@media (min-width: 1101px){
+
+  .desktop-round-rail{
+    grid-template-rows: 118px repeat(var(--desktop-rounds, 12), 54px) !important;
+  }
+
+  .desktop-round-spacer{
+    height: 118px !important;
+  }
+
+  .desktop-team-column{
+    grid-template-rows: 118px auto !important;
+  }
+
+  .desktop-team-head{
+    height: 118px !important;
+    padding: 14px 10px !important;
+  }
+
+  .desktop-team-head img{
+    width: 88px !important;
+    height: 88px !important;
+    object-fit: contain !important;
+  }
+
+  .desktop-team-head strong{
+    display: none !important;
+  }
+}
