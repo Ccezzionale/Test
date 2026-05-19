@@ -1490,4 +1490,33 @@ body::after{
   .admin-playoff-btn{
     width:100%;
   }
+
+.mobile-qualified-badge{
+  margin-top:-2px;
+  padding:5px 9px;
+  border-radius:999px;
+  color:#061a3a;
+  background:linear-gradient(180deg, #ffe27a, #d6a82c);
+  font-size:.76rem;
+  font-weight:950;
+  box-shadow:
+    0 0 0 2px rgba(255,255,255,.16),
+    0 0 16px rgba(255,211,107,.34);
+  white-space:nowrap;
+}
+
+.mobile-vs-pill.has-score{
+  width:86px;
+  font-size:1.05rem;
+  color:#061a3a;
+  background:linear-gradient(180deg, #ffe27a, #d6a82c);
+  border-color:rgba(255,255,255,.48);
+  box-shadow:
+    0 0 24px rgba(255,211,107,.28),
+    0 6px 14px rgba(0,0,0,.25),
+    inset 0 1px 0 rgba(255,255,255,.35);
+}
+
+.mobile-team-side:not(.is-winner) .mobile-qualified-badge{
+  display:none;
 }
