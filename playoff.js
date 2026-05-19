@@ -788,39 +788,6 @@ function getMatchWinnerSide(code, matchData = null) {
   return null;
 }
 
-  const pick = PICKS[code];
-  if (!pick) return null;
-
-  const homeScore = pick.home;
-  const awayScore = pick.away;
-
-  const hasHomeScore =
-    homeScore !== "" &&
-    homeScore !== null &&
-    homeScore !== undefined &&
-    !isNaN(Number(homeScore));
-
-  const hasAwayScore =
-    awayScore !== "" &&
-    awayScore !== null &&
-    awayScore !== undefined &&
-    !isNaN(Number(awayScore));
-
-  if (hasHomeScore && hasAwayScore) {
-    const h = Number(homeScore);
-    const a = Number(awayScore);
-
-    if (h > a) return "home";
-    if (a > h) return "away";
-    return null;
-  }
-
-  if (truthy(homeScore) && !truthy(awayScore)) return "home";
-  if (truthy(awayScore) && !truthy(homeScore)) return "away";
-
-  return null;
-}
-
 function getMobileStageData(P) {
   const stages = {};
 
@@ -830,7 +797,7 @@ function getMobileStageData(P) {
       next: item.next,
       home: P[item.code]?.home || null,
       away: P[item.code]?.away || null,
-   winnerSide: getMatchWinnerSide(item.code, P[item.code])
+      winnerSide: getMatchWinnerSide(item.code, P[item.code])
     }));
   });
 
