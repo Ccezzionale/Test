@@ -245,6 +245,7 @@ function aggiornaPlayoff() {
   });
 
   renderCampione(P);
+   renderMobilePlayoff(P);
 }
 
 /* =========================================
@@ -457,3 +458,176 @@ fetch(URL_STATS_MASTER + "&nocache=" + Date.now(), { cache: "no-store" })
     });
   })
   .catch(err => console.error("Errore nel caricamento classifica playoff:", err));
+
+/* =========================================
+   MOBILE APP VIEW
+   - Usa gli stessi dati P giÃ  calcolati.
+   - Non modifica PICKS, computeParticipants o winnerOf.
+   ========================================= */
+let currentMobileStage = "wildcard";
+let mobileTabsBound = false;
+let lastMobileParticipants = null;
+
+const MOBILE_STAGE_META = {
+  wildcard: {
+    title: "Wildcard",
+    matches: [
+      { code: "WC1", next: "Quarti" },
+      { code: "WC3", next: "Quarti" },
+      { code: "WC2", next: "Quarti" },
+      { code: "WC4", next: "Quarti" }
+    ]
+  },
+  quarti: {
+    title: "Quarti",
+    matches: [
+      { code: "Q1", next: "Semifinale" },
+      { code: "Q4", next: "Semifinale" },
+      { code: "Q2", next: "Semifinale" },
+      { code: "Q3", next: "Semifinale" }
+    ]
+  },
+  semifinali: {
+    title: "Semifinali",
+    matches: [
+      { code: "S1", next: "Finale" },
+      { code: "S2", next: "Finale" }
+    ]
+  },
+  finale: {
+    title: "Finale",
+    matches: [
+      { code: "F", next: "Campione" }
+    ]
+  }
+};
+
+function isPlaceholderTeam(team) {
+  const name = stripSeed(team?.name || "");
+  return !team || (!team.seed && /vincente|classificata|in attesa/i.test(name));
+}
+
+function getMatchWinnerSide(code) {
+  const pick = PICKS[code];
+  if (!pick) return null;
+
+  const home = truthy(pick.home);
+  const away = truthy(pick.away);
+
+  if (home && !away) return "home";
+  if (away && !home) return "away";
+  return null;
+}
+
+function getMobileStageData(P) {
+  const stages = {};
+
+  Object.entries(MOBILE_STAGE_META).forEach(([stageKey, meta]) => {
+    stages[stageKey] = meta.matches.map(item => ({
+      code: item.code,
+      next: item.next,
+      home: P[item.code]?.home || null,
+      away: P[item.code]?.away || null,
+      winnerSide: getMatchWinnerSide(item.code)
+    }));
+  });
+
+  return stages;
+}
+
+function createMobileTeamSide(team, side, isWinner) {
+  const cleanName = stripSeed(team?.name || "In attesa");
+  const placeholder = isPlaceholderTeam(team);
+  const logo = `img/${cleanName}.png`;
+
+  return `
+    <div class="mobile-team-side ${side} ${isWinner ? "is-winner" : ""} ${placeholder ? "is-placeholder" : ""}">
+      ${team?.seed ? `<span class="mobile-seed">#${team.seed}</span>` : ""}
+      <div class="mobile-team-logo-wrap">
+        ${!placeholder ? `<img src="${logo}" alt="${cleanName}" onerror="this.style.display='none'">` : ""}
+      </div>
+      <div class="mobile-team-name">${cleanName}</div>
+    </div>
+  `;
+}
+
+function createMobileMatchCard(match) {
+  const home = match.home || { name: "In attesa" };
+  const away = match.away || { name: "In attesa" };
+
+  const homeWinner = match.winnerSide === "home";
+  const awayWinner = match.winnerSide === "away";
+  const hasWinner = !!match.winnerSide;
+  const statusText = hasWinner ? "Qualificata" : "In attesa";
+  const statusIcon = hasWinner ? "âœ“" : "â—·";
+  const stageClass = match.code === "F" ? "is-final" : "";
+
+  return `
+    <article class="mobile-match-card ${stageClass}" data-mobile-match="${match.code}">
+      <div class="mobile-match-code">${match.code}</div>
+
+      <div class="mobile-match-main">
+        ${createMobileTeamSide(home, "left", homeWinner)}
+
+        <div class="mobile-vs-center">
+          <div class="mobile-match-label">Sfida playoff</div>
+          <div class="mobile-vs-pill">VS</div>
+          <div class="mobile-match-status">
+            <span>${statusIcon}</span>
+            <span>${statusText}</span>
+          </div>
+        </div>
+
+        ${createMobileTeamSide(away, "right", awayWinner)}
+      </div>
+
+      <div class="mobile-match-footer">
+        <span>Vincitore <strong>â†’</strong> ${match.next}</span>
+        <span class="mobile-footer-arrow">â€º</span>
+      </div>
+    </article>
+  `;
+}
+
+function renderMobilePlayoff(P) {
+  lastMobileParticipants = P;
+
+  const container = document.getElementById("mobile-stage-content");
+  if (!container) return;
+
+  bindMobileStageTabs();
+
+  const stages = getMobileStageData(P);
+  const meta = MOBILE_STAGE_META[currentMobileStage] || MOBILE_STAGE_META.wildcard;
+  const matches = stages[currentMobileStage] || [];
+
+  const title = `
+    <div class="mobile-stage-title-row">
+      <h2>${meta.title}</h2>
+      <span>${matches.length} sfide</span>
+    </div>
+  `;
+
+  container.innerHTML = title + matches.map(createMobileMatchCard).join("");
+
+  document.querySelectorAll(".stage-tab").forEach(tab => {
+    tab.classList.toggle("active", tab.dataset.stage === currentMobileStage);
+  });
+}
+
+function bindMobileStageTabs() {
+  if (mobileTabsBound) return;
+
+  document.querySelectorAll(".stage-tab").forEach(tab => {
+    tab.addEventListener("click", () => {
+      currentMobileStage = tab.dataset.stage || "wildcard";
+      if (lastMobileParticipants) {
+        renderMobilePlayoff(lastMobileParticipants);
+      }
+    });
+  });
+
+  mobileTabsBound = true;
+}
+
+
