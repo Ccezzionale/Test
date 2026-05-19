@@ -685,8 +685,6 @@ fetch(URL_STATS_MASTER + "&nocache=" + Date.now(), { cache: "no-store" })
 
     aggiornaPlayoff();
 
-       alert("Risultati salvati.");
-
     window.addEventListener("resize", () => {
       if (typeof alignLikeExcel === "function") {
         alignLikeExcel();
