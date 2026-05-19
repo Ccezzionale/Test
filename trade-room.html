@@ -97,48 +97,79 @@
   <p>Il tavolo delle trattative: proponi scambi di pick, accetta offerte e aggiorna automaticamente il draft.</p>
 </section>
 
- <section class="draft-card user-card">
-  <p id="userInfo">Controllo accesso...</p>
+<section class="team-dashboard-card" id="teamDashboardCard">
+  <div class="team-dashboard-accent"></div>
+
+  <div class="team-dashboard-logo-wrap">
+    <img id="teamDashboardLogo" src="" alt="" class="team-dashboard-logo">
+  </div>
+
+  <div class="team-dashboard-info">
+    <h2 id="teamDashboardName">Controllo accesso...</h2>
+    <p id="teamDashboardMeta">Trade Room</p>
+  </div>
+
+  <div class="team-dashboard-status" id="teamDashboardStatus">
+    Mercato
+  </div>
+
+  <p id="userInfo" class="hidden-user-info">Controllo accesso...</p>
 </section>
-<section id="tradeAdminPanel" class="draft-card admin-card" style="display:none;">
-  <h2>Admin Mercato</h2>
+<section id="tradeAdminPanel" class="admin-accordion-card" style="display:none;">
+  <details class="admin-accordion">
+    <summary>
+      <span class="admin-summary-left">
+        <span class="admin-icon">⚙️</span>
+        <span>
+          <strong>Admin Mercato</strong>
+          <small>Fase, finestre e pick future</small>
+        </span>
+      </span>
 
-  <div class="form-row">
-    <label for="adminTradePhase">Fase mercato</label>
-    <select id="adminTradePhase">
-      <option value="draft">Durante il Draft</option>
-      <option value="conference_market">Mercato Conferences</option>
-      <option value="round_robin_market">Round Robin / Mercato unificato</option>
-    </select>
-  </div>
+      <span class="admin-summary-pill">Apri pannello</span>
+    </summary>
 
-  <div class="form-row">
-    <label for="adminFutureSeason">Stagione pick future</label>
-    <input id="adminFutureSeason" type="number" min="2026" step="1" />
-  </div>
+    <div class="admin-accordion-body">
+      <div class="admin-grid">
+        <div class="form-row">
+          <label for="adminTradePhase">Fase mercato</label>
+          <select id="adminTradePhase">
+            <option value="draft">Durante il Draft</option>
+            <option value="conference_market">Mercato Conferences</option>
+            <option value="round_robin_market">Round Robin / Mercato unificato</option>
+          </select>
+        </div>
 
-<div class="form-row admin-toggle-row">
-  <label>
-    <input id="adminMarketOpen" type="checkbox" />
-    Mercato aperto
-  </label>
-</div>
+        <div class="form-row">
+          <label for="adminFutureSeason">Stagione pick future</label>
+          <input id="adminFutureSeason" type="number" min="2026" step="1" />
+        </div>
 
-<div class="form-row">
-  <label for="adminMarketOpenAt">Apertura mercato</label>
-  <input id="adminMarketOpenAt" type="datetime-local" />
-</div>
+        <div class="form-row">
+          <label for="adminMarketOpenAt">Apertura mercato</label>
+          <input id="adminMarketOpenAt" type="datetime-local" />
+        </div>
 
-<div class="form-row">
-  <label for="adminMarketCloseAt">Chiusura mercato</label>
-  <input id="adminMarketCloseAt" type="datetime-local" />
-</div>
+        <div class="form-row">
+          <label for="adminMarketCloseAt">Chiusura mercato</label>
+          <input id="adminMarketCloseAt" type="datetime-local" />
+        </div>
+      </div>
 
-  <button id="saveTradeSettingsBtn" type="button">
-    Salva impostazioni mercato
-  </button>
+      <div class="admin-bottom-row">
+        <label class="admin-switch-row">
+          <input id="adminMarketOpen" type="checkbox" />
+          <span>Mercato aperto</span>
+        </label>
 
-  <p id="tradeSettingsMessage"></p>
+        <button id="saveTradeSettingsBtn" type="button">
+          Salva impostazioni mercato
+        </button>
+      </div>
+
+      <p id="tradeSettingsMessage"></p>
+    </div>
+  </details>
 </section>
     <section id="tradeApp" style="display:none;">
       <section class="draft-card">
