@@ -456,8 +456,6 @@ await checkPlayoffAdmin();
 await loadPlayoffResultsFromSupabase();
 
 aggiornaPlayoff();
-
-  alert("Risultati salvati.");
 }
 
 async function resetPlayoffAdminResults() {
