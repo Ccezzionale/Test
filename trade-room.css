@@ -2012,3 +2012,192 @@ textarea{
     border-radius:20px;
   }
 }
+
+/* =====================================================
+   TRADE WAR ROOM - COLOR FIX
+   ===================================================== */
+
+.trade-war-card{
+  background:
+    radial-gradient(520px 220px at 80% 0%, rgba(255,204,0,.12), transparent 64%),
+    linear-gradient(135deg, #05264a 0%, #0a3a6b 100%);
+  color:#ffffff;
+  border:1px solid rgba(255,204,0,.20);
+  box-shadow:0 24px 58px rgba(0,0,0,.30);
+}
+
+.trade-war-card::after{
+  color:rgba(255,255,255,.06);
+}
+
+.trade-kicker{
+  color:#ffcc00;
+}
+
+.trade-war-card h2{
+  color:#ffffff;
+}
+
+.trade-war-team-pill{
+  background:rgba(255,255,255,.10);
+  border:1px solid rgba(255,255,255,.14);
+}
+
+.trade-war-team-pill span{
+  color:rgba(255,255,255,.65);
+}
+
+.trade-war-team-pill strong,
+.trade-war-card #myTeamLabel{
+  color:#ffffff;
+}
+
+/* barra draft */
+.trade-market-strip{
+  background:rgba(255,255,255,.08);
+  border:1px solid rgba(255,255,255,.12);
+}
+
+.trade-market-strip span{
+  color:rgba(255,255,255,.68);
+}
+
+.trade-market-strip strong,
+.trade-war-card #activeDraftLabel{
+  color:#ffffff;
+}
+
+/* pannello scegli squadra */
+.trade-target-panel{
+  background:linear-gradient(180deg, #ffffff 0%, #f7faff 100%);
+  color:#0b2d55;
+  box-shadow:0 14px 28px rgba(0,0,0,.16);
+}
+
+.trade-target-panel label,
+.trade-message-panel label{
+  color:#0b2d55;
+}
+
+.trade-target-panel select,
+.trade-message-panel textarea{
+  background:#ffffff;
+  color:#1a2c45;
+  border:1px solid rgba(11,45,85,.12);
+}
+
+/* colonne trade */
+.trade-side{
+  border:1px solid rgba(255,255,255,.10);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.08);
+}
+
+/* TU OFFRI */
+.trade-side-give{
+  background:
+    radial-gradient(260px 120px at 20% 0%, rgba(255,204,0,.22), transparent 66%),
+    linear-gradient(180deg, rgba(255,248,230,.95), rgba(255,255,255,.92));
+}
+
+.trade-side-give h3{
+  color:#0b2d55;
+}
+
+.trade-side-give p{
+  color:#6f7f94;
+}
+
+.trade-side-give .trade-side-icon{
+  background:linear-gradient(135deg, #ffcc00, #f4b400);
+  color:#08213d;
+}
+
+/* TU CHIEDI */
+.trade-side-get{
+  background:
+    radial-gradient(260px 120px at 80% 0%, rgba(108,180,255,.18), transparent 66%),
+    linear-gradient(180deg, rgba(239,247,255,.96), rgba(255,255,255,.92));
+}
+
+.trade-side-get h3{
+  color:#0b2d55;
+}
+
+.trade-side-get p{
+  color:#6f7f94;
+}
+
+.trade-side-get .trade-side-icon{
+  background:linear-gradient(135deg, #7ab8ff, #4098ff);
+  color:#08213d;
+}
+
+/* VS */
+.trade-vs-badge span{
+  background:linear-gradient(135deg, #ffde59, #ffcc00);
+  color:#08213d;
+  border:1px solid rgba(255,255,255,.65);
+}
+
+/* dropdown board */
+.trade-board-dropdown{
+  background:#ffffff;
+  border:1px solid rgba(11,45,85,.10);
+  box-shadow:0 12px 24px rgba(0,0,0,.10);
+}
+
+.trade-board-dropdown summary{
+  background:linear-gradient(180deg, #ffffff, #f4f8fd);
+  color:#0b2d55;
+}
+
+.trade-board-dropdown .pick-list{
+  background:#f8fbff;
+}
+
+.trade-war-card .pick-choice{
+  background:#ffffff;
+  border:1px solid rgba(11,45,85,.10);
+  color:#17304f;
+}
+
+.trade-war-card .pick-choice:hover{
+  background:#fffdf3;
+  border-color:rgba(255,204,0,.60);
+}
+
+.trade-war-card .pick-choice:has(input:checked){
+  border-color:#ffcc00;
+  background:linear-gradient(135deg, rgba(255,204,0,.18), #ffffff);
+}
+
+/* messaggio */
+.trade-message-panel{
+  background:linear-gradient(180deg, #ffffff 0%, #f7faff 100%);
+  color:#0b2d55;
+  box-shadow:0 14px 28px rgba(0,0,0,.14);
+}
+
+/* bottone */
+.trade-war-card #sendTradeBtn{
+  color:#08213d;
+  background:linear-gradient(135deg, #ffcc00 0%, #f4b400 45%, #f59e0b 100%);
+  box-shadow:0 18px 36px rgba(245,158,11,.28);
+}
+
+.trade-war-card #sendTradeBtn:hover{
+  box-shadow:0 22px 42px rgba(245,158,11,.34);
+}
+
+/* messaggi */
+.trade-war-card .success-message{
+  background:#dcfce7;
+  color:#14532d;
+  border:1px solid #86efac;
+}
+
+.trade-war-card .error-message{
+  background:#fee2e2;
+  color:#7f1d1d;
+  border:1px solid #fecaca;
+}
