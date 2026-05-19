@@ -18,34 +18,51 @@ const stripSeed = (txt) => (txt || "").replace(/^\s*\d+\s*°\s*/, "").trim();
 
 const truthy = v => !(v === '' || v === 0 || v === null || v === undefined || v === false);
 
-/* =========================================
-   COLORI SQUADRE
-   ========================================= */
-const TEAM_COLORS = {
-  "team bartowski": "#C1121F",
-  "bayern christiansen": "#8B0A1A",
-  "wildboys78": "#A07900",
-  "desperados": "#2E4A7F",
-  "minnesode timberland": "#00A651",
-  "golden knights": "#B4975A",
-  "pokermantra": "#5B2A86",
-  "rubinkebab": "#C27A33",
-  "pandinicoccolosini": "#228B22",
-  "ibla": "#F97316",
-  "fc disoneste": "#A78BFA",
-  "athletic pongao": "#C1121F",
-  "riverfilo": "#D5011D",
-  "eintracht franco 126": "#E1000F",
-  "fantaugusta": "#164E3B",
-  "costantinobull": "#B91C1C",
-  "real mimmo": "#D97706",
-  "union librino": "#8B5CF6",
-  "giody": "#1E3A8A",
-  "golden knight": "#B4975A"
-};
+const supabaseClient = window.supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_ANON_KEY
+);
 
-function getTeamColor(name) {
-  return TEAM_COLORS[norm(name)] || "#123c7a";
+let isPlayoffAdmin = false;
+
+async function checkPlayoffAdmin() {
+  const { data: userData } = await supabaseClient.auth.getUser();
+  const user = userData?.user;
+
+  if (!user) {
+    isPlayoffAdmin = false;
+    hidePlayoffAdminPanel();
+    return;
+  }
+
+  const { data, error } = await supabaseClient
+    .from("profiles")
+    .select("role")
+    .eq("id", user.id)
+    .single();
+
+  if (error) {
+    console.error("Errore controllo admin playoff:", error);
+    isPlayoffAdmin = false;
+    hidePlayoffAdminPanel();
+    return;
+  }
+
+  isPlayoffAdmin = data?.role === "admin";
+
+  if (!isPlayoffAdmin) {
+    hidePlayoffAdminPanel();
+  }
+}
+
+function hidePlayoffAdminPanel() {
+  const panel = document.getElementById("playoff-admin-panel");
+  if (panel) panel.style.display = "none";
+}
+
+function showPlayoffAdminPanel() {
+  const panel = document.getElementById("playoff-admin-panel");
+  if (panel && isPlayoffAdmin) panel.style.display = "";
 }
 
 
@@ -318,6 +335,13 @@ function renderPlayoffAdminPanel(P) {
   const container = document.getElementById("admin-playoff-results");
   if (!container) return;
 
+  if (!isPlayoffAdmin) {
+    hidePlayoffAdminPanel();
+    return;
+  }
+
+  showPlayoffAdminPanel();
+
   if (!P || !Object.keys(P).length) return;
 
   container.innerHTML = ADMIN_MATCH_ORDER.map(code => {
@@ -368,7 +392,14 @@ function renderPlayoffAdminPanel(P) {
   bindPlayoffAdminButtons();
 }
 
-function savePlayoffAdminResults() {
+async function savePlayoffAdminResults() {
+  if (!isPlayoffAdmin) {
+    alert("Non sei autorizzato a modificare i risultati.");
+    return;
+  }
+
+  const rows = [];
+
   document.querySelectorAll(".admin-score-input").forEach(input => {
     const code = input.dataset.code;
     const side = input.dataset.side;
@@ -378,21 +409,65 @@ function savePlayoffAdminResults() {
     PICKS[code][side] = input.value === "" ? "" : Number(input.value);
   });
 
-  localStorage.setItem(PLAYOFF_RESULTS_KEY, JSON.stringify(PICKS));
+  const { data: userData } = await supabaseClient.auth.getUser();
+  const userId = userData?.user?.id || null;
 
-  aggiornaPlayoff();
+  Object.entries(PICKS).forEach(([code, score]) => {
+    rows.push({
+      match_code: code,
+      home_score: score.home === "" ? null : Number(score.home),
+      away_score: score.away === "" ? null : Number(score.away),
+      updated_at: new Date().toISOString(),
+      updated_by: userId
+    });
+  });
+
+  const { error } = await supabaseClient
+    .from("playoff_results")
+    .upsert(rows, { onConflict: "match_code" });
+
+  if (error) {
+    console.error("Errore salvataggio risultati playoff:", error);
+    alert("Errore nel salvataggio dei risultati.");
+    return;
+  }
+
+await checkPlayoffAdmin();
+await loadPlayoffResultsFromSupabase();
+
+aggiornaPlayoff();
+
+  alert("Risultati salvati.");
 }
 
-function resetPlayoffAdminResults() {
+async function resetPlayoffAdminResults() {
+  if (!isPlayoffAdmin) {
+    alert("Non sei autorizzato a cancellare i risultati.");
+    return;
+  }
+
+  const conferma = confirm("Vuoi davvero cancellare tutti i risultati playoff?");
+  if (!conferma) return;
+
+  const { error } = await supabaseClient
+    .from("playoff_results")
+    .delete()
+    .neq("match_code", "");
+
+  if (error) {
+    console.error("Errore reset risultati playoff:", error);
+    alert("Errore nel reset dei risultati.");
+    return;
+  }
+
   Object.keys(DEFAULT_PICKS).forEach(code => {
     PICKS[code].home = "";
     PICKS[code].away = "";
   });
 
-  localStorage.removeItem(PLAYOFF_RESULTS_KEY);
-
   aggiornaPlayoff();
 
+  alert("Risultati cancellati.");
 }
 
 function bindPlayoffAdminButtons() {
