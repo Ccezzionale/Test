@@ -1340,13 +1340,36 @@ textarea{
     font-size:.9rem;
   }
 
-  .team-dashboard-status{
-    position:absolute;
-    right:14px;
-    top:14px;
-    font-size:.72rem;
-    padding:6px 9px;
-  }
+.team-dashboard-status{
+  position:relative;
+  right:auto;
+  top:auto;
+  margin-left:0;
+  margin-top:8px;
+  align-self:flex-start;
+  font-size:.72rem;
+  padding:6px 9px;
+  order:3;
+}
+
+  .team-dashboard-card{
+  flex-wrap:wrap;
+}
+
+.team-dashboard-info{
+  flex:1;
+  min-width:0;
+  order:2;
+}
+
+.team-dashboard-logo-wrap,
+.team-dashboard-accent{
+  order:1;
+}
+
+.team-dashboard-status{
+  margin-left:calc(6px + 13px + 66px);
+}
 
   .team-dashboard-card::after{
     display:none;
