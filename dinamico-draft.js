@@ -765,3 +765,27 @@ Promise.all([
   if (league) league.innerHTML = "<p class=\"draft-error\">⚠️ Errore nel caricamento del draft futuro.</p>";
   if (championship) championship.innerHTML = "<p class=\"draft-error\">⚠️ Errore nel caricamento del draft futuro.</p>";
 });
+
+function initDraftTabs() {
+  const tabs = document.querySelectorAll(".draft-tab");
+  const panels = document.querySelectorAll(".draft-tab-panel");
+
+  if (!tabs.length || !panels.length) return;
+
+  tabs.forEach(tabButton => {
+    tabButton.addEventListener("click", () => {
+      const targetId = tabButton.dataset.target;
+      const targetPanel = document.getElementById(targetId);
+
+      if (!targetPanel) return;
+
+      tabs.forEach(btn => btn.classList.remove("active"));
+      panels.forEach(panel => panel.classList.remove("active"));
+
+      tabButton.classList.add("active");
+      targetPanel.classList.add("active");
+    });
+  });
+}
+
+initDraftTabs();
