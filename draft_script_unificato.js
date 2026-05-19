@@ -578,24 +578,49 @@ if (prossimaIndex >= 0) {
     }
   }
 
-  /* Mobile live hero */
+  /* Mobile Draft Companion hero */
   const mobileLivePick = document.getElementById("mobile-live-pick");
   const mobileLiveTeam = document.getElementById("mobile-live-team");
   const mobileLiveSub = document.getElementById("mobile-live-sub");
+  const mobileLiveLogo = document.getElementById("mobile-live-logo");
+  const mobileCompanionProgress = document.getElementById("mobile-companion-progress");
+  const mobileCompanionNext = document.getElementById("mobile-companion-next");
+
+  const mobilePickedCount = dati.filter(r => (r["Giocatore"] || "").trim()).length;
+  const mobileTotalCount = dati.length;
+  const mobileNextRows = dati
+    .filter(r => Number(r["Pick"]) > Number(currentPick || 0) && !(r["Giocatore"] || "").trim())
+    .slice(0, 1);
+
+  if (mobileCompanionProgress) {
+    mobileCompanionProgress.textContent = `${mobilePickedCount}/${mobileTotalCount}`;
+  }
+
+  if (mobileCompanionNext) {
+    mobileCompanionNext.textContent = mobileNextRows[0]?.["Fanta Team"] || "--";
+  }
 
   if (mobileLivePick && mobileLiveTeam && mobileLiveSub) {
     if (currentDraftState?.is_open === false) {
       mobileLivePick.textContent = "RFA";
       mobileLiveTeam.textContent = "Draft fermo";
       mobileLiveSub.textContent = "Decisione RFA in attesa";
+      if (mobileLiveLogo) mobileLiveLogo.style.display = "none";
     } else if (prossima) {
       mobileLivePick.textContent = `Pick #${prossima.pick}`;
       mobileLiveTeam.textContent = prossima.fantaTeam;
-      mobileLiveSub.textContent = "È il turno di questa squadra";
+      mobileLiveSub.textContent = "Tutto ciò che serve, nel momento giusto.";
+
+      if (mobileLiveLogo) {
+        mobileLiveLogo.src = getDraftTeamLogoPath(prossima.fantaTeam);
+        mobileLiveLogo.alt = prossima.fantaTeam;
+        mobileLiveLogo.style.display = "block";
+      }
     } else {
       mobileLivePick.textContent = "Fine";
       mobileLiveTeam.textContent = "Draft completato";
       mobileLiveSub.textContent = "Tutte le pick sono state effettuate";
+      if (mobileLiveLogo) mobileLiveLogo.style.display = "none";
     }
   }
 
