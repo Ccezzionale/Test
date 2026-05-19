@@ -613,9 +613,7 @@ function renderTeamSelect() {
       const option = document.createElement("option");
       option.value = team[CONFIG.TEAM_ID_COL];
 
-      const conferenceLabel = team.conference === currentTeamConference
-        ? "stessa Conference"
-        : "altra Conference";
+      const conferenceLabel = team.conference || "Conference";
 
       option.textContent = `${team[CONFIG.TEAM_NAME_COL]} (${conferenceLabel})`;
       toTeamSelect.appendChild(option);
