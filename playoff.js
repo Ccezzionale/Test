@@ -274,6 +274,27 @@ function aggiornaPlayoff() {
 /* =========================================
    CAMPIONE ASSOLUTO
    ========================================= */
+function renderCampione(P) {
+  const container = document.getElementById("vincitore-assoluto");
+  if (!container) return;
+
+  const winnerSide = getWinnerSide("F");
+  const champ = winnerSide ? P.F?.[winnerSide]?.name : null;
+
+  if (!champ || /vincente/i.test(champ)) {
+    container.innerHTML = "";
+    return;
+  }
+
+  container.innerHTML = `
+    <img src="img/${champ}.png" alt="${champ}" class="logo-vincitore" onerror="this.style.display='none'">
+    <div class="champion-chip">🏆 Campione dei Playoff</div>
+    <div class="nome-vincitore">${champ}</div>
+  `;
+}
+
+
+
 /* =========================================
    ADMIN PANEL RISULTATI PLAYOFF
    ========================================= */
@@ -298,6 +319,10 @@ function renderPlayoffAdminPanel(P) {
   if (!container) return;
 
   if (!P || !Object.keys(P).length) return;
+
+  container.innerHTML = ADMIN_MATCH_ORDER.map(code => {
+    const match = P[code];
+    if (!match) return "";
 
     const homeName = stripSeed(match.home?.name || "In attesa");
     const awayName = stripSeed(match.away?.name || "In attesa");
@@ -356,7 +381,6 @@ function savePlayoffAdminResults() {
   localStorage.setItem(PLAYOFF_RESULTS_KEY, JSON.stringify(PICKS));
 
   aggiornaPlayoff();
-  renderPlayoffAdminPanel();
 }
 
 function resetPlayoffAdminResults() {
@@ -368,7 +392,7 @@ function resetPlayoffAdminResults() {
   localStorage.removeItem(PLAYOFF_RESULTS_KEY);
 
   aggiornaPlayoff();
-  renderPlayoffAdminPanel();
+
 }
 
 function bindPlayoffAdminButtons() {
