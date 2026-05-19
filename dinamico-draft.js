@@ -740,7 +740,190 @@ function renderRounds(draftContainerId, roundsColId) {
   }
 }
 
+function escapeDraftHtml(value) {
+  return String(value ?? "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
 
+function buildDraftPerSquadra(draftData, squadreOrdine) {
+  if (!draftData || draftData.length === 0) {
+    return {
+      squadre: [],
+      maxRounds: 0,
+      draftPerSquadra: {}
+    };
+  }
+
+  const squadre = squadreOrdine && squadreOrdine.length
+    ? squadreOrdine.map(s => cleanTeamName(s))
+    : draftData[0].Picks.map(p => cleanTeamName(p.team));
+
+  const maxRounds = Math.max(...draftData.map(r => Number(r.Round) || 0));
+  const draftPerSquadra = {};
+
+  squadre.forEach(s => {
+    draftPerSquadra[s] = {};
+    for (let r = 1; r <= maxRounds; r++) {
+      draftPerSquadra[s][r] = [];
+    }
+  });
+
+  draftData.forEach(round => {
+    round.Picks.forEach(p => {
+      const ownerCanonical = getCanonicalTeamName(p.team, squadre);
+      const originalCanonical = getCanonicalTeamName(p.originalTeam, squadre);
+
+      const displayRound = Number(
+        p.displayRound || p.round || round.Round
+      );
+
+      if (!draftPerSquadra[ownerCanonical]) {
+        draftPerSquadra[ownerCanonical] = {};
+        for (let r = 1; r <= maxRounds; r++) {
+          draftPerSquadra[ownerCanonical][r] = [];
+        }
+        squadre.push(ownerCanonical);
+      }
+
+      if (!draftPerSquadra[ownerCanonical][displayRound]) {
+        draftPerSquadra[ownerCanonical][displayRound] = [];
+      }
+
+      draftPerSquadra[ownerCanonical][displayRound].push({
+        pickNumber: p.pickNumber,
+        originalTeam: originalCanonical,
+        traded: p.traded,
+        bonus: p.bonus,
+        round: p.round,
+        displayRound,
+        protection_note: p.protection_note,
+        notes: p.notes
+      });
+    });
+  });
+
+  return {
+    squadre,
+    maxRounds,
+    draftPerSquadra
+  };
+}
+
+function generaMobileDraftCards(containerId, draftData, squadreOrdine) {
+  const container = document.getElementById(containerId);
+  if (!container) return;
+
+  const { squadre, maxRounds, draftPerSquadra } = buildDraftPerSquadra(
+    draftData,
+    squadreOrdine
+  );
+
+  if (!squadre.length) {
+    container.innerHTML = `<p class="draft-error">⚠️ Nessun dato disponibile</p>`;
+    return;
+  }
+
+  let html = `
+    <div class="mobile-draft-view-toggle" aria-label="Vista draft mobile">
+      <button type="button" class="active">👥 Squadre</button>
+      <button type="button" disabled>☰ Round</button>
+    </div>
+
+    <div class="mobile-team-list">
+  `;
+
+  squadre.forEach((squadra, index) => {
+    const picks = [];
+
+    for (let r = 1; r <= maxRounds; r++) {
+      const picksInRound = draftPerSquadra[squadra][r] || [];
+
+      picksInRound.forEach(pick => {
+        picks.push({
+          ...pick,
+          displayRound: r
+        });
+      });
+    }
+
+    const openClass = index === 0 ? "is-open" : "";
+    const logoPath = `img/${squadra}.png`;
+
+    html += `
+      <article class="mobile-team-card ${openClass}" data-mobile-team="${escapeDraftHtml(squadra)}">
+        <button type="button" class="mobile-team-header">
+          <span class="mobile-team-main">
+            <span class="mobile-team-logo">
+              <img src="${logoPath}" alt="${escapeDraftHtml(squadra)}" loading="lazy" onerror="this.style.display='none'">
+            </span>
+
+            <span class="mobile-team-text">
+              <strong>${escapeDraftHtml(squadra)}</strong>
+              <small>${picks.length} pick totali</small>
+            </span>
+          </span>
+
+          <span class="mobile-team-chevron">⌄</span>
+        </button>
+
+        <div class="mobile-team-body">
+          <div class="mobile-pick-list">
+    `;
+
+    picks.forEach(pick => {
+      const isTraded = !!pick.traded;
+      const isBonus = !!pick.bonus;
+      const originalTeam = pick.originalTeam || squadra;
+      const originalLogo = `img/${originalTeam}.png`;
+
+      const rowClass = [
+        isTraded ? "is-traded" : "",
+        isBonus ? "is-bonus" : ""
+      ].join(" ").trim();
+
+      html += `
+        <div class="mobile-pick-row ${rowClass}">
+          <span class="mobile-pick-code">R${pick.displayRound} · #${pick.pickNumber}</span>
+
+          <span class="mobile-pick-origin">
+            <img src="${originalLogo}" alt="${escapeDraftHtml(originalTeam)}" loading="lazy" onerror="this.style.display='none'">
+            <span>${isTraded ? `da ${escapeDraftHtml(shortTeamName(originalTeam))}` : escapeDraftHtml(shortTeamName(originalTeam))}</span>
+          </span>
+
+          <span class="mobile-pick-badges">
+            ${isTraded ? `<span class="mobile-pick-badge trade">↔ Trade</span>` : ""}
+            ${isBonus ? `<span class="mobile-pick-badge bonus">★ Bonus</span>` : ""}
+          </span>
+        </div>
+      `;
+    });
+
+    html += `
+          </div>
+        </div>
+      </article>
+    `;
+  });
+
+  html += `
+    </div>
+  `;
+
+  container.innerHTML = html;
+
+  container.querySelectorAll(".mobile-team-header").forEach(header => {
+    header.addEventListener("click", () => {
+      const card = header.closest(".mobile-team-card");
+      if (!card) return;
+
+      card.classList.toggle("is-open");
+    });
+  });
+}
 // Fetch classifica totale + scambi
 Promise.all([
   fetch(STATS_MASTER_CSV_URL + "&nocache=" + Date.now(), { cache: "no-store" }).then(r => r.text()),
@@ -750,11 +933,14 @@ Promise.all([
   console.log("FUTURE PICKS DA SUPABASE:", futurePicks);
   const draft = generaDraftDaCSV(statsCSV, futurePicks);
 
-  generaTabellaVerticale("draft-league", draft.league, draft.leagueTeams);
-  generaTabellaVerticale("draft-championship", draft.championship, draft.champTeams);
+generaTabellaVerticale("draft-league", draft.league, draft.leagueTeams);
+generaTabellaVerticale("draft-championship", draft.championship, draft.champTeams);
 
-  renderRounds("draft-league", "rounds-league");
-  renderRounds("draft-championship", "rounds-championship");
+renderRounds("draft-league", "rounds-league");
+renderRounds("draft-championship", "rounds-championship");
+
+generaMobileDraftCards("mobile-draft-league", draft.league, draft.leagueTeams);
+generaMobileDraftCards("mobile-draft-championship", draft.championship, draft.champTeams);
 })
 .catch(err => {
   console.error("Errore nel caricamento del draft:", err);
