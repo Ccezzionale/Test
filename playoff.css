@@ -311,6 +311,39 @@ body::after{
   justify-content:center;
 }
 
+.round-col--quarter .round-stack{
+  position:relative;
+}
+
+.round-col--quarter .round-stack::after{
+  content:"";
+  position:absolute;
+  top:50%;
+  transform:translateY(-50%);
+  width:3px;
+  height:285px;
+  border-radius:999px;
+  background:linear-gradient(
+    180deg,
+    rgba(75,166,255,.15),
+    rgba(108,190,255,1),
+    rgba(75,166,255,.15)
+  );
+  box-shadow:
+    0 0 10px rgba(92,166,255,.75),
+    0 0 20px rgba(92,166,255,.30);
+  z-index:0;
+  pointer-events:none;
+}
+
+.round-col--quarter-left .round-stack::after{
+  right:-18px;
+}
+
+.round-col--quarter-right .round-stack::after{
+  left:-18px;
+}
+
 .game-slot{
   width:100%;
   display:flex;
