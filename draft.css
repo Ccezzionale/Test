@@ -5171,3 +5171,69 @@ h1, h2, h3, h4, p{
     display: none !important;
   }
 }
+
+/* =========================
+   MOBILE PLAYER POOL - CARD COMPATTE
+   ========================= */
+@media (max-width: 768px){
+
+  .lista-container #lista-giocatori-table tbody{
+    gap: 8px !important;
+  }
+
+  .lista-container #lista-giocatori-table tbody tr{
+    grid-template-columns: 1fr auto !important;
+    grid-template-areas:
+      "name quote"
+      "meta action" !important;
+    gap: 6px 10px !important;
+    padding: 11px 12px !important;
+    border-radius: 18px !important;
+    min-height: 86px !important;
+  }
+
+  .lista-container #lista-giocatori-table td:nth-child(1){
+    grid-area: name !important;
+    font-size: 1.05rem !important;
+    line-height: 1.1 !important;
+  }
+
+  .lista-container #lista-giocatori-table td:nth-child(2){
+    grid-area: meta !important;
+    font-size: .82rem !important;
+    font-weight: 850 !important;
+    color: #334155 !important;
+  }
+
+  .lista-container #lista-giocatori-table td:nth-child(3){
+    grid-area: meta !important;
+    margin-left: 34px !important;
+    font-size: .82rem !important;
+    color: #64748b !important;
+    font-weight: 750 !important;
+  }
+
+  .lista-container #lista-giocatori-table td:nth-child(3)::before{
+    content: "· " !important;
+  }
+
+  .lista-container #lista-giocatori-table td:nth-child(4){
+    grid-area: quote !important;
+    align-self: start !important;
+    min-width: 54px !important;
+    padding: 5px 9px !important;
+    font-size: .82rem !important;
+  }
+
+  .lista-container #lista-giocatori-table td:nth-child(5){
+    display: none !important;
+  }
+
+  .lista-container #lista-giocatori-table tbody tr::after{
+    grid-area: action !important;
+    align-self: end !important;
+    min-width: 68px !important;
+    padding: 7px 10px !important;
+    font-size: .68rem !important;
+  }
+}
