@@ -116,22 +116,44 @@ function creaHTMLPartita(code, matchData) {
 /* =========================================
    BRACKET MANUALE
    ========================================= */
-const PICKS = {
-  WC1: { home: 4, away: 6 },
-  WC2: { home: 5, away: 6 },
-  WC3: { home: 2, away: 5 },
-  WC4: { home: 7, away: 3 },
+const PLAYOFF_RESULTS_KEY = "legaEroiPlayoffResults";
 
-  Q1:  { home: 3, away: 1 },
-  Q2:  { home: 1, away: 3 },
-  Q3:  { home: 7, away: 6 },
-  Q4:  { home: 7, away: 9 },
+const DEFAULT_PICKS = {
+  WC1: { home: "", away: "" },
+  WC2: { home: "", away: "" },
+  WC3: { home: "", away: "" },
+  WC4: { home: "", away: "" },
 
-  S1:  { home: 8, away: 6 },
-  S2:  { home: 5, away: 9 },
+  Q1:  { home: "", away: "" },
+  Q2:  { home: "", away: "" },
+  Q3:  { home: "", away: "" },
+  Q4:  { home: "", away: "" },
 
-  F:   { home: 4, away: 6 },
+  S1:  { home: "", away: "" },
+  S2:  { home: "", away: "" },
+
+  F:   { home: "", away: "" },
 };
+
+function loadPlayoffResults() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(PLAYOFF_RESULTS_KEY) || "{}");
+
+    return Object.fromEntries(
+      Object.entries(DEFAULT_PICKS).map(([code, base]) => [
+        code,
+        {
+          home: saved?.[code]?.home ?? base.home,
+          away: saved?.[code]?.away ?? base.away
+        }
+      ])
+    );
+  } catch {
+    return structuredClone(DEFAULT_PICKS);
+  }
+}
+
+const PICKS = loadPlayoffResults();
 
 const WC_PAIRS = {
   WC1: [7, 8],
@@ -251,27 +273,121 @@ function aggiornaPlayoff() {
 /* =========================================
    CAMPIONE ASSOLUTO
    ========================================= */
-function renderCampione(P) {
-  const container = document.getElementById("vincitore-assoluto");
+/* =========================================
+   ADMIN PANEL RISULTATI PLAYOFF
+   ========================================= */
+
+const ADMIN_MATCH_ORDER = [
+  "WC1", "WC2", "WC3", "WC4",
+  "Q1", "Q2", "Q3", "Q4",
+  "S1", "S2",
+  "F"
+];
+
+function getAdminMatchLabel(code) {
+  if (code.startsWith("WC")) return `Wild Card ${code.replace("WC", "")}`;
+  if (code.startsWith("Q")) return `Quarto ${code.replace("Q", "")}`;
+  if (code.startsWith("S")) return `Semifinale ${code.replace("S", "")}`;
+  if (code === "F") return "Finale";
+  return code;
+}
+
+function renderPlayoffAdminPanel() {
+  const container = document.getElementById("admin-playoff-results");
   if (!container) return;
 
-  const fPick = PICKS.F;
-  const winnerSide = fPick && truthy(fPick.home) !== truthy(fPick.away)
-    ? (truthy(fPick.home) ? "home" : "away")
-    : null;
+  const P = computeParticipants();
+  if (!Object.keys(P).length) return;
 
-  const champ = winnerSide ? P.F?.[winnerSide]?.name : null;
+  container.innerHTML = ADMIN_MATCH_ORDER.map(code => {
+    const match = P[code];
+    if (!match) return "";
 
-  if (!champ) {
-    container.innerHTML = "";
-    return;
+    const homeName = stripSeed(match.home?.name || "In attesa");
+    const awayName = stripSeed(match.away?.name || "In attesa");
+
+    return `
+      <div class="admin-match-row" data-admin-code="${code}">
+        <div class="admin-match-title">
+          <strong>${getAdminMatchLabel(code)}</strong>
+          <span>${code}</span>
+        </div>
+
+        <div class="admin-team-line">
+          <span>${match.home?.seed ? "#" + match.home.seed : ""} ${homeName}</span>
+          <input
+            type="number"
+            min="0"
+            inputmode="numeric"
+            class="admin-score-input"
+            data-code="${code}"
+            data-side="home"
+            value="${PICKS[code]?.home ?? ""}"
+            placeholder="-"
+          >
+        </div>
+
+        <div class="admin-team-line">
+          <span>${match.away?.seed ? "#" + match.away.seed : ""} ${awayName}</span>
+          <input
+            type="number"
+            min="0"
+            inputmode="numeric"
+            class="admin-score-input"
+            data-code="${code}"
+            data-side="away"
+            value="${PICKS[code]?.away ?? ""}"
+            placeholder="-"
+          >
+        </div>
+      </div>
+    `;
+  }).join("");
+
+  bindPlayoffAdminButtons();
+}
+
+function savePlayoffAdminResults() {
+  document.querySelectorAll(".admin-score-input").forEach(input => {
+    const code = input.dataset.code;
+    const side = input.dataset.side;
+
+    if (!PICKS[code]) PICKS[code] = { home: "", away: "" };
+
+    PICKS[code][side] = input.value === "" ? "" : Number(input.value);
+  });
+
+  localStorage.setItem(PLAYOFF_RESULTS_KEY, JSON.stringify(PICKS));
+
+  aggiornaPlayoff();
+  renderPlayoffAdminPanel();
+}
+
+function resetPlayoffAdminResults() {
+  Object.keys(DEFAULT_PICKS).forEach(code => {
+    PICKS[code].home = "";
+    PICKS[code].away = "";
+  });
+
+  localStorage.removeItem(PLAYOFF_RESULTS_KEY);
+
+  aggiornaPlayoff();
+  renderPlayoffAdminPanel();
+}
+
+function bindPlayoffAdminButtons() {
+  const saveBtn = document.getElementById("save-playoff-results");
+  const resetBtn = document.getElementById("reset-playoff-results");
+
+  if (saveBtn && !saveBtn.dataset.bound) {
+    saveBtn.addEventListener("click", savePlayoffAdminResults);
+    saveBtn.dataset.bound = "true";
   }
 
-  container.innerHTML = `
-    <img src="img/${champ}.png" alt="${champ}" class="logo-vincitore" onerror="this.style.display='none'">
-    <div class="champion-chip">🏆 Campione dei Playoff</div>
-    <div class="nome-vincitore">${champ}</div>
-  `;
+  if (resetBtn && !resetBtn.dataset.bound) {
+    resetBtn.addEventListener("click", resetPlayoffAdminResults);
+    resetBtn.dataset.bound = "true";
+  }
 }
 
 /* =========================================
@@ -452,6 +568,7 @@ fetch(URL_STATS_MASTER + "&nocache=" + Date.now(), { cache: "no-store" })
     window.squadre = classificaTotale.slice(0, 12);
 
     aggiornaPlayoff();
+     renderPlayoffAdminPanel();
 
     window.addEventListener("resize", () => {
       alignLikeExcel();
