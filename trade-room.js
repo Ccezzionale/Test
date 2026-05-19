@@ -101,6 +101,11 @@ const confirmCutPlayersBtn = document.getElementById("confirmCutPlayersBtn");
 const cancelCutPlayersBtn = document.getElementById("cancelCutPlayersBtn");
 const cutPlayersModalMessage = document.getElementById("cutPlayersModalMessage");
 
+const teamDashboardLogo = document.getElementById("teamDashboardLogo");
+const teamDashboardName = document.getElementById("teamDashboardName");
+const teamDashboardMeta = document.getElementById("teamDashboardMeta");
+const teamDashboardStatus = document.getElementById("teamDashboardStatus");
+
 /* ========= INIT ========= */
 
 document.addEventListener("DOMContentLoaded", initTradeRoom);
@@ -236,8 +241,26 @@ currentIsAdmin = currentUserRole === "admin";
     currentDraftName = "Draft Championship";
   }
 
-  userInfo.textContent = `Accesso effettuato come ${email}`;
-  myTeamLabel.textContent = currentTeamName;
+userInfo.textContent = `Accesso effettuato come ${email}`;
+
+if (teamDashboardName) {
+  teamDashboardName.textContent = currentTeamName;
+}
+
+if (teamDashboardMeta) {
+  teamDashboardMeta.textContent = `${currentTeamConference || "Conference"} · Stagione 2026`;
+}
+
+if (teamDashboardStatus) {
+  teamDashboardStatus.textContent = "Mercato aperto";
+}
+
+if (teamDashboardLogo) {
+  teamDashboardLogo.src = `img/${currentTeamName}.png`;
+  teamDashboardLogo.alt = currentTeamName;
+}
+
+myTeamLabel.textContent = currentTeamName;
 
   if (activeDraftLabel) {
     activeDraftLabel.textContent = currentDraftName;
@@ -2089,6 +2112,11 @@ function showTradeSettingsMessage(text, type) {
   userInfo.textContent = getMarketClosedMessage();
 } else if (currentUser?.email) {
   userInfo.textContent = `Accesso effettuato come ${currentUser.email}`;
+}
+
+      if (teamDashboardStatus) {
+  teamDashboardStatus.textContent = locked ? "Mercato chiuso" : "Mercato aperto";
+  teamDashboardStatus.classList.toggle("closed", locked);
 }
 }
 
