@@ -4987,3 +4987,25 @@ h1, h2, h3, h4, p{
     min-height: 72px !important;
   }
 }
+
+/* =========================
+   DESKTOP DRAFT BOARD - SOLO LOGHI SQUADRE
+   ========================= */
+@media (min-width: 1101px){
+
+  .desktop-team-head strong{
+    display: none !important;
+  }
+
+  .desktop-team-head{
+    height: 90px !important;
+    justify-content: center !important;
+    padding: 12px 8px !important;
+  }
+
+  .desktop-team-head img{
+    width: 68px !important;
+    height: 68px !important;
+    object-fit: contain !important;
+  }
+}
