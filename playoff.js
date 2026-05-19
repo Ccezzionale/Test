@@ -101,32 +101,28 @@ function getBestSeedSide(matchData) {
   return null;
 }
 
-function getWinnerSide(code, matchData = null){
-  const pick = PICKS[code];
-  if (!pick) return null;
-
-  const h = pick.home;
-  const a = pick.away;
-
-  if (isNumericScore(h) && isNumericScore(a)) {
-    const hn = Number(h);
-    const an = Number(a);
-
-    if (hn > an) return "home";
-    if (an > hn) return "away";
-
-    // Pareggio: in Wildcard e Quarti passa il seed migliore
-    if (usesSeedTieBreaker(code) && matchData) {
-      return getBestSeedSide(matchData);
-    }
-
-    return null;
+function getMatchWinnerSide(code, matchData = null) {
+  if (typeof getWinnerSide === "function") {
+    return getWinnerSide(code, matchData);
   }
 
-  if (truthy(h) && !truthy(a)) return "home";
-  if (truthy(a) && !truthy(h)) return "away";
-
   return null;
+}
+
+function getMobileStageData(P) {
+  const stages = {};
+
+  Object.entries(MOBILE_STAGE_META).forEach(([stageKey, meta]) => {
+    stages[stageKey] = meta.matches.map(item => ({
+      code: item.code,
+      next: item.next,
+      home: P[item.code]?.home || null,
+      away: P[item.code]?.away || null,
+      winnerSide: getMatchWinnerSide(item.code, P[item.code])
+    }));
+  });
+
+  return stages;
 }
 
 function creaMatchRowHTML(team, score, isWinner = false, isPlaceholder = false, isFinal = false) {
