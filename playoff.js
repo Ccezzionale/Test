@@ -559,7 +559,7 @@ function createMobileMatchCard(match) {
   const awayWinner = match.winnerSide === "away";
   const hasWinner = !!match.winnerSide;
   const statusText = hasWinner ? "Qualificata" : "In attesa";
-  const statusIcon = hasWinner ? "âœ“" : "â—·";
+  const statusIcon = hasWinner ? "&check;" : "&bull;";
   const stageClass = match.code === "F" ? "is-final" : "";
 
   return `
@@ -582,8 +582,8 @@ function createMobileMatchCard(match) {
       </div>
 
       <div class="mobile-match-footer">
-        <span>Vincitore <strong>â†’</strong> ${match.next}</span>
-        <span class="mobile-footer-arrow">â€º</span>
+        <span>Vincitore <strong>&rarr;</strong> ${match.next}</span>
+        <span class="mobile-footer-arrow">&rsaquo;</span>
       </div>
     </article>
   `;
