@@ -1067,3 +1067,36 @@ function initDraftTabs() {
 }
 
 initDraftTabs();
+
+// Fetch classifica totale + future picks
+Promise.all([
+  fetch(STATS_MASTER_CSV_URL + "&nocache=" + Date.now(), { cache: "no-store" }).then(r => r.text()),
+  loadFutureDraftPicks()
+])
+.then(([statsCSV, futurePicks]) => {
+  console.log("FUTURE PICKS DA SUPABASE:", futurePicks);
+
+  const draft = generaDraftDaCSV(statsCSV, futurePicks);
+
+  generaTabellaVerticale("draft-league", draft.league, draft.leagueTeams);
+  generaTabellaVerticale("draft-championship", draft.championship, draft.champTeams);
+
+  renderRounds("draft-league", "rounds-league");
+  renderRounds("draft-championship", "rounds-championship");
+
+  generaMobileDraftCards("mobile-draft-league", draft.league, draft.leagueTeams);
+  generaMobileDraftCards("mobile-draft-championship", draft.championship, draft.champTeams);
+})
+.catch(err => {
+  console.error("Errore nel caricamento del draft:", err);
+
+  const league = document.getElementById("draft-league");
+  const championship = document.getElementById("draft-championship");
+  const mobileLeague = document.getElementById("mobile-draft-league");
+  const mobileChampionship = document.getElementById("mobile-draft-championship");
+
+  if (league) league.innerHTML = `<p class="draft-error">⚠️ Errore nel caricamento del draft futuro.</p>`;
+  if (championship) championship.innerHTML = `<p class="draft-error">⚠️ Errore nel caricamento del draft futuro.</p>`;
+  if (mobileLeague) mobileLeague.innerHTML = `<p class="draft-error">⚠️ Errore nel caricamento del draft futuro.</p>`;
+  if (mobileChampionship) mobileChampionship.innerHTML = `<p class="draft-error">⚠️ Errore nel caricamento del draft futuro.</p>`;
+});
