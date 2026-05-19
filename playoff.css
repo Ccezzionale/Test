@@ -212,45 +212,47 @@ body::after{
 }
 
 .game-card--finale{
-  width:320px;
-  min-height:470px;
+  width:330px;
+  min-height:510px;
   border:3px solid rgba(243,195,91,.95);
-  border-radius:26px;
+  border-radius:28px;
   box-shadow:
     0 0 0 3px rgba(243,195,91,.14),
-    0 24px 46px rgba(0,0,0,.38),
-    0 0 42px rgba(243,195,91,.36);
+    0 26px 50px rgba(0,0,0,.40),
+    0 0 46px rgba(243,195,91,.38);
   position:relative;
   overflow:hidden;
-  padding-bottom:185px;
+  padding-bottom:215px;
 }
 
-.game-card--finale::after{
+/* glow basso per la coppa */
+.game-card--finale::before{
   content:"";
   position:absolute;
   left:50%;
   bottom:34px;
   transform:translateX(-50%);
-  width:118px;
-  height:118px;
-  background:url("img/Playoffcup.png") center/contain no-repeat;
-  filter:drop-shadow(0 10px 18px rgba(0,0,0,.36));
-  z-index:3;
+  width:210px;
+  height:150px;
+  border-radius:999px;
+  background:radial-gradient(circle, rgba(243,195,91,.26) 0%, rgba(243,195,91,0) 72%);
   pointer-events:none;
+  z-index:1;
 }
 
-.game-card--finale::before{
+/* coppa dentro la card */
+.game-card--finale::after{
   content:"";
   position:absolute;
   left:50%;
-  bottom:22px;
+  bottom:48px;
   transform:translateX(-50%);
-  width:180px;
-  height:130px;
-  border-radius:999px;
-  background:radial-gradient(circle, rgba(243,195,91,.20) 0%, rgba(243,195,91,0) 72%);
-  pointer-events:none;
+  width:135px;
+  height:135px;
+  background:url("img/Playoffcup.png") center/contain no-repeat;
+  filter:drop-shadow(0 12px 20px rgba(0,0,0,.40));
   z-index:2;
+  pointer-events:none;
 }
 
 
@@ -269,9 +271,10 @@ body::after{
 }
 
 .game-card--finale .match-row{
-  min-height:110px;
-  padding:16px 16px;
-  grid-template-columns: 40px 1fr 58px;
+  min-height:112px;
+  padding:16px 18px;
+  grid-template-columns: 42px 1fr 62px;
+  z-index:3;
 }
 
 .game-card--finale .match-row:first-child{
@@ -406,18 +409,6 @@ body::after{
   pointer-events:none;
 }
 
-.finale-trophy{
-  position:relative;
-  z-index:4;
-  margin-bottom:-18px;
-}
-
-.coppa-img{
-  width:104px;
-  height:auto;
-  filter:drop-shadow(0 10px 18px rgba(0,0,0,.35));
-}
-
 .game-slot--finale{
   z-index:3;
 }
@@ -428,19 +419,6 @@ body::after{
   flex-direction:column;
   align-items:center;
   gap:10px;
-}
-
-.tagline-finale{
-  padding:12px 24px;
-  white-space:nowrap;
-  border-radius:18px;
-  border:1px solid rgba(243,195,91,.55);
-  background:rgba(6,26,58,.84);
-  color:#ffffff;
-  text-transform:uppercase;
-  font-weight:900;
-  letter-spacing:.4px;
-  box-shadow:0 12px 28px rgba(0,0,0,.24);
 }
 
 .vincitore-info{
