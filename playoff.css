@@ -222,12 +222,6 @@ body::after{
     0 0 46px rgba(243,195,91,.38);
   position:relative;
   overflow:hidden;
-
-  display:flex;
-  flex-direction:column;
-  justify-content:center;
-  gap:145px;
-  padding:26px 0;
 }
 
 /* glow basso per la coppa */
@@ -275,11 +269,25 @@ body::after{
 }
 
 .game-card--finale .match-row{
+  position:absolute;
+  left:0;
+  width:100%;
   min-height:118px;
   padding:16px 18px;
   grid-template-columns: 42px 1fr 62px;
   z-index:3;
-  width:100%;
+}
+
+.game-card--finale .match-row:first-child{
+  top:42px;
+  border-top:none;
+  border-bottom:none;
+}
+
+.game-card--finale .match-row:last-child{
+  bottom:42px;
+  border-top:none;
+  border-bottom:none;
 }
 
 .game-card--finale .match-row,
