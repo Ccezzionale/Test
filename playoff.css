@@ -679,6 +679,92 @@ body::after{
   width:24px;
 }
 
+/* ===== NUOVI CONNETTORI QUARTI -> SEMIFINALI ===== */
+
+/* spegne i connettori vecchi solo tra quarti e semifinali */
+.round-col--quarter-left .game-slot::after,
+.round-col--semi-left .game-slot::before,
+.round-col--quarter-right .game-slot::before,
+.round-col--semi-right .game-slot::after{
+  display:none;
+}
+
+/* contenitore semifinale */
+.round-col--semi .round-stack{
+  position:relative;
+  overflow:visible;
+}
+
+/* linea verticale */
+.semi-bracket{
+  position:absolute;
+  top:50%;
+  transform:translateY(-50%);
+  width:3px;
+  height:305px;
+  border-radius:999px;
+  background:linear-gradient(
+    180deg,
+    rgba(75,166,255,.15),
+    rgba(108,190,255,1),
+    rgba(75,166,255,.15)
+  );
+  box-shadow:
+    0 0 10px rgba(92,166,255,.75),
+    0 0 20px rgba(92,166,255,.30);
+  z-index:0;
+  pointer-events:none;
+}
+
+/* bracci orizzontali */
+.semi-bracket::before,
+.semi-bracket::after{
+  content:"";
+  position:absolute;
+  width:86px;
+  height:3px;
+  border-radius:999px;
+  background:linear-gradient(
+    90deg,
+    rgba(75,166,255,.15),
+    rgba(108,190,255,1),
+    rgba(75,166,255,.15)
+  );
+  box-shadow:
+    0 0 10px rgba(92,166,255,.75),
+    0 0 20px rgba(92,166,255,.30);
+}
+
+/* lato sinistro */
+.semi-bracket-left{
+  left:-28px;
+}
+
+.semi-bracket-left::before{
+  top:0;
+  right:100%;
+}
+
+.semi-bracket-left::after{
+  bottom:0;
+  right:100%;
+}
+
+/* lato destro */
+.semi-bracket-right{
+  right:-28px;
+}
+
+.semi-bracket-right::before{
+  top:0;
+  left:100%;
+}
+
+.semi-bracket-right::after{
+  bottom:0;
+  left:100%;
+}
+
 /* MOBILE fallback */
 @media (max-width: 1200px){
   .playoff-stage{
