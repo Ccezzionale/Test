@@ -1398,3 +1398,206 @@ textarea{
     min-width:0;
   }
 }
+
+/* =====================================================
+   TRADE PROPOSAL CARD - PREMIUM LOOK
+   ===================================================== */
+
+.trade-proposal-card{
+  border-radius:28px;
+  padding:22px;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.97), rgba(244,248,255,.96));
+  box-shadow:0 18px 36px rgba(15,23,42,.12);
+}
+
+.trade-proposal-card h2{
+  margin-bottom:18px;
+  font-size:1.9rem;
+  line-height:1;
+  text-transform:uppercase;
+  letter-spacing:-.05em;
+  color:var(--navy);
+}
+
+.trade-premium-head{
+  display:grid;
+  gap:12px;
+  margin-bottom:14px;
+}
+
+.trade-mini-card{
+  border-radius:20px;
+  padding:14px 16px;
+  background:
+    linear-gradient(135deg, rgba(0,31,63,.04), rgba(10,77,143,.08));
+  border:1px solid rgba(10,77,143,.12);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.45);
+}
+
+.trade-mini-card-wide{
+  padding-bottom:16px;
+}
+
+.trade-mini-label{
+  display:block;
+  margin-bottom:8px;
+  font-size:.82rem;
+  font-weight:900;
+  text-transform:uppercase;
+  letter-spacing:.06em;
+  color:#5c6f8c;
+}
+
+.trade-mini-value{
+  display:flex;
+  flex-wrap:wrap;
+  align-items:center;
+  gap:8px;
+}
+
+.trade-mini-value #myTeamLabel{
+  display:inline-flex;
+  align-items:center;
+  padding:8px 14px;
+  border-radius:999px;
+  color:var(--navy);
+  background:rgba(255,204,0,.15);
+  border:1px solid rgba(255,204,0,.45);
+  font-size:1rem;
+  font-weight:900;
+}
+
+.trade-mini-value #activeDraftLabel{
+  display:inline-flex;
+  align-items:center;
+  width:100%;
+  padding:12px 15px;
+  border-radius:999px;
+  color:#083b74;
+  background:linear-gradient(135deg, rgba(0,116,217,.08), rgba(10,77,143,.10));
+  border:1px solid rgba(10,77,143,.18);
+  font-size:1rem;
+  font-weight:900;
+  line-height:1.35;
+}
+
+.trade-head-divider{
+  height:1px;
+  margin:14px 0 6px;
+  background:linear-gradient(90deg, rgba(0,31,63,.16), rgba(0,31,63,.04), transparent);
+}
+
+/* Label più premium solo dentro la card trade */
+.trade-proposal-card .form-row label{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  margin-bottom:9px;
+  font-size:.9rem;
+  font-weight:900;
+  text-transform:uppercase;
+  letter-spacing:.05em;
+  color:var(--navy);
+}
+
+.trade-proposal-card .form-row label::before{
+  content:"";
+  width:8px;
+  height:8px;
+  border-radius:999px;
+  background:linear-gradient(135deg, var(--gold), #f59e0b);
+  box-shadow:0 0 0 4px rgba(255,204,0,.12);
+  flex:0 0 auto;
+}
+
+/* Campi più ricchi */
+.trade-proposal-card select,
+.trade-proposal-card textarea{
+  border-radius:18px;
+  padding:14px 16px;
+  border:1px solid rgba(15,23,42,.10);
+  background:
+    linear-gradient(180deg, #ffffff 0%, #fbfdff 100%);
+  box-shadow:0 8px 18px rgba(15,23,42,.05);
+}
+
+.trade-proposal-card select:focus,
+.trade-proposal-card textarea:focus{
+  border-color:rgba(10,77,143,.42);
+  box-shadow:
+    0 0 0 4px rgba(10,77,143,.10),
+    0 8px 18px rgba(15,23,42,.06);
+}
+
+/* Dropdown asset più premium dentro questa card */
+.trade-proposal-card .pick-dropdown{
+  border-radius:20px;
+  overflow:hidden;
+  border:1px solid rgba(15,23,42,.08);
+  box-shadow:0 10px 22px rgba(15,23,42,.06);
+}
+
+.trade-proposal-card .pick-dropdown summary{
+  min-height:56px;
+  padding:15px 16px;
+  background:linear-gradient(180deg, #ffffff, #f5f8fd);
+  font-size:1rem;
+}
+
+.trade-proposal-card .pick-list{
+  background:linear-gradient(180deg, #fbfdff, #f6faff);
+}
+
+/* Pulsante principale più deciso */
+.trade-proposal-card #sendTradeBtn{
+  min-height:56px;
+  border-radius:18px;
+  margin-top:10px;
+  font-size:1.03rem;
+  font-weight:1000;
+  text-transform:uppercase;
+  letter-spacing:.03em;
+  background:linear-gradient(135deg, #ffcc00 0%, #f59e0b 55%, #fb923c 100%);
+  color:#0f2340;
+  box-shadow:0 16px 28px rgba(245,158,11,.24);
+}
+
+.trade-proposal-card #sendTradeBtn:hover{
+  transform:translateY(-1px);
+  box-shadow:0 18px 34px rgba(245,158,11,.30);
+}
+
+/* Messaggio opzionale un po' più elegante */
+.trade-proposal-card textarea{
+  min-height:92px;
+}
+
+/* Mobile */
+@media (max-width:700px){
+  .trade-proposal-card{
+    padding:20px 18px;
+    border-radius:24px;
+  }
+
+  .trade-proposal-card h2{
+    font-size:1.6rem;
+    margin-bottom:16px;
+  }
+
+  .trade-mini-card{
+    border-radius:18px;
+    padding:13px 14px;
+  }
+
+  .trade-mini-value #activeDraftLabel{
+    border-radius:18px;
+    font-size:.98rem;
+    padding:12px 14px;
+  }
+
+  .trade-proposal-card .pick-dropdown summary{
+    min-height:54px;
+    padding:14px 15px;
+  }
+}
