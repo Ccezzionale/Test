@@ -85,7 +85,23 @@ function isNumericScore(value){
   return value !== "" && value !== null && value !== undefined && !isNaN(Number(value));
 }
 
-function getWinnerSide(code){
+function usesSeedTieBreaker(code) {
+  return code.startsWith("WC") || code.startsWith("Q");
+}
+
+function getBestSeedSide(matchData) {
+  const homeSeed = Number(matchData?.home?.seed);
+  const awaySeed = Number(matchData?.away?.seed);
+
+  if (!Number.isFinite(homeSeed) || !Number.isFinite(awaySeed)) return null;
+
+  if (homeSeed < awaySeed) return "home";
+  if (awaySeed < homeSeed) return "away";
+
+  return null;
+}
+
+function getWinnerSide(code, matchData = null){
   const pick = PICKS[code];
   if (!pick) return null;
 
@@ -95,13 +111,21 @@ function getWinnerSide(code){
   if (isNumericScore(h) && isNumericScore(a)) {
     const hn = Number(h);
     const an = Number(a);
+
     if (hn > an) return "home";
     if (an > hn) return "away";
+
+    // Pareggio: in Wildcard e Quarti passa il seed migliore
+    if (usesSeedTieBreaker(code) && matchData) {
+      return getBestSeedSide(matchData);
+    }
+
     return null;
   }
 
   if (truthy(h) && !truthy(a)) return "home";
   if (truthy(a) && !truthy(h)) return "away";
+
   return null;
 }
 
@@ -127,7 +151,7 @@ function creaHTMLPartita(code, matchData) {
   const home = matchData?.home || {};
   const away = matchData?.away || {};
 
-  const winnerSide = getWinnerSide(code);
+ const winnerSide = getWinnerSide(code, matchData);
 
   const homePlaceholder = !home.seed && /vincente/i.test(home.name || "");
   const awayPlaceholder = !away.seed && /vincente/i.test(away.name || "");
