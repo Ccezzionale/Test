@@ -2470,3 +2470,10 @@ textarea{
     padding:6px 9px;
   }
 }
+
+#tradeApp .trade-war-card{
+  background:
+    radial-gradient(520px 240px at 88% 0%, rgba(255,204,0,.18), transparent 62%),
+    radial-gradient(620px 260px at 8% 0%, rgba(54,163,255,.16), transparent 60%),
+    linear-gradient(135deg, #041f3d 0%, #073461 52%, #082f59 100%) !important;
+}
