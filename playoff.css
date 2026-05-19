@@ -222,7 +222,12 @@ body::after{
     0 0 46px rgba(243,195,91,.38);
   position:relative;
   overflow:hidden;
-  padding-bottom:215px;
+
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  gap:145px;
+  padding:26px 0;
 }
 
 /* glow basso per la coppa */
@@ -230,12 +235,12 @@ body::after{
   content:"";
   position:absolute;
   left:50%;
-  bottom:34px;
-  transform:translateX(-50%);
-  width:210px;
-  height:150px;
+  top:50%;
+  transform:translate(-50%, -50%);
+  width:230px;
+  height:170px;
   border-radius:999px;
-  background:radial-gradient(circle, rgba(243,195,91,.26) 0%, rgba(243,195,91,0) 72%);
+  background:radial-gradient(circle, rgba(243,195,91,.30) 0%, rgba(243,195,91,0) 72%);
   pointer-events:none;
   z-index:1;
 }
@@ -245,12 +250,12 @@ body::after{
   content:"";
   position:absolute;
   left:50%;
-  bottom:48px;
-  transform:translateX(-50%);
-  width:135px;
-  height:135px;
+  top:50%;
+  transform:translate(-50%, -50%);
+  width:145px;
+  height:145px;
   background:url("img/Playoffcup.png") center/contain no-repeat;
-  filter:drop-shadow(0 12px 20px rgba(0,0,0,.40));
+  filter:drop-shadow(0 12px 22px rgba(0,0,0,.42));
   z-index:2;
   pointer-events:none;
 }
@@ -271,18 +276,19 @@ body::after{
 }
 
 .game-card--finale .match-row{
-  min-height:112px;
+  min-height:118px;
   padding:16px 18px;
   grid-template-columns: 42px 1fr 62px;
   z-index:3;
+  width:100%;
 }
 
-.game-card--finale .match-row:first-child{
-  border-bottom:1px solid rgba(12,30,69,.14);
-}
-
+.game-card--finale .match-row,
+.game-card--finale .match-row + .match-row,
+.game-card--finale .match-row:first-child,
 .game-card--finale .match-row:last-child{
   border-top:none;
+  border-bottom:none;
 }
 
 .match-row + .match-row{
