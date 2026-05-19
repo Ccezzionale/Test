@@ -2308,3 +2308,64 @@ textarea{
 #tradeApp .trade-war-card{
   overflow:visible;
 }
+
+/* MOBILE TEAM DASHBOARD - versione compatta */
+
+@media (max-width: 700px){
+  .team-dashboard-card{
+    display:grid !important;
+    grid-template-columns:7px 82px 1fr;
+    gap:14px;
+    align-items:center;
+  }
+
+  .team-dashboard-accent{
+    grid-column:1;
+    grid-row:1 / span 2;
+    width:7px;
+    height:92px;
+  }
+
+  .team-dashboard-logo-wrap{
+    grid-column:2;
+    grid-row:1 / span 2;
+    width:82px;
+    height:82px;
+  }
+
+  .team-dashboard-logo{
+    width:70px;
+    height:70px;
+  }
+
+  .team-dashboard-info{
+    grid-column:3;
+    grid-row:1;
+  }
+
+  .team-dashboard-info h2{
+    font-size:2rem;
+    line-height:.95;
+    margin-bottom:8px;
+  }
+
+  .team-dashboard-info p{
+    font-size:1rem;
+    line-height:1.2;
+  }
+
+  .team-dashboard-info p::after{
+    content:"";
+  }
+
+  .team-dashboard-status{
+    grid-column:3;
+    grid-row:2;
+    position:static !important;
+    justify-self:start;
+    margin:8px 0 0 0 !important;
+    font-size:.88rem;
+    padding:8px 13px;
+    order:initial;
+  }
+}
