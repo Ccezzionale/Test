@@ -1007,10 +1007,10 @@ nav.site-nav .action-icon{opacity:1!important;filter:none!important;}
     gap: 7px;
   }
 
-  .rounds-col .rounds-spacer{
-    height: 142px;
-    flex: 0 0 142px;
-  }
+.rounds-col .rounds-spacer{
+  height: 114px;
+  flex: 0 0 114px;
+}
 
   .rounds-col .round{
     height: 46px;
