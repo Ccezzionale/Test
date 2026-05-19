@@ -166,28 +166,35 @@ body::after{
   z-index:2;
   margin:0;
   text-align:center;
-  font-size:clamp(2.8rem, 5.4vw, 5.2rem);
-  line-height:.98;
-  font-weight:950;
-  letter-spacing:.3px;
-  color:#fff;
-  text-shadow:
-    0 5px 20px rgba(0,0,0,.42),
-    0 0 30px rgba(79,145,255,.22);
+  font-family:"Bebas Neue", sans-serif;
+  font-size:clamp(3.2rem, 6vw, 6rem);
+  line-height:.95;
+  letter-spacing:1.2px;
+  font-weight:400;
+  text-transform:uppercase;
+
+  background:linear-gradient(180deg, #fffdf5 0%, #f7e7b0 42%, #e3b85b 100%);
+  -webkit-background-clip:text;
+  background-clip:text;
+  -webkit-text-fill-color:transparent;
+  color:transparent;
+
+  text-shadow:none;
+  filter:drop-shadow(0 4px 18px rgba(0,0,0,.35));
 }
 
 .sottotitolo-pagina{
   position:relative;
   z-index:2;
-  margin:16px 0 0;
+  margin:14px 0 0;
   text-align:center;
-  color:#f3c35b;
-  font-size:1.12rem;
-  font-weight:900;
-  letter-spacing:.2px;
-  text-shadow:0 2px 12px rgba(0,0,0,.28);
+  font-family:"Cinzel", serif;
+  color:#f1d48a;
+  font-size:1rem;
+  font-weight:700;
+  letter-spacing:.6px;
+  text-shadow:0 2px 10px rgba(0,0,0,.25);
 }
-
 .cinematic-meta{
   position:relative;
   z-index:2;
