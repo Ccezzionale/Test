@@ -5224,10 +5224,39 @@ h1, h2, h3, h4, p{
     padding: 5px 9px !important;
     font-size: .82rem !important;
   }
-
+@media (max-width: 768px){
   .lista-container #lista-giocatori-table td:nth-child(5){
+    display: flex !important;
+    grid-area: badges !important;
+    justify-self: end !important;
+    align-self: center !important;
+    min-width: 42px !important;
+    text-align: right !important;
+  }
+
+  .lista-container #lista-giocatori-table tbody tr{
+    grid-template-areas:
+      "name quote"
+      "meta badges"
+      "meta action" !important;
+  }
+
+  .lista-container #lista-giocatori-table td:nth-child(5):empty{
     display: none !important;
   }
+
+  .lista-container #lista-giocatori-table td:nth-child(5) .badge-img-pill{
+    width: 38px !important;
+    height: 23px !important;
+    margin-left: 0 !important;
+  }
+
+  .lista-container #lista-giocatori-table td:nth-child(5) .badge-img-star{
+    width: 26px !important;
+    height: 26px !important;
+    margin-left: 0 !important;
+  }
+}
 
   .lista-container #lista-giocatori-table tbody tr::after{
     grid-area: action !important;
