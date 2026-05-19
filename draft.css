@@ -5101,3 +5101,64 @@ h1, h2, h3, h4, p{
     min-height: var(--desktop-pick-row-h) !important;
   }
 }
+
+/* =========================
+   DESKTOP DRAFT BOARD - FIX ALTEZZA PICK CARD
+   ========================= */
+@media (min-width: 1101px){
+
+  body.desktop-draft-v2{
+    --desktop-team-head-h: 118px;
+    --desktop-pick-row-h: 74px;
+    --desktop-row-gap: 10px;
+  }
+
+  .desktop-round-rail{
+    grid-template-rows:
+      var(--desktop-team-head-h)
+      repeat(var(--desktop-rounds, 23), var(--desktop-pick-row-h)) !important;
+    gap: var(--desktop-row-gap) !important;
+  }
+
+  .desktop-round-spacer{
+    height: var(--desktop-team-head-h) !important;
+  }
+
+  .desktop-team-column{
+    grid-template-rows: var(--desktop-team-head-h) auto !important;
+    gap: var(--desktop-row-gap) !important;
+  }
+
+  .desktop-team-slots{
+    gap: var(--desktop-row-gap) !important;
+  }
+
+  .desktop-pick-slot{
+    height: var(--desktop-pick-row-h) !important;
+    min-height: var(--desktop-pick-row-h) !important;
+    padding: 10px 12px !important;
+    align-content: center !important;
+    gap: 3px 6px !important;
+  }
+
+  .desktop-round-label{
+    height: var(--desktop-pick-row-h) !important;
+    min-height: var(--desktop-pick-row-h) !important;
+  }
+
+  .desktop-pick-slot strong{
+    font-size: .9rem !important;
+    line-height: 1.08 !important;
+  }
+
+  .desktop-pick-slot small{
+    font-size: .72rem !important;
+    line-height: 1.1 !important;
+  }
+
+  .desktop-pick-number{
+    height: 20px !important;
+    min-width: 24px !important;
+    font-size: .72rem !important;
+  }
+}
