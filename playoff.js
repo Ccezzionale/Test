@@ -784,10 +784,13 @@ function isPlaceholderTeam(team) {
   return !team || (!team.seed && /vincente|classificata|in attesa/i.test(name));
 }
 
-function getMatchWinnerSide(code) {
+function getMatchWinnerSide(code, matchData = null) {
   if (typeof getWinnerSide === "function") {
-    return getWinnerSide(code);
+    return getWinnerSide(code, matchData);
   }
+
+  return null;
+}
 
   const pick = PICKS[code];
   if (!pick) return null;
@@ -831,7 +834,7 @@ function getMobileStageData(P) {
       next: item.next,
       home: P[item.code]?.home || null,
       away: P[item.code]?.away || null,
-      winnerSide: getMatchWinnerSide(item.code)
+   winnerSide: getMatchWinnerSide(item.code, P[item.code])
     }));
   });
 
