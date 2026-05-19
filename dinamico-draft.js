@@ -624,7 +624,7 @@ function generaTabellaVerticale(containerId, draftData, squadreOrdine) {
   const container = document.getElementById(containerId);
 
   if (!draftData || draftData.length === 0) {
-    container.innerHTML = "<p class="draft-error">⚠️ Nessun dato disponibile</p>";
+    container.innerHTML = `<p class="draft-error">⚠️ Nessun dato disponibile</p>`;
     return;
   }
 
