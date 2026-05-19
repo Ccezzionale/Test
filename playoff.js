@@ -3,6 +3,19 @@
    ========================================= */
 const URL_STATS_MASTER =
   "https://docs.google.com/spreadsheets/d/e/2PACX-1vSG3HrTJsfZGhgfJJx8l63QYhooGsyiydLf1OTt2JldOPx5nSZyJz00IplWA5YHGwjymNL9EXIVX5XA/pub?gid=1118969717&single=true&output=csv";
+
+/* =========================================
+   SUPABASE
+   ========================================= */
+const SUPABASE_URL = "https://vfzadnfpwsbzfiyzbpvx.supabase.co";
+const SUPABASE_ANON_KEY = "QUI_METTI_LA_TUA_ANON_KEY";
+
+const supabaseClient = window.supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_ANON_KEY
+);
+
+
 /* =========================================
    UTILS
    ========================================= */
@@ -17,11 +30,6 @@ const norm = (s) => (s || "")
 const stripSeed = (txt) => (txt || "").replace(/^\s*\d+\s*°\s*/, "").trim();
 
 const truthy = v => !(v === '' || v === 0 || v === null || v === undefined || v === false);
-
-const supabaseClient = window.supabase.createClient(
-  SUPABASE_URL,
-  SUPABASE_ANON_KEY
-);
 
 let isPlayoffAdmin = false;
 
@@ -133,7 +141,6 @@ function creaHTMLPartita(code, matchData) {
 /* =========================================
    BRACKET MANUALE
    ========================================= */
-const PLAYOFF_RESULTS_KEY = "legaEroiPlayoffResults";
 
 const DEFAULT_PICKS = {
   WC1: { home: "", away: "" },
@@ -152,25 +159,38 @@ const DEFAULT_PICKS = {
   F:   { home: "", away: "" },
 };
 
-function loadPlayoffResults() {
-  try {
-    const saved = JSON.parse(localStorage.getItem(PLAYOFF_RESULTS_KEY) || "{}");
+const PICKS = structuredClone(DEFAULT_PICKS);
 
-    return Object.fromEntries(
-      Object.entries(DEFAULT_PICKS).map(([code, base]) => [
-        code,
-        {
-          home: saved?.[code]?.home ?? base.home,
-          away: saved?.[code]?.away ?? base.away
-        }
-      ])
-    );
-  } catch {
-    return structuredClone(DEFAULT_PICKS);
+async function loadPlayoffResultsFromSupabase() {
+  const { data, error } = await supabaseClient
+    .from("playoff_results")
+    .select("match_code, home_score, away_score");
+
+  if (error) {
+    console.error("Errore caricamento risultati playoff:", error);
+    return;
   }
-}
 
-const PICKS = loadPlayoffResults();
+  Object.keys(DEFAULT_PICKS).forEach(code => {
+    PICKS[code].home = "";
+    PICKS[code].away = "";
+  });
+
+  data.forEach(row => {
+    const code = row.match_code;
+    if (!PICKS[code]) return;
+
+    PICKS[code].home =
+      row.home_score === null || row.home_score === undefined
+        ? ""
+        : Number(row.home_score);
+
+    PICKS[code].away =
+      row.away_score === null || row.away_score === undefined
+        ? ""
+        : Number(row.away_score);
+  });
+}
 
 const WC_PAIRS = {
   WC1: [7, 8],
@@ -656,16 +676,23 @@ return Array.from(table.values()).sort((a, b) => {
    ========================================= */
 fetch(URL_STATS_MASTER + "&nocache=" + Date.now(), { cache: "no-store" })
   .then(res => res.text())
-  .then(csv => {
+  .then(async csv => {
     const classificaTotale = buildTotalRankingFromStats(csv);
 
     // Playoff: prime 12 della classifica totale
     window.squadre = classificaTotale.slice(0, 12);
 
+    await checkPlayoffAdmin();
+    await loadPlayoffResultsFromSupabase();
+
     aggiornaPlayoff();
 
+       alert("Risultati salvati.");
+
     window.addEventListener("resize", () => {
-      alignLikeExcel();
+      if (typeof alignLikeExcel === "function") {
+        alignLikeExcel();
+      }
     });
   })
   .catch(err => console.error("Errore nel caricamento classifica playoff:", err));
