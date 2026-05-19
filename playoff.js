@@ -259,26 +259,45 @@ const winnerOf = (code) => {
     awayScore !== undefined &&
     !isNaN(Number(awayScore));
 
-  if (hasHomeScore && hasAwayScore) {
-    const h = Number(homeScore);
-    const a = Number(awayScore);
+if (hasHomeScore && hasAwayScore) {
+  const h = Number(homeScore);
+  const a = Number(awayScore);
 
-    if (h > a) {
+  if (h > a) {
+    return {
+      name: stripSeed(m.home.name),
+      seed: m.home.seed
+    };
+  }
+
+  if (a > h) {
+    return {
+      name: stripSeed(m.away.name),
+      seed: m.away.seed
+    };
+  }
+
+  // Pareggio: in Wildcard e Quarti passa il seed migliore
+  if (usesSeedTieBreaker(code)) {
+    const bestSeedSide = getBestSeedSide(m);
+
+    if (bestSeedSide === "home") {
       return {
         name: stripSeed(m.home.name),
         seed: m.home.seed
       };
     }
 
-    if (a > h) {
+    if (bestSeedSide === "away") {
       return {
         name: stripSeed(m.away.name),
         seed: m.away.seed
       };
     }
-
-    return null;
   }
+
+  return null;
+}
 
   if (truthy(homeScore) && !truthy(awayScore)) {
     return {
