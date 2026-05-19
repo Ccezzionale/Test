@@ -5495,3 +5495,336 @@ h1, h2, h3, h4, p{
     background: rgba(0, 31, 63, .92) !important;
   }
 }
+
+/* =========================================================
+   MOBILE DRAFT COMPANION - SINGLE VIEW APP NAVIGATION
+   Home, Draft, Pool, Rose and Admin become separate mobile views.
+   Desktop remains unchanged.
+   ========================================================= */
+@media (max-width: 768px){
+
+  .mobile-draft-tabs{
+    display: none !important;
+  }
+
+  body.mobile-view-home #draft-board-section,
+  body.mobile-view-home #summary-panel,
+  body.mobile-view-home #admin-panel,
+  body.mobile-view-home #admin-trade-panel{
+    display: none !important;
+  }
+
+  body.mobile-view-draft #mobile-live-draft,
+  body.mobile-view-draft .mobile-companion-actions,
+  body.mobile-view-draft #pool-section,
+  body.mobile-view-draft #summary-panel,
+  body.mobile-view-draft #admin-panel,
+  body.mobile-view-draft #admin-trade-panel{
+    display: none !important;
+  }
+
+  body.mobile-view-pool #mobile-live-draft,
+  body.mobile-view-pool .mobile-companion-actions,
+  body.mobile-view-pool #draft-board-panel,
+  body.mobile-view-pool #summary-panel,
+  body.mobile-view-pool #admin-panel,
+  body.mobile-view-pool #admin-trade-panel{
+    display: none !important;
+  }
+
+  body.mobile-view-rose #mobile-live-draft,
+  body.mobile-view-rose .mobile-companion-actions,
+  body.mobile-view-rose #draft-board-section,
+  body.mobile-view-rose #admin-panel,
+  body.mobile-view-rose #admin-trade-panel{
+    display: none !important;
+  }
+
+  body.mobile-view-admin #mobile-live-draft,
+  body.mobile-view-admin .mobile-companion-actions,
+  body.mobile-view-admin #draft-board-section,
+  body.mobile-view-admin #summary-panel{
+    display: none !important;
+  }
+
+  body.mobile-view-draft #draft-board-section,
+  body.mobile-view-pool #draft-board-section{
+    display: block !important;
+  }
+
+  body.mobile-view-draft #draft-board-panel,
+  body.mobile-view-pool #pool-section,
+  body.mobile-view-rose #summary-panel,
+  body.mobile-view-admin #admin-panel{
+    display: block !important;
+    margin-top: 12px !important;
+  }
+
+  body.mobile-view-admin #admin-trade-panel{
+    display: block !important;
+  }
+
+  .mobile-companion-card{
+    border: 0 !important;
+    width: 100% !important;
+    text-align: left !important;
+  }
+
+  .mobile-companion-card.active{
+    box-shadow:
+      0 14px 28px rgba(0,31,63,.12),
+      inset 4px 0 0 #ffd54a !important;
+  }
+
+  .mobile-bottom-nav a.active{
+    opacity: 1 !important;
+    color: #ffd54a !important;
+    background: rgba(255,255,255,.10) !important;
+  }
+
+  .mobile-bottom-nav a.active span:first-child{
+    transform: translateY(-1px) scale(1.08);
+  }
+}
+
+/* =========================================================
+   MOBILE DRAFT BOARD - COMPANION LIGHT CONCEPT
+   Overrides the old dark-blue board on mobile only.
+   ========================================================= */
+@media (max-width: 768px){
+
+  body.mobile-view-draft{
+    background:
+      radial-gradient(circle at 8% 0%, rgba(255, 213, 74, .18), transparent 30%),
+      radial-gradient(circle at 92% 12%, rgba(15, 89, 166, .12), transparent 34%),
+      linear-gradient(180deg, #f7f4ea 0%, #edf3f8 42%, #f8fbff 100%) !important;
+  }
+
+  body.mobile-view-draft .page-shell{
+    padding-top: 10px !important;
+  }
+
+  body.mobile-view-draft #draft-board-panel{
+    border-radius: 28px !important;
+    overflow: hidden !important;
+    background:
+      linear-gradient(180deg, rgba(255,255,255,.98) 0%, rgba(247,250,254,.98) 100%) !important;
+    border: 1px solid rgba(0,31,63,.10) !important;
+    box-shadow:
+      0 18px 38px rgba(0,31,63,.12),
+      inset 0 1px 0 rgba(255,255,255,.9) !important;
+  }
+
+  body.mobile-view-draft #draft-board-panel .panel-header{
+    padding: 18px 18px 14px !important;
+    background:
+      linear-gradient(180deg, #ffffff 0%, #f4f8fe 100%) !important;
+    border-bottom: 1px solid rgba(0,31,63,.08) !important;
+  }
+
+  body.mobile-view-draft #draft-board-panel .panel-title{
+    color: #061f3f !important;
+    font-size: 1.45rem !important;
+    line-height: 1.05 !important;
+    font-weight: 950 !important;
+    letter-spacing: -.03em !important;
+    text-shadow: 0 2px 0 rgba(255,213,74,.24) !important;
+  }
+
+  body.mobile-view-draft #draft-board-panel .panel-subtitle{
+    color: #52647c !important;
+    font-size: .92rem !important;
+    font-weight: 750 !important;
+  }
+
+  body.mobile-view-draft #draft-board-panel .panel-count{
+    min-width: 64px !important;
+    height: 46px !important;
+    border-radius: 999px !important;
+    background:
+      linear-gradient(180deg, #ffe56d 0%, #ffd54a 54%, #ffc400 100%) !important;
+    color: #061f3f !important;
+    border: 1px solid rgba(0,31,63,.12) !important;
+    box-shadow:
+      0 9px 18px rgba(255, 199, 35, .28),
+      inset 0 1px 0 rgba(255,255,255,.78) !important;
+    font-weight: 950 !important;
+  }
+
+  body.mobile-view-draft #draft-board-panel .table-shell{
+    padding: 14px !important;
+    background: transparent !important;
+  }
+
+  body.mobile-view-draft #draft-board-panel .table-scroll{
+    max-height: calc(100vh - 172px) !important;
+    min-height: 520px !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    padding: 0 2px 10px !important;
+  }
+
+  body.mobile-view-draft #tabella-pick{
+    display: block !important;
+    width: 100% !important;
+    background: transparent !important;
+    border: 0 !important;
+  }
+
+  body.mobile-view-draft #tabella-pick thead{
+    display: none !important;
+  }
+
+  body.mobile-view-draft #tabella-pick tbody{
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 10px !important;
+  }
+
+  body.mobile-view-draft #tabella-pick tbody tr{
+    display: grid !important;
+    grid-template-columns: 42px minmax(0, 1fr) auto !important;
+    grid-template-areas:
+      "pick team status"
+      "pick player status" !important;
+    align-items: center !important;
+    column-gap: 12px !important;
+    min-height: 70px !important;
+    padding: 12px 12px !important;
+    border-radius: 22px !important;
+    background:
+      linear-gradient(180deg, #ffffff 0%, #f4f8fe 100%) !important;
+    border: 1px solid #d8e5f3 !important;
+    box-shadow:
+      0 8px 18px rgba(0,31,63,.07),
+      inset 0 1px 0 rgba(255,255,255,.9) !important;
+    color: #061f3f !important;
+  }
+
+  body.mobile-view-draft #tabella-pick tbody tr:nth-child(odd){
+    background:
+      linear-gradient(180deg, #ffffff 0%, #f8fbff 100%) !important;
+  }
+
+  body.mobile-view-draft #tabella-pick tbody tr.next-pick{
+    background:
+      linear-gradient(135deg, #fff7d1 0%, #ffe16c 58%, #ffd54a 100%) !important;
+    border: 1px solid rgba(194, 143, 0, .55) !important;
+    box-shadow:
+      0 12px 26px rgba(255, 199, 35, .32),
+      inset 0 1px 0 rgba(255,255,255,.82) !important;
+  }
+
+  body.mobile-view-draft #tabella-pick tbody td{
+    display: block !important;
+    width: auto !important;
+    border: 0 !important;
+    padding: 0 !important;
+    background: transparent !important;
+    min-width: 0 !important;
+  }
+
+  body.mobile-view-draft #tabella-pick tbody td:nth-child(1){
+    grid-area: pick !important;
+    width: 40px !important;
+    height: 40px !important;
+    border-radius: 999px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    background:
+      linear-gradient(180deg, #062b57 0%, #001f3f 100%) !important;
+    color: #ffd54a !important;
+    font-size: .92rem !important;
+    font-weight: 950 !important;
+    box-shadow:
+      0 7px 15px rgba(0,31,63,.24),
+      inset 0 1px 0 rgba(255,255,255,.18) !important;
+  }
+
+  body.mobile-view-draft #tabella-pick tbody td:nth-child(2){
+    grid-area: team !important;
+    color: #061f3f !important;
+    font-size: .98rem !important;
+    line-height: 1.08 !important;
+    font-weight: 950 !important;
+    letter-spacing: -.02em !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+  }
+
+  body.mobile-view-draft #tabella-pick tbody td:nth-child(3){
+    grid-area: player !important;
+    margin-top: 4px !important;
+    color: #61728a !important;
+    font-size: .86rem !important;
+    line-height: 1.1 !important;
+    font-weight: 800 !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+  }
+
+  body.mobile-view-draft #tabella-pick tbody td:nth-child(3):empty::after{
+    content: "In attesa...";
+    color: #8795a8 !important;
+    font-style: italic;
+    font-weight: 800;
+  }
+
+  body.mobile-view-draft #tabella-pick tbody tr::after{
+    content: "";
+    grid-area: status;
+    width: 34px;
+    height: 34px;
+    border-radius: 999px;
+    justify-self: end;
+    background:
+      linear-gradient(180deg, #f5f8fd 0%, #e7eef8 100%);
+    border: 1px solid #d8e5f3;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.86);
+  }
+
+  body.mobile-view-draft #tabella-pick tbody tr:not(.next-pick) td:nth-child(3):not(:empty) ~ *{
+    color: inherit;
+  }
+
+  body.mobile-view-draft #tabella-pick tbody tr.next-pick::after{
+    content: "⏱";
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background:
+      linear-gradient(180deg, #062b57 0%, #001f3f 100%);
+    color: #ffd54a;
+    border-color: rgba(255,213,74,.44);
+    font-size: 1rem;
+    font-weight: 900;
+  }
+
+  body.mobile-view-draft #tabella-pick tbody tr.next-pick td:nth-child(1){
+    background:
+      linear-gradient(180deg, #ffffff 0%, #f1f6ff 100%) !important;
+    color: #001f3f !important;
+    border: 1px solid rgba(0,31,63,.10) !important;
+  }
+
+  body.mobile-view-draft #tabella-pick tbody tr.next-pick td:nth-child(2){
+    color: #061f3f !important;
+    text-shadow: none !important;
+  }
+
+  body.mobile-view-draft #tabella-pick tbody tr.next-pick td:nth-child(3){
+    color: #775900 !important;
+  }
+
+  body.mobile-view-draft .trade-pick-badge{
+    background: #061f3f !important;
+    color: #ffd54a !important;
+    border-color: rgba(255,213,74,.35) !important;
+  }
+}

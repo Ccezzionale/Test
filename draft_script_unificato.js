@@ -2606,7 +2606,78 @@ if (shouldShow) {
   }
 });
 
+
+
+// ========== Mobile Draft Companion navigation ==========
+function setMobileDraftView(view = "home") {
+  if (window.innerWidth > 768) return;
+
+  const allowedViews = new Set(["home", "draft", "pool", "rose", "admin"]);
+  const nextView = allowedViews.has(view) ? view : "home";
+
+  document.body.classList.remove(
+    "mobile-view-home",
+    "mobile-view-draft",
+    "mobile-view-pool",
+    "mobile-view-rose",
+    "mobile-view-admin"
+  );
+
+  document.body.classList.add(`mobile-view-${nextView}`);
+  document.body.dataset.mobileDraftView = nextView;
+
+  document.querySelectorAll("[data-mobile-view]").forEach(el => {
+    el.classList.toggle("active", el.dataset.mobileView === nextView);
+  });
+
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+function initMobileDraftCompanionNavigation() {
+  const bindNavigation = () => {
+    document.querySelectorAll("[data-mobile-view]").forEach(el => {
+      if (el.dataset.mobileDraftBound === "1") return;
+
+      el.addEventListener("click", event => {
+        if (window.innerWidth > 768) return;
+        event.preventDefault();
+        setMobileDraftView(el.dataset.mobileView || "home");
+      });
+
+      el.dataset.mobileDraftBound = "1";
+    });
+  };
+
+  bindNavigation();
+
+  if (window.innerWidth <= 768) {
+    setMobileDraftView(document.body.dataset.mobileDraftView || "home");
+  }
+
+  let mobileViewResizeTimer = null;
+  window.addEventListener("resize", () => {
+    clearTimeout(mobileViewResizeTimer);
+    mobileViewResizeTimer = setTimeout(() => {
+      if (window.innerWidth <= 768) {
+        bindNavigation();
+        setMobileDraftView(document.body.dataset.mobileDraftView || "home");
+      } else {
+        document.body.classList.remove(
+          "mobile-view-home",
+          "mobile-view-draft",
+          "mobile-view-pool",
+          "mobile-view-rose",
+          "mobile-view-admin"
+        );
+        document.querySelectorAll("[data-mobile-view]").forEach(el => el.classList.remove("active"));
+      }
+    }, 160);
+  });
+}
+
 window.addEventListener("DOMContentLoaded", async function () {
+  initMobileDraftCompanionNavigation();
+
   const ok = await caricaUtenteLoggato();
   if (!ok) return;
   aggiornaAdminPanel();

@@ -149,7 +149,7 @@
 </section>
 
 <section class="mobile-companion-actions" aria-label="Azioni rapide Draft Companion">
-  <a class="mobile-companion-card" href="#draft-board-panel">
+  <a class="mobile-companion-card" href="#draft-board-panel" data-mobile-view="draft">
     <span class="mobile-companion-icon">▦</span>
     <span>
       <strong>Board</strong>
@@ -158,7 +158,7 @@
     <em>›</em>
   </a>
 
-  <a class="mobile-companion-card" href="#pool-section">
+  <a class="mobile-companion-card" href="#pool-section" data-mobile-view="pool">
     <span class="mobile-companion-icon">👥</span>
     <span>
       <strong>Player Pool</strong>
@@ -167,7 +167,7 @@
     <em>›</em>
   </a>
 
-  <a class="mobile-companion-card" href="#summary-panel">
+  <a class="mobile-companion-card" href="#summary-panel" data-mobile-view="rose">
     <span class="mobile-companion-icon">🛡️</span>
     <span>
       <strong>Le mie pick</strong>
@@ -439,11 +439,11 @@
 
 
   <nav class="mobile-bottom-nav" aria-label="Navigazione Draft mobile">
-    <a href="#mobile-live-draft" aria-label="Torna alla situazione live"><span>🏠</span><span>Home</span></a>
-    <a href="#draft-board-panel" aria-label="Draft board"><span>📋</span><span>Draft</span></a>
-    <a href="#pool-section" aria-label="Player pool"><span>🔎</span><span>Pool</span></a>
-    <a href="#summary-panel" aria-label="Riepilogo rose"><span>🏆</span><span>Rose</span></a>
-    <a href="#admin-panel" aria-label="Admin panel"><span>⚙️</span><span>Admin</span></a>
+    <a href="#mobile-live-draft" data-mobile-view="home" aria-label="Torna alla companion home"><span>🏠</span><span>Home</span></a>
+    <a href="#draft-board-panel" data-mobile-view="draft" aria-label="Draft board"><span>📋</span><span>Draft</span></a>
+    <a href="#pool-section" data-mobile-view="pool" aria-label="Player pool"><span>🔎</span><span>Pool</span></a>
+    <a href="#summary-panel" data-mobile-view="rose" aria-label="Riepilogo rose"><span>🏆</span><span>Rose</span></a>
+    <a href="#admin-panel" data-mobile-view="admin" aria-label="Admin panel"><span>⚙️</span><span>Admin</span></a>
   </nav>
 
   <script type="module" src="draft_script_unificato.js"></script>
