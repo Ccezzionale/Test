@@ -838,3 +838,95 @@ nav.site-nav .action-icon{opacity:1!important;filter:none!important;}
     font-size: .68rem;
   }
 }
+
+/* =========================================================
+   MOBILE DRAFT DINAMICO - VISTA ROUND
+   ========================================================= */
+
+@media (max-width: 768px){
+
+  .mobile-draft-view{
+    display: none;
+  }
+
+  .mobile-draft-view.active{
+    display: block;
+  }
+
+  .mobile-round-list{
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .mobile-round-card{
+    background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+    border: 1px solid rgba(0, 31, 63, 0.11);
+    border-radius: 24px;
+    overflow: hidden;
+    box-shadow:
+      0 12px 28px rgba(0, 31, 63, 0.10),
+      inset 0 1px 0 rgba(255,255,255,.9);
+  }
+
+  .mobile-round-header{
+    width: 100%;
+    appearance: none;
+    border: 0;
+    background: transparent;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 16px 16px;
+    cursor: pointer;
+    text-align: left;
+  }
+
+  .mobile-round-header strong{
+    display: block;
+    color: #001f3f;
+    font-size: 1.22rem;
+    line-height: 1.05;
+    font-weight: 950;
+  }
+
+  .mobile-round-header small{
+    display: block;
+    margin-top: 4px;
+    color: #64748b;
+    font-size: .86rem;
+    font-weight: 800;
+  }
+
+  .mobile-round-body{
+    display: none;
+    padding: 0 13px 14px;
+  }
+
+  .mobile-round-card.is-open .mobile-round-body{
+    display: block;
+  }
+
+  .mobile-round-card.is-open .mobile-team-chevron{
+    transform: rotate(180deg);
+  }
+
+  .mobile-round-pick-row{
+    grid-template-columns: 74px minmax(0, 1fr) auto;
+  }
+
+  .mobile-round-pick-row .mobile-pick-code{
+    background: linear-gradient(180deg, #063b73 0%, #001f3f 100%);
+    color: #ffd54a;
+  }
+}
+
+@media (max-width: 420px){
+  .mobile-round-pick-row{
+    grid-template-columns: 66px minmax(0, 1fr);
+    grid-template-areas:
+      "code origin"
+      "code badges";
+  }
+}
