@@ -2369,3 +2369,104 @@ textarea{
     order:initial;
   }
 }
+
+/* =====================================================
+   FINAL TOUCH - WAR ROOM HEADER + REMOVE TEAM PILL
+   ===================================================== */
+
+.hidden-trade-team-label{
+  display:none !important;
+}
+
+#tradeApp .trade-war-header{
+  margin-bottom:22px;
+  padding:18px 20px;
+  border-radius:24px;
+  background:
+    radial-gradient(380px 160px at 90% 0%, rgba(255,204,0,.20), transparent 64%),
+    linear-gradient(135deg, rgba(255,255,255,.12), rgba(255,255,255,.045));
+  border:1px solid rgba(255,255,255,.13);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.10),
+    0 18px 34px rgba(0,0,0,.16);
+}
+
+#tradeApp .trade-war-header::before{
+  content:"";
+  display:block;
+  width:68px;
+  height:6px;
+  margin-bottom:14px;
+  border-radius:999px;
+  background:linear-gradient(90deg, #ffcc00, #36a3ff);
+  box-shadow:0 0 22px rgba(255,204,0,.24);
+}
+
+#tradeApp .trade-kicker{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  margin-bottom:10px;
+  padding:7px 11px;
+  border-radius:999px;
+  color:#08213d !important;
+  background:linear-gradient(135deg, #ffcc00, #f59e0b);
+  font-size:.76rem;
+  font-weight:1000;
+  letter-spacing:.12em;
+  text-transform:uppercase;
+  box-shadow:0 12px 22px rgba(245,158,11,.22);
+}
+
+#tradeApp .trade-kicker::before{
+  content:"↔";
+  font-size:.9rem;
+}
+
+#tradeApp .trade-war-card h2{
+  max-width:720px;
+  color:#ffffff !important;
+  font-size:clamp(2rem, 4vw, 3.2rem);
+  line-height:.92;
+  letter-spacing:-.07em;
+  text-transform:uppercase;
+  text-shadow:0 10px 24px rgba(0,0,0,.20);
+}
+
+/* Rende la scritta gigante dietro meno invadente ma più elegante */
+#tradeApp .trade-war-card::after{
+  content:"TRADE TABLE";
+  top:26px;
+  right:24px;
+  color:rgba(255,255,255,.045) !important;
+}
+
+/* Barra draft più compatta dopo il nuovo header */
+#tradeApp .trade-market-strip{
+  margin-top:0;
+}
+
+/* Mobile */
+@media (max-width:700px){
+  #tradeApp .trade-war-header{
+    padding:16px;
+    border-radius:22px;
+    margin-bottom:16px;
+  }
+
+  #tradeApp .trade-war-header::before{
+    width:56px;
+    height:5px;
+    margin-bottom:12px;
+  }
+
+  #tradeApp .trade-war-card h2{
+    font-size:2rem;
+    line-height:.95;
+  }
+
+  #tradeApp .trade-kicker{
+    font-size:.68rem;
+    padding:6px 9px;
+  }
+}
