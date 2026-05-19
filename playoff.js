@@ -8,7 +8,7 @@ const URL_STATS_MASTER =
    SUPABASE
    ========================================= */
 const SUPABASE_URL = "https://vfzadnfpwsbzfiyzbpvx.supabase.co";
-const SUPABASE_ANON_KEY = "QUI_METTI_LA_TUA_ANON_KEY";
+const SUPABASE_ANON_KEY = "sb_publishable_PL6nGBOyzAOiXWXjuplwYw_-fr60KdO";
 
 const supabaseClient = window.supabase.createClient(
   SUPABASE_URL,
