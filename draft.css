@@ -5042,3 +5042,62 @@ h1, h2, h3, h4, p{
     display: none !important;
   }
 }
+
+/* =========================
+   DESKTOP DRAFT BOARD - LOGHI GRANDI + ROUND ALLINEATI
+   ========================= */
+@media (min-width: 1101px){
+
+  body.desktop-draft-v2{
+    --desktop-team-head-h: 118px;
+    --desktop-pick-row-h: 64px;
+    --desktop-row-gap: 8px;
+  }
+
+  .desktop-round-rail{
+    grid-template-rows:
+      var(--desktop-team-head-h)
+      repeat(var(--desktop-rounds, 23), var(--desktop-pick-row-h)) !important;
+    gap: var(--desktop-row-gap) !important;
+  }
+
+  .desktop-round-spacer{
+    height: var(--desktop-team-head-h) !important;
+  }
+
+  .desktop-team-column{
+    grid-template-rows: var(--desktop-team-head-h) auto !important;
+    gap: var(--desktop-row-gap) !important;
+  }
+
+  .desktop-team-head{
+    height: var(--desktop-team-head-h) !important;
+    min-height: var(--desktop-team-head-h) !important;
+    padding: 14px 10px !important;
+    justify-content: center !important;
+  }
+
+  .desktop-team-head strong{
+    display: none !important;
+  }
+
+  .desktop-team-head img{
+    width: 88px !important;
+    height: 88px !important;
+    object-fit: contain !important;
+  }
+
+  .desktop-team-slots{
+    gap: var(--desktop-row-gap) !important;
+  }
+
+  .desktop-pick-slot{
+    height: var(--desktop-pick-row-h) !important;
+    min-height: var(--desktop-pick-row-h) !important;
+  }
+
+  .desktop-round-label{
+    height: var(--desktop-pick-row-h) !important;
+    min-height: var(--desktop-pick-row-h) !important;
+  }
+}
