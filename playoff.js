@@ -795,6 +795,23 @@ function getMobileStageData(P) {
   return stages;
 }
 
+function getMobileScoreDisplay(code) {
+  const pick = PICKS[code];
+  if (!pick) return "VS";
+
+  const home = pick.home;
+  const away = pick.away;
+
+  const hasHome = home !== "" && home !== null && home !== undefined && !isNaN(Number(home));
+  const hasAway = away !== "" && away !== null && away !== undefined && !isNaN(Number(away));
+
+  if (hasHome && hasAway) {
+    return `${home} - ${away}`;
+  }
+
+  return "VS";
+}
+
 function createMobileTeamSide(team, side, isWinner) {
   const cleanName = stripSeed(team?.name || "In attesa");
   const placeholder = isPlaceholderTeam(team);
@@ -803,10 +820,14 @@ function createMobileTeamSide(team, side, isWinner) {
   return `
     <div class="mobile-team-side ${side} ${isWinner ? "is-winner" : ""} ${placeholder ? "is-placeholder" : ""}">
       ${team?.seed ? `<span class="mobile-seed">#${team.seed}</span>` : ""}
+
       <div class="mobile-team-logo-wrap">
         ${!placeholder ? `<img src="${logo}" alt="${cleanName}" onerror="this.style.display='none'">` : ""}
       </div>
+
       <div class="mobile-team-name">${cleanName}</div>
+
+      ${isWinner ? `<div class="mobile-qualified-badge">✓ Qualificata</div>` : ""}
     </div>
   `;
 }
@@ -817,10 +838,9 @@ function createMobileMatchCard(match) {
 
   const homeWinner = match.winnerSide === "home";
   const awayWinner = match.winnerSide === "away";
-  const hasWinner = !!match.winnerSide;
-  const statusText = hasWinner ? "Qualificata" : "In attesa";
-  const statusIcon = hasWinner ? "&check;" : "&bull;";
-  const stageClass = match.code === "F" ? "is-final" : "";
+const hasWinner = !!match.winnerSide;
+const scoreDisplay = getMobileScoreDisplay(match.code);
+const stageClass = match.code === "F" ? "is-final" : "";;
 
   return `
     <article class="mobile-match-card ${stageClass}" data-mobile-match="${match.code}">
@@ -829,14 +849,13 @@ function createMobileMatchCard(match) {
       <div class="mobile-match-main">
         ${createMobileTeamSide(home, "left", homeWinner)}
 
-        <div class="mobile-vs-center">
-          <div class="mobile-match-label">Sfida playoff</div>
-          <div class="mobile-vs-pill">VS</div>
-          <div class="mobile-match-status">
-            <span>${statusIcon}</span>
-            <span>${statusText}</span>
-          </div>
-        </div>
+<div class="mobile-vs-center">
+  <div class="mobile-match-label">Sfida playoff</div>
+  <div class="mobile-vs-pill ${hasWinner ? "has-score" : ""}">${scoreDisplay}</div>
+  <div class="mobile-match-status">
+    ${hasWinner ? "Risultato finale" : "In attesa"}
+  </div>
+</div>
 
         ${createMobileTeamSide(away, "right", awayWinner)}
       </div>
