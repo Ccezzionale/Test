@@ -76,12 +76,12 @@ body::after{
 /* HERO */
 .hero-playoff{
   text-align:center;
-  padding:34px 20px 8px;
+  padding:76px 20px 10px;
 }
 
 .titolo-pagina{
   margin:0;
-  font-size:clamp(2.2rem, 4.6vw, 4rem);
+  font-size:clamp(2rem, 4vw, 3.25rem);
   font-weight:900;
   letter-spacing:.3px;
   color:#fff;
@@ -97,7 +97,7 @@ body::after{
 
 .playoff-intro{
   width:min(1440px, 94%);
-  margin:6px auto 4px;
+  margin:-2px auto 2px;
   display:flex;
   justify-content:flex-end;
 }
@@ -115,7 +115,7 @@ body::after{
 /* STAGE */
 .playoff-stage{
   width:min(1560px, 98%);
-  margin:18px auto 26px;
+  margin:4px auto 22px;
   position:relative;
 }
 
@@ -134,8 +134,8 @@ body::after{
   position:relative;
   z-index:1;
   display:grid;
-  grid-template-columns: 1fr 1fr .9fr 1.28fr .9fr 1fr 1fr;
-  gap:18px;
+  grid-template-columns: 1fr 1fr .95fr 1.35fr .95fr 1fr 1fr;
+  gap:20px;
   align-items:stretch;
   padding:12px 10px 22px;
   min-height:640px;
@@ -387,7 +387,7 @@ body::after{
 .finale-trophy{
   position:relative;
   z-index:4;
-  margin-bottom:-10px;
+  margin-bottom:-18px;
 }
 
 .coppa-img{
@@ -409,14 +409,15 @@ body::after{
 }
 
 .tagline-finale{
-  padding:14px 28px;
+  padding:12px 24px;
+  white-space:nowrap;
   border-radius:18px;
   border:1px solid rgba(243,195,91,.55);
   background:rgba(6,26,58,.84);
   color:#ffffff;
   text-transform:uppercase;
   font-weight:900;
-  letter-spacing:.8px;
+  letter-spacing:.4px;
   box-shadow:0 12px 28px rgba(0,0,0,.24);
 }
 
