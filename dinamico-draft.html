@@ -86,14 +86,24 @@
     </div>
   </nav>
 
-  <main class="page-wrap">
-    <section class="draft-page-hero">
-      <span class="hero-pill">🏀 Draft 2027</span>
-      <h1>Draft dinamico</h1>
-      <p>Ordine aggiornato in base alla classifica totale e agli scambi di pick.</p>
-    </section>
+<main class="page-wrap">
 
-    <section class="draft-board-panel draft-section">
+  <section class="draft-page-hero">
+    <span class="hero-pill">🏀 Draft 2027</span>
+    <h1>Draft dinamico</h1>
+    <p>Ordine aggiornato in base alla classifica totale e agli scambi di pick.</p>
+  </section>
+
+  <div class="draft-tabs">
+    <button class="draft-tab active" type="button" data-target="league-panel">
+      Conference League
+    </button>
+    <button class="draft-tab" type="button" data-target="championship-panel">
+      Conference Championship
+    </button>
+  </div>
+
+ <section id="league-panel" class="draft-board-panel draft-section draft-tab-panel active">
       <div class="board-header">
         <div>
           <h2>Draft Conference League</h2>
@@ -110,7 +120,7 @@
       </div>
     </section>
 
-    <section class="draft-board-panel draft-section">
+    <section id="championship-panel" class="draft-board-panel draft-section draft-tab-panel">
       <div class="board-header">
         <div>
           <h2>Draft Conference Championship</h2>
