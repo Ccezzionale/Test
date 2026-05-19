@@ -5162,3 +5162,12 @@ h1, h2, h3, h4, p{
     font-size: .72rem !important;
   }
 }
+
+/* =========================
+   MOBILE - NASCONDI QUICK TABS SUPERIORI
+   ========================= */
+@media (max-width: 768px){
+  .mobile-draft-tabs{
+    display: none !important;
+  }
+}
