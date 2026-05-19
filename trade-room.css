@@ -2283,3 +2283,28 @@ textarea{
   background:linear-gradient(180deg, #ffffff, #f4f8fd) !important;
   color:#0b2d55 !important;
 }
+
+/* =====================================================
+   FIX BOTTONE INVIA COPERTO
+   ===================================================== */
+
+@media (min-width: 900px){
+  #tradeApp .trade-war-card{
+    position:relative !important;
+    top:auto !important;
+    grid-row:auto !important;
+    z-index:3;
+    margin-bottom:28px !important;
+  }
+}
+
+#tradeApp .trade-war-card #sendTradeBtn{
+  position:relative;
+  z-index:10;
+  display:block;
+  margin-bottom:12px;
+}
+
+#tradeApp .trade-war-card{
+  overflow:visible;
+}
