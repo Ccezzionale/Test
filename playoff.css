@@ -765,6 +765,23 @@ body::after{
   left:100%;
 }
 
+/* ===== PULIZIA CONNETTORI EXTRA ===== */
+
+/* elimina i trattini inutili fuori dalle Wild Card di destra */
+.playoff-board > .round-col--outer:last-child .game-slot::after{
+  display:none !important;
+}
+
+/* elimina solo il trattino che entra male nella semifinale sinistra */
+.round-col--semi-left .game-slot::before{
+  display:none !important;
+}
+
+/* elimina solo il trattino che entra male nella semifinale destra */
+.round-col--semi-right .game-slot::after{
+  display:none !important;
+}
+
 /* MOBILE fallback */
 @media (max-width: 1200px){
   .playoff-stage{
