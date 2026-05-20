@@ -1623,3 +1623,164 @@ button:disabled {
     border-radius: 16px;
   }
 }
+
+/* =========================================================
+   WAIVER HERO - MODERN DESKTOP VISUAL
+   ========================================================= */
+
+@media (min-width: 1024px){
+
+  .waiver-hero{
+    min-height: 220px;
+    padding: 34px 38px;
+    display: flex;
+    align-items: stretch;
+    justify-content: space-between;
+    gap: 28px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .waiver-hero::before{
+    content: none;
+  }
+
+  .waiver-hero::after{
+    content: "WAIVER";
+    position: absolute;
+    right: -18px;
+    bottom: -34px;
+    font-size: clamp(6rem, 11vw, 10rem);
+    font-weight: 900;
+    letter-spacing: -0.08em;
+    color: rgba(255,255,255,0.06);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .waiver-hero-copy{
+    position: relative;
+    z-index: 2;
+    max-width: 760px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .waiver-hero-copy h1{
+    margin: 0;
+    font-size: clamp(3.3rem, 5vw, 5rem);
+    line-height: 0.95;
+  }
+
+  .waiver-hero-copy p:last-child{
+    max-width: 640px;
+  }
+
+  .waiver-hero-visual{
+    position: relative;
+    z-index: 2;
+    width: 330px;
+    min-width: 330px;
+    border-radius: 24px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 16px;
+    background:
+      linear-gradient(180deg, rgba(255,255,255,0.18), rgba(255,255,255,0.08));
+    border: 1px solid rgba(255,255,255,0.18);
+    box-shadow:
+      0 20px 40px rgba(0,0,0,0.16),
+      inset 0 1px 0 rgba(255,255,255,0.16);
+    backdrop-filter: blur(8px);
+  }
+
+  .hero-live-pill{
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    width: fit-content;
+    padding: 7px 12px;
+    border-radius: 999px;
+    background: rgba(255, 204, 0, 0.18);
+    color: #ffdf6c;
+    border: 1px solid rgba(255, 204, 0, 0.30);
+    font-size: 0.76rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  .hero-live-pill::before{
+    content: "";
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #ffcc00;
+    box-shadow: 0 0 0 6px rgba(255, 204, 0, 0.15);
+  }
+
+  .hero-visual-main{
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 16px;
+    border-radius: 18px;
+    background: rgba(0, 0, 0, 0.14);
+    border: 1px solid rgba(255,255,255,0.10);
+  }
+
+  .hero-visual-label{
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.10em;
+    color: rgba(255,255,255,0.72);
+    font-weight: 800;
+  }
+
+  .hero-visual-main strong{
+    font-size: 2rem;
+    line-height: 1;
+    color: #ffffff;
+    letter-spacing: -0.04em;
+  }
+
+  .hero-visual-sub{
+    font-size: 0.9rem;
+    color: rgba(255,255,255,0.82);
+    font-weight: 700;
+  }
+
+  .hero-stat-grid{
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+  }
+
+  .hero-stat-card{
+    padding: 14px 10px;
+    border-radius: 16px;
+    text-align: center;
+    background: rgba(255,255,255,0.10);
+    border: 1px solid rgba(255,255,255,0.10);
+  }
+
+  .hero-stat-card span{
+    display: block;
+    margin-bottom: 5px;
+    font-size: 0.68rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: rgba(255,255,255,0.68);
+    font-weight: 800;
+  }
+
+  .hero-stat-card strong{
+    display: block;
+    font-size: 1rem;
+    color: #ffffff;
+    font-weight: 900;
+  }
+}
