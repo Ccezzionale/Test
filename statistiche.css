@@ -2668,3 +2668,43 @@ body::before{
   position:relative;
   z-index:1;
 }
+
+/* =========================================================
+   MOBILE EXTRA STATS CLEANUP
+   ========================================================= */
+
+@media (max-width:768px){
+
+  /* nasconde i sottotitoli nelle card statistiche */
+  #extra-stats .spotlight-head p{
+    display:none !important;
+  }
+
+  /* header più compatto visto che non c'è più il sottotitolo */
+  #extra-stats .spotlight-head{
+    min-height:105px !important;
+    padding:16px 130px 14px 16px !important;
+  }
+
+  /* immagine leggermente più alta e ordinata */
+  #extra-stats .spotlight-head::after{
+    top:6px !important;
+    right:16px !important;
+    width:100px !important;
+    height:100px !important;
+  }
+
+  /* solo su mobile: Classifica Sculati -> Sculati */
+  .luck-card .spotlight-head h2{
+    font-size:0 !important;
+  }
+
+  .luck-card .spotlight-head h2::after{
+    content:"Sculati";
+    font-size:1.35rem;
+    line-height:1.1;
+    color:#81ef79;
+    text-transform:uppercase;
+    letter-spacing:.02em;
+  }
+}
