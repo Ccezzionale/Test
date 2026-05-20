@@ -1049,3 +1049,577 @@ button:disabled {
 #freeAgentsTable thead th[data-sort]:hover {
   background: #073763;
 }
+
+/* =========================================================
+   WAIVER ROOM DESKTOP RESTYLE
+   Desktop first - safe override
+   ========================================================= */
+
+@media (min-width: 1024px){
+
+  body{
+    background:
+      radial-gradient(900px 520px at 10% -10%, rgba(63, 146, 255, 0.20), transparent 62%),
+      radial-gradient(780px 460px at 88% 8%, rgba(255, 204, 0, 0.14), transparent 58%),
+      linear-gradient(180deg, #00172f 0%, #002b55 42%, #edf3fb 42%, #f6f8fc 100%);
+  }
+
+  .waiver-page{
+    max-width: 1460px;
+    padding-top: 26px;
+  }
+
+  /* ===============================
+     HERO
+  ================================ */
+
+  .waiver-hero{
+    min-height: 210px;
+    padding: 38px 42px;
+    border-radius: 28px;
+    margin-bottom: 22px;
+    background:
+      linear-gradient(135deg, rgba(0, 24, 49, 0.98), rgba(0, 75, 145, 0.92)),
+      radial-gradient(560px 300px at 78% 18%, rgba(255, 204, 0, 0.26), transparent 64%);
+    box-shadow:
+      0 24px 58px rgba(0, 0, 0, 0.28),
+      inset 0 1px 0 rgba(255,255,255,0.12);
+  }
+
+  .waiver-hero::before{
+    content: "";
+    position: absolute;
+    right: 46px;
+    top: 34px;
+    width: 154px;
+    height: 154px;
+    border-radius: 34px;
+    background:
+      linear-gradient(135deg, rgba(255,255,255,0.16), rgba(255,255,255,0.04)),
+      url("icons/nav/waiver.webp") center/72px 72px no-repeat;
+    border: 1px solid rgba(255,255,255,0.16);
+    box-shadow:
+      0 24px 50px rgba(0,0,0,0.18),
+      inset 0 0 30px rgba(255,255,255,0.06);
+    opacity: .92;
+  }
+
+  .waiver-hero::after{
+    content: "WAIVER";
+    right: -24px;
+    bottom: -42px;
+    font-size: clamp(6rem, 12vw, 11.5rem);
+    color: rgba(255,255,255,0.055);
+    letter-spacing: -0.10em;
+  }
+
+  .eyebrow{
+    color: #ffdd63;
+    letter-spacing: .20em;
+    font-size: .82rem;
+  }
+
+  .waiver-hero h1{
+    max-width: 760px;
+    font-size: clamp(3.4rem, 5.5vw, 5.2rem);
+    letter-spacing: -0.065em;
+    text-shadow: 0 8px 26px rgba(0,0,0,0.22);
+  }
+
+  .waiver-hero p{
+    max-width: 690px;
+    font-size: 1.08rem;
+    color: rgba(255,255,255,0.88);
+  }
+
+  /* ===============================
+     CARD BASE
+  ================================ */
+
+  .waiver-card{
+    border-radius: 26px;
+    padding: 24px;
+    background:
+      linear-gradient(180deg, rgba(255,255,255,0.98), rgba(248,251,255,0.96));
+    border: 1px solid rgba(0, 45, 91, 0.10);
+    box-shadow:
+      0 18px 42px rgba(0, 31, 63, 0.12),
+      inset 0 1px 0 rgba(255,255,255,0.80);
+  }
+
+  .waiver-card h2{
+    font-size: 1.28rem;
+    letter-spacing: -0.035em;
+  }
+
+  .card-subtitle{
+    color: #52637a;
+    font-size: .94rem;
+  }
+
+  .card-title-row{
+    margin-bottom: 18px;
+  }
+
+  /* ===============================
+     TEAM INFO CARD
+  ================================ */
+
+  .team-card{
+    padding: 22px 24px;
+    background:
+      linear-gradient(135deg, rgba(255,255,255,0.98), rgba(238,246,255,0.96));
+  }
+
+  .team-card h2{
+    margin-bottom: 18px;
+  }
+
+  .info-grid{
+    gap: 14px;
+  }
+
+  .info-item{
+    position: relative;
+    overflow: hidden;
+    min-height: 86px;
+    padding: 17px 18px;
+    border-radius: 18px;
+    background:
+      linear-gradient(180deg, #ffffff 0%, #eef6ff 100%);
+    border: 1px solid rgba(0, 63, 127, 0.12);
+    box-shadow: 0 10px 22px rgba(0,31,63,0.06);
+  }
+
+  .info-item::after{
+    content: "";
+    position: absolute;
+    right: -18px;
+    bottom: -26px;
+    width: 84px;
+    height: 84px;
+    border-radius: 999px;
+    background: rgba(0, 63, 127, 0.055);
+  }
+
+  .info-item span{
+    color: #607089;
+    font-size: .78rem;
+    letter-spacing: .12em;
+  }
+
+  .info-item strong{
+    color: #001f3f;
+    font-size: 1.05rem;
+  }
+
+  .info-item:first-child strong{
+    font-size: 1.2rem;
+  }
+
+  /* ===============================
+     LAYOUT DESKTOP
+  ================================ */
+
+  .waiver-dashboard-grid{
+    grid-template-columns: minmax(760px, 1.55fr) minmax(410px, .75fr);
+    gap: 28px;
+  }
+
+  .waiver-left-column,
+  .waiver-right-column{
+    gap: 28px;
+  }
+
+  .public-waiver-card{
+    position: sticky;
+    top: 18px;
+    max-height: calc(100vh - 36px);
+    overflow: auto;
+  }
+
+  .public-waiver-card::-webkit-scrollbar{
+    width: 8px;
+  }
+
+  .public-waiver-card::-webkit-scrollbar-track{
+    background: transparent;
+  }
+
+  .public-waiver-card::-webkit-scrollbar-thumb{
+    background: rgba(0, 63, 127, .22);
+    border-radius: 999px;
+  }
+
+  /* ===============================
+     MY CALLS
+  ================================ */
+
+  #myWaiverCalls .waiver-slot-title{
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin: 2px 0 14px;
+    padding: 7px 12px;
+    border-radius: 999px;
+    background: rgba(0, 63, 127, 0.08);
+    color: #002b55;
+    font-size: .92rem;
+    letter-spacing: -0.01em;
+  }
+
+  #myWaiverCalls .waiver-slot-title::before{
+    content: "";
+    width: 8px;
+    height: 8px;
+    border-radius: 999px;
+    background: #ffcc00;
+    box-shadow: 0 0 0 4px rgba(255,204,0,.18);
+  }
+
+  #myWaiverCalls .waiver-slot-content{
+    grid-template-columns: repeat(2, minmax(300px, 1fr));
+    gap: 16px;
+  }
+
+  .dynamic-call-card{
+    border-radius: 20px;
+    padding: 18px;
+    background:
+      linear-gradient(180deg, #ffffff 0%, #f6faff 100%);
+    border: 1px solid rgba(0, 63, 127, 0.12);
+    box-shadow:
+      0 12px 26px rgba(0,31,63,.09),
+      inset 0 1px 0 rgba(255,255,255,.95);
+    transition:
+      transform .16s ease,
+      box-shadow .16s ease,
+      border-color .16s ease;
+  }
+
+  .dynamic-call-card:hover{
+    transform: translateY(-2px);
+    box-shadow:
+      0 18px 34px rgba(0,31,63,.13),
+      inset 0 1px 0 rgba(255,255,255,.95);
+  }
+
+  .dynamic-call-card.active-call-target{
+    border-color: rgba(255, 204, 0, .85);
+    box-shadow:
+      0 0 0 4px rgba(255,204,0,.18),
+      0 18px 36px rgba(0,31,63,.15);
+  }
+
+  .dynamic-call-title strong{
+    font-size: 1rem;
+    color: #001f3f;
+  }
+
+  .dynamic-call-title span{
+    color: #607089;
+  }
+
+  .order-position-pill{
+    min-width: 44px;
+    height: 38px;
+    border-radius: 14px;
+    background:
+      linear-gradient(135deg, #001f3f, #004b91);
+    color: #ffcc00;
+    box-shadow: 0 10px 18px rgba(0,31,63,.22);
+  }
+
+  label{
+    margin-top: 11px;
+    margin-bottom: 7px;
+    color: #1f334d;
+    font-size: .82rem;
+  }
+
+  input,
+  select{
+    border-radius: 15px;
+    border-color: rgba(0, 63, 127, .13);
+    background: #ffffff;
+  }
+
+  input[readonly]{
+    background:
+      linear-gradient(180deg, #fbfdff, #f3f7fc);
+  }
+
+  .call-actions{
+    gap: 8px;
+    margin-top: 15px;
+  }
+
+  .call-actions .primary-btn,
+  .call-actions .secondary-btn{
+    padding: 10px 12px;
+    font-size: .84rem;
+    border-radius: 12px;
+  }
+
+  .call-actions .select-dynamic-call-btn,
+  .call-actions .select-compensatory-call-btn{
+    background: #eef5ff;
+    color: #003f7f;
+    border-color: rgba(0,63,127,.12);
+  }
+
+  .call-message{
+    font-size: .86rem;
+    color: #52637a;
+  }
+
+  /* ===============================
+     COMPENSATIVE
+  ================================ */
+
+  .my-compensatory-card{
+    background:
+      linear-gradient(180deg, rgba(255,255,255,.98), rgba(255,251,235,.72));
+    border-color: rgba(255, 204, 0, .25);
+  }
+
+  .my-compensatory-card h2::after{
+    content: " extra";
+    display: inline-flex;
+    margin-left: 8px;
+    padding: 3px 8px;
+    border-radius: 999px;
+    background: rgba(255,204,0,.24);
+    color: #745600;
+    font-size: .7rem;
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    vertical-align: middle;
+  }
+
+  /* ===============================
+     FREE AGENTS
+  ================================ */
+
+  .free-agents-card{
+    padding-bottom: 22px;
+  }
+
+  .free-agents-filters{
+    grid-template-columns: 1.35fr .75fr 1fr .62fr;
+    gap: 12px;
+    margin-bottom: 14px;
+  }
+
+  .free-agents-filters input,
+  .free-agents-filters select{
+    min-height: 48px;
+    border-radius: 16px;
+    font-size: .94rem;
+    background:
+      linear-gradient(180deg, #ffffff, #f8fbff);
+  }
+
+  .table-hint{
+    background: rgba(0,63,127,.08);
+    color: #003f7f;
+    border: 1px solid rgba(0,63,127,.08);
+  }
+
+  .free-agents-table-wrap{
+    max-height: 610px;
+    border-radius: 20px;
+    border-color: rgba(0,63,127,.12);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.9);
+  }
+
+  #freeAgentsTable{
+    min-width: 680px;
+  }
+
+  #freeAgentsTable thead th{
+    background:
+      linear-gradient(180deg, #002b55, #001f3f);
+    padding: 14px 15px;
+    font-size: .76rem;
+    letter-spacing: .08em;
+  }
+
+  #freeAgentsTable thead th:first-child{
+    border-top-left-radius: 0;
+  }
+
+  #freeAgentsTable thead th:last-child{
+    border-top-right-radius: 0;
+  }
+
+  #freeAgentsTable th,
+  #freeAgentsTable td{
+    padding: 12px 15px;
+    font-size: .92rem;
+  }
+
+  #freeAgentsTable tbody tr{
+    background: #ffffff;
+  }
+
+  #freeAgentsTable tbody tr:nth-child(even){
+    background: #f8fbff;
+  }
+
+  #freeAgentsTable tbody tr:hover{
+    background: #eaf4ff;
+  }
+
+  #freeAgentsTable tbody tr.selected-player{
+    background: #fff7d6 !important;
+    box-shadow: inset 5px 0 0 #ffcc00;
+  }
+
+  .u21-table-badge{
+    min-width: 42px;
+    height: 24px;
+    border-radius: 999px;
+    background:
+      linear-gradient(135deg, #ffcc00, #ffe27a);
+    color: #001f3f;
+    border: 1px solid rgba(170, 125, 0, .35);
+    box-shadow: 0 5px 12px rgba(255,204,0,.18);
+  }
+
+  .player-badges{
+    margin-left: 8px;
+    font-size: .78rem;
+  }
+
+  /* ===============================
+     PUBLIC WAIVER ORDER
+  ================================ */
+
+  .public-waiver-order{
+    gap: 16px;
+  }
+
+  .public-waiver-group{
+    padding: 15px;
+    border-radius: 20px;
+    background:
+      linear-gradient(180deg, #ffffff 0%, #f6faff 100%);
+    border: 1px solid rgba(0,63,127,.11);
+    box-shadow: 0 12px 24px rgba(0,31,63,.07);
+  }
+
+  .public-waiver-group-title{
+    padding-bottom: 12px;
+    margin-bottom: 12px;
+    border-bottom-color: rgba(0,63,127,.10);
+  }
+
+  .public-waiver-group-title h3{
+    font-size: .98rem;
+    color: #001f3f;
+    letter-spacing: -0.02em;
+  }
+
+  .public-waiver-group-title span{
+    font-size: .78rem;
+    color: #64748b;
+  }
+
+  .public-waiver-group-content{
+    gap: 9px;
+  }
+
+  .public-waiver-row{
+    grid-template-columns: 48px 1fr;
+    min-height: 68px;
+    padding: 10px 11px;
+    border-radius: 16px;
+    background:
+      linear-gradient(180deg, #ffffff, #fbfdff);
+    border-color: rgba(0,63,127,.09);
+    transition:
+      transform .14s ease,
+      box-shadow .14s ease,
+      border-color .14s ease;
+  }
+
+  .public-waiver-row:hover{
+    transform: translateX(2px);
+    box-shadow: 0 8px 18px rgba(0,31,63,.09);
+    border-color: rgba(0,63,127,.16);
+  }
+
+  .public-waiver-rank{
+    width: 42px;
+    height: 42px;
+    background:
+      linear-gradient(135deg, #315b84, #12395f);
+    color: #ffcc00;
+    box-shadow: 0 8px 16px rgba(0,31,63,.18);
+  }
+
+  .public-waiver-main{
+    gap: 2px;
+    min-width: 0;
+  }
+
+  .public-waiver-main strong{
+    color: #243148;
+    font-size: .95rem;
+    line-height: 1.1;
+  }
+
+  .public-waiver-via{
+    font-size: .76rem;
+    color: #8090a5;
+  }
+
+  .public-waiver-result{
+    font-size: .82rem;
+    color: #334155;
+  }
+
+  .public-waiver-row.empty{
+    opacity: .86;
+  }
+
+  .public-waiver-row.won{
+    background: linear-gradient(180deg, #f0fdf4, #ffffff);
+    border-color: rgba(34,197,94,.28);
+  }
+
+  .public-waiver-row.lost{
+    background: linear-gradient(180deg, #fef2f2, #ffffff);
+    border-color: rgba(239,68,68,.25);
+  }
+
+  .public-waiver-row.pending{
+    background: linear-gradient(180deg, #fffbeb, #ffffff);
+    border-color: rgba(245,158,11,.25);
+  }
+
+  /* ===============================
+     ADMIN DESKTOP CLEANUP
+  ================================ */
+
+  .admin-card{
+    border-radius: 28px;
+  }
+
+  .admin-settings-panel{
+    border-radius: 20px;
+  }
+
+  .slot-settings-card{
+    border-radius: 18px;
+  }
+
+  .waiver-admin-group{
+    border-radius: 20px;
+  }
+
+  .waiver-admin-row{
+    border-radius: 16px;
+  }
+}
