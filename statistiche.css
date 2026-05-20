@@ -2628,3 +2628,46 @@ body::before{
     0 6px 16px rgba(0,0,0,.28),
     0 0 20px rgba(255,223,126,.20) !important;
 }
+
+.spotlight-head{
+  position:relative;
+  padding-right:180px; /* lascia spazio all’immagine a destra */
+  min-height:120px;
+}
+
+/* immagini decorative in alto a destra */
+.shame-card .spotlight-head::after,
+.luck-card .spotlight-head::after,
+.scores-card .spotlight-head::after{
+  content:"";
+  position:absolute;
+  top:18px;
+  right:20px;
+  width:110px;
+  height:110px;
+  background-size:contain;
+  background-repeat:no-repeat;
+  background-position:center;
+  opacity:.16;
+  pointer-events:none;
+  z-index:0;
+}
+
+/* immagini diverse per ciascuna card */
+.shame-card .spotlight-head::after{
+  background-image:url("img/stats/hall-shame.webp");
+}
+
+.luck-card .spotlight-head::after{
+  background-image:url("img/stats/sculati.webp");
+}
+
+.scores-card .spotlight-head::after{
+  background-image:url("img/stats/top-score.webp");
+}
+
+/* testo sopra l'immagine */
+.spotlight-head > *{
+  position:relative;
+  z-index:1;
+}
