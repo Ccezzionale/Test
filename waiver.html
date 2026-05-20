@@ -135,11 +135,7 @@
 
 <nav class="waiver-mobile-tabs" aria-label="Sezioni Waiver Room">
   <button type="button" class="waiver-mobile-tab active" data-waiver-mobile-tab="calls">
-    Chiamate
-  </button>
-
-  <button type="button" class="waiver-mobile-tab" data-waiver-mobile-tab="pool">
-    Svincolati
+    Chiama
   </button>
 
   <button type="button" class="waiver-mobile-tab" data-waiver-mobile-tab="order">
@@ -148,28 +144,14 @@
 
   <button type="button" class="waiver-mobile-tab" data-waiver-mobile-tab="extra">
     Extra
+    <span id="mobileExtraBadge" class="mobile-tab-badge" style="display:none;">!</span>
+  </button>
+
+  <button type="button" class="waiver-mobile-tab admin-mobile-tab" data-waiver-mobile-tab="admin" style="display:none;">
+    Admin
   </button>
 </nav>
 
-   </section>
-
-<nav class="waiver-mobile-tabs" aria-label="Sezioni Waiver Room">
-  <button type="button" class="waiver-mobile-tab active" data-waiver-mobile-tab="calls">
-    Chiamate
-  </button>
-
-  <button type="button" class="waiver-mobile-tab" data-waiver-mobile-tab="pool">
-    Svincolati
-  </button>
-
-  <button type="button" class="waiver-mobile-tab" data-waiver-mobile-tab="order">
-    Ordine
-  </button>
-
-  <button type="button" class="waiver-mobile-tab" data-waiver-mobile-tab="extra">
-    Extra
-  </button>
-</nav>
 
     <section class="waiver-dashboard-grid">
 
@@ -271,7 +253,7 @@
     </section>
 
     <section class="waiver-admin-section">
-      <article class="waiver-card admin-card" id="adminPanel" style="display:none;">
+      <article class="waiver-card admin-card" id="adminPanel" data-waiver-mobile-panel="admin" style="display:none;">
         <h2>Admin Waiver Room</h2>
 
         <div class="admin-settings-panel">
