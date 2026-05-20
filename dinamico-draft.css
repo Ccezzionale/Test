@@ -1023,3 +1023,236 @@ nav.site-nav .action-icon{opacity:1!important;filter:none!important;}
     justify-content: center;
   }
 }
+
+/* =========================================================
+   DRAFT 2027 - RIEPILOGO TRADE CON PICK
+   ========================================================= */
+
+.draft-trade-summary{
+  padding: 0 22px 24px;
+}
+
+.draft-trades-panel{
+  margin-top: 10px;
+  border-radius: 22px;
+  background:
+    radial-gradient(circle at 92% 0%, rgba(255, 213, 74, .16), transparent 26%),
+    linear-gradient(180deg, #ffffff 0%, #f7fbff 100%);
+  border: 1px solid rgba(0, 31, 63, .10);
+  box-shadow: 0 12px 28px rgba(0, 31, 63, .09);
+  overflow: hidden;
+}
+
+.draft-trades-head{
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 18px 20px;
+  border-bottom: 1px solid #e4edf8;
+}
+
+.draft-trades-kicker{
+  display: inline-flex;
+  margin-bottom: 6px;
+  color: #0b5cad;
+  font-size: .76rem;
+  font-weight: 950;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+}
+
+.draft-trades-head h3{
+  margin: 0;
+  color: #001f3f;
+  font-size: 1.35rem;
+  line-height: 1;
+  font-weight: 950;
+  letter-spacing: -.035em;
+}
+
+.draft-trades-head p{
+  margin: 6px 0 0;
+  color: #657489;
+  font-size: .9rem;
+  font-weight: 750;
+}
+
+.draft-trades-count{
+  min-width: 40px;
+  height: 40px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(180deg, #063b73 0%, #001f3f 100%);
+  color: #ffd54a;
+  font-weight: 950;
+  box-shadow: 0 8px 16px rgba(0,31,63,.18);
+}
+
+.draft-trades-list{
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 12px;
+  padding: 16px;
+}
+
+.draft-trade-card{
+  position: relative;
+  overflow: hidden;
+  border-radius: 18px;
+  background: linear-gradient(180deg, #ffffff 0%, #fbfdff 100%);
+  border: 1px solid #dbe7f5;
+  box-shadow: 0 8px 18px rgba(0,31,63,.07);
+  padding: 15px;
+}
+
+.draft-trade-card::before{
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 6px;
+  background: #94a3b8;
+}
+
+.draft-trade-card.league::before{
+  background: #dc2626;
+}
+
+.draft-trade-card.championship::before{
+  background: #2563eb;
+}
+
+.draft-trade-card.interconference::before{
+  background: #ffcc00;
+}
+
+.draft-trade-top{
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding-left: 4px;
+  margin-bottom: 13px;
+}
+
+.draft-trade-dot{
+  width: 14px;
+  height: 14px;
+  border-radius: 999px;
+  background: #94a3b8;
+  flex: 0 0 auto;
+}
+
+.draft-trade-card.league .draft-trade-dot{
+  background: #dc2626;
+}
+
+.draft-trade-card.championship .draft-trade-dot{
+  background: #2563eb;
+}
+
+.draft-trade-card.interconference .draft-trade-dot{
+  background: #ffcc00;
+  border: 1px solid #d8aa00;
+}
+
+.draft-trade-title strong{
+  display: block;
+  color: #001f3f;
+  font-size: 1rem;
+  font-weight: 950;
+  line-height: 1.05;
+}
+
+.draft-trade-title small{
+  display: block;
+  margin-top: 3px;
+  color: #657489;
+  font-size: .78rem;
+  font-weight: 850;
+}
+
+.draft-trade-body{
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.draft-trade-side{
+  padding: 10px;
+  border-radius: 14px;
+  background: #f3f8ff;
+  border: 1px solid #e0ebf8;
+}
+
+.draft-trade-side span{
+  display: block;
+  margin-bottom: 6px;
+  color: #657489;
+  font-size: .72rem;
+  font-weight: 950;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+}
+
+.draft-trade-side p{
+  margin: 0;
+  color: #001f3f;
+  font-size: .86rem;
+  line-height: 1.35;
+  font-weight: 800;
+}
+
+.draft-trade-pick{
+  display: inline-flex;
+  align-items: center;
+  margin: 2px 0;
+  padding: 4px 8px;
+  border-radius: 999px;
+  background: linear-gradient(180deg, #ffe36a 0%, #ffcc00 100%);
+  color: #3b2b00;
+  border: 1px solid #d8aa00;
+  font-weight: 950;
+}
+
+.draft-trade-plus{
+  display: inline;
+  color: #64748b;
+  font-weight: 950;
+}
+
+.draft-trades-loading,
+.draft-trades-empty{
+  margin-top: 10px;
+  padding: 16px;
+  border-radius: 16px;
+  background: #f8fbff;
+  border: 1px solid #dbe7f5;
+  color: #657489;
+  font-weight: 850;
+}
+
+@media (max-width: 768px){
+  .draft-trade-summary{
+    padding: 14px 0 20px;
+  }
+
+  .draft-trades-panel{
+    border-radius: 24px;
+  }
+
+  .draft-trades-head{
+    padding: 16px;
+  }
+
+  .draft-trades-list{
+    grid-template-columns: 1fr;
+    padding: 12px;
+  }
+
+  .draft-trade-body{
+    grid-template-columns: 1fr;
+  }
+}
+
