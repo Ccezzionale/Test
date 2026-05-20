@@ -1476,7 +1476,14 @@ async function loadMyCompensatoryCalls() {
 
 function renderMyCompensatoryCalls() {
   if (!myCompensatoryCallsEl) return;
+   const mobileExtraBadge = document.getElementById("mobileExtraBadge");
 
+if (mobileExtraBadge) {
+  mobileExtraBadge.style.display =
+    myCompensatoryCalls && myCompensatoryCalls.length > 0
+      ? "inline-flex"
+      : "none";
+}
   if (!myCompensatoryCalls || myCompensatoryCalls.length === 0) {
     myCompensatoryCallsEl.innerHTML = "<p>Nessuna chiamata compensativa disponibile.</p>";
     return;
@@ -2853,7 +2860,11 @@ if (settings) {
    await renderPublicWaiverOrder();
 
 if (currentUserEmail === "tringali0511@gmail.com") {
-  adminPanel.style.display = "block";
+  if (adminPanel) adminPanel.style.display = "block";
+
+  const adminMobileTab = document.querySelector(".admin-mobile-tab");
+  if (adminMobileTab) adminMobileTab.style.display = "";
+
   renderWaiverOrderAdmin();
   await loadAllCalls();
   await loadAllCompensatoryCalls();
@@ -2883,6 +2894,15 @@ function setupMobileWaiverTabs() {
       panel.classList.toggle("mobile-panel-active", isActive);
     });
   }
+
+  tabButtons.forEach(button => {
+    button.addEventListener("click", () => {
+      activateMobileTab(button.dataset.waiverMobileTab);
+    });
+  });
+
+  activateMobileTab("calls");
+}
 
   tabButtons.forEach(button => {
     button.addEventListener("click", () => {
