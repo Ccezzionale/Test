@@ -2006,3 +2006,159 @@ button:disabled {
     display:none !important;
   }
 }
+
+/* =========================================================
+   WAIVER HERO FINAL FIX
+   ========================================================= */
+
+.waiver-hidden-status{
+  display:none !important;
+}
+
+.waiver-hero-visual,
+.hero-visual-main,
+.hero-stat-grid,
+.hero-stat-card{
+  display:none !important;
+}
+
+.waiver-hero::before{
+  content:none !important;
+  display:none !important;
+}
+
+@media (min-width: 1024px){
+
+  .waiver-hero{
+    min-height:220px;
+    padding:34px 38px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:34px;
+  }
+
+  .waiver-hero-copy{
+    position:relative;
+    z-index:2;
+    max-width:760px;
+  }
+
+  .waiver-hero-team{
+    position:relative;
+    z-index:2;
+    width:440px;
+    min-width:440px;
+    padding:22px;
+    border-radius:26px;
+    display:flex;
+    flex-direction:column;
+    gap:18px;
+    background:
+      linear-gradient(180deg, rgba(255,255,255,0.16), rgba(255,255,255,0.07));
+    border:1px solid rgba(255,255,255,0.16);
+    box-shadow:
+      0 22px 44px rgba(0,0,0,0.18),
+      inset 0 1px 0 rgba(255,255,255,0.12);
+    backdrop-filter:blur(8px);
+  }
+
+  .waiver-hero-team .hero-live-pill{
+    display:inline-flex !important;
+    align-items:center;
+    gap:8px;
+    width:fit-content;
+    align-self:flex-start;
+    margin:0;
+    padding:7px 13px;
+    border-radius:999px;
+    background:rgba(255,204,0,0.18);
+    color:#ffdf6c;
+    border:1px solid rgba(255,204,0,0.32);
+    font-size:0.76rem;
+    font-weight:900;
+    text-transform:uppercase;
+    letter-spacing:0.08em;
+  }
+
+  .waiver-hero-team .hero-live-pill::before{
+    content:"";
+    width:8px;
+    height:8px;
+    border-radius:50%;
+    background:#ffcc00;
+    box-shadow:0 0 0 6px rgba(255,204,0,0.15);
+  }
+
+  .hero-team-main{
+    display:flex;
+    align-items:center;
+    gap:18px;
+    margin:0;
+  }
+
+  .hero-team-logo-wrap{
+    width:96px;
+    height:96px;
+    border-radius:24px;
+    background:rgba(255,255,255,0.12);
+    border:1px solid rgba(255,255,255,0.14);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    overflow:hidden;
+    flex-shrink:0;
+  }
+
+  .hero-team-logo{
+    width:82px;
+    height:82px;
+    object-fit:contain;
+    display:block;
+  }
+
+  .hero-team-text{
+    display:flex;
+    flex-direction:column;
+    gap:4px;
+    min-width:0;
+  }
+
+  .hero-team-kicker{
+    font-size:0.72rem;
+    text-transform:uppercase;
+    letter-spacing:0.11em;
+    font-weight:800;
+    color:rgba(255,255,255,0.68);
+  }
+
+  .hero-team-text strong{
+    display:block;
+    color:#fff;
+    font-size:1.65rem;
+    line-height:1.02;
+    letter-spacing:-0.03em;
+  }
+
+  .hero-team-conference{
+    display:inline-flex;
+    width:fit-content;
+    margin-top:4px;
+    padding:5px 10px;
+    border-radius:999px;
+    background:rgba(255,204,0,0.18);
+    border:1px solid rgba(255,204,0,0.28);
+    color:#ffdf6b;
+    font-size:0.82rem;
+    font-weight:900;
+  }
+
+  .hero-team-stats,
+  .hero-team-stat{
+    display:none !important;
+  }
+
+  .waiver-grid-info{
+    display:none !important;
+  }
+}
