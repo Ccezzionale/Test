@@ -1915,7 +1915,28 @@ body::before{
   line-height:.82 !important;
   letter-spacing:.035em !important;
   text-transform:uppercase !important;
-  transform:skewX(-7deg) scaleY(1.06);
+  transform:skewX(-7deg) scaleY(1.04);
+
+  background: linear-gradient(
+    180deg,
+    #ffffff 0%,
+    #f5f7fa 18%,
+    #d9dee5 42%,
+    #ffffff 58%,
+    #c7ced6 78%,
+    #eef2f6 100%
+  );
+  -webkit-background-clip:text;
+  background-clip:text;
+  color:transparent;
+
+  -webkit-text-stroke: 1px rgba(18,24,34,.38);
+
+  text-shadow:
+    0 2px 0 rgba(0,0,0,.22),
+    0 5px 10px rgba(0,0,0,.22),
+    0 0 18px rgba(255,213,106,.12);
+}
   
   background:
     linear-gradient(180deg,
