@@ -5879,3 +5879,19 @@ h1, h2, h3, h4, p{
     color: #ffdd55 !important;
   }
 }
+
+@media (max-width: 768px){
+
+  .mobile-companion-icon img{
+    width: 30px;
+    height: 30px;
+    object-fit: contain;
+    display: block;
+  }
+
+  .mobile-companion-icon{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
