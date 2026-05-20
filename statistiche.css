@@ -1649,3 +1649,56 @@ body::before{
   color:#f4f8fc;
   border-bottom-color:rgba(255,255,255,.09);
 }
+
+/* =========================================================
+   STATS GRID REWORK
+   Hall + Top 5 a sinistra, Sculati a destra
+   ========================================================= */
+
+.stats-grid.stats-grid-reworked{
+  display:grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap:24px;
+  align-items:start;
+  margin-top:24px;
+}
+
+.stats-left-stack{
+  display:flex;
+  flex-direction:column;
+  gap:24px;
+}
+
+.stats-left-stack .spotlight-card,
+.stats-grid-reworked > .spotlight-card{
+  width:100%;
+}
+
+/* Top 5 non deve più stare enorme a tutta pagina */
+.top-scores-section{
+  margin-top:0;
+}
+
+/* rende Hall e Top5 più compatte */
+.shame-card .subtable th,
+.shame-card .subtable td,
+.scores-card .subtable th,
+.scores-card .subtable td{
+  padding:11px 14px;
+}
+
+/* Classifica sculati può essere più alta senza sembrare sproporzionata */
+.luck-card{
+  min-height:100%;
+}
+
+/* mobile: torna tutto in colonna */
+@media (max-width: 980px){
+  .stats-grid.stats-grid-reworked{
+    grid-template-columns:1fr;
+  }
+
+  .stats-left-stack{
+    gap:18px;
+  }
+}
