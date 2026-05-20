@@ -2947,3 +2947,138 @@ button:disabled {
     line-height: 1.25;
   }
 }
+
+.table-hint{
+  display:none !important;
+}y
+
+/* =========================================================
+   MOBILE SVINCOLATI AS REAL TABLE
+   Mantiene sorting su Quotazione
+   ========================================================= */
+
+@media (max-width: 768px){
+
+  .table-hint{
+    display:none !important;
+  }
+
+  .free-agents-card .card-title-row::after{
+    content:"Tocca un giocatore per inserirlo nella chiamata selezionata";
+    display:block;
+    width:100%;
+    margin-top:6px;
+    padding:8px 10px;
+    border-radius:12px;
+    background:rgba(255,204,0,.16);
+    color:#725300;
+    font-size:.76rem;
+    font-weight:850;
+    line-height:1.25;
+  }
+
+  .free-agents-table-wrap{
+    max-height:520px !important;
+    overflow:auto !important;
+    border:1px solid rgba(0,31,63,.10) !important;
+    border-radius:16px !important;
+    background:#fff !important;
+  }
+
+  #freeAgentsTable{
+    display:table !important;
+    width:100% !important;
+    min-width:640px !important;
+    border-collapse:separate !important;
+    border-spacing:0 !important;
+  }
+
+  #freeAgentsTable thead{
+    display:table-header-group !important;
+  }
+
+  #freeAgentsTable tbody{
+    display:table-row-group !important;
+  }
+
+  #freeAgentsTable tr{
+    display:table-row !important;
+    padding:0 !important;
+    border-radius:0 !important;
+    box-shadow:none !important;
+  }
+
+  #freeAgentsTable th,
+  #freeAgentsTable td{
+    display:table-cell !important;
+    width:auto !important;
+    padding:12px 13px !important;
+    text-align:left !important;
+    border-bottom:1px solid rgba(0,31,63,.08) !important;
+    font-size:.88rem !important;
+  }
+
+  #freeAgentsTable thead th{
+    position:sticky !important;
+    top:0 !important;
+    z-index:3 !important;
+    background:#001f3f !important;
+    color:#fff !important;
+    font-size:.72rem !important;
+    text-transform:uppercase !important;
+    letter-spacing:.06em !important;
+    white-space:nowrap !important;
+  }
+
+  #freeAgentsTable thead th[data-sort]{
+    cursor:pointer !important;
+    user-select:none !important;
+  }
+
+  #freeAgentsTable tbody tr{
+    cursor:pointer !important;
+    background:#fff !important;
+    transition:background .14s ease, box-shadow .14s ease !important;
+  }
+
+  #freeAgentsTable tbody tr:hover{
+    background:#f1f7ff !important;
+  }
+
+  #freeAgentsTable tbody tr.selected-player{
+    background:#fff7d6 !important;
+    box-shadow:inset 4px 0 0 #ffcc00 !important;
+  }
+
+  #freeAgentsTable td:nth-child(1),
+  #freeAgentsTable td:nth-child(2),
+  #freeAgentsTable td:nth-child(3),
+  #freeAgentsTable td:nth-child(4),
+  #freeAgentsTable td:nth-child(5){
+    position:static !important;
+    margin:0 !important;
+    border-radius:0 !important;
+    background:transparent !important;
+    color:#001f3f !important;
+    font-weight:500 !important;
+  }
+
+  #freeAgentsTable td:nth-child(1)::before,
+  #freeAgentsTable td:nth-child(2)::before,
+  #freeAgentsTable td:nth-child(3)::before,
+  #freeAgentsTable td:nth-child(4)::before{
+    content:none !important;
+  }
+
+  #freeAgentsTable .u21-cell{
+    text-align:center !important;
+    white-space:nowrap !important;
+  }
+
+  .u21-table-badge{
+    min-width:38px !important;
+    height:22px !important;
+    padding:0 8px !important;
+    font-size:.7rem !important;
+  }
+}
