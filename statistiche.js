@@ -180,6 +180,16 @@ function teamLogoImg(team, extraClass=''){
                     else { this.onerror=null; this.src='${ph}'; }">`;
 }
 
+function rankingState(r){
+  if (r.rank === 1) return { label:"MINACCIA MASSIMA", cls:"danger" };
+  if (r.rank <= 3) return { label:"CONTENDER", cls:"gold" };
+  if (r.delta > 0) return { label:"IN RISALITA", cls:"up" };
+  if (r.delta < 0) return { label:"IN CALO", cls:"down" };
+  if (r.cons < 20) return { label:"VOLATILE", cls:"danger" };
+  if (r.forma >= 70) return { label:"ON FIRE", cls:"gold" };
+  return { label:"SOLIDA", cls:"neutral" };
+}
+
 function renderPR(res){
   const tbody = document.getElementById('tbody-pr');
   const podium = document.getElementById('pr-podium');
@@ -191,16 +201,30 @@ function renderPR(res){
     podium.innerHTML = order.map(r => {
       const arrow = r.delta>0 ? `▲ ${r.delta}` : (r.delta<0 ? `▼ ${Math.abs(r.delta)}` : '•');
       const trendClass = r.delta>0 ? 'up' : (r.delta<0 ? 'down' : 'flat');
+      const state = rankingState(r);
 
       return `
         <article class="podium-card rank-${r.rank}">
           <div class="podium-rank">#${r.rank}</div>
+          <div class="podium-status ${state.cls}">${state.label}</div>
           ${teamLogoImg(r.team, 'podium-logo')}
           <div class="podium-team">${r.team}</div>
           <div class="podium-score">${r.score.toFixed(1)}</div>
-          <div class="podium-mini">
-            <span>Forma ${r.forma.toFixed(0)}</span>
-            <span class="trend ${trendClass}">${arrow}</span>
+          <div class="podium-trend trend ${trendClass}">${arrow}</div>
+
+          <div class="podium-stats">
+            <div>
+              <span>Forma</span>
+              <strong>${r.forma.toFixed(0)}</strong>
+            </div>
+            <div>
+              <span>Media</span>
+              <strong>${r.media.toFixed(0)}</strong>
+            </div>
+            <div>
+              <span>Continuità</span>
+              <strong>${r.cons.toFixed(0)}</strong>
+            </div>
           </div>
         </article>
       `;
@@ -208,19 +232,25 @@ function renderPR(res){
   }
 
   if (tbody){
-    const rows = res.ranked.map(r=>{
-      const arrow = r.delta>0?'▲':(r.delta<0?'▼':'•');
-      const cls   = r.delta>0?'trend up':(r.delta<0?'trend down':'');
-      return `<tr class="riga-classifica">
-        <td class="mono"><strong>${r.rank}</strong></td>
-        <td>${logoHTML(r.team)}</td>
-        <td class="mono"><span class="score-pill">${r.score.toFixed(1)}</span></td>
-        <td class="${cls}">${arrow} ${r.delta===0?'':Math.abs(r.delta)}</td>
-        <td class="mono">${r.media.toFixed(0)}</td>
-        <td class="mono">${r.forma.toFixed(0)}</td>
-        <td class="mono">${r.cons.toFixed(0)}</td>
-      </tr>`;
+    const rows = res.ranked.slice(3).map(r => {
+      const arrow = r.delta>0 ? '▲' : (r.delta<0 ? '▼' : '•');
+      const cls = r.delta>0 ? 'trend up' : (r.delta<0 ? 'trend down' : 'trend flat');
+      const state = rankingState(r);
+
+      return `
+        <tr class="riga-classifica">
+          <td class="rank-cell mono"><strong>${r.rank}</strong></td>
+          <td>${logoHTML(r.team)}</td>
+          <td class="mono"><span class="score-pill">${r.score.toFixed(1)}</span></td>
+          <td class="${cls}">${arrow} ${r.delta===0 ? '' : Math.abs(r.delta)}</td>
+          <td class="mono stat-cell">${r.forma.toFixed(0)}</td>
+          <td class="mono stat-cell">${r.media.toFixed(0)}</td>
+          <td class="mono stat-cell">${r.cons.toFixed(0)}</td>
+          <td><span class="state-badge ${state.cls}">${state.label}</span></td>
+        </tr>
+      `;
     }).join('');
+
     tbody.innerHTML = rows;
   }
 
