@@ -2950,7 +2950,7 @@ button:disabled {
 
 .table-hint{
   display:none !important;
-}y
+}
 
 /* =========================================================
    MOBILE SVINCOLATI AS REAL TABLE
@@ -3080,5 +3080,164 @@ button:disabled {
     height:22px !important;
     padding:0 8px !important;
     font-size:.7rem !important;
+  }
+}
+
+/* =========================================================
+   FORCE MOBILE SVINCOLATI TABLE - DEFINITIVO
+   ========================================================= */
+
+@media (max-width: 768px){
+
+  .table-hint{
+    display:none !important;
+  }
+
+  .free-agents-table-wrap{
+    max-height:520px !important;
+    overflow-x:auto !important;
+    overflow-y:auto !important;
+    border:1px solid rgba(0,31,63,.10) !important;
+    border-radius:16px !important;
+    background:#fff !important;
+  }
+
+  #freeAgentsTable{
+    display:table !important;
+    width:100% !important;
+    min-width:640px !important;
+    border-collapse:separate !important;
+    border-spacing:0 !important;
+  }
+
+  #freeAgentsTable thead{
+    display:table-header-group !important;
+  }
+
+  #freeAgentsTable tbody{
+    display:table-row-group !important;
+  }
+
+  #freeAgentsTable tr{
+    display:table-row !important;
+    position:static !important;
+    padding:0 !important;
+    border:0 !important;
+    border-radius:0 !important;
+    box-shadow:none !important;
+    background:transparent !important;
+  }
+
+  #freeAgentsTable th,
+  #freeAgentsTable td{
+    display:table-cell !important;
+    width:auto !important;
+    min-width:0 !important;
+    padding:12px 13px !important;
+    text-align:left !important;
+    border-bottom:1px solid rgba(0,31,63,.08) !important;
+    border-radius:0 !important;
+    box-shadow:none !important;
+    position:static !important;
+    margin:0 !important;
+    font-size:.88rem !important;
+    background:transparent !important;
+    color:#001f3f !important;
+    font-weight:500 !important;
+  }
+
+  #freeAgentsTable thead th{
+    position:sticky !important;
+    top:0 !important;
+    z-index:10 !important;
+    background:#001f3f !important;
+    color:#fff !important;
+    font-size:.72rem !important;
+    text-transform:uppercase !important;
+    letter-spacing:.06em !important;
+    white-space:nowrap !important;
+    font-weight:900 !important;
+  }
+
+  #freeAgentsTable thead th[data-sort]{
+    cursor:pointer !important;
+    user-select:none !important;
+  }
+
+  #freeAgentsTable tbody tr{
+    cursor:pointer !important;
+    background:#fff !important;
+  }
+
+  #freeAgentsTable tbody tr:nth-child(even){
+    background:#f8fbff !important;
+  }
+
+  #freeAgentsTable tbody tr:hover{
+    background:#f1f7ff !important;
+  }
+
+  #freeAgentsTable tbody tr.selected-player{
+    background:#fff7d6 !important;
+    box-shadow:inset 4px 0 0 #ffcc00 !important;
+  }
+
+  #freeAgentsTable td:nth-child(1),
+  #freeAgentsTable td:nth-child(2),
+  #freeAgentsTable td:nth-child(3),
+  #freeAgentsTable td:nth-child(4),
+  #freeAgentsTable td:nth-child(5){
+    display:table-cell !important;
+    width:auto !important;
+    padding:12px 13px !important;
+    position:static !important;
+    top:auto !important;
+    right:auto !important;
+    margin:0 !important;
+    border-radius:0 !important;
+    background:transparent !important;
+  }
+
+  #freeAgentsTable td:nth-child(1){
+    font-size:.88rem !important;
+    font-weight:500 !important;
+    padding-right:13px !important;
+    line-height:1.3 !important;
+  }
+
+  #freeAgentsTable td:nth-child(1)::before,
+  #freeAgentsTable td:nth-child(2)::before,
+  #freeAgentsTable td:nth-child(3)::before,
+  #freeAgentsTable td:nth-child(4)::before,
+  #freeAgentsTable td:nth-child(5)::before{
+    content:none !important;
+    display:none !important;
+  }
+
+  #freeAgentsTable td:nth-child(2),
+  #freeAgentsTable td:nth-child(3),
+  #freeAgentsTable td:nth-child(4){
+    color:#001f3f !important;
+    font-size:.88rem !important;
+    font-weight:500 !important;
+  }
+
+  #freeAgentsTable td:nth-child(5),
+  #freeAgentsTable .u21-cell{
+    text-align:center !important;
+    white-space:nowrap !important;
+  }
+
+  .u21-table-badge{
+    min-width:38px !important;
+    height:22px !important;
+    padding:0 8px !important;
+    font-size:.7rem !important;
+  }
+
+  .player-badges{
+    display:inline-flex !important;
+    margin-left:6px !important;
+    font-size:.72rem !important;
   }
 }
