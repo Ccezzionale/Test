@@ -131,11 +131,51 @@
 </div>
 </section>
 
+    </section>
+
+<nav class="waiver-mobile-tabs" aria-label="Sezioni Waiver Room">
+  <button type="button" class="waiver-mobile-tab active" data-waiver-mobile-tab="calls">
+    Chiamate
+  </button>
+
+  <button type="button" class="waiver-mobile-tab" data-waiver-mobile-tab="pool">
+    Svincolati
+  </button>
+
+  <button type="button" class="waiver-mobile-tab" data-waiver-mobile-tab="order">
+    Ordine
+  </button>
+
+  <button type="button" class="waiver-mobile-tab" data-waiver-mobile-tab="extra">
+    Extra
+  </button>
+</nav>
+
+   </section>
+
+<nav class="waiver-mobile-tabs" aria-label="Sezioni Waiver Room">
+  <button type="button" class="waiver-mobile-tab active" data-waiver-mobile-tab="calls">
+    Chiamate
+  </button>
+
+  <button type="button" class="waiver-mobile-tab" data-waiver-mobile-tab="pool">
+    Svincolati
+  </button>
+
+  <button type="button" class="waiver-mobile-tab" data-waiver-mobile-tab="order">
+    Ordine
+  </button>
+
+  <button type="button" class="waiver-mobile-tab" data-waiver-mobile-tab="extra">
+    Extra
+  </button>
+</nav>
+
     <section class="waiver-dashboard-grid">
 
       <div class="waiver-left-column">
 
-        <article class="waiver-card my-waiver-card">
+      <article class="waiver-card my-waiver-card mobile-panel-active" data-waiver-mobile-panel="calls">
           <div class="card-title-row">
             <div>
               <h2>Le mie chiamate</h2>
@@ -152,7 +192,7 @@
           <p id="callMessage" class="call-message"></p>
         </article>
 
-        <article class="waiver-card my-compensatory-card">
+        <article class="waiver-card my-compensatory-card" data-waiver-mobile-panel="extra">
           <div class="card-title-row">
             <div>
               <h2>Chiamate compensative</h2>
@@ -167,7 +207,7 @@
           </div>
         </article>
 
-        <article class="waiver-card free-agents-card">
+        <article class="waiver-card free-agents-card" data-waiver-mobile-panel="pool">
           <div class="card-title-row">
             <h2>Svincolati</h2>
             <span class="table-hint">Scroll verticale</span>
@@ -210,8 +250,8 @@
       </div>
 
       <div class="waiver-right-column">
-
-        <article class="waiver-card public-waiver-card">
+        
+<article class="waiver-card public-waiver-card" data-waiver-mobile-panel="order">
           <div class="card-title-row">
             <div>
               <h2>Ordine Waiver</h2>
