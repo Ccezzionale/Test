@@ -2423,3 +2423,115 @@ body::before{
     scroll-margin-top:82px;
   }
 }
+
+/* =========================================================
+   MOBILE TABS - POWER RANKING / STATISTICHE
+   ========================================================= */
+
+.mobile-stats-tabs{
+  display:none;
+}
+
+@media (max-width:768px){
+
+  .mobile-stats-tabs{
+    position:sticky;
+    top:0;
+    z-index:40;
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:0;
+    margin:0 0 16px;
+    padding:6px;
+    border-radius:22px;
+    background:rgba(8,22,42,.92);
+    border:1px solid rgba(255,255,255,.14);
+    box-shadow:
+      0 12px 28px rgba(0,0,0,.25),
+      inset 0 1px 0 rgba(255,255,255,.08);
+    backdrop-filter:blur(10px);
+  }
+
+  .mobile-stats-tab{
+    appearance:none;
+    border:0;
+    min-height:48px;
+    border-radius:17px;
+    background:transparent;
+    color:#b8c4d2;
+    font-size:.92rem;
+    font-weight:1000;
+    text-transform:uppercase;
+    letter-spacing:.02em;
+    cursor:pointer;
+  }
+
+  .mobile-stats-tab.active{
+    color:#151008;
+    background:linear-gradient(180deg, #ffe17b, #d89a17);
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,.25),
+      0 8px 18px rgba(0,0,0,.24),
+      0 0 16px rgba(255,213,106,.18);
+  }
+
+  /* default mobile: vedo Power Ranking */
+  .stats-page.mobile-view-ranking #classifica-container{
+    display:block !important;
+  }
+
+  .stats-page.mobile-view-ranking #extra-stats{
+    display:none !important;
+  }
+
+  /* tab Statistiche: nascondo Power Ranking, mostro Hall/Sculati/Top5 */
+  .stats-page.mobile-view-stats #classifica-container{
+    display:none !important;
+  }
+
+  .stats-page.mobile-view-stats #extra-stats{
+    display:grid !important;
+    grid-template-columns:1fr !important;
+    gap:16px !important;
+    margin-top:0 !important;
+  }
+
+  .stats-page.mobile-view-stats .stats-left-stack{
+    gap:16px !important;
+  }
+
+  /* le card statistiche su mobile respirano meglio */
+  #extra-stats .spotlight-card{
+    border-radius:22px;
+  }
+
+  #extra-stats .spotlight-head{
+    padding:16px 16px 12px;
+  }
+
+  #extra-stats .spotlight-head h2{
+    font-size:1.35rem;
+  }
+
+  #extra-stats .spotlight-head p{
+    font-size:.86rem;
+    line-height:1.35;
+  }
+
+  #extra-stats .subtable th,
+  #extra-stats .subtable td{
+    padding:10px 10px;
+    font-size:.82rem;
+  }
+
+  #extra-stats .logo-nome,
+  #extra-stats .inline-name{
+    gap:7px;
+  }
+
+  #extra-stats .mini-logo,
+  #extra-stats .logo-nome img{
+    width:26px;
+    height:26px;
+  }
+}
