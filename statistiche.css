@@ -2671,3 +2671,9 @@ body::before{
   position:relative;
   z-index:1;
 }
+
+.shame-card .spotlight-head::after,
+.luck-card .spotlight-head::after,
+.scores-card .spotlight-head::after{
+  opacity:var(--stats-icon-opacity, .16);
+}
