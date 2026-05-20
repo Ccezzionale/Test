@@ -2865,6 +2865,42 @@ await loadMyCompensatoryCalls();
 await loadFreeAgents();
    }
 
+function setupMobileWaiverTabs() {
+  const tabButtons = document.querySelectorAll("[data-waiver-mobile-tab]");
+  const panels = document.querySelectorAll("[data-waiver-mobile-panel]");
+
+  if (!tabButtons.length || !panels.length) return;
+
+  function activateMobileTab(tabName) {
+    tabButtons.forEach(button => {
+      const isActive = button.dataset.waiverMobileTab === tabName;
+      button.classList.toggle("active", isActive);
+      button.setAttribute("aria-selected", String(isActive));
+    });
+
+    panels.forEach(panel => {
+      const isActive = panel.dataset.waiverMobilePanel === tabName;
+      panel.classList.toggle("mobile-panel-active", isActive);
+    });
+  }
+
+  tabButtons.forEach(button => {
+    button.addEventListener("click", () => {
+      activateMobileTab(button.dataset.waiverMobileTab);
+
+      const tabs = document.querySelector(".waiver-mobile-tabs");
+      if (tabs) {
+        tabs.scrollIntoView({
+          behavior: "smooth",
+          block: "start"
+        });
+      }
+    });
+  });
+
+  activateMobileTab("calls");
+}
+
 /* ===============================
    EVENT LISTENERS
 ================================ */
@@ -2913,5 +2949,6 @@ saveWaiverSettingsBtn?.addEventListener("click", () => {
   saveWaiverSettings();
 });
 setupFreeAgentsSorting();
+setupMobileWaiverTabs();
 
 initWaiverRoom();
