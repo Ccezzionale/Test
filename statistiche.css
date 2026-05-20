@@ -2631,29 +2631,27 @@ body::before{
 
 .spotlight-head{
   position:relative;
-  padding-right:180px; /* lascia spazio all’immagine a destra */
+  padding-right:180px;
   min-height:120px;
 }
 
-/* immagini decorative in alto a destra */
 .shame-card .spotlight-head::after,
 .luck-card .spotlight-head::after,
 .scores-card .spotlight-head::after{
   content:"";
   position:absolute;
-  top:18px;
+  top:6px;
   right:20px;
   width:110px;
   height:110px;
   background-size:contain;
   background-repeat:no-repeat;
   background-position:center;
-  opacity:.16;
+  opacity:var(--stats-icon-opacity, .85);
   pointer-events:none;
   z-index:0;
 }
 
-/* immagini diverse per ciascuna card */
 .shame-card .spotlight-head::after{
   background-image:url("img/hall-shame.webp");
 }
@@ -2666,14 +2664,7 @@ body::before{
   background-image:url("img/top-score.webp");
 }
 
-/* testo sopra l'immagine */
 .spotlight-head > *{
   position:relative;
   z-index:1;
-}
-
-.shame-card .spotlight-head::after,
-.luck-card .spotlight-head::after,
-.scores-card .spotlight-head::after{
-  opacity:var(--stats-icon-opacity, .16);
 }
