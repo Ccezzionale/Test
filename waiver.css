@@ -1784,3 +1784,147 @@ button:disabled {
     font-weight: 900;
   }
 }
+
+/* =========================================================
+   WAIVER HERO TEAM - DESKTOP RESTYLE
+   ========================================================= */
+
+.waiver-hero::before{
+  content: none !important;
+  display: none !important;
+}
+
+@media (min-width: 1024px){
+
+  .waiver-hero{
+    min-height: 220px;
+    padding: 34px 38px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 34px;
+  }
+
+  .waiver-hero-copy{
+    max-width: 760px;
+    position: relative;
+    z-index: 2;
+  }
+
+  .waiver-hero-copy h1{
+    margin: 0;
+    font-size: clamp(3.3rem, 5vw, 5rem);
+    line-height: 0.95;
+  }
+
+  .waiver-hero-copy p:last-child{
+    max-width: 650px;
+  }
+
+  .waiver-hero-team{
+    position: relative;
+    z-index: 2;
+    width: 360px;
+    min-width: 360px;
+    padding: 20px;
+    border-radius: 24px;
+    background:
+      linear-gradient(180deg, rgba(255,255,255,0.14), rgba(255,255,255,0.07));
+    border: 1px solid rgba(255,255,255,0.14);
+    box-shadow:
+      0 20px 40px rgba(0,0,0,0.16),
+      inset 0 1px 0 rgba(255,255,255,0.10);
+    backdrop-filter: blur(8px);
+  }
+
+  .hero-team-main{
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 16px;
+  }
+
+  .hero-team-logo-wrap{
+    width: 84px;
+    height: 84px;
+    border-radius: 22px;
+    background: rgba(255,255,255,0.12);
+    border: 1px solid rgba(255,255,255,0.12);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    flex-shrink: 0;
+  }
+
+  .hero-team-logo{
+    width: 68px;
+    height: 68px;
+    object-fit: contain;
+    display: block;
+  }
+
+  .hero-team-text{
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0;
+  }
+
+  .hero-team-kicker{
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.11em;
+    font-weight: 800;
+    color: rgba(255,255,255,0.68);
+  }
+
+  .hero-team-text strong{
+    display: block;
+    color: #ffffff;
+    font-size: 1.55rem;
+    line-height: 1.02;
+    letter-spacing: -0.03em;
+  }
+
+  .hero-team-conference{
+    color: #ffdf6b;
+    font-size: 0.92rem;
+    font-weight: 800;
+  }
+
+  .hero-team-stats{
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+
+  .hero-team-stat{
+    padding: 14px 14px;
+    border-radius: 16px;
+    background: rgba(255,255,255,0.10);
+    border: 1px solid rgba(255,255,255,0.08);
+  }
+
+  .hero-team-stat span{
+    display: block;
+    margin-bottom: 5px;
+    font-size: 0.68rem;
+    text-transform: uppercase;
+    letter-spacing: 0.09em;
+    color: rgba(255,255,255,0.70);
+    font-weight: 800;
+  }
+
+  .hero-team-stat strong{
+    display: block;
+    color: #ffffff;
+    font-size: 1rem;
+    font-weight: 900;
+  }
+
+  /* visto che eliminiamo la sezione info, niente spazio extra */
+  .waiver-grid-info{
+    display: none !important;
+  }
+}
