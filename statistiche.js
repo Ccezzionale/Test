@@ -1043,3 +1043,39 @@ function buildRaceFromClean(clean){
   const topScores = computeTopScores(clean, 5);
   renderTopScores(topScores);
 })();
+
+function setupMobileStatsTabs(){
+  const page = document.querySelector('.stats-page');
+  const tabs = document.querySelectorAll('.mobile-stats-tab');
+
+  if (!page || !tabs.length) return;
+
+  // stato iniziale
+  page.classList.remove('mobile-view-stats');
+  page.classList.add('mobile-view-ranking');
+
+  tabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+      const target = tab.dataset.mobileTab;
+
+      tabs.forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+
+      page.classList.remove('mobile-view-ranking', 'mobile-view-stats');
+
+      if (target === 'stats'){
+        page.classList.add('mobile-view-stats');
+      } else {
+        page.classList.add('mobile-view-ranking');
+      }
+
+      window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+      });
+    });
+  });
+}
+
+setupMobileStatsTabs();
+document.addEventListener('DOMContentLoaded', setupMobileStatsTabs);
