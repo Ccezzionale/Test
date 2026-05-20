@@ -796,3 +796,29 @@ td {
     line-height: 1.15 !important;
   }
 }
+
+.regolamento-title {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+}
+
+.regolamento-title-icon {
+  width: 44px;
+  height: 44px;
+  object-fit: contain;
+  display: block;
+  flex: 0 0 auto;
+}
+
+@media (max-width: 768px) {
+  .regolamento-title {
+    gap: 10px;
+  }
+
+  .regolamento-title-icon {
+    width: 36px;
+    height: 36px;
+  }
+}
