@@ -2904,23 +2904,6 @@ function setupMobileWaiverTabs() {
   activateMobileTab("calls");
 }
 
-  tabButtons.forEach(button => {
-    button.addEventListener("click", () => {
-      activateMobileTab(button.dataset.waiverMobileTab);
-
-      const tabs = document.querySelector(".waiver-mobile-tabs");
-      if (tabs) {
-        tabs.scrollIntoView({
-          behavior: "smooth",
-          block: "start"
-        });
-      }
-    });
-  });
-
-  activateMobileTab("calls");
-}
-
 /* ===============================
    EVENT LISTENERS
 ================================ */
