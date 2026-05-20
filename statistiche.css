@@ -1989,3 +1989,7 @@ body::before{
   font-size:.82rem;
   border-radius:999px;
 }
+
+.hero-lightning{
+  display:none !important;
+}
