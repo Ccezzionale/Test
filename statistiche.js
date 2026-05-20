@@ -259,37 +259,108 @@ function renderPR(res){
 }
 
 
+function mobileState(r){
+  if (r.rank === 1) return "Team to beat";
+  if (r.rank <= 3) return "Contender";
+  if (r.delta > 0) return "In risalita";
+  if (r.delta < 0) return "In calo";
+  if (r.forma >= 70) return "On fire";
+  if (r.cons < 20) return "Volatile";
+  return "Solida";
+}
+
 function renderPRMobile(res){
   const wrap = document.getElementById('pr-mobile');
   if (!wrap) return;
 
-  const html = res.ranked.map(r => {
-    const trend = r.delta>0 ? `▲ ${r.delta}` : (r.delta<0 ? `▼ ${Math.abs(r.delta)}` : '•');
-    const png = `${LOGO_DIR}${r.team}.png`;
-    const jpg = `${LOGO_DIR}${r.team}.jpg`;
+  const logoTag = (team, cls = "") => {
+    const png = `${LOGO_DIR}${team}.png`;
+    const jpg = `${LOGO_DIR}${team}.jpg`;
     const ph  = `${LOGO_DIR}_placeholder.png`;
-    return `
-      <div class="acc-item" onclick="this.classList.toggle('open')">
-        <div class="acc-head">
-          <span class="badge">#${r.rank}</span>
-          <img src="${png}" alt="${r.team}" loading="lazy"
-               onerror="if(!this.dataset.jpg){ this.dataset.jpg=1; this.src='${jpg}'; }
-                        else { this.onerror=null; this.src='${ph}'; }">
-          <div class="acc-title">
-            <div class="team-name">${r.team}</div>
-            <div class="sub">Score ${r.score.toFixed(1)} • Trend ${trend}</div>
-          </div>
-        </div>
-        <div class="acc-body">
-          <div><strong>Media</strong><br>${r.media.toFixed(1)}</div>
-          <div><strong>Forma (ult.5)</strong><br>${r.forma.toFixed(1)}</div>
-          <div><strong>Consistenza</strong><br>${r.cons.toFixed(1)}</div>
-        </div>
-      </div>
-    `;
-  }).join('');
 
-  wrap.innerHTML = html;
+    return `
+      <img class="${cls}" src="${png}" alt="${team}" loading="lazy"
+        onerror="if(!this.dataset.jpg){ this.dataset.jpg=1; this.src='${jpg}'; }
+        else { this.onerror=null; this.src='${ph}'; }">
+    `;
+  };
+
+  const trendTag = (r) => {
+    const trend = r.delta > 0 ? `▲ ${r.delta}` : (r.delta < 0 ? `▼ ${Math.abs(r.delta)}` : '•');
+    const cls = r.delta > 0 ? 'up' : (r.delta < 0 ? 'down' : 'flat');
+    return `<span class="mobile-pr-trend ${cls}">${trend}</span>`;
+  };
+
+  const top3 = res.ranked.slice(0, 3);
+  const rest = res.ranked.slice(3);
+
+  const champion = top3[0];
+  const others = top3.slice(1);
+
+  wrap.innerHTML = `
+    <section class="mobile-pr-page">
+
+      <div class="mobile-pr-header">
+        <span class="mobile-pr-kicker">Power Ranking</span>
+        <h2>Il verdetto</h2>
+        <p>Forma, media e continuità: qui non si guarda solo la classifica.</p>
+      </div>
+
+      <article class="mobile-pr-king">
+        <div class="mobile-rank-badge">#${champion.rank}</div>
+        <div class="mobile-state-badge">${mobileState(champion)}</div>
+        ${logoTag(champion.team, "mobile-king-logo")}
+        <h3>${champion.team}</h3>
+        <div class="mobile-king-score">${champion.score.toFixed(1)}</div>
+        ${trendTag(champion)}
+
+        <div class="mobile-stat-grid">
+          <div><span>Forma</span><strong>${champion.forma.toFixed(0)}</strong></div>
+          <div><span>Media</span><strong>${champion.media.toFixed(0)}</strong></div>
+          <div><span>Continuità</span><strong>${champion.cons.toFixed(0)}</strong></div>
+        </div>
+      </article>
+
+      <div class="mobile-podium-mini">
+        ${others.map(r => `
+          <article class="mobile-mini-card">
+            <div class="mobile-mini-top">
+              <span class="mobile-rank-small">#${r.rank}</span>
+              ${trendTag(r)}
+            </div>
+            ${logoTag(r.team, "mobile-mini-logo")}
+            <h3>${r.team}</h3>
+            <strong>${r.score.toFixed(1)}</strong>
+            <span class="mobile-mini-state">${mobileState(r)}</span>
+          </article>
+        `).join('')}
+      </div>
+
+      <div class="mobile-pr-list">
+        <div class="mobile-list-title">Dal 4° posto in giù</div>
+
+        ${rest.map(r => `
+          <article class="mobile-rank-row">
+            <div class="mobile-row-rank">#${r.rank}</div>
+            ${logoTag(r.team, "mobile-row-logo")}
+            <div class="mobile-row-main">
+              <strong>${r.team}</strong>
+              <span>${mobileState(r)}</span>
+            </div>
+            <div class="mobile-row-score">
+              <strong>${r.score.toFixed(1)}</strong>
+              ${trendTag(r)}
+            </div>
+          </article>
+        `).join('')}
+      </div>
+
+      <a class="mobile-extra-button" href="#extra-stats">
+        Vai a Hall of Shame, Sculati e Top 5
+      </a>
+
+    </section>
+  `;
 }
 
 
