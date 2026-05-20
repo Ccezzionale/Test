@@ -364,7 +364,7 @@ function renderTable(containerId, title, rows, cols){
 
 
 function renderHall(h){
-  renderTable('shame-worst', 'Peggiori punteggi assoluti',
+  rrenderTable('shame-worst', 'Peggiori 5 punteggi dell’anno',
     h.worst.slice(0,5).map((r, idx) => ({ pos: idx + 1, gw: r.GW, team: r.Team, pf: r.PF })),
     [
       { key:'pos',  label:'#' },
@@ -537,7 +537,7 @@ function computeTopScores(clean, n = 5){
 
 
 function renderTopScores(list){
-  renderTable('fun-top', 'Top 5 punteggi stagionali',
+  renderTable('fun-top', 'Top 5 punteggi dell’anno',
     list.map((r, idx) => ({ pos: idx + 1, gw: r.gw, team: r.team, pf: r.pf })),
     [
       { key:'pos',  label:'#' },
