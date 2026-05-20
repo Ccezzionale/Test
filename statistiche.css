@@ -1339,346 +1339,151 @@ body::before{
 .podium-card.rank-1:hover{
   transform:translateY(-30px);
 }
-
 /* =========================================================
-   PODIO REBUILD - CINEMATIC CARD / CONCEPT STYLE
-   incollare in fondo al CSS
+   PODIO FINAL TUNING - CLEAN BROADCAST
    ========================================================= */
 
 #pr-podium{
-  max-width:1420px !important;
-  margin:10px auto 44px !important;
-  padding:54px 20px 70px !important;
-  display:grid !important;
-  grid-template-columns:1fr 1.32fr 1fr !important;
-  gap:42px !important;
-  align-items:end !important;
-  position:relative !important;
-  border-radius:34px !important;
-  overflow:visible !important;
+  max-width:1420px;
+  margin:18px auto 42px;
+  padding:34px 18px 54px;
+  gap:42px;
   background:
-    radial-gradient(circle at 50% 8%, rgba(255,210,88,.24), transparent 27%),
-    radial-gradient(circle at 17% 68%, rgba(67,170,255,.25), transparent 25%),
-    radial-gradient(circle at 83% 68%, rgba(255,67,86,.22), transparent 25%),
-    linear-gradient(180deg, rgba(3,8,16,.10), rgba(3,8,16,.50)) !important;
+    radial-gradient(circle at 50% 6%, rgba(255,205,80,.20), transparent 28%),
+    radial-gradient(circle at 18% 72%, rgba(70,165,255,.18), transparent 24%),
+    radial-gradient(circle at 82% 72%, rgba(255,75,90,.16), transparent 24%),
+    linear-gradient(180deg, rgba(2,7,14,.12), rgba(2,7,14,.42));
 }
 
-#pr-podium::before{
-  content:"" !important;
-  position:absolute !important;
-  inset:12px 3% auto !important;
-  height:170px !important;
-  z-index:0 !important;
-  pointer-events:none !important;
-  background:
-    radial-gradient(ellipse at 50% 0%, rgba(255,230,150,.22), transparent 55%),
-    linear-gradient(90deg, transparent, rgba(255,255,255,.12), transparent) !important;
-  filter:blur(.2px) !important;
-  opacity:.95 !important;
-}
-
-#pr-podium::after{
-  content:"" !important;
-  position:absolute !important;
-  left:7% !important;
-  right:7% !important;
-  bottom:34px !important;
-  height:90px !important;
-  z-index:0 !important;
-  pointer-events:none !important;
-  background:
-    radial-gradient(ellipse at 50% 80%, rgba(255,210,88,.20), transparent 60%),
-    linear-gradient(90deg, transparent, rgba(255,255,255,.10), transparent) !important;
-  opacity:.8 !important;
-}
-
-/* CARD: forma più “targa da arena” */
 .podium-card{
-  position:relative !important;
-  isolation:isolate !important;
-  overflow:visible !important;
-  min-height:405px !important;
-  padding:30px 24px 24px !important;
-  border-radius:18px !important;
-  clip-path:polygon(
-    0 9%,
-    8% 0,
-    92% 0,
-    100% 9%,
-    100% 100%,
-    0 100%
-  ) !important;
-
-  display:flex !important;
-  flex-direction:column !important;
-  align-items:center !important;
-
-  background:
-    linear-gradient(180deg, rgba(255,255,255,.10), transparent 28%),
-    radial-gradient(circle at 50% 30%, rgba(255,255,255,.13), transparent 27%),
-    linear-gradient(180deg, rgba(17,31,47,.98), rgba(2,8,17,.99)) !important;
-
-  border:1px solid rgba(255,255,255,.20) !important;
-  box-shadow:
-    inset 0 1px 0 rgba(255,255,255,.15),
-    inset 0 -55px 80px rgba(0,0,0,.42),
-    0 28px 58px rgba(0,0,0,.55) !important;
-  z-index:2 !important;
+  min-height:390px;
+  padding:26px 24px 22px;
+  border-radius:26px;
+  overflow:visible;
+  clip-path:none;
 }
 
-/* cornice interna */
-.podium-card::before{
-  content:"" !important;
-  position:absolute !important;
-  inset:8px !important;
-  border-radius:14px !important;
-  clip-path:polygon(
-    0 9%,
-    8% 0,
-    92% 0,
-    100% 9%,
-    100% 100%,
-    0 100%
-  ) !important;
-  border:1px solid rgba(255,255,255,.14) !important;
-  background:
-    linear-gradient(90deg, transparent, rgba(255,255,255,.06), transparent) !important;
-  pointer-events:none !important;
-  z-index:1 !important;
-}
-
-/* pedana sotto molto più evidente */
-.podium-card::after{
-  content:"" !important;
-  position:absolute !important;
-  left:50% !important;
-  bottom:-31px !important;
-  transform:translateX(-50%) !important;
-  width:112% !important;
-  height:34px !important;
-  border-radius:999px !important;
-  z-index:-1 !important;
-  filter:blur(.1px) !important;
-}
-
-/* rank 1 protagonista */
 .podium-card.rank-1{
-  min-height:455px !important;
-  transform:translateY(-24px) !important;
-  border-color:rgba(255,204,76,.82) !important;
+  min-height:440px;
+  transform:translateY(-22px);
+}
+
+.podium-card.rank-2,
+.podium-card.rank-3{
+  min-height:370px;
+}
+
+/* più profondità, meno scatola piatta */
+.podium-card{
   background:
-    radial-gradient(circle at 50% 28%, rgba(255,217,103,.28), transparent 30%),
-    linear-gradient(180deg, rgba(28,35,48,.99), rgba(3,8,17,.99)) !important;
-  box-shadow:
-    inset 0 1px 0 rgba(255,255,255,.18),
-    inset 0 -68px 95px rgba(0,0,0,.48),
-    0 34px 72px rgba(0,0,0,.62),
-    0 0 72px rgba(255,196,54,.26) !important;
+    radial-gradient(circle at 50% 30%, rgba(255,255,255,.15), transparent 25%),
+    radial-gradient(circle at 50% 92%, rgba(255,255,255,.08), transparent 42%),
+    linear-gradient(180deg, rgba(22,36,53,.97), rgba(3,10,20,.99));
+}
+
+.podium-card.rank-1{
+  background:
+    radial-gradient(circle at 50% 26%, rgba(255,215,100,.25), transparent 30%),
+    radial-gradient(circle at 50% 94%, rgba(255,200,70,.13), transparent 45%),
+    linear-gradient(180deg, rgba(21,31,45,.98), rgba(3,9,18,.99));
+}
+
+/* pedana più scenica */
+.podium-card::after{
+  bottom:-24px;
+  width:104%;
+  height:30px;
+  opacity:1;
 }
 
 .podium-card.rank-1::after{
-  background:linear-gradient(90deg, transparent, #f0b83f, #fff0a8, #f0b83f, transparent) !important;
+  background:linear-gradient(90deg, transparent, #f0b83f, #fff0a8, #f0b83f, transparent);
   box-shadow:
-    0 0 22px rgba(255,207,79,.90),
-    0 0 56px rgba(255,207,79,.45) !important;
+    0 0 22px rgba(255,207,79,.85),
+    0 0 54px rgba(255,207,79,.40);
 }
 
 .podium-card.rank-2::after{
-  background:linear-gradient(90deg, transparent, #42aaff, #b9e3ff, #42aaff, transparent) !important;
-  box-shadow:
-    0 0 20px rgba(66,170,255,.72),
-    0 0 48px rgba(66,170,255,.32) !important;
+  background:linear-gradient(90deg, transparent, #4caeff, #bde6ff, #4caeff, transparent);
 }
 
 .podium-card.rank-3::after{
-  background:linear-gradient(90deg, transparent, #ff4058, #ff9a70, #ff4058, transparent) !important;
-  box-shadow:
-    0 0 20px rgba(255,64,88,.72),
-    0 0 48px rgba(255,64,88,.32) !important;
+  background:linear-gradient(90deg, transparent, #ff4f5f, #ff9b76, #ff4f5f, transparent);
 }
 
-/* badge posizione come scudo */
+/* badge rank meno ingombrante */
 .podium-rank{
-  position:absolute !important;
-  top:-18px !important;
-  left:22px !important;
-  min-width:62px !important;
-  height:70px !important;
-  border-radius:14px 14px 20px 20px !important;
-  display:grid !important;
-  place-items:center !important;
-  color:#fff !important;
-  font-size:1.35rem !important;
-  font-weight:1000 !important;
-  background:linear-gradient(180deg, #6b7787, #253241) !important;
-  border:1px solid rgba(255,255,255,.26) !important;
-  box-shadow:0 12px 24px rgba(0,0,0,.38) !important;
-  z-index:5 !important;
+  top:18px;
+  left:18px;
+  min-width:56px;
+  height:56px;
+  border-radius:16px;
+  font-size:1.25rem;
 }
 
-.podium-card.rank-1 .podium-rank{
-  color:#14100a !important;
-  background:linear-gradient(180deg, #ffe17b, #c78308) !important;
-  border-color:#fff0b8 !important;
-}
-
-/* stato in alto più compatto */
-.podium-status{
-  position:absolute !important;
-  top:20px !important;
-  right:20px !important;
-  padding:9px 16px !important;
-  border-radius:999px !important;
-  font-size:.76rem !important;
-  font-weight:1000 !important;
-  letter-spacing:.08em !important;
-  z-index:5 !important;
-}
-
-/* logo più basso e più integrato */
+/* loghi più importanti */
 .podium-logo{
-  width:150px !important;
-  height:150px !important;
-  object-fit:contain !important;
-  margin-top:74px !important;
-  margin-bottom:18px !important;
-  filter:
-    drop-shadow(0 20px 20px rgba(0,0,0,.50))
-    drop-shadow(0 0 22px rgba(255,255,255,.10)) !important;
-  z-index:4 !important;
+  width:162px;
+  height:162px;
+  margin-top:70px;
+  margin-bottom:18px;
 }
 
 .podium-card.rank-1 .podium-logo{
-  width:178px !important;
-  height:178px !important;
-  margin-top:72px !important;
-  margin-bottom:20px !important;
+  width:205px;
+  height:205px;
+  margin-top:66px;
+  margin-bottom:16px;
 }
 
-/* nome squadra su mini fascia */
-.podium-team{
-  min-width:70% !important;
-  margin:0 auto 10px !important;
-  padding:8px 16px !important;
-  text-align:center !important;
-  color:#f8fbff !important;
-  font-size:1.02rem !important;
-  font-weight:1000 !important;
-  text-transform:uppercase !important;
-  letter-spacing:.03em !important;
-  background:linear-gradient(90deg, transparent, rgba(255,255,255,.07), transparent) !important;
-  z-index:4 !important;
-}
-
-.podium-card.rank-1 .podium-team{
-  font-size:1.14rem !important;
-}
-
-/* score come placca dorata, non solo testo */
+/* score torna testo premium, niente placca */
 .podium-score{
-  min-width:170px !important;
-  margin:0 auto !important;
-  padding:4px 22px 8px !important;
-  text-align:center !important;
-  color:#171108 !important;
-  font-size:3.9rem !important;
-  line-height:.95 !important;
-  font-weight:1000 !important;
-  letter-spacing:-.055em !important;
-  border-radius:16px !important;
-  background:
-    linear-gradient(180deg, #ffe28b 0%, #ffc642 45%, #b97808 100%) !important;
-  box-shadow:
-    inset 0 1px 0 rgba(255,255,255,.35),
-    0 12px 28px rgba(0,0,0,.36),
-    0 0 24px rgba(255,198,61,.22) !important;
-  text-shadow:none !important;
-  z-index:4 !important;
+  padding:0;
+  background:none;
+  color:#ffce4a;
+  font-size:4.6rem;
+  line-height:.88;
+  text-shadow:
+    0 0 14px rgba(255,206,74,.22),
+    0 0 32px rgba(255,206,74,.18),
+    0 8px 22px rgba(0,0,0,.42);
 }
 
 .podium-card.rank-1 .podium-score{
-  min-width:205px !important;
-  font-size:4.7rem !important;
+  font-size:5.4rem;
 }
 
-/* trend sotto la placca */
-.podium-trend{
-  margin-top:8px !important;
-  margin-bottom:12px !important;
-  font-size:1rem !important;
-  font-weight:1000 !important;
-  z-index:4 !important;
+/* nome squadra più vicino al logo */
+.podium-team{
+  margin-bottom:12px;
+  font-size:1.08rem;
 }
 
-/* Team to beat più stile label */
-.podium-card.rank-1 .podium-trend::after{
-  content:"TEAM TO BEAT" !important;
-  display:block !important;
-  width:max-content !important;
-  margin:8px auto 0 !important;
-  padding:8px 22px !important;
-  border-radius:999px !important;
-  color:#151006 !important;
-  font-size:.78rem !important;
-  font-weight:1000 !important;
-  letter-spacing:.07em !important;
-  background:linear-gradient(180deg, #ffd75e, #bf7f08) !important;
-  box-shadow:
-    inset 0 1px 0 rgba(255,255,255,.30),
-    0 8px 20px rgba(0,0,0,.34) !important;
+.podium-card.rank-1 .podium-team{
+  font-size:1.22rem;
 }
 
-/* stats come fascia broadcast in basso */
+/* stats più compatte, da fascia broadcast */
 .podium-stats{
-  width:100% !important;
-  margin-top:auto !important;
-  display:grid !important;
-  grid-template-columns:repeat(3,1fr) !important;
-  gap:0 !important;
-  border-radius:14px !important;
-  overflow:hidden !important;
-  background:rgba(3,8,16,.56) !important;
-  border:1px solid rgba(255,255,255,.16) !important;
-  box-shadow:
-    inset 0 1px 0 rgba(255,255,255,.08),
-    0 14px 24px rgba(0,0,0,.22) !important;
-  z-index:4 !important;
+  margin-top:auto;
+  border-radius:16px;
+  background:rgba(3,8,16,.48);
 }
 
 .podium-stats > div{
-  min-height:66px !important;
-  padding:10px 8px !important;
-  border-right:1px solid rgba(255,255,255,.10) !important;
-  display:flex !important;
-  flex-direction:column !important;
-  justify-content:center !important;
-  align-items:center !important;
-}
-
-.podium-stats > div:last-child{
-  border-right:0 !important;
-}
-
-.podium-stats span{
-  color:#aeb9c9 !important;
-  font-size:.68rem !important;
-  font-weight:1000 !important;
-  letter-spacing:.05em !important;
-  text-transform:uppercase !important;
-  margin-bottom:6px !important;
+  min-height:60px;
+  padding:9px 8px;
 }
 
 .podium-stats strong{
-  color:#fff !important;
-  font-size:1.35rem !important;
-  font-weight:1000 !important;
+  font-size:1.25rem;
 }
 
-/* hover coerente */
-.podium-card:hover{
-  transform:translateY(-8px) !important;
-}
-
-.podium-card.rank-1:hover{
-  transform:translateY(-30px) !important;
+/* Team to beat resta sotto, ma più elegante */
+.podium-card.rank-1 .podium-trend::after{
+  padding:7px 20px;
+  margin-top:8px;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.28),
+    0 8px 18px rgba(0,0,0,.30);
 }
