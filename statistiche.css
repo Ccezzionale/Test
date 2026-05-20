@@ -1778,29 +1778,68 @@ body::before{
 }
 
 .stats-hero-banner h1{
-  margin:0;
-  color:#f7f9fc;
-  font-size:clamp(3.8rem, 8vw, 7.2rem);
-  line-height:.82;
-  text-transform:uppercase;
-  letter-spacing:.02em;
-  font-weight:1000;
+  font-family: 'Anton', Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif !important;
+  display:inline-block;
+  margin:0 auto;
+  max-width:none;
+  padding:0 .14em 0 .08em;
+
+  font-size:clamp(4.3rem, 8vw, 7rem) !important;
+  line-height:.86 !important;
+  letter-spacing:.02em !important;
+  text-transform:uppercase !important;
+
+  /* meno inclinazione = meno taglio */
+  transform:skewX(-4deg) scaleY(1.03);
+
+  /* nuovo colore: champagne / oro chiaro */
+  background: linear-gradient(
+    180deg,
+    #fff8dc 0%,
+    #ffe9a3 22%,
+    #ffd15c 48%,
+    #fff0b8 68%,
+    #f7c94b 100%
+  );
+  -webkit-background-clip:text;
+  background-clip:text;
+  color:transparent;
+
+  -webkit-text-stroke: 1px rgba(70,45,0,.22);
+
   text-shadow:
-    0 4px 0 rgba(0,0,0,.34),
-    0 0 24px rgba(255,255,255,.10),
-    0 0 42px rgba(255,213,106,.20);
+    0 2px 0 rgba(0,0,0,.18),
+    0 5px 10px rgba(0,0,0,.18),
+    0 0 16px rgba(255,213,106,.14);
+}
+
+.hero-banner-content{
+  width:min(1100px, 96vw);
+  overflow:visible;
+}
+
+.stats-hero-banner{
+  overflow:hidden;
+}
+
+.stats-hero-banner h1{
+  position:relative;
+  z-index:2;
 }
 
 .hero-script{
-  margin:8px 0 8px;
-  color:#ffd56a;
-  font-size:clamp(1.15rem, 2.2vw, 1.75rem);
-  line-height:1;
-  font-weight:1000;
-  text-transform:uppercase;
-  letter-spacing:.08em;
-  font-style:italic;
-  text-shadow:0 0 18px rgba(255,213,106,.28);
+  font-family:'Barlow Condensed', 'Arial Narrow', sans-serif !important;
+  margin:10px 0 12px !important;
+  color:#ffd15a !important;
+  font-size:clamp(1.2rem, 2vw, 1.8rem) !important;
+  font-style:italic !important;
+  font-weight:900 !important;
+  text-transform:uppercase !important;
+  letter-spacing:.08em !important;
+  transform:skewX(-7deg);
+  text-shadow:
+    0 2px 0 rgba(0,0,0,.20),
+    0 0 10px rgba(255,209,90,.14);
 }
 
 .hero-subtitle{
