@@ -57,6 +57,9 @@ const setPlayoffFridayBtn = document.getElementById("setPlayoffFridayBtn");
 const saveWaiverSettingsBtn = document.getElementById("saveWaiverSettingsBtn");
 const settingsMessageEl = document.getElementById("settingsMessage");
 
+const teamLogoEl = document.getElementById("teamLogo");
+const heroPriorityEl = document.getElementById("heroPriority");
+
 /* ===============================
    STATO APP
 ================================ */
@@ -85,6 +88,11 @@ let activeCompensatoryCallId = null;
 /* ===============================
    HELPERS
 ================================ */
+
+function getTeamLogoPath(teamName) {
+  if (!teamName) return "";
+  return `img/${teamName}.png`;
+}
 
 function formatWaiverDateTime(value) {
   if (!value) return "";
@@ -329,6 +337,23 @@ function sortGroupKeys(keys) {
 
     return a.localeCompare(b);
   });
+}
+
+function updateHeroPriority() {
+  if (!heroPriorityEl) return;
+
+  if (!myOrderRows || myOrderRows.length === 0) {
+    heroPriorityEl.textContent = "-";
+    return;
+  }
+
+  const firstOpenCall =
+    myOrderRows.find(row => isSlotOpen(row.slot)) ||
+    myOrderRows[0];
+
+  heroPriorityEl.textContent = firstOpenCall?.priority_number
+    ? `#${firstOpenCall.priority_number}`
+    : "-";
 }
 
 /* ===============================
@@ -1218,6 +1243,7 @@ async function loadMyWaiverCalls() {
   }
 
   myOrderRows = orders || [];
+   updateHeroPriority();
 
   const { data: calls, error: callsError } = await supabase
     .from("waiver_calls")
@@ -2806,6 +2832,15 @@ async function initWaiverRoom() {
     teamNameEl.textContent = team.name;
     teamConferenceEl.textContent = team.conference || "Non assegnata";
   }
+
+   if (team && teamLogoEl) {
+  teamLogoEl.src = getTeamLogoPath(team.name);
+  teamLogoEl.alt = `Logo ${team.name}`;
+
+  teamLogoEl.onerror = () => {
+    teamLogoEl.style.display = "none";
+  };
+}
 
 if (settings) {
   if (activePhaseEl) activePhaseEl.textContent = settings.active_phase || "Non impostata";
