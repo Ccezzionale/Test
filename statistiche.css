@@ -1927,108 +1927,88 @@ body::before{
   }
 }
 
+.hero-lightning{
+  display:none !important;
+}
+
 /* =========================================================
-   HERO TITLE - SPORT POSTER STYLE
+   HERO TITLE FINAL - GOLD CLEAN VERSION
    ========================================================= */
-
-.stats-hero-banner{
-  min-height: 250px;
-  padding-top: 42px;
-  padding-bottom: 38px;
-}
-
-.hero-stars{
-  margin-bottom: 10px;
-  color:#ffd56a;
-  font-size:.78rem;
-  letter-spacing:.75em;
-  transform: translateX(.35em);
-}
-
-.stats-hero-banner h1{
-  font-family: 'Anton', Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif !important;
-  margin:0 auto;
-  width:max-content;
-  max-width:96%;
-  font-size:clamp(4.6rem, 8.2vw, 7.4rem) !important;
-  line-height:.82 !important;
-  letter-spacing:.035em !important;
-  text-transform:uppercase !important;
-  transform:skewX(-7deg) scaleY(1.04);
-
-  background: linear-gradient(
-    180deg,
-    #ffffff 0%,
-    #f5f7fa 18%,
-    #d9dee5 42%,
-    #ffffff 58%,
-    #c7ced6 78%,
-    #eef2f6 100%
-  );
-  -webkit-background-clip:text;
-  background-clip:text;
-  color:transparent;
-
-  -webkit-text-stroke: 1px rgba(18,24,34,.38);
-
-  text-shadow:
-    0 2px 0 rgba(0,0,0,.22),
-    0 5px 10px rgba(0,0,0,.22),
-    0 0 18px rgba(255,213,106,.12);
-}
-  
-  background:
-    linear-gradient(180deg,
-      #ffffff 0%,
-      #dfe3e8 22%,
-      #888f98 48%,
-      #f7f9fb 52%,
-      #7c828a 78%,
-      #f1f3f6 100%
-    );
-  -webkit-background-clip:text;
-  background-clip:text;
-  color:transparent;
-
-  -webkit-text-stroke: 1.5px rgba(12,18,28,.72);
-
-  text-shadow:
-    3px 3px 0 rgba(0,0,0,.55),
-    6px 7px 0 rgba(0,0,0,.28),
-    0 0 26px rgba(255,213,106,.18);
-}
-
-/* riga gialla più vicina al concept */
-.hero-script{
-  font-family:'Barlow Condensed', 'Arial Narrow', sans-serif !important;
-  margin:8px 0 12px !important;
-  color:#ffd56a !important;
-  font-size:clamp(1.25rem, 2.1vw, 1.85rem) !important;
-  font-style:italic !important;
-  font-weight:900 !important;
-  text-transform:uppercase !important;
-  letter-spacing:.10em !important;
-  transform:skewX(-9deg);
-  text-shadow:
-    2px 2px 0 rgba(0,0,0,.42),
-    0 0 18px rgba(255,213,106,.24);
-}
-
-.hero-subtitle{
-  max-width:720px;
-  font-size:.96rem;
-  line-height:1.45;
-  color:rgba(248,251,255,.84);
-}
-
-/* pill GW più piccola e meno invasiva */
-.hero-gw-pill{
-  margin-top:16px;
-  padding:7px 16px;
-  font-size:.82rem;
-  border-radius:999px;
-}
 
 .hero-lightning{
   display:none !important;
+}
+
+.stats-hero-banner{
+  min-height:240px !important;
+  padding:38px 24px 34px !important;
+  overflow:hidden !important;
+}
+
+.hero-banner-content{
+  width:min(1180px, 96vw) !important;
+  max-width:1180px !important;
+  overflow:visible !important;
+  text-align:center !important;
+}
+
+.hero-stars{
+  margin-bottom:10px !important;
+  color:#ffd56a !important;
+  font-size:.78rem !important;
+  letter-spacing:.72em !important;
+  transform:translateX(.35em) !important;
+}
+
+.stats-hero-banner h1{
+  font-family:'Anton', Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif !important;
+  display:inline-block !important;
+  width:auto !important;
+  max-width:none !important;
+  margin:0 auto !important;
+  padding:0 .18em 0 .12em !important;
+
+  font-size:clamp(4.2rem, 7.4vw, 6.8rem) !important;
+  line-height:.9 !important;
+  letter-spacing:.025em !important;
+  text-transform:uppercase !important;
+  transform:skewX(-3deg) scaleY(1.02) !important;
+
+  background:linear-gradient(
+    180deg,
+    #fff7d0 0%,
+    #ffe28a 24%,
+    #f0b83f 52%,
+    #fff0b3 72%,
+    #d89213 100%
+  ) !important;
+  -webkit-background-clip:text !important;
+  background-clip:text !important;
+  color:transparent !important;
+
+  -webkit-text-stroke:1px rgba(72,45,0,.20) !important;
+
+  text-shadow:
+    0 2px 0 rgba(0,0,0,.18),
+    0 5px 12px rgba(0,0,0,.22),
+    0 0 18px rgba(255,213,106,.18) !important;
+}
+
+.hero-script{
+  font-family:'Barlow Condensed', 'Arial Narrow', sans-serif !important;
+  margin:8px 0 12px !important;
+  color:#fff0a8 !important;
+  font-size:clamp(1.2rem, 2vw, 1.75rem) !important;
+  font-style:italic !important;
+  font-weight:900 !important;
+  text-transform:uppercase !important;
+  letter-spacing:.09em !important;
+  transform:skewX(-6deg) !important;
+  text-shadow:
+    0 2px 0 rgba(0,0,0,.22),
+    0 0 12px rgba(255,213,106,.18) !important;
+}
+
+.hero-subtitle{
+  color:rgba(255,255,255,.90) !important;
 }
