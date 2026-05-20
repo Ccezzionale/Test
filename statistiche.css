@@ -1487,3 +1487,165 @@ body::before{
     inset 0 1px 0 rgba(255,255,255,.28),
     0 8px 18px rgba(0,0,0,.30);
 }
+
+/* =========================================================
+   LIGHTER DARK THEME - STADIUM NIGHT
+   più chiaro, meno pesante
+   ========================================================= */
+
+:root{
+  --stats-bg:#101926;
+  --stats-panel:#142235;
+  --stats-panel-2:#1b2d43;
+  --stats-line:rgba(255,255,255,.16);
+  --stats-soft-line:rgba(255,255,255,.10);
+  --stats-text:#f8fbff;
+  --stats-muted:#b8c4d2;
+  --stats-gold:#e5aa32;
+  --stats-gold-2:#ffd56a;
+  --stats-red:#ff5f66;
+  --stats-green:#5bd779;
+  --stats-blue:#65b7ff;
+  --stats-orange:#ffae3d;
+}
+
+html{
+  background:#101926;
+}
+
+body{
+  background:
+    radial-gradient(circle at 50% -8%, rgba(255,213,106,.26), transparent 34rem),
+    radial-gradient(circle at 12% 18%, rgba(101,183,255,.20), transparent 30rem),
+    radial-gradient(circle at 88% 20%, rgba(255,95,102,.16), transparent 30rem),
+    linear-gradient(180deg, #152235 0%, #111c2b 46%, #0e1724 100%) !important;
+  color:var(--stats-text);
+}
+
+/* griglia meno “hacker room”, più leggera */
+body::before{
+  opacity:.18;
+}
+
+/* hero meno cupo */
+.stats-hero-war{
+  border-color:rgba(255,213,106,.26);
+  background:
+    radial-gradient(circle at 72% 34%, rgba(255,95,102,.13), transparent 16rem),
+    radial-gradient(circle at 40% 12%, rgba(255,213,106,.20), transparent 20rem),
+    linear-gradient(135deg, rgba(27,45,67,.92), rgba(15,27,42,.94)) !important;
+  box-shadow:
+    0 22px 60px rgba(0,0,0,.26),
+    inset 0 1px 0 rgba(255,255,255,.10);
+}
+
+/* titolo più luminoso, meno “metallo nero” */
+.stats-hero-war h1{
+  color:#ffffff;
+  text-shadow:
+    0 3px 0 rgba(0,0,0,.18),
+    0 0 24px rgba(255,213,106,.20);
+}
+
+.hero-manifesto{
+  color:#ffcc66;
+}
+
+/* cards ranking e blocchi sotto più chiari */
+.ranking-card,
+.spotlight-card{
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.055), transparent 36%),
+    rgba(20,34,53,.86) !important;
+  border-color:rgba(255,255,255,.16);
+  box-shadow:
+    0 18px 46px rgba(0,0,0,.24),
+    inset 0 1px 0 rgba(255,255,255,.08);
+}
+
+/* testata tabella più leggibile */
+.ranking-card-head,
+.spotlight-head{
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.02));
+}
+
+/* righe tabella più soft */
+#tabella-classifica tbody tr.riga-classifica{
+  background:
+    linear-gradient(90deg, rgba(27,45,67,.92), rgba(18,31,48,.92)) !important;
+  border-color:rgba(255,255,255,.13);
+}
+
+#tabella-classifica tbody tr.riga-classifica:hover{
+  background:
+    linear-gradient(90deg, rgba(39,63,92,.96), rgba(24,41,63,.96)) !important;
+}
+
+/* podio più “stadium”, meno nero */
+#pr-podium{
+  background:
+    radial-gradient(circle at 50% 6%, rgba(255,213,106,.20), transparent 30%),
+    radial-gradient(circle at 18% 72%, rgba(101,183,255,.16), transparent 26%),
+    radial-gradient(circle at 82% 72%, rgba(255,95,102,.13), transparent 26%),
+    linear-gradient(180deg, rgba(255,255,255,.035), rgba(255,255,255,.015)) !important;
+}
+
+.podium-card{
+  background:
+    radial-gradient(circle at 50% 30%, rgba(255,255,255,.18), transparent 26%),
+    radial-gradient(circle at 50% 92%, rgba(255,255,255,.08), transparent 42%),
+    linear-gradient(180deg, rgba(29,47,69,.96), rgba(13,24,38,.98)) !important;
+  border-color:rgba(255,255,255,.19);
+}
+
+.podium-card.rank-1{
+  background:
+    radial-gradient(circle at 50% 26%, rgba(255,215,100,.26), transparent 31%),
+    radial-gradient(circle at 50% 94%, rgba(255,200,70,.14), transparent 45%),
+    linear-gradient(180deg, rgba(30,43,62,.98), rgba(13,23,37,.99)) !important;
+}
+
+/* mini stats più chiare */
+.podium-stats{
+  background:rgba(16,28,44,.66) !important;
+  border-color:rgba(255,255,255,.18);
+}
+
+.podium-stats span{
+  color:#c1cad8;
+}
+
+/* blocchi Hall / Sculati / Top5 meno cupi */
+.shame-card{
+  border-color:rgba(255,95,102,.38);
+  box-shadow:
+    0 18px 44px rgba(0,0,0,.24),
+    0 0 20px rgba(255,95,102,.08);
+}
+
+.luck-card{
+  border-color:rgba(91,215,121,.36);
+  box-shadow:
+    0 18px 44px rgba(0,0,0,.24),
+    0 0 20px rgba(91,215,121,.08);
+}
+
+.scores-card{
+  border-color:rgba(255,213,106,.38);
+  box-shadow:
+    0 18px 44px rgba(0,0,0,.24),
+    0 0 20px rgba(255,213,106,.10);
+}
+
+/* sottotabelle più leggibili */
+.subtable thead th{
+  background:rgba(255,255,255,.06);
+  color:#c7d2df;
+}
+
+.subtable th,
+.subtable td{
+  color:#f4f8fc;
+  border-bottom-color:rgba(255,255,255,.09);
+}
