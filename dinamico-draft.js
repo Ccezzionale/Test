@@ -1044,6 +1044,280 @@ function generaMobileDraftCards(containerId, draftData, squadreOrdine) {
   });
 }
 
+async function loadDraftTradeSummary() {
+  const containers = [
+    document.getElementById("draft-trades-league"),
+    document.getElementById("draft-trades-championship")
+  ];
+
+  containers.forEach(container => {
+    if (container) {
+      container.innerHTML = `<div class="draft-trades-loading">Caricamento trade draft...</div>`;
+    }
+  });
+
+  const { data: teamsData, error: teamsError } = await supabase
+    .from("teams")
+    .select("id, name, conference");
+
+  if (teamsError) {
+    console.error("Errore caricamento teams per trade summary:", teamsError);
+    renderDraftTradeError();
+    return;
+  }
+
+  const teamsById = new Map((teamsData || []).map(team => [team.id, team]));
+
+  const { data: proposals, error: proposalsError } = await supabase
+    .from("trade_proposals")
+    .select("*")
+    .eq("status", "accepted")
+    .order("accepted_at", { ascending: false });
+
+  if (proposalsError) {
+    console.error("Errore caricamento trade_proposals:", proposalsError);
+    renderDraftTradeError();
+    return;
+  }
+
+  if (!proposals || !proposals.length) {
+    renderDraftTrades([], "draft-trades-league", "Conference League");
+    renderDraftTrades([], "draft-trades-championship", "Conference Championship");
+    return;
+  }
+
+  const proposalIds = proposals.map(proposal => proposal.id);
+
+  const { data: assets, error: assetsError } = await supabase
+    .from("trade_assets")
+    .select("*")
+    .in("proposal_id", proposalIds);
+
+  if (assetsError) {
+    console.error("Errore caricamento trade_assets:", assetsError);
+    renderDraftTradeError();
+    return;
+  }
+
+  const futurePickAssetIds = [
+    ...new Set(
+      (assets || [])
+        .filter(asset => asset.asset_type === "future_pick")
+        .map(asset => asset.asset_id)
+        .filter(Boolean)
+    )
+  ];
+
+  if (!futurePickAssetIds.length) {
+    renderDraftTrades([], "draft-trades-league", "Conference League");
+    renderDraftTrades([], "draft-trades-championship", "Conference Championship");
+    return;
+  }
+
+  const { data: futurePicks, error: futurePicksError } = await supabase
+    .from("future_draft_picks")
+    .select("id, season, draft_name, round, pick_kind, status")
+    .eq("season", FUTURE_PICK_SEASON)
+    .in("id", futurePickAssetIds);
+
+  if (futurePicksError) {
+    console.error("Errore caricamento future_draft_picks trade:", futurePicksError);
+    renderDraftTradeError();
+    return;
+  }
+
+  const validFuturePickIds = new Set(
+    (futurePicks || []).map(pick => String(pick.id))
+  );
+
+  const draftTrades = proposals
+    .map(proposal => {
+      const tradeAssets = (assets || []).filter(asset => asset.proposal_id === proposal.id);
+
+      const hasDraft2027Pick = tradeAssets.some(asset =>
+        asset.asset_type === "future_pick" &&
+        validFuturePickIds.has(String(asset.asset_id))
+      );
+
+      if (!hasDraft2027Pick) return null;
+
+      const fromTeam = teamsById.get(proposal.from_team);
+      const toTeam = teamsById.get(proposal.to_team);
+
+      if (!fromTeam || !toTeam) return null;
+
+      const futureAssets = tradeAssets.filter(asset =>
+        asset.asset_type === "future_pick" &&
+        validFuturePickIds.has(String(asset.asset_id))
+      );
+
+      const involvedDraftNames = new Set(
+        futureAssets
+          .map(asset => {
+            const futurePick = (futurePicks || []).find(fp => String(fp.id) === String(asset.asset_id));
+            return futurePick?.draft_name || "";
+          })
+          .filter(Boolean)
+      );
+
+      return {
+        proposal,
+        assets: tradeAssets,
+        futureAssets,
+        fromTeam,
+        toTeam,
+        type: getDraftTradeType(fromTeam, toTeam),
+        involvedDraftNames,
+        date: proposal.accepted_at || proposal.created_at
+      };
+    })
+    .filter(Boolean);
+
+  const leagueTrades = draftTrades.filter(trade =>
+    trade.involvedDraftNames.has("Draft Conference") ||
+    trade.fromTeam.conference === "Conference League" ||
+    trade.toTeam.conference === "Conference League" ||
+    trade.type === "interconference"
+  );
+
+  const championshipTrades = draftTrades.filter(trade =>
+    trade.involvedDraftNames.has("Draft Championship") ||
+    trade.fromTeam.conference === "Conference Championship" ||
+    trade.toTeam.conference === "Conference Championship" ||
+    trade.type === "interconference"
+  );
+
+  renderDraftTrades(leagueTrades, "draft-trades-league", "Conference League");
+  renderDraftTrades(championshipTrades, "draft-trades-championship", "Conference Championship");
+}
+
+function getDraftTradeType(fromTeam, toTeam) {
+  const fromConference = fromTeam?.conference || "";
+  const toConference = toTeam?.conference || "";
+
+  if (fromConference !== toConference) {
+    return "interconference";
+  }
+
+  if (fromConference === "Conference League") {
+    return "league";
+  }
+
+  if (fromConference === "Conference Championship") {
+    return "championship";
+  }
+
+  return "unknown";
+}
+
+function getDraftTradeTypeLabel(type) {
+  if (type === "league") return "Conference League";
+  if (type === "championship") return "Conference Championship";
+  if (type === "interconference") return "Inter-conference";
+  return "Trade";
+}
+
+function renderDraftTradeError() {
+  ["draft-trades-league", "draft-trades-championship"].forEach(id => {
+    const container = document.getElementById(id);
+    if (!container) return;
+
+    container.innerHTML = `
+      <div class="draft-trades-empty">
+        ⚠️ Errore nel caricamento delle trade draft.
+      </div>
+    `;
+  });
+}
+
+function renderDraftTrades(trades, containerId, conferenceTitle) {
+  const container = document.getElementById(containerId);
+  if (!container) return;
+
+  const safeConferenceTitle = escapeDraftHtml(conferenceTitle);
+
+  if (!trades.length) {
+    container.innerHTML = `
+      <div class="draft-trades-panel">
+        <div class="draft-trades-head">
+          <div>
+            <span class="draft-trades-kicker">Movimenti ufficiali</span>
+            <h3>Trade Draft 2027</h3>
+            <p>${safeConferenceTitle}: nessuna trade con pick 2027.</p>
+          </div>
+        </div>
+      </div>
+    `;
+    return;
+  }
+
+  container.innerHTML = `
+    <div class="draft-trades-panel">
+      <div class="draft-trades-head">
+        <div>
+          <span class="draft-trades-kicker">Movimenti ufficiali</span>
+          <h3>Trade Draft 2027</h3>
+          <p>${safeConferenceTitle}: solo trade concluse con almeno una pick futura 2027.</p>
+        </div>
+
+        <span class="draft-trades-count">${trades.length}</span>
+      </div>
+
+      <div class="draft-trades-list">
+        ${trades.map(renderDraftTradeCard).join("")}
+      </div>
+    </div>
+  `;
+}
+
+function renderDraftTradeCard(trade) {
+  const fromAssets = trade.assets.filter(asset => asset.side === "from");
+  const toAssets = trade.assets.filter(asset => asset.side === "to");
+
+  const fromName = trade.fromTeam?.name || "Squadra";
+  const toName = trade.toTeam?.name || "Squadra";
+
+  return `
+    <article class="draft-trade-card ${escapeDraftHtml(trade.type)}">
+      <div class="draft-trade-top">
+        <span class="draft-trade-dot"></span>
+
+        <div class="draft-trade-title">
+          <strong>${escapeDraftHtml(shortTeamName(fromName))} ↔ ${escapeDraftHtml(shortTeamName(toName))}</strong>
+          <small>${escapeDraftHtml(getDraftTradeTypeLabel(trade.type))}</small>
+        </div>
+      </div>
+
+      <div class="draft-trade-body">
+        <div class="draft-trade-side">
+          <span>${escapeDraftHtml(shortTeamName(fromName))} offre</span>
+          <p>${renderDraftTradeAssets(fromAssets)}</p>
+        </div>
+
+        <div class="draft-trade-side">
+          <span>${escapeDraftHtml(shortTeamName(toName))} offre</span>
+          <p>${renderDraftTradeAssets(toAssets)}</p>
+        </div>
+      </div>
+    </article>
+  `;
+}
+
+function renderDraftTradeAssets(assets) {
+  if (!assets.length) return "Nessun asset";
+
+  return assets
+    .map(asset => {
+      const isFuturePick = asset.asset_type === "future_pick";
+      const label = asset.asset_label || "Asset";
+
+      return isFuturePick
+        ? `<strong class="draft-trade-pick">${escapeDraftHtml(label)}</strong>`
+        : `<span>${escapeDraftHtml(label)}</span>`;
+    })
+    .join(`<span class="draft-trade-plus"> + </span>`);
+}
+
 function initDraftTabs() {
   const tabs = document.querySelectorAll(".draft-tab");
   const panels = document.querySelectorAll(".draft-tab-panel");
@@ -1086,6 +1360,7 @@ Promise.all([
 
   generaMobileDraftCards("mobile-draft-league", draft.league, draft.leagueTeams);
   generaMobileDraftCards("mobile-draft-championship", draft.championship, draft.champTeams);
+  loadDraftTradeSummary();
 })
 .catch(err => {
   console.error("Errore nel caricamento del draft:", err);
@@ -1094,9 +1369,13 @@ Promise.all([
   const championship = document.getElementById("draft-championship");
   const mobileLeague = document.getElementById("mobile-draft-league");
   const mobileChampionship = document.getElementById("mobile-draft-championship");
+  const tradesLeague = document.getElementById("draft-trades-league");
+const tradesChampionship = document.getElementById("draft-trades-championship");
 
   if (league) league.innerHTML = `<p class="draft-error">⚠️ Errore nel caricamento del draft futuro.</p>`;
   if (championship) championship.innerHTML = `<p class="draft-error">⚠️ Errore nel caricamento del draft futuro.</p>`;
   if (mobileLeague) mobileLeague.innerHTML = `<p class="draft-error">⚠️ Errore nel caricamento del draft futuro.</p>`;
   if (mobileChampionship) mobileChampionship.innerHTML = `<p class="draft-error">⚠️ Errore nel caricamento del draft futuro.</p>`;
+  if (tradesLeague) tradesLeague.innerHTML = `<p class="draft-error">⚠️ Errore nel caricamento delle trade draft.</p>`;
+if (tradesChampionship) tradesChampionship.innerHTML = `<p class="draft-error">⚠️ Errore nel caricamento delle trade draft.</p>`;
 });
