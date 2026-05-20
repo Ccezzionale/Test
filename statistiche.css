@@ -1030,3 +1030,76 @@ body::before{
   color:#c4ccd6;
   font-weight:1000;
 }
+
+/* ===== FIX PODIO TOP 3: score separato dalle mini-card ===== */
+
+.podium-card{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:flex-start;
+  min-height: 460px;
+  padding: 26px 22px 24px;
+}
+
+.podium-logo{
+  width: 140px;
+  height: 140px;
+  object-fit: contain;
+  margin-top: 34px;
+  margin-bottom: 18px;
+}
+
+.podium-team{
+  margin-top: 4px;
+  margin-bottom: 10px;
+  text-align:center;
+}
+
+.podium-score{
+  position: relative;
+  z-index: 3;
+  font-size: 4.4rem;
+  line-height: 0.95;
+  margin: 0;
+}
+
+.podium-trend{
+  position: relative;
+  z-index: 3;
+  margin-top: 6px;
+  margin-bottom: 18px;
+}
+
+.podium-stats{
+  position: static !important;
+  left: auto !important;
+  right: auto !important;
+  bottom: auto !important;
+
+  width: 100%;
+  margin-top: 10px;
+  display:grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  align-items: stretch;
+}
+
+.podium-stats > div{
+  min-height: 74px;
+  padding: 10px 8px 12px;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+}
+
+.podium-stats span{
+  display:block;
+  margin-bottom: 6px;
+  font-size: 0.72rem;
+}
+
+.podium-stats strong{
+  font-size: 1.9rem;
+  line-height: 1;
+}
