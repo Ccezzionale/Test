@@ -2286,4 +2286,546 @@ button:disabled {
   .hero-waiver-mini-stat:last-child strong{
     color: #ffdf6c;
   }
+}/* =========================================================
+   WAIVER ROOM MOBILE APP MODE
+   ========================================================= */
+
+.waiver-mobile-tabs{
+  display:none;
+}
+
+@media (max-width: 768px){
+
+  body{
+    background:
+      radial-gradient(520px 360px at 20% 0%, rgba(38, 121, 210, 0.22), transparent 62%),
+      linear-gradient(180deg, #001f3f 0%, #062b52 34%, #f4f7fb 34%, #f4f7fb 100%);
+  }
+
+  .waiver-page{
+    padding: 12px 8px 28px;
+  }
+
+  /* ===============================
+     HERO MOBILE
+  ================================ */
+
+  .waiver-hero{
+    min-height: auto;
+    padding: 18px;
+    border-radius: 24px;
+    margin-bottom: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    align-items: stretch;
+  }
+
+  .waiver-hero::after{
+    right: -20px;
+    bottom: -18px;
+    font-size: 5.2rem;
+    opacity: .75;
+  }
+
+  .waiver-hero-copy{
+    position: relative;
+    z-index: 2;
+  }
+
+  .eyebrow{
+    font-size: .66rem;
+    letter-spacing: .18em;
+    margin-bottom: 5px;
+  }
+
+  .waiver-hero-copy h1{
+    font-size: 2.6rem;
+    line-height: .95;
+    letter-spacing: -.06em;
+  }
+
+  .waiver-hero-copy p{
+    margin-top: 8px;
+    font-size: .9rem;
+    line-height: 1.35;
+  }
+
+  .waiver-hero-team{
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    min-width: 0;
+    padding: 14px;
+    border-radius: 22px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    background:
+      linear-gradient(180deg, rgba(255,255,255,0.15), rgba(255,255,255,0.07));
+    border: 1px solid rgba(255,255,255,0.15);
+    box-shadow:
+      0 14px 30px rgba(0,0,0,0.18),
+      inset 0 1px 0 rgba(255,255,255,0.10);
+  }
+
+  .hero-live-top{
+    display:flex;
+  }
+
+  .waiver-hero-team .hero-live-pill{
+    display:inline-flex !important;
+    align-items:center;
+    gap:7px;
+    width:fit-content;
+    padding:6px 11px;
+    border-radius:999px;
+    background:rgba(255,204,0,0.18);
+    color:#ffdf6c;
+    border:1px solid rgba(255,204,0,0.32);
+    font-size:.68rem;
+    font-weight:900;
+    text-transform:uppercase;
+    letter-spacing:.08em;
+  }
+
+  .waiver-hero-team .hero-live-pill::before{
+    content:"";
+    width:7px;
+    height:7px;
+    border-radius:50%;
+    background:#ffcc00;
+    box-shadow:0 0 0 5px rgba(255,204,0,0.15);
+  }
+
+  .hero-team-main{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    margin:0;
+  }
+
+  .hero-team-logo-wrap{
+    width:68px;
+    height:68px;
+    border-radius:18px;
+    background:rgba(255,255,255,0.12);
+    border:1px solid rgba(255,255,255,0.14);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    overflow:hidden;
+    flex-shrink:0;
+  }
+
+  .hero-team-logo{
+    width:58px;
+    height:58px;
+    object-fit:contain;
+  }
+
+  .hero-team-kicker{
+    font-size:.62rem;
+    letter-spacing:.11em;
+    text-transform:uppercase;
+    font-weight:900;
+    color:rgba(255,255,255,.68);
+  }
+
+  .hero-team-text strong{
+    font-size:1.38rem;
+    line-height:1;
+    color:#fff;
+    letter-spacing:-.035em;
+  }
+
+  .hero-team-conference{
+    display:inline-flex;
+    width:fit-content;
+    margin-top:3px;
+    padding:4px 8px;
+    border-radius:999px;
+    background:rgba(255,204,0,.18);
+    border:1px solid rgba(255,204,0,.28);
+    color:#ffdf6b;
+    font-size:.72rem;
+    font-weight:900;
+  }
+
+  .hero-waiver-mini-stats{
+    display:grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap:10px;
+  }
+
+  .hero-waiver-mini-stat{
+    padding:11px 12px;
+    border-radius:16px;
+    background:rgba(255,255,255,.11);
+    border:1px solid rgba(255,255,255,.10);
+  }
+
+  .hero-waiver-mini-stat span{
+    display:block;
+    margin-bottom:4px;
+    font-size:.62rem;
+    text-transform:uppercase;
+    letter-spacing:.09em;
+    color:rgba(255,255,255,.68);
+    font-weight:900;
+  }
+
+  .hero-waiver-mini-stat strong{
+    color:#fff;
+    font-size:1.08rem;
+    font-weight:950;
+  }
+
+  .hero-waiver-mini-stat:last-child strong{
+    color:#ffdf6c;
+  }
+
+  /* ===============================
+     MOBILE TABS
+  ================================ */
+
+  .waiver-mobile-tabs{
+    position: sticky;
+    top: 0;
+    z-index: 30;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 6px;
+    margin: 0 0 12px;
+    padding: 7px;
+    border-radius: 20px;
+    background: rgba(0, 31, 63, .94);
+    border: 1px solid rgba(255,255,255,.10);
+    box-shadow: 0 12px 26px rgba(0,31,63,.22);
+    backdrop-filter: blur(10px);
+  }
+
+  .waiver-mobile-tab{
+    border:0;
+    min-height:42px;
+    border-radius:15px;
+    background:transparent;
+    color:rgba(255,255,255,.62);
+    font-weight:950;
+    font-size:.76rem;
+    letter-spacing:-.01em;
+  }
+
+  .waiver-mobile-tab.active{
+    background:
+      linear-gradient(135deg, #ffcc00, #ffe27a);
+    color:#001f3f;
+    box-shadow:0 8px 18px rgba(255,204,0,.20);
+  }
+
+  /* ===============================
+     ONE PANEL AT A TIME
+  ================================ */
+
+  .waiver-dashboard-grid{
+    display:block;
+    margin-bottom:22px;
+  }
+
+  .waiver-left-column,
+  .waiver-right-column{
+    display:contents;
+  }
+
+  [data-waiver-mobile-panel]{
+    display:none !important;
+  }
+
+  [data-waiver-mobile-panel].mobile-panel-active{
+    display:block !important;
+  }
+
+  .waiver-card{
+    border-radius:22px;
+    padding:16px;
+    box-shadow:0 14px 30px rgba(0,31,63,.12);
+  }
+
+  .card-title-row{
+    margin-bottom:12px;
+  }
+
+  .card-title-row h2,
+  .waiver-card h2{
+    font-size:1.18rem;
+  }
+
+  .card-subtitle{
+    font-size:.82rem;
+  }
+
+  /* ===============================
+     MY CALLS MOBILE
+  ================================ */
+
+  #myWaiverCalls .waiver-slot-title{
+    width:fit-content;
+    margin: 0 0 12px;
+    padding:7px 11px;
+    border-radius:999px;
+    background:rgba(0,63,127,.08);
+    color:#002b55;
+    font-size:.82rem;
+    font-weight:950;
+  }
+
+  #myWaiverCalls .waiver-slot-content{
+    grid-template-columns:1fr;
+    gap:12px;
+  }
+
+  .dynamic-call-card{
+    border-radius:20px;
+    padding:15px;
+  }
+
+  .dynamic-call-header{
+    flex-direction:row;
+    align-items:flex-start;
+  }
+
+  .dynamic-call-title strong{
+    font-size:.98rem;
+  }
+
+  .dynamic-call-title span{
+    font-size:.78rem;
+  }
+
+  .order-position-pill{
+    min-width:42px;
+    height:34px;
+    border-radius:14px;
+  }
+
+  label{
+    font-size:.8rem;
+  }
+
+  input,
+  select{
+    min-height:44px;
+    border-radius:14px;
+    font-size:.92rem;
+  }
+
+  .call-actions{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:8px;
+  }
+
+  .call-actions .primary-btn,
+  .call-actions .secondary-btn{
+    width:100%;
+    padding:10px 9px;
+    border-radius:13px;
+    font-size:.8rem;
+  }
+
+  .select-dynamic-call-btn,
+  .select-compensatory-call-btn{
+    grid-column:1 / -1;
+    background:#eef5ff;
+  }
+
+  /* ===============================
+     FREE AGENTS AS PLAYER CARDS
+  ================================ */
+
+  .free-agents-filters{
+    grid-template-columns:1fr;
+    gap:8px;
+  }
+
+  .free-agents-filters input,
+  .free-agents-filters select{
+    min-height:43px;
+  }
+
+  .free-agents-table-wrap{
+    max-height:none;
+    overflow:visible;
+    border:0;
+    background:transparent;
+  }
+
+  #freeAgentsTable{
+    min-width:0;
+    width:100%;
+    border-collapse:separate;
+    border-spacing:0 10px;
+  }
+
+  #freeAgentsTable thead{
+    display:none;
+  }
+
+  #freeAgentsTable tbody,
+  #freeAgentsTable tr,
+  #freeAgentsTable td{
+    display:block;
+    width:100%;
+  }
+
+  #freeAgentsTable tbody tr{
+    position:relative;
+    padding:14px 14px 12px;
+    border-radius:19px;
+    background:
+      linear-gradient(180deg, #ffffff, #f7fbff);
+    border:1px solid rgba(0,63,127,.10);
+    box-shadow:0 10px 22px rgba(0,31,63,.08);
+  }
+
+  #freeAgentsTable tbody tr:hover{
+    background:#ffffff;
+  }
+
+  #freeAgentsTable tbody tr.selected-player{
+    background:#fff7d6 !important;
+    box-shadow:
+      inset 5px 0 0 #ffcc00,
+      0 12px 24px rgba(0,31,63,.10);
+  }
+
+  #freeAgentsTable td{
+    border:0;
+    padding:0;
+    font-size:.88rem;
+  }
+
+  #freeAgentsTable td:nth-child(1){
+    padding-right:52px;
+    color:#001f3f;
+    font-size:1rem;
+    font-weight:950;
+    line-height:1.15;
+  }
+
+  #freeAgentsTable td:nth-child(2),
+  #freeAgentsTable td:nth-child(3),
+  #freeAgentsTable td:nth-child(4){
+    display:inline-flex;
+    width:auto;
+    margin-top:8px;
+    margin-right:6px;
+    padding:5px 8px;
+    border-radius:999px;
+    background:rgba(0,63,127,.07);
+    color:#334155;
+    font-size:.76rem;
+    font-weight:850;
+  }
+
+  #freeAgentsTable td:nth-child(2)::before{
+    content:"Ruolo ";
+    color:#64748b;
+    margin-right:3px;
+  }
+
+  #freeAgentsTable td:nth-child(3)::before{
+    content:"Squadra ";
+    color:#64748b;
+    margin-right:3px;
+  }
+
+  #freeAgentsTable td:nth-child(4)::before{
+    content:"Q ";
+    color:#64748b;
+    margin-right:3px;
+  }
+
+  #freeAgentsTable td:nth-child(5){
+    position:absolute;
+    top:12px;
+    right:12px;
+    width:auto;
+  }
+
+  .u21-table-badge{
+    min-width:40px;
+    height:24px;
+    font-size:.72rem;
+  }
+
+  .player-badges{
+    display:inline-flex;
+    margin-left:6px;
+    font-size:.72rem;
+  }
+
+  /* ===============================
+     PUBLIC ORDER MOBILE
+  ================================ */
+
+  .public-waiver-card{
+    position:static;
+    max-height:none;
+    overflow:visible;
+  }
+
+  .public-waiver-group{
+    border-radius:19px;
+    padding:12px;
+  }
+
+  .public-waiver-group-title{
+    flex-direction:row;
+    align-items:center;
+    gap:8px;
+    margin-bottom:10px;
+    padding-bottom:10px;
+  }
+
+  .public-waiver-group-title h3{
+    font-size:.88rem;
+  }
+
+  .public-waiver-group-title span{
+    font-size:.7rem;
+  }
+
+  .public-waiver-row{
+    grid-template-columns:40px 1fr;
+    min-height:58px;
+    padding:9px;
+    border-radius:15px;
+  }
+
+  .public-waiver-rank{
+    width:36px;
+    height:36px;
+    font-size:.8rem;
+  }
+
+  .public-waiver-main strong{
+    font-size:.88rem;
+  }
+
+  .public-waiver-via{
+    font-size:.72rem;
+  }
+
+  .public-waiver-result{
+    font-size:.76rem;
+  }
+
+  /* ===============================
+     ADMIN OFF IN MOBILE FLOW
+  ================================ */
+
+  .waiver-admin-section{
+    display:none;
+  }
 }
