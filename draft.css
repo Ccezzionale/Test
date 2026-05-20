@@ -5895,3 +5895,123 @@ h1, h2, h3, h4, p{
     justify-content: center;
   }
 }
+
+/* =========================
+   DESKTOP PLAYER POOL - COMPACT TABLE
+   ========================= */
+@media (min-width: 769px){
+
+  /* rende il blocco meno "lenzuolo" */
+  .lista-container{
+    max-width: 1500px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .lista-container .panel-header{
+    padding: 14px 18px 12px !important;
+  }
+
+  .lista-container .panel-title{
+    font-size: 1.2rem !important;
+  }
+
+  .lista-container .panel-subtitle{
+    font-size: .88rem !important;
+  }
+
+  .lista-container .panel-count{
+    min-width: 54px !important;
+    height: 36px !important;
+    font-size: .9rem !important;
+  }
+
+  .lista-container .filters-wrap{
+    padding: 12px 18px 10px !important;
+  }
+
+  .lista-container .filters-grid{
+    gap: 10px !important;
+  }
+
+  .lista-container input[type="text"],
+  .lista-container select{
+    min-height: 36px !important;
+    padding: 7px 10px !important;
+    font-size: .86rem !important;
+    border-radius: 11px !important;
+  }
+
+  .lista-container #lista-giocatori-scroll{
+    padding: 0 18px 14px !important;
+    max-height: 430px !important;
+  }
+
+  .lista-container #lista-giocatori-table th,
+  .lista-container #lista-giocatori-table td{
+    padding: 8px 11px !important;
+    font-size: .86rem !important;
+    line-height: 1.15 !important;
+  }
+
+  .lista-container #lista-giocatori-table th{
+    height: 34px !important;
+  }
+
+  .lista-container #lista-giocatori-table tbody tr{
+    height: 38px !important;
+  }
+
+  /* colonne più compatte, meno autostrada vuota */
+  .lista-container #lista-giocatori-table th:nth-child(1),
+  .lista-container #lista-giocatori-table td:nth-child(1){
+    width: 30% !important;
+  }
+
+  .lista-container #lista-giocatori-table th:nth-child(2),
+  .lista-container #lista-giocatori-table td:nth-child(2){
+    width: 14% !important;
+  }
+
+  .lista-container #lista-giocatori-table th:nth-child(3),
+  .lista-container #lista-giocatori-table td:nth-child(3){
+    width: 22% !important;
+  }
+
+  .lista-container #lista-giocatori-table th:nth-child(4),
+  .lista-container #lista-giocatori-table td:nth-child(4){
+    width: 16% !important;
+    text-align: center !important;
+  }
+
+  .lista-container #lista-giocatori-table th:nth-child(5),
+  .lista-container #lista-giocatori-table td:nth-child(5){
+    width: 18% !important;
+    text-align: center !important;
+  }
+
+  /* badge U21 finalmente visibile anche agli umani */
+  .lista-container #lista-giocatori-table .badge-img-pill{
+    width: 48px !important;
+    height: 28px !important;
+    margin-left: 0 !important;
+    vertical-align: middle !important;
+    transform: none !important;
+  }
+
+  .lista-container #lista-giocatori-table .badge-img-star{
+    width: 32px !important;
+    height: 32px !important;
+    margin-left: 0 !important;
+    vertical-align: middle !important;
+    transform: none !important;
+  }
+
+  .lista-container #lista-giocatori-table .badge-img-protected{
+    width: 30px !important;
+    height: 30px !important;
+    margin-left: 0 !important;
+    vertical-align: middle !important;
+    transform: none !important;
+  }
+}
