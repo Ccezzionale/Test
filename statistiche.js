@@ -335,7 +335,7 @@ function renderTable(containerId, title, rows, cols){
 
 function renderHall(h){
   renderTable('shame-worst', 'Peggiori punteggi assoluti',
-    h.worst.map((r, idx) => ({ pos: idx + 1, gw: r.GW, team: r.Team, pf: r.PF })),
+    h.worst.slice(0,5).map((r, idx) => ({ pos: idx + 1, gw: r.GW, team: r.Team, pf: r.PF })),
     [
       { key:'pos',  label:'#' },
       { key:'gw',   label:'GW' },

@@ -86,15 +86,23 @@
       </div>
     </div>
   </nav>
-  <main class="stats-page">
-    <section class="stats-hero">
-      <div class="stats-kicker">Lega degli Eroi · Statistiche</div>
-      <h1>Power Ranking</h1>
-      <p class="stats-subtitle">
-        La classifica che non guarda solo i punti: forma, media e continuità finiscono nel frullatore.
-        Qui esce il verdetto, senza pietà e senza VAR.
-      </p>
-      <div id="meta-top" class="stats-meta"></div>
+  <main class="stats-page stats-war-room">
+    <section class="stats-hero stats-hero-war">
+      <div class="hero-copy">
+        <div class="stats-kicker">Lega degli Eroi · Statistiche</div>
+        <h1>Power Ranking</h1>
+        <p class="hero-manifesto">Niente alibi. Solo gerarchie.</p>
+        <p class="stats-subtitle">
+          Forma, media e continuità finiscono nel frullatore. Qui esce il verdetto settimanale,
+          freddo come una sentenza e rumoroso come una curva al 90°.
+        </p>
+        <div id="meta-top" class="stats-meta"></div>
+      </div>
+      <div class="hero-alert">
+        <span>Situazione generale</span>
+        <strong>Allerta Ranking</strong>
+        <small>Competizione attiva</small>
+      </div>
     </section>
 
     <!-- POWER RANKING -->
@@ -104,11 +112,11 @@
       <div class="ranking-card">
         <div class="ranking-card-head">
           <div>
-            <span class="section-eyebrow">Classifica completa</span>
-            <h2>Power Ranking</h2>
+            <span class="section-eyebrow">Dal 4° posto in giù</span>
+            <h2>Zona pressione</h2>
           </div>
           <p>
-            Score 0–100: 50% Forma, 30% Media stagionale, 20% Consistenza.
+            Score 0–100: 50% Forma, 30% Media stagionale, 20% Consistenza. I primi tre sono già nel podio sopra.
           </p>
         </div>
 
@@ -119,9 +127,10 @@
               <th>Squadra</th>
               <th>Score</th>
               <th>Trend</th>
-              <th>Media</th>
               <th>Forma</th>
-              <th>Consistenza</th>
+              <th>Media</th>
+              <th>Continuità</th>
+              <th>Stato</th>
             </tr>
           </thead>
           <tbody id="tbody-pr"></tbody>
@@ -134,18 +143,18 @@
     <section class="stats-grid">
       <div class="spotlight-card shame-card">
         <div class="spotlight-head">
-          <span class="section-eyebrow">La cantina del dolore</span>
+          <span class="section-eyebrow">Peggiori della settimana</span>
           <h2>Hall of Shame</h2>
-          <p>I peggiori punteggi assoluti della stagione. Qui non si cade: si precipita con stile.</p>
+          <p>La zona rossa della pagina. Qui il pallone pesa, il tabellone ride.</p>
         </div>
         <div id="shame-worst"></div>
       </div>
 
       <div class="spotlight-card luck-card">
         <div class="spotlight-head">
-          <span class="section-eyebrow">Il tribunale della fortuna</span>
+          <span class="section-eyebrow">Chi regala punti a chiunque</span>
           <h2>Classifica Sculati</h2>
-          <p>Chi ha sorriso alla sorte e chi invece ha trovato il destino con gli scarpini chiodati.</p>
+          <p>La fortuna non bussa: entra, prende il telecomando e cambia risultato.</p>
         </div>
         <div id="luck-most"></div>
       </div>
@@ -154,9 +163,9 @@
     <section class="top-scores-section">
       <div class="spotlight-card scores-card">
         <div class="spotlight-head center">
-          <span class="section-eyebrow">Prestazioni da incorniciare</span>
-          <h2>Migliori 5 punteggi</h2>
-          <p>Le serate in cui la squadra ha acceso il tabellone come un flipper impazzito.</p>
+          <span class="section-eyebrow">Bomber della settimana</span>
+          <h2>Top 5 punteggi</h2>
+          <p>Le cinque esplosioni offensive che hanno bucato il soffitto della giornata.</p>
         </div>
         <div id="fun-top"></div>
       </div>
