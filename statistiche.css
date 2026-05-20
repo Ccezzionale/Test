@@ -2012,3 +2012,414 @@ body::before{
 .hero-subtitle{
   color:rgba(255,255,255,.90) !important;
 }
+
+/* =========================================================
+   MOBILE STATISTICHE - MAIN PAGE POWER RANKING
+   ========================================================= */
+
+@media (max-width: 768px){
+
+  html{
+    scroll-behavior:smooth;
+  }
+
+  .stats-page.stats-war-room{
+    padding:0 12px 32px !important;
+  }
+
+  .stats-hero-banner{
+    min-height:150px !important;
+    padding:24px 14px 22px !important;
+    margin-bottom:12px !important;
+  }
+
+  .hero-stars{
+    font-size:.62rem !important;
+    letter-spacing:.45em !important;
+    margin-bottom:6px !important;
+  }
+
+  .stats-hero-banner h1{
+    font-size:clamp(2.75rem, 13vw, 4.2rem) !important;
+    line-height:.88 !important;
+    padding:0 .18em !important;
+    max-width:100% !important;
+  }
+
+  .hero-script{
+    font-size:.95rem !important;
+    margin:6px 0 8px !important;
+  }
+
+  .hero-subtitle{
+    display:none !important;
+  }
+
+  .hero-gw-pill{
+    margin-top:10px !important;
+    font-size:.72rem !important;
+    padding:6px 12px !important;
+  }
+
+  #classifica-container{
+    padding:0 !important;
+    display:block !important;
+  }
+
+  #pr-podium,
+  .ranking-card,
+  #tabella-classifica{
+    display:none !important;
+  }
+
+  #pr-mobile{
+    display:block !important;
+    padding:0 !important;
+  }
+
+  .mobile-pr-page{
+    display:flex;
+    flex-direction:column;
+    gap:14px;
+    padding-bottom:18px;
+  }
+
+  .mobile-pr-header{
+    padding:14px 14px 4px;
+    text-align:left;
+  }
+
+  .mobile-pr-kicker{
+    display:inline-flex;
+    color:#ffd56a;
+    text-transform:uppercase;
+    letter-spacing:.13em;
+    font-size:.68rem;
+    font-weight:1000;
+  }
+
+  .mobile-pr-header h2{
+    margin:4px 0 4px;
+    color:#fff;
+    text-align:left;
+    font-size:1.8rem;
+    line-height:1;
+    text-transform:uppercase;
+  }
+
+  .mobile-pr-header p{
+    margin:0;
+    color:rgba(255,255,255,.72);
+    font-size:.88rem;
+    line-height:1.35;
+  }
+
+  .mobile-pr-king{
+    position:relative;
+    overflow:hidden;
+    border-radius:26px;
+    padding:22px 18px 18px;
+    min-height:390px;
+    text-align:center;
+    background:
+      radial-gradient(circle at 50% 23%, rgba(255,213,106,.24), transparent 33%),
+      linear-gradient(180deg, rgba(31,48,70,.96), rgba(12,24,39,.98));
+    border:1px solid rgba(255,213,106,.42);
+    box-shadow:
+      0 18px 42px rgba(0,0,0,.34),
+      0 0 28px rgba(255,213,106,.12),
+      inset 0 1px 0 rgba(255,255,255,.10);
+  }
+
+  .mobile-pr-king::after{
+    content:"";
+    position:absolute;
+    left:9%;
+    right:9%;
+    bottom:0;
+    height:6px;
+    border-radius:999px 999px 0 0;
+    background:linear-gradient(90deg, transparent, #ffd56a, transparent);
+    box-shadow:0 0 22px rgba(255,213,106,.55);
+  }
+
+  .mobile-rank-badge{
+    position:absolute;
+    top:16px;
+    left:16px;
+    width:54px;
+    height:54px;
+    display:grid;
+    place-items:center;
+    border-radius:16px;
+    background:linear-gradient(180deg, #ffe17b, #c78308);
+    color:#151008;
+    font-size:1.1rem;
+    font-weight:1000;
+  }
+
+  .mobile-state-badge{
+    position:absolute;
+    top:20px;
+    right:16px;
+    padding:8px 12px;
+    border-radius:999px;
+    color:#ffd56a;
+    background:rgba(255,213,106,.10);
+    border:1px solid rgba(255,213,106,.32);
+    font-size:.68rem;
+    font-weight:1000;
+    text-transform:uppercase;
+    letter-spacing:.06em;
+  }
+
+  .mobile-king-logo{
+    width:150px;
+    height:150px;
+    object-fit:contain;
+    margin-top:50px;
+    filter:drop-shadow(0 18px 20px rgba(0,0,0,.42));
+  }
+
+  .mobile-pr-king h3{
+    margin:12px 0 4px;
+    color:#fff;
+    text-transform:uppercase;
+    font-size:1.35rem;
+    font-weight:1000;
+  }
+
+  .mobile-king-score{
+    color:#ffd56a;
+    font-size:4.3rem;
+    line-height:.9;
+    font-weight:1000;
+    letter-spacing:-.04em;
+    text-shadow:0 8px 22px rgba(0,0,0,.35);
+  }
+
+  .mobile-pr-trend{
+    display:inline-flex;
+    justify-content:center;
+    align-items:center;
+    min-width:34px;
+    margin-top:5px;
+    font-weight:1000;
+  }
+
+  .mobile-pr-trend.up{ color:#5bd779; }
+  .mobile-pr-trend.down{ color:#ff5f66; }
+  .mobile-pr-trend.flat{ color:#cfd7e2; }
+
+  .mobile-stat-grid{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:0;
+    overflow:hidden;
+    margin-top:16px;
+    border-radius:16px;
+    background:rgba(5,12,22,.44);
+    border:1px solid rgba(255,255,255,.14);
+  }
+
+  .mobile-stat-grid div{
+    padding:10px 6px;
+    border-right:1px solid rgba(255,255,255,.10);
+  }
+
+  .mobile-stat-grid div:last-child{
+    border-right:0;
+  }
+
+  .mobile-stat-grid span{
+    display:block;
+    color:#b8c4d2;
+    font-size:.64rem;
+    text-transform:uppercase;
+    font-weight:1000;
+    letter-spacing:.04em;
+  }
+
+  .mobile-stat-grid strong{
+    display:block;
+    margin-top:5px;
+    color:#fff;
+    font-size:1.25rem;
+    font-weight:1000;
+  }
+
+  .mobile-podium-mini{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:12px;
+  }
+
+  .mobile-mini-card{
+    position:relative;
+    min-height:210px;
+    padding:14px 12px;
+    border-radius:22px;
+    text-align:center;
+    background:
+      radial-gradient(circle at 50% 25%, rgba(255,255,255,.12), transparent 32%),
+      linear-gradient(180deg, rgba(30,48,70,.92), rgba(13,25,40,.98));
+    border:1px solid rgba(255,255,255,.14);
+    box-shadow:0 12px 28px rgba(0,0,0,.24);
+  }
+
+  .mobile-mini-top{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:8px;
+  }
+
+  .mobile-rank-small{
+    display:grid;
+    place-items:center;
+    width:40px;
+    height:40px;
+    border-radius:13px;
+    color:#fff;
+    background:rgba(255,255,255,.10);
+    border:1px solid rgba(255,255,255,.16);
+    font-weight:1000;
+  }
+
+  .mobile-mini-logo{
+    width:82px;
+    height:82px;
+    object-fit:contain;
+    margin:2px auto 8px;
+    filter:drop-shadow(0 12px 16px rgba(0,0,0,.36));
+  }
+
+  .mobile-mini-card h3{
+    margin:0 0 6px;
+    color:#fff;
+    font-size:.88rem;
+    text-transform:uppercase;
+    line-height:1.1;
+  }
+
+  .mobile-mini-card strong{
+    display:block;
+    color:#ffd56a;
+    font-size:2rem;
+    line-height:1;
+  }
+
+  .mobile-mini-state{
+    display:inline-flex;
+    margin-top:8px;
+    padding:5px 9px;
+    border-radius:999px;
+    color:#ffd56a;
+    background:rgba(255,213,106,.10);
+    border:1px solid rgba(255,213,106,.24);
+    font-size:.62rem;
+    font-weight:1000;
+    text-transform:uppercase;
+  }
+
+  .mobile-pr-list{
+    margin-top:4px;
+    display:flex;
+    flex-direction:column;
+    gap:9px;
+  }
+
+  .mobile-list-title{
+    color:#ffd56a;
+    font-size:.78rem;
+    font-weight:1000;
+    text-transform:uppercase;
+    letter-spacing:.10em;
+    padding:4px 2px;
+  }
+
+  .mobile-rank-row{
+    display:grid;
+    grid-template-columns:44px 44px 1fr auto;
+    align-items:center;
+    gap:10px;
+    padding:10px 12px;
+    border-radius:18px;
+    background:linear-gradient(90deg, rgba(27,45,67,.92), rgba(18,31,48,.92));
+    border:1px solid rgba(255,255,255,.12);
+    box-shadow:0 8px 18px rgba(0,0,0,.18);
+  }
+
+  .mobile-row-rank{
+    color:#ffd56a;
+    font-weight:1000;
+    font-size:.9rem;
+  }
+
+  .mobile-row-logo{
+    width:38px;
+    height:38px;
+    object-fit:contain;
+    border-radius:50%;
+    background:rgba(255,255,255,.92);
+  }
+
+  .mobile-row-main{
+    min-width:0;
+  }
+
+  .mobile-row-main strong{
+    display:block;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+    color:#fff;
+    font-size:.9rem;
+  }
+
+  .mobile-row-main span{
+    display:block;
+    margin-top:2px;
+    color:#b8c4d2;
+    font-size:.70rem;
+    text-transform:uppercase;
+    letter-spacing:.04em;
+    font-weight:800;
+  }
+
+  .mobile-row-score{
+    text-align:right;
+  }
+
+  .mobile-row-score strong{
+    display:block;
+    color:#ffd56a;
+    font-size:1.05rem;
+  }
+
+  .mobile-row-score .mobile-pr-trend{
+    margin:1px 0 0;
+    font-size:.74rem;
+  }
+
+  .mobile-extra-button{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    margin:10px 0 4px;
+    padding:13px 16px;
+    border-radius:999px;
+    color:#151008;
+    background:linear-gradient(180deg, #ffe17b, #d89a17);
+    text-decoration:none;
+    font-weight:1000;
+    text-transform:uppercase;
+    letter-spacing:.03em;
+    font-size:.78rem;
+    box-shadow:0 12px 24px rgba(0,0,0,.26);
+  }
+
+  #extra-stats{
+    scroll-margin-top:82px;
+  }
+}
