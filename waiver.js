@@ -2767,8 +2767,8 @@ async function saveWaiverSettings() {
 
   currentSettings = data;
 
-  activePhaseEl.textContent = currentSettings.active_phase || "Non impostata";
-  activeWeekEl.textContent = currentSettings.active_week || "-";
+if (activePhaseEl) activePhaseEl.textContent = currentSettings.active_phase || "Non impostata";
+if (activeWeekEl) activeWeekEl.textContent = currentSettings.active_week || "-";
 
   activeWaiverOrderId = null;
   waiverOrderRows = [];
@@ -2807,10 +2807,10 @@ async function initWaiverRoom() {
     teamConferenceEl.textContent = team.conference || "Non assegnata";
   }
 
-  if (settings) {
-    activePhaseEl.textContent = settings.active_phase || "Non impostata";
-    activeWeekEl.textContent = settings.active_week || "-";
-  }
+if (settings) {
+  if (activePhaseEl) activePhaseEl.textContent = settings.active_phase || "Non impostata";
+  if (activeWeekEl) activeWeekEl.textContent = settings.active_week || "-";
+}
    syncSettingsPanel();
 
   await loadTeams();
