@@ -170,25 +170,64 @@ for (const r of clean){
   return { ranked, maxGW };
 }
 
+
+function teamLogoImg(team, extraClass=''){
+  const png = `${LOGO_DIR}${team}.png`;
+  const jpg = `${LOGO_DIR}${team}.jpg`;
+  const ph  = `${LOGO_DIR}_placeholder.png`;
+  return `<img class="${extraClass}" src="${png}" alt="${team}" loading="lazy"
+           onerror="if(!this.dataset.jpg){ this.dataset.jpg=1; this.src='${jpg}'; }
+                    else { this.onerror=null; this.src='${ph}'; }">`;
+}
+
 function renderPR(res){
   const tbody = document.getElementById('tbody-pr');
-  const rows = res.ranked.map(r=>{
-    const arrow = r.delta>0?'▲':(r.delta<0?'▼':'•');
-    const cls   = r.delta>0?'trend up':(r.delta<0?'trend down':'');
-    return `<tr class="riga-classifica">
-      <td class="mono"><strong>${r.rank}</strong></td>
-      <td>${logoHTML(r.team)}</td>
-      <td class="mono">${r.score.toFixed(1)}</td>
-      <td class="${cls}">${arrow} ${r.delta===0?'':Math.abs(r.delta)}</td>
-      <td class="mono">${r.media.toFixed(0)}</td>
-      <td class="mono">${r.forma.toFixed(0)}</td>
-      <td class="mono">${r.cons.toFixed(0)}</td>
-    </tr>`;
-  }).join('');
-  tbody.innerHTML = rows;
+  const podium = document.getElementById('pr-podium');
+
+  if (podium){
+    const top3 = res.ranked.slice(0,3);
+    const order = top3.length >= 3 ? [top3[1], top3[0], top3[2]] : top3;
+
+    podium.innerHTML = order.map(r => {
+      const arrow = r.delta>0 ? `▲ ${r.delta}` : (r.delta<0 ? `▼ ${Math.abs(r.delta)}` : '•');
+      const trendClass = r.delta>0 ? 'up' : (r.delta<0 ? 'down' : 'flat');
+
+      return `
+        <article class="podium-card rank-${r.rank}">
+          <div class="podium-rank">#${r.rank}</div>
+          ${teamLogoImg(r.team, 'podium-logo')}
+          <div class="podium-team">${r.team}</div>
+          <div class="podium-score">${r.score.toFixed(1)}</div>
+          <div class="podium-mini">
+            <span>Forma ${r.forma.toFixed(0)}</span>
+            <span class="trend ${trendClass}">${arrow}</span>
+          </div>
+        </article>
+      `;
+    }).join('');
+  }
+
+  if (tbody){
+    const rows = res.ranked.map(r=>{
+      const arrow = r.delta>0?'▲':(r.delta<0?'▼':'•');
+      const cls   = r.delta>0?'trend up':(r.delta<0?'trend down':'');
+      return `<tr class="riga-classifica">
+        <td class="mono"><strong>${r.rank}</strong></td>
+        <td>${logoHTML(r.team)}</td>
+        <td class="mono"><span class="score-pill">${r.score.toFixed(1)}</span></td>
+        <td class="${cls}">${arrow} ${r.delta===0?'':Math.abs(r.delta)}</td>
+        <td class="mono">${r.media.toFixed(0)}</td>
+        <td class="mono">${r.forma.toFixed(0)}</td>
+        <td class="mono">${r.cons.toFixed(0)}</td>
+      </tr>`;
+    }).join('');
+    tbody.innerHTML = rows;
+  }
+
   const metaTop = document.getElementById('meta-top');
   if (metaTop) metaTop.textContent = `Ultima giornata inclusa: GW ${res.maxGW}`;
 }
+
 
 function renderPRMobile(res){
   const wrap = document.getElementById('pr-mobile');
@@ -293,42 +332,23 @@ function renderTable(containerId, title, rows, cols){
   el.innerHTML = `<div class="badge">${title}</div><table class="subtable">${thead}${tbody}</table>`;
 }
 
+
 function renderHall(h){
-  // 1) SOLO GW, Team (con logo) e PF
-  renderTable('shame-worst', 'Peggiori punteggi',
-    h.worst.map(r => ({ gw: r.GW, team: r.Team, pf: r.PF })),
+  renderTable('shame-worst', 'Peggiori punteggi assoluti',
+    h.worst.map((r, idx) => ({ pos: idx + 1, gw: r.GW, team: r.Team, pf: r.PF })),
     [
+      { key:'pos',  label:'#' },
       { key:'gw',   label:'GW' },
-      { key:'team', label:'Team', type:'team' },      // mostra logo + nome
-      { key:'pf',   label:'PF',   format:v => Number(v).toFixed(1) }
+      { key:'team', label:'Squadra', type:'team' },
+      { key:'pf',   label:'Punti', format:v => `<span class="score-pill shame-score">${Number(v).toFixed(1)}</span>` }
     ]
   );
 
-  // 2) Vittorie col punteggio più basso (con avversario)
-  renderTable('shame-lowwins', 'Vittorie col punteggio più basso',
-    h.lowWins.map(r => ({ gw: r.GW, team: r.Team, pf: r.PF, opp: r.Opponent, pa: r.PA })),
-    [
-      { key:'gw',   label:'GW' },
-      { key:'team', label:'Team', type:'team' },
-      { key:'pf',   label:'PF',   format:v => Number(v).toFixed(1) },
-      { key:'opp',  label:'vs',   type:'team' },
-      { key:'pa',   label:'PA',   format:v => Number(v).toFixed(1) }
-    ]
-  );
-
-  // 3) Sconfitte col punteggio più alto (con avversario)
-  renderTable('shame-highloss', 'Sconfitte col punteggio più alto',
-    h.highLoss.map(r => ({ gw: r.GW, team: r.Team, pf: r.PF, opp: r.Opponent, pa: r.PA })),
-    [
-      { key:'gw',   label:'GW' },
-      { key:'team', label:'Team', type:'team' },
-      { key:'pf',   label:'PF',   format:v => Number(v).toFixed(1) },
-      { key:'opp',  label:'vs',   type:'team' },
-      { key:'pa',   label:'PA',   format:v => Number(v).toFixed(1) }
-    ]
-  );
+  const lowWins = document.getElementById('shame-lowwins');
+  const highLoss = document.getElementById('shame-highloss');
+  if (lowWins) lowWins.innerHTML = '';
+  if (highLoss) highLoss.innerHTML = '';
 }
-
 
 
 /********** SCULATI / SFIGATI (fix + pareggio sculato) **********/
@@ -443,14 +463,20 @@ const tally = new Map(
 }
 
   // mostra la tabella sculati/sfigati
+
 function renderLuckBox(l){
-  renderTable('luck-most','Sculati / Sfigati (cumulato)', l.table, [
-    {key:'team',label:'Team', type:'team'},
+  renderTable('luck-most','Sculati / Hall of Shame della fortuna', l.table, [
+    {key:'team',label:'Squadra', type:'team'},
     {key:'sculati',label:'Sculati'},
     {key:'sfigati',label:'Sfigati'},
-    {key:'netto',label:'Netto'}
+    {key:'netto',label:'Netto', format:v => {
+      const n = Number(v) || 0;
+      const cls = n >= 0 ? 'luck-positive' : 'luck-negative';
+      return `<span class="${cls}">${n > 0 ? '+' : ''}${n}</span>`;
+    }}
  ]);
 }
+
 
 /********** CURIOSITÀ **********/
 function renderFunFacts(h){
@@ -479,16 +505,19 @@ function computeTopScores(clean, n = 5){
     .map(r => ({ gw: r.GW, team: r.Team, pf: r.PointsFor }));
 }
 
+
 function renderTopScores(list){
-  renderTable('fun-top', 'Migliori punteggi di sempre (Top 5)',
-    list,
+  renderTable('fun-top', 'Top 5 punteggi stagionali',
+    list.map((r, idx) => ({ pos: idx + 1, gw: r.gw, team: r.team, pf: r.pf })),
     [
+      { key:'pos',  label:'#' },
       { key:'gw',   label:'GW' },
-      { key:'team', label:'Team', type:'team' },        // logo + nome
-      { key:'pf',   label:'PF',   format:v => Number(v).toFixed(1) }
+      { key:'team', label:'Squadra', type:'team' },
+      { key:'pf',   label:'Punti', format:v => `<span class="score-pill top-score">${Number(v).toFixed(1)}</span>` }
     ]
   );
 }
+
 
 /* ================= ANDAMENTO SQUADRE (fix: team case-insensitive) ================= */
 let trendChart = null; // istanza Chart.js
@@ -901,19 +930,15 @@ function buildRaceFromClean(clean){
   // Power Ranking
   const pr = computePower(clean);
   renderPR(pr);
-  initTrend(clean, pr?.ranked?.[0]?.team);
   renderPRMobile(pr);
 
-  // Extra
+  // Sezioni principali
   const hall = computeHall(clean);
   renderHall(hall);
-  renderFunFacts(hall);
-  
-  const topScores = computeTopScores(clean, 5);
-  renderTopScores(topScores);
 
   const luck = computeLuck(clean);
   renderLuckBox(luck);
 
-  buildRaceFromClean(clean);
+  const topScores = computeTopScores(clean, 5);
+  renderTopScores(topScores);
 })();
