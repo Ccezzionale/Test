@@ -767,3 +767,32 @@ td {
     font-size: 0.9rem;
   }
 }
+
+/* =========================================================
+   FIX MENU SEZIONI MOBILE REGOLAMENTO
+   ========================================================= */
+
+@media (max-width: 768px) {
+  .link-sezione {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 10px !important;
+    padding: 14px !important;
+    box-sizing: border-box !important;
+  }
+
+  .link-sezione a {
+    width: auto !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    text-align: center !important;
+    padding: 11px 8px !important;
+    border-radius: 999px !important;
+    white-space: normal !important;
+    line-height: 1.15 !important;
+  }
+}
