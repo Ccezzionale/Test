@@ -1207,3 +1207,135 @@ body::before{
 .podium-card.rank-1:hover{
   transform:translateY(-24px);
 }
+
+/* =========================================================
+   PODIO BOOST - ARENA / BROADCAST LOOK
+   ========================================================= */
+
+/* sfondo scenico dietro al podio */
+#pr-podium{
+  max-width: 1420px;
+  margin: 18px auto 42px;
+  padding: 44px 18px 56px;
+  border-radius: 28px;
+  background:
+    radial-gradient(circle at 50% 0%, rgba(255,210,90,.18), transparent 28%),
+    radial-gradient(circle at 18% 65%, rgba(67,170,255,.20), transparent 24%),
+    radial-gradient(circle at 82% 65%, rgba(255,70,86,.18), transparent 24%),
+    linear-gradient(180deg, rgba(4,10,18,.20), rgba(4,10,18,.42));
+}
+
+/* linee/luce tipo palco */
+#pr-podium::after{
+  content:"";
+  position:absolute;
+  left:4%;
+  right:4%;
+  bottom:18px;
+  height:130px;
+  pointer-events:none;
+  z-index:0;
+  background:
+    linear-gradient(90deg, transparent, rgba(255,255,255,.10), transparent),
+    radial-gradient(ellipse at 50% 100%, rgba(255,210,90,.16), transparent 55%);
+  opacity:.7;
+}
+
+/* card più “vetrina premium” */
+.podium-card{
+  backdrop-filter: blur(10px);
+  background:
+    radial-gradient(circle at 50% 28%, rgba(255,255,255,.16), transparent 23%),
+    radial-gradient(circle at 50% 100%, rgba(255,255,255,.07), transparent 42%),
+    linear-gradient(180deg, rgba(24,39,56,.95), rgba(3,10,20,.99));
+}
+
+/* bordo superiore luminoso */
+.podium-card::before{
+  background:
+    linear-gradient(135deg, rgba(255,255,255,.45), transparent 24%, transparent 70%, rgba(255,255,255,.18)),
+    linear-gradient(90deg, transparent, rgba(255,255,255,.10), transparent);
+}
+
+/* luci specifiche per posizione */
+.podium-card.rank-1{
+  background:
+    radial-gradient(circle at 50% 28%, rgba(255,215,95,.24), transparent 27%),
+    radial-gradient(circle at 50% 100%, rgba(255,199,66,.16), transparent 48%),
+    linear-gradient(180deg, rgba(22,31,45,.97), rgba(3,9,18,.99));
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.14),
+    inset 0 -55px 95px rgba(0,0,0,.46),
+    0 32px 70px rgba(0,0,0,.55),
+    0 0 62px rgba(255,199,66,.24);
+}
+
+.podium-card.rank-2{
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.12),
+    inset 0 -45px 80px rgba(0,0,0,.40),
+    0 26px 56px rgba(0,0,0,.46),
+    0 0 46px rgba(76,174,255,.20);
+}
+
+.podium-card.rank-3{
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.12),
+    inset 0 -45px 80px rgba(0,0,0,.40),
+    0 26px 56px rgba(0,0,0,.46),
+    0 0 46px rgba(255,79,95,.18);
+}
+
+/* logo più protagonista */
+.podium-logo{
+  transform: scale(1.08);
+  filter:
+    drop-shadow(0 18px 22px rgba(0,0,0,.45))
+    drop-shadow(0 0 20px rgba(255,255,255,.10));
+}
+
+.podium-card.rank-1 .podium-logo{
+  transform: scale(1.12);
+  filter:
+    drop-shadow(0 20px 24px rgba(0,0,0,.48))
+    drop-shadow(0 0 24px rgba(255,210,90,.18));
+}
+
+/* score più “televisivo” */
+.podium-score{
+  background: linear-gradient(180deg, #ffe08a 0%, #ffc43d 45%, #d78d10 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  text-shadow:
+    0 10px 24px rgba(0,0,0,.42),
+    0 0 26px rgba(255,198,61,.18);
+}
+
+/* stats meno fredde */
+.podium-stats{
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.075), rgba(255,255,255,.025));
+  border-color: rgba(255,255,255,.16);
+}
+
+.podium-stats strong{
+  font-size:1.35rem;
+}
+
+/* pedane più larghe, effetto palco */
+.podium-card::after{
+  bottom:-24px;
+  height:28px;
+  width:96%;
+  opacity:.95;
+}
+
+/* #1 ancora più centrale */
+.podium-card.rank-1{
+  transform:translateY(-24px);
+}
+
+.podium-card.rank-1:hover{
+  transform:translateY(-30px);
+}
