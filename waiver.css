@@ -2829,3 +2829,121 @@ button:disabled {
     display:none;
   }
 }
+
+/* =========================================================
+   WAIVER MOBILE FINAL FLOW
+   Chiama = chiamate + svincolati
+   ========================================================= */
+
+@media (max-width: 768px){
+
+  .waiver-mobile-tabs{
+    position: sticky;
+    top: 0;
+    z-index: 40;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 6px;
+    margin: 0 0 14px;
+    padding: 7px;
+    border-radius: 20px;
+    background: rgba(0, 31, 63, .96);
+    border: 1px solid rgba(255,255,255,.10);
+    box-shadow: 0 12px 26px rgba(0,31,63,.24);
+    backdrop-filter: blur(10px);
+  }
+
+  .waiver-mobile-tab{
+    position: relative;
+    border: 0;
+    min-height: 42px;
+    border-radius: 15px;
+    background: transparent;
+    color: rgba(255,255,255,.62);
+    font-weight: 950;
+    font-size: .76rem;
+    letter-spacing: -.01em;
+  }
+
+  .waiver-mobile-tab.active{
+    background: linear-gradient(135deg, #ffcc00, #ffe27a);
+    color: #001f3f;
+    box-shadow: 0 8px 18px rgba(255,204,0,.20);
+  }
+
+  .mobile-tab-badge{
+    position: absolute;
+    top: 4px;
+    right: 7px;
+    width: 17px;
+    height: 17px;
+    border-radius: 50%;
+    align-items: center;
+    justify-content: center;
+    background: #ef4444;
+    color: #fff;
+    font-size: .65rem;
+    font-weight: 950;
+    box-shadow: 0 0 0 2px rgba(0,31,63,.96);
+  }
+
+  .waiver-dashboard-grid{
+    display: block;
+    margin-bottom: 22px;
+  }
+
+  .waiver-left-column,
+  .waiver-right-column{
+    display: contents;
+  }
+
+  [data-waiver-mobile-panel]{
+    display: none !important;
+  }
+
+  [data-waiver-mobile-panel].mobile-panel-active{
+    display: block !important;
+  }
+
+  /* Se due card appartengono alla stessa tab, metti spazio tra loro */
+  [data-waiver-mobile-panel="calls"].mobile-panel-active + [data-waiver-mobile-panel="calls"].mobile-panel-active{
+    margin-top: 14px;
+  }
+
+  .my-waiver-card.mobile-panel-active{
+    margin-bottom: 14px;
+  }
+
+  .free-agents-card.mobile-panel-active{
+    margin-top: 0;
+  }
+
+  /* Nascondi il pannello admin wrapper solo se non serve */
+  .waiver-admin-section{
+    display: block;
+    margin-top: 0;
+  }
+
+  .waiver-admin-section [data-waiver-mobile-panel="admin"]:not(.mobile-panel-active){
+    display: none !important;
+  }
+
+  .waiver-admin-section [data-waiver-mobile-panel="admin"].mobile-panel-active{
+    display: block !important;
+  }
+
+  /* Aiutino: nel tab Chiama spiega il flusso */
+  .free-agents-card .card-title-row::after{
+    content: "Tocca un giocatore per inserirlo nella chiamata selezionata";
+    display: block;
+    width: 100%;
+    margin-top: 6px;
+    padding: 8px 10px;
+    border-radius: 12px;
+    background: rgba(255,204,0,.16);
+    color: #725300;
+    font-size: .76rem;
+    font-weight: 850;
+    line-height: 1.25;
+  }
+}
