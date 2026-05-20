@@ -1928,3 +1928,81 @@ button:disabled {
     display: none !important;
   }
 }
+
+/* =========================================================
+   WAIVER HERO CLEANUP - TEAM CARD ONLY
+   ========================================================= */
+
+.waiver-hidden-status{
+  display:none !important;
+}
+
+.waiver-hero-visual,
+.hero-visual-main,
+.hero-stat-grid,
+.hero-stat-card{
+  display:none !important;
+}
+
+@media (min-width: 1024px){
+
+  .waiver-hero-team{
+    width: 390px;
+    min-width: 390px;
+    padding: 22px;
+    border-radius: 26px;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    background:
+      linear-gradient(180deg, rgba(255,255,255,0.16), rgba(255,255,255,0.07));
+    border: 1px solid rgba(255,255,255,0.16);
+    box-shadow:
+      0 22px 44px rgba(0,0,0,0.18),
+      inset 0 1px 0 rgba(255,255,255,0.12);
+    backdrop-filter: blur(8px);
+  }
+
+  .waiver-hero-team .hero-live-pill{
+    align-self: flex-start;
+    margin: 0;
+  }
+
+  .hero-team-main{
+    margin-bottom: 0;
+    gap: 18px;
+  }
+
+  .hero-team-logo-wrap{
+    width: 96px;
+    height: 96px;
+    border-radius: 24px;
+  }
+
+  .hero-team-logo{
+    width: 82px;
+    height: 82px;
+  }
+
+  .hero-team-text strong{
+    font-size: 1.65rem;
+  }
+
+  .hero-team-conference{
+    display: inline-flex;
+    width: fit-content;
+    margin-top: 4px;
+    padding: 5px 10px;
+    border-radius: 999px;
+    background: rgba(255,204,0,0.18);
+    border: 1px solid rgba(255,204,0,0.28);
+    color: #ffdf6b;
+    font-size: .82rem;
+    font-weight: 900;
+  }
+
+  .hero-team-stats,
+  .hero-team-stat{
+    display:none !important;
+  }
+}
