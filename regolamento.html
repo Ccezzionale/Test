@@ -972,11 +972,6 @@ function evidenziaInSezione(section, parola) {
     }
   }
 
-  // Quando la pagina viene caricata con un hash nell'URL
-  document.addEventListener("DOMContentLoaded", function () {
-    apriFisarmonicaDaHash(window.location.hash);
-  });
-
   // Quando clicchi uno dei link nella griglia
   document.querySelectorAll('.link-sezione a').forEach(link => {
     link.addEventListener('click', function (e) {
