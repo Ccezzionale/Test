@@ -2535,3 +2535,74 @@ body::before{
     height:26px;
   }
 }
+
+/* =========================================================
+   MOBILE TABS FIX DEFINITIVO
+   ========================================================= */
+
+@media (max-width:768px){
+
+  .mobile-stats-tabs{
+    display:grid !important;
+    grid-template-columns:1fr 1fr;
+    gap:6px;
+    margin:0 0 16px !important;
+    padding:6px;
+    border-radius:22px;
+    background:rgba(8,22,42,.92);
+    border:1px solid rgba(255,255,255,.14);
+    box-shadow:0 12px 28px rgba(0,0,0,.25);
+    position:sticky;
+    top:0;
+    z-index:50;
+  }
+
+  .mobile-stats-tab{
+    border:0;
+    min-height:46px;
+    border-radius:17px;
+    background:transparent;
+    color:#b8c4d2;
+    font-weight:1000;
+    text-transform:uppercase;
+    letter-spacing:.02em;
+  }
+
+  .mobile-stats-tab.active{
+    color:#151008;
+    background:linear-gradient(180deg, #ffe17b, #d89a17);
+    box-shadow:0 8px 18px rgba(0,0,0,.24);
+  }
+
+  /* default: mobile mostra SOLO Power Ranking */
+  .stats-page:not(.mobile-view-stats) #classifica-container{
+    display:block !important;
+  }
+
+  .stats-page:not(.mobile-view-stats) #extra-stats{
+    display:none !important;
+  }
+
+  /* tab Statistiche: mostra SOLO Hall / Top5 / Sculati */
+  .stats-page.mobile-view-stats #classifica-container{
+    display:none !important;
+  }
+
+  .stats-page.mobile-view-stats #extra-stats{
+    display:grid !important;
+    grid-template-columns:1fr !important;
+    gap:16px !important;
+    margin-top:0 !important;
+  }
+
+  .stats-page.mobile-view-stats .stats-left-stack{
+    display:flex !important;
+    flex-direction:column !important;
+    gap:16px !important;
+  }
+
+  /* via il vecchio bottone */
+  .mobile-extra-button{
+    display:none !important;
+  }
+}
