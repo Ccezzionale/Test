@@ -363,3 +363,285 @@ tbody tr:nth-child(even) {
     line-height: 1;
   }
 }
+
+/* =========================================================
+   REGOLAMENTO RESTYLE APP
+   Incollare in fondo a regolamento.css
+   ========================================================= */
+
+body {
+  background:
+    radial-gradient(circle at top left, rgba(255, 215, 0, 0.14), transparent 30%),
+    radial-gradient(circle at top right, rgba(0, 95, 194, 0.12), transparent 34%),
+    linear-gradient(180deg, #f7f9fc 0%, #eef3f8 100%);
+}
+
+.wrapper {
+  max-width: 1180px;
+  padding-top: 38px;
+}
+
+/* Titolo più da pagina premium */
+h1 {
+  width: fit-content;
+  max-width: 100%;
+  margin: 22px auto 28px;
+  padding: 18px 28px;
+  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.78);
+  border: 1px solid rgba(0, 31, 63, 0.10);
+  box-shadow: 0 18px 38px rgba(0, 31, 63, 0.10);
+  color: #001f3f;
+  font-size: clamp(2rem, 3vw, 2.65rem);
+  letter-spacing: -0.03em;
+  backdrop-filter: blur(10px);
+}
+
+/* Menu sezioni stile app */
+.link-sezione {
+  max-width: 980px;
+  padding: 16px;
+  margin-bottom: 28px;
+  border-radius: 24px;
+  background:
+    linear-gradient(135deg, rgba(0, 31, 63, 0.98), rgba(0, 55, 105, 0.98));
+  border: 1px solid rgba(255, 215, 0, 0.18);
+  box-shadow: 0 18px 42px rgba(0, 31, 63, 0.22);
+  gap: 10px;
+}
+
+.link-sezione a {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 215, 0, 0.18);
+  color: #ffdf55;
+  border-radius: 999px;
+  padding: 10px 15px;
+  font-size: 0.95rem;
+  line-height: 1;
+}
+
+.link-sezione a:hover {
+  background: #ffdf55;
+  color: #001f3f;
+  transform: translateY(-2px);
+}
+
+/* Search più elegante */
+.search-container {
+  margin: 10px auto 34px;
+}
+
+.search-container input {
+  width: min(420px, 100%);
+  border-radius: 999px;
+  border: 1px solid rgba(0, 31, 63, 0.16);
+  box-shadow: 0 10px 24px rgba(0, 31, 63, 0.06);
+}
+
+.search-container button {
+  border-radius: 999px;
+  padding-inline: 24px;
+  background: linear-gradient(135deg, #001f3f, #073e73);
+  box-shadow: 0 12px 22px rgba(0, 31, 63, 0.18);
+}
+
+/* Accordion card */
+details {
+  max-width: 980px;
+  margin: 0 auto 18px;
+  border-radius: 22px;
+  border: 1px solid rgba(0, 31, 63, 0.10);
+  background: rgba(255, 255, 255, 0.86);
+  box-shadow: 0 14px 34px rgba(0, 31, 63, 0.08);
+  backdrop-filter: blur(8px);
+}
+
+details:hover {
+  border-color: rgba(0, 31, 63, 0.22);
+  box-shadow: 0 18px 42px rgba(0, 31, 63, 0.12);
+}
+
+details[open] {
+  border-color: rgba(255, 215, 0, 0.55);
+  box-shadow: 0 22px 48px rgba(0, 31, 63, 0.14);
+}
+
+/* Header accordion */
+summary {
+  min-height: 62px;
+  padding: 18px 22px;
+  font-size: 1.18rem;
+  letter-spacing: -0.015em;
+  border-radius: 22px;
+}
+
+details[open] summary {
+  background:
+    linear-gradient(135deg, rgba(0, 31, 63, 0.98), rgba(0, 65, 120, 0.98));
+  color: #fff;
+}
+
+summary::before {
+  content: "›";
+  width: 28px;
+  height: 28px;
+  display: inline-grid;
+  place-items: center;
+  border-radius: 50%;
+  background: rgba(0, 31, 63, 0.09);
+  color: #001f3f;
+  font-size: 1.25rem;
+  font-weight: 900;
+}
+
+details[open] summary::before {
+  background: #ffdf55;
+  color: #001f3f;
+  transform: rotate(90deg);
+}
+
+/* Corpo interno più leggibile */
+details > *:not(summary) {
+  max-width: 880px;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 26px;
+  padding-right: 26px;
+}
+
+details[open] > h4:first-of-type {
+  margin-top: 26px;
+}
+
+p {
+  font-size: 1.02rem;
+  line-height: 1.72;
+}
+
+li {
+  line-height: 1.62;
+  margin-bottom: 0.5rem;
+}
+
+/* Titoletti interni più puliti */
+h4, h5, h6 {
+  color: #001f3f;
+  letter-spacing: -0.01em;
+}
+
+h4 {
+  font-size: 1.22rem;
+  margin-top: 1.45rem;
+}
+
+h5 {
+  font-size: 1.05rem;
+  padding-left: 12px;
+  border-left: 4px solid #ffdf55;
+}
+
+h6 {
+  font-size: 0.96rem;
+  color: #0b5fc2;
+}
+
+/* Liste meno pesanti */
+ul, ol {
+  background: rgba(0, 31, 63, 0.025);
+  border-radius: 14px;
+  padding-top: 12px;
+  padding-bottom: 12px;
+  padding-right: 16px;
+}
+
+/* Tabelle più moderne */
+table {
+  border-radius: 16px;
+  border: 1px solid rgba(0, 31, 63, 0.12);
+  box-shadow: 0 12px 28px rgba(0, 31, 63, 0.06);
+}
+
+thead {
+  background: linear-gradient(135deg, #001f3f, #074a88);
+}
+
+th {
+  font-size: 0.92rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+td {
+  background: rgba(255, 255, 255, 0.86);
+}
+
+/* Evidenziatore ricerca */
+.highlight {
+  background: #ffdf55;
+  color: #001f3f;
+  box-shadow: 0 0 0 3px rgba(255, 223, 85, 0.32);
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+  .wrapper {
+    padding: 22px 12px 34px;
+  }
+
+  h1 {
+    padding: 16px 18px;
+    font-size: 1.65rem;
+    border-radius: 20px;
+  }
+
+  .link-sezione {
+    grid-template-columns: 1fr 1fr;
+    max-width: 100%;
+    border-radius: 20px;
+    padding: 12px;
+    gap: 9px;
+  }
+
+  .link-sezione a {
+    font-size: 0.86rem;
+    padding: 10px 8px;
+    white-space: normal;
+  }
+
+  details {
+    border-radius: 18px;
+    margin-bottom: 14px;
+  }
+
+  summary {
+    min-height: 56px;
+    padding: 15px 16px;
+    font-size: 1rem;
+    line-height: 1.25;
+  }
+
+  summary::before {
+    width: 24px;
+    height: 24px;
+    font-size: 1.05rem;
+  }
+
+  details > *:not(summary) {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+
+  p {
+    font-size: 0.98rem;
+    line-height: 1.65;
+  }
+
+  ul, ol {
+    padding-left: 1.25rem;
+    padding-right: 12px;
+  }
+
+  h5 {
+    padding-left: 10px;
+  }
+}
