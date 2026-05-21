@@ -244,7 +244,7 @@ function renderPlayerBadges(g) {
         title="${isSecondYear ? "U21 confermato 2° anno" : "U21 confermato 1° anno"}"
       >
     `);
-  } else if (g.u21Slot || g.u21) {
+  } else if (g.u21Slot) {
     badges.push(`
       <img
         class="badge-img badge-img-pill"
