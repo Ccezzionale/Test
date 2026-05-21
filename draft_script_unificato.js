@@ -759,12 +759,12 @@ function renderDesktopBadgesForPlayer(playerInfo) {
     is_fp_keeper: playerInfo.is_fp_keeper,
     fp_keeper_year: playerInfo.fp_keeper_year,
     is_u21: playerInfo.is_u21,
-    is_u21_slot: playerInfo.is_u21_slot || playerInfo.is_u21,
+    is_u21_slot: playerInfo.is_u21_slot,
     is_u21_keeper: playerInfo.is_u21_keeper,
     u21_keeper_year: playerInfo.u21_keeper_year,
     is_top6_protected: playerInfo.is_top6_protected,
     is_rfa_matched: playerInfo.is_rfa_matched
-  }, { showEligibleU21: true });
+  }, { showEligibleU21: false });
 }
 
 const DESKTOP_FIXED_ROUNDS = 23;
