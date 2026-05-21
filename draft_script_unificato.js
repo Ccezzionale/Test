@@ -2715,6 +2715,28 @@ function setMobileDraftView(view = "home") {
     el.classList.toggle("active", el.dataset.mobileView === nextView);
   });
 
+  if (nextView === "draft") {
+    setTimeout(() => {
+      const draftScroll = document.querySelector("#draft-board-panel .table-scroll");
+      const currentRow = document.querySelector("#tabella-pick tbody tr.next-pick");
+
+      if (draftScroll && currentRow) {
+        const rowTop = currentRow.offsetTop;
+        const containerHeight = draftScroll.clientHeight;
+        const rowHeight = currentRow.offsetHeight;
+
+        draftScroll.scrollTo({
+          top: Math.max(0, rowTop - containerHeight / 2 + rowHeight / 2),
+          behavior: "smooth"
+        });
+      } else {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
+    }, 120);
+
+    return;
+  }
+
   window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
