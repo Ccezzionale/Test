@@ -6084,3 +6084,40 @@ h1, h2, h3, h4, p{
     white-space: nowrap !important;
   }
 }
+
+/* =========================================================
+   LIVE BAR - FIX COLONNA CHIAMATE TAGLIATA
+   ========================================================= */
+
+@media (min-width: 1101px){
+
+  .desktop-live-bar{
+    grid-template-columns:
+      minmax(380px, .95fr)   /* On the clock */
+      minmax(180px, .42fr)   /* Pick attuale */
+      minmax(360px, .78fr)   /* Prossimi */
+      minmax(130px, .28fr)   /* Round */
+      minmax(190px, .36fr) !important; /* Chiamate */
+    gap: 20px !important;
+    padding-right: 28px !important;
+  }
+
+  .desktop-live-stat{
+    min-width: 0 !important;
+  }
+
+  .desktop-live-stat:last-child{
+    min-width: 180px !important;
+    padding-right: 8px !important;
+  }
+
+  #desktop-live-progress{
+    font-size: clamp(2.2rem, 2.9vw, 3.3rem) !important;
+    white-space: nowrap !important;
+    letter-spacing: -0.04em !important;
+  }
+
+  .desktop-live-stat:last-child span{
+    white-space: nowrap !important;
+  }
+}
