@@ -6479,3 +6479,20 @@ h1, h2, h3, h4, p{
     font-size: 1.4rem !important;
   }
 }
+
+@media (min-width: 1101px){
+  .desktop-live-main{
+    min-width: 0 !important;
+    overflow: hidden !important;
+  }
+
+  .desktop-live-main > div:not(.desktop-live-icon){
+    min-width: 0 !important;
+    overflow: hidden !important;
+  }
+
+  #desktop-live-team{
+    display: block !important;
+    max-width: 100% !important;
+  }
+}
