@@ -1394,3 +1394,59 @@ body{
     radial-gradient(circle at 50% 35%, rgba(59,130,246,.20), transparent 65%),
     rgba(255,255,255,.08);
 }
+
+/* =========================================================
+   ADMIN TABLE FIX - LIGHT READABLE VERSION
+   ========================================================= */
+
+#keeper-admin{
+  background:linear-gradient(180deg, #ffffff, #f4f8ff);
+  color:#07172d;
+  border:1px solid #dbe5f5;
+}
+
+#keeper-admin h2,
+#keeper-admin h3,
+#keeper-admin label{
+  color:#001f3f;
+}
+
+#keeper-admin .predraft-table-wrap{
+  background:#ffffff;
+  border:1px solid #dbe5f5;
+  box-shadow:0 10px 24px rgba(0,31,63,.08);
+}
+
+#keeper-admin .predraft-table-wrap th{
+  background:#34465c;
+  color:#ffffff;
+  border-bottom:1px solid rgba(255,255,255,.15);
+}
+
+#keeper-admin .predraft-table-wrap td{
+  color:#10233f;
+  border-bottom:1px solid #e4ecf8;
+  background:#ffffff;
+}
+
+#keeper-admin .predraft-table-wrap tbody tr:nth-child(even) td{
+  background:#f6f9ff;
+}
+
+#keeper-admin .predraft-table-wrap tbody tr:nth-child(odd) td{
+  background:#ffffff;
+}
+
+#keeper-admin .predraft-table-wrap tr:hover td{
+  background:#eaf3ff;
+}
+
+#keeper-admin .predraft-table-wrap td:nth-child(2),
+#keeper-admin .predraft-table-wrap td:nth-child(4){
+  color:#001f3f;
+  font-weight:900;
+}
+
+#admin-apply-status{
+  color:#001f3f !important;
+}
