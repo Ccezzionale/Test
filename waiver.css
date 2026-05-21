@@ -3430,3 +3430,9 @@ button:disabled {
   display: none !important;
   margin-left: 0 !important;
 }
+
+@media (max-width: 768px){
+  #freeAgentsTable td:nth-child(1){
+    padding-right: 6px !important;
+  }
+}
