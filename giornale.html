@@ -8,47 +8,50 @@
 </head>
 
 <body>
-  <div class="wrap">
-    <div class="mast-shell">
-      <div class="page-title">
+  <div class="gazzetta-page-shell">
+    <section class="gazzetta-welcome" aria-label="Benvenuto">
+      <div class="welcome-mark">♛</div>
+      <div class="welcome-copy">
         <h1>Benvenuto nella Lega degli Eroi</h1>
         <p>La prima pagina della tua lega, tra verdetti, crolli e colpi di scena.</p>
       </div>
+      <div class="welcome-glow"></div>
+    </section>
 
-      <div class="masthead">
-        <div class="mast-top">
-          <div class="brand">
-            <div class="eyebrow">Edizione Ufficiale</div>
-            <div class="name">La Gazzetta degli Eroi</div>
-            <div class="tagline">Cronache, sentenze e caos organizzato della Lega</div>
+    <main class="gazette-frame" aria-label="La Gazzetta degli Eroi">
+      <header class="gazette-masthead">
+        <div class="edition-ribbon">Edizione Straordinaria</div>
+
+        <div class="masthead-title-row">
+          <span></span>
+          <div class="brand-lockup">
+            <h2>La Gazzetta degli Eroi</h2>
+            <div class="brand-seal">⚜</div>
+            <p>Cronache, sentenze e caos organizzato della Lega</p>
           </div>
-
-          <div class="meta">
-            <div class="chip" id="chipDate">Data</div>
-            <div class="chip" id="chipGW">GW</div>
+          <div class="issue-meta">
+            <span class="issue-chip" id="chipDate">Data</span>
+            <span class="issue-chip issue-chip-dark" id="chipGW">GW</span>
           </div>
         </div>
 
-        <div class="toolbar">
+        <div class="gazette-toolbar">
           <div class="toolbar-left">
-            <span class="badge blue">Edizione</span>
-
+            <span class="toolbar-label">Edizione</span>
             <label for="gwSelect">Giornata</label>
-            <select id="gwSelect"></select>
-
-            <button id="btnReload">Aggiorna</button>
+            <select id="gwSelect" aria-label="Seleziona giornata"></select>
+            <button id="btnReload" type="button">Aggiorna</button>
           </div>
-
           <div class="toolbar-right">
             <span id="status"></span>
           </div>
         </div>
+      </header>
 
-        <div id="output" class="paper">
-          Caricamento…
-        </div>
-      </div>
-    </div>
+      <section id="output" class="gazette-paper">
+        <div class="loading-card">Caricamento…</div>
+      </section>
+    </main>
   </div>
 
   <script src="giornale.js"></script>

@@ -1,5 +1,6 @@
 // =====================================
 // LA GAZZETTA DEGLI EROI
+// Gazzetta Premium Edition
 // Manuale + Stats editoriali
 // =====================================
 
@@ -32,8 +33,8 @@ const MAN = {
 };
 
 // ===== Cache =====
-const CACHE_KEY_HTML = "giornale_cache_html_v3";
-const CACHE_KEY_TS   = "giornale_cache_ts_v3";
+const CACHE_KEY_HTML = "giornale_cache_html_v4_premium";
+const CACHE_KEY_TS = "giornale_cache_ts_v4_premium";
 const AUTO_REFRESH_MS = 12 * 60 * 60 * 1000;
 
 // ===== State =====
@@ -53,18 +54,8 @@ function escapeHtml(value){
   return String(value ?? "")
     .replace(/&/g, "&amp;")
     .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;");
-}
-
-function textToParagraphs(text){
-  const safe = escapeHtml(text);
-  const parts = safe.split(/\n\s*\n/g).map(s => s.trim()).filter(Boolean);
-
-  if (!parts.length) {
-    return `<p>Nessun testo disponibile per questa giornata.</p>`;
-  }
-
-  return parts.map(p => `<p>${p.replace(/\n/g, "<br>")}</p>`).join("");
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
 }
 
 function toNum(x){
@@ -76,6 +67,69 @@ function toNum(x){
 function gwNum(v){
   const m = String(v ?? "").match(/\d+/);
   return m ? Number(m[0]) : NaN;
+}
+
+function formatScore(n){
+  const num = Number(n);
+  if (!Number.isFinite(num)) return "-";
+  return Number.isInteger(num) ? String(num) : num.toFixed(1);
+}
+
+function splitParagraphsRaw(text){
+  return String(text ?? "")
+    .split(/\n\s*\n/g)
+    .map(s => s.trim())
+    .filter(Boolean);
+}
+
+function textToParagraphs(text){
+  const parts = splitParagraphsRaw(text);
+
+  if (!parts.length) {
+    return `<p>Nessun testo disponibile per questa giornata.</p>`;
+  }
+
+  return parts
+    .map(p => `<p>${escapeHtml(p).replace(/\n/g, "<br>")}</p>`)
+    .join("");
+}
+
+function makePullQuote(text){
+  const raw = String(text ?? "").replace(/\s+/g, " ").trim();
+  if (!raw) return "La Lega degli Eroi riparte da qui.";
+
+  const sentences = raw
+    .split(/(?<=[.!?])\s+/)
+    .map(s => s.trim())
+    .filter(s => s.length >= 35 && s.length <= 150);
+
+  const preferred = sentences.find(s => /Excel|polemiche|irripetibile|trono|rivolta|leggenda/i.test(s));
+  const fallback = sentences[Math.min(3, Math.max(0, sentences.length - 1))];
+
+  return preferred || fallback || "La Lega degli Eroi riparte da qui.";
+}
+
+function textToEditorialWithQuote(text){
+  const parts = splitParagraphsRaw(text);
+
+  if (!parts.length) {
+    return `<p>Per questa giornata non è stato ancora inserito un editoriale manuale.</p>`;
+  }
+
+  const quote = makePullQuote(text);
+  const insertAfter = Math.min(2, Math.max(1, parts.length - 1));
+
+  return parts.map((p, idx) => {
+    const html = `<p>${escapeHtml(p).replace(/\n/g, "<br>")}</p>`;
+    if (idx === insertAfter - 1) {
+      return `${html}
+        <aside class="pull-quote">
+          <span class="quote-mark">“</span>
+          <strong>${escapeHtml(quote)}</strong>
+        </aside>`;
+    }
+    return html;
+  }).join("");
 }
 
 function extractDriveFileId(value){
@@ -211,24 +265,12 @@ async function loadManualMap(){
     const title = norm(r[MAN.title]);
     const text = norm(r[MAN.text]);
     const upd = norm(r[MAN.updated]);
-
-    const imageRaw = norm(r[MAN.image]);
-    const imageUrl = buildDriveImageUrl(imageRaw);
-
-    const teaserImageRaw = norm(r[MAN.teaserImage]);
-    const teaserImageUrl = buildDriveImageUrl(teaserImageRaw);
-
+    const imageUrl = buildDriveImageUrl(norm(r[MAN.image]));
+    const teaserImageUrl = buildDriveImageUrl(norm(r[MAN.teaserImage]));
     const teaser = norm(r[MAN.teaser]);
 
     if (title || text || imageUrl || teaserImageUrl || teaser){
-      map.set(g, {
-        title,
-        text,
-        updatedAt: upd,
-        imageUrl,
-        teaserImageUrl,
-        teaser
-      });
+      map.set(g, { title, text, updatedAt: upd, imageUrl, teaserImageUrl, teaser });
     }
   }
 
@@ -367,44 +409,43 @@ function buildAutoArticle(data, gw){
 function buildStatsBlocks(article){
   const matchHTML = article.matchOfWeek
     ? `
-      <div class="side-block">
-        <div class="label">Partita più tirata</div>
-        <div class="match-line">
-          <b>${escapeHtml(article.matchOfWeek.home)}</b>
-          <span class="score">${article.matchOfWeek.aPoints.toFixed(1)} - ${article.matchOfWeek.bPoints.toFixed(1)}</span>
-          <b>${escapeHtml(article.matchOfWeek.away)}</b>
+      <div class="match-widget">
+        <div class="widget-label">Partita più tirata</div>
+        <div class="scoreboard-line">
+          <span class="score-team">${escapeHtml(article.matchOfWeek.home)}</span>
+          <span class="score-pill">${formatScore(article.matchOfWeek.aPoints)} - ${formatScore(article.matchOfWeek.bPoints)}</span>
+          <span class="score-team">${escapeHtml(article.matchOfWeek.away)}</span>
         </div>
-        <div class="match-detail">Scarto ${article.matchOfWeek.margin.toFixed(1)}</div>
+        <div class="widget-note">Scarto ${formatScore(article.matchOfWeek.margin)}</div>
       </div>
     `
-    : `<div class="small">Nessun match trovato.</div>`;
+    : `<div class="empty-note">Nessun match trovato.</div>`;
 
   const premiHTML = `
-    <ul class="ul">
-      <li>
-        <b>Re:</b> ${escapeHtml(article.top.team || "-")}
-        <span class="badge gold">${article.top.pf.toFixed(1)}</span>
-      </li>
-      <li>
-        <b>Pagliaccio d’Oro:</b> ${escapeHtml(article.flop.team || "-")}
-        <span class="badge">${article.flop.pf.toFixed(1)}</span>
-      </li>
+    <div class="award-list">
+      <div class="award-row">
+        <span class="award-icon">♛</span>
+        <div class="award-copy"><b>Re</b><span>${escapeHtml(article.top.team || "-")}</span></div>
+        <span class="award-score gold">${formatScore(article.top.pf)}</span>
+      </div>
+      <div class="award-row">
+        <span class="award-icon">♟</span>
+        <div class="award-copy"><b>Pagliaccio d’Oro</b><span>${escapeHtml(article.flop.team || "-")}</span></div>
+        <span class="award-score">${formatScore(article.flop.pf)}</span>
+      </div>
       ${
         article.thief
-          ? `<li>
-              <b>Ladro:</b> ${escapeHtml(article.thief.winner || "-")}
-              <span class="badge blue">${article.thief.winnerPts.toFixed(1)}</span>
-              <span class="small">scarto ${article.thief.margin.toFixed(1)}</span>
-            </li>`
-          : `<li class="small">Nessun ladro di giornata.</li>`
+          ? `<div class="award-row">
+              <span class="award-icon">◆</span>
+              <div class="award-copy"><b>Ladro</b><span>${escapeHtml(article.thief.winner || "-")} <em>scarto ${formatScore(article.thief.margin)}</em></span></div>
+              <span class="award-score blue">${formatScore(article.thief.winnerPts)}</span>
+            </div>`
+          : `<div class="award-row muted-row">Nessun ladro di giornata.</div>`
       }
-    </ul>
+    </div>
   `;
 
-  return {
-    matchHTML,
-    premiHTML
-  };
+  return { matchHTML, premiHTML };
 }
 
 function buildProssimamenteHTML(manual){
@@ -413,30 +454,36 @@ function buildProssimamenteHTML(manual){
 
   if (!teaserImageUrl && !teaserText) {
     return `
-      <div class="block upcoming-block">
-        <div class="label">Trailer</div>
-        <h3>Next on Lega degli Eroi</h3>
-      </div>
+      <section class="cinema-card empty-cinema">
+        <div class="section-eyebrow">Trailer</div>
+        <h3>Nel prossimo episodio</h3>
+        <p>La redazione sta ancora montando il teaser. Tagli, dissolvenze, sospetti.</p>
+      </section>
     `;
   }
 
   return `
-    <div class="block upcoming-block">
-      <div class="label">Trailer</div>
-      <h3>Prossimamente nella Lega degli Eroi</h3>
+    <section class="cinema-card">
+      <div class="cinema-head">
+        <div>
+          <div class="section-eyebrow">Trailer</div>
+          <h3>Nel prossimo episodio</h3>
+        </div>
+        <span class="next-chip">Next on</span>
+      </div>
 
       ${teaserImageUrl ? `
-        <div class="upcoming-media">
+        <figure class="cinema-media">
           <img src="${teaserImageUrl}" alt="Prossima giornata">
-        </div>
+        </figure>
       ` : ""}
 
       ${teaserText ? `
-        <div class="upcoming-text">
-          <p>${escapeHtml(teaserText).replace(/\n/g, "<br>")}</p>
-        </div>
+        <blockquote class="cinema-teaser">
+          ${escapeHtml(teaserText).replace(/\n/g, "<br>")}
+        </blockquote>
       ` : ""}
-    </div>
+    </section>
   `;
 }
 
@@ -454,59 +501,68 @@ function renderManualHTML(gw, manual, stats){
     : "Editoriale";
 
   const editorialContent = manual?.text
-    ? textToParagraphs(manual.text)
+    ? textToEditorialWithQuote(manual.text)
     : `<p>Per questa giornata non è stato ancora inserito un editoriale manuale.</p>`;
 
   const heroImage = manual?.imageUrl
     ? `
-      <div class="hero-media">
+      <figure class="hero-media">
         <img src="${manual.imageUrl}" alt="${title}">
-      </div>
+      </figure>
     `
-    : "";
+    : `<div class="hero-media hero-placeholder"><span>Immagine editoriale</span></div>`;
 
   const prossimamenteHTML = buildProssimamenteHTML(manual);
 
   return `
-    <div class="lede-wrap">
-      <div class="lede">
-        <span class="kicker">Lega degli Eroi</span>
-        <div class="h1">${title}</div>
-        <div class="deck">${deck}</div>
-        <div class="subline">${subtitle}</div>
+    <section class="front-hero">
+      <div class="lede-copy">
+        <span class="kicker"><span>♕</span> Lega degli Eroi</span>
+        <h1>${title}</h1>
+        <p class="deck">${escapeHtml(deck)}</p>
+        <div class="story-meta">
+          <span>${subtitle}</span>
+          <span>GW ${gw}</span>
+          <span>Prima pagina</span>
+        </div>
+      </div>
+      ${heroImage}
+    </section>
+
+    <section class="news-grid">
+      <div class="main-column">
+        <article class="editorial-card">
+          <div class="article-label"><span>✒</span> Il Punto di Costantino</div>
+          <div class="article-body">
+            ${editorialContent}
+          </div>
+        </article>
       </div>
 
-      ${heroImage}
-    </div>
+      <aside class="side-column">
+        <section class="side-card match-card">
+          <div class="side-card-head">
+            <span class="section-eyebrow">Rubrica</span>
+            <h3>Match della Settimana</h3>
+          </div>
+          ${stats.matchHTML}
+        </section>
 
-    <div class="columns">
-      <div>
-        <div class="block editorial">
-          <h3>Il Punto di Costantino</h3>
-          ${editorialContent}
-        </div>
+        <section class="side-card awards-card">
+          <div class="side-card-head">
+            <span class="section-eyebrow">Rubrica</span>
+            <h3>Premi Discutibili</h3>
+          </div>
+          ${stats.premiHTML}
+        </section>
 
         ${prossimamenteHTML}
-      </div>
+      </aside>
+    </section>
 
-      <div>
-        <div class="block side-block">
-          <div class="label">Rubrica</div>
-          <h3>Match della Settimana</h3>
-          ${stats.matchHTML}
-        </div>
-
-        <div class="block side-block">
-          <div class="label">Rubrica</div>
-          <h3>Premi Discutibili</h3>
-          ${stats.premiHTML}
-        </div>
-      </div>
-    </div>
-
-    <div class="paper-foot">
+    <footer class="paper-foot">
       Edizione automatica della Gazzetta • GW ${gw}
-    </div>
+    </footer>
   `;
 }
 
