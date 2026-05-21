@@ -917,6 +917,36 @@ function getDesktopCurrentPickOwnerTeamName(currentPick) {
   return team?.name || "";
 }
 
+function applyDesktopLiveTeamSize() {
+  const liveTeam = document.getElementById("desktop-live-team");
+  if (!liveTeam) return;
+
+  const name = String(liveTeam.textContent || "").trim();
+  const len = name.length;
+
+  let fontSize = "3.35rem";
+  let lineHeight = "1.04";
+  let whiteSpace = "nowrap";
+
+  if (len >= 20) {
+    fontSize = "2.05rem";
+    lineHeight = "1.02";
+    whiteSpace = "normal";
+  } else if (len >= 14) {
+    fontSize = "2.45rem";
+    lineHeight = "1.02";
+    whiteSpace = "nowrap";
+  }
+
+  liveTeam.style.setProperty("font-size", fontSize, "important");
+  liveTeam.style.setProperty("line-height", lineHeight, "important");
+  liveTeam.style.setProperty("white-space", whiteSpace, "important");
+  liveTeam.style.setProperty("overflow", "hidden", "important");
+  liveTeam.style.setProperty("text-overflow", "clip", "important");
+  liveTeam.style.setProperty("letter-spacing", "-0.055em", "important");
+  liveTeam.style.setProperty("padding-bottom", "6px", "important");
+}
+
 function aggiornaDesktopDraftRoom(dati = [], prossima = null) {
   const shell = ensureDesktopDraftRoomShell();
   if (!shell || !Array.isArray(dati)) return;
@@ -950,23 +980,7 @@ function aggiornaDesktopDraftRoom(dati = [], prossima = null) {
     if (livePick) livePick.textContent = "Fine";
   }
   
-if (liveTeam) {
-  const nameLength = String(liveTeam.textContent || "").length;
-
-  liveTeam.classList.remove(
-    "team-name-normal",
-    "team-name-long",
-    "team-name-xl"
-  );
-
-  if (nameLength >= 20) {
-    liveTeam.classList.add("team-name-xl");
-  } else if (nameLength >= 14) {
-    liveTeam.classList.add("team-name-long");
-  } else {
-    liveTeam.classList.add("team-name-normal");
-  }
-}
+applyDesktopLiveTeamSize();
 
   if (liveRound) liveRound.textContent = `${currentRound}/${maxRounds}`;
   if (liveProgress) liveProgress.textContent = `${picked}/${totalPicks}`;
