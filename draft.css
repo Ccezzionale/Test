@@ -6154,3 +6154,38 @@ h1, h2, h3, h4, p{
     line-height: 1.18 !important;
   }
 }
+
+/* =========================================================
+   LIVE BAR - FIX TAGLIO NOME PRIMA DI PICK ATTUALE
+   ========================================================= */
+
+@media (min-width: 1101px){
+
+  .desktop-live-main{
+    overflow: visible !important;
+    min-width: 0 !important;
+  }
+
+  .desktop-live-main > div:not(.desktop-live-icon){
+    overflow: visible !important;
+    min-width: 0 !important;
+  }
+
+  #desktop-live-team{
+    overflow: visible !important;
+    padding-right: 14px !important;
+    padding-bottom: 6px !important;
+    line-height: 1.08 !important;
+  }
+
+  .desktop-live-stat{
+    position: relative !important;
+    z-index: 2 !important;
+    background: transparent !important;
+  }
+
+  .desktop-live-main{
+    position: relative !important;
+    z-index: 1 !important;
+  }
+}
