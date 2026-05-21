@@ -1098,10 +1098,20 @@ if (myU21Out !== theirU21Out) {
 
     if (proposalError) throw proposalError;
 
-    const assets = assetsToInsert.map(asset => ({
-      ...asset,
-      proposal_id: proposal.id
-    }));
+const sideCounters = {
+  from: 0,
+  to: 0
+};
+
+const assets = assetsToInsert.map(asset => {
+  sideCounters[asset.side] += 1;
+
+  return {
+    ...asset,
+    proposal_id: proposal.id,
+    asset_order: sideCounters[asset.side]
+  };
+});
 
     const { error: assetsError } = await supabase
       .from("trade_assets")
