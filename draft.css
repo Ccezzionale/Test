@@ -6383,3 +6383,50 @@ h1, h2, h3, h4, p{
     white-space: nowrap !important;
   }
 }
+
+/* =========================================================
+   DESKTOP DRAFT BOARD - FIX TESTO TAGLIATO NELLE PICK
+   ========================================================= */
+
+@media (min-width: 1101px){
+
+  .desktop-round-rail{
+    grid-template-rows: 104px repeat(var(--desktop-rounds, 23), 80px) !important;
+  }
+
+  .desktop-round-label{
+    height: 80px !important;
+    min-height: 80px !important;
+  }
+
+  .desktop-pick-slot{
+    height: 80px !important;
+    min-height: 80px !important;
+    padding: 9px 10px 10px !important;
+    align-content: center !important;
+    overflow: hidden !important;
+    gap: 2px 8px !important;
+  }
+
+  .desktop-pick-slot strong{
+    line-height: 1.18 !important;
+    padding-bottom: 1px !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+  }
+
+  .desktop-pick-slot small{
+    line-height: 1.22 !important;
+    padding-bottom: 2px !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+  }
+
+  .desktop-team-column{
+    grid-template-rows: 104px auto !important;
+  }
+
+  .desktop-team-slots{
+    gap: 10px !important;
+  }
+}
