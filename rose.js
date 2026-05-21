@@ -279,6 +279,39 @@ if (g.top6Protected) {
   return badges.join("");
 }
 
+function getTeamStats(giocatori = []) {
+  return {
+    totale: giocatori.length,
+    fp: giocatori.filter(g => g.fp || g.fpKeeper).length,
+    u21: giocatori.filter(g => g.u21 || g.u21Slot || g.u21Keeper).length,
+    rfa: giocatori.filter(g => g.rfaMatched).length,
+    protetti: giocatori.filter(g => g.top6Protected).length
+  };
+}
+
+function aggiornaEmptyState() {
+  const container = document.getElementById("contenitore-rose");
+  if (!container) return;
+
+  const cards = [...container.querySelectorAll(".box-rosa")];
+  const visibleCards = cards.filter(card => card.style.display !== "none");
+
+  let empty = document.getElementById("rose-empty-state");
+
+  if (!empty) {
+    empty = document.createElement("div");
+    empty.id = "rose-empty-state";
+    empty.innerHTML = `
+      <div class="rose-empty-icon">🔎</div>
+      <strong>Nessun risultato trovato</strong>
+      <span>Prova a cambiare giocatore, squadra o conference.</span>
+    `;
+    container.appendChild(empty);
+  }
+
+  empty.style.display = visibleCards.length === 0 ? "flex" : "none";
+}
+
 function mostraRose() {
   const container = document.getElementById("contenitore-rose");
   if (!container) return;
@@ -288,6 +321,8 @@ function mostraRose() {
   const nomeCercato = document.getElementById("filtro-nome")?.value?.toLowerCase() || "";
 
   for (const [nome, data] of Object.entries(rose)) {
+    const stats = getTeamStats(data.giocatori);
+
     const div = document.createElement("div");
     div.className = "box-rosa giocatore";
     div.setAttribute("data-squadra", nome);
@@ -309,15 +344,56 @@ function mostraRose() {
     imgMaglia.className = "team-shirt";
     applyImageFallback(imgMaglia, data.maglia);
 
+    const nameWrap = document.createElement("div");
+    nameWrap.className = "team-title-wrap";
+
     const name = document.createElement("span");
+    name.className = "team-name";
     name.textContent = nome;
+
+    const conferenceBadge = document.createElement("small");
+    conferenceBadge.className = "team-conference-badge";
+    conferenceBadge.textContent = data.conference || "N/A";
+
+    const meta = document.createElement("div");
+    meta.className = "team-roster-meta";
+    meta.innerHTML = `
+      <span>${stats.totale} giocatori</span>
+      <span>${stats.fp} FP</span>
+      <span>${stats.u21} U21</span>
+      <span>${stats.rfa} RFA</span>
+      <span>${stats.protetti} protetti</span>
+    `;
+
+    const toggleBtn = document.createElement("button");
+    toggleBtn.type = "button";
+    toggleBtn.className = "roster-toggle";
+    toggleBtn.innerHTML = `
+      <span>Mostra rosa</span>
+      <strong>+</strong>
+    `;
+
+    toggleBtn.addEventListener("click", () => {
+      const isOpen = div.classList.toggle("is-open");
+      toggleBtn.innerHTML = isOpen
+        ? `<span>Chiudi rosa</span><strong>−</strong>`
+        : `<span>Mostra rosa</span><strong>+</strong>`;
+    });
 
     iconsWrap.appendChild(imgLogo);
     iconsWrap.appendChild(imgMaglia);
 
+    nameWrap.appendChild(name);
+    nameWrap.appendChild(conferenceBadge);
+    nameWrap.appendChild(meta);
+    nameWrap.appendChild(toggleBtn);
+
     header.appendChild(iconsWrap);
-    header.appendChild(name);
+    header.appendChild(nameWrap);
     div.appendChild(header);
+
+    const rosterBody = document.createElement("div");
+    rosterBody.className = "roster-body";
 
     const table = document.createElement("table");
 
@@ -351,9 +427,12 @@ function mostraRose() {
       </tbody>
     `;
 
-    div.appendChild(table);
+    rosterBody.appendChild(table);
+    div.appendChild(rosterBody);
     container.appendChild(div);
   }
+
+  aggiornaEmptyState();
 }
 
 function popolaFiltri() {
@@ -406,28 +485,18 @@ function filtraGiocatori() {
     const matchConf = conference === "Tutte" || conf === conference;
     const matchTeam = squadra === "Tutte" || team === squadra;
 
-    card.style.display = matchNome && matchConf && matchTeam ? "" : "none";
+    const visible = matchNome && matchConf && matchTeam;
+    card.style.display = visible ? "" : "none";
+
+    if (visible && nome) {
+      card.classList.add("is-open");
+
+      const toggleBtn = card.querySelector(".roster-toggle");
+      if (toggleBtn) {
+        toggleBtn.innerHTML = `<span>Chiudi rosa</span><strong>−</strong>`;
+      }
+    }
   });
+
+  aggiornaEmptyState();
 }
-
-function resetFiltri() {
-  const filtroNome = document.getElementById("filtro-nome");
-  const filtroConference = document.getElementById("filtro-conference");
-  const filtroSquadra = document.getElementById("filtro-squadra");
-
-  if (filtroNome) filtroNome.value = "";
-  if (filtroConference) filtroConference.value = "Tutte";
-  if (filtroSquadra) filtroSquadra.value = "Tutte";
-
-  filtraGiocatori();
-}
-
-window.resetFiltri = resetFiltri;
-
-window.addEventListener("DOMContentLoaded", () => {
-  document.getElementById("filtro-nome")?.addEventListener("input", filtraGiocatori);
-  document.getElementById("filtro-conference")?.addEventListener("change", filtraGiocatori);
-  document.getElementById("filtro-squadra")?.addEventListener("change", filtraGiocatori);
-
-  caricaRose();
-});
