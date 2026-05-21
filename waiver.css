@@ -3424,3 +3424,9 @@ button:disabled {
     font-size:.62rem !important;
   }
 }
+
+/* Nasconde i quadratini conference / pool negli svincolati */
+.player-badges{
+  display: none !important;
+  margin-left: 0 !important;
+}
