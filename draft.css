@@ -6189,3 +6189,152 @@ h1, h2, h3, h4, p{
     z-index: 1 !important;
   }
 }
+
+/* =========================================================
+   LIVE BAR FINAL RESET - STABLE DESKTOP VERSION
+   ========================================================= */
+
+@media (min-width: 1101px){
+
+  .desktop-live-bar{
+    display: grid !important;
+    grid-template-columns:
+      minmax(420px, 1.05fr)
+      minmax(190px, 0.42fr)
+      minmax(360px, 0.82fr)
+      minmax(130px, 0.28fr)
+      minmax(200px, 0.36fr) !important;
+    align-items: center !important;
+    gap: 22px !important;
+
+    width: 100% !important;
+    max-width: 100% !important;
+
+    padding: 20px 34px 20px 24px !important;
+    margin: 0 0 18px !important;
+
+    overflow: hidden !important;
+    border-radius: 18px !important;
+  }
+
+  .desktop-live-main{
+    display: grid !important;
+    grid-template-columns: 68px minmax(0, 1fr) !important;
+    align-items: center !important;
+    gap: 22px !important;
+
+    min-width: 0 !important;
+    max-width: 100% !important;
+    overflow: hidden !important;
+
+    border: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+  }
+
+  .desktop-live-icon{
+    width: 64px !important;
+    height: 64px !important;
+    flex: 0 0 64px !important;
+  }
+
+  .desktop-live-main > div:not(.desktop-live-icon){
+    min-width: 0 !important;
+    max-width: 100% !important;
+    overflow: hidden !important;
+  }
+
+  .desktop-live-kicker{
+    display: block !important;
+    margin-bottom: 6px !important;
+
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: clip !important;
+
+    font-size: .82rem !important;
+    line-height: 1.1 !important;
+  }
+
+  #desktop-live-team{
+    display: block !important;
+
+    max-width: 100% !important;
+    min-width: 0 !important;
+
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: clip !important;
+
+    font-size: clamp(2.15rem, 2.65vw, 3.15rem) !important;
+    line-height: 1.08 !important;
+    letter-spacing: -.055em !important;
+
+    padding-bottom: 5px !important;
+  }
+
+  /* Nomi lunghi: restano interi andando su due righe */
+  #desktop-live-team.team-name-long,
+  #desktop-live-team.team-name-xl{
+    white-space: normal !important;
+    line-height: 1.02 !important;
+    font-size: clamp(1.75rem, 2.15vw, 2.55rem) !important;
+  }
+
+  .desktop-live-stat,
+  .desktop-live-queue{
+    min-width: 0 !important;
+    max-width: 100% !important;
+    overflow: hidden !important;
+  }
+
+  .desktop-live-stat{
+    padding-left: 18px !important;
+    border-left: 1px solid rgba(255,255,255,.13) !important;
+  }
+
+  .desktop-live-stat span,
+  .desktop-live-queue > span{
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: clip !important;
+  }
+
+  .desktop-live-stat strong{
+    display: block !important;
+    white-space: nowrap !important;
+    overflow: visible !important;
+    text-overflow: clip !important;
+
+    font-size: clamp(2.15rem, 2.8vw, 3.25rem) !important;
+    line-height: 1.05 !important;
+    letter-spacing: -.04em !important;
+  }
+
+  #desktop-live-progress{
+    font-size: clamp(2rem, 2.55vw, 3rem) !important;
+  }
+
+  .desktop-next-queue{
+    display: flex !important;
+    align-items: center !important;
+    gap: 7px !important;
+    min-width: 0 !important;
+    overflow: hidden !important;
+  }
+
+  .desktop-queue-logo{
+    flex: 0 0 42px !important;
+    width: 42px !important;
+    height: 42px !important;
+  }
+
+  .desktop-queue-logo img{
+    width: 34px !important;
+    height: 34px !important;
+  }
+
+  .desktop-queue-arrow{
+    flex: 0 0 auto !important;
+  }
+}
