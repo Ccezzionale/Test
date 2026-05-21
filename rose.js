@@ -500,3 +500,25 @@ function filtraGiocatori() {
 
   aggiornaEmptyState();
 }
+
+function resetFiltri() {
+  const filtroNome = document.getElementById("filtro-nome");
+  const filtroConference = document.getElementById("filtro-conference");
+  const filtroSquadra = document.getElementById("filtro-squadra");
+
+  if (filtroNome) filtroNome.value = "";
+  if (filtroConference) filtroConference.value = "Tutte";
+  if (filtroSquadra) filtroSquadra.value = "Tutte";
+
+  filtraGiocatori();
+}
+
+window.resetFiltri = resetFiltri;
+
+window.addEventListener("DOMContentLoaded", () => {
+  document.getElementById("filtro-nome")?.addEventListener("input", filtraGiocatori);
+  document.getElementById("filtro-conference")?.addEventListener("change", filtraGiocatori);
+  document.getElementById("filtro-squadra")?.addEventListener("change", filtraGiocatori);
+
+  caricaRose();
+});
