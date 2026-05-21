@@ -3,9 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Lega degli Eroi – Supercoppa</title>
+  <title>Lega degli Eroi - Supercoppa</title>
 
-  <!-- CSS della pagina -->
   <link rel="stylesheet" href="navbar.css">
   <link rel="stylesheet" href="supercoppa.css">
 </head>
@@ -23,9 +22,7 @@
         <li><a href="rose.html">Rose</a></li>
 
         <li class="dropdown">
-          <a href="#" class="toggle-submenu">
-            Draft <span class="caret">▾</span>
-          </a>
+          <a href="#" class="toggle-submenu">Draft <span class="caret">▾</span></a>
           <ul class="submenu">
             <li><a href="pre-draft.html"><img src="icons/nav/pre-draft.webp" class="menu-icon" alt="">Pre-Draft</a></li>
             <li><a href="draft_championship.html"><img src="icons/nav/conf-championship.webp" class="menu-icon" alt="">Conf. Championship</a></li>
@@ -35,9 +32,7 @@
         </li>
 
         <li class="dropdown competizioni">
-          <a href="#" class="toggle-submenu">
-            Competizioni <span class="caret">▾</span>
-          </a>
+          <a href="#" class="toggle-submenu">Competizioni <span class="caret">▾</span></a>
           <ul class="submenu">
             <li><a href="classifica.html"><img src="icons/nav/classifiche.webp" class="menu-icon" alt="">Classifiche</a></li>
             <li><a href="playoff.html"><img src="icons/nav/playoff.webp" class="menu-icon" alt="">Playoff</a></li>
@@ -49,13 +44,10 @@
           </ul>
         </li>
 
-      
         <li><a href="waiver.html">Waiver Wire</a></li>
 
         <li class="dropdown">
-          <a href="#" class="toggle-submenu">
-            Hall of Fame <span class="caret">▾</span>
-          </a>
+          <a href="#" class="toggle-submenu">Hall of Fame <span class="caret">▾</span></a>
           <ul class="submenu">
             <li><a href="medagliere.html"><img src="icons/nav/albo-oro.webp" class="menu-icon" alt="">Albo d'Oro</a></li>
             <li><a href="albo.html"><img src="icons/nav/medagliere.webp" class="menu-icon" alt="">Medagliere</a></li>
@@ -88,143 +80,153 @@
       </div>
     </div>
   </nav>
-     <!-- ===== HEADER PAGINA ===== -->
-<header class="page-header">
-  <h1>Supercoppa degli Eroi</h1>
-  <p>I vincitori delle grandi competizioni si sfidano per la corona finale della Lega.</p>
-</header>
 
-  <!-- ===== BRACKET SUPERCOPPA (4 squadre) ===== -->
-  <main class="supercup-main">
-    <section class="supercup-bracket">
+  <header class="supercup-hero">
+    <div class="hero-crown" aria-hidden="true">♛</div>
+    <h1>Supercoppa degli Eroi</h1>
+    <p>Cinque campioni. Una sola corona.</p>
+    <div class="hero-rule" aria-hidden="true"></div>
+  </header>
 
-      <!-- SEMIFINALE 1 -->
-      <article class="match-card" data-match="sf1">
-        <h2 class="match-title">Semifinale 1</h2>
-        <div class="match-body">
-          <div class="team-row">
-            <div class="team-logo-wrap">
-              <!-- CAMBIA QUI NOME FILE LOGO + ALT -->
-              <img src="img/Team Bartowski.png" alt="Team Bartowski" class="team-logo">
-            </div>
-            <div class="team-info">
-              <div class="team-name">Team Bartowski</div>
-              <div class="team-seed">Campione Highlander Cup &amp; Conf. League</div>
-            </div>
-            <div class="score-box" contenteditable="true" data-placeholder="1"></div>
-          </div>
+  <main class="supercup-shell">
+    <section class="stage-section participants-section" aria-labelledby="participants-title">
+      <div class="section-kicker">1 · Partecipanti</div>
+      <div class="participants-grid" id="participants-grid"></div>
+    </section>
 
-          <div class="vs-line">vs</div>
-
-          <div class="team-row">
-            <div class="team-logo-wrap">
-              <img src="img/Rubinkebab.png" alt="Rubinkebab" class="team-logo">
-            </div>
-            <div class="team-info">
-              <div class="team-name">Rubinkebab</div>
-              <div class="team-seed">Campione Conf. Championship</div>
-            </div>
-            <div class="score-box" contenteditable="true" data-placeholder="2"></div>
-          </div>
+    <section class="supercup-flow">
+      <article class="stage-panel playin-panel" aria-labelledby="playin-title">
+        <div class="section-kicker">2 · Play-in Conference</div>
+        <div class="panel-card match-card compact" data-match="playin">
+          <h2 id="playin-title">Play-in Conference</h2>
+          <div class="match-row" data-slot="conferenceLeagueChampion"></div>
+          <div class="vs-strip">vs</div>
+          <div class="match-row" data-slot="conferenceChampionshipChampion"></div>
+          <p class="match-note">★ La vincente entra nel sorteggio delle semifinali.</p>
         </div>
       </article>
 
-   <!-- FINALE (auto dalle semifinali) -->
-<article class="match-card final" id="final-match" data-match="final">
-  <h2 class="match-title">Finale Supercoppa</h2>
-  <div class="final-trophy" aria-hidden="true"></div>
-  <div class="match-body">
-    <div class="team-row" data-final-slot="sf1">
-      <div class="team-logo-wrap">
-        <img src="" alt="" class="team-logo" id="final-logo-sf1">
-      </div>
-      <div class="team-info">
-        <div class="team-name" id="final-name-sf1">Vincente Semifinale 1</div>
-        <div class="team-seed" id="final-seed-sf1">—</div>
-      </div>
-      <div class="score-box" contenteditable="true" data-placeholder="2"></div>
-    </div>
-
-    <div class="vs-line">vs</div>
-
-    <div class="team-row" data-final-slot="sf2">
-      <div class="team-logo-wrap">
-        <img src="" alt="" class="team-logo" id="final-logo-sf2">
-      </div>
-      <div class="team-info">
-        <div class="team-name" id="final-name-sf2">Vincente Semifinale 2</div>
-        <div class="team-seed" id="final-seed-sf2">—</div>
-      </div>
-      <div class="score-box" contenteditable="true" data-placeholder="0"></div>
-    </div>
-  </div>
-</article>
-
-
-      <!-- SEMIFINALE 2 -->
-      <article class="match-card" data-match="sf2">
-        <h2 class="match-title">Semifinale 2</h2>
-        <div class="match-body">
-          <div class="team-row">
-            <div class="team-logo-wrap">
-              <img src="img/Bayern Christiansen.png" alt="Bayern Christiansen" class="team-logo">
-            </div>
-            <div class="team-info">
-              <div class="team-name">Bayern Christiansen</div>
-              <div class="team-seed">Campione Lega degli Eroi</div>
-            </div>
-            <div class="score-box" contenteditable="true" data-placeholder="6"></div>
+      <article class="stage-panel draw-panel" aria-labelledby="draw-title">
+        <div class="section-kicker">3 · Sorteggio semifinali</div>
+        <div class="draw-card">
+          <div class="draw-column" id="draw-left"></div>
+          <div class="draw-bowl" aria-hidden="true">
+            <span></span><span></span><span></span><span></span><span></span>
           </div>
-
-          <div class="vs-line">vs</div>
-
-          <div class="team-row">
-            <div class="team-logo-wrap">
-              <img src="img/Golden Knights.png" alt="Golden Knights" class="team-logo">
-            </div>
-            <div class="team-info">
-              <div class="team-name">Golden Knights</div>
-              <div class="team-seed">Vice-campione Lega degli Eroi</div>
-            </div>
-           <div class="score-box" contenteditable="true" data-placeholder="2"></div>
-
-          </div>
+          <div class="draw-column" id="draw-right"></div>
         </div>
       </article>
+    </section>
 
-        </section>
+    <section class="stage-section semis-section" aria-labelledby="semis-title">
+      <div class="section-kicker">4 · Semifinali <span>in attesa di sorteggio</span></div>
+      <div class="semis-grid">
+        <article class="match-card semi-card" data-match="sf1">
+          <h2>Semifinale 1</h2>
+          <div class="match-row" data-semi-slot="sf1a"></div>
+          <div class="vs-strip">vs</div>
+          <div class="match-row" data-semi-slot="sf1b"></div>
+        </article>
 
-  <!-- CARD CAMPIONE SUPERCOPPA -->
-  <section class="supercup-winner" id="supercup-winner" hidden>
-    <article class="winner-card">
-      <div class="winner-trophy"></div>
-      <div class="winner-content">
-        <div class="winner-title">Campione Supercoppa</div>
-
-        <div class="winner-logos">
-  <div class="winner-logo-wrap">
-    <img alt="" class="winner-logo" id="champion-logo">
-  </div>
-
-  <div class="winner-cup-wrap">
-    <!-- puoi usare anche un'altra immagine, es. cup_small.png -->
-    <img src="img/Supercoppacup.png" alt="Supercoppa degli Eroi" class="winner-cup">
-  </div>
-</div>
-
-
-        <div class="winner-name" id="champion-name">—</div>
-<div class="winner-sub" id="champion-sub">
-  In attesa della squadra che solleverà la Supercoppa
-</div>
+        <article class="match-card semi-card" data-match="sf2">
+          <h2>Semifinale 2</h2>
+          <div class="match-row" data-semi-slot="sf2a"></div>
+          <div class="vs-strip">vs</div>
+          <div class="match-row" data-semi-slot="sf2b"></div>
+        </article>
       </div>
-    </article>
-  </section>
-</main>
+    </section>
 
+    <section class="stage-section final-section" aria-labelledby="final-title">
+      <div class="section-kicker">5 · Finale Supercoppa</div>
+      <article class="match-card final-card" id="final-match" data-match="final">
+        <div class="final-trophy" aria-hidden="true"></div>
+        <h2 id="final-title">Finale Supercoppa</h2>
+        <div class="match-row" data-final-slot="sf1"></div>
+        <div class="vs-strip">vs</div>
+        <div class="match-row" data-final-slot="sf2"></div>
+      </article>
+    </section>
 
-  <!-- JS per navbar (e in futuro eventuali extra) -->
+    <section class="supercup-winner" id="supercup-winner" aria-labelledby="winner-title">
+      <article class="winner-card">
+        <div class="winner-glow" aria-hidden="true"></div>
+        <div class="winner-title" id="winner-title">6 · Campione Supercoppa</div>
+        <div class="winner-stage">
+          <div class="winner-logo-wrap">
+            <img id="champion-logo" class="winner-logo" alt="">
+          </div>
+          <div class="winner-cup-wrap">
+            <img src="img/Supercoppacup.png" alt="Supercoppa degli Eroi" class="winner-cup">
+          </div>
+        </div>
+        <div class="winner-name" id="champion-name">In attesa del campione</div>
+        <div class="winner-sub" id="champion-sub">Solo una corona. Solo un eroe.</div>
+      </article>
+    </section>
+
+    <section class="admin-shell" id="supercup-admin">
+      <button class="admin-toggle" id="admin-toggle" type="button">⚙️ Admin Supercoppa</button>
+
+      <div class="admin-panel" id="admin-panel" hidden>
+        <div class="admin-head">
+          <div>
+            <h2>Admin Panel Supercoppa</h2>
+            <p>Inserisci squadre, loghi, risultati e sorteggio. La pagina aggiorna play-in, finaliste e campione.</p>
+          </div>
+          <button class="admin-reset" id="admin-reset" type="button">Reset demo</button>
+        </div>
+
+        <div class="admin-block">
+          <h3>Partecipanti</h3>
+          <div class="admin-grid" id="admin-teams"></div>
+        </div>
+
+        <div class="admin-block">
+          <h3>Risultati</h3>
+          <div class="admin-results-grid">
+            <label>Play-in CL
+              <input type="number" id="score-playin-a" min="0" inputmode="numeric">
+            </label>
+            <label>Play-in CC
+              <input type="number" id="score-playin-b" min="0" inputmode="numeric">
+            </label>
+            <label>Semifinale 1 A
+              <input type="number" id="score-sf1-a" min="0" inputmode="numeric">
+            </label>
+            <label>Semifinale 1 B
+              <input type="number" id="score-sf1-b" min="0" inputmode="numeric">
+            </label>
+            <label>Semifinale 2 A
+              <input type="number" id="score-sf2-a" min="0" inputmode="numeric">
+            </label>
+            <label>Semifinale 2 B
+              <input type="number" id="score-sf2-b" min="0" inputmode="numeric">
+            </label>
+            <label>Finale A
+              <input type="number" id="score-final-a" min="0" inputmode="numeric">
+            </label>
+            <label>Finale B
+              <input type="number" id="score-final-b" min="0" inputmode="numeric">
+            </label>
+          </div>
+        </div>
+
+        <div class="admin-block">
+          <h3>Sorteggio semifinali</h3>
+          <p class="admin-help">Dopo il play-in scegli manualmente gli accoppiamenti usciti dal sorteggio.</p>
+          <div class="admin-draw-grid">
+            <label>Semifinale 1 - Squadra A<select id="draw-sf1a"></select></label>
+            <label>Semifinale 1 - Squadra B<select id="draw-sf1b"></select></label>
+            <label>Semifinale 2 - Squadra A<select id="draw-sf2a"></select></label>
+            <label>Semifinale 2 - Squadra B<select id="draw-sf2b"></select></label>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
   <script src="supercoppa.js" defer></script>
-   <script src="navbar.js"></script>
+  <script src="navbar.js"></script>
 </body>
 </html>
