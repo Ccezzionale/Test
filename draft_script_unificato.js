@@ -917,29 +917,6 @@ function getDesktopCurrentPickOwnerTeamName(currentPick) {
   return team?.name || "";
 }
 
-function fitDesktopLiveTeamName() {
-  const el = document.getElementById("desktop-live-team");
-  if (!el) return;
-
-  const box = el.parentElement;
-  if (!box) return;
-
-  el.style.whiteSpace = "nowrap";
-  el.style.overflow = "visible";
-  el.style.textOverflow = "clip";
-
-  // reset iniziale
-  let size = 58;
-  el.style.fontSize = `${size}px`;
-
-  const maxWidth = box.clientWidth;
-
-  while (el.scrollWidth > maxWidth && size > 22) {
-    size -= 1;
-    el.style.fontSize = `${size}px`;
-  }
-}
-
 function aggiornaDesktopDraftRoom(dati = [], prossima = null) {
   const shell = ensureDesktopDraftRoomShell();
   if (!shell || !Array.isArray(dati)) return;
@@ -973,7 +950,6 @@ function aggiornaDesktopDraftRoom(dati = [], prossima = null) {
     if (liveTeam) liveTeam.textContent = "Draft completato";
     if (livePick) livePick.textContent = "Fine";
   }
-  fitDesktopLiveTeamName();
 
   if (liveRound) liveRound.textContent = `${currentRound}/${maxRounds}`;
   if (liveProgress) liveProgress.textContent = `${picked}/${totalPicks}`;
