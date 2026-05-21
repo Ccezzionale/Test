@@ -973,37 +973,59 @@ function aggiornaDesktopDraftRoom(dati = [], prossima = null) {
     }).join("") || `<span class="desktop-empty-muted">Completato</span>`;
   }
 
-  const recentEl = document.getElementById("desktop-recent-list");
-  const recentCount = document.getElementById("desktop-recent-count");
+const recentEl = document.getElementById("desktop-recent-list");
+const recentCount = document.getElementById("desktop-recent-count");
 
-  if (recentEl) {
-    const recent = dati
-      .filter(r => (r["Giocatore"] || "").trim())
-      .slice(-8)
-      .reverse();
+if (recentEl) {
+  const teamsById = new Map(
+    (lastDraftTeams || []).map(team => [String(team.id), team.name])
+  );
 
-    if (recentCount) recentCount.textContent = `${recent.length}`;
+  const recent = (lastDraftPickRows || [])
+    .filter(pick => {
+      const playerName = String(pick.player_name || "").trim();
+      const source = String(pick.source || "draft").toUpperCase();
 
-    recentEl.innerHTML = recent.length
-      ? recent.map(r => {
-          const nome = r["Giocatore"] || "";
-          const team = r["Fanta Team"] || "";
-          const info = getDraftPlayerInfoByName(nome);
+      if (!playerName) return false;
 
-          return `
-            <div class="desktop-recent-row">
-              <span class="desktop-recent-pick">#${escapeHtml(r["Pick"])}</span>
-              <img src="${getDraftTeamLogoPath(team)}" alt="${escapeHtml(team)}" onerror="this.style.display='none'">
-              <span class="desktop-recent-info">
-                <strong>${escapeHtml(nome)}</strong>
-                <small>${escapeHtml(team)} · ${escapeHtml(info.ruolo || "-")}${info.squadra ? ` · ${escapeHtml(info.squadra)}` : ""}</small>
-              </span>
-              <span class="desktop-recent-badges">${renderDesktopBadgesForPlayer(info)}</span>
-            </div>
-          `;
-        }).join("")
-      : `<div class="desktop-empty-state">Nessuna chiamata ancora.</div>`;
-  }
+      // Escludiamo le scelte automatiche/pre-draft
+      if (source === "FP") return false;
+      if (source === "U21_KEEPER") return false;
+
+      return true;
+    })
+    .sort((a, b) => {
+      const dateA = new Date(a.created_at || 0).getTime();
+      const dateB = new Date(b.created_at || 0).getTime();
+
+      if (dateB !== dateA) return dateB - dateA;
+
+      return Number(b.pick_number || 0) - Number(a.pick_number || 0);
+    })
+    .slice(0, 8);
+
+  if (recentCount) recentCount.textContent = `${recent.length}`;
+
+  recentEl.innerHTML = recent.length
+    ? recent.map(pick => {
+        const nome = pick.player_name || "";
+        const team = teamsById.get(String(pick.team_id)) || "";
+        const info = getDraftPlayerInfoByName(nome);
+
+        return `
+          <div class="desktop-recent-row">
+            <span class="desktop-recent-pick">#${escapeHtml(pick.pick_number)}</span>
+            <img src="${getDraftTeamLogoPath(team)}" alt="${escapeHtml(team)}" onerror="this.style.display='none'">
+            <span class="desktop-recent-info">
+              <strong>${escapeHtml(nome)}</strong>
+              <small>${escapeHtml(team)} · ${escapeHtml(info.ruolo || "-")}${info.squadra ? ` · ${escapeHtml(info.squadra)}` : ""}</small>
+            </span>
+            <span class="desktop-recent-badges">${renderDesktopBadgesForPlayer(info)}</span>
+          </div>
+        `;
+      }).join("")
+    : `<div class="desktop-empty-state">Nessuna chiamata ancora.</div>`;
+}
 
   const boardEl = document.getElementById("desktop-draft-board-grid");
   if (!boardEl) return;
