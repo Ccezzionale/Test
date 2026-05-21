@@ -780,18 +780,25 @@ function buildDesktopFixedBoardColumns() {
     orderMap[Number(row.pick_number)] = row;
   });
 
-  // Se esiste draft_visual_order, usiamo quello.
-  // È la fonte del tabellone stile anno scorso.
-  if (visualRows.length) {
-    const roundOneRows = visualRows
-      .filter(row => Number(row.visual_round) === 1)
-      .sort((a, b) => Number(a.pick_number) - Number(b.pick_number));
+// Se esiste draft_visual_order, usiamo quello per posizionare le card.
+// Ma l'ordine delle colonne deve restare quello originale del draft,
+// altrimenti una trade visuale sposta anche le squadre/header.
+if (visualRows.length) {
+  const originalTeamsOrder = [];
 
-    const teamsOrder = roundOneRows
-      .map(row => getTeamByIdDesktop(row.team_id))
-      .filter(Boolean);
+  orderRows.forEach(row => {
+    const originalTeamId = row.original_team_id || row.team_id;
+    if (!originalTeamId) return;
 
-    return teamsOrder.map(team => {
+    if (!originalTeamsOrder.some(t => String(t.id) === String(originalTeamId))) {
+      const team = getTeamByIdDesktop(originalTeamId);
+      if (team) originalTeamsOrder.push(team);
+    }
+  });
+
+  const teamsOrder = originalTeamsOrder;
+
+  return teamsOrder.map(team => {
       const teamVisualRows = visualRows
         .filter(row => String(row.team_id) === String(team.id))
         .sort((a, b) => Number(a.visual_round) - Number(b.visual_round))
