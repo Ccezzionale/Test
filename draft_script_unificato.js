@@ -925,17 +925,19 @@ function applyDesktopLiveTeamSize() {
   const name = String(liveTeam.textContent || "").trim();
   const len = name.length;
 
-  let fontSize = "3.35rem";
+  let fontSize = "3.25rem";
   let lineHeight = "1.06";
   let whiteSpace = "nowrap";
 
-  if (len >= 20) {
-    fontSize = "2.15rem";
-    lineHeight = "1.05";
+  // Nomi medio-lunghi tipo MinneSota Snakes / Team Bartowski
+  // restano grandi.
+  if (len >= 22) {
+    fontSize = "2.25rem";
+    lineHeight = "1.04";
     whiteSpace = "normal";
-  } else if (len >= 14) {
-    fontSize = "2.45rem";
-    lineHeight = "1.06";
+  } else if (len >= 18) {
+    fontSize = "2.75rem";
+    lineHeight = "1.05";
     whiteSpace = "nowrap";
   }
 
