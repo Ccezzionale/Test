@@ -939,7 +939,6 @@ function aggiornaDesktopDraftRoom(dati = [], prossima = null) {
   const currentRound = currentPick && fixedColumns.length
     ? Math.ceil(currentPick / fixedColumns.length)
     : "-";
-
   if (currentDraftState?.is_open === false) {
     if (liveTeam) liveTeam.textContent = "Draft fermo";
     if (livePick) livePick.textContent = "RFA";
@@ -950,6 +949,24 @@ function aggiornaDesktopDraftRoom(dati = [], prossima = null) {
     if (liveTeam) liveTeam.textContent = "Draft completato";
     if (livePick) livePick.textContent = "Fine";
   }
+  
+if (liveTeam) {
+  const nameLength = String(liveTeam.textContent || "").length;
+
+  liveTeam.classList.remove(
+    "team-name-normal",
+    "team-name-long",
+    "team-name-xl"
+  );
+
+  if (nameLength >= 20) {
+    liveTeam.classList.add("team-name-xl");
+  } else if (nameLength >= 14) {
+    liveTeam.classList.add("team-name-long");
+  } else {
+    liveTeam.classList.add("team-name-normal");
+  }
+}
 
   if (liveRound) liveRound.textContent = `${currentRound}/${maxRounds}`;
   if (liveProgress) liveProgress.textContent = `${picked}/${totalPicks}`;
