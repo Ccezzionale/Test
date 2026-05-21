@@ -6130,3 +6130,27 @@ h1, h2, h3, h4, p{
     white-space: nowrap !important;
   }
 }
+
+/* =========================================================
+   DESKTOP PICK CARD - FIX NOMI TAGLIATI
+   ========================================================= */
+
+@media (min-width: 1101px){
+
+  .desktop-pick-slot{
+    padding-top: 9px !important;
+    padding-bottom: 9px !important;
+    overflow: visible !important;
+  }
+
+  .desktop-pick-slot strong{
+    line-height: 1.18 !important;
+    padding-bottom: 2px !important;
+    overflow: visible !important;
+    text-overflow: clip !important;
+  }
+
+  .desktop-pick-slot small{
+    line-height: 1.18 !important;
+  }
+}
