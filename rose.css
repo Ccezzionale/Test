@@ -469,3 +469,381 @@ tbody tr:last-child {
     font-size: 0.88rem;
   }
 }
+
+/* =========================================================
+   ROSE RESTYLE V1 - DASHBOARD COMPATTA
+   ========================================================= */
+
+.rose-page {
+  max-width: 1500px;
+  padding-top: 34px;
+}
+
+.rose-hero {
+  position: relative;
+  padding: 26px 18px 22px;
+  margin-bottom: 22px;
+  border-radius: 24px;
+  background:
+    radial-gradient(circle at 20% 0%, rgba(255, 204, 0, 0.22), transparent 32%),
+    linear-gradient(135deg, #00284d 0%, #004b85 52%, #061d35 100%);
+  box-shadow: 0 18px 42px rgba(0, 31, 63, 0.18);
+  overflow: hidden;
+}
+
+.rose-hero::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(120deg, transparent 0%, rgba(255,255,255,0.10) 48%, transparent 72%);
+  pointer-events: none;
+}
+
+.rose-hero .titolo-pagina {
+  position: relative;
+  z-index: 1;
+  color: #ffffff;
+  font-size: clamp(2rem, 4vw, 3.1rem);
+  letter-spacing: 0.5px;
+  text-shadow: 0 4px 18px rgba(0, 0, 0, 0.35);
+}
+
+.rose-hero .rose-subtitle {
+  position: relative;
+  z-index: 1;
+  color: rgba(255,255,255,0.82);
+  font-weight: 500;
+}
+
+/* Card legenda più compatta */
+.rose-legend-card {
+  padding: 12px 16px;
+  border-radius: 20px;
+  background: rgba(255,255,255,0.92);
+  backdrop-filter: blur(8px);
+}
+
+#legenda {
+  gap: 10px;
+}
+
+.legend-item {
+  padding: 7px 11px;
+  font-size: 0.86rem;
+  background: #f8fbff;
+  border-color: #d7e5f5;
+  box-shadow: 0 4px 12px rgba(0, 31, 63, 0.04);
+}
+
+/* Filtri più dashboard */
+.rose-filter-card {
+  position: sticky;
+  top: 82px;
+  z-index: 20;
+  padding: 14px 16px;
+  border-radius: 20px;
+  background: rgba(255,255,255,0.94);
+  backdrop-filter: blur(10px);
+}
+
+#filtri-rose {
+  justify-content: center;
+}
+
+#filtri-rose input {
+  min-width: 300px;
+}
+
+#filtri-rose input,
+#filtri-rose select {
+  height: 46px;
+  border-radius: 14px;
+  background: #fdfefe;
+}
+
+.reset-rose-btn {
+  height: 46px;
+  padding: 0 18px;
+  border: 0;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #00284d, #005a9c);
+  color: #ffffff;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 8px 18px rgba(0, 31, 63, 0.16);
+  transition: transform 0.15s ease, box-shadow 0.15s ease, filter 0.15s ease;
+}
+
+.reset-rose-btn:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.05);
+  box-shadow: 0 12px 24px rgba(0, 31, 63, 0.22);
+}
+
+/* Contenitore più largo e meno dispersivo */
+.rose-content-card {
+  padding: 22px;
+  border-radius: 24px;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.96), rgba(248,251,255,0.98));
+}
+
+#contenitore-rose {
+  grid-template-columns: repeat(auto-fit, minmax(390px, 1fr));
+  gap: 22px;
+}
+
+/* Card squadra più sportiva */
+.box-rosa {
+  position: relative;
+  overflow: hidden;
+  padding: 0 0 16px;
+  border-radius: 24px;
+  background: #ffffff;
+  border: 1px solid #d8e6f5;
+  box-shadow: 0 14px 34px rgba(0, 31, 63, 0.09);
+}
+
+.box-rosa::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto;
+  height: 86px;
+  background:
+    radial-gradient(circle at 18% 10%, rgba(255,204,0,0.22), transparent 35%),
+    linear-gradient(135deg, #00284d 0%, #004b85 100%);
+  pointer-events: none;
+}
+
+.box-rosa:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 20px 44px rgba(0, 31, 63, 0.15);
+}
+
+.logo-nome {
+  position: relative;
+  z-index: 1;
+  margin: 0;
+  padding: 22px 16px 14px;
+}
+
+.team-icons {
+  width: 100%;
+  min-height: 132px;
+  gap: 22px;
+  margin-bottom: 8px;
+}
+
+.team-logo {
+  width: 112px;
+  height: 112px;
+  padding: 8px;
+  border-radius: 22px;
+  background: rgba(255,255,255,0.92);
+}
+
+.team-shirt {
+  width: 128px;
+  height: 128px;
+}
+
+.logo-nome span {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 8px 18px;
+  border-radius: 999px;
+  background: #ffffff;
+  color: #00284d;
+  font-size: 1.35rem;
+  box-shadow: 0 8px 18px rgba(0, 31, 63, 0.10);
+}
+
+/* Tabella più compatta e leggibile */
+.box-rosa table {
+  width: calc(100% - 28px);
+  margin: 0 auto;
+  border-radius: 16px;
+  overflow: hidden;
+  background: #ffffff;
+}
+
+.box-rosa thead {
+  background: linear-gradient(90deg, #00284d 0%, #005a9c 100%);
+}
+
+.box-rosa th {
+  padding: 10px 11px;
+  font-size: 0.86rem;
+  text-transform: uppercase;
+  letter-spacing: 0.45px;
+}
+
+.box-rosa td {
+  padding: 8px 11px;
+  font-size: 0.91rem;
+}
+
+.box-rosa td:first-child {
+  width: 58px;
+  font-weight: 800;
+  color: #003f73;
+}
+
+.box-rosa td.nome {
+  font-weight: 600;
+}
+
+.box-rosa tbody tr:nth-child(even) {
+  background-color: #f4f8fd;
+}
+
+.box-rosa tbody tr:hover {
+  background: #eaf4ff;
+}
+
+/* Badge un po' più puliti */
+.badge-img {
+  margin-left: 6px;
+  transform: translateY(2px);
+}
+
+.badge-img-star {
+  width: 28px;
+  height: 28px;
+}
+
+.badge-img-pill {
+  width: 32px;
+  height: 32px;
+}
+
+.badge-img-protected {
+  width: 30px !important;
+  height: 30px !important;
+}
+
+/* Ricerca evidenziata più elegante */
+.evidenziato {
+  background: linear-gradient(135deg, #ffe96a, #ffcc00);
+  color: #081421;
+  border-radius: 999px;
+  padding: 2px 7px;
+}
+
+/* =========================================================
+   MOBILE RESTYLE
+   ========================================================= */
+
+@media (max-width: 900px) {
+  .rose-filter-card {
+    position: static;
+  }
+
+  #contenitore-rose {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 600px) {
+  .rose-page {
+    padding: 16px 10px 34px;
+  }
+
+  .rose-hero {
+    padding: 22px 12px 18px;
+    border-radius: 20px;
+  }
+
+  .rose-hero .titolo-pagina {
+    font-size: 2rem;
+  }
+
+  .rose-legend-card {
+    overflow-x: auto;
+  }
+
+  #legenda {
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    padding-bottom: 4px;
+  }
+
+  .legend-item {
+    width: auto;
+    white-space: nowrap;
+    flex: 0 0 auto;
+    border-radius: 999px;
+  }
+
+  #filtri-rose input,
+  #filtri-rose select,
+  .reset-rose-btn {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .rose-content-card {
+    padding: 12px;
+  }
+
+  .box-rosa {
+    border-radius: 20px;
+  }
+
+  .box-rosa::before {
+    height: 78px;
+  }
+
+  .logo-nome {
+    padding: 18px 10px 12px;
+  }
+
+  .team-icons {
+    min-height: 108px;
+    gap: 14px;
+  }
+
+  .team-logo {
+    width: 86px;
+    height: 86px;
+    border-radius: 18px;
+  }
+
+  .team-shirt {
+    width: 96px;
+    height: 96px;
+  }
+
+  .logo-nome span {
+    font-size: 1.12rem;
+    min-height: 38px;
+    padding: 7px 14px;
+  }
+
+  .box-rosa table {
+    width: calc(100% - 18px);
+  }
+
+  .box-rosa th,
+  .box-rosa td {
+    padding: 7px 8px;
+    font-size: 0.82rem;
+  }
+
+  .box-rosa td:first-child {
+    width: 42px;
+  }
+
+  .badge-img-star {
+    width: 25px;
+    height: 25px;
+  }
+
+  .badge-img-pill {
+    width: 28px;
+    height: 28px;
+  }
+}
