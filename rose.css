@@ -847,3 +847,184 @@ tbody tr:last-child {
     height: 28px;
   }
 }
+
+/* =========================================================
+   ROSE RESTYLE V2 - STATS + MOBILE ACCORDION
+   ========================================================= */
+
+.team-title-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 7px;
+  width: 100%;
+}
+
+.logo-nome .team-name {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 8px 18px;
+  border-radius: 999px;
+  background: #ffffff;
+  color: #00284d;
+  font-size: 1.35rem;
+  font-weight: 900;
+  box-shadow: 0 8px 18px rgba(0, 31, 63, 0.10);
+}
+
+.team-conference-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 5px 12px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #00284d, #005a9c);
+  color: #ffffff;
+  font-size: 0.74rem;
+  font-weight: 800;
+  letter-spacing: 0.35px;
+  text-transform: uppercase;
+  box-shadow: 0 6px 14px rgba(0, 31, 63, 0.14);
+}
+
+.team-roster-meta {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 2px;
+}
+
+.team-roster-meta span {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 8px;
+  border-radius: 999px;
+  background: #f2f7fd;
+  border: 1px solid #d8e6f5;
+  color: #2b4057;
+  font-size: 0.75rem;
+  font-weight: 800;
+}
+
+.roster-toggle {
+  display: none;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  width: calc(100% - 28px);
+  margin: 10px auto 0;
+  padding: 10px 12px;
+  border: 1px solid #d8e6f5;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #f8fbff, #eef6ff);
+  color: #00284d;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.roster-toggle strong {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 999px;
+  background: #00284d;
+  color: #ffffff;
+  font-size: 1rem;
+  line-height: 1;
+}
+
+#rose-empty-state {
+  grid-column: 1 / -1;
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 220px;
+  padding: 30px 20px;
+  border: 1px dashed #b9cce2;
+  border-radius: 22px;
+  background:
+    radial-gradient(circle at 50% 0%, rgba(255, 204, 0, 0.16), transparent 36%),
+    #f8fbff;
+  color: #263b52;
+  text-align: center;
+}
+
+#rose-empty-state .rose-empty-icon {
+  font-size: 2.2rem;
+  margin-bottom: 10px;
+}
+
+#rose-empty-state strong {
+  display: block;
+  font-size: 1.25rem;
+  color: #00284d;
+  margin-bottom: 5px;
+}
+
+#rose-empty-state span {
+  color: #5c6f84;
+  font-size: 0.95rem;
+}
+
+/* Desktop: la rosa resta sempre visibile */
+@media (min-width: 601px) {
+  .roster-body {
+    display: block !important;
+  }
+}
+
+/* Mobile: card a fisarmonica */
+@media (max-width: 600px) {
+  .roster-toggle {
+    display: flex;
+  }
+
+  .roster-body {
+    display: none;
+    margin-top: 12px;
+  }
+
+  .box-rosa.is-open .roster-body {
+    display: block;
+  }
+
+  .team-roster-meta {
+    gap: 5px;
+    padding: 0 8px;
+  }
+
+  .team-roster-meta span {
+    font-size: 0.68rem;
+    padding: 4px 7px;
+  }
+
+  .team-conference-badge {
+    font-size: 0.68rem;
+    padding: 5px 10px;
+  }
+
+  .logo-nome .team-name {
+    font-size: 1.08rem;
+    min-height: 38px;
+    padding: 7px 14px;
+  }
+
+  .box-rosa {
+    padding-bottom: 12px;
+  }
+
+  .box-rosa:not(.is-open) {
+    padding-bottom: 14px;
+  }
+
+  .box-rosa:not(.is-open) .team-icons {
+    margin-bottom: 6px;
+  }
+}
