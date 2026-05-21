@@ -917,6 +917,7 @@ function getDesktopCurrentPickOwnerTeamName(currentPick) {
   return team?.name || "";
 }
 
+
 function applyDesktopLiveTeamSize() {
   const liveTeam = document.getElementById("desktop-live-team");
   if (!liveTeam) return;
@@ -925,26 +926,26 @@ function applyDesktopLiveTeamSize() {
   const len = name.length;
 
   let fontSize = "3.35rem";
-  let lineHeight = "1.04";
+  let lineHeight = "1.06";
   let whiteSpace = "nowrap";
 
   if (len >= 20) {
-    fontSize = "2.05rem";
-    lineHeight = "1.02";
+    fontSize = "2.15rem";
+    lineHeight = "1.05";
     whiteSpace = "normal";
   } else if (len >= 14) {
     fontSize = "2.45rem";
-    lineHeight = "1.02";
+    lineHeight = "1.06";
     whiteSpace = "nowrap";
   }
 
   liveTeam.style.setProperty("font-size", fontSize, "important");
   liveTeam.style.setProperty("line-height", lineHeight, "important");
   liveTeam.style.setProperty("white-space", whiteSpace, "important");
-  liveTeam.style.setProperty("overflow", "hidden", "important");
+  liveTeam.style.setProperty("overflow", "visible", "important");
   liveTeam.style.setProperty("text-overflow", "clip", "important");
   liveTeam.style.setProperty("letter-spacing", "-0.055em", "important");
-  liveTeam.style.setProperty("padding-bottom", "6px", "important");
+  liveTeam.style.setProperty("padding-bottom", "8px", "important");
 }
 
 function aggiornaDesktopDraftRoom(dati = [], prossima = null) {
