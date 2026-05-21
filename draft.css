@@ -6449,3 +6449,44 @@ h1, h2, h3, h4, p{
     grid-template-rows: 114px repeat(var(--desktop-rounds, 23), 80px) !important;
   }
 }
+
+/* =========================================================
+   MOBILE DRAFT BOARD - COMPLETED PICK CHECK
+   ========================================================= */
+
+@media (max-width: 768px){
+
+  body.mobile-view-draft #tabella-pick tbody tr td:nth-child(3):not(:empty) ~ *{
+    color: inherit;
+  }
+
+  body.mobile-view-draft #tabella-pick tbody tr:has(td:nth-child(3):not(:empty))::after{
+    content: "✓" !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+
+    background:
+      linear-gradient(180deg, #123f73 0%, #001f3f 100%) !important;
+    color: #ffdd55 !important;
+
+    border: 1px solid rgba(255, 213, 74, .55) !important;
+    box-shadow:
+      0 6px 13px rgba(0,31,63,.20),
+      inset 0 1px 0 rgba(255,255,255,.18) !important;
+
+    font-size: 1.05rem !important;
+    font-weight: 950 !important;
+  }
+
+  body.mobile-view-draft #tabella-pick tbody tr.next-pick::after{
+    content: "⏱" !important;
+    background:
+      linear-gradient(180deg, #062b57 0%, #001f3f 100%) !important;
+    color: #ffd54a !important;
+  }
+
+  body.mobile-view-draft #tabella-pick tbody tr.next-pick td:nth-child(3):empty::after{
+    content: "In attesa...";
+  }
+}
