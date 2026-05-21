@@ -490,10 +490,12 @@ function renderPicks(dati) {
 
     if (currentPick !== null && pick === currentPick) {
       prossimaIndex = index;
-      prossima = {
-        fantaTeam: riga["Fanta Team"],
-        pick: riga["Pick"]
-      };
+const visualTeamName = getCurrentPickVisualTeamName(pick) || riga["Fanta Team"];
+
+prossima = {
+  fantaTeam: visualTeamName,
+  pick: riga["Pick"]
+};
     }
   });
 
@@ -886,7 +888,25 @@ function buildDesktopFixedBoardColumns() {
   });
 }
 
+function getCurrentPickVisualTeamName(pickNumber) {
+  const visualRow = (lastDraftVisualRows || []).find(
+    row => Number(row.pick_number) === Number(pickNumber)
+  );
+
+  if (!visualRow) return "";
+
+  const team = (lastDraftTeams || []).find(
+    t => String(t.id) === String(visualRow.team_id)
+  );
+
+  return team?.name || "";
+}
+
 function getDesktopCurrentPickOwnerTeamName(currentPick) {
+  const visualTeamName = getCurrentPickVisualTeamName(currentPick);
+
+  if (visualTeamName) return visualTeamName;
+
   const orderRow = (lastDraftOrderRows || []).find(
     row => Number(row.pick_number) === Number(currentPick)
   );
@@ -1220,7 +1240,15 @@ function isMioTurno() {
   if (!currentDraftState) return false;
   if (currentDraftState.is_open === false) return false;
 
-  const pickCorrente = currentDraftState.current_pick;
+  const pickCorrente = Number(currentDraftState.current_pick || 0);
+  if (!pickCorrente) return false;
+
+  const visualTeamName = getCurrentPickVisualTeamName(pickCorrente);
+
+  if (visualTeamName) {
+    return String(visualTeamName) === String(currentTeamName);
+  }
+
   const righe = document.querySelectorAll("#tabella-pick tbody tr");
 
   for (let r of righe) {
@@ -1235,6 +1263,7 @@ function isMioTurno() {
 
   return false;
 }
+
 function aggiornaStatoInterattivoLista() {
   const puoScegliere = isAdmin || isMioTurno();
 
