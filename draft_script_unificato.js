@@ -12,6 +12,8 @@ const cercaRuolo = document.getElementById("cercaRuolo");
 
 const mappaGiocatori = {};
 const mappaGiocatoriDraft = {};
+const mappaGiocatoriDraftById = {};
+
 let ruoli = new Set();
 let squadre = new Set();
 let currentUser = null;
@@ -638,9 +640,20 @@ function getDraftTeamLogoPath(team) {
   return `img/${team}.png`;
 }
 
+
+
 function getDraftPlayerInfoByName(nome) {
   const key = normalize(nome || "");
   return mappaGiocatoriDraft[key] || mappaGiocatori[key] || {};
+}
+
+function getDraftPlayerInfoByPick(pick) {
+  if (pick?.player_id) {
+    const byId = mappaGiocatoriDraftById[String(pick.player_id)];
+    if (byId) return byId;
+  }
+
+  return getDraftPlayerInfoByName(pick?.player_name || "");
 }
 
 function ensureDesktopDraftRoomShell() {
@@ -1088,7 +1101,7 @@ if (recentEl) {
       const pick = cell.pickData;
       const nome = (pick?.player_name || "").trim();
       const isCurrent = Number(pickNum) === currentPick && currentDraftState?.is_open !== false;
-      const info = nome ? getDraftPlayerInfoByName(nome) : {};
+     const info = nome ? getDraftPlayerInfoByPick(pick) : {};
 
       const filledClass = nome ? "is-filled" : "is-empty";
       const currentClass = isCurrent ? "is-current" : "";
@@ -1186,6 +1199,7 @@ lastDraftPickRows = pickRows || [];
 lastDraftVisualRows = visualRows || [];
 
 Object.keys(mappaGiocatoriDraft).forEach(k => delete mappaGiocatoriDraft[k]);
+    Object.keys(mappaGiocatoriDraftById).forEach(k => delete mappaGiocatoriDraftById[k]);
 
 const draftPlayerIds = [...new Set(
   (pickRows || [])
@@ -1217,26 +1231,29 @@ quotation
 
   if (draftPlayersError) throw draftPlayersError;
 
-  (draftPlayers || []).forEach(p => {
-    const key = normalize(p.name || "");
+(draftPlayers || []).forEach(p => {
+  const key = normalize(p.name || "");
 
-    mappaGiocatoriDraft[key] = {
-      id: p.id,
-      nome: p.name || "",
-      ruolo: p.role || p.role_mantra || "",
-      is_u21: !!p.is_u21,
-      is_u21_slot: !!p.is_u21_slot,
-      is_u21_keeper: !!p.is_u21_keeper,
-      is_fp: !!p.is_fp,
-is_fp_keeper: !!p.is_fp_keeper,
-fp_keeper_year: p.fp_keeper_year,
-      is_top6_protected: !!p.is_top6_protected,
-      u21_keeper_year: p.u21_keeper_year,
-      is_rfa_matched: !!p.is_rfa_matched,
-      squadra: p.serie_a_team || "",
-      quotazione: p.quotation ?? ""
-    };
-  });
+  const info = {
+    id: p.id,
+    nome: p.name || "",
+    ruolo: p.role || p.role_mantra || "",
+    is_u21: !!p.is_u21,
+    is_u21_slot: !!p.is_u21_slot,
+    is_u21_keeper: !!p.is_u21_keeper,
+    is_fp: !!p.is_fp,
+    is_fp_keeper: !!p.is_fp_keeper,
+    fp_keeper_year: p.fp_keeper_year,
+    is_top6_protected: !!p.is_top6_protected,
+    u21_keeper_year: p.u21_keeper_year,
+    is_rfa_matched: !!p.is_rfa_matched,
+    squadra: p.serie_a_team || "",
+    quotazione: p.quotation ?? ""
+  };
+
+  mappaGiocatoriDraft[key] = info;
+  mappaGiocatoriDraftById[String(p.id)] = info;
+});
 }
 
     const { data: stateRows, error: stateError } = await supabase
