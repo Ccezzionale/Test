@@ -6430,3 +6430,22 @@ h1, h2, h3, h4, p{
     gap: 10px !important;
   }
 }
+
+/* =========================================================
+   DESKTOP BOARD - SPAZIO TRA LOGHI E PRIME PICK
+   ========================================================= */
+
+@media (min-width: 1101px){
+
+  .desktop-team-slots{
+    padding-top: 10px !important;
+  }
+
+  .desktop-round-spacer{
+    height: 114px !important;
+  }
+
+  .desktop-round-rail{
+    grid-template-rows: 114px repeat(var(--desktop-rounds, 23), 80px) !important;
+  }
+}
