@@ -6732,6 +6732,7 @@ h1, h2, h3, h4, p{
   .desktop-round-rail{
     grid-template-rows: 164px repeat(var(--desktop-rounds, 12), 72px) !important;
     gap: 10px !important;
+    transform: translateY(12px) !important;
   }
 
   .desktop-round-spacer{
