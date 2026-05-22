@@ -33,6 +33,72 @@ let lastDraftOrderRows = [];
 let lastDraftPickRows = [];
 let lastDraftTeams = [];
 let lastDraftVisualRows = [];
+let lastAcceptedTradeAssets = [];
+const tradeColorByPickNumber = new Map();
+
+const TRADE_COLOR_CLASSES = [
+  "trade-color-1",
+  "trade-color-2",
+  "trade-color-3",
+  "trade-color-4",
+  "trade-color-5",
+  "trade-color-6",
+  "trade-color-7",
+  "trade-color-8"
+];
+
+function getTradeColorClass(tradeId) {
+  if (!tradeId) return "";
+
+  let hash = 0;
+  const text = String(tradeId);
+
+  for (let i = 0; i < text.length; i++) {
+    hash = text.charCodeAt(i) + ((hash << 5) - hash);
+  }
+
+  return TRADE_COLOR_CLASSES[Math.abs(hash) % TRADE_COLOR_CLASSES.length];
+}
+
+function rebuildTradeColorMap(tradeAssets = [], draftPicks = []) {
+  tradeColorByPickNumber.clear();
+
+  const draftPickById = new Map(
+    (draftPicks || []).map(pick => [String(pick.id), pick])
+  );
+
+  (tradeAssets || []).forEach(asset => {
+    if (!asset.proposal_id) return;
+
+    let pickNumber = null;
+
+    if (asset.asset_type === "pick") {
+      pickNumber = Number(asset.asset_id);
+    }
+
+    if (asset.asset_type === "player") {
+      const draftPick = draftPickById.get(String(asset.asset_id));
+      pickNumber = draftPick ? Number(draftPick.pick_number) : null;
+    }
+
+    if (!pickNumber) return;
+
+    tradeColorByPickNumber.set(
+      Number(pickNumber),
+      getTradeColorClass(asset.proposal_id)
+    );
+  });
+}
+
+function renderTradeBadgeHtml(pickNumber, className = "desktop-pick-trade") {
+  const colorClass = tradeColorByPickNumber.get(Number(pickNumber)) || "trade-color-1";
+
+  return `
+    <span class="${className} ${colorClass}" title="Pick acquisita via trade">
+      ↔
+    </span>
+  `;
+}
 
 
 function normalize(nome) { return nome.trim().toLowerCase(); }
@@ -1113,7 +1179,7 @@ if (recentEl) {
             <span class="desktop-pick-number">
               ${pickNum ? escapeHtml(pickNum) : "—"}
             </span>
-            ${cell.isTradedPick ? '<span class="desktop-pick-trade" title="Pick acquisita via trade">↔</span>' : ''}
+            ${cell.isTradedPick ? renderTradeBadgeHtml(pickNum, "desktop-pick-trade") : ""}
           </div>
 
           ${pickNum ? (
@@ -1192,6 +1258,32 @@ const { data: visualRows, error: visualError } = await supabase
   .order("visual_round", { ascending: true });
 
 if (visualError) throw visualError;
+
+    const { data: acceptedTrades, error: acceptedTradesError } = await supabase
+  .from("trade_proposals")
+  .select("id")
+  .eq("draft_name", tab)
+  .eq("status", "accepted");
+
+if (acceptedTradesError) throw acceptedTradesError;
+
+const acceptedTradeIds = (acceptedTrades || []).map(trade => trade.id);
+
+let acceptedTradeAssets = [];
+
+if (acceptedTradeIds.length) {
+  const { data: tradeAssetsData, error: tradeAssetsError } = await supabase
+    .from("trade_assets")
+    .select("proposal_id, asset_type, asset_id")
+    .in("proposal_id", acceptedTradeIds);
+
+  if (tradeAssetsError) throw tradeAssetsError;
+
+  acceptedTradeAssets = tradeAssetsData || [];
+}
+
+lastAcceptedTradeAssets = acceptedTradeAssets;
+rebuildTradeColorMap(lastAcceptedTradeAssets, pickRows || []);
 
 lastDraftTeams = teams || [];
 lastDraftOrderRows = orderRows || [];
@@ -3039,8 +3131,8 @@ if (p.nome.length >= 18) {
         is_rfa_matched: p.isRfaMatched
       });
 
-      const tradeBadgeHtml = p.isTradedPick
-  ? '<span class="summary-trade-badge" title="Pick acquisita via trade">🔁</span>'
+const tradeBadgeHtml = p.isTradedPick
+  ? renderTradeBadgeHtml(p.pickNum, "summary-trade-badge")
   : "";
 
 riga.innerHTML = `
