@@ -14,12 +14,12 @@
         <a class="back-link" href="index.html">← Torna alla home</a>
         <p class="eyebrow">Area Admin</p>
         <h1>Admin Gazzetta</h1>
-        <p class="subtitle">Scrivi, salva e pubblica le edizioni della Gazzetta senza passare da Google Sheet.</p>
+        <p class="subtitle">Scrivi, salva e pubblica la Gazzetta senza statistiche esterne. Tutto passa dalla redazione interna.</p>
       </div>
       <div class="hero-card">
         <span>🗞️</span>
         <strong>CMS Editoriale</strong>
-        <small>Supabase → Home</small>
+        <small>Admin → Supabase → Home</small>
       </div>
     </header>
 
@@ -45,20 +45,26 @@
             <p class="eyebrow">Redazione</p>
             <h2 id="formTitle">Nuova edizione</h2>
           </div>
-<div class="save-actions">
-  <span id="saveStatus"></span>
-
-  <button id="btnSave" type="button">Salva edizione</button>
-</div>
+          <div class="save-actions">
+            <span id="saveStatus"></span>
+            <button id="btnSave" type="button">Salva edizione</button>
+          </div>
         </div>
 
         <form id="gazzettaForm" class="editor-form">
           <input type="hidden" id="editionId" />
 
+          <div class="section-divider first">Dati edizione</div>
+
           <div class="form-row compact-row">
             <label>
               <span>GW</span>
-              <input id="gw" type="number" min="1" step="1" required placeholder="34" />
+              <input id="gw" type="number" min="1" step="1" required placeholder="37" />
+            </label>
+
+            <label>
+              <span>Data edizione</span>
+              <input id="editionDate" type="text" placeholder="18 maggio 2026" />
             </label>
 
             <label class="publish-toggle">
@@ -69,13 +75,29 @@
 
           <label>
             <span>Titolo principale</span>
-            <input id="title" type="text" placeholder="Golden Knights, il trono è loro…" />
+            <input id="title" type="text" placeholder="Trionfi, cadute e leggende: la verità è servita" />
           </label>
 
           <label>
             <span>Sottotitolo / deck</span>
-            <textarea id="deck" rows="3" placeholder="La giornata lascia sentenze, rilancia gerarchie…"></textarea>
+            <textarea id="deck" rows="3" placeholder="La lotta per il titolo entra nel vivo. Nessuno è al sicuro."></textarea>
           </label>
+
+          <div class="section-divider">Hero</div>
+
+          <div class="form-row">
+            <label>
+              <span>URL immagine principale</span>
+              <input id="heroImageUrl" type="text" placeholder="img/gazzetta/gw37-hero.webp oppure link Google Drive" />
+            </label>
+
+            <label>
+              <span>Alt immagine principale</span>
+              <input id="heroImageAlt" type="text" placeholder="I Golden Knights sul trono della Lega" />
+            </label>
+          </div>
+
+          <div class="section-divider">Il Punto di Costantino</div>
 
           <div class="form-row">
             <label>
@@ -84,14 +106,14 @@
             </label>
 
             <label>
-              <span>URL immagine principale</span>
-              <input id="heroImageUrl" type="url" placeholder="https://… oppure link Google Drive" />
+              <span>Firma</span>
+              <input id="editorialSignature" type="text" placeholder="Costantino" />
             </label>
           </div>
 
           <label>
             <span>Testo editoriale</span>
-            <textarea id="editorialText" rows="14" placeholder="Scrivi qui l'articolo. Usa una riga vuota tra i paragrafi."></textarea>
+            <textarea id="editorialText" rows="18" placeholder="Scrivi qui l'articolo. Usa una riga vuota tra i paragrafi."></textarea>
           </label>
 
           <label>
@@ -99,27 +121,149 @@
             <textarea id="pullQuote" rows="3" placeholder="Se lasci vuoto, la home prova a estrarla automaticamente dal testo."></textarea>
           </label>
 
-          <div class="section-divider">Trailer / Prossimamente</div>
+          <div class="section-divider">Pagelle degli Eroi</div>
 
-          <label>
-            <span>Titolo teaser</span>
-            <input id="teaserTitle" type="text" placeholder="Nel prossimo episodio" />
-          </label>
+          <div class="ratings-admin-grid">
+            <article class="mini-editor-card">
+              <h3>Pagella 1</h3>
+              <input id="rating1Team" type="text" placeholder="Squadra" />
+              <input id="rating1Vote" type="text" placeholder="Voto, es. 9.0" />
+              <input id="rating1Label" type="text" placeholder="Titolo, es. Imperatore" />
+              <textarea id="rating1Text" rows="3" placeholder="Commento breve"></textarea>
+              <input id="rating1IconUrl" type="text" placeholder="Logo opzionale" />
+            </article>
+
+            <article class="mini-editor-card">
+              <h3>Pagella 2</h3>
+              <input id="rating2Team" type="text" placeholder="Squadra" />
+              <input id="rating2Vote" type="text" placeholder="Voto" />
+              <input id="rating2Label" type="text" placeholder="Titolo" />
+              <textarea id="rating2Text" rows="3" placeholder="Commento breve"></textarea>
+              <input id="rating2IconUrl" type="text" placeholder="Logo opzionale" />
+            </article>
+
+            <article class="mini-editor-card">
+              <h3>Pagella 3</h3>
+              <input id="rating3Team" type="text" placeholder="Squadra" />
+              <input id="rating3Vote" type="text" placeholder="Voto" />
+              <input id="rating3Label" type="text" placeholder="Titolo" />
+              <textarea id="rating3Text" rows="3" placeholder="Commento breve"></textarea>
+              <input id="rating3IconUrl" type="text" placeholder="Logo opzionale" />
+            </article>
+
+            <article class="mini-editor-card">
+              <h3>Pagella 4</h3>
+              <input id="rating4Team" type="text" placeholder="Squadra" />
+              <input id="rating4Vote" type="text" placeholder="Voto" />
+              <input id="rating4Label" type="text" placeholder="Titolo" />
+              <textarea id="rating4Text" rows="3" placeholder="Commento breve"></textarea>
+              <input id="rating4IconUrl" type="text" placeholder="Logo opzionale" />
+            </article>
+
+            <article class="mini-editor-card">
+              <h3>Pagella 5</h3>
+              <input id="rating5Team" type="text" placeholder="Squadra" />
+              <input id="rating5Vote" type="text" placeholder="Voto" />
+              <input id="rating5Label" type="text" placeholder="Titolo" />
+              <textarea id="rating5Text" rows="3" placeholder="Commento breve"></textarea>
+              <input id="rating5IconUrl" type="text" placeholder="Logo opzionale" />
+            </article>
+          </div>
+
+          <div class="section-divider">Top & Flop</div>
+
+          <div class="form-row topflop-admin">
+            <section class="mini-editor-card">
+              <h3>Top</h3>
+              <input id="top1Title" type="text" placeholder="Top 1 titolo" />
+              <textarea id="top1Text" rows="2" placeholder="Top 1 testo"></textarea>
+              <input id="top2Title" type="text" placeholder="Top 2 titolo" />
+              <textarea id="top2Text" rows="2" placeholder="Top 2 testo"></textarea>
+              <input id="top3Title" type="text" placeholder="Top 3 titolo" />
+              <textarea id="top3Text" rows="2" placeholder="Top 3 testo"></textarea>
+            </section>
+
+            <section class="mini-editor-card">
+              <h3>Flop</h3>
+              <input id="flop1Title" type="text" placeholder="Flop 1 titolo" />
+              <textarea id="flop1Text" rows="2" placeholder="Flop 1 testo"></textarea>
+              <input id="flop2Title" type="text" placeholder="Flop 2 titolo" />
+              <textarea id="flop2Text" rows="2" placeholder="Flop 2 testo"></textarea>
+              <input id="flop3Title" type="text" placeholder="Flop 3 titolo" />
+              <textarea id="flop3Text" rows="2" placeholder="Flop 3 testo"></textarea>
+            </section>
+          </div>
+
+          <div class="section-divider">Next on Lega degli Eroi</div>
+
+          <div class="form-row">
+            <label>
+              <span>Titolo sezione</span>
+              <input id="nextTitle" type="text" placeholder="Next on Lega degli Eroi" />
+            </label>
+
+            <label>
+              <span>Titolo evento / match</span>
+              <input id="nextEventTitle" type="text" placeholder="Il duello dei titani" />
+            </label>
+          </div>
+
+          <div class="form-row">
+            <label>
+              <span>Sottotitolo Next on</span>
+              <input id="nextSubtitle" type="text" placeholder="Solo uno regnerà" />
+            </label>
+
+            <label>
+              <span>Immagine teaser</span>
+              <input id="nextImageUrl" type="text" placeholder="img/gazzetta/next-on.webp oppure link Google Drive" />
+            </label>
+          </div>
 
           <label>
             <span>Testo teaser</span>
-            <textarea id="teaserText" rows="4" placeholder="Una nuova era sta arrivando…"></textarea>
+            <textarea id="nextText" rows="4" placeholder="La sfida che può decidere la stagione..."></textarea>
           </label>
 
-          <label>
-            <span>URL immagine teaser</span>
-            <input id="teaserImageUrl" type="url" placeholder="https://… oppure link Google Drive" />
-          </label>
+          <div class="form-row quad-row">
+            <label>
+              <span>Squadra A</span>
+              <input id="nextTeamA" type="text" placeholder="Real Mimmo" />
+            </label>
+
+            <label>
+              <span>Squadra B</span>
+              <input id="nextTeamB" type="text" placeholder="Team Bartowski" />
+            </label>
+
+            <label>
+              <span>Data evento</span>
+              <input id="nextDate" type="text" placeholder="24 maggio 2026" />
+            </label>
+
+            <label>
+              <span>Orario</span>
+              <input id="nextTime" type="text" placeholder="20:45" />
+            </label>
+          </div>
+
+          <div class="form-row">
+            <label>
+              <span>CTA label opzionale</span>
+              <input id="nextCtaLabel" type="text" placeholder="Anteprima match" />
+            </label>
+
+            <label>
+              <span>CTA URL opzionale</span>
+              <input id="nextCtaUrl" type="text" placeholder="playoff.html" />
+            </label>
+          </div>
         </form>
       </section>
     </section>
   </main>
 
-<script type="module" src="admin-gazzetta.js?v=2"></script>
+  <script type="module" src="admin-gazzetta.js?v=20"></script>
 </body>
 </html>
+
