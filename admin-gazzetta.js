@@ -1,9 +1,5 @@
 import { supabase as sb } from "./supabase-config.js";
 
-const sb = HAS_SUPABASE_CONFIG && window.supabase
-  ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
-  : null;
-
 let editions = [];
 let activeGw = null;
 
