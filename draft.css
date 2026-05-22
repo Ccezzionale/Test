@@ -6704,10 +6704,10 @@ h1, h2, h3, h4, p{
   }
 
   .desktop-team-head img{
-    width: 82px !important;
-    height: 82px !important;
-    max-width: 82px !important;
-    max-height: 82px !important;
+    width: 120px !important;
+    height: 120px !important;
+    max-width: 120px !important;
+    max-height: 120px !important;
     object-fit: contain !important;
   }
 
