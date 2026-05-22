@@ -6691,9 +6691,9 @@ h1, h2, h3, h4, p{
     color: #4b3700;
   }
 
-  /* =========================
+ /* =========================
    DESKTOP LOGHI DRAFT PIÙ GRANDI
-   mantiene U21/POR attaccati alla card
+   mantiene U21/POR attaccati e riallinea i round
    ========================= */
 
 @media (min-width: 1101px){
@@ -6713,13 +6713,15 @@ h1, h2, h3, h4, p{
 
   .desktop-team-column{
     grid-template-rows: 132px 28px auto !important;
+    gap: 7px !important;
   }
 
   .desktop-round-rail{
-    grid-template-rows: 167px repeat(var(--desktop-rounds, 12), 72px) !important;
+    grid-template-rows: 132px 28px repeat(var(--desktop-rounds, 12), 72px) !important;
+    gap: 7px !important;
   }
 
   .desktop-round-spacer{
-    height: 167px !important;
+    height: auto !important;
   }
 }
