@@ -1978,8 +1978,25 @@ function mapPlayerRow(p) {
     quotation: p.quotation ?? "",
     is_u21: !!p.is_u21,
     is_fp: !!p.is_fp,
-    pool: p.pool
+    pool: p.pool,
+    unavailable_until_week: p.unavailable_until_week,
+    unavailable_until_phase: p.unavailable_until_phase,
+    unavailable_reason: p.unavailable_reason
   };
+}
+
+function isPlayerBlockedThisWaiverWeek(player) {
+  if (!currentSettings) return false;
+
+  return (
+    player.unavailable_reason === "trade_cut" &&
+    Number(player.unavailable_until_week) === Number(currentSettings.active_week) &&
+    String(player.unavailable_until_phase || "") === String(currentSettings.active_phase || "")
+  );
+}
+
+function filterAvailableFreeAgents(players) {
+  return (players || []).filter(player => !isPlayerBlockedThisWaiverWeek(player));
 }
 
 async function loadMyOwnedPlayers() {
@@ -2029,20 +2046,23 @@ async function loadFreeAgents() {
 
     freeAgents = [];
 
-    const selectFields = `
-      id,
-      external_id,
-      name,
-      role,
-      role_mantra,
-      serie_a_team,
-      quotation,
-      is_u21,
-      is_fp,
-      owner_team_id,
-      status,
-      pool
-    `;
+const selectFields = `
+  id,
+  external_id,
+  name,
+  role,
+  role_mantra,
+  serie_a_team,
+  quotation,
+  is_u21,
+  is_fp,
+  owner_team_id,
+  status,
+  pool,
+  unavailable_until_week,
+  unavailable_until_phase,
+  unavailable_reason
+`;
 
     // FASE CONFERENCE: ogni Conference vede solo il proprio pool
     if (!isUnifiedWaiverPhase()) {
@@ -2058,7 +2078,7 @@ async function loadFreeAgents() {
 
       if (error) throw error;
 
-freeAgents = (data || []).map(mapPlayerRow);
+freeAgents = filterAvailableFreeAgents((data || []).map(mapPlayerRow));
 populateFreeAgentsFilters();
 renderFreeAgents();
 return;
@@ -2079,7 +2099,7 @@ const { data, error } = await supabase
 
 if (error) throw error;
 
-freeAgents = (data || []).map(mapPlayerRow);
+freeAgents = filterAvailableFreeAgents((data || []).map(mapPlayerRow));
 populateFreeAgentsFilters();
 renderFreeAgents();
 
@@ -2251,10 +2271,13 @@ async function applyWinningWaiverCall(call) {
   // 1. assegna il giocatore preso alla squadra vincitrice
   const { data: incomingPlayer, error: incomingError } = await supabase
     .from("players")
-    .update({
-      owner_team_id: winningTeamId,
-      updated_at: nowIso
-    })
+.update({
+  owner_team_id: winningTeamId,
+  unavailable_until_week: null,
+  unavailable_until_phase: null,
+  unavailable_reason: null,
+  updated_at: nowIso
+})
     .eq("id", call.player_in_id)
     .is("owner_team_id", null)
     .select("id, name")
@@ -2415,10 +2438,13 @@ async function applyWinningCompensatoryCall(call) {
 
   const { data: incomingPlayer, error: incomingError } = await supabase
     .from("players")
-    .update({
-      owner_team_id: winningTeamId,
-      updated_at: nowIso
-    })
+.update({
+  owner_team_id: winningTeamId,
+  unavailable_until_week: null,
+  unavailable_until_phase: null,
+  unavailable_reason: null,
+  updated_at: nowIso
+})
     .eq("id", call.player_in_id)
     .is("owner_team_id", null)
     .select("id, name")
