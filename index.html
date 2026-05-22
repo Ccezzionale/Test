@@ -119,7 +119,13 @@
 
 <ul class="navbar" id="mainMenu">
 
-  <li class="dropdown">
+  <!-- ROSE NORMALE: visibile ai non-admin -->
+  <li id="nav-rose-normal">
+    <a href="rose.html">Rose</a>
+  </li>
+
+  <!-- ROSE ADMIN: visibile solo agli admin -->
+  <li id="nav-rose-admin" class="dropdown" style="display:none;">
     <a href="#" class="toggle-submenu">
       Rose <span class="caret">▾</span>
     </a>
@@ -131,7 +137,7 @@
         </a>
       </li>
 
-      <li id="nav-admin-rose" style="display:none;">
+      <li>
         <a href="admin-rose.html">
           Admin Rose
         </a>
