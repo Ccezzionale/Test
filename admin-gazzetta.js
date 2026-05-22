@@ -71,19 +71,20 @@ function collectPayload(){
     throw new Error("Inserisci una GW valida.");
   }
 
-  return {
-    gw,
-    is_published: Boolean($(fields.is_published)?.checked),
-    title: formValue(fields.title),
-    deck: formValue(fields.deck),
-    editorial_title: formValue(fields.editorial_title) || "Il Punto di Costantino",
-    editorial_text: formValue(fields.editorial_text),
-    pull_quote: formValue(fields.pull_quote),
-    hero_image_url: formValue(fields.hero_image_url),
-    teaser_title: formValue(fields.teaser_title) || "Nel prossimo episodio",
-    teaser_text: formValue(fields.teaser_text),
-    teaser_image_url: formValue(fields.teaser_image_url)
-  };
+return {
+  gw,
+  is_published: Boolean($(fields.is_published)?.checked),
+  title: formValue(fields.title),
+  deck: formValue(fields.deck),
+  editorial_title: formValue(fields.editorial_title) || "Il Punto di Costantino",
+  editorial_text: formValue(fields.editorial_text),
+  pull_quote: formValue(fields.pull_quote),
+  hero_image_url: formValue(fields.hero_image_url),
+  teaser_title: formValue(fields.teaser_title) || "Nel prossimo episodio",
+  teaser_text: formValue(fields.teaser_text),
+  teaser_image_url: formValue(fields.teaser_image_url),
+  updated_at: new Date().toISOString()
+};
 }
 
 async function requireAdmin(){
