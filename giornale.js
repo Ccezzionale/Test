@@ -1,3 +1,5 @@
+import { supabase as sb } from "./supabase-config.js";
+
 // =====================================
 // LA GAZZETTA DEGLI EROI
 // Gazzetta Premium Edition
