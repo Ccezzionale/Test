@@ -2,7 +2,7 @@
 // Supercoppa a 5 partecipanti con play-in, sorteggio semifinali e admin panel.
 
 (function () {
-  var STORAGE_KEY = "legaEroiSupercoppaData_v4";
+  var STORAGE_KEY = "legaEroiSupercoppaData_v5";
 
   var SQUADRE_SUPERCOPPA = [
     { nome: "Rubinkebab", logo: "img/Rubinkebab.png" },
@@ -24,11 +24,11 @@
   ];
 
   var slots = [
-    { key: "leagueChampion", icon: "♛", competition: "Lega degli Eroi", defaultQualifier: "Campione", placeholder: "Campione Lega degli Eroi" },
-    { key: "crashOutChampion", icon: "🏆", competition: "Crash Out Cup", defaultQualifier: "Vincitore", placeholder: "Rappresentante Crash Out Cup" },
-    { key: "highlanderChampion", icon: "🛡️", competition: "Highlander Cup", defaultQualifier: "Vincitore", placeholder: "Rappresentante Highlander Cup" },
-    { key: "conferenceLeagueChampion", icon: "🏅", competition: "Conference League", defaultQualifier: "Vincitore", placeholder: "Rappresentante Conference League" },
-    { key: "conferenceChampionshipChampion", icon: "✦", competition: "Conference Championship", defaultQualifier: "Vincitore", placeholder: "Rappresentante Conference Championship" }
+    { key: "leagueChampion", icon: "♛", defaultCompetition: "Lega degli Eroi", defaultQualifier: "Campione", placeholder: "Campione Lega degli Eroi" },
+    { key: "crashOutChampion", icon: "🏆", defaultCompetition: "Crash Out Cup", defaultQualifier: "Vincitore", placeholder: "Rappresentante Crash Out Cup" },
+    { key: "highlanderChampion", icon: "🛡️", defaultCompetition: "Highlander Cup", defaultQualifier: "Vincitore", placeholder: "Rappresentante Highlander Cup" },
+    { key: "conferenceLeagueChampion", icon: "🏅", defaultCompetition: "Conference League", defaultQualifier: "Vincitore", placeholder: "Rappresentante Conference League" },
+    { key: "conferenceChampionshipChampion", icon: "✦", defaultCompetition: "Conference Championship", defaultQualifier: "Vincitore", placeholder: "Rappresentante Conference Championship" }
   ];
 
   var defaultData = {
@@ -38,6 +38,13 @@
       highlanderChampion: null,
       conferenceLeagueChampion: null,
       conferenceChampionshipChampion: null
+    },
+    competitions: {
+      leagueChampion: "Lega degli Eroi",
+      crashOutChampion: "Crash Out Cup",
+      highlanderChampion: "Highlander Cup",
+      conferenceLeagueChampion: "Conference League",
+      conferenceChampionshipChampion: "Conference Championship"
     },
     qualifiers: {
       leagueChampion: "Campione",
@@ -110,6 +117,7 @@
   function mergeData(base, saved) {
     if (!saved) return base;
     base.teams = Object.assign(base.teams, saved.teams || {});
+    base.competitions = Object.assign(base.competitions, saved.competitions || {});
     base.qualifiers = Object.assign(base.qualifiers, saved.qualifiers || {});
     base.scores = Object.assign(base.scores, saved.scores || {});
     base.draw = Object.assign(base.draw, saved.draw || {});
@@ -131,7 +139,7 @@
     var selectedName = state.teams[key];
     var squadra = selectedName ? findSquadra(selectedName) : null;
     var qualifier = getQualifier(key);
-    var competition = slot ? slot.competition : "Da definire";
+    var competition = getCompetition(key);
 
     return {
       key: key,
@@ -143,6 +151,12 @@
       icon: slot ? slot.icon : "?",
       isPlaceholder: !squadra
     };
+  }
+
+  function getCompetition(key) {
+    var slot = getSlot(key);
+    var value = state.competitions && state.competitions[key] ? state.competitions[key] : "";
+    return value || (slot ? slot.defaultCompetition : "Da definire");
   }
 
   function getQualifier(key) {
@@ -371,7 +385,11 @@
 
     box.innerHTML = slots.map(function (slot) {
       return '<div class="admin-participant-field">' +
-        '<label>' + escapeHtml(slot.competition) +
+        '<div class="admin-slot-title">' + escapeHtml(slot.defaultCompetition) + '</div>' +
+        '<label>Nome coppa / competizione' +
+          '<input type="text" data-competition-slot="' + escapeAttr(slot.key) + '" value="' + escapeAttr(getCompetition(slot.key)) + '" placeholder="Es. Crash Out Cup, Coppa degli Eroi..." />' +
+        '</label>' +
+        '<label>Squadra' +
           '<select data-team-slot="' + escapeAttr(slot.key) + '">' + teamOptions(state.teams[slot.key]) + '</select>' +
         '</label>' +
         '<label>Qualifica mostrata' +
@@ -379,6 +397,15 @@
         '</label>' +
       '</div>';
     }).join("");
+
+    box.querySelectorAll("input[data-competition-slot]").forEach(function (input) {
+      input.addEventListener("input", function () {
+        var key = this.getAttribute("data-competition-slot");
+        state.competitions[key] = this.value || getSlot(key).defaultCompetition;
+        saveState();
+        renderAll();
+      });
+    });
 
     box.querySelectorAll("select[data-team-slot]").forEach(function (select) {
       select.addEventListener("change", function () {
@@ -459,6 +486,12 @@
     document.querySelectorAll("select[data-team-slot]").forEach(function (select) {
       var key = select.getAttribute("data-team-slot");
       select.value = state.teams[key] || "";
+    });
+
+    document.querySelectorAll("input[data-competition-slot]").forEach(function (input) {
+      var key = input.getAttribute("data-competition-slot");
+      var value = getCompetition(key);
+      if (input.value !== value) input.value = value;
     });
 
     document.querySelectorAll("input[data-qualifier-slot]").forEach(function (input) {
