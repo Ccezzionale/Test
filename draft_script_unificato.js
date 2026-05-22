@@ -1224,15 +1224,15 @@ const teamColumns = fixedColumns.map(column => {
 <div class="desktop-team-head">
   <img src="${logo}" alt="${escapeHtml(teamName)}" onerror="this.style.visibility='hidden'">
   <strong>${escapeHtml(teamName)}</strong>
+</div>
 
-  <div class="desktop-team-rules">
-    <span class="desktop-team-rule-chip ${u21Ok ? "ok" : "warn"}">
-      U21 ${Math.min(u21Count, 4)}/4
-    </span>
-    <span class="desktop-team-rule-chip ${porOk ? "ok" : "warn"}">
-      POR ${goalkeeperCount}/2
-    </span>
-  </div>
+<div class="desktop-team-rules">
+  <span class="desktop-team-rule-chip ${u21Ok ? "ok" : "warn"}">
+    U21 ${Math.min(u21Count, 4)}/4
+  </span>
+  <span class="desktop-team-rule-chip ${porOk ? "ok" : "warn"}">
+    POR ${goalkeeperCount}/2
+  </span>
 </div>
         <div class="desktop-team-slots">${slots}</div>
       </article>
