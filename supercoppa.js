@@ -2,7 +2,7 @@
 // Supercoppa a 5 partecipanti con play-in, sorteggio semifinali e admin panel.
 
 (function () {
-  var STORAGE_KEY = "legaEroiSupercoppaData_v3";
+  var STORAGE_KEY = "legaEroiSupercoppaData_v4";
 
   var SQUADRE_SUPERCOPPA = [
     { nome: "Rubinkebab", logo: "img/Rubinkebab.png" },
@@ -24,11 +24,11 @@
   ];
 
   var slots = [
-    { key: "leagueChampion", icon: "♛", role: "Campione Lega degli Eroi", placeholder: "Campione Lega degli Eroi" },
-    { key: "crashOutChampion", icon: "🏆", role: "Vincitore Crash Out Cup", placeholder: "Vincitore Crash Out Cup" },
-    { key: "highlanderChampion", icon: "🛡️", role: "Vincitore Highlander Cup", placeholder: "Vincitore Highlander Cup" },
-    { key: "conferenceLeagueChampion", icon: "🏅", role: "Vincitore Conference League", placeholder: "Vincitore Conference League" },
-    { key: "conferenceChampionshipChampion", icon: "✦", role: "Vincitore Conference Championship", placeholder: "Vincitore Conference Championship" }
+    { key: "leagueChampion", icon: "♛", competition: "Lega degli Eroi", defaultQualifier: "Campione", placeholder: "Campione Lega degli Eroi" },
+    { key: "crashOutChampion", icon: "🏆", competition: "Crash Out Cup", defaultQualifier: "Vincitore", placeholder: "Rappresentante Crash Out Cup" },
+    { key: "highlanderChampion", icon: "🛡️", competition: "Highlander Cup", defaultQualifier: "Vincitore", placeholder: "Rappresentante Highlander Cup" },
+    { key: "conferenceLeagueChampion", icon: "🏅", competition: "Conference League", defaultQualifier: "Vincitore", placeholder: "Rappresentante Conference League" },
+    { key: "conferenceChampionshipChampion", icon: "✦", competition: "Conference Championship", defaultQualifier: "Vincitore", placeholder: "Rappresentante Conference Championship" }
   ];
 
   var defaultData = {
@@ -38,6 +38,13 @@
       highlanderChampion: null,
       conferenceLeagueChampion: null,
       conferenceChampionshipChampion: null
+    },
+    qualifiers: {
+      leagueChampion: "Campione",
+      crashOutChampion: "Vincitore",
+      highlanderChampion: "Vincitore",
+      conferenceLeagueChampion: "Vincitore",
+      conferenceChampionshipChampion: "Vincitore"
     },
     scores: {
       playin: ["", ""],
@@ -103,6 +110,7 @@
   function mergeData(base, saved) {
     if (!saved) return base;
     base.teams = Object.assign(base.teams, saved.teams || {});
+    base.qualifiers = Object.assign(base.qualifiers, saved.qualifiers || {});
     base.scores = Object.assign(base.scores, saved.scores || {});
     base.draw = Object.assign(base.draw, saved.draw || {});
     return base;
@@ -122,15 +130,25 @@
     var slot = getSlot(key);
     var selectedName = state.teams[key];
     var squadra = selectedName ? findSquadra(selectedName) : null;
+    var qualifier = getQualifier(key);
+    var competition = slot ? slot.competition : "Da definire";
 
     return {
       key: key,
       name: squadra ? squadra.nome : (slot ? slot.placeholder : "Da definire"),
       logo: squadra ? squadra.logo : "",
-      role: slot ? slot.role : "Da definire",
+      competition: competition,
+      qualifier: qualifier,
+      role: qualifier + " · " + competition,
       icon: slot ? slot.icon : "?",
       isPlaceholder: !squadra
     };
+  }
+
+  function getQualifier(key) {
+    var slot = getSlot(key);
+    var value = state.qualifiers && state.qualifiers[key] ? state.qualifiers[key] : "";
+    return value || (slot ? slot.defaultQualifier : "Rappresentante");
   }
 
   function scoreValue(matchKey, index) {
@@ -164,8 +182,8 @@
   function getDrawCandidates() {
     var playinWinner = getPlayinWinner();
     var playinCandidate = playinWinner && playinWinner !== "tie"
-      ? Object.assign({}, playinWinner, { key: "playinWinner", role: "Vincente Play-in Conference" })
-      : { key: "playinWinner", name: "Vincente Play-in", logo: "", role: "Vincente Play-in Conference", icon: "?", isPlaceholder: true };
+      ? Object.assign({}, playinWinner, { key: "playinWinner", competition: "Play-in Conference", qualifier: "Vincente", role: "Vincente · Play-in Conference" })
+      : { key: "playinWinner", name: "Vincente Play-in", logo: "", competition: "Play-in Conference", qualifier: "Vincente", role: "Vincente · Play-in Conference", icon: "?", isPlaceholder: true };
 
     return [
       getTeam("leagueChampion"),
@@ -232,9 +250,10 @@
   function renderParticipantCard(team) {
     return '<article class="participant-card">' +
       renderMiniLogo(team) +
-      '<div>' +
-      '<span>' + escapeHtml(team.role.replace("Vincitore ", "Vincitore<br>")) + '</span>' +
+      '<div class="participant-copy">' +
+      '<span class="participant-competition">' + escapeHtml(team.competition || team.role) + '</span>' +
       '<strong>' + escapeHtml(team.isPlaceholder ? "Da definire" : team.name) + '</strong>' +
+      '<em>' + escapeHtml(team.qualifier || "Rappresentante") + '</em>' +
       '</div>' +
       '</article>';
   }
@@ -351,9 +370,14 @@
     if (!box) return;
 
     box.innerHTML = slots.map(function (slot) {
-      return '<label>' + escapeHtml(slot.role) +
-        '<select data-team-slot="' + escapeAttr(slot.key) + '">' + teamOptions(state.teams[slot.key]) + '</select>' +
-        '</label>';
+      return '<div class="admin-participant-field">' +
+        '<label>' + escapeHtml(slot.competition) +
+          '<select data-team-slot="' + escapeAttr(slot.key) + '">' + teamOptions(state.teams[slot.key]) + '</select>' +
+        '</label>' +
+        '<label>Qualifica mostrata' +
+          '<input type="text" data-qualifier-slot="' + escapeAttr(slot.key) + '" value="' + escapeAttr(getQualifier(slot.key)) + '" placeholder="Es. Vincitore, Finalista, Ripescato..." />' +
+        '</label>' +
+      '</div>';
     }).join("");
 
     box.querySelectorAll("select[data-team-slot]").forEach(function (select) {
@@ -361,6 +385,15 @@
         var key = this.getAttribute("data-team-slot");
         state.teams[key] = this.value || null;
         cleanInvalidDraw();
+        saveState();
+        renderAll();
+      });
+    });
+
+    box.querySelectorAll("input[data-qualifier-slot]").forEach(function (input) {
+      input.addEventListener("input", function () {
+        var key = this.getAttribute("data-qualifier-slot");
+        state.qualifiers[key] = this.value || getSlot(key).defaultQualifier;
         saveState();
         renderAll();
       });
@@ -426,6 +459,12 @@
     document.querySelectorAll("select[data-team-slot]").forEach(function (select) {
       var key = select.getAttribute("data-team-slot");
       select.value = state.teams[key] || "";
+    });
+
+    document.querySelectorAll("input[data-qualifier-slot]").forEach(function (input) {
+      var key = input.getAttribute("data-qualifier-slot");
+      var value = getQualifier(key);
+      if (input.value !== value) input.value = value;
     });
   }
 
