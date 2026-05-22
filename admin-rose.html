@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Rose - Lega degli Eroi</title>
+  <link rel="stylesheet" href="navbar.css?v=99">
+  <link rel="stylesheet" href="admin-rose.css?v=1">
+</head>
+<body>
+  <nav class="site-nav">
+    <div class="nav-inner">
+      <div class="nav-left">
+        <span id="hamburger" class="hamburger" aria-label="Apri menu">☰</span>
+        <a href="index.html" class="brand-home" aria-label="Home">
+          <img src="icons/nav/home.webp" alt="" class="nav-home-icon">
+        </a>
+      </div>
+
+      <ul class="navbar" id="mainMenu">
+        <li><a href="rose.html">Rose</a></li>
+        <li><a href="admin-rose.html" class="active">Admin Rose</a></li>
+        <li><a href="trade-room.html">Trade Room</a></li>
+        <li><a href="waiver.html">Waiver Wire</a></li>
+        <li><a href="regolamento.html">Regolamento</a></li>
+      </ul>
+
+      <div class="nav-right hero-actions">
+        <a id="login-btn" href="login.html" class="btn-hero" style="display:none;" aria-label="Login">
+          <img src="icons/nav/login-logout.webp" class="action-icon" alt="">
+          <span class="btn-label">Login</span>
+        </a>
+        <button id="logout-btn" type="button" class="btn-hero" style="display:none;" aria-label="Logout">
+          <img src="icons/nav/login-logout.webp" class="action-icon" alt="">
+          <span class="btn-label">Logout</span>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <main class="admin-rose-page">
+    <section class="admin-hero">
+      <div>
+        <p class="eyebrow">Cabina VAR</p>
+        <h1>Admin Rose</h1>
+        <p>Correggi assegnazioni, rimuovi giocatori e sistema i badge senza aprire Supabase.</p>
+      </div>
+      <a href="rose.html" class="ghost-link">Torna alle rose</a>
+    </section>
+
+    <section id="admin-guard" class="admin-card guard-card">
+      <strong>Controllo accesso in corso...</strong>
+      <span>Verifico che tu sia admin.</span>
+    </section>
+
+    <section id="admin-app" class="admin-layout" style="display:none;">
+      <aside class="admin-card search-card">
+        <div class="card-head">
+          <div>
+            <h2>Cerca calciatore</h2>
+            <p>Trova un giocatore già presente nel database.</p>
+          </div>
+          <button id="refresh-btn" type="button" class="mini-btn">Aggiorna</button>
+        </div>
+
+        <input id="player-search" class="admin-input" type="text" placeholder="Scrivi nome, ruolo o squadra Serie A...">
+
+        <div class="quick-filters">
+          <button type="button" data-filter="all" class="filter-chip active">Tutti</button>
+          <button type="button" data-filter="owned" class="filter-chip">In rosa</button>
+          <button type="button" data-filter="free" class="filter-chip">Svincolati</button>
+          <button type="button" data-filter="badges" class="filter-chip">Con badge</button>
+        </div>
+
+        <div id="players-list" class="players-list"></div>
+      </aside>
+
+      <section class="admin-card editor-card">
+        <div class="card-head">
+          <div>
+            <h2>Scheda modifica</h2>
+            <p id="selected-hint">Seleziona un calciatore dalla lista.</p>
+          </div>
+          <span id="selected-pill" class="status-pill">Nessuna selezione</span>
+        </div>
+
+        <form id="player-form" class="player-form is-disabled">
+          <input type="hidden" id="player-id">
+
+          <div class="form-grid">
+            <label>
+              Nome
+              <input id="player-name" class="admin-input" type="text" disabled>
+            </label>
+
+            <label>
+              Ruolo
+              <input id="player-role" class="admin-input" type="text" disabled>
+            </label>
+
+            <label>
+              Ruolo Mantra
+              <input id="player-role-mantra" class="admin-input" type="text" disabled>
+            </label>
+
+            <label>
+              Squadra Serie A
+              <input id="player-serie-a" class="admin-input" type="text" disabled>
+            </label>
+
+            <label>
+              Quotazione
+              <input id="player-quotation" class="admin-input" type="number" disabled>
+            </label>
+
+            <label>
+              Squadra proprietaria
+              <select id="owner-team" class="admin-input"></select>
+            </label>
+          </div>
+
+          <div class="badges-panel">
+            <div class="section-title">
+              <h3>Badge</h3>
+              <p>Questi campi pilotano le icone già visibili nella pagina Rose.</p>
+            </div>
+
+            <div class="badge-grid">
+              <label class="switch-row">
+                <input id="is-fp" type="checkbox">
+                <span>FP</span>
+              </label>
+
+              <label class="switch-row">
+                <input id="is-fp-keeper" type="checkbox">
+                <span>FP confermato</span>
+              </label>
+
+              <label>
+                Anno FP
+                <select id="fp-keeper-year" class="admin-input compact">
+                  <option value="">Nessuno</option>
+                  <option value="1">1° anno</option>
+                  <option value="2">2° anno</option>
+                </select>
+              </label>
+
+              <label class="switch-row">
+                <input id="is-u21-slot" type="checkbox">
+                <span>U21</span>
+              </label>
+
+              <label class="switch-row">
+                <input id="is-u21-keeper" type="checkbox">
+                <span>U21 confermato</span>
+              </label>
+
+              <label>
+                Anno U21
+                <select id="u21-keeper-year" class="admin-input compact">
+                  <option value="">Nessuno</option>
+                  <option value="1">1° anno</option>
+                  <option value="2">2° anno</option>
+                </select>
+              </label>
+
+              <label class="switch-row">
+                <input id="is-rfa-matched" type="checkbox">
+                <span>RFA pareggiato</span>
+              </label>
+
+              <label class="switch-row">
+                <input id="is-top6-protected" type="checkbox">
+                <span>Protetto mercato</span>
+              </label>
+            </div>
+          </div>
+
+          <div class="actions-row">
+            <button id="save-player-btn" type="submit" class="primary-btn">Salva modifiche</button>
+            <button id="remove-player-btn" type="button" class="danger-btn">Rimuovi dalla rosa</button>
+          </div>
+        </form>
+      </section>
+
+      <section class="admin-card create-card">
+        <div class="card-head">
+          <div>
+            <h2>Crea calciatore</h2>
+            <p>Da usare solo se il giocatore non esiste proprio in Supabase.</p>
+          </div>
+        </div>
+
+        <form id="create-player-form" class="create-form">
+          <div class="form-grid">
+            <label>
+              Nome*
+              <input id="new-name" class="admin-input" type="text" required>
+            </label>
+            <label>
+              Ruolo
+              <input id="new-role" class="admin-input" type="text" placeholder="Es. C">
+            </label>
+            <label>
+              Ruolo Mantra
+              <input id="new-role-mantra" class="admin-input" type="text" placeholder="Es. C/T">
+            </label>
+            <label>
+              Squadra Serie A
+              <input id="new-serie-a" class="admin-input" type="text">
+            </label>
+            <label>
+              Quotazione
+              <input id="new-quotation" class="admin-input" type="number" min="0">
+            </label>
+            <label>
+              Squadra proprietaria
+              <select id="new-owner-team" class="admin-input"></select>
+            </label>
+          </div>
+          <button type="submit" class="secondary-btn">Crea giocatore</button>
+        </form>
+      </section>
+    </section>
+
+    <div id="toast" class="toast" aria-live="polite"></div>
+  </main>
+
+  <script type="module" src="admin-rose.js?v=1"></script>
+  <script src="navbar.js?v=100"></script>
+</body>
+</html>
