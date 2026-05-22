@@ -6690,17 +6690,17 @@ h1, h2, h3, h4, p{
     background: linear-gradient(180deg, #fff2b8 0%, #ffd54a 100%);
     color: #4b3700;
   }
-
- /* =========================
-   DESKTOP LOGHI DRAFT PIÙ GRANDI
-   U21/POR attaccati alla card + round allineati
+/* =========================
+   DESKTOP LOGHI 120PX
+   Nome visibile + U21/POR attaccati
    ========================= */
 
 @media (min-width: 1101px){
 
   .desktop-team-head{
-    height: 132px !important;
+    height: 174px !important;
     padding: 12px 10px 10px !important;
+    gap: 8px !important;
   }
 
   .desktop-team-head img{
@@ -6711,8 +6711,18 @@ h1, h2, h3, h4, p{
     object-fit: contain !important;
   }
 
+  .desktop-team-head strong{
+    display: block !important;
+    font-size: .82rem !important;
+    line-height: 1.05 !important;
+    min-height: 18px !important;
+    max-height: 34px !important;
+    overflow: hidden !important;
+    text-align: center !important;
+  }
+
   .desktop-team-column{
-    grid-template-rows: 132px 28px auto !important;
+    grid-template-rows: 174px 28px auto !important;
     gap: 7px !important;
   }
 
@@ -6730,13 +6740,13 @@ h1, h2, h3, h4, p{
   }
 
   .desktop-round-rail{
-    grid-template-rows: 164px repeat(var(--desktop-rounds, 12), 72px) !important;
+    grid-template-rows: 206px repeat(var(--desktop-rounds, 12), 72px) !important;
     gap: 10px !important;
     transform: translateY(12px) !important;
   }
 
   .desktop-round-spacer{
-    height: 164px !important;
+    height: 206px !important;
   }
 
   .desktop-round-label{
