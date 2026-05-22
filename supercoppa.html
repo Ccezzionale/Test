@@ -2,11 +2,10 @@
 <html lang="it">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Lega degli Eroi - Supercoppa</title>
-
-  <link rel="stylesheet" href="navbar.css">
-  <link rel="stylesheet" href="supercoppa.css">
+  <link rel="stylesheet" href="navbar.css" />
+  <link rel="stylesheet" href="supercoppa.css" />
 </head>
 <body>
   <nav class="site-nav">
@@ -14,13 +13,12 @@
       <div class="nav-left">
         <span id="hamburger" class="hamburger" aria-label="Apri menu">☰</span>
         <a href="index.html" class="brand-home" aria-label="Home">
-          <img src="icons/nav/home.webp" alt="" class="nav-home-icon">
+          <img src="icons/nav/home.webp" alt="" class="nav-home-icon" />
         </a>
       </div>
 
       <ul class="navbar" id="mainMenu">
         <li><a href="rose.html">Rose</a></li>
-
         <li class="dropdown">
           <a href="#" class="toggle-submenu">Draft <span class="caret">▾</span></a>
           <ul class="submenu">
@@ -30,7 +28,6 @@
             <li><a href="dinamico-draft.html"><img src="icons/nav/draft-2026.webp" class="menu-icon" alt="">Draft 2027</a></li>
           </ul>
         </li>
-
         <li class="dropdown competizioni">
           <a href="#" class="toggle-submenu">Competizioni <span class="caret">▾</span></a>
           <ul class="submenu">
@@ -43,9 +40,7 @@
             <li><a href="statistiche.html"><img src="icons/nav/statistiche.webp" class="menu-icon" alt="">Statistiche</a></li>
           </ul>
         </li>
-
         <li><a href="waiver.html">Waiver Wire</a></li>
-
         <li class="dropdown">
           <a href="#" class="toggle-submenu">Hall of Fame <span class="caret">▾</span></a>
           <ul class="submenu">
@@ -53,28 +48,24 @@
             <li><a href="albo.html"><img src="icons/nav/medagliere.webp" class="menu-icon" alt="">Medagliere</a></li>
           </ul>
         </li>
-
         <li><a href="regolamento.html">Regolamento</a></li>
       </ul>
 
       <div class="nav-right hero-actions">
         <a id="trade-badge" href="trade-room.html" class="btn-hero trade-badge" aria-label="Trade Room">
-          <img src="icons/nav/trade-room.webp" class="action-icon" alt="">
+          <img src="icons/nav/trade-room.webp" class="action-icon" alt="" />
           <span class="btn-label">Trade Room</span>
         </a>
-
         <a id="login-btn" href="login.html" class="btn-hero" style="display:none;" aria-label="Login">
-          <img src="icons/nav/login-logout.webp" class="action-icon" alt="">
+          <img src="icons/nav/login-logout.webp" class="action-icon" alt="" />
           <span class="btn-label">Login</span>
         </a>
-
         <button id="logout-btn" type="button" class="btn-hero" style="display:none;" aria-label="Logout">
-          <img src="icons/nav/login-logout.webp" class="action-icon" alt="">
+          <img src="icons/nav/login-logout.webp" class="action-icon" alt="" />
           <span class="btn-label">Logout</span>
         </button>
-
         <button id="attiva-notifiche-btn" type="button" class="btn-hero warning" aria-label="Attiva notifiche">
-          <img src="icons/nav/notifications.webp" class="action-icon" alt="">
+          <img src="icons/nav/notifications.webp" class="action-icon" alt="" />
           <span class="btn-label">Attiva notifiche</span>
         </button>
       </div>
@@ -82,151 +73,100 @@
   </nav>
 
   <header class="supercup-hero">
-    <div class="hero-crown" aria-hidden="true">♛</div>
+    <div class="hero-crown">♕</div>
     <h1>Supercoppa degli Eroi</h1>
     <p>Cinque campioni. Una sola corona.</p>
-    <div class="hero-rule" aria-hidden="true"></div>
   </header>
 
-  <main class="supercup-shell">
-    <section class="stage-section participants-section" aria-labelledby="participants-title">
-      <div class="section-kicker">1 · Partecipanti</div>
-      <div class="participants-grid" id="participants-grid"></div>
+  <main class="supercup-main">
+    <section class="stage participants-stage">
+      <div class="stage-title">1 · Partecipanti</div>
+      <div id="participants-grid" class="participants-grid"></div>
     </section>
 
     <section class="supercup-flow">
-      <article class="stage-panel playin-panel" aria-labelledby="playin-title">
-        <div class="section-kicker">2 · Play-in Conference</div>
-        <div class="panel-card match-card compact" data-match="playin">
-          <h2 id="playin-title">Play-in Conference</h2>
-          <div class="match-row" data-slot="conferenceLeagueChampion"></div>
-          <div class="vs-strip">vs</div>
-          <div class="match-row" data-slot="conferenceChampionshipChampion"></div>
-          <p class="match-note">★ La vincente entra nel sorteggio delle semifinali.</p>
-        </div>
+      <article class="stage playin-stage">
+        <div class="stage-title">2 · Play-in Conference</div>
+        <div id="playin-card" class="match-card wide-card"></div>
       </article>
 
-      <article class="stage-panel draw-panel" aria-labelledby="draw-title">
-        <div class="section-kicker">3 · Sorteggio semifinali</div>
-        <div class="draw-card">
-          <div class="draw-column" id="draw-left"></div>
+      <article class="stage draw-stage">
+        <div class="stage-title">3 · Sorteggio semifinali</div>
+        <div class="draw-board">
+          <div id="draw-left" class="draw-column"></div>
           <div class="draw-bowl" aria-hidden="true">
+            <div class="bowl-glass"></div>
             <span></span><span></span><span></span><span></span><span></span>
           </div>
-          <div class="draw-column" id="draw-right"></div>
+          <div id="draw-right" class="draw-column"></div>
         </div>
       </article>
     </section>
 
-    <section class="stage-section semis-section" aria-labelledby="semis-title">
-      <div class="section-kicker">4 · Semifinali <span>in attesa di sorteggio</span></div>
+    <section class="stage bracket-stage">
+      <div class="stage-title">4 · Semifinali <span>in attesa di sorteggio</span></div>
       <div class="semis-grid">
-        <article class="match-card semi-card" data-match="sf1">
-          <h2>Semifinale 1</h2>
-          <div class="match-row" data-semi-slot="sf1a"></div>
-          <div class="vs-strip">vs</div>
-          <div class="match-row" data-semi-slot="sf1b"></div>
-        </article>
-
-        <article class="match-card semi-card" data-match="sf2">
-          <h2>Semifinale 2</h2>
-          <div class="match-row" data-semi-slot="sf2a"></div>
-          <div class="vs-strip">vs</div>
-          <div class="match-row" data-semi-slot="sf2b"></div>
-        </article>
+        <div id="sf1-card" class="match-card semi-card"></div>
+        <div id="sf2-card" class="match-card semi-card"></div>
       </div>
     </section>
 
-    <section class="stage-section final-section" aria-labelledby="final-title">
-      <div class="section-kicker">5 · Finale Supercoppa</div>
-      <article class="match-card final-card" id="final-match" data-match="final">
-        <div class="final-trophy" aria-hidden="true"></div>
-        <h2 id="final-title">Finale Supercoppa</h2>
-        <div class="match-row" data-final-slot="sf1"></div>
-        <div class="vs-strip">vs</div>
-        <div class="match-row" data-final-slot="sf2"></div>
-      </article>
+    <section class="stage final-stage">
+      <div class="stage-title">5 · Finale Supercoppa</div>
+      <div id="final-card" class="match-card final-card"></div>
     </section>
 
-    <section class="supercup-winner" id="supercup-winner" aria-labelledby="winner-title">
-      <article class="winner-card">
-        <div class="winner-glow" aria-hidden="true"></div>
-        <div class="winner-title" id="winner-title">6 · Campione Supercoppa</div>
-        <div class="winner-stage">
-          <div class="winner-logo-wrap">
-            <img id="champion-logo" class="winner-logo" alt="">
-          </div>
-          <div class="winner-cup-wrap">
-            <img src="img/Supercoppacup.png" alt="Supercoppa degli Eroi" class="winner-cup">
-          </div>
-        </div>
-        <div class="winner-name" id="champion-name">In attesa del campione</div>
-        <div class="winner-sub" id="champion-sub">Solo una corona. Solo un eroe.</div>
-      </article>
+    <section id="champion-stage" class="champion-stage">
+      <div class="champion-title">6 · Campione Supercoppa</div>
+      <div class="champion-card">
+        <div class="laurel">‹</div>
+        <div id="champion-content" class="champion-content"></div>
+        <div class="laurel">›</div>
+      </div>
+      <p class="supercup-motto">Solo una corona. Solo un eroe.</p>
     </section>
 
-    <section class="admin-shell" id="supercup-admin">
-      <button class="admin-toggle" id="admin-toggle" type="button">⚙️ Admin Supercoppa</button>
-
-      <div class="admin-panel" id="admin-panel" hidden>
-        <div class="admin-head">
-          <div>
-            <h2>Admin Panel Supercoppa</h2>
-            <p>Seleziona le squadre dal menu, inserisci risultati e sorteggio. La pagina aggiorna play-in, finaliste e campione.</p>
-          </div>
-          <button class="admin-reset" id="admin-reset" type="button">Reset demo</button>
+    <section id="supercoppa-admin" class="admin-panel">
+      <div class="admin-head">
+        <div>
+          <h2>Admin Supercoppa</h2>
+          <p>Seleziona le squadre dal menu, inserisci i risultati e decidi il sorteggio delle semifinali.</p>
         </div>
+        <button id="reset-supercoppa" type="button" class="admin-reset">Reset</button>
+      </div>
 
-        <div class="admin-block">
-          <h3>Partecipanti</h3>
-          <div class="admin-grid" id="admin-teams"></div>
+      <div class="admin-block">
+        <h3>Partecipanti</h3>
+        <div id="admin-team-selectors" class="admin-grid"></div>
+      </div>
+
+      <div class="admin-block">
+        <h3>Risultati</h3>
+        <div class="admin-scores-grid">
+          <label>Play-in A <input type="number" min="0" inputmode="numeric" data-score="playin-0" /></label>
+          <label>Play-in B <input type="number" min="0" inputmode="numeric" data-score="playin-1" /></label>
+          <label>Semifinale 1 A <input type="number" min="0" inputmode="numeric" data-score="sf1-0" /></label>
+          <label>Semifinale 1 B <input type="number" min="0" inputmode="numeric" data-score="sf1-1" /></label>
+          <label>Semifinale 2 A <input type="number" min="0" inputmode="numeric" data-score="sf2-0" /></label>
+          <label>Semifinale 2 B <input type="number" min="0" inputmode="numeric" data-score="sf2-1" /></label>
+          <label>Finale A <input type="number" min="0" inputmode="numeric" data-score="final-0" /></label>
+          <label>Finale B <input type="number" min="0" inputmode="numeric" data-score="final-1" /></label>
         </div>
+      </div>
 
-        <div class="admin-block">
-          <h3>Risultati</h3>
-          <div class="admin-results-grid">
-            <label>Play-in CL
-              <input type="number" id="score-playin-a" min="0" inputmode="numeric">
-            </label>
-            <label>Play-in CC
-              <input type="number" id="score-playin-b" min="0" inputmode="numeric">
-            </label>
-            <label>Semifinale 1 A
-              <input type="number" id="score-sf1-a" min="0" inputmode="numeric">
-            </label>
-            <label>Semifinale 1 B
-              <input type="number" id="score-sf1-b" min="0" inputmode="numeric">
-            </label>
-            <label>Semifinale 2 A
-              <input type="number" id="score-sf2-a" min="0" inputmode="numeric">
-            </label>
-            <label>Semifinale 2 B
-              <input type="number" id="score-sf2-b" min="0" inputmode="numeric">
-            </label>
-            <label>Finale A
-              <input type="number" id="score-final-a" min="0" inputmode="numeric">
-            </label>
-            <label>Finale B
-              <input type="number" id="score-final-b" min="0" inputmode="numeric">
-            </label>
-          </div>
-        </div>
-
-        <div class="admin-block">
-          <h3>Sorteggio semifinali</h3>
-          <p class="admin-help">Dopo il play-in scegli manualmente gli accoppiamenti usciti dal sorteggio.</p>
-          <div class="admin-draw-grid">
-            <label>Semifinale 1 - Squadra A<select id="draw-sf1a"></select></label>
-            <label>Semifinale 1 - Squadra B<select id="draw-sf1b"></select></label>
-            <label>Semifinale 2 - Squadra A<select id="draw-sf2a"></select></label>
-            <label>Semifinale 2 - Squadra B<select id="draw-sf2b"></select></label>
-          </div>
+      <div class="admin-block">
+        <h3>Sorteggio semifinali</h3>
+        <div class="admin-grid draw-select-grid">
+          <label>Semifinale 1 - Squadra A <select data-draw="sf1a"></select></label>
+          <label>Semifinale 1 - Squadra B <select data-draw="sf1b"></select></label>
+          <label>Semifinale 2 - Squadra A <select data-draw="sf2a"></select></label>
+          <label>Semifinale 2 - Squadra B <select data-draw="sf2b"></select></label>
         </div>
       </div>
     </section>
   </main>
 
   <script src="supercoppa.js" defer></script>
-  <script src="navbar.js"></script>
+  <script src="navbar.js" defer></script>
 </body>
 </html>

@@ -1,81 +1,43 @@
 // supercoppa.js
+// Supercoppa a 5 partecipanti con play-in, sorteggio semifinali e admin panel.
 
 (function () {
-  var STORAGE_KEY = "legaEroiSupercoppaData_v2";
+  var STORAGE_KEY = "legaEroiSupercoppaData_v3";
 
-
-
-  var teamOptions = [
-    { name: "Athletic Pongao", logo: "Athletic Pongao.png" },
-    { name: "Bayern Christiansen", logo: "Bayern Christiansen.png" },
-    { name: "Desperados", logo: "Desperados.png" },
-    { name: "Eintracht Franco 126", logo: "Eintracht Franco 126.png" },
-    { name: "Fantaugusta", logo: "Fantaugusta.png" },
-    { name: "FC Disoneste", logo: "FC Disoneste.png" },
-    { name: "Giody", logo: "Giody.png" },
-    { name: "Giulay", logo: "Giulay.png" },
-    { name: "Golden Knights", logo: "Golden Knights.png" },
-    { name: "Ibla", logo: "Ibla.png" },
-    { name: "Minnesota Snakes", logo: "Minnesota Snakes.png" },
-    { name: "Minnesode Timberland", logo: "Minnesode Timberland.png" },
-    { name: "Pandinicoccolosini", logo: "Pandinicoccolosini.png" },
-    { name: "Pokermantra", logo: "Pokermantra.png" },
-    { name: "Rafa Casablanca", logo: "Rafa Casablanca.png" },
-    { name: "Real Mimmo", logo: "Real Mimmo.png" },
-    { name: "Riverfilo", logo: "Riverfilo.png" },
-    { name: "Rubinkebab", logo: "Rubinkebab.png" },
-    { name: "Rubin Kebab", logo: "Rubin Kebab.png" },
-    { name: "Sharknado04", logo: "Sharknado04.png" },
-    { name: "Team Bartowski", logo: "Team Bartowski.png" },
-    { name: "Union Librino", logo: "Union Librino.png" },
-    { name: "Wildboys 78", logo: "Wildboys 78.png" }
+  var SQUADRE_SUPERCOPPA = [
+    { nome: "Rubinkebab", logo: "img/Rubinkebab.png" },
+    { nome: "Bayern Christiansen", logo: "img/Bayern Christiansen.png" },
+    { nome: "Team Bartowski", logo: "img/Team Bartowski.png" },
+    { nome: "Golden Knights", logo: "img/Golden Knights.png" },
+    { nome: "Ibla", logo: "img/Ibla.png" },
+    { nome: "Fantaugusta", logo: "img/Fantaugusta.png" },
+    { nome: "Riverfilo", logo: "img/Riverfilo.png" },
+    { nome: "Desperados", logo: "img/Desperados.png" },
+    { nome: "Wildboys 78", logo: "img/wildboys78.png" },
+    { nome: "Pandinicoccolosini", logo: "img/Pandinicoccolosini.png" },
+    { nome: "Pokermantra", logo: "img/PokerMantra.png" },
+    { nome: "Minnesode Timberland", logo: "img/Minnesode Timberland.png" },
+    { nome: "Minnesota Snakes", logo: "img/MinneSota Snakes.png" },
+    { nome: "Eintracht Franco 126", logo: "img/Eintracht Franco 126.png" },
+    { nome: "FC Disoneste", logo: "img/FC Disoneste.png" },
+    { nome: "Athletic Pongao", logo: "img/Athletic Pongao.png" }
   ];
 
   var slots = [
-    {
-      key: "leagueChampion",
-      icon: "♛",
-      role: "Campione Lega degli Eroi",
-      defaultName: "Campione Lega degli Eroi",
-      logo: ""
-    },
-    {
-      key: "crashOutChampion",
-      icon: "🏆",
-      role: "Vincitore Crash Out Cup",
-      defaultName: "Vincitore Crash Out Cup",
-      logo: ""
-    },
-    {
-      key: "highlanderChampion",
-      icon: "🛡️",
-      role: "Vincitore Highlander Cup",
-      defaultName: "Vincitore Highlander Cup",
-      logo: ""
-    },
-    {
-      key: "conferenceLeagueChampion",
-      icon: "🏅",
-      role: "Vincitore Conference League",
-      defaultName: "Vincitore Conference League",
-      logo: ""
-    },
-    {
-      key: "conferenceChampionshipChampion",
-      icon: "✦",
-      role: "Vincitore Conference Championship",
-      defaultName: "Vincitore Conference Championship",
-      logo: ""
-    }
+    { key: "leagueChampion", icon: "♛", role: "Campione Lega degli Eroi", placeholder: "Campione Lega degli Eroi" },
+    { key: "crashOutChampion", icon: "🏆", role: "Vincitore Crash Out Cup", placeholder: "Vincitore Crash Out Cup" },
+    { key: "highlanderChampion", icon: "🛡️", role: "Vincitore Highlander Cup", placeholder: "Vincitore Highlander Cup" },
+    { key: "conferenceLeagueChampion", icon: "🏅", role: "Vincitore Conference League", placeholder: "Vincitore Conference League" },
+    { key: "conferenceChampionshipChampion", icon: "✦", role: "Vincitore Conference Championship", placeholder: "Vincitore Conference Championship" }
   ];
 
   var defaultData = {
     teams: {
-      leagueChampion: { name: "Campione Lega degli Eroi", logo: "" },
-      crashOutChampion: { name: "Vincitore Crash Out Cup", logo: "" },
-      highlanderChampion: { name: "Vincitore Highlander Cup", logo: "" },
-      conferenceLeagueChampion: { name: "Vincitore Conference League", logo: "" },
-      conferenceChampionshipChampion: { name: "Vincitore Conference Championship", logo: "" }
+      leagueChampion: null,
+      crashOutChampion: null,
+      highlanderChampion: null,
+      conferenceLeagueChampion: null,
+      conferenceChampionshipChampion: null
     },
     scores: {
       playin: ["", ""],
@@ -122,12 +84,11 @@
   function loadState() {
     try {
       var saved = localStorage.getItem(STORAGE_KEY);
-      if (!saved) return structuredCloneSafe(defaultData);
-      var parsed = JSON.parse(saved);
-      return mergeData(structuredCloneSafe(defaultData), parsed);
+      if (!saved) return clone(defaultData);
+      return mergeData(clone(defaultData), JSON.parse(saved));
     } catch (err) {
       console.warn("Impossibile caricare i dati Supercoppa", err);
-      return structuredCloneSafe(defaultData);
+      return clone(defaultData);
     }
   }
 
@@ -135,7 +96,7 @@
     localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
   }
 
-  function structuredCloneSafe(obj) {
+  function clone(obj) {
     return JSON.parse(JSON.stringify(obj));
   }
 
@@ -147,30 +108,35 @@
     return base;
   }
 
-  function getSlotMeta(key) {
+  function findSquadra(nome) {
+    return SQUADRE_SUPERCOPPA.find(function (squadra) {
+      return squadra.nome === nome;
+    }) || null;
+  }
+
+  function getSlot(key) {
     return slots.find(function (slot) { return slot.key === key; }) || null;
   }
 
-  function getTeamOptionByName(name) {
-    return teamOptions.find(function (team) { return team.name === name; }) || null;
-  }
-
   function getTeam(key) {
-    var meta = getSlotMeta(key);
-    var team = state.teams[key] || {};
+    var slot = getSlot(key);
+    var selectedName = state.teams[key];
+    var squadra = selectedName ? findSquadra(selectedName) : null;
+
     return {
       key: key,
-      name: team.name || (meta ? meta.defaultName : "Da definire"),
-      logo: team.logo || "",
-      role: meta ? meta.role : "Da definire",
-      icon: meta ? meta.icon : "?"
+      name: squadra ? squadra.nome : (slot ? slot.placeholder : "Da definire"),
+      logo: squadra ? squadra.logo : "",
+      role: slot ? slot.role : "Da definire",
+      icon: slot ? slot.icon : "?",
+      isPlaceholder: !squadra
     };
   }
 
   function scoreValue(matchKey, index) {
-    var score = state.scores[matchKey] || ["", ""];
-    var value = score[index];
-    if (value === null || value === undefined || value === "") return "";
+    var scores = state.scores[matchKey] || ["", ""];
+    var value = scores[index];
+    if (value === null || value === undefined) return "";
     return String(value);
   }
 
@@ -186,41 +152,39 @@
     return a > b ? teamA : teamB;
   }
 
+  function getPlayinTeams() {
+    return [getTeam("conferenceLeagueChampion"), getTeam("conferenceChampionshipChampion")];
+  }
+
   function getPlayinWinner() {
-    return getWinnerFromTeams(
-      "playin",
-      getTeam("conferenceLeagueChampion"),
-      getTeam("conferenceChampionshipChampion")
-    );
+    var teams = getPlayinTeams();
+    return getWinnerFromTeams("playin", teams[0], teams[1]);
   }
 
   function getDrawCandidates() {
     var playinWinner = getPlayinWinner();
+    var playinCandidate = playinWinner && playinWinner !== "tie"
+      ? Object.assign({}, playinWinner, { key: "playinWinner", role: "Vincente Play-in Conference" })
+      : { key: "playinWinner", name: "Vincente Play-in", logo: "", role: "Vincente Play-in Conference", icon: "?", isPlaceholder: true };
+
     return [
       getTeam("leagueChampion"),
       getTeam("crashOutChampion"),
       getTeam("highlanderChampion"),
-      playinWinner && playinWinner !== "tie" ? playinWinner : {
-        key: "playinWinner",
-        name: "Vincente Play-in",
-        logo: "",
-        role: "Vincente Play-in Conference",
-        icon: "?"
-      }
+      playinCandidate
     ];
   }
 
   function getCandidateByKey(key) {
-    if (!key) return null;
     return getDrawCandidates().find(function (candidate) {
       return candidate.key === key;
     }) || null;
   }
 
   function getSemiTeam(slotKey) {
-    var selectedKey = state.draw[slotKey];
-    if (!selectedKey) return null;
-    return getCandidateByKey(selectedKey);
+    var key = state.draw[slotKey];
+    if (!key) return null;
+    return getCandidateByKey(key);
   }
 
   function getSemiWinner(matchKey) {
@@ -230,21 +194,29 @@
     return getWinnerFromTeams(matchKey, a, b);
   }
 
+  function getFinalTeams() {
+    var sf1 = getSemiWinner("sf1");
+    var sf2 = getSemiWinner("sf2");
+    return [
+      sf1 && sf1 !== "tie" ? sf1 : { key: "sf1Winner", name: "Vincente Semifinale 1", logo: "", role: "Finalista", icon: "?", isPlaceholder: true },
+      sf2 && sf2 !== "tie" ? sf2 : { key: "sf2Winner", name: "Vincente Semifinale 2", logo: "", role: "Finalista", icon: "?", isPlaceholder: true }
+    ];
+  }
+
   function getFinalWinner() {
-    var sf1Winner = getSemiWinner("sf1");
-    var sf2Winner = getSemiWinner("sf2");
-    if (!sf1Winner || !sf2Winner || sf1Winner === "tie" || sf2Winner === "tie") return null;
-    return getWinnerFromTeams("final", sf1Winner, sf2Winner);
+    var teams = getFinalTeams();
+    if (teams[0].isPlaceholder || teams[1].isPlaceholder) return null;
+    return getWinnerFromTeams("final", teams[0], teams[1]);
   }
 
   function renderAll() {
     renderParticipants();
     renderPlayin();
     renderDraw();
-    renderDrawSelects();
     renderSemis();
     renderFinal();
     renderChampion();
+    refreshDrawSelects();
     syncAdminInputs();
   }
 
@@ -253,34 +225,26 @@
     if (!grid) return;
 
     grid.innerHTML = slots.map(function (slot) {
-      var team = getTeam(slot.key);
-      return "" +
-        "<article class=\"participant-card\">" +
-          renderLogo(team, "participant-logo") +
-          "<div>" +
-            "<div class=\"participant-role\">" + escapeHtml(slot.role) + "</div>" +
-            "<div class=\"participant-name\">" + escapeHtml(team.name) + "</div>" +
-          "</div>" +
-        "</article>";
+      return renderParticipantCard(getTeam(slot.key));
     }).join("");
   }
 
+  function renderParticipantCard(team) {
+    return '<article class="participant-card">' +
+      renderMiniLogo(team) +
+      '<div>' +
+      '<span>' + escapeHtml(team.role.replace("Vincitore ", "Vincitore<br>")) + '</span>' +
+      '<strong>' + escapeHtml(team.isPlaceholder ? "Da definire" : team.name) + '</strong>' +
+      '</div>' +
+      '</article>';
+  }
+
   function renderPlayin() {
-    renderMatchRow(
-      document.querySelector("[data-slot='conferenceLeagueChampion']"),
-      getTeam("conferenceLeagueChampion"),
-      "playin",
-      0
-    );
-
-    renderMatchRow(
-      document.querySelector("[data-slot='conferenceChampionshipChampion']"),
-      getTeam("conferenceChampionshipChampion"),
-      "playin",
-      1
-    );
-
-    highlightWinner("playin", getPlayinWinner());
+    var card = document.getElementById("playin-card");
+    if (!card) return;
+    var teams = getPlayinTeams();
+    card.innerHTML = renderMatchRows("playin", teams[0], teams[1]) +
+      '<div class="match-note">★ Il vincitore avanza al sorteggio delle semifinali.</div>';
   }
 
   function renderDraw() {
@@ -289,287 +253,188 @@
     var right = document.getElementById("draw-right");
     if (!left || !right) return;
 
-    left.innerHTML = candidates.slice(0, 2).map(renderDrawItem).join("");
-    right.innerHTML = candidates.slice(2, 4).map(renderDrawItem).join("");
+    left.innerHTML = renderDrawItem(candidates[0]) + renderDrawItem(candidates[1]);
+    right.innerHTML = renderDrawItem(candidates[2]) + renderDrawItem(candidates[3]);
   }
 
   function renderDrawItem(team) {
-    return "" +
-      "<div class=\"draw-item\">" +
-        renderLogo(team, "draw-logo") +
-        "<div>" +
-          "<strong>" + escapeHtml(team.name) + "</strong>" +
-          "<span>" + escapeHtml(team.role) + "</span>" +
-        "</div>" +
-      "</div>";
+    return '<div class="draw-item">' +
+      renderMiniLogo(team) +
+      '<div><strong>' + escapeHtml(team.name) + '</strong><span>' + escapeHtml(team.role) + '</span></div>' +
+      '</div>';
   }
 
   function renderSemis() {
-    renderMatchRow(
-      document.querySelector("[data-semi-slot='sf1a']"),
-      getSemiTeam("sf1a"),
-      "sf1",
-      0,
-      "Da sorteggio"
-    );
-    renderMatchRow(
-      document.querySelector("[data-semi-slot='sf1b']"),
-      getSemiTeam("sf1b"),
-      "sf1",
-      1,
-      "Da sorteggio"
-    );
-    renderMatchRow(
-      document.querySelector("[data-semi-slot='sf2a']"),
-      getSemiTeam("sf2a"),
-      "sf2",
-      0,
-      "Da sorteggio"
-    );
-    renderMatchRow(
-      document.querySelector("[data-semi-slot='sf2b']"),
-      getSemiTeam("sf2b"),
-      "sf2",
-      1,
-      "Da sorteggio"
-    );
+    renderSemiCard("sf1", "Semifinale 1");
+    renderSemiCard("sf2", "Semifinale 2");
+  }
 
-    highlightWinner("sf1", getSemiWinner("sf1"));
-    highlightWinner("sf2", getSemiWinner("sf2"));
+  function renderSemiCard(matchKey, title) {
+    var card = document.getElementById(matchKey + "-card");
+    if (!card) return;
+    var a = getSemiTeam(matchKey + "a") || { name: "Da sorteggio", logo: "", role: "In attesa", icon: "?", isPlaceholder: true };
+    var b = getSemiTeam(matchKey + "b") || { name: "Da sorteggio", logo: "", role: "In attesa", icon: "?", isPlaceholder: true };
+
+    card.innerHTML = '<div class="match-kicker">' + title + '</div>' + renderMatchRows(matchKey, a, b);
   }
 
   function renderFinal() {
-    var sf1Winner = getSemiWinner("sf1");
-    var sf2Winner = getSemiWinner("sf2");
-
-    renderMatchRow(
-      document.querySelector("[data-final-slot='sf1']"),
-      sf1Winner && sf1Winner !== "tie" ? sf1Winner : null,
-      "final",
-      0,
-      sf1Winner === "tie" ? "Parità Semifinale 1" : "Vincente Semifinale 1"
-    );
-
-    renderMatchRow(
-      document.querySelector("[data-final-slot='sf2']"),
-      sf2Winner && sf2Winner !== "tie" ? sf2Winner : null,
-      "final",
-      1,
-      sf2Winner === "tie" ? "Parità Semifinale 2" : "Vincente Semifinale 2"
-    );
-
-    highlightWinner("final", getFinalWinner());
+    var card = document.getElementById("final-card");
+    if (!card) return;
+    var teams = getFinalTeams();
+    card.innerHTML = renderMatchRows("final", teams[0], teams[1]);
   }
 
   function renderChampion() {
+    var box = document.getElementById("champion-content");
+    if (!box) return;
     var winner = getFinalWinner();
-    var nameEl = document.getElementById("champion-name");
-    var subEl = document.getElementById("champion-sub");
-    var logoEl = document.getElementById("champion-logo");
-
-    if (!nameEl || !subEl || !logoEl) return;
 
     if (!winner || winner === "tie") {
-      nameEl.textContent = winner === "tie" ? "Finale in parità" : "In attesa del campione";
-      subEl.textContent = "Solo una corona. Solo un eroe.";
-      logoEl.removeAttribute("src");
-      logoEl.alt = "";
+      box.innerHTML = '<div class="champion-placeholder"><span>🏆</span><strong>In attesa del campione</strong></div>';
       return;
     }
 
-    nameEl.textContent = winner.name;
-    subEl.textContent = "Detentore della Supercoppa degli Eroi";
+    box.innerHTML = renderLargeLogo(winner) +
+      '<div class="champion-name">' + escapeHtml(winner.name) + '</div>' +
+      '<div class="champion-sub">Detentore della Supercoppa</div>';
+  }
 
-    if (winner.logo) {
-      logoEl.src = normaliseLogoPath(winner.logo);
-      logoEl.alt = winner.name;
-    } else {
-      logoEl.removeAttribute("src");
-      logoEl.alt = "";
+  function renderMatchRows(matchKey, teamA, teamB) {
+    return '<div class="match-row">' + renderTeamBlock(teamA) + renderScore(matchKey, 0) + '</div>' +
+      '<div class="vs-line">VS</div>' +
+      '<div class="match-row">' + renderTeamBlock(teamB) + renderScore(matchKey, 1) + '</div>';
+  }
+
+  function renderTeamBlock(team) {
+    return '<div class="team-block">' + renderLargeLogo(team) +
+      '<div class="team-copy"><strong>' + escapeHtml(team.name) + '</strong><span>' + escapeHtml(team.role || "") + '</span></div>' +
+      '</div>';
+  }
+
+  function renderScore(matchKey, index) {
+    var value = scoreValue(matchKey, index);
+    return '<div class="score-box">' + (value === "" ? "" : escapeHtml(value)) + '</div>';
+  }
+
+  function renderMiniLogo(team) {
+    if (team.logo) {
+      return '<span class="mini-logo"><img src="' + escapeAttr(team.logo) + '" alt="' + escapeAttr(team.name) + '"></span>';
     }
+    return '<span class="mini-logo placeholder-logo">' + escapeHtml(team.icon || "?") + '</span>';
   }
 
-  function renderMatchRow(container, team, matchKey, index, fallbackText) {
-    if (!container) return;
-    var isPlaceholder = !team;
-    var shownTeam = team || {
-      name: fallbackText || "Da definire",
-      role: "In attesa",
-      logo: "",
-      icon: "?"
-    };
-
-    container.innerHTML = "" +
-      renderLogo(shownTeam, "team-logo", isPlaceholder) +
-      "<div class=\"team-copy\">" +
-        "<strong>" + escapeHtml(shownTeam.name) + "</strong>" +
-        "<span>" + escapeHtml(shownTeam.role || "") + "</span>" +
-      "</div>" +
-      "<div class=\"score-chip\" data-score=\"" + matchKey + "-" + index + "\">" + escapeHtml(scoreValue(matchKey, index)) + "</div>";
-  }
-
-  function renderLogo(team, className, forcePlaceholder) {
-    if (team && team.logo && !forcePlaceholder) {
-      return "<div class=\"logo-shell " + className + "\"><img src=\"" + escapeAttr(normaliseLogoPath(team.logo)) + "\" alt=\"" + escapeAttr(team.name) + "\"></div>";
+  function renderLargeLogo(team) {
+    if (team.logo) {
+      return '<span class="logo-wrap"><img src="' + escapeAttr(team.logo) + '" alt="' + escapeAttr(team.name) + '"></span>';
     }
-
-    return "<div class=\"logo-shell " + className + " is-placeholder\"><span>" + escapeHtml((team && team.icon) || "?") + "</span></div>";
-  }
-
-  function normaliseLogoPath(value) {
-    if (!value) return "";
-    if (value.indexOf("/") >= 0 || value.indexOf("http") === 0) return value;
-    return "img/" + value;
-  }
-
-  function highlightWinner(matchKey, winner) {
-    var card = document.querySelector("[data-match='" + matchKey + "']");
-    if (!card) return;
-    card.querySelectorAll(".match-row").forEach(function (row) {
-      row.classList.remove("is-winner", "is-tie");
-      var name = row.querySelector(".team-copy strong");
-      if (!name) return;
-      if (winner === "tie") {
-        row.classList.add("is-tie");
-        return;
-      }
-      if (winner && name.textContent.trim() === winner.name) {
-        row.classList.add("is-winner");
-      }
-    });
+    return '<span class="logo-wrap placeholder-logo">' + escapeHtml(team.icon || "?") + '</span>';
   }
 
   function setupAdmin() {
-    var toggle = document.getElementById("admin-toggle");
-    var panel = document.getElementById("admin-panel");
-    var reset = document.getElementById("admin-reset");
+    renderAdminTeamSelectors();
+    setupScoreInputs();
+    setupDrawInputs();
 
-    if (toggle && panel) {
-      toggle.addEventListener("click", function () {
-        panel.hidden = !panel.hidden;
-      });
-    }
-
+    var reset = document.getElementById("reset-supercoppa");
     if (reset) {
       reset.addEventListener("click", function () {
-        state = structuredCloneSafe(defaultData);
+        state = clone(defaultData);
         saveState();
         renderAll();
       });
     }
-
-    renderAdminTeamInputs();
-    bindScoreInputs();
-    bindDrawInputs();
   }
 
-  function renderAdminTeamInputs() {
-    var container = document.getElementById("admin-teams");
-    if (!container) return;
+  function renderAdminTeamSelectors() {
+    var box = document.getElementById("admin-team-selectors");
+    if (!box) return;
 
-    var optionHtml = "<option value=\"\">Scegli squadra</option>" + teamOptions.map(function (team) {
-      return "<option value=\"" + escapeAttr(team.name) + "\">" + escapeHtml(team.name) + "</option>";
+    box.innerHTML = slots.map(function (slot) {
+      return '<label>' + escapeHtml(slot.role) +
+        '<select data-team-slot="' + escapeAttr(slot.key) + '">' + teamOptions(state.teams[slot.key]) + '</select>' +
+        '</label>';
     }).join("");
 
-    container.innerHTML = slots.map(function (slot) {
-      return "" +
-        "<div class=\"admin-team-card\">" +
-          "<div class=\"admin-role\">" + escapeHtml(slot.role) + "</div>" +
-          "<label>Squadra<select data-team-select=\"" + slot.key + "\">" + optionHtml + "</select></label>" +
-        "</div>";
-    }).join("");
-
-    container.querySelectorAll("[data-team-select]").forEach(function (select) {
+    box.querySelectorAll("select[data-team-slot]").forEach(function (select) {
       select.addEventListener("change", function () {
-        var key = this.getAttribute("data-team-select");
-        var selected = getTeamOptionByName(this.value);
-
-        if (!selected) {
-          var meta = getSlotMeta(key);
-          state.teams[key].name = meta ? meta.defaultName : "";
-          state.teams[key].logo = "";
-        } else {
-          state.teams[key].name = selected.name;
-          state.teams[key].logo = selected.logo;
-        }
-
+        var key = this.getAttribute("data-team-slot");
+        state.teams[key] = this.value || null;
+        cleanInvalidDraw();
         saveState();
         renderAll();
       });
     });
   }
 
-  function bindScoreInputs() {
-    [
-      ["score-playin-a", "playin", 0],
-      ["score-playin-b", "playin", 1],
-      ["score-sf1-a", "sf1", 0],
-      ["score-sf1-b", "sf1", 1],
-      ["score-sf2-a", "sf2", 0],
-      ["score-sf2-b", "sf2", 1],
-      ["score-final-a", "final", 0],
-      ["score-final-b", "final", 1]
-    ].forEach(function (item) {
-      var input = document.getElementById(item[0]);
-      if (!input) return;
+  function teamOptions(selectedName) {
+    var html = '<option value="">Seleziona squadra...</option>';
+    SQUADRE_SUPERCOPPA.forEach(function (squadra) {
+      html += '<option value="' + escapeAttr(squadra.nome) + '"' + (squadra.nome === selectedName ? ' selected' : '') + '>' + escapeHtml(squadra.nome) + '</option>';
+    });
+    return html;
+  }
+
+  function setupScoreInputs() {
+    document.querySelectorAll("input[data-score]").forEach(function (input) {
       input.addEventListener("input", function () {
-        state.scores[item[1]][item[2]] = this.value;
+        var parts = this.getAttribute("data-score").split("-");
+        var matchKey = parts[0];
+        var index = Number(parts[1]);
+        state.scores[matchKey][index] = this.value;
+
+        if (matchKey === "playin") cleanInvalidDraw();
         saveState();
         renderAll();
       });
     });
   }
 
-  function bindDrawInputs() {
-    ["draw-sf1a", "draw-sf1b", "draw-sf2a", "draw-sf2b"].forEach(function (id) {
-      var select = document.getElementById(id);
-      if (!select) return;
+  function setupDrawInputs() {
+    document.querySelectorAll("select[data-draw]").forEach(function (select) {
       select.addEventListener("change", function () {
-        state.draw[id.replace("draw-", "")] = this.value;
+        var key = this.getAttribute("data-draw");
+        state.draw[key] = this.value;
         saveState();
         renderAll();
       });
     });
   }
 
-  function renderDrawSelects() {
+  function refreshDrawSelects() {
     var candidates = getDrawCandidates();
-    ["draw-sf1a", "draw-sf1b", "draw-sf2a", "draw-sf2b"].forEach(function (id) {
-      var select = document.getElementById(id);
-      if (!select) return;
+    document.querySelectorAll("select[data-draw]").forEach(function (select) {
+      var selected = state.draw[select.getAttribute("data-draw")] || "";
+      var html = '<option value="">Da sorteggio...</option>';
 
-      var stateKey = id.replace("draw-", "");
-      var current = state.draw[stateKey] || "";
-      select.innerHTML = "<option value=\"\">Da sorteggio</option>" + candidates.map(function (candidate) {
-        return "<option value=\"" + escapeAttr(candidate.key) + "\">" + escapeHtml(candidate.name) + "</option>";
-      }).join("");
-      select.value = current;
+      candidates.forEach(function (candidate) {
+        html += '<option value="' + escapeAttr(candidate.key) + '"' + (candidate.key === selected ? ' selected' : '') + '>' + escapeHtml(candidate.name) + '</option>';
+      });
+
+      select.innerHTML = html;
     });
   }
 
   function syncAdminInputs() {
-    slots.forEach(function (slot) {
-      var select = document.querySelector("[data-team-select='" + slot.key + "']");
-      if (select) {
-        var selectedName = state.teams[slot.key].name || "";
-        select.value = getTeamOptionByName(selectedName) ? selectedName : "";
-      }
+    Object.keys(state.scores).forEach(function (matchKey) {
+      state.scores[matchKey].forEach(function (value, index) {
+        var input = document.querySelector('input[data-score="' + matchKey + '-' + index + '"]');
+        if (input && input.value !== String(value || "")) input.value = value || "";
+      });
     });
 
-    var scoreMap = [
-      ["score-playin-a", "playin", 0],
-      ["score-playin-b", "playin", 1],
-      ["score-sf1-a", "sf1", 0],
-      ["score-sf1-b", "sf1", 1],
-      ["score-sf2-a", "sf2", 0],
-      ["score-sf2-b", "sf2", 1],
-      ["score-final-a", "final", 0],
-      ["score-final-b", "final", 1]
-    ];
+    document.querySelectorAll("select[data-team-slot]").forEach(function (select) {
+      var key = select.getAttribute("data-team-slot");
+      select.value = state.teams[key] || "";
+    });
+  }
 
-    scoreMap.forEach(function (item) {
-      var input = document.getElementById(item[0]);
-      if (input) input.value = scoreValue(item[1], item[2]);
+  function cleanInvalidDraw() {
+    var validKeys = getDrawCandidates().map(function (candidate) { return candidate.key; });
+    Object.keys(state.draw).forEach(function (drawKey) {
+      if (state.draw[drawKey] && validKeys.indexOf(state.draw[drawKey]) === -1) {
+        state.draw[drawKey] = "";
+      }
     });
   }
 
@@ -583,6 +448,6 @@
   }
 
   function escapeAttr(value) {
-    return escapeHtml(value).replace(/`/g, "&#096;");
+    return escapeHtml(value);
   }
 })();
