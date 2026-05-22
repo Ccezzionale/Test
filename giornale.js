@@ -33,6 +33,7 @@ const AUTO_REFRESH_MS = 12 * 60 * 60 * 1000;
 let STATS_DATA = [];
 let MANUAL_MAP = new Map();
 let CURRENT_GW = null;
+let LAST_SAVED_GW = null;
 
 // ===== DOM helper =====
 const $ = (id) => document.getElementById(id);
@@ -260,13 +261,19 @@ async function loadManualMap(){
     return map;
   }
 
-  const { data, error } = await sb
-    .from("gazzetta_editions")
-    .select("gw,title,deck,editorial_title,editorial_text,pull_quote,hero_image_url,teaser_title,teaser_text,teaser_image_url,is_published,updated_at")
-    .eq("is_published", true)
-    .order("gw", { ascending: true });
+const { data, error } = await sb
+  .from("gazzetta_editions")
+  .select("gw,title,deck,editorial_title,editorial_text,pull_quote,hero_image_url,teaser_title,teaser_text,teaser_image_url,is_published,updated_at")
+  .eq("is_published", true)
+  .order("updated_at", { ascending: true });
 
   if (error) throw new Error(`Supabase Gazzetta: ${error.message}`);
+  LAST_SAVED_GW = null;
+
+if (data && data.length) {
+  const last = data[data.length - 1];
+  LAST_SAVED_GW = Number(last.gw);
+}
 
   for (const r of (data || [])){
     const g = Number(r.gw);
@@ -639,15 +646,22 @@ async function loadAll(){
     MANUAL_MAP = new Map();
   }
 
-  const gws = getAllGWs(STATS_DATA);
-  if (!gws.length) throw new Error("Nessuna GW trovata nel CSV statistiche.");
+const statsGws = getAllGWs(STATS_DATA);
+if (!statsGws.length) throw new Error("Nessuna GW trovata nel CSV statistiche.");
 
-  if (!CURRENT_GW || !gws.includes(Number(CURRENT_GW))) {
-    CURRENT_GW = gws[gws.length - 1];
-  }
+const manualGws = Array.from(MANUAL_MAP.keys())
+  .map(Number)
+  .filter(Number.isFinite);
 
-  fillGWSelect(gws, CURRENT_GW);
+const allGws = Array.from(new Set([...statsGws, ...manualGws]))
+  .sort((a, b) => a - b);
+
+if (!CURRENT_GW || !allGws.includes(Number(CURRENT_GW))) {
+  CURRENT_GW = LAST_SAVED_GW || statsGws[statsGws.length - 1];
 }
+
+fillGWSelect(allGws, CURRENT_GW);
+  }
 
 async function reloadKeepingGW(){
   const selected = Number($("gwSelect")?.value || CURRENT_GW);
