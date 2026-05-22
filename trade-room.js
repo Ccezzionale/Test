@@ -1018,13 +1018,13 @@ if (myU21Out !== theirU21Out) {
     return;
   }
 
-  if (!isDraftPhase() && mySelectedFuturePickIds.length !== theirSelectedFuturePickIds.length) {
-    showMessage(
-      "Le pick future devono sempre essere scambiate con rapporto 1:1. Puoi scambiare giocatori in modo sbilanciato, ma non puoi creare una squadra con una pick futura in più e un'altra con una pick futura in meno.",
-      "error"
-    );
-    return;
- }
+if (mySelectedFuturePickIds.length !== theirSelectedFuturePickIds.length) {
+  showMessage(
+    "Le pick future devono sempre essere scambiate con rapporto 1:1. Non puoi creare una squadra con pick future in più e un'altra con pick future in meno.",
+    "error"
+  );
+  return;
+}
    
   if (!isDraftPhase()) {
     const warnings = [];
