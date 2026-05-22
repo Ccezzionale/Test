@@ -167,16 +167,9 @@ async function caricaRose() {
       });
     });
 
-    Object.values(rose).forEach(teamData => {
-      teamData.giocatori.sort((a, b) => {
-        const ruoloA = String(a.ruolo || "");
-        const ruoloB = String(b.ruolo || "");
-        const nomeA = String(a.nome || "");
-        const nomeB = String(b.nome || "");
-
-        return ruoloA.localeCompare(ruoloB) || nomeA.localeCompare(nomeB);
-      });
-    });
+Object.values(rose).forEach(teamData => {
+  teamData.giocatori.sort(sortRoseByMantraLine);
+});
 
     mostraRose();
     popolaFiltri();
@@ -499,6 +492,116 @@ function filtraGiocatori() {
   });
 
   aggiornaEmptyState();
+}
+
+function sortRoseByMantraLine(a, b) {
+  const aRank = getMainRoleRank(a.ruolo || "");
+  const bRank = getMainRoleRank(b.ruolo || "");
+
+  if (aRank !== bRank) {
+    return aRank - bRank;
+  }
+
+  const aRoleDetail = getRoleDetailRank(a.ruolo || "");
+  const bRoleDetail = getRoleDetailRank(b.ruolo || "");
+
+  if (aRoleDetail !== bRoleDetail) {
+    return aRoleDetail - bRoleDetail;
+  }
+
+  const roleCompare = String(a.ruolo || "").localeCompare(String(b.ruolo || ""), "it", {
+    sensitivity: "base"
+  });
+
+  if (roleCompare !== 0) {
+    return roleCompare;
+  }
+
+  return String(a.nome || "").localeCompare(String(b.nome || ""), "it", {
+    sensitivity: "base"
+  });
+}
+
+function getMainRoleRank(roleValue) {
+  const rawRole = String(roleValue || "").toUpperCase().trim();
+
+  const roles = rawRole
+    .split(/[;,/|\s]+/)
+    .map(role => role.trim())
+    .filter(Boolean);
+
+  // Portieri
+  if (
+    roles.includes("P") ||
+    roles.includes("POR") ||
+    roles.includes("PORTIERE") ||
+    roles.includes("PORTIERI") ||
+    rawRole.startsWith("P ")
+  ) {
+    return 1;
+  }
+
+  // Difesa
+  if (
+    roles.some(role =>
+      ["DD", "DC", "DS", "B", "E"].includes(role)
+    )
+  ) {
+    return 2;
+  }
+
+  // Centrocampo
+  if (
+    roles.some(role =>
+      ["M", "C", "T", "W"].includes(role)
+    )
+  ) {
+    return 3;
+  }
+
+  // Attacco
+  if (
+    roles.some(role =>
+      ["A", "PC"].includes(role)
+    )
+  ) {
+    return 4;
+  }
+
+  return 99;
+}
+
+function getRoleDetailRank(roleValue) {
+  const rawRole = String(roleValue || "").toUpperCase().trim();
+
+  const roles = rawRole
+    .split(/[;,/|\s]+/)
+    .map(role => role.trim())
+    .filter(Boolean);
+
+  const order = [
+    "P",
+    "POR",
+    "DC",
+    "DD",
+    "DS",
+    "B",
+    "E",
+    "M",
+    "C",
+    "T",
+    "W",
+    "A",
+    "PC"
+  ];
+
+  for (const role of order) {
+    if (roles.includes(role)) {
+      return order.indexOf(role) + 1;
+    }
+  }
+
+  return 999;
 }
 
 function resetFiltri() {
