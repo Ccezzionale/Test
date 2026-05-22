@@ -6690,4 +6690,36 @@ h1, h2, h3, h4, p{
     background: linear-gradient(180deg, #fff2b8 0%, #ffd54a 100%);
     color: #4b3700;
   }
+
+  /* =========================
+   DESKTOP LOGHI DRAFT PIÙ GRANDI
+   mantiene U21/POR attaccati alla card
+   ========================= */
+
+@media (min-width: 1101px){
+
+  .desktop-team-head{
+    height: 132px !important;
+    padding: 12px 10px 10px !important;
+  }
+
+  .desktop-team-head img{
+    width: 82px !important;
+    height: 82px !important;
+    max-width: 82px !important;
+    max-height: 82px !important;
+    object-fit: contain !important;
+  }
+
+  .desktop-team-column{
+    grid-template-rows: 132px 28px auto !important;
+  }
+
+  .desktop-round-rail{
+    grid-template-rows: 167px repeat(var(--desktop-rounds, 12), 72px) !important;
+  }
+
+  .desktop-round-spacer{
+    height: 167px !important;
+  }
 }
