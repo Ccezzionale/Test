@@ -3234,3 +3234,73 @@ const bText = colonnaIndex === 4
   righe.forEach(r => tbody.appendChild(r));
 }
 window.ordinaLista = ordinaLista;
+
+/* =========================
+   TRADE BADGE COLORS FINAL OVERRIDE
+   Ogni trade ha un colore diverso
+   ========================= */
+
+.desktop-pick-trade,
+.summary-trade-badge,
+.trade-pick-badge {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  border-radius: 999px !important;
+  font-weight: 950 !important;
+  border: 1px solid rgba(255,255,255,.85) !important;
+  box-shadow: 0 5px 12px rgba(15, 23, 42, .18) !important;
+}
+
+.desktop-pick-trade {
+  width: 18px !important;
+  height: 18px !important;
+  font-size: .68rem !important;
+}
+
+.summary-trade-badge,
+.trade-pick-badge {
+  width: 22px !important;
+  height: 22px !important;
+  font-size: .76rem !important;
+}
+
+.trade-color-1 {
+  background: linear-gradient(135deg, #ffd84d, #ff9f1c) !important;
+  color: #061a38 !important;
+}
+
+.trade-color-2 {
+  background: linear-gradient(135deg, #c084fc, #7c3aed) !important;
+  color: #ffffff !important;
+}
+
+.trade-color-3 {
+  background: linear-gradient(135deg, #6ee7b7, #059669) !important;
+  color: #042f2e !important;
+}
+
+.trade-color-4 {
+  background: linear-gradient(135deg, #fb7185, #dc2626) !important;
+  color: #ffffff !important;
+}
+
+.trade-color-5 {
+  background: linear-gradient(135deg, #7dd3fc, #2563eb) !important;
+  color: #ffffff !important;
+}
+
+.trade-color-6 {
+  background: linear-gradient(135deg, #f9a8d4, #db2777) !important;
+  color: #ffffff !important;
+}
+
+.trade-color-7 {
+  background: linear-gradient(135deg, #fde68a, #ca8a04) !important;
+  color: #111827 !important;
+}
+
+.trade-color-8 {
+  background: linear-gradient(135deg, #a7f3d0, #14b8a6) !important;
+  color: #042f2e !important;
+}
