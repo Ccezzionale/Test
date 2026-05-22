@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Admin Gazzetta - Lega degli Eroi</title>
+  <link rel="stylesheet" href="admin-gazzetta.css" />
+</head>
+
+<body>
+  <main class="admin-shell">
+    <header class="admin-hero">
+      <div>
+        <a class="back-link" href="index.html">← Torna alla home</a>
+        <p class="eyebrow">Area Admin</p>
+        <h1>Admin Gazzetta</h1>
+        <p class="subtitle">Scrivi, salva e pubblica le edizioni della Gazzetta senza passare da Google Sheet.</p>
+      </div>
+      <div class="hero-card">
+        <span>🗞️</span>
+        <strong>CMS Editoriale</strong>
+        <small>Supabase → Home</small>
+      </div>
+    </header>
+
+    <section id="adminGate" class="gate-card">
+      Controllo permessi admin…
+    </section>
+
+    <section id="adminApp" class="admin-grid" hidden>
+      <aside class="editions-panel">
+        <div class="panel-head">
+          <div>
+            <p class="eyebrow">Archivio</p>
+            <h2>Edizioni</h2>
+          </div>
+          <button id="btnNew" type="button" class="ghost-btn">Nuova</button>
+        </div>
+        <div id="editionsList" class="editions-list">Caricamento…</div>
+      </aside>
+
+      <section class="editor-panel">
+        <div class="panel-head editor-head">
+          <div>
+            <p class="eyebrow">Redazione</p>
+            <h2 id="formTitle">Nuova edizione</h2>
+          </div>
+          <div class="save-actions">
+            <span id="saveStatus"></span>
+            <button id="btnSave" type="button">Salva edizione</button>
+          </div>
+        </div>
+
+        <form id="gazzettaForm" class="editor-form">
+          <input type="hidden" id="editionId" />
+
+          <div class="form-row compact-row">
+            <label>
+              <span>GW</span>
+              <input id="gw" type="number" min="1" step="1" required placeholder="34" />
+            </label>
+
+            <label class="publish-toggle">
+              <input id="isPublished" type="checkbox" />
+              <span>Pubblicata</span>
+            </label>
+          </div>
+
+          <label>
+            <span>Titolo principale</span>
+            <input id="title" type="text" placeholder="Golden Knights, il trono è loro…" />
+          </label>
+
+          <label>
+            <span>Sottotitolo / deck</span>
+            <textarea id="deck" rows="3" placeholder="La giornata lascia sentenze, rilancia gerarchie…"></textarea>
+          </label>
+
+          <div class="form-row">
+            <label>
+              <span>Titolo rubrica editoriale</span>
+              <input id="editorialTitle" type="text" placeholder="Il Punto di Costantino" />
+            </label>
+
+            <label>
+              <span>URL immagine principale</span>
+              <input id="heroImageUrl" type="url" placeholder="https://… oppure link Google Drive" />
+            </label>
+          </div>
+
+          <label>
+            <span>Testo editoriale</span>
+            <textarea id="editorialText" rows="14" placeholder="Scrivi qui l'articolo. Usa una riga vuota tra i paragrafi."></textarea>
+          </label>
+
+          <label>
+            <span>Citazione evidenziata</span>
+            <textarea id="pullQuote" rows="3" placeholder="Se lasci vuoto, la home prova a estrarla automaticamente dal testo."></textarea>
+          </label>
+
+          <div class="section-divider">Trailer / Prossimamente</div>
+
+          <label>
+            <span>Titolo teaser</span>
+            <input id="teaserTitle" type="text" placeholder="Nel prossimo episodio" />
+          </label>
+
+          <label>
+            <span>Testo teaser</span>
+            <textarea id="teaserText" rows="4" placeholder="Una nuova era sta arrivando…"></textarea>
+          </label>
+
+          <label>
+            <span>URL immagine teaser</span>
+            <input id="teaserImageUrl" type="url" placeholder="https://… oppure link Google Drive" />
+          </label>
+        </form>
+      </section>
+    </section>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js"></script>
+  <script src="admin-gazzetta.js"></script>
+</body>
+</html>

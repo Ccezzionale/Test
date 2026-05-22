@@ -4,12 +4,11 @@
 // Manuale + Stats editoriali
 // =====================================
 
-// ===== CSV URLs =====
+// ===== Data URLs =====
+// Le statistiche restano temporaneamente sul CSV Google Sheet.
+// La parte editoriale manuale viene invece letta da Supabase.
 const STATS_CSV_URL =
   "https://docs.google.com/spreadsheets/d/e/2PACX-1vRhEJKfZhVb7V08KI29T_aPTR0hfx7ayIOlFjQn_v-fqgktImjXFg-QAEA6z7w5eyEh2B3w5KLpaRYz/pub?gid=1118969717&single=true&output=csv";
-
-const MANUAL_CSV_URL =
-  "https://docs.google.com/spreadsheets/d/e/2PACX-1vTIIcMsU01jJD0WJ8bz_V3rhlYXQOTpU0q8rnFaGzeG1edoqIVk9U3WaIb1WvCBKkrm8ciWYRgdY1ae/pub?output=csv";
 
 // ===== Column mapping =====
 const COL = {
@@ -22,19 +21,22 @@ const COL = {
   ga: "GoalsAgainst"
 };
 
-const MAN = {
-  gw: "GW",
-  title: "Titolo_manual",
-  text: "Testo_manual",
-  updated: "UpdatedAt",
-  image: "Immagine",
-  teaserImage: "Immagine_teaser",
-  teaser: "Teaser"
-};
+// ===== Supabase =====
+const SUPABASE_URL = window.LEGA_SUPABASE_URL || "";
+const SUPABASE_ANON_KEY = window.LEGA_SUPABASE_ANON_KEY || "";
+const HAS_SUPABASE_CONFIG =
+  SUPABASE_URL &&
+  SUPABASE_ANON_KEY &&
+  !SUPABASE_URL.includes("INCOLLA_QUI") &&
+  !SUPABASE_ANON_KEY.includes("INCOLLA_QUI");
+
+const sb = HAS_SUPABASE_CONFIG && window.supabase
+  ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+  : null;
 
 // ===== Cache =====
-const CACHE_KEY_HTML = "giornale_cache_html_v4_premium";
-const CACHE_KEY_TS = "giornale_cache_ts_v4_premium";
+const CACHE_KEY_HTML = "giornale_cache_html_v5_supabase";
+const CACHE_KEY_TS = "giornale_cache_ts_v5_supabase";
 const AUTO_REFRESH_MS = 12 * 60 * 60 * 1000;
 
 // ===== State =====
@@ -109,14 +111,14 @@ function makePullQuote(text){
   return preferred || fallback || "La Lega degli Eroi riparte da qui.";
 }
 
-function textToEditorialWithQuote(text){
+function textToEditorialWithQuote(text, quoteOverride = ""){
   const parts = splitParagraphsRaw(text);
 
   if (!parts.length) {
     return `<p>Per questa giornata non è stato ancora inserito un editoriale manuale.</p>`;
   }
 
-  const quote = makePullQuote(text);
+  const quote = norm(quoteOverride) || makePullQuote(text);
   const insertAfter = Math.min(2, Math.max(1, parts.length - 1));
 
   return parts.map((p, idx) => {
@@ -158,6 +160,12 @@ function extractDriveFileId(value){
 function buildDriveImageUrl(value){
   const id = extractDriveFileId(value);
   return id ? `https://drive.google.com/thumbnail?id=${id}&sz=w1600` : "";
+}
+
+function normalizeImageUrl(value){
+  const raw = norm(value);
+  if (!raw) return "";
+  return buildDriveImageUrl(raw) || raw;
 }
 
 // ===== Cache helpers =====
@@ -255,23 +263,39 @@ async function fetchCSV(url){
 
 // ===== Data load =====
 async function loadManualMap(){
-  const data = await fetchCSV(MANUAL_CSV_URL);
   const map = new Map();
 
-  for (const r of data){
-    const g = gwNum(r[MAN.gw]);
+  if (!sb) {
+    console.warn("Supabase non configurato per la Gazzetta. Controlla supabase-config.js");
+    return map;
+  }
+
+  const { data, error } = await sb
+    .from("gazzetta_editions")
+    .select("gw,title,deck,editorial_title,editorial_text,pull_quote,hero_image_url,teaser_title,teaser_text,teaser_image_url,is_published,updated_at")
+    .eq("is_published", true)
+    .order("gw", { ascending: true });
+
+  if (error) throw new Error(`Supabase Gazzetta: ${error.message}`);
+
+  for (const r of (data || [])){
+    const g = Number(r.gw);
     if (!Number.isFinite(g)) continue;
 
-    const title = norm(r[MAN.title]);
-    const text = norm(r[MAN.text]);
-    const upd = norm(r[MAN.updated]);
-    const imageUrl = buildDriveImageUrl(norm(r[MAN.image]));
-    const teaserImageUrl = buildDriveImageUrl(norm(r[MAN.teaserImage]));
-    const teaser = norm(r[MAN.teaser]);
-
-    if (title || text || imageUrl || teaserImageUrl || teaser){
-      map.set(g, { title, text, updatedAt: upd, imageUrl, teaserImageUrl, teaser });
-    }
+    map.set(g, {
+      title: norm(r.title),
+      deck: norm(r.deck),
+      editorialTitle: norm(r.editorial_title) || "Il Punto di Costantino",
+      text: norm(r.editorial_text),
+      pullQuote: norm(r.pull_quote),
+      updatedAt: r.updated_at
+        ? new Date(r.updated_at).toLocaleDateString("it-IT")
+        : "",
+      imageUrl: normalizeImageUrl(r.hero_image_url),
+      teaserTitle: norm(r.teaser_title) || "Nel prossimo episodio",
+      teaserImageUrl: normalizeImageUrl(r.teaser_image_url),
+      teaser: norm(r.teaser_text)
+    });
   }
 
   return map;
@@ -451,12 +475,13 @@ function buildStatsBlocks(article){
 function buildProssimamenteHTML(manual){
   const teaserImageUrl = manual?.teaserImageUrl || "";
   const teaserText = manual?.teaser || "";
+  const teaserTitle = manual?.teaserTitle || "Nel prossimo episodio";
 
   if (!teaserImageUrl && !teaserText) {
     return `
       <section class="cinema-card empty-cinema">
         <div class="section-eyebrow">Trailer</div>
-        <h3>Nel prossimo episodio</h3>
+        <h3>${escapeHtml(teaserTitle)}</h3>
         <p>La redazione sta ancora montando il teaser. Tagli, dissolvenze, sospetti.</p>
       </section>
     `;
@@ -467,7 +492,7 @@ function buildProssimamenteHTML(manual){
       <div class="cinema-head">
         <div>
           <div class="section-eyebrow">Trailer</div>
-          <h3>Nel prossimo episodio</h3>
+          <h3>${escapeHtml(teaserTitle)}</h3>
         </div>
         <span class="next-chip">Next on</span>
       </div>
@@ -492,16 +517,20 @@ function renderManualHTML(gw, manual, stats){
     ? escapeHtml(manual.title)
     : `GW ${gw} | Edizione della Gazzetta`;
 
-  const deck = manual?.text
-    ? "La giornata lascia sentenze, rilancia gerarchie e mette qualcuno davanti allo specchio."
-    : "Testo editoriale non ancora inserito. Ma l’aria, intorno alla Lega degli Eroi, sa già di prossima battaglia.";
+  const deck = manual?.deck
+    ? manual.deck
+    : manual?.text
+      ? "La giornata lascia sentenze, rilancia gerarchie e mette qualcuno davanti allo specchio."
+      : "Testo editoriale non ancora inserito. Ma l’aria, intorno alla Lega degli Eroi, sa già di prossima battaglia.";
 
   const subtitle = manual?.updatedAt
     ? `Aggiornato: ${escapeHtml(manual.updatedAt)}`
     : "Editoriale";
 
+  const editorialTitle = manual?.editorialTitle || "Il Punto di Costantino";
+
   const editorialContent = manual?.text
-    ? textToEditorialWithQuote(manual.text)
+    ? textToEditorialWithQuote(manual.text, manual.pullQuote)
     : `<p>Per questa giornata non è stato ancora inserito un editoriale manuale.</p>`;
 
   const heroImage = manual?.imageUrl
@@ -532,7 +561,7 @@ function renderManualHTML(gw, manual, stats){
     <section class="news-grid">
       <div class="main-column">
         <article class="editorial-card">
-          <div class="article-label"><span>✒</span> Il Punto di Costantino</div>
+          <div class="article-label"><span>✒</span> ${escapeHtml(editorialTitle)}</div>
           <div class="article-body">
             ${editorialContent}
           </div>
