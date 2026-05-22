@@ -1157,12 +1157,28 @@ if (recentEl) {
     (_, i) => `<div class="desktop-round-label">R${i + 1}</div>`
   ).join("");
 
-  const teamColumns = fixedColumns.map(column => {
-    const team = column.team;
-    const teamName = team.name || "";
-    const logo = getDraftTeamLogoPath(teamName);
+const teamColumns = fixedColumns.map(column => {
+  const team = column.team;
+  const teamName = team.name || "";
+  const logo = getDraftTeamLogoPath(teamName);
 
-    const slots = column.rounds.map(cell => {
+  const draftedPlayersForTeam = column.rounds
+    .map(cell => cell.pickData)
+    .filter(Boolean)
+    .map(pick => getDraftPlayerInfoByPick(pick));
+
+  const u21Count = draftedPlayersForTeam.filter(info =>
+    info?.is_u21_slot === true
+  ).length;
+
+  const goalkeeperCount = draftedPlayersForTeam.filter(info =>
+    isGoalkeeperRole(info?.ruolo || "")
+  ).length;
+
+  const u21Ok = u21Count >= 4;
+  const porOk = goalkeeperCount >= 2;
+
+  const slots = column.rounds.map(cell => {
       const pickNum = cell.pick_number;
       const pick = cell.pickData;
       const nome = (pick?.player_name || "").trim();
@@ -1205,10 +1221,19 @@ if (recentEl) {
 
     return `
       <article class="desktop-team-column">
-        <div class="desktop-team-head">
-          <img src="${logo}" alt="${escapeHtml(teamName)}" onerror="this.style.visibility='hidden'">
-          <strong>${escapeHtml(teamName)}</strong>
-        </div>
+<div class="desktop-team-head">
+  <img src="${logo}" alt="${escapeHtml(teamName)}" onerror="this.style.visibility='hidden'">
+  <strong>${escapeHtml(teamName)}</strong>
+
+  <div class="desktop-team-rules">
+    <span class="desktop-team-rule-chip ${u21Ok ? "ok" : "warn"}">
+      U21 ${Math.min(u21Count, 4)}/4
+    </span>
+    <span class="desktop-team-rule-chip ${porOk ? "ok" : "warn"}">
+      POR ${goalkeeperCount}/2
+    </span>
+  </div>
+</div>
         <div class="desktop-team-slots">${slots}</div>
       </article>
     `;
