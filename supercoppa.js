@@ -3,6 +3,34 @@
 (function () {
   var STORAGE_KEY = "legaEroiSupercoppaData_v2";
 
+
+
+  var teamOptions = [
+    { name: "Athletic Pongao", logo: "Athletic Pongao.png" },
+    { name: "Bayern Christiansen", logo: "Bayern Christiansen.png" },
+    { name: "Desperados", logo: "Desperados.png" },
+    { name: "Eintracht Franco 126", logo: "Eintracht Franco 126.png" },
+    { name: "Fantaugusta", logo: "Fantaugusta.png" },
+    { name: "FC Disoneste", logo: "FC Disoneste.png" },
+    { name: "Giody", logo: "Giody.png" },
+    { name: "Giulay", logo: "Giulay.png" },
+    { name: "Golden Knights", logo: "Golden Knights.png" },
+    { name: "Ibla", logo: "Ibla.png" },
+    { name: "Minnesota Snakes", logo: "Minnesota Snakes.png" },
+    { name: "Minnesode Timberland", logo: "Minnesode Timberland.png" },
+    { name: "Pandinicoccolosini", logo: "Pandinicoccolosini.png" },
+    { name: "Pokermantra", logo: "Pokermantra.png" },
+    { name: "Rafa Casablanca", logo: "Rafa Casablanca.png" },
+    { name: "Real Mimmo", logo: "Real Mimmo.png" },
+    { name: "Riverfilo", logo: "Riverfilo.png" },
+    { name: "Rubinkebab", logo: "Rubinkebab.png" },
+    { name: "Rubin Kebab", logo: "Rubin Kebab.png" },
+    { name: "Sharknado04", logo: "Sharknado04.png" },
+    { name: "Team Bartowski", logo: "Team Bartowski.png" },
+    { name: "Union Librino", logo: "Union Librino.png" },
+    { name: "Wildboys 78", logo: "Wildboys 78.png" }
+  ];
+
   var slots = [
     {
       key: "leagueChampion",
@@ -121,6 +149,10 @@
 
   function getSlotMeta(key) {
     return slots.find(function (slot) { return slot.key === key; }) || null;
+  }
+
+  function getTeamOptionByName(name) {
+    return teamOptions.find(function (team) { return team.name === name; }) || null;
   }
 
   function getTeam(key) {
@@ -435,28 +467,32 @@
     var container = document.getElementById("admin-teams");
     if (!container) return;
 
+    var optionHtml = "<option value=\"\">Scegli squadra</option>" + teamOptions.map(function (team) {
+      return "<option value=\"" + escapeAttr(team.name) + "\">" + escapeHtml(team.name) + "</option>";
+    }).join("");
+
     container.innerHTML = slots.map(function (slot) {
       return "" +
         "<div class=\"admin-team-card\">" +
           "<div class=\"admin-role\">" + escapeHtml(slot.role) + "</div>" +
-          "<label>Squadra<input type=\"text\" data-team-name=\"" + slot.key + "\" placeholder=\"Nome squadra\"></label>" +
-          "<label>Logo<input type=\"text\" data-team-logo=\"" + slot.key + "\" placeholder=\"Es. Rubinkebab.png\"></label>" +
+          "<label>Squadra<select data-team-select=\"" + slot.key + "\">" + optionHtml + "</select></label>" +
         "</div>";
     }).join("");
 
-    container.querySelectorAll("[data-team-name]").forEach(function (input) {
-      input.addEventListener("input", function () {
-        var key = this.getAttribute("data-team-name");
-        state.teams[key].name = this.value.trim();
-        saveState();
-        renderAll();
-      });
-    });
+    container.querySelectorAll("[data-team-select]").forEach(function (select) {
+      select.addEventListener("change", function () {
+        var key = this.getAttribute("data-team-select");
+        var selected = getTeamOptionByName(this.value);
 
-    container.querySelectorAll("[data-team-logo]").forEach(function (input) {
-      input.addEventListener("input", function () {
-        var key = this.getAttribute("data-team-logo");
-        state.teams[key].logo = this.value.trim();
+        if (!selected) {
+          var meta = getSlotMeta(key);
+          state.teams[key].name = meta ? meta.defaultName : "";
+          state.teams[key].logo = "";
+        } else {
+          state.teams[key].name = selected.name;
+          state.teams[key].logo = selected.logo;
+        }
+
         saveState();
         renderAll();
       });
@@ -513,10 +549,11 @@
 
   function syncAdminInputs() {
     slots.forEach(function (slot) {
-      var name = document.querySelector("[data-team-name='" + slot.key + "']");
-      var logo = document.querySelector("[data-team-logo='" + slot.key + "']");
-      if (name) name.value = state.teams[slot.key].name || "";
-      if (logo) logo.value = state.teams[slot.key].logo || "";
+      var select = document.querySelector("[data-team-select='" + slot.key + "']");
+      if (select) {
+        var selectedName = state.teams[slot.key].name || "";
+        select.value = getTeamOptionByName(selectedName) ? selectedName : "";
+      }
     });
 
     var scoreMap = [
