@@ -1,14 +1,4 @@
-// =====================================
-// ADMIN GAZZETTA - Supabase CMS
-// =====================================
-
-const SUPABASE_URL = window.LEGA_SUPABASE_URL || "";
-const SUPABASE_ANON_KEY = window.LEGA_SUPABASE_ANON_KEY || "";
-const HAS_SUPABASE_CONFIG =
-  SUPABASE_URL &&
-  SUPABASE_ANON_KEY &&
-  !SUPABASE_URL.includes("INCOLLA_QUI") &&
-  !SUPABASE_ANON_KEY.includes("INCOLLA_QUI");
+import { supabase as sb } from "./supabase-config.js";
 
 const sb = HAS_SUPABASE_CONFIG && window.supabase
   ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
