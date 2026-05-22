@@ -319,41 +319,4 @@ document.addEventListener("DOMContentLoaded", async () => {
     setGate(e.message || "Errore controllo admin.", "error");
     $("adminApp").hidden = true;
   }
-});    if (error) throw error;
-
-    setSaveStatus("Salvata ✅", "ok");
-    await loadEditions();
-    fillForm(data);
-    renderEditionsList();
-    setTimeout(() => setSaveStatus(""), 1600);
-  } catch (e) {
-    console.error(e);
-    setSaveStatus(e.message || "Errore salvataggio", "error");
-  }
-}
-
-function wireEvents(){
-  $("btnNew")?.addEventListener("click", () => {
-    fillForm(null);
-    renderEditionsList();
-    setSaveStatus("");
-  });
-
-  $("btnSave")?.addEventListener("click", saveEdition);
-}
-
-document.addEventListener("DOMContentLoaded", async () => {
-  wireEvents();
-
-  try {
-    await requireAdmin();
-    setGate("Accesso admin confermato. La redazione è aperta.", "ok");
-    $("adminApp").hidden = false;
-    await loadEditions();
-    fillForm(editions[0] || null);
-  } catch (e) {
-    console.error(e);
-    setGate(e.message || "Errore controllo admin.", "error");
-    $("adminApp").hidden = true;
-  }
 });
