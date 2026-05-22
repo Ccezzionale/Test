@@ -3459,3 +3459,28 @@ button:disabled {
   text-shadow:
     0 10px 26px rgba(0,0,0,.35) !important;
 }
+
+.public-compensatory-group {
+  border-color: rgba(255, 204, 0, 0.32);
+  background:
+    linear-gradient(180deg, #fffdf3 0%, #ffffff 100%);
+}
+
+.public-compensatory-group .public-waiver-group-title h3::after {
+  content: " extra";
+  display: inline-flex;
+  margin-left: 8px;
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: rgba(255, 204, 0, 0.24);
+  color: #745600;
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  vertical-align: middle;
+}
+
+.public-compensatory-row .public-waiver-rank {
+  background: linear-gradient(135deg, #7a5300, #c98700);
+  color: #fff7c2;
+}
