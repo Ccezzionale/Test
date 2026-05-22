@@ -23,18 +23,6 @@ const COL = {
   ga: "GoalsAgainst"
 };
 
-// ===== Supabase =====
-const SUPABASE_URL = window.LEGA_SUPABASE_URL || "";
-const SUPABASE_ANON_KEY = window.LEGA_SUPABASE_ANON_KEY || "";
-const HAS_SUPABASE_CONFIG =
-  SUPABASE_URL &&
-  SUPABASE_ANON_KEY &&
-  !SUPABASE_URL.includes("INCOLLA_QUI") &&
-  !SUPABASE_ANON_KEY.includes("INCOLLA_QUI");
-
-const sb = HAS_SUPABASE_CONFIG && window.supabase
-  ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
-  : null;
 
 // ===== Cache =====
 const CACHE_KEY_HTML = "giornale_cache_html_v5_supabase";
