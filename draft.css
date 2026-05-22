@@ -6615,66 +6615,70 @@ h1, h2, h3, h4, p{
   background: linear-gradient(135deg, #a7f3d0, #14b8a6) !important;
   color: #042f2e !important;
 }
-
 /* =========================
    DESKTOP TEAM REQUIREMENTS
-   U21 / POR chips sotto i loghi
+   U21 / POR chips sotto la card logo
    ========================= */
 
 @media (min-width: 1101px){
 
+  /* Card logo grande come prima */
   .desktop-team-head{
-    height: 124px !important;
-    gap: 6px !important;
-    padding: 10px 8px 9px !important;
-  }
-
-  .desktop-team-column{
-    grid-template-rows: 124px auto !important;
-  }
-
-  .desktop-round-rail{
-    grid-template-rows: 124px repeat(var(--desktop-rounds, 12), 72px) !important;
-  }
-
-  .desktop-round-spacer{
-    height: 124px !important;
+    height: 104px !important;
+    padding: 11px 10px !important;
+    gap: 7px !important;
   }
 
   .desktop-team-head img{
-    width: 42px !important;
-    height: 42px !important;
+    width: 52px !important;
+    height: 52px !important;
   }
 
   .desktop-team-head strong{
-    font-size: .82rem !important;
-    line-height: 1.02 !important;
-    min-height: 18px;
+    font-size: .9rem !important;
+    line-height: 1.05 !important;
+  }
+
+  /* La colonna ora ha: logo + chips + slots */
+  .desktop-team-column{
+    grid-template-rows: 104px 28px auto !important;
+    gap: 7px !important;
+  }
+
+  /* Anche la rail dei round deve scendere sotto logo + chips */
+  .desktop-round-rail{
+    grid-template-rows: 139px repeat(var(--desktop-rounds, 12), 72px) !important;
+  }
+
+  .desktop-round-spacer{
+    height: 139px !important;
   }
 
   .desktop-team-rules{
+    height: 28px;
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 5px;
-    flex-wrap: wrap;
+    gap: 6px;
+    flex-wrap: nowrap;
     width: 100%;
-    margin-top: 2px;
   }
 
   .desktop-team-rule-chip{
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    min-width: 54px;
+    min-width: 58px;
     height: 22px;
-    padding: 0 7px;
+    padding: 0 8px;
     border-radius: 999px;
-    font-size: .66rem;
+    font-size: .68rem;
     font-weight: 950;
     border: 1px solid rgba(0,31,63,.12);
     white-space: nowrap;
-    box-shadow: inset 0 1px 0 rgba(255,255,255,.75);
+    box-shadow:
+      0 3px 8px rgba(0,31,63,.08),
+      inset 0 1px 0 rgba(255,255,255,.75);
   }
 
   .desktop-team-rule-chip.ok{
