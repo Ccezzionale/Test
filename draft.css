@@ -6734,23 +6734,32 @@ h1, h2, h3, h4, p{
     gap: 10px !important;
   }
 
-  .desktop-pick-slot{
-    height: 72px !important;
-    min-height: 72px !important;
-  }
+.desktop-pick-slot{
+  height: 78px !important;
+  min-height: 78px !important;
+  padding-top: 10px !important;
+  padding-bottom: 8px !important;
+  overflow: visible !important;
+}
 
-  .desktop-round-rail{
-    grid-template-rows: 206px repeat(var(--desktop-rounds, 12), 72px) !important;
-    gap: 10px !important;
-    transform: translateY(12px) !important;
-  }
+.desktop-pick-slot strong{
+  line-height: 1.22 !important;
+  overflow: visible !important;
+  text-overflow: clip !important;
+}
+
+.desktop-round-rail{
+  grid-template-rows: 206px repeat(var(--desktop-rounds, 12), 78px) !important;
+  gap: 10px !important;
+  transform: translateY(12px) !important;
+}
+
+.desktop-round-label{
+  height: 78px !important;
+  min-height: 78px !important;
+}
 
   .desktop-round-spacer{
     height: 206px !important;
-  }
-
-  .desktop-round-label{
-    height: 72px !important;
-    min-height: 72px !important;
   }
 }
