@@ -177,6 +177,31 @@ function populateFreeAgentsFilters() {
   serieATeamFilter.value = currentTeam;
 }
 
+function getCompensatoryPublishAt() {
+  if (!currentSettings) return null;
+
+  if (isPlayoffPhase()) {
+    return (
+      currentSettings.slot2s_close_at ||
+      currentSettings.slot2_close_at ||
+      currentSettings.slot1_close_at
+    );
+  }
+
+  return (
+    currentSettings.slot2_close_at ||
+    currentSettings.slot1_close_at
+  );
+}
+
+function areCompensatoryResultsPublic() {
+  const publishAt = getCompensatoryPublishAt();
+
+  if (!publishAt) return false;
+
+  return new Date() >= new Date(publishAt);
+}
+
 function getSlotTimes(slot) {
   if (!currentSettings) return { openAt: null, closeAt: null };
 
@@ -1218,8 +1243,98 @@ async function renderPublicWaiverOrder() {
 
     publicWaiverOrderEl.appendChild(groupBlock);
   });
+     await renderPublicCompensatoryOrder();
 }
 
+async function renderPublicCompensatoryOrder() {
+  if (!publicWaiverOrderEl || !currentSettings) return;
+
+  const { data, error } = await supabase
+    .from("waiver_compensatory_calls")
+    .select("*")
+    .eq("week", currentSettings.active_week)
+    .eq("phase", currentSettings.active_phase)
+    .order("priority_order", { ascending: true });
+
+  if (error) {
+    console.error("Errore caricamento compensative pubbliche:", error);
+    return;
+  }
+
+  if (!data || data.length === 0) return;
+
+  const isPublic = areCompensatoryResultsPublic();
+  const publishAt = getCompensatoryPublishAt();
+
+  const groupBlock = document.createElement("div");
+  groupBlock.className = "public-waiver-group public-compensatory-group";
+
+  groupBlock.innerHTML = `
+    <button
+      type="button"
+      class="public-waiver-group-title public-waiver-toggle"
+      aria-expanded="true"
+    >
+      <h3>Chiamate compensative</h3>
+
+      <span>
+        ${
+          isPublic
+            ? "Risultati visibili"
+            : publishAt
+              ? `Risultati visibili ${formatWaiverDateTime(publishAt)}`
+              : "Risultati non ancora programmati"
+        }
+      </span>
+    </button>
+
+    <div class="public-waiver-group-content"></div>
+  `;
+
+  const groupContent = groupBlock.querySelector(".public-waiver-group-content");
+
+  data.forEach(call => {
+    const team = teamMap[call.team_id];
+
+    let statusClass = "waiting";
+    let resultText = "";
+
+    if (!isPublic) {
+      resultText = publishAt
+        ? `Le compensative saranno visibili ${formatWaiverDateTime(publishAt)}`
+        : "Le compensative saranno visibili dopo la chiusura.";
+    } else if (!call.player_in) {
+      statusClass = "empty";
+      resultText = "Nessuna chiamata registrata.";
+    } else if (call.status === "won") {
+      statusClass = "won";
+      resultText = `🟢 Prende ${call.player_in}`;
+    } else if (call.status === "lost") {
+      statusClass = "lost";
+      resultText = `🔴 Perde ${call.player_in}`;
+    } else {
+      statusClass = "pending";
+      resultText = `⏳ Chiama ${call.player_in}`;
+    }
+
+    const rowDiv = document.createElement("div");
+    rowDiv.className = `public-waiver-row public-compensatory-row ${statusClass}`;
+
+    rowDiv.innerHTML = `
+      <div class="public-waiver-rank">C${call.priority_order || "-"}</div>
+
+      <div class="public-waiver-main">
+        <strong>${team?.name || "Squadra sconosciuta"}</strong>
+        <span class="public-waiver-via">da trade sbilanciata</span>
+        <span class="public-waiver-result">${resultText}</span>
+      </div>
+    `;
+
+    groupContent.appendChild(rowDiv);
+  });
+
+  publicWaiverOrderEl.appendChild(groupBlock);
+}
 /* ===============================
    LE MIE CHIAMATE DINAMICHE
 ================================ */
