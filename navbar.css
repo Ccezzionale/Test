@@ -2172,3 +2172,142 @@ nav.site-nav{
 
 </style>
 `);
+
+/* =========================================================
+   HOME MOBILE - COMPETIZIONI COLORATE PER TORNEO
+   Deve stare IN FONDO al file
+   ========================================================= */
+
+@media (max-width: 900px){
+
+  .home-dashboard .mini-link-grid{
+    gap: 10px;
+  }
+
+  .home-dashboard .mini-link-grid > a{
+    position: relative;
+    overflow: hidden;
+    min-height: 58px;
+    padding: 13px 14px !important;
+    border-radius: 16px !important;
+
+    display: flex !important;
+    align-items: center;
+    gap: 10px;
+
+    color: #10213d !important;
+    font-weight: 950 !important;
+    text-decoration: none !important;
+
+    border: 1px solid rgba(15,35,65,.08) !important;
+    box-shadow: 0 10px 22px rgba(15,35,65,.10) !important;
+  }
+
+  .home-dashboard .mini-link-grid > a::before{
+    content: "" !important;
+    position: absolute;
+    inset: 0;
+    opacity: .95;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .home-dashboard .mini-link-grid > a::after{
+    content: "" !important;
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 1;
+    background:
+      radial-gradient(120px 70px at 100% 0%, rgba(255,255,255,.55), transparent 62%),
+      linear-gradient(180deg, rgba(255,255,255,.34), rgba(255,255,255,.08));
+  }
+
+  .home-dashboard .mini-link-grid > a img,
+  .home-dashboard .mini-link-grid > a span{
+    position: relative;
+    z-index: 2;
+  }
+
+  .home-dashboard .mini-link-grid > a img{
+    width: 25px !important;
+    height: 25px !important;
+    object-fit: contain !important;
+    flex: 0 0 25px;
+    filter: drop-shadow(0 3px 6px rgba(0,0,0,.18)) !important;
+  }
+
+  /* 1. Highlander - arena oro/sabbia */
+  .home-dashboard .mini-link-grid > a:nth-child(1){
+    border-color: rgba(196,143,32,.38) !important;
+    box-shadow: 0 10px 24px rgba(130,82,20,.12) !important;
+  }
+
+  .home-dashboard .mini-link-grid > a:nth-child(1)::before{
+    background:
+      radial-gradient(130px 80px at 100% 0%, rgba(255,205,80,.32), transparent 62%),
+      linear-gradient(135deg, #fff7df 0%, #ecd08a 100%) !important;
+  }
+
+  /* 2. Crash Out Cup - neon viola/blu */
+  .home-dashboard .mini-link-grid > a:nth-child(2){
+    border-color: rgba(210,55,255,.34) !important;
+    box-shadow: 0 10px 24px rgba(130,35,170,.14) !important;
+  }
+
+  .home-dashboard .mini-link-grid > a:nth-child(2)::before{
+    background:
+      radial-gradient(130px 80px at 100% 0%, rgba(0,200,255,.22), transparent 62%),
+      radial-gradient(110px 70px at 0% 100%, rgba(255,55,215,.24), transparent 62%),
+      linear-gradient(135deg, #fff0ff 0%, #ead8ff 100%) !important;
+  }
+
+  /* 3. Supercoppa - blu/oro elegante */
+  .home-dashboard .mini-link-grid > a:nth-child(3){
+    border-color: rgba(210,165,60,.38) !important;
+    box-shadow: 0 10px 24px rgba(30,70,140,.12) !important;
+  }
+
+  .home-dashboard .mini-link-grid > a:nth-child(3)::before{
+    background:
+      radial-gradient(130px 80px at 100% 0%, rgba(235,190,82,.30), transparent 62%),
+      linear-gradient(135deg, #f4f9ff 0%, #dce9ff 100%) !important;
+  }
+
+  /* 4. All-Star Game - broadcast blu/rosso */
+  .home-dashboard .mini-link-grid > a:nth-child(4){
+    border-color: rgba(60,110,240,.34) !important;
+    box-shadow: 0 10px 24px rgba(60,90,190,.12) !important;
+  }
+
+  .home-dashboard .mini-link-grid > a:nth-child(4)::before{
+    background:
+      radial-gradient(130px 80px at 0% 0%, rgba(30,100,255,.22), transparent 62%),
+      radial-gradient(130px 80px at 100% 100%, rgba(255,45,86,.20), transparent 62%),
+      linear-gradient(135deg, #eef5ff 0%, #ffe7ef 100%) !important;
+  }
+
+  /* 5. Statistiche - data blue */
+  .home-dashboard .mini-link-grid > a:nth-child(5){
+    border-color: rgba(55,126,230,.32) !important;
+    box-shadow: 0 10px 24px rgba(45,105,180,.12) !important;
+  }
+
+  .home-dashboard .mini-link-grid > a:nth-child(5)::before{
+    background:
+      radial-gradient(130px 80px at 100% 0%, rgba(69,145,255,.26), transparent 62%),
+      linear-gradient(135deg, #f0f9ff 0%, #dceeff 100%) !important;
+  }
+
+  /* 6. Hall of Fame - oro premium */
+  .home-dashboard .mini-link-grid > a:nth-child(6){
+    border-color: rgba(212,164,55,.40) !important;
+    box-shadow: 0 10px 24px rgba(140,95,25,.13) !important;
+  }
+
+  .home-dashboard .mini-link-grid > a:nth-child(6)::before{
+    background:
+      radial-gradient(130px 80px at 100% 0%, rgba(255,210,82,.32), transparent 62%),
+      linear-gradient(135deg, #fff8e2 0%, #ead49d 100%) !important;
+  }
+}
