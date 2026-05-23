@@ -1189,3 +1189,108 @@ nav.site-nav{
     right: 8px;
   }
 }
+
+/* =========================================================
+   MOBILE HAMBURGER PANEL REFINEMENT
+   ========================================================= */
+
+@media (max-width: 900px){
+
+  nav.site-nav #mainMenu.navbar::before{
+    content: "LEGA DEGLI EROI";
+    display: block;
+    padding: 10px 12px 12px;
+    margin-bottom: 6px;
+    color: #ffdf7e;
+    font-size: .76rem;
+    font-weight: 1000;
+    letter-spacing: .16em;
+    text-transform: uppercase;
+    border-bottom: 1px solid rgba(255,255,255,.10);
+  }
+
+  nav.site-nav #mainMenu.navbar{
+    gap: 8px;
+  }
+
+  nav.site-nav #mainMenu.navbar > li > a{
+    position: relative;
+    overflow: hidden;
+    min-height: 52px;
+    padding: 14px 15px;
+    border-radius: 17px;
+    background:
+      linear-gradient(135deg, rgba(255,255,255,.085), rgba(255,255,255,.035));
+    border: 1px solid rgba(255,255,255,.09);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.05);
+  }
+
+  nav.site-nav #mainMenu.navbar > li > a:hover,
+  nav.site-nav #mainMenu.navbar > li > a:active{
+    background:
+      linear-gradient(135deg, rgba(255,204,0,.18), rgba(255,255,255,.05));
+    color: #ffdf7e;
+  }
+
+  nav.site-nav #mainMenu.navbar > li > a::before{
+    width: 32px;
+    height: 32px;
+    border-radius: 13px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 10px;
+    background: rgba(255,255,255,.08);
+    flex-shrink: 0;
+    font-size: 1rem;
+  }
+
+  nav.site-nav #nav-rose-normal > a::before,
+  nav.site-nav #nav-rose-admin > a::before{
+    content: "👥";
+  }
+
+  nav.site-nav #mainMenu.navbar > li:nth-child(2) > a::before{
+    content: "🎯";
+  }
+
+  nav.site-nav #mainMenu.navbar > li.competizioni > a::before{
+    content: "🏆";
+  }
+
+  nav.site-nav #mainMenu.navbar > li > a[href="waiver.html"]::before{
+    content: "🔁";
+  }
+
+  nav.site-nav #mainMenu.navbar > li > a[href="regolamento.html"]::before{
+    content: "📘";
+  }
+
+  nav.site-nav #mainMenu.navbar > li.dropdown:not(.competizioni):last-of-type > a::before{
+    content: "🏛️";
+  }
+
+  nav.site-nav .submenu{
+    gap: 6px;
+    background:
+      linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.025));
+  }
+
+  nav.site-nav .submenu a{
+    background: rgba(255,255,255,.04);
+    border: 1px solid rgba(255,255,255,.055);
+  }
+
+  nav.site-nav .submenu a:hover,
+  nav.site-nav .submenu a:active{
+    background: rgba(255,204,0,.12);
+  }
+
+  nav.site-nav .submenu .menu-icon{
+    width: 28px;
+    height: 28px;
+    padding: 3px;
+    border-radius: 11px;
+    background: rgba(255,255,255,.08);
+  }
+}
