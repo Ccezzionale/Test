@@ -3,6 +3,30 @@ import { supabase as sb } from "./supabase-config.js";
 let editions = [];
 let activeGw = null;
 
+const squadreBase = [
+  { nome: "Rubinkebab", logo: "img/Rubinkebab.png" },
+  { nome: "Bayern Christiansen", logo: "img/Bayern Christiansen.png" },
+  { nome: "Team Bartowski", logo: "img/Team Bartowski.png" },
+  { nome: "Golden Knights", logo: "img/Golden Knights.png" },
+  { nome: "Ibla", logo: "img/Ibla.png" },
+  { nome: "Fantaugusta", logo: "img/Fantaugusta.png" },
+  { nome: "Riverfilo", logo: "img/Riverfilo.png" },
+  { nome: "Desperados", logo: "img/Desperados.png" },
+  { nome: "Wildboys 78", logo: "img/wildboys78.png" },
+  { nome: "Pandinicoccolosini", logo: "img/Pandinicoccolosini.png" },
+  { nome: "Pokermantra", logo: "img/PokerMantra.png" },
+  { nome: "Minnesode Timberland", logo: "img/Minnesode Timberland.png" },
+  { nome: "Minnesota Snakes", logo: "img/MinneSota Snakes.png" },
+  { nome: "Eintracht Franco 126", logo: "img/Eintracht Franco 126.png" },
+  { nome: "FC Disoneste", logo: "img/FC Disoneste.png" },
+  { nome: "Athletic Pongao", logo: "img/Athletic Pongao.png" }
+];
+
+function getTeamLogo(teamName){
+  const found = squadreBase.find(t => t.nome === teamName);
+  return found?.logo || "";
+}
+
 const $ = (id) => document.getElementById(id);
 
 const fields = {
