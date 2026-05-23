@@ -853,3 +853,28 @@ function initMobileAllStarTabs() {
 }
 
 document.addEventListener("DOMContentLoaded", initMobileAllStarTabs);
+
+
+// =========================================================
+// BROADCAST DUPLICATE AUTO PICK SYNC
+// Mirrors #autoPickPreview into #autoPickPreviewBroadcast when present.
+// =========================================================
+
+function syncBroadcastAutoPickPreview() {
+  const source = document.getElementById("autoPickPreview");
+  const target = document.getElementById("autoPickPreviewBroadcast");
+  if (!source || !target) return;
+  target.innerHTML = source.innerHTML;
+}
+
+const originalRenderAutoPickPreviewBroadcastSafe = typeof renderAutoPickPreview === "function" ? renderAutoPickPreview : null;
+if (originalRenderAutoPickPreviewBroadcastSafe) {
+  renderAutoPickPreview = function(...args) {
+    originalRenderAutoPickPreviewBroadcastSafe.apply(this, args);
+    syncBroadcastAutoPickPreview();
+  };
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  setTimeout(syncBroadcastAutoPickPreview, 50);
+});
