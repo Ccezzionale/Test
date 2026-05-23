@@ -147,22 +147,33 @@
       <div class="crash-quote">“ Nella distruzione, nascono le leggende. ”</div>
     </div>
 
-    <section id="crash-admin-panel" class="crash-admin-panel hidden">
-  <div class="crash-admin-head">
-    <div>
+<section id="crash-admin-panel" class="crash-admin-panel hidden">
+  <button id="crash-admin-toggle" type="button" class="crash-admin-toggle" aria-expanded="false">
+    <span>
       <span class="crash-admin-kicker">Admin Panel</span>
-      <h2>Risultati Crash Out Cup</h2>
-      <p>Aggiorna le serie. Chi arriva a 3 passa automaticamente il turno.</p>
+      <strong>Risultati Crash Out Cup</strong>
+      <small>Aggiorna le serie. Chi arriva a 3 passa automaticamente il turno.</small>
+    </span>
+
+    <span class="crash-admin-chevron">⌄</span>
+  </button>
+
+  <div class="crash-admin-body">
+    <div class="crash-admin-head">
+      <div>
+        <h2>Risultati serie</h2>
+        <p>Modifica i punteggi e salva. Il bracket si aggiorna subito dopo.</p>
+      </div>
+
+      <button id="crash-admin-save" type="button" class="crash-admin-save">
+        Salva risultati
+      </button>
     </div>
 
-    <button id="crash-admin-save" type="button" class="crash-admin-save">
-      Salva risultati
-    </button>
+    <div id="crash-admin-grid" class="crash-admin-grid"></div>
+
+    <p id="crash-admin-status" class="crash-admin-status"></p>
   </div>
-
-  <div id="crash-admin-grid" class="crash-admin-grid"></div>
-
-  <p id="crash-admin-status" class="crash-admin-status"></p>
 </section>
 
     <div id="bracket-mobile" class="bracket-mobile"></div>
