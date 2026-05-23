@@ -3657,3 +3657,740 @@ body {
     border-radius: 18px !important;
   }
 }
+
+
+/* =========================================================
+   NBA PARTY EDITION
+   All-Star Weekend / showtime / bold arena vibes
+   League = fiery red-orange
+   Championship = electric purple-pink
+   ========================================================= */
+
+:root{
+  --nba-bg-1:#090c16;
+  --nba-bg-2:#12182b;
+  --nba-surface:#121827;
+  --nba-surface-2:#171f33;
+  --nba-border:rgba(255,255,255,.08);
+  --nba-text:#f7f8fc;
+  --nba-muted:#aeb9d0;
+
+  --nba-league:#ff5a36;
+  --nba-league-2:#ff884a;
+  --nba-league-soft:rgba(255,90,54,.14);
+
+  --nba-champ:#b14dff;
+  --nba-champ-2:#ff57c7;
+  --nba-champ-soft:rgba(177,77,255,.14);
+
+  --nba-gold:#ffcc4d;
+  --nba-gold-2:#ff9b2f;
+
+  --nba-shadow:0 18px 40px rgba(0,0,0,.30);
+  --nba-shadow-soft:0 12px 24px rgba(0,0,0,.22);
+  --nba-radius:24px;
+  --nba-radius-sm:18px;
+}
+
+html, body{
+  background:#090c16 !important;
+}
+
+body{
+  background:
+    radial-gradient(circle at 15% 0%, rgba(177,77,255,.16), transparent 22rem),
+    radial-gradient(circle at 85% 0%, rgba(255,90,54,.16), transparent 22rem),
+    radial-gradient(circle at 50% 100%, rgba(255,204,77,.07), transparent 26rem),
+    linear-gradient(180deg, #0a0e18 0%, #10162a 55%, #0a0e18 100%) !important;
+  color:var(--nba-text) !important;
+}
+
+.allstar-page{
+  position:relative;
+}
+
+.allstar-page::before{
+  content:"";
+  position:fixed;
+  inset:0;
+  pointer-events:none;
+  background:
+    radial-gradient(circle at 50% -10%, rgba(255,255,255,.07), transparent 32rem),
+    linear-gradient(180deg, rgba(255,255,255,.02), transparent 18%);
+}
+
+/* ---------- GENERAL TEXT ---------- */
+h1,h2,h3,h4,strong{
+  color:var(--nba-text) !important;
+}
+
+p, small, .hero-festa-note, .section-head p, .ranking-subtitle,
+.info-card small, .team-header p, .team-header span,
+.player-mini span, .vote-slot small, .week-stars-split p,
+.ranking-player small, .auto-pick-row small{
+  color:var(--nba-muted) !important;
+}
+
+/* ---------- HERO ---------- */
+.tricolore-ribbon{
+  display:none !important;
+}
+
+.allstar-hero{
+  position:relative;
+  overflow:hidden;
+  background:
+    radial-gradient(circle at top center, rgba(255,255,255,.05), transparent 16rem),
+    linear-gradient(135deg, rgba(177,77,255,.12), transparent 28%),
+    linear-gradient(225deg, rgba(255,90,54,.12), transparent 28%),
+    linear-gradient(180deg, #171d30 0%, #0f1424 100%) !important;
+  border:1px solid rgba(255,255,255,.07) !important;
+  border-radius:30px !important;
+  box-shadow:0 24px 54px rgba(0,0,0,.34) !important;
+}
+
+.allstar-hero::before{
+  content:"";
+  position:absolute;
+  inset:0 0 auto 0;
+  height:6px;
+  background:linear-gradient(90deg, var(--nba-champ), var(--nba-gold), var(--nba-league));
+}
+
+.allstar-hero::after{
+  content:"";
+  position:absolute;
+  inset:auto auto 0 0;
+  width:100%;
+  height:120px;
+  background:
+    radial-gradient(circle at 10% 100%, rgba(177,77,255,.18), transparent 25%),
+    radial-gradient(circle at 90% 100%, rgba(255,90,54,.18), transparent 25%);
+  pointer-events:none;
+}
+
+.hero-glow-left{
+  background:radial-gradient(circle, rgba(177,77,255,.28), transparent 65%) !important;
+  filter:blur(14px);
+}
+
+.hero-glow-right{
+  background:radial-gradient(circle, rgba(255,90,54,.28), transparent 65%) !important;
+  filter:blur(14px);
+}
+
+.hero-meta span{
+  background:rgba(255,255,255,.06) !important;
+  border:1px solid rgba(255,255,255,.08) !important;
+  color:#fff !important;
+  box-shadow:none !important;
+  backdrop-filter:blur(10px);
+}
+
+.hero-title-box h1{
+  color:#ffffff !important;
+  text-transform:uppercase;
+  letter-spacing:.03em;
+  text-shadow:0 6px 20px rgba(0,0,0,.24);
+}
+
+.hero-title-box h2{
+  display:flex;
+  justify-content:center;
+  flex-wrap:wrap;
+  align-items:center;
+  gap:14px;
+  margin-top:14px;
+}
+
+.green-text, .red-text{
+  min-height:52px;
+  padding:0 22px;
+  border-radius:999px;
+  font-weight:950;
+  letter-spacing:.04em;
+  text-transform:uppercase;
+  box-shadow:0 10px 20px rgba(0,0,0,.24);
+  border:1px solid transparent;
+}
+
+.green-text{
+  background:linear-gradient(135deg, rgba(177,77,255,.20), rgba(255,87,199,.16)) !important;
+  color:#fff !important;
+  border-color:rgba(255,87,199,.28) !important;
+  text-shadow:0 0 14px rgba(255,87,199,.22);
+}
+
+.red-text{
+  background:linear-gradient(135deg, rgba(255,90,54,.22), rgba(255,136,74,.16)) !important;
+  color:#fff !important;
+  border-color:rgba(255,136,74,.30) !important;
+  text-shadow:0 0 14px rgba(255,90,54,.20);
+}
+
+.versus{
+  color:var(--nba-gold) !important;
+  font-weight:950;
+  text-transform:uppercase;
+  letter-spacing:.08em;
+}
+
+.hero-title-box p{
+  color:#f0f2ff !important;
+  font-style:italic;
+}
+
+.hero-festa-note{
+  color:var(--nba-gold) !important;
+  font-weight:900;
+  letter-spacing:.10em;
+  text-transform:uppercase;
+}
+
+.hero-badge{
+  background:rgba(255,255,255,.07) !important;
+  border-color:rgba(255,255,255,.09) !important;
+  color:#fff !important;
+  box-shadow:none !important;
+}
+
+.badge-pulse{
+  background:var(--nba-gold) !important;
+  box-shadow:0 0 0 6px rgba(255,204,77,.12) !important;
+}
+
+/* ---------- SHARED CARDS ---------- */
+.info-card,
+.vote-card,
+.ranking-card,
+.wide-auto-pick,
+.team-panel,
+.clock-panel,
+.pool-section,
+.admin-panel,
+.pick-modal{
+  background:linear-gradient(180deg, rgba(23,31,51,.96), rgba(16,23,39,.96)) !important;
+  border:1px solid rgba(255,255,255,.08) !important;
+  border-radius:var(--nba-radius) !important;
+  box-shadow:var(--nba-shadow-soft) !important;
+}
+
+.info-card,
+.vote-card,
+.ranking-card,
+.wide-auto-pick,
+.team-panel,
+.clock-panel,
+.pool-section,
+.admin-panel{
+  position:relative;
+  overflow:hidden;
+}
+
+.info-card::before,
+.vote-card::before,
+.ranking-card::before,
+.wide-auto-pick::before,
+.team-panel::before,
+.clock-panel::before,
+.pool-section::before,
+.admin-panel::before{
+  content:"";
+  position:absolute;
+  inset:0 0 auto 0;
+  height:4px;
+}
+
+.vote-form-card::before,
+.star-of-week-card::before{
+  height:4px !important;
+}
+
+.vote-form-card::before,
+.wide-auto-pick::before,
+.clock-panel::before,
+.pool-section::before,
+.admin-panel::before{
+  background:linear-gradient(90deg, var(--nba-champ), var(--nba-gold), var(--nba-league)) !important;
+}
+
+.star-of-week-card::before{
+  background:linear-gradient(90deg, var(--nba-gold), var(--nba-league)) !important;
+}
+
+.ranking-card.ranking-championship::before,
+.team-championship::before{
+  background:linear-gradient(90deg, var(--nba-champ), var(--nba-champ-2)) !important;
+}
+
+.ranking-card.ranking-league::before,
+.team-league::before{
+  background:linear-gradient(90deg, var(--nba-league), var(--nba-league-2)) !important;
+}
+
+.info-card:nth-child(1)::before{background:linear-gradient(90deg, var(--nba-champ), var(--nba-league));}
+.info-card:nth-child(2)::before{background:linear-gradient(90deg, var(--nba-gold), var(--nba-league));}
+.info-card:nth-child(3)::before{background:linear-gradient(90deg, var(--nba-league), var(--nba-league-2));}
+.info-card:nth-child(4)::before{background:linear-gradient(90deg, var(--nba-champ), var(--nba-champ-2));}
+
+.info-card strong,
+.section-head h3,
+.ranking-card h4,
+.auto-pick-card h4,
+.team-header h3,
+.vote-form-card .section-head h3,
+.star-card-kicker{
+  color:#fff !important;
+}
+
+/* ---------- INFO ICONS ---------- */
+.info-icon{
+  filter:drop-shadow(0 4px 8px rgba(0,0,0,.16));
+}
+
+/* ---------- MOBILE TABS ---------- */
+.mobile-allstar-tabs{
+  background:rgba(18,24,39,.92) !important;
+  border:1px solid rgba(255,255,255,.08) !important;
+  box-shadow:var(--nba-shadow-soft) !important;
+  backdrop-filter:blur(14px);
+}
+
+.mobile-tab-btn{
+  background:transparent !important;
+  color:var(--nba-muted) !important;
+  border:0 !important;
+}
+
+.mobile-tab-btn.is-active{
+  background:rgba(255,255,255,.06) !important;
+  color:#fff !important;
+  box-shadow:none !important;
+}
+
+.mobile-tab-btn.is-active::after{
+  background:linear-gradient(90deg, var(--nba-champ), var(--nba-gold), var(--nba-league)) !important;
+  height:4px !important;
+}
+
+/* ---------- VOTE ---------- */
+.vote-week-pill{
+  background:linear-gradient(90deg, var(--nba-champ), var(--nba-league)) !important;
+  color:#fff !important;
+  box-shadow:none !important;
+}
+
+.vote-conference-select{
+  background:rgba(255,255,255,.04) !important;
+  border-color:rgba(255,255,255,.08) !important;
+}
+
+.vote-conference-select span{
+  color:#fff !important;
+}
+
+.vote-slot{
+  background:rgba(255,255,255,.03) !important;
+  border:1px solid rgba(255,255,255,.08) !important;
+  box-shadow:none !important;
+}
+
+.vote-slot-gold{
+  box-shadow:inset 5px 0 0 0 var(--nba-gold) !important;
+}
+
+.vote-slot-silver{
+  box-shadow:inset 5px 0 0 0 #9caed2 !important;
+}
+
+.vote-slot-bronze{
+  box-shadow:inset 5px 0 0 0 #d9804c !important;
+}
+
+.vote-medal{
+  color:#111 !important;
+}
+
+.vote-slot select,
+.vote-conference-select select,
+.pool-filters input,
+.pool-filters select,
+#modalSearchInput{
+  background:rgba(255,255,255,.06) !important;
+  border:1px solid rgba(255,255,255,.08) !important;
+  color:#fff !important;
+}
+
+.vote-slot select option,
+.vote-conference-select select option,
+.pool-filters select option{
+  color:#111 !important;
+}
+
+.vote-submit-btn,
+.primary-call-btn,
+.pick-btn{
+  background:linear-gradient(90deg, var(--nba-champ), var(--nba-league)) !important;
+  color:#fff !important;
+  border:none !important;
+  box-shadow:0 10px 20px rgba(0,0,0,.18) !important;
+  text-transform:uppercase;
+  letter-spacing:.04em;
+  font-weight:900;
+}
+
+.vote-submit-btn:hover,
+.primary-call-btn:hover,
+.pick-btn:hover{
+  filter:brightness(1.08);
+}
+
+.star-card-kicker{
+  color:var(--nba-gold) !important;
+  letter-spacing:.12em;
+}
+
+.star-card-icon{
+  filter:drop-shadow(0 10px 20px rgba(255,204,77,.14)) !important;
+}
+
+.week-stars-split > div{
+  border-radius:18px !important;
+  box-shadow:none !important;
+}
+
+.week-stars-split > div:first-child{
+  background:linear-gradient(180deg, rgba(255,90,54,.12), rgba(255,90,54,.06)) !important;
+  border:1px solid rgba(255,90,54,.18) !important;
+}
+
+.week-stars-split > div:last-child{
+  background:linear-gradient(180deg, rgba(177,77,255,.12), rgba(177,77,255,.06)) !important;
+  border:1px solid rgba(177,77,255,.18) !important;
+}
+
+.week-stars-split > div:first-child small,
+.week-stars-split > div:first-child h3{
+  color:#fff !important;
+}
+
+.week-stars-split > div:last-child small,
+.week-stars-split > div:last-child h3{
+  color:#fff !important;
+}
+
+/* ---------- RANKINGS ---------- */
+.race-section{
+  background:transparent !important;
+  border:0 !important;
+  box-shadow:none !important;
+  padding:0 !important;
+}
+
+.ranking-card.ranking-championship{
+  background:
+    radial-gradient(circle at top right, rgba(177,77,255,.10), transparent 14rem),
+    linear-gradient(180deg, rgba(23,31,51,.98), rgba(16,23,39,.98)) !important;
+  border-color:rgba(177,77,255,.18) !important;
+}
+
+.ranking-card.ranking-league{
+  background:
+    radial-gradient(circle at top left, rgba(255,90,54,.10), transparent 14rem),
+    linear-gradient(180deg, rgba(23,31,51,.98), rgba(16,23,39,.98)) !important;
+  border-color:rgba(255,90,54,.18) !important;
+}
+
+.ranking-card.ranking-championship h4,
+.ranking-card.ranking-championship .ranking-subtitle{
+  color:#fff !important;
+}
+
+.ranking-card.ranking-league h4,
+.ranking-card.ranking-league .ranking-subtitle{
+  color:#fff !important;
+}
+
+.ranking-row{
+  background:rgba(255,255,255,.04) !important;
+  border:1px solid rgba(255,255,255,.06) !important;
+  box-shadow:none !important;
+}
+
+.ranking-card.ranking-championship .ranking-pos{
+  background:linear-gradient(135deg, var(--nba-champ), var(--nba-champ-2)) !important;
+  color:#fff !important;
+}
+
+.ranking-card.ranking-league .ranking-pos{
+  background:linear-gradient(135deg, var(--nba-league), var(--nba-league-2)) !important;
+  color:#fff !important;
+}
+
+.ranking-card.ranking-championship .auto-badge{
+  background:rgba(177,77,255,.16) !important;
+  color:#fff !important;
+}
+
+.ranking-card.ranking-league .auto-badge{
+  background:rgba(255,90,54,.16) !important;
+  color:#fff !important;
+}
+
+.ranking-empty{
+  background:rgba(255,255,255,.03) !important;
+  border:1px dashed rgba(255,255,255,.10) !important;
+}
+
+.ranking-empty strong{
+  color:#fff !important;
+}
+
+.wide-auto-pick{
+  background:
+    radial-gradient(circle at top center, rgba(255,204,77,.06), transparent 12rem),
+    linear-gradient(180deg, rgba(23,31,51,.98), rgba(16,23,39,.98)) !important;
+}
+
+.auto-pick-row{
+  background:rgba(255,255,255,.04) !important;
+  border-radius:16px !important;
+  box-shadow:none !important;
+}
+
+.auto-pick-row.championship{
+  border:1px solid rgba(177,77,255,.18) !important;
+  box-shadow:inset 4px 0 0 0 var(--nba-champ) !important;
+}
+
+.auto-pick-row.league{
+  border:1px solid rgba(255,90,54,.18) !important;
+  box-shadow:inset 4px 0 0 0 var(--nba-league) !important;
+}
+
+.auto-pick-row.championship strong{color:#fff !important;}
+.auto-pick-row.league strong{color:#fff !important;}
+
+.auto-pick-row .pick-number-pill{
+  background:linear-gradient(135deg, #ffffff, #dcdfea) !important;
+  color:#111b2e !important;
+  box-shadow:none !important;
+}
+
+.duplicate-badge{
+  background:rgba(255,204,77,.14) !important;
+  color:var(--nba-gold) !important;
+  border:1px solid rgba(255,204,77,.18);
+}
+
+/* ---------- DRAFT ---------- */
+.team-championship{
+  background:
+    radial-gradient(circle at top right, rgba(177,77,255,.10), transparent 14rem),
+    linear-gradient(180deg, rgba(23,31,51,.98), rgba(16,23,39,.98)) !important;
+  border-color:rgba(177,77,255,.18) !important;
+}
+
+.team-league{
+  background:
+    radial-gradient(circle at top left, rgba(255,90,54,.10), transparent 14rem),
+    linear-gradient(180deg, rgba(23,31,51,.98), rgba(16,23,39,.98)) !important;
+  border-color:rgba(255,90,54,.18) !important;
+}
+
+.team-championship .team-header{
+  border-bottom:1px solid rgba(177,77,255,.16) !important;
+}
+
+.team-league .team-header{
+  border-bottom:1px solid rgba(255,90,54,.16) !important;
+}
+
+.team-championship .team-header h3,
+.team-championship .team-header span{
+  color:#fff !important;
+}
+
+.team-league .team-header h3,
+.team-league .team-header span{
+  color:#fff !important;
+}
+
+.crest-gold{
+  background:linear-gradient(135deg, var(--nba-champ), var(--nba-champ-2)) !important;
+  color:#fff !important;
+  border:none !important;
+}
+
+.crest-blue{
+  background:linear-gradient(135deg, var(--nba-league), var(--nba-league-2)) !important;
+  color:#fff !important;
+  border:none !important;
+}
+
+.team-championship .role-badge{
+  background:rgba(177,77,255,.16) !important;
+  border-color:rgba(177,77,255,.20) !important;
+  color:#fff !important;
+}
+
+.team-league .role-badge{
+  background:rgba(255,90,54,.16) !important;
+  border-color:rgba(255,90,54,.20) !important;
+  color:#fff !important;
+}
+
+.player-mini{
+  background:rgba(255,255,255,.04) !important;
+  border:1px solid rgba(255,255,255,.06) !important;
+}
+
+.player-mini strong,
+.player-mini b{
+  color:#fff !important;
+}
+
+.clock-panel{
+  background:
+    radial-gradient(circle at top center, rgba(255,204,77,.06), transparent 10rem),
+    linear-gradient(180deg, rgba(23,31,51,.98), rgba(16,23,39,.98)) !important;
+}
+
+.clock-kicker{
+  color:var(--nba-gold) !important;
+  letter-spacing:.18em;
+  text-transform:uppercase;
+}
+
+#currentPickBig{
+  color:#fff !important;
+  text-shadow:0 10px 20px rgba(0,0,0,.22);
+}
+
+#currentConferenceBig[data-conf="Conference Championship"]{
+  background:rgba(177,77,255,.16) !important;
+  color:#fff !important;
+  border:1px solid rgba(177,77,255,.18) !important;
+}
+
+#currentConferenceBig[data-conf="Conference League"]{
+  background:rgba(255,90,54,.16) !important;
+  color:#fff !important;
+  border:1px solid rgba(255,90,54,.18) !important;
+}
+
+.last-picks{
+  background:rgba(255,255,255,.04) !important;
+}
+
+/* ---------- POOL / TABLE ---------- */
+.pool-section,
+.admin-panel{
+  background:
+    linear-gradient(180deg, rgba(23,31,51,.98), rgba(16,23,39,.98)) !important;
+}
+
+.table-wrap{
+  background:rgba(255,255,255,.02) !important;
+  border:1px solid rgba(255,255,255,.08) !important;
+}
+
+.players-table thead th{
+  background:#181f31 !important;
+  color:#fff !important;
+}
+
+.players-table td{
+  color:#eef2ff !important;
+  border-color:rgba(255,255,255,.05) !important;
+}
+
+.ghost-btn,
+.admin-toggle{
+  background:rgba(255,255,255,.05) !important;
+  color:#fff !important;
+  border:1px solid rgba(255,255,255,.08) !important;
+  box-shadow:none !important;
+}
+
+.admin-btn.green,
+.admin-btn.blue{
+  background:linear-gradient(90deg, var(--nba-champ), var(--nba-champ-2)) !important;
+  color:#fff !important;
+}
+
+.admin-btn.red{
+  background:linear-gradient(90deg, var(--nba-league), var(--nba-league-2)) !important;
+  color:#fff !important;
+}
+
+.admin-btn.gold{
+  background:linear-gradient(90deg, var(--nba-gold), var(--nba-league)) !important;
+  color:#111 !important;
+}
+
+/* ---------- MODAL ---------- */
+.pick-modal{
+  background:linear-gradient(180deg, #171e31, #111728) !important;
+  border:1px solid rgba(255,255,255,.08) !important;
+  box-shadow:var(--nba-shadow) !important;
+}
+
+.modal-player-row{
+  background:rgba(255,255,255,.03) !important;
+  border:1px solid rgba(255,255,255,.06) !important;
+}
+
+.modal-head strong,
+.modal-player-row strong,
+.modal-head p,
+.modal-player-row small{
+  color:#fff !important;
+}
+
+.modal-close{
+  color:#fff !important;
+}
+
+/* ---------- MOBILE ---------- */
+@media (max-width:768px){
+  body{
+    background:
+      radial-gradient(circle at 20% 0%, rgba(177,77,255,.14), transparent 12rem),
+      radial-gradient(circle at 80% 0%, rgba(255,90,54,.14), transparent 12rem),
+      linear-gradient(180deg, #0a0e18 0%, #10162a 100%) !important;
+  }
+
+  .allstar-hero{
+    border-radius:24px !important;
+  }
+
+  .hero-title-box h1{
+    font-size:clamp(34px, 12vw, 58px);
+  }
+
+  .green-text, .red-text{
+    min-height:40px;
+    padding:0 14px;
+    font-size:13px;
+  }
+
+  .hero-festa-note{
+    font-size:10px;
+  }
+
+  .mobile-tab-btn.is-active{
+    background:rgba(255,255,255,.06) !important;
+  }
+
+  .info-card,
+  .vote-card,
+  .ranking-card,
+  .wide-auto-pick,
+  .team-panel,
+  .clock-panel,
+  .pool-section,
+  .admin-panel{
+    border-radius:20px !important;
+  }
+}
