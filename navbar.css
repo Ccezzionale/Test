@@ -2384,3 +2384,95 @@ nav.site-nav{
     color: #10213d !important;
   }
 }
+
+/* =========================================================
+   HOME MOBILE - COMPETIZIONI CARD COLORATE DENTRO
+   ========================================================= */
+
+@media (max-width: 900px){
+
+  .home-dashboard .mini-link-grid > a{
+    position: relative !important;
+    overflow: hidden !important;
+    min-height: 62px !important;
+    padding: 13px 14px !important;
+    border-radius: 16px !important;
+    border-width: 1px !important;
+
+    color: #061326 !important;
+    font-weight: 950 !important;
+
+    box-shadow: 0 10px 22px rgba(15,35,65,.13) !important;
+  }
+
+  /* Spegniamo gli overlay vecchi che sbiancavano tutto */
+  .home-dashboard .mini-link-grid > a::before,
+  .home-dashboard .mini-link-grid > a::after{
+    display: none !important;
+    content: none !important;
+  }
+
+  .home-dashboard .mini-link-grid > a img,
+  .home-dashboard .mini-link-grid > a span{
+    position: relative;
+    z-index: 2;
+  }
+
+  .home-dashboard .mini-link-grid > a img{
+    width: 26px !important;
+    height: 26px !important;
+    object-fit: contain !important;
+    flex: 0 0 26px !important;
+    filter: drop-shadow(0 4px 7px rgba(0,0,0,.20)) !important;
+  }
+
+  /* 1. Highlander - arena oro/sabbia */
+  .home-dashboard .mini-link-grid > a:nth-child(1){
+    background:
+      radial-gradient(120px 70px at 100% 0%, rgba(255,255,255,.35), transparent 60%),
+      linear-gradient(135deg, #ffe8a8 0%, #e1b84f 48%, #c8942d 100%) !important;
+    border-color: rgba(174,123,24,.42) !important;
+  }
+
+  /* 2. Crash Out Cup - viola/neon */
+  .home-dashboard .mini-link-grid > a:nth-child(2){
+    background:
+      radial-gradient(120px 70px at 100% 0%, rgba(0,220,255,.28), transparent 60%),
+      radial-gradient(110px 70px at 0% 100%, rgba(255,55,220,.32), transparent 62%),
+      linear-gradient(135deg, #f4c8ff 0%, #c79cff 52%, #8f68e8 100%) !important;
+    border-color: rgba(186,66,255,.45) !important;
+  }
+
+  /* 3. Supercoppa - blu reale/oro */
+  .home-dashboard .mini-link-grid > a:nth-child(3){
+    background:
+      radial-gradient(120px 70px at 100% 0%, rgba(255,205,80,.38), transparent 62%),
+      linear-gradient(135deg, #d9ecff 0%, #9fc2f4 50%, #6f96db 100%) !important;
+    border-color: rgba(80,125,210,.42) !important;
+  }
+
+  /* 4. All-Star Game - broadcast blu/rosso */
+  .home-dashboard .mini-link-grid > a:nth-child(4){
+    background:
+      radial-gradient(120px 70px at 0% 0%, rgba(0,95,255,.28), transparent 62%),
+      radial-gradient(120px 70px at 100% 100%, rgba(255,40,85,.32), transparent 62%),
+      linear-gradient(135deg, #cfe3ff 0%, #f8b7c8 100%) !important;
+    border-color: rgba(70,120,240,.40) !important;
+  }
+
+  /* 5. Statistiche - data blue */
+  .home-dashboard .mini-link-grid > a:nth-child(5){
+    background:
+      radial-gradient(120px 70px at 100% 0%, rgba(0,145,255,.36), transparent 62%),
+      linear-gradient(135deg, #d4f0ff 0%, #91caff 52%, #6da9f1 100%) !important;
+    border-color: rgba(55,126,230,.42) !important;
+  }
+
+  /* 6. Hall of Fame - oro storico */
+  .home-dashboard .mini-link-grid > a:nth-child(6){
+    background:
+      radial-gradient(120px 70px at 100% 0%, rgba(255,245,170,.42), transparent 62%),
+      linear-gradient(135deg, #ffe9a8 0%, #d7a94b 55%, #b47b24 100%) !important;
+    border-color: rgba(180,125,30,.45) !important;
+  }
+}
