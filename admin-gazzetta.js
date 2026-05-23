@@ -27,6 +27,23 @@ function getTeamLogo(teamName){
   return found?.logo || "";
 }
 
+function populateTeamSelects(){
+  document.querySelectorAll(".team-select").forEach(select => {
+    const currentValue = select.value;
+
+    select.innerHTML = `<option value="">Scegli squadra</option>`;
+
+    squadreBase.forEach(team => {
+      const opt = document.createElement("option");
+      opt.value = team.nome;
+      opt.textContent = team.nome;
+      select.appendChild(opt);
+    });
+
+    if (currentValue) select.value = currentValue;
+  });
+}
+
 const $ = (id) => document.getElementById(id);
 
 const fields = {
