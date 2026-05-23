@@ -230,7 +230,7 @@ function collectPayload(){
     payload[`rating_${i}_vote`] = formValue(fields[`rating_${i}_vote`]);
     payload[`rating_${i}_label`] = formValue(fields[`rating_${i}_label`]);
     payload[`rating_${i}_text`] = formValue(fields[`rating_${i}_text`]);
-    payload[`rating_${i}_icon_url`] = formValue(fields[`rating_${i}_icon_url`]);
+ payload[`rating_${i}_icon_url`] = getTeamLogo(payload[`rating_${i}_team`]);
   }
 
   for (let i = 1; i <= 3; i++){
@@ -347,6 +347,7 @@ function wireEvents(){
 }
 
 document.addEventListener("DOMContentLoaded", async () => {
+  populateTeamSelects();
   wireEvents();
 
   try {
