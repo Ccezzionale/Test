@@ -4,6 +4,8 @@ document.addEventListener("DOMContentLoaded", function () {
   const submenuToggles = document.querySelectorAll(".toggle-submenu");
   const isMobile = () => window.innerWidth <= 900;
 
+  let menuOpenScrollY = 0;
+
   function closeMainMenu() {
     if (mainMenu) mainMenu.classList.remove("show");
 
@@ -16,7 +18,12 @@ document.addEventListener("DOMContentLoaded", function () {
     hamburger.addEventListener("click", function (e) {
       e.preventDefault();
       e.stopPropagation();
+
       mainMenu.classList.toggle("show");
+
+      if (mainMenu.classList.contains("show")) {
+        menuOpenScrollY = window.scrollY || window.pageYOffset || 0;
+      }
     });
   }
 
@@ -58,7 +65,12 @@ document.addEventListener("DOMContentLoaded", function () {
     if (!isMobile()) return;
     if (!mainMenu || !mainMenu.classList.contains("show")) return;
 
-    closeMainMenu();
+    const currentScrollY = window.scrollY || window.pageYOffset || 0;
+    const distance = Math.abs(currentScrollY - menuOpenScrollY);
+
+    if (distance > 120) {
+      closeMainMenu();
+    }
   }, { passive: true });
 
   window.addEventListener("resize", function () {
