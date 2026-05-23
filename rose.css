@@ -893,21 +893,70 @@ tbody tr:last-child {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 6px;
-  margin-top: 2px;
+  gap: 10px;
+  margin-top: 8px;
 }
 
 .team-roster-meta span {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 4px 8px;
+  min-height: 40px;
+  padding: 8px 14px;
   border-radius: 999px;
-  background: #f2f7fd;
-  border: 1px solid #d8e6f5;
-  color: #2b4057;
-  font-size: 0.75rem;
-  font-weight: 800;
+  background: linear-gradient(180deg, #ffffff, #f4f8fd);
+  border: 1px solid #dbe7f3;
+  color: #133252;
+  font-size: 0.82rem;
+  font-weight: 900;
+  box-shadow:
+    0 8px 18px rgba(0, 31, 63, 0.08),
+    inset 0 1px 0 rgba(255,255,255,0.9);
+  letter-spacing: 0.2px;
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+.team-roster-meta span:hover {
+  transform: translateY(-2px);
+  box-shadow:
+    0 12px 24px rgba(0, 31, 63, 0.12),
+    inset 0 1px 0 rgba(255,255,255,0.95);
+}
+
+/* Giocatori */
+.team-roster-meta span:nth-child(1) {
+  background: linear-gradient(180deg, #f8fbff, #edf5ff);
+  color: #0f3d68;
+  border-color: #cfe0f3;
+  padding-inline: 16px;
+}
+
+/* FP */
+.team-roster-meta span:nth-child(2) {
+  background: linear-gradient(180deg, #fff8e4, #ffeeb7);
+  color: #8a5a00;
+  border-color: #f1d67a;
+}
+
+/* U21 */
+.team-roster-meta span:nth-child(3) {
+  background: linear-gradient(180deg, #ecfff1, #cff5da);
+  color: #146c3b;
+  border-color: #9ed9b0;
+}
+
+/* RFA */
+.team-roster-meta span:nth-child(4) {
+  background: linear-gradient(180deg, #f3edff, #ddd0ff);
+  color: #5a3ea6;
+  border-color: #c5b0f4;
+}
+
+/* Protetti */
+.team-roster-meta span:nth-child(5) {
+  background: linear-gradient(180deg, #eef3f8, #dde7f1);
+  color: #31465f;
+  border-color: #c8d6e4;
 }
 
 .roster-toggle {
