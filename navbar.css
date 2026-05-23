@@ -1774,3 +1774,83 @@ nav.site-nav{
     display: none !important;
   }
 }
+
+/* =========================================================
+   HOME MOBILE - CUSTOM WEBP ICONS
+   Solo mobile, non tocca desktop
+   ========================================================= */
+
+@media (max-width: 900px){
+
+  .quick-icon img,
+  .feature-icon img,
+  .mobile-bottom-icon img,
+  .mobile-more-grid span img{
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+
+  .quick-icon{
+    padding: 7px;
+  }
+
+  .quick-icon img{
+    filter: drop-shadow(0 3px 5px rgba(6,19,38,.18));
+  }
+
+  .feature-icon{
+    padding: 8px;
+  }
+
+  .feature-icon img{
+    filter: drop-shadow(0 3px 5px rgba(6,19,38,.14));
+  }
+
+  .mini-link-grid a{
+    gap: 8px;
+  }
+
+  .mini-link-grid a::before{
+    content: none !important;
+    display: none !important;
+  }
+
+  .mini-link-grid a img{
+    width: 22px;
+    height: 22px;
+    object-fit: contain;
+    flex: 0 0 22px;
+    filter: drop-shadow(0 2px 4px rgba(6,19,38,.16));
+  }
+
+  .mini-link-grid a span{
+    min-width: 0;
+  }
+
+  .mobile-bottom-icon{
+    width: 22px;
+    height: 22px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .mobile-bottom-link.active .mobile-bottom-icon img{
+    filter: drop-shadow(0 3px 6px rgba(244,210,122,.24));
+  }
+
+  .mobile-bottom-link:not(.active) .mobile-bottom-icon img{
+    opacity: .72;
+    filter: grayscale(.15);
+  }
+
+  .mobile-more-grid span{
+    padding: 7px;
+  }
+
+  .mobile-more-grid span img{
+    filter: drop-shadow(0 3px 5px rgba(6,19,38,.14));
+  }
+}
