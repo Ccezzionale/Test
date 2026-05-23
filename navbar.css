@@ -2308,3 +2308,79 @@ nav.site-nav{
       linear-gradient(135deg, #fff8e2 0%, #ead49d 100%) !important;
   }
 }
+
+/* =========================================================
+   HOME MOBILE - COMPETIZIONI COLORI PIU' VISIBILI
+   Mettere dopo il blocco competizioni precedente
+   ========================================================= */
+
+@media (max-width: 900px){
+
+  .home-dashboard .mini-link-grid > a{
+    min-height: 62px !important;
+    border-width: 1.5px !important;
+  }
+
+  .home-dashboard .mini-link-grid > a::after{
+    background:
+      radial-gradient(110px 70px at 100% 0%, rgba(255,255,255,.24), transparent 60%),
+      linear-gradient(180deg, rgba(255,255,255,.12), rgba(255,255,255,.02)) !important;
+  }
+
+  /* Highlander - oro arena più visibile */
+  .home-dashboard .mini-link-grid > a:nth-child(1)::before{
+    background:
+      radial-gradient(150px 90px at 100% 0%, rgba(255,196,40,.55), transparent 64%),
+      linear-gradient(135deg, #fff3c4 0%, #e7bd54 100%) !important;
+  }
+
+  /* Crash Out - viola/neon più visibile */
+  .home-dashboard .mini-link-grid > a:nth-child(2)::before{
+    background:
+      radial-gradient(140px 90px at 100% 0%, rgba(0,194,255,.35), transparent 62%),
+      radial-gradient(130px 90px at 0% 100%, rgba(234,39,255,.38), transparent 62%),
+      linear-gradient(135deg, #ffe4ff 0%, #d6b8ff 100%) !important;
+  }
+
+  /* Supercoppa - blu/oro più leggibile */
+  .home-dashboard .mini-link-grid > a:nth-child(3)::before{
+    background:
+      radial-gradient(140px 90px at 100% 0%, rgba(244,190,62,.45), transparent 62%),
+      linear-gradient(135deg, #edf6ff 0%, #bfd6ff 100%) !important;
+  }
+
+  /* All-Star - blu/rosso più sportivo */
+  .home-dashboard .mini-link-grid > a:nth-child(4)::before{
+    background:
+      radial-gradient(140px 90px at 0% 0%, rgba(0,92,255,.32), transparent 62%),
+      radial-gradient(140px 90px at 100% 100%, rgba(255,35,80,.30), transparent 62%),
+      linear-gradient(135deg, #dcecff 0%, #ffd6df 100%) !important;
+  }
+
+  /* Statistiche - azzurro più data/app */
+  .home-dashboard .mini-link-grid > a:nth-child(5)::before{
+    background:
+      radial-gradient(140px 90px at 100% 0%, rgba(43,139,255,.42), transparent 62%),
+      linear-gradient(135deg, #e4f6ff 0%, #bfe0ff 100%) !important;
+  }
+
+  /* Hall of Fame - oro più nobile */
+  .home-dashboard .mini-link-grid > a:nth-child(6)::before{
+    background:
+      radial-gradient(140px 90px at 100% 0%, rgba(255,205,55,.55), transparent 62%),
+      linear-gradient(135deg, #fff1b8 0%, #d8ad4f 100%) !important;
+  }
+
+  .home-dashboard .mini-link-grid > a:nth-child(1),
+  .home-dashboard .mini-link-grid > a:nth-child(6){
+    color: #17304f !important;
+  }
+
+  .home-dashboard .mini-link-grid > a:nth-child(2){
+    color: #19113a !important;
+  }
+
+  .home-dashboard .mini-link-grid > a:nth-child(4){
+    color: #10213d !important;
+  }
+}
