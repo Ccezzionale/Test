@@ -68,7 +68,7 @@ window.addEventListener("scroll", function () {
   const currentScrollY = window.scrollY || window.pageYOffset || 0;
   const distance = Math.abs(currentScrollY - menuOpenScrollY);
 
-  if (distance > 90) {
+  if (distance > 180) {
     closeMainMenu();
   }
 }, { passive: true });
