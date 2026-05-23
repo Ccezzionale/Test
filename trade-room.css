@@ -2638,3 +2638,54 @@ textarea{
     height:330px;
   }
 }
+
+/* =====================================================
+   FIX DESKTOP TRADE ROOM - asset dropdown ordinato
+   ===================================================== */
+
+@media (min-width: 801px){
+
+  #tradeApp .trade-board-dropdown .pick-list{
+    display:block !important;
+    max-height:320px;
+    overflow-y:auto;
+    overflow-x:hidden;
+  }
+
+  #tradeApp .trade-asset-group{
+    display:grid;
+    grid-template-columns:repeat(2, minmax(0, 1fr));
+    gap:10px;
+    margin-bottom:18px;
+  }
+
+  #tradeApp .trade-asset-group h4{
+    grid-column:1 / -1;
+    margin:8px 0 2px;
+    color:#0b2d55;
+    font-size:1rem;
+    font-weight:1000;
+  }
+
+  #tradeApp .trade-asset-group p{
+    grid-column:1 / -1;
+    margin:4px 0 8px;
+    color:#6f7f94;
+    font-weight:800;
+  }
+
+  #tradeApp .trade-board-dropdown .pick-choice{
+    min-width:0;
+    min-height:58px;
+    align-items:center;
+    padding:11px 12px;
+  }
+
+  #tradeApp .trade-board-dropdown .trade-asset-label{
+    min-width:0;
+    max-width:100%;
+    line-height:1.18;
+    overflow-wrap:anywhere;
+    word-break:normal;
+  }
+}
