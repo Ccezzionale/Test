@@ -1722,3 +1722,203 @@ body {
     grid-template-columns: 1fr;
   }
 }
+
+
+/* =========================================================
+   FINAL TRICOLORE CARDS
+   Ultime due card: Vota le Stelle + Stelle della Settimana
+   ========================================================= */
+
+.vote-form-card {
+  position: relative;
+  overflow: hidden;
+  background:
+    linear-gradient(90deg,
+      rgba(35,164,84,.08) 0%,
+      rgba(35,164,84,.03) 22%,
+      rgba(255,255,255,.95) 50%,
+      rgba(214,64,64,.03) 78%,
+      rgba(214,64,64,.08) 100%
+    ),
+    linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+  border-color: rgba(16,33,63,.08);
+}
+
+.vote-form-card::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 8px;
+  background:
+    linear-gradient(90deg,
+      #1ea34a 0%,
+      #1ea34a 33.33%,
+      #ffffff 33.33%,
+      #ffffff 66.66%,
+      #d64040 66.66%,
+      #d64040 100%
+    );
+}
+
+.vote-form-card .section-head h3 {
+  color: #17345a;
+}
+
+.vote-form-card .section-head p {
+  color: #586c8c;
+}
+
+.vote-week-pill {
+  background: linear-gradient(90deg, #1ea34a 0%, #3d8df7 50%, #d64040 100%);
+  color: #fff;
+  box-shadow: 0 10px 22px rgba(16,33,63,.10);
+}
+
+.vote-conference-select {
+  background:
+    linear-gradient(90deg,
+      rgba(35,164,84,.08) 0%,
+      rgba(255,255,255,.92) 50%,
+      rgba(214,64,64,.08) 100%);
+  border-color: rgba(16,33,63,.08);
+}
+
+.vote-conference-select span {
+  color: #17345a;
+}
+
+.vote-slot {
+  background: rgba(255,255,255,.78);
+  border-color: rgba(16,33,63,.08);
+}
+
+.vote-slot-gold {
+  background:
+    linear-gradient(90deg, rgba(242,182,63,.10), rgba(255,255,255,.82));
+}
+
+.vote-slot-silver {
+  background:
+    linear-gradient(90deg, rgba(125,145,173,.10), rgba(255,255,255,.82));
+}
+
+.vote-slot-bronze {
+  background:
+    linear-gradient(90deg, rgba(184,104,56,.10), rgba(255,255,255,.82));
+}
+
+.vote-submit-btn {
+  background: linear-gradient(90deg, #1ea34a 0%, #ffffff 48%, #d64040 100%);
+  color: #17345a;
+  box-shadow: 0 14px 28px rgba(16,33,63,.12);
+}
+
+.star-of-week-card {
+  position: relative;
+  overflow: hidden;
+  background:
+    linear-gradient(90deg,
+      rgba(35,164,84,.08) 0%,
+      rgba(35,164,84,.03) 20%,
+      rgba(255,255,255,.95) 50%,
+      rgba(214,64,64,.03) 80%,
+      rgba(214,64,64,.08) 100%
+    ),
+    linear-gradient(180deg, #fffef9 0%, #fff9ef 100%);
+  border-color: rgba(16,33,63,.08);
+}
+
+.star-of-week-card::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 8px;
+  background:
+    linear-gradient(90deg,
+      #1ea34a 0%,
+      #1ea34a 33.33%,
+      #ffffff 33.33%,
+      #ffffff 66.66%,
+      #d64040 66.66%,
+      #d64040 100%
+    );
+}
+
+.star-card-kicker {
+  color: #a36b00;
+  letter-spacing: .14em;
+}
+
+.week-stars-split {
+  margin-top: 18px;
+  gap: 14px;
+}
+
+.week-stars-split > div:first-child {
+  background:
+    linear-gradient(180deg, rgba(255,246,246,.98), rgba(255,237,237,.95));
+  border-color: rgba(214,64,64,.14);
+}
+
+.week-stars-split > div:last-child {
+  background:
+    linear-gradient(180deg, rgba(244,255,247,.98), rgba(235,248,239,.95));
+  border-color: rgba(35,164,84,.14);
+}
+
+.week-stars-split > div:first-child small {
+  color: #a83b3b;
+}
+
+.week-stars-split > div:last-child small {
+  color: #167344;
+}
+
+.week-stars-split > div:first-child h3 {
+  color: #b02b2b;
+}
+
+.week-stars-split > div:last-child h3 {
+  color: #167344;
+}
+
+.week-stars-split > div:first-child p {
+  color: #8f6060;
+}
+
+.week-stars-split > div:last-child p {
+  color: #4b8161;
+}
+
+/* Piccolo richiamo tricolore anche nella stellina */
+.star-card-icon {
+  filter: drop-shadow(0 6px 10px rgba(242,182,63,.18));
+}
+
+@media (max-width: 980px) {
+  .vote-form-card,
+  .star-of-week-card {
+    border-radius: 22px;
+  }
+}
+
+
+/* =========================================================
+   HERO CONFERENCE FIX
+   Championship verde, League rossa
+   ========================================================= */
+
+.green-text {
+  color: #1ea34a !important;
+  text-shadow: 0 6px 18px rgba(35,164,84,.10);
+}
+
+.red-text {
+  color: #d64040 !important;
+  text-shadow: 0 6px 18px rgba(214,64,64,.10);
+}
+
+.blue-text,
+.gold-text {
+  color: inherit;
+}
