@@ -947,3 +947,9 @@ button:hover{ transform:translateY(-1px); background:var(--navy-2); }
     border-top: none !important;
   }
 }
+
+@media (max-width: 768px){
+  .front-hero{
+    border-top: none !important;
+  }
+}
