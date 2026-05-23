@@ -2476,3 +2476,322 @@ nav.site-nav{
     border-color: rgba(180,125,30,.45) !important;
   }
 }
+
+/* =========================================================
+   HOME MOBILE - COMPETIZIONI IDEA 1 + SPOTLIGHT
+   ========================================================= */
+
+@media (max-width: 900px){
+
+  .competitions-home-section{
+    margin-top: 22px;
+  }
+
+  /* Spotlight piccolo, tocco Idea 2 */
+  .competition-spotlight{
+    position: relative;
+    overflow: hidden;
+    min-height: 92px;
+    margin-bottom: 12px;
+    padding: 16px;
+    border-radius: 20px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+
+    text-decoration: none;
+    color: #fff !important;
+
+    background:
+      radial-gradient(180px 120px at 100% 0%, rgba(255,210,90,.36), transparent 62%),
+      radial-gradient(220px 140px at 0% 100%, rgba(0,112,224,.20), transparent 64%),
+      linear-gradient(135deg, #003f8f 0%, #00306f 56%, #071b34 100%) !important;
+
+    border: 1px solid rgba(255,255,255,.14);
+    box-shadow: 0 14px 30px rgba(0,48,111,.24);
+  }
+
+  .competition-spotlight::after{
+    content: "";
+    position: absolute;
+    right: -36px;
+    bottom: -54px;
+    width: 150px;
+    height: 150px;
+    border-radius: 999px;
+    background: rgba(255,255,255,.10);
+    pointer-events: none;
+  }
+
+  .competition-spotlight-copy{
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+  }
+
+  .competition-spotlight-copy span{
+    margin-bottom: 5px;
+    font-size: .68rem;
+    font-weight: 1000;
+    letter-spacing: .13em;
+    text-transform: uppercase;
+    color: #ffe082;
+  }
+
+  .competition-spotlight-copy strong{
+    font-size: 1.26rem;
+    line-height: 1;
+    font-weight: 1000;
+    color: #fff;
+  }
+
+  .competition-spotlight-copy small{
+    margin-top: 6px;
+    font-size: .78rem;
+    line-height: 1.15;
+    font-weight: 750;
+    color: rgba(255,255,255,.84);
+  }
+
+  .competition-spotlight img{
+    position: relative;
+    z-index: 2;
+    width: 58px;
+    height: 58px;
+    object-fit: contain;
+    filter: drop-shadow(0 8px 12px rgba(0,0,0,.25));
+    flex: 0 0 58px;
+  }
+
+  /* Principali */
+  .competitions-primary-grid{
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  .competition-primary-card{
+    position: relative;
+    overflow: hidden;
+    min-height: 116px;
+    padding: 14px 12px;
+    border-radius: 20px;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 10px;
+
+    text-decoration: none !important;
+    color: #10213d !important;
+
+    border: 1px solid rgba(15,35,65,.08);
+    box-shadow: 0 10px 22px rgba(15,35,65,.10);
+  }
+
+  .competition-primary-card::before{
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .competition-primary-card img,
+  .competition-primary-card span{
+    position: relative;
+    z-index: 2;
+  }
+
+  .competition-primary-card img{
+    width: 46px;
+    height: 46px;
+    object-fit: contain;
+    filter: drop-shadow(0 5px 8px rgba(0,0,0,.18));
+  }
+
+  .competition-primary-card span{
+    display: flex;
+    flex-direction: column;
+  }
+
+  .competition-primary-card strong{
+    font-size: .98rem;
+    line-height: 1.05;
+    font-weight: 1000;
+    color: #071b34;
+  }
+
+  .competition-primary-card small{
+    margin-top: 5px;
+    font-size: .70rem;
+    line-height: 1.1;
+    font-weight: 750;
+    color: #607089;
+  }
+
+  .comp-classifica{
+    background:
+      radial-gradient(140px 90px at 100% 0%, rgba(0,112,224,.20), transparent 62%),
+      linear-gradient(135deg, #eef7ff 0%, #ffffff 100%) !important;
+    border-color: rgba(0,112,224,.18) !important;
+  }
+
+  .comp-playoff{
+    background:
+      radial-gradient(150px 95px at 100% 0%, rgba(255,190,55,.34), transparent 62%),
+      linear-gradient(135deg, #fff8e2 0%, #ffffff 100%) !important;
+    border-color: rgba(217,154,33,.24) !important;
+  }
+
+  /* Titolo secondario */
+  .competitions-special-title{
+    margin: 15px 2px 9px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .competitions-special-title span{
+    font-size: .72rem;
+    font-weight: 1000;
+    text-transform: uppercase;
+    letter-spacing: .13em;
+    color: #607089;
+  }
+
+  .competitions-special-title::after{
+    content: "";
+    height: 1px;
+    flex: 1;
+    background: linear-gradient(90deg, rgba(0,88,180,.28), transparent);
+  }
+
+  /* Tornei speciali */
+  .competitions-special-grid{
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  .competition-special-card{
+    position: relative;
+    overflow: hidden;
+    min-height: 74px;
+    padding: 12px;
+    border-radius: 18px;
+
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    text-decoration: none !important;
+    color: #10213d !important;
+
+    background: #fff !important;
+    border: 1px solid rgba(15,35,65,.08);
+    box-shadow: 0 9px 20px rgba(15,35,65,.09);
+  }
+
+  .competition-special-card::before{
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .competition-special-card::after{
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 12px;
+    bottom: 12px;
+    width: 4px;
+    border-radius: 999px;
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  .competition-special-card img,
+  .competition-special-card span{
+    position: relative;
+    z-index: 2;
+  }
+
+  .competition-special-card img{
+    width: 34px;
+    height: 34px;
+    object-fit: contain;
+    flex: 0 0 34px;
+    filter: drop-shadow(0 4px 7px rgba(0,0,0,.18));
+  }
+
+  .competition-special-card span{
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+  }
+
+  .competition-special-card strong{
+    font-size: .84rem;
+    line-height: 1.05;
+    font-weight: 1000;
+    color: #071b34;
+  }
+
+  .competition-special-card small{
+    margin-top: 4px;
+    font-size: .64rem;
+    line-height: 1.05;
+    font-weight: 750;
+    color: #607089;
+  }
+
+  .comp-highlander::before{
+    background:
+      radial-gradient(120px 80px at 100% 0%, rgba(201,154,39,.28), transparent 62%),
+      linear-gradient(135deg, rgba(255,247,223,.95), rgba(255,255,255,.95)) !important;
+  }
+
+  .comp-highlander::after{
+    background: #b98425;
+  }
+
+  .comp-crashout::before{
+    background:
+      radial-gradient(120px 80px at 100% 0%, rgba(210,55,255,.24), transparent 62%),
+      radial-gradient(90px 70px at 0% 100%, rgba(0,200,255,.16), transparent 62%),
+      linear-gradient(135deg, rgba(255,241,255,.95), rgba(255,255,255,.95)) !important;
+  }
+
+  .comp-crashout::after{
+    background: #c13cff;
+  }
+
+  .comp-supercoppa::before{
+    background:
+      radial-gradient(120px 80px at 100% 0%, rgba(235,190,82,.24), transparent 62%),
+      radial-gradient(100px 70px at 0% 100%, rgba(0,70,160,.14), transparent 62%),
+      linear-gradient(135deg, rgba(241,247,255,.95), rgba(255,255,255,.95)) !important;
+  }
+
+  .comp-supercoppa::after{
+    background: #1f5fae;
+  }
+
+  .comp-allstar::before{
+    background:
+      radial-gradient(120px 80px at 0% 0%, rgba(0,92,255,.18), transparent 62%),
+      radial-gradient(120px 80px at 100% 100%, rgba(255,35,80,.20), transparent 62%),
+      linear-gradient(135deg, rgba(239,246,255,.95), rgba(255,246,249,.95)) !important;
+  }
+
+  .comp-allstar::after{
+    background: linear-gradient(180deg, #1f6bff, #ef2f5b);
+  }
+}
