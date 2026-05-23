@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>All Star Game 2027 - Lega degli Eroi</title>
+
+  <!-- Se hai già navbar.css globale puoi lasciarlo -->
+  <link rel="stylesheet" href="navbar.css" />
+  <link rel="stylesheet" href="allstar.css" />
+
+  <script type="module" src="allstar.js" defer></script>
+</head>
+
+<body>
+  <!-- NAVBAR / SIDEBAR -->
+  <nav class="site-nav">
+    <div class="nav-inner">
+      <a href="index.html" class="brand">
+        <img src="img/logo.png" alt="Lega degli Eroi" class="brand-logo">
+        <span>Lega degli Eroi</span>
+      </a>
+
+      <button id="hamburger" class="hamburger" aria-label="Apri menu">☰</button>
+
+      <div id="navMenu" class="nav-links">
+        <a href="index.html">Home</a>
+        <a href="rose.html">Rose</a>
+        <a href="classifica.html">Classifiche</a>
+        <a href="waiver.html">Waiver</a>
+        <a href="trade-room.html">Trade Room</a>
+        <a href="allstar.html" class="active">All Star Game</a>
+      </div>
+    </div>
+  </nav>
+
+  <main class="allstar-page">
+    <!-- HERO -->
+    <section class="allstar-hero">
+      <div class="hero-glow"></div>
+
+      <div class="hero-meta">
+        <span>📅 Sabato 27 Giugno 2027</span>
+        <span>🕘 Ore 21:00</span>
+        <span>🏟️ Stadio degli Eroi</span>
+      </div>
+
+      <div class="hero-title-box">
+        <div class="hero-star">★</div>
+        <h1>All Star Game 2027</h1>
+        <h2>
+          <span class="blue-text">Conference League</span>
+          <span class="versus">vs</span>
+          <span class="gold-text">Conference Championship</span>
+        </h2>
+        <p>Le stelle della Lega degli Eroi</p>
+      </div>
+
+      <div class="hero-badge">
+        <span class="badge-pulse"></span>
+        <span id="draftStatusLabel">Draft in corso</span>
+      </div>
+    </section>
+
+    <!-- INFO STRIP -->
+    <section class="draft-info-strip">
+      <article class="info-card">
+        <span class="info-icon">🔁</span>
+        <div>
+          <strong>Ordine draft: fisso</strong>
+          <small>Ogni round: Conference League poi Conference Championship</small>
+        </div>
+      </article>
+
+      <article class="info-card">
+        <span class="info-icon">🎯</span>
+        <div>
+          <strong>Pick attuale</strong>
+          <small id="currentPickInfo">1</small>
+        </div>
+      </article>
+
+      <article class="info-card">
+        <span class="info-icon">👥</span>
+        <div>
+          <strong>Ora sceglie</strong>
+          <small id="currentConferenceInfo">Conference League</small>
+        </div>
+      </article>
+
+      <article class="info-card">
+        <span class="info-icon">⭐</span>
+        <div>
+          <strong>Giocatori selezionati</strong>
+          <small id="selectedCountInfo">0 / 44</small>
+        </div>
+      </article>
+    </section>
+
+    <!-- MAIN DRAFT AREA -->
+    <section class="draft-arena">
+      <!-- TEAM LEAGUE -->
+      <article class="team-panel team-league">
+        <header class="team-header">
+          <div class="conference-crest crest-blue">CL</div>
+          <div>
+            <h3>Conference League</h3>
+            <p>All Stars</p>
+            <span id="leagueCount">0 / 22 giocatori selezionati</span>
+          </div>
+        </header>
+
+        <div class="role-list" id="leagueRoster">
+          <!-- JS -->
+        </div>
+      </article>
+
+      <!-- CENTER CLOCK -->
+      <article class="clock-panel">
+        <span class="clock-kicker">On the clock</span>
+        <strong id="currentPickBig">1</strong>
+        <p id="currentConferenceBig">Conference League</p>
+
+        <button id="openPickModalBtn" class="primary-call-btn">
+          Effettua chiamata
+        </button>
+
+        <div class="last-picks">
+          <h4>Ultimi pick</h4>
+          <div id="lastPicksList"></div>
+        </div>
+      </article>
+
+      <!-- TEAM CHAMPIONSHIP -->
+      <article class="team-panel team-championship">
+        <header class="team-header">
+          <div class="conference-crest crest-gold">CC</div>
+          <div>
+            <h3>Conference Championship</h3>
+            <p>All Stars</p>
+            <span id="championshipCount">0 / 22 giocatori selezionati</span>
+          </div>
+        </header>
+
+        <div class="role-list" id="championshipRoster">
+          <!-- JS -->
+        </div>
+      </article>
+    </section>
+
+    <!-- POOL -->
+    <section class="pool-section">
+      <div class="section-head">
+        <div>
+          <h3>Pool Giocatori</h3>
+          <p>Seleziona i giocatori disponibili per costruire le due rose All Star.</p>
+        </div>
+
+        <button id="clearFiltersBtn" class="ghost-btn">Azzera filtri</button>
+      </div>
+
+      <div class="pool-filters">
+        <input id="searchInput" type="search" placeholder="Cerca giocatore..." />
+
+        <select id="roleFilter">
+          <option value="">Ruolo</option>
+          <option value="P">P</option>
+          <option value="D">D</option>
+          <option value="C">C</option>
+          <option value="A">A</option>
+        </select>
+
+        <select id="teamFilter">
+          <option value="">Squadra Serie A</option>
+        </select>
+
+        <select id="originFilter">
+          <option value="">Team di origine</option>
+        </select>
+
+        <select id="conferenceFilter">
+          <option value="">Conference</option>
+          <option value="Conference League">Conference League</option>
+          <option value="Conference Championship">Conference Championship</option>
+        </select>
+      </div>
+
+      <div class="table-wrap">
+        <table class="players-table">
+          <thead>
+            <tr>
+              <th>Giocatore</th>
+              <th>Ruolo</th>
+              <th>Squadra Serie A</th>
+              <th>Quotazione</th>
+              <th>Team origine</th>
+              <th>Conference</th>
+              <th>Azione</th>
+            </tr>
+          </thead>
+          <tbody id="playersTbody">
+            <!-- JS -->
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ADMIN PANEL -->
+    <section id="adminPanel" class="admin-panel">
+      <button class="admin-toggle" id="adminToggle">
+        <span>⚙️ Admin Panel</span>
+        <span id="adminChevron">⌄</span>
+      </button>
+
+      <div class="admin-body" id="adminBody">
+        <button id="toggleDraftBtn" class="admin-btn green">Apri / Chiudi Draft</button>
+        <button id="undoPickBtn" class="admin-btn blue">Annulla ultima pick</button>
+        <button id="resetDraftBtn" class="admin-btn red">Reset Draft</button>
+        <small>Visibile solo ad admin/commissioner quando colleghiamo Supabase.</small>
+      </div>
+    </section>
+  </main>
+
+  <!-- PICK MODAL -->
+  <dialog id="pickModal" class="pick-modal">
+    <div class="modal-head">
+      <div>
+        <strong>Effettua chiamata</strong>
+        <p id="modalPickText">Pick 1 - Conference League</p>
+      </div>
+      <button id="closePickModalBtn" class="modal-close">×</button>
+    </div>
+
+    <input id="modalSearchInput" type="search" placeholder="Cerca giocatore da chiamare..." />
+
+    <div id="modalPlayersList" class="modal-player-list"></div>
+  </dialog>
+</body>
+</html>
