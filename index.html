@@ -407,7 +407,19 @@
           <a href="medagliere.html">Hall of Fame</a>
         </div>
       </section>
+
+      <section class="desktop-gazzetta-section">
+  <iframe
+    id="gazzettaFrame"
+    class="gazzetta-frame"
+    src="giornale.html"
+    title="La Gazzetta degli Eroi"
+    scrolling="no">
+  </iframe>
+</section>
     </section>
+
+    
 
     <nav class="mobile-bottom-nav" aria-label="Navigazione mobile">
   <a href="index.html" class="mobile-bottom-link active">
@@ -482,6 +494,48 @@
 </div>
 
   </main>
+
+  <script>
+function resizeGazzetta() {
+  const iframe = document.getElementById("gazzettaFrame");
+  if (!iframe) return;
+
+  try {
+    const doc = iframe.contentDocument || iframe.contentWindow.document;
+
+    iframe.style.height = "1px";
+
+    const body = doc.body;
+    const html = doc.documentElement;
+
+    const h = Math.max(
+      body.offsetHeight,
+      body.scrollHeight,
+      html.offsetHeight,
+      html.scrollHeight
+    );
+
+    iframe.style.height = Math.ceil(h + 12) + "px";
+  } catch (e) {
+    console.warn("Impossibile auto-resize iframe:", e);
+  }
+}
+
+document.addEventListener("DOMContentLoaded", function () {
+  const iframe = document.getElementById("gazzettaFrame");
+
+  if (iframe) {
+    iframe.addEventListener("load", function () {
+      resizeGazzetta();
+      setTimeout(resizeGazzetta, 400);
+      setTimeout(resizeGazzetta, 1200);
+      setTimeout(resizeGazzetta, 2500);
+    });
+  }
+
+  window.addEventListener("resize", resizeGazzetta);
+});
+</script>
 
   <script>
     if ("serviceWorker" in navigator) {
