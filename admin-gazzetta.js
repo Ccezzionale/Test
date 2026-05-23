@@ -216,8 +216,6 @@ function collectPayload(){
     next_subtitle: formValue(fields.next_subtitle),
     next_text: formValue(fields.next_text),
     next_image_url: formValue(fields.next_image_url),
-    next_team_a: formValue(fields.next_team_a),
-    next_team_b: formValue(fields.next_team_b),
     next_date: formValue(fields.next_date),
     next_time: formValue(fields.next_time),
     next_cta_label: formValue(fields.next_cta_label),
