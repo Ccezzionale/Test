@@ -61,17 +61,17 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   });
 
-  window.addEventListener("scroll", function () {
-    if (!isMobile()) return;
-    if (!mainMenu || !mainMenu.classList.contains("show")) return;
+window.addEventListener("scroll", function () {
+  if (!isMobile()) return;
+  if (!mainMenu || !mainMenu.classList.contains("show")) return;
 
-    const currentScrollY = window.scrollY || window.pageYOffset || 0;
-    const distance = Math.abs(currentScrollY - menuOpenScrollY);
+  const currentScrollY = window.scrollY || window.pageYOffset || 0;
+  const distance = Math.abs(currentScrollY - menuOpenScrollY);
 
-    if (distance > 120) {
-      closeMainMenu();
-    }
-  }, { passive: true });
+  if (distance > 90) {
+    closeMainMenu();
+  }
+}, { passive: true });
 
   window.addEventListener("resize", function () {
     if (!isMobile()) {
