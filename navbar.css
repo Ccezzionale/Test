@@ -1001,9 +1001,15 @@ nav.site-nav{
     padding-bottom: env(safe-area-inset-bottom);
   }
 
-  .home-wrap.home-dashboard{
-    padding-bottom: 108px;
+.home-wrap.home-dashboard{
+  padding-bottom: 150px !important;
+}
+
+  @media (max-width: 900px){
+  .gazzetta-home-section{
+    padding-bottom: 90px;
   }
+}
 
   .mobile-bottom-nav{
     position: fixed;
@@ -1011,7 +1017,7 @@ nav.site-nav{
     right: 12px;
     bottom: calc(10px + env(safe-area-inset-bottom));
     z-index: 1400;
-    height: 66px;
+    height: 60px;
     display: grid;
     grid-template-columns: repeat(5, 1fr);
     gap: 4px;
@@ -1044,8 +1050,8 @@ nav.site-nav{
     font-family: inherit;
   }
 
-  .mobile-bottom-link.active{
-    background: linear-gradient(135deg, #003366, #0057a8);
+.mobile-bottom-link.active{
+  background: linear-gradient(135deg, #004f9f, #006ed6);
     color: #fff;
     box-shadow: 0 10px 20px rgba(0,64,128,.20);
   }
