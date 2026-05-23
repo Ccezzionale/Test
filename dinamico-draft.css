@@ -1256,3 +1256,80 @@ nav.site-nav .action-icon{opacity:1!important;filter:none!important;}
   }
 }
 
+/* =========================================================
+   DRAFT TRADE SUMMARY - ACCORDION
+   ========================================================= */
+
+.draft-trades-toggle{
+  width:100%;
+  appearance:none;
+  border:0;
+  background:transparent;
+  cursor:pointer;
+  text-align:left;
+  font-family:inherit;
+}
+
+.draft-trades-actions{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  flex:0 0 auto;
+}
+
+.draft-trades-chevron{
+  width:36px;
+  height:36px;
+  border-radius:999px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  background:#eef4fb;
+  color:#001f3f;
+  font-size:1.25rem;
+  font-weight:950;
+  transition:transform .18s ease, background .18s ease;
+}
+
+.draft-trades-panel:not(.is-open) .draft-trades-list{
+  display:none;
+}
+
+.draft-trades-panel.is-open .draft-trades-chevron{
+  transform:rotate(180deg);
+  background:#001f3f;
+  color:#ffd54a;
+}
+
+.draft-trades-panel.is-open .draft-trades-head{
+  border-bottom:1px solid #e4edf8;
+}
+
+.draft-trades-panel:not(.is-open) .draft-trades-head{
+  border-bottom:0;
+}
+
+@media (max-width:768px){
+  .draft-trades-head{
+    align-items:center;
+  }
+
+  .draft-trades-head h3{
+    font-size:1.15rem;
+  }
+
+  .draft-trades-head p{
+    font-size:.82rem;
+  }
+
+  .draft-trades-count{
+    min-width:34px;
+    height:34px;
+  }
+
+  .draft-trades-chevron{
+    width:34px;
+    height:34px;
+  }
+}
+
