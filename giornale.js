@@ -242,26 +242,21 @@ function buildNextOn(row){
   const subtitle = norm(row.next_subtitle);
   const text = norm(row.next_text);
   const image = normalizeImageUrl(row.next_image_url);
-  const teamA = norm(row.next_team_a);
-  const teamB = norm(row.next_team_b);
   const date = norm(row.next_date);
   const time = norm(row.next_time);
   const ctaLabel = norm(row.next_cta_label);
   const ctaUrl = norm(row.next_cta_url);
 
-  if (!eventTitle && !subtitle && !text && !image && !teamA && !teamB && !date && !time) return "";
+  if (!eventTitle && !subtitle && !text && !image && !date && !time) return "";
 
   return `
     <section class="next-section">
-      <div class="next-media">
-        ${image ? `<img src="${image}" alt="${escapeHtml(eventTitle || title)}">` : `<div class="next-placeholder">VS</div>`}
-        ${(teamA || teamB) ? `
-          <div class="next-versus">
-            <span>${escapeHtml(teamA || "Squadra A")}</span>
-            <b>VS</b>
-            <span>${escapeHtml(teamB || "Squadra B")}</span>
-          </div>
-        ` : ""}
+      <div class="next-media next-media-image-only">
+        ${
+          image
+            ? `<img src="${image}" alt="${escapeHtml(eventTitle || title)}">`
+            : `<div class="next-placeholder">Teaser in arrivo</div>`
+        }
       </div>
 
       <div class="next-copy">
