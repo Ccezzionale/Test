@@ -88,3 +88,52 @@ async function updateAuthButtons() {
     if (logoutBtn) logoutBtn.style.display = "none";
   }
 }
+
+document.addEventListener("DOMContentLoaded", function () {
+  const moreBtn = document.getElementById("mobile-more-btn");
+  const morePanel = document.getElementById("mobile-more-panel");
+  const moreBackdrop = document.getElementById("mobile-more-backdrop");
+  const moreClose = document.getElementById("mobile-more-close");
+  const mobileLogoutBtn = document.getElementById("mobile-logout-btn");
+
+  function openMorePanel() {
+    if (!morePanel) return;
+    morePanel.classList.add("is-open");
+    morePanel.setAttribute("aria-hidden", "false");
+    document.body.classList.add("mobile-more-open");
+  }
+
+  function closeMorePanel() {
+    if (!morePanel) return;
+    morePanel.classList.remove("is-open");
+    morePanel.setAttribute("aria-hidden", "true");
+    document.body.classList.remove("mobile-more-open");
+  }
+
+  if (moreBtn) {
+    moreBtn.addEventListener("click", function () {
+      openMorePanel();
+    });
+  }
+
+  if (moreBackdrop) {
+    moreBackdrop.addEventListener("click", closeMorePanel);
+  }
+
+  if (moreClose) {
+    moreClose.addEventListener("click", closeMorePanel);
+  }
+
+  if (mobileLogoutBtn) {
+    mobileLogoutBtn.addEventListener("click", async function () {
+      try {
+        const { supabase } = await import("./supabase.js");
+        await supabase.auth.signOut();
+        window.location.href = "index.html";
+      } catch (err) {
+        console.warn("Logout mobile non riuscito:", err);
+        window.location.href = "login.html";
+      }
+    });
+  }
+});
