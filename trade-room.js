@@ -894,19 +894,17 @@ function formatPlayerLabel(player) {
 
   const role = player.role_mantra || player.role || "";
   const serieATeam = player.serie_a_team || "";
-  const badgeTokens = getTradeBadgeTokens(player);
 
   if (isDraftPhase() && pickNumber) {
-    return `${playerName}${badgeTokens} (pick ${pickNumber})`;
+    return `${playerName} (pick ${pickNumber})`;
   }
 
   const details = [role, serieATeam].filter(Boolean).join(" · ");
 
   return details
-    ? `${playerName}${badgeTokens} (${details})`
-    : `${playerName}${badgeTokens}`;
+    ? `${playerName} (${details})`
+    : `${playerName}`;
 }
-
 function formatFuturePickLabel(pick) {
   const originalName = pick.original?.name || getTeamName(pick.original_team_id);
   const ownerName = pick.owner?.name || getTeamName(pick.owner_team_id);
