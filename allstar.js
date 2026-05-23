@@ -799,3 +799,57 @@ function escapeHtml(value) {
 function escapeAttr(value) {
   return escapeHtml(value);
 }
+
+
+// =========================================================
+// MOBILE ALL STAR TABS
+// Desktop: tutto visibile. Mobile: una sezione alla volta.
+// =========================================================
+
+function initMobileAllStarTabs() {
+  const tabButtons = [...document.querySelectorAll("[data-allstar-tab]")];
+  const sections = [...document.querySelectorAll("[data-mobile-section]")];
+
+  if (!tabButtons.length || !sections.length) return;
+
+  const mq = window.matchMedia("(max-width: 768px)");
+
+  function activateTab(tabName) {
+    tabButtons.forEach((btn) => {
+      btn.classList.toggle("is-active", btn.dataset.allstarTab === tabName);
+    });
+
+    sections.forEach((section) => {
+      section.classList.toggle("is-mobile-active", section.dataset.mobileSection === tabName);
+    });
+  }
+
+  function syncMode() {
+    if (mq.matches) {
+      const active = document.querySelector(".mobile-tab-btn.is-active")?.dataset.allstarTab || "vote";
+      activateTab(active);
+    } else {
+      sections.forEach((section) => section.classList.remove("is-mobile-active"));
+    }
+  }
+
+  tabButtons.forEach((btn) => {
+    btn.addEventListener("click", () => {
+      activateTab(btn.dataset.allstarTab);
+      const tabs = document.querySelector(".mobile-allstar-tabs");
+      if (tabs) {
+        tabs.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+    });
+  });
+
+  if (mq.addEventListener) {
+    mq.addEventListener("change", syncMode);
+  } else if (mq.addListener) {
+    mq.addListener(syncMode);
+  }
+
+  syncMode();
+}
+
+document.addEventListener("DOMContentLoaded", initMobileAllStarTabs);

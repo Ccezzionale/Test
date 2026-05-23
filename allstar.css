@@ -1922,3 +1922,101 @@ body {
 .gold-text {
   color: inherit;
 }
+
+
+/* =========================================================
+   MOBILE TABS + INDEX NAVBAR INTEGRATION
+   Desktop invariato, mobile diviso in sezioni
+   ========================================================= */
+
+.mobile-allstar-tabs {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .allstar-page {
+    padding-bottom: 86px;
+  }
+
+  .mobile-allstar-tabs {
+    position: sticky;
+    top: 64px;
+    z-index: 45;
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 6px;
+    margin: 12px 0 14px;
+    padding: 8px;
+    border: 1px solid rgba(16,33,63,.08);
+    border-radius: 18px;
+    background:
+      linear-gradient(90deg,
+        rgba(35,164,84,.08),
+        rgba(255,255,255,.96),
+        rgba(214,64,64,.08));
+    box-shadow: 0 14px 30px rgba(18,45,86,.10);
+    backdrop-filter: blur(14px);
+  }
+
+  .mobile-tab-btn {
+    border: 1px solid rgba(16,33,63,.08);
+    border-radius: 13px;
+    padding: 10px 5px;
+    background: rgba(255,255,255,.72);
+    color: #17345a;
+    font-size: 11px;
+    font-weight: 950;
+    text-transform: uppercase;
+    letter-spacing: .03em;
+    cursor: pointer;
+  }
+
+  .mobile-tab-btn.is-active {
+    color: white;
+    background: linear-gradient(90deg, #1ea34a 0%, #ffffff 50%, #d64040 100%);
+    text-shadow: 0 1px 1px rgba(0,0,0,.22);
+    box-shadow: 0 10px 20px rgba(16,33,63,.12);
+  }
+
+  [data-mobile-section] {
+    display: none !important;
+  }
+
+  [data-mobile-section].is-mobile-active {
+    display: block !important;
+  }
+
+  .draft-info-strip[data-mobile-section].is-mobile-active,
+  .vote-grid[data-mobile-section].is-mobile-active,
+  .draft-arena[data-mobile-section].is-mobile-active {
+    display: grid !important;
+  }
+
+  .pool-section[data-mobile-section].is-mobile-active,
+  .race-section[data-mobile-section].is-mobile-active,
+  .admin-panel[data-mobile-section].is-mobile-active {
+    display: block !important;
+  }
+
+  .players-table {
+    min-width: 760px;
+  }
+
+  .admin-panel {
+    margin-top: 0;
+  }
+}
+
+@media (max-width: 520px) {
+  .mobile-allstar-tabs {
+    top: 58px;
+    gap: 5px;
+    padding: 6px;
+  }
+
+  .mobile-tab-btn {
+    padding: 9px 3px;
+    font-size: 10px;
+    letter-spacing: .01em;
+  }
+}
