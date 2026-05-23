@@ -1245,6 +1245,10 @@ function renderDraftTrades(trades, containerId, conferenceTitle) {
             <h3>Trade Draft 2027</h3>
             <p>${safeConferenceTitle}: nessuna trade con pick 2027.</p>
           </div>
+
+          <span class="draft-trades-actions">
+            <span class="draft-trades-count">0</span>
+          </span>
         </div>
       </div>
     `;
@@ -1253,21 +1257,32 @@ function renderDraftTrades(trades, containerId, conferenceTitle) {
 
   container.innerHTML = `
     <div class="draft-trades-panel">
-      <div class="draft-trades-head">
+      <button type="button" class="draft-trades-head draft-trades-toggle" aria-expanded="false">
         <div>
           <span class="draft-trades-kicker">Movimenti ufficiali</span>
           <h3>Trade Draft 2027</h3>
           <p>${safeConferenceTitle}: solo trade concluse con almeno una pick futura 2027.</p>
         </div>
 
-        <span class="draft-trades-count">${trades.length}</span>
-      </div>
+        <span class="draft-trades-actions">
+          <span class="draft-trades-count">${trades.length}</span>
+          <span class="draft-trades-chevron">⌄</span>
+        </span>
+      </button>
 
       <div class="draft-trades-list">
         ${trades.map(renderDraftTradeCard).join("")}
       </div>
     </div>
   `;
+
+  const toggle = container.querySelector(".draft-trades-toggle");
+  const panel = container.querySelector(".draft-trades-panel");
+
+  toggle?.addEventListener("click", () => {
+    const isOpen = panel.classList.toggle("is-open");
+    toggle.setAttribute("aria-expanded", String(isOpen));
+  });
 }
 
 function renderDraftTradeCard(trade) {
