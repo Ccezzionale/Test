@@ -120,55 +120,64 @@
             <span>Citazione evidenziata</span>
             <textarea id="pullQuote" rows="3" placeholder="Se lasci vuoto, la home prova a estrarla automaticamente dal testo."></textarea>
           </label>
+<div class="section-divider">Pagelle degli Eroi</div>
 
-          <div class="section-divider">Pagelle degli Eroi</div>
+<div class="ratings-admin-grid">
+  <article class="mini-editor-card">
+    <h3>Pagella 1</h3>
+    <select id="rating1Team" class="team-select">
+      <option value="">Scegli squadra</option>
+    </select>
+    <input id="rating1Vote" type="text" placeholder="Voto, es. 9.0" />
+    <input id="rating1Label" type="text" placeholder="Titolo, es. Imperatore" />
+    <textarea id="rating1Text" rows="3" placeholder="Commento breve"></textarea>
+    <input id="rating1IconUrl" type="hidden" />
+  </article>
 
-          <div class="ratings-admin-grid">
-            <article class="mini-editor-card">
-              <h3>Pagella 1</h3>
-              <input id="rating1Team" type="text" placeholder="Squadra" />
-              <input id="rating1Vote" type="text" placeholder="Voto, es. 9.0" />
-              <input id="rating1Label" type="text" placeholder="Titolo, es. Imperatore" />
-              <textarea id="rating1Text" rows="3" placeholder="Commento breve"></textarea>
-              <input id="rating1IconUrl" type="text" placeholder="Logo opzionale" />
-            </article>
+  <article class="mini-editor-card">
+    <h3>Pagella 2</h3>
+    <select id="rating2Team" class="team-select">
+      <option value="">Scegli squadra</option>
+    </select>
+    <input id="rating2Vote" type="text" placeholder="Voto" />
+    <input id="rating2Label" type="text" placeholder="Titolo" />
+    <textarea id="rating2Text" rows="3" placeholder="Commento breve"></textarea>
+    <input id="rating2IconUrl" type="hidden" />
+  </article>
 
-            <article class="mini-editor-card">
-              <h3>Pagella 2</h3>
-              <input id="rating2Team" type="text" placeholder="Squadra" />
-              <input id="rating2Vote" type="text" placeholder="Voto" />
-              <input id="rating2Label" type="text" placeholder="Titolo" />
-              <textarea id="rating2Text" rows="3" placeholder="Commento breve"></textarea>
-              <input id="rating2IconUrl" type="text" placeholder="Logo opzionale" />
-            </article>
+  <article class="mini-editor-card">
+    <h3>Pagella 3</h3>
+    <select id="rating3Team" class="team-select">
+      <option value="">Scegli squadra</option>
+    </select>
+    <input id="rating3Vote" type="text" placeholder="Voto" />
+    <input id="rating3Label" type="text" placeholder="Titolo" />
+    <textarea id="rating3Text" rows="3" placeholder="Commento breve"></textarea>
+    <input id="rating3IconUrl" type="hidden" />
+  </article>
 
-            <article class="mini-editor-card">
-              <h3>Pagella 3</h3>
-              <input id="rating3Team" type="text" placeholder="Squadra" />
-              <input id="rating3Vote" type="text" placeholder="Voto" />
-              <input id="rating3Label" type="text" placeholder="Titolo" />
-              <textarea id="rating3Text" rows="3" placeholder="Commento breve"></textarea>
-              <input id="rating3IconUrl" type="text" placeholder="Logo opzionale" />
-            </article>
+  <article class="mini-editor-card">
+    <h3>Pagella 4</h3>
+    <select id="rating4Team" class="team-select">
+      <option value="">Scegli squadra</option>
+    </select>
+    <input id="rating4Vote" type="text" placeholder="Voto" />
+    <input id="rating4Label" type="text" placeholder="Titolo" />
+    <textarea id="rating4Text" rows="3" placeholder="Commento breve"></textarea>
+    <input id="rating4IconUrl" type="hidden" />
+  </article>
 
-            <article class="mini-editor-card">
-              <h3>Pagella 4</h3>
-              <input id="rating4Team" type="text" placeholder="Squadra" />
-              <input id="rating4Vote" type="text" placeholder="Voto" />
-              <input id="rating4Label" type="text" placeholder="Titolo" />
-              <textarea id="rating4Text" rows="3" placeholder="Commento breve"></textarea>
-              <input id="rating4IconUrl" type="text" placeholder="Logo opzionale" />
-            </article>
-
-            <article class="mini-editor-card">
-              <h3>Pagella 5</h3>
-              <input id="rating5Team" type="text" placeholder="Squadra" />
-              <input id="rating5Vote" type="text" placeholder="Voto" />
-              <input id="rating5Label" type="text" placeholder="Titolo" />
-              <textarea id="rating5Text" rows="3" placeholder="Commento breve"></textarea>
-              <input id="rating5IconUrl" type="text" placeholder="Logo opzionale" />
-            </article>
-          </div>
+  <article class="mini-editor-card">
+    <h3>Pagella 5</h3>
+    <select id="rating5Team" class="team-select">
+      <option value="">Scegli squadra</option>
+    </select>
+    <input id="rating5Vote" type="text" placeholder="Voto" />
+    <input id="rating5Label" type="text" placeholder="Titolo" />
+    <textarea id="rating5Text" rows="3" placeholder="Commento breve"></textarea>
+    <input id="rating5IconUrl" type="hidden" />
+  </article>
+</div>
 
           <div class="section-divider">Top & Flop</div>
 
@@ -227,14 +236,18 @@
 
           <div class="form-row quad-row">
             <label>
-              <span>Squadra A</span>
-              <input id="nextTeamA" type="text" placeholder="Real Mimmo" />
-            </label>
+  <span>Squadra A</span>
+  <select id="nextTeamA" class="team-select">
+    <option value="">Scegli squadra</option>
+  </select>
+</label>
 
-            <label>
-              <span>Squadra B</span>
-              <input id="nextTeamB" type="text" placeholder="Team Bartowski" />
-            </label>
+<label>
+  <span>Squadra B</span>
+  <select id="nextTeamB" class="team-select">
+    <option value="">Scegli squadra</option>
+  </select>
+</label>
 
             <label>
               <span>Data evento</span>
