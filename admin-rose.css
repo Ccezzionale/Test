@@ -371,11 +371,19 @@ body {
     grid-template-columns: 1fr;
   }
 
-  .search-card,
-  .create-card {
+  .search-card {
     position: static;
     grid-column: auto;
-    max-height: none;
+    max-height: 560px;
+  }
+
+  .players-list {
+    max-height: 330px;
+    overflow-y: auto;
+  }
+
+  .create-card {
+    display: none;
   }
 }
 
@@ -403,5 +411,33 @@ body {
   .danger-btn,
   .secondary-btn {
     width: 100%;
+  }
+
+    .search-card {
+    max-height: 500px;
+    padding: 16px;
+  }
+
+  .players-list {
+    max-height: 300px;
+  }
+
+  .player-row {
+    padding: 9px 10px;
+    border-radius: 14px;
+  }
+
+  .player-main strong {
+    font-size: .92rem;
+  }
+
+  .player-main small {
+    font-size: .76rem;
+    line-height: 1.25;
+  }
+
+  .badge-count {
+    font-size: .7rem;
+    padding: 5px 8px;
   }
 }
