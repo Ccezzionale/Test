@@ -930,26 +930,27 @@ button:hover{ transform:translateY(-1px); background:var(--navy-2); }
 
 @media (max-width: 768px){
 
-  .gazette-toolbar{
-    border-top: none !important;
-    border-bottom: none !important;
-  }
-
-  .front-hero,
-  .editorial-wide,
-  .lower-grid,
-  .next-section,
-  .paper-foot{
-    border-top: none !important;
-  }
-
-  .gazette-paper > section{
-    border-top: none !important;
-  }
-}
-
-@media (max-width: 768px){
+  .gazette-masthead,
+  .masthead-title-row,
+  .gazette-toolbar,
+  .gazette-paper,
   .front-hero{
-    border-top: none !important;
+    border-top: 0 !important;
+    border-bottom: 0 !important;
+    box-shadow: none !important;
+  }
+
+  .gazette-masthead::before,
+  .gazette-masthead::after,
+  .gazette-toolbar::before,
+  .gazette-toolbar::after,
+  .front-hero::before,
+  .front-hero::after{
+    display: none !important;
+    content: none !important;
+  }
+
+  .gazette-toolbar{
+    margin-bottom: 18px !important;
   }
 }
