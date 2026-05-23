@@ -1190,106 +1190,106 @@ nav.site-nav{
 }
 
 /* =========================================================
-   MOBILE HAMBURGER PANEL REFINEMENT
+   MOBILE HAMBURGER MENU - CLEAN VERSION
    ========================================================= */
 
 @media (max-width: 900px){
 
+  nav.site-nav #mainMenu.navbar{
+    position: fixed;
+    top: 82px;
+    left: 12px;
+    right: 12px;
+    width: auto;
+    max-height: calc(100vh - 110px);
+    overflow-y: auto;
+    z-index: 1200;
+
+    padding: 12px;
+    border-radius: 22px;
+
+    background: #062b52;
+    border: 1px solid rgba(255,255,255,.10);
+    box-shadow: 0 22px 50px rgba(0,20,45,.36);
+
+    gap: 7px;
+  }
+
   nav.site-nav #mainMenu.navbar::before{
-    content: "LEGA DEGLI EROI";
+    content: "Menu";
     display: block;
-    padding: 10px 12px 12px;
-    margin-bottom: 6px;
+    padding: 8px 10px 12px;
+    margin-bottom: 4px;
+
     color: #ffdf7e;
-    font-size: .76rem;
+    font-size: .8rem;
     font-weight: 1000;
-    letter-spacing: .16em;
+    letter-spacing: .12em;
     text-transform: uppercase;
+
     border-bottom: 1px solid rgba(255,255,255,.10);
   }
 
-  nav.site-nav #mainMenu.navbar{
-    gap: 8px;
-  }
-
   nav.site-nav #mainMenu.navbar > li > a{
-    position: relative;
-    overflow: hidden;
-    min-height: 52px;
-    padding: 14px 15px;
-    border-radius: 17px;
-    background:
-      linear-gradient(135deg, rgba(255,255,255,.085), rgba(255,255,255,.035));
-    border: 1px solid rgba(255,255,255,.09);
-    box-shadow: inset 0 1px 0 rgba(255,255,255,.05);
+    min-height: 48px;
+    padding: 12px 14px;
+
+    border-radius: 15px;
+    background: rgba(255,255,255,.06);
+    border: 1px solid rgba(255,255,255,.08);
+
+    color: #fff;
+    font-size: .96rem;
+    font-weight: 900;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
   }
 
   nav.site-nav #mainMenu.navbar > li > a:hover,
   nav.site-nav #mainMenu.navbar > li > a:active{
-    background:
-      linear-gradient(135deg, rgba(255,204,0,.18), rgba(255,255,255,.05));
+    background: rgba(255,204,0,.14);
     color: #ffdf7e;
   }
 
   nav.site-nav #mainMenu.navbar > li > a::before{
-    width: 32px;
-    height: 32px;
-    border-radius: 13px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    margin-right: 10px;
-    background: rgba(255,255,255,.08);
-    flex-shrink: 0;
-    font-size: 1rem;
-  }
-
-  nav.site-nav #nav-rose-normal > a::before,
-  nav.site-nav #nav-rose-admin > a::before{
-    content: "👥";
-  }
-
-  nav.site-nav #mainMenu.navbar > li:nth-child(2) > a::before{
-    content: "🎯";
-  }
-
-  nav.site-nav #mainMenu.navbar > li.competizioni > a::before{
-    content: "🏆";
-  }
-
-  nav.site-nav #mainMenu.navbar > li > a[href="waiver.html"]::before{
-    content: "🔁";
-  }
-
-  nav.site-nav #mainMenu.navbar > li > a[href="regolamento.html"]::before{
-    content: "📘";
-  }
-
-  nav.site-nav #mainMenu.navbar > li.dropdown:not(.competizioni):last-of-type > a::before{
-    content: "🏛️";
+    display: none !important;
+    content: none !important;
   }
 
   nav.site-nav .submenu{
-    gap: 6px;
-    background:
-      linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.025));
+    margin-top: 7px;
+    padding: 7px;
+    border-radius: 15px;
+    background: rgba(255,255,255,.04);
+    border: 1px solid rgba(255,255,255,.06);
+    gap: 5px;
   }
 
   nav.site-nav .submenu a{
+    min-height: 42px;
+    padding: 10px 11px;
+    border-radius: 12px;
     background: rgba(255,255,255,.04);
-    border: 1px solid rgba(255,255,255,.055);
+    border: 1px solid rgba(255,255,255,.05);
+
+    color: rgba(255,255,255,.92);
+    font-size: .9rem;
+    font-weight: 800;
   }
 
   nav.site-nav .submenu a:hover,
   nav.site-nav .submenu a:active{
     background: rgba(255,204,0,.12);
+    color: #ffdf7e;
   }
 
   nav.site-nav .submenu .menu-icon{
-    width: 28px;
-    height: 28px;
+    width: 26px;
+    height: 26px;
     padding: 3px;
-    border-radius: 11px;
+    border-radius: 10px;
     background: rgba(255,255,255,.08);
   }
 }
