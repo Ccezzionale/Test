@@ -545,6 +545,7 @@ function renderHeader() {
   els.selectedCountInfo.textContent = `${selected} / ${TOTAL_PLAYERS}`;
   els.currentPickBig.textContent = String(state.currentPick);
   els.currentConferenceBig.textContent = currentConference;
+  els.currentConferenceBig.dataset.conf = currentConference;
 
   els.openPickModalBtn.disabled = !state.isOpen || selected >= TOTAL_PLAYERS;
   els.openPickModalBtn.textContent = selected >= TOTAL_PLAYERS ? "Draft completato" : "Effettua chiamata";
