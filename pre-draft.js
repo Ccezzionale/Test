@@ -643,7 +643,6 @@ function isEligibleRFA(player) {
 function formatPlayerOption(player, type = null) {
   const role = player.role || player.role_mantra || "-";
   const team = player.serie_a_team || "-";
-  const quotation = player.quotation ?? "-";
 
   const badges = [];
 
@@ -657,7 +656,7 @@ function formatPlayerOption(player, type = null) {
 
   const badgeText = badges.length ? ` · ${badges.join(" · ")}` : "";
 
-  return `${player.name} · ${role} · ${team} · Q ${quotation}${badgeText}`;
+  return `${player.name} · ${role} · ${team}${badgeText}`;
 }
 
 function renderCurrentSelections() {
@@ -898,28 +897,26 @@ function renderRoster() {
         `
         : `
           <table>
-            <thead>
-              <tr>
-                <th>Ruolo</th>
-                <th>Nome</th>
-                <th>Squadra</th>
-                <th>Quotazione</th>
-                <th>Status</th>
-              </tr>
-            </thead>
-            <tbody>
-              ${filteredRoster.map(player => {
-                const type = selectionByPlayerId[player.id];
+<thead>
+  <tr>
+    <th>Ruolo</th>
+    <th>Nome</th>
+    <th>Squadra</th>
+    <th>Status</th>
+  </tr>
+</thead>
+<tbody>
+  ${filteredRoster.map(player => {
+    const type = selectionByPlayerId[player.id];
 
-                return `
-                  <tr>
-                    <td>${escapeHtml(player.role || player.role_mantra || "-")}</td>
-                    <td>
-                      <span class="roster-player-name">${escapeHtml(player.name || "-")}</span>
-                    </td>
-                    <td>${escapeHtml(player.serie_a_team || "-")}</td>
-                    <td>${escapeHtml(player.quotation ?? "-")}</td>
-                    <td>
+    return `
+      <tr>
+        <td>${escapeHtml(player.role || player.role_mantra || "-")}</td>
+        <td>
+          <span class="roster-player-name">${escapeHtml(player.name || "-")}</span>
+        </td>
+        <td>${escapeHtml(player.serie_a_team || "-")}</td>
+        <td>
                       ${player.is_fp ? `<span class="badge badge-fp">FP attuale</span>` : ""}
                       ${
                         player.is_u21 && type !== "U21_KEEPER"
@@ -1161,7 +1158,6 @@ async function loadAdminSummary() {
           <th>Giocatore</th>
           <th>Ruolo</th>
           <th>Serie A</th>
-          <th>Q</th>
         </tr>
       </thead>
       <tbody>
@@ -1173,7 +1169,6 @@ async function loadAdminSummary() {
             <td>${escapeHtml(row.players?.name || "-")}</td>
             <td>${escapeHtml(row.players?.role || row.players?.role_mantra || "-")}</td>
             <td>${escapeHtml(row.players?.serie_a_team || "-")}</td>
-            <td>${escapeHtml(row.players?.quotation ?? "-")}</td>
           </tr>
         `).join("")}
       </tbody>
