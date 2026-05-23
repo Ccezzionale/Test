@@ -1375,5 +1375,85 @@ body::before{
   #mainMenu .submenu a:hover{
     background: rgba(32,199,255,0.12) !important;
   }
+}
 
+/* =========================================================
+   DESKTOP CRASH OUT CUP - BRACKET PIÙ GRANDE
+   ========================================================= */
+
+@media (min-width: 1451px){
+
+  :root{
+    --slot: 82px;
+    --match-w: 168px;
+    --match-h: 76px;
+    --center-w: 340px;
+    --round-gap: 28px;
+  }
+
+  .bracket{
+    padding-top: 42px;
+    gap: 22px;
+  }
+
+  .match{
+    padding: 9px 10px;
+    border-radius: 14px;
+  }
+
+  .team{
+    min-height: 30px;
+    grid-template-columns: 24px 1fr 36px;
+    gap: 9px;
+  }
+
+  .conference.right .team{
+    grid-template-columns: 36px 1fr 24px;
+  }
+
+  .seed{
+    font-size: .82rem;
+  }
+
+  .logo-wrap{
+    width: 50px;
+    height: 50px;
+  }
+
+  .score-box{
+    width: 36px;
+    height: 32px;
+    border-radius: 9px;
+    font-size: 1.12rem;
+  }
+
+  #left-round-3 .match,
+  #right-round-3 .match{
+    width: 174px;
+  }
+
+  .round-final .match{
+    width: 168px;
+    min-height: 64px;
+  }
+
+  .match.one-team .team{
+    min-height: 40px;
+    grid-template-columns: 24px 1fr 36px;
+  }
+
+  .match.one-team .logo-wrap{
+    width: 50px;
+    height: 50px;
+  }
+
+  .trophy{
+    width: min(350px, 25vw);
+    height: min(350px, 25vw);
+  }
+
+  .trophy-glow{
+    width: min(430px, 30vw);
+    height: min(430px, 30vw);
+  }
 }
