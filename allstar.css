@@ -2548,1343 +2548,241 @@ body {
 
 
 /* =========================================================
-   FINAL RECOLOR - RED / BLUE
-   Conference League = red
+   SPORTS BROADCAST EDITION
+   Concept 2 - TV live / ESPN-TNT inspired dashboard
    Conference Championship = blue
-   Remove Italy / tricolore look
+   Conference League = red
    ========================================================= */
 
 :root {
-  --allstar-red: #d64040;
-  --allstar-red-soft: #fff2f2;
-  --allstar-blue: #2c7df0;
-  --allstar-blue-soft: #eef5ff;
-  --allstar-neutral-bg: #f4f7fb;
-  --allstar-neutral-card: rgba(255,255,255,.95);
-  --allstar-neutral-border: rgba(16,33,63,.08);
-  --allstar-text: #17345a;
-  --allstar-muted: #5f7392;
+  --sb-bg: #070b12;
+  --sb-panel: #111823;
+  --sb-panel-2: #151e2c;
+  --sb-card: #101722;
+  --sb-card-soft: #172131;
+  --sb-border: rgba(255,255,255,.08);
+  --sb-border-strong: rgba(255,255,255,.14);
+  --sb-text: #f4f7fb;
+  --sb-muted: #9daabe;
+
+  --sb-blue: #1168ff;
+  --sb-blue-2: #4fa0ff;
+  --sb-blue-soft: rgba(17,104,255,.15);
+
+  --sb-red: #e8203d;
+  --sb-red-2: #ff5b6d;
+  --sb-red-soft: rgba(232,32,61,.15);
+
+  --sb-gold: #ffbf3f;
+  --sb-green-live: #35d07f;
+
+  --sb-shadow: 0 18px 45px rgba(0,0,0,.34);
+  --sb-shadow-soft: 0 10px 24px rgba(0,0,0,.24);
+  --sb-radius: 18px;
+  --sb-radius-lg: 26px;
+}
+
+html,
+body {
+  background: var(--sb-bg) !important;
 }
 
 body {
   background:
-    radial-gradient(circle at top left, rgba(44,125,240,.10), transparent 22rem),
-    radial-gradient(circle at top right, rgba(214,64,64,.10), transparent 22rem),
-    linear-gradient(180deg, #fbfdff 0%, #f3f7fc 100%) !important;
+    radial-gradient(circle at 8% 0%, rgba(17,104,255,.18), transparent 24rem),
+    radial-gradient(circle at 92% 0%, rgba(232,32,61,.18), transparent 24rem),
+    linear-gradient(180deg, #070b12 0%, #0d131d 44%, #070b12 100%) !important;
+  color: var(--sb-text) !important;
 }
 
-/* Remove tricolore / italy ornaments */
-.tricolore-ribbon,
-.vote-form-card::before,
-.star-of-week-card::before {
-  display: none !important;
+.allstar-page {
+  position: relative;
 }
 
-.green-text { color: var(--allstar-blue) !important; text-shadow: none !important; }
-.red-text { color: var(--allstar-red) !important; text-shadow: none !important; }
-
-/* HERO */
-.allstar-hero {
+.allstar-page::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
   background:
-    radial-gradient(circle at top left, rgba(44,125,240,.08), transparent 18rem),
-    radial-gradient(circle at top right, rgba(214,64,64,.08), transparent 18rem),
-    linear-gradient(180deg, #ffffff 0%, #f6f9fd 100%) !important;
+    linear-gradient(90deg, rgba(17,104,255,.08), transparent 22%, transparent 78%, rgba(232,32,61,.08)),
+    repeating-linear-gradient(0deg, rgba(255,255,255,.018) 0 1px, transparent 1px 4px);
+  opacity: .8;
 }
 
-.hero-glow-left {
-  background: radial-gradient(circle, rgba(44,125,240,.12), transparent 65%) !important;
+/* ---------- Base text ---------- */
+h1, h2, h3, h4, strong {
+  color: var(--sb-text) !important;
 }
 
-.hero-glow-right {
-  background: radial-gradient(circle, rgba(214,64,64,.12), transparent 65%) !important;
-}
-
-.hero-badge {
-  background: rgba(44,125,240,.08) !important;
-  border-color: rgba(44,125,240,.18) !important;
-  color: var(--allstar-blue) !important;
-}
-
-.badge-pulse {
-  background: var(--allstar-blue) !important;
-  box-shadow: 0 0 0 6px rgba(44,125,240,.12) !important;
-}
-
-.hero-festa-note {
-  color: var(--allstar-text) !important;
-}
-
-/* Generic cards */
-.info-card,
-.vote-card,
-.race-section,
-.team-panel,
-.clock-panel,
-.pool-section,
-.admin-panel {
-  background: var(--allstar-neutral-card) !important;
-  border-color: var(--allstar-neutral-border) !important;
-}
-
-.info-card strong,
-.section-head h3,
-.ranking-card h4,
-.auto-pick-card h4,
-.wide-auto-pick h4,
-.team-header h3 {
-  color: var(--allstar-text) !important;
-}
-
-.info-card small,
+p, small,
 .section-head p,
+.info-card small,
 .ranking-subtitle,
 .team-header p,
 .team-header span,
-.player-mini span,
-.auto-pick-row small,
-.week-stars-split p,
-.ranking-player small,
 .vote-slot small,
-.vote-form-card .section-head p {
-  color: var(--allstar-muted) !important;
+.week-stars-split p,
+.player-mini span,
+.ranking-player small,
+.auto-pick-row small {
+  color: var(--sb-muted) !important;
 }
 
-/* Mobile tab bar */
-@media (max-width: 768px) {
-  .mobile-allstar-tabs {
-    background: rgba(255,255,255,.92) !important;
-    border-color: rgba(16,33,63,.08) !important;
-    box-shadow: 0 14px 28px rgba(18,45,86,.10) !important;
-    backdrop-filter: blur(14px);
-  }
-
-  .mobile-tab-btn {
-    background: #f7f9fc !important;
-    color: var(--allstar-text) !important;
-  }
-
-  .mobile-tab-btn.is-active {
-    background: linear-gradient(90deg, var(--allstar-blue), var(--allstar-red)) !important;
-    color: #fff !important;
-    text-shadow: none !important;
-  }
+/* ---------- Navbar compatibility ---------- */
+.site-nav {
+  background: rgba(7,11,18,.92) !important;
+  border-bottom: 1px solid var(--sb-border) !important;
+  backdrop-filter: blur(14px);
 }
 
-/* Vote card + stars of week */
-.vote-form-card,
-.star-of-week-card {
-  background: linear-gradient(180deg, #ffffff 0%, #f7faff 100%) !important;
-}
-
-.vote-week-pill {
-  background: linear-gradient(90deg, var(--allstar-blue), var(--allstar-red)) !important;
-  color: #fff !important;
-}
-
-.vote-conference-select {
-  background: #f7faff !important;
-  border-color: rgba(16,33,63,.08) !important;
-}
-
-.vote-submit-btn,
-.primary-call-btn {
-  background: linear-gradient(90deg, var(--allstar-blue), var(--allstar-red)) !important;
-  color: #fff !important;
-  text-shadow: none !important;
-}
-
-.vote-submit-btn:hover,
-.primary-call-btn:hover {
-  filter: brightness(1.04);
-}
-
-.week-stars-split > div:first-child {
-  background: linear-gradient(180deg, #f0f6ff, #ebf3ff) !important;
-  border-color: rgba(44,125,240,.14) !important;
-}
-
-.week-stars-split > div:last-child {
-  background: linear-gradient(180deg, #fff3f3, #ffefef) !important;
-  border-color: rgba(214,64,64,.14) !important;
-}
-
-.week-stars-split > div:first-child small,
-.week-stars-split > div:first-child h3 {
-  color: var(--allstar-blue) !important;
-}
-
-.week-stars-split > div:last-child small,
-.week-stars-split > div:last-child h3 {
-  color: var(--allstar-red) !important;
-}
-
-/* Rankings */
-.ranking-card.ranking-championship {
-  background:
-    radial-gradient(circle at top left, rgba(44,125,240,.10), transparent 14rem),
-    linear-gradient(180deg, #f6faff 0%, #eef5ff 100%) !important;
-  border-color: rgba(44,125,240,.16) !important;
-}
-
-.ranking-card.ranking-league {
-  background:
-    radial-gradient(circle at top right, rgba(214,64,64,.10), transparent 14rem),
-    linear-gradient(180deg, #fff7f7 0%, #fff0f0 100%) !important;
-  border-color: rgba(214,64,64,.16) !important;
-}
-
-.ranking-card.ranking-championship h4,
-.ranking-card.ranking-championship .ranking-subtitle,
-.ranking-card.ranking-championship .ranking-pos,
-.ranking-card.ranking-championship .auto-badge {
-  color: var(--allstar-blue) !important;
-}
-
-.ranking-card.ranking-championship .ranking-pos {
-  background: rgba(44,125,240,.12) !important;
-}
-
-.ranking-card.ranking-championship .auto-badge {
-  background: rgba(44,125,240,.12) !important;
-}
-
-.ranking-card.ranking-league h4,
-.ranking-card.ranking-league .ranking-subtitle,
-.ranking-card.ranking-league .ranking-pos,
-.ranking-card.ranking-league .auto-badge {
-  color: var(--allstar-red) !important;
-}
-
-.ranking-card.ranking-league .ranking-pos {
-  background: rgba(214,64,64,.12) !important;
-}
-
-.ranking-card.ranking-league .auto-badge {
-  background: rgba(214,64,64,.12) !important;
-}
-
-.wide-auto-pick {
-  background: linear-gradient(180deg, #ffffff 0%, #f7faff 100%) !important;
-}
-
-.auto-pick-row.championship {
-  background: linear-gradient(180deg, #f6faff, #eef5ff) !important;
-  border-color: rgba(44,125,240,.10) !important;
-}
-
-.auto-pick-row.league {
-  background: linear-gradient(180deg, #fff7f7, #fff0f0) !important;
-  border-color: rgba(214,64,64,.10) !important;
-}
-
-.auto-pick-row.championship .pick-number-pill {
-  background: linear-gradient(135deg, #6daaff, var(--allstar-blue)) !important;
-  color: #fff !important;
-}
-
-.auto-pick-row.league .pick-number-pill {
-  background: linear-gradient(135deg, #ef7b7b, var(--allstar-red)) !important;
-  color: #fff !important;
-}
-
-.auto-pick-row.championship strong { color: var(--allstar-blue) !important; }
-.auto-pick-row.league strong { color: var(--allstar-red) !important; }
-
-/* Draft area */
-.italian-draft-arena::before {
-  display: none !important;
-}
-
-.team-championship {
-  background:
-    radial-gradient(circle at top left, rgba(44,125,240,.10), transparent 16rem),
-    linear-gradient(180deg, #f6faff 0%, #eef5ff 100%) !important;
-  border-color: rgba(44,125,240,.18) !important;
-}
-
-.team-league {
-  background:
-    radial-gradient(circle at top right, rgba(214,64,64,.10), transparent 16rem),
-    linear-gradient(180deg, #fff7f7 0%, #fff0f0 100%) !important;
-  border-color: rgba(214,64,64,.18) !important;
-}
-
-.team-championship .team-header {
-  border-bottom-color: rgba(44,125,240,.14) !important;
-}
-
-.team-league .team-header {
-  border-bottom-color: rgba(214,64,64,.14) !important;
-}
-
-.team-championship .team-header h3,
-.team-championship .team-header span,
-.team-championship .role-badge {
-  color: var(--allstar-blue) !important;
-}
-
-.team-league .team-header h3,
-.team-league .team-header span,
-.team-league .role-badge {
-  color: var(--allstar-red) !important;
-}
-
-.crest-gold {
-  background: linear-gradient(135deg, #79b0ff, var(--allstar-blue)) !important;
-  color: #fff !important;
-  box-shadow: 0 0 24px rgba(44,125,240,.18) !important;
-}
-
-.crest-blue {
-  background: linear-gradient(135deg, #ef7b7b, var(--allstar-red)) !important;
-  color: #fff !important;
-  box-shadow: 0 0 24px rgba(214,64,64,.18) !important;
-}
-
-.team-championship .role-badge {
-  background: rgba(44,125,240,.10) !important;
-  border-color: rgba(44,125,240,.14) !important;
-}
-
-.team-league .role-badge {
-  background: rgba(214,64,64,.10) !important;
-  border-color: rgba(214,64,64,.14) !important;
-}
-
-.italian-clock-panel,
-.clock-panel {
-  background:
-    radial-gradient(circle at top left, rgba(44,125,240,.06), transparent 16rem),
-    radial-gradient(circle at top right, rgba(214,64,64,.06), transparent 16rem),
-    linear-gradient(180deg, #ffffff 0%, #f7faff 100%) !important;
-  border-color: rgba(16,33,63,.08) !important;
-}
-
-.italian-clock-panel::before,
-.clock-panel::before {
-  background:
-    radial-gradient(circle at 20% 18%, rgba(44,125,240,.08), transparent 10rem),
-    radial-gradient(circle at 80% 18%, rgba(214,64,64,.08), transparent 10rem) !important;
-}
-
-#currentConferenceBig[data-conf="Conference Championship"] {
-  background: linear-gradient(90deg, #79b0ff, var(--allstar-blue)) !important;
-  color: #fff !important;
-}
-
-#currentConferenceBig[data-conf="Conference League"] {
-  background: linear-gradient(90deg, #ef7b7b, var(--allstar-red)) !important;
-  color: #fff !important;
-}
-
-.last-picks {
-  background: rgba(255,255,255,.82) !important;
-}
-
-/* Pool / admin / generic buttons */
-.ghost-btn {
-  background: #ffffff !important;
-  color: var(--allstar-text) !important;
-}
-
-.pick-btn {
-  background: linear-gradient(90deg, var(--allstar-blue), var(--allstar-red)) !important;
-  color: #fff !important;
-}
-
-.admin-toggle {
-  background: linear-gradient(180deg, #ffffff 0%, #f7faff 100%) !important;
-  color: var(--allstar-text) !important;
-}
-
-.admin-btn.green {
-  background: linear-gradient(135deg, #79b0ff, var(--allstar-blue)) !important;
-  color: #fff !important;
-}
-
-.admin-btn.blue {
-  background: linear-gradient(135deg, #79b0ff, var(--allstar-blue)) !important;
-  color: #fff !important;
-}
-
-.admin-btn.red {
-  background: linear-gradient(135deg, #ef7b7b, var(--allstar-red)) !important;
-  color: #fff !important;
-}
-
-.admin-btn.gold {
-  background: linear-gradient(135deg, #79b0ff, var(--allstar-red)) !important;
-  color: #fff !important;
-}
-
-/* Empty states neutral */
-.ranking-empty {
-  background: #ffffff !important;
-}
-
-/* Extra mobile cleanup */
-@media (max-width: 768px) {
-  body {
-    background:
-      radial-gradient(circle at top left, rgba(44,125,240,.10), transparent 14rem),
-      radial-gradient(circle at top right, rgba(214,64,64,.10), transparent 14rem),
-      linear-gradient(180deg, #fbfdff 0%, #f3f7fc 100%) !important;
-  }
-
-  .allstar-hero,
-  .vote-form-card,
-  .star-of-week-card,
-  .wide-auto-pick,
-  .ranking-card,
-  .team-panel,
-  .clock-panel,
-  .pool-section,
-  .admin-panel {
-    box-shadow: 0 12px 24px rgba(18,45,86,.08) !important;
-  }
-
-  .mobile-tab-btn.is-active {
-    background: linear-gradient(90deg, var(--allstar-blue), var(--allstar-red)) !important;
-    color: #fff !important;
-  }
-}
-
-
-/* =========================================================
-   MODERN SPLIT EDITION
-   Cleaner premium sports-dashboard look
-   Championship = blue | League = red
-   ========================================================= */
-
-:root {
-  --ms-bg: #f4f7fb;
-  --ms-surface: #ffffff;
-  --ms-border: rgba(16, 33, 63, 0.08);
-  --ms-text: #112544;
-  --ms-muted: #6b7b95;
-
-  --ms-blue: #2563eb;
-  --ms-blue-soft: #edf3ff;
-  --ms-blue-line: rgba(37, 99, 235, 0.22);
-
-  --ms-red: #e5484d;
-  --ms-red-soft: #fff1f2;
-  --ms-red-line: rgba(229, 72, 77, 0.22);
-
-  --ms-shadow: 0 12px 28px rgba(17, 37, 68, 0.07);
-  --ms-shadow-soft: 0 8px 18px rgba(17, 37, 68, 0.05);
-  --ms-radius: 22px;
-  --ms-radius-sm: 16px;
-}
-
-html, body {
-  background: var(--ms-bg) !important;
-}
-
-body {
-  background:
-    radial-gradient(circle at 15% 0%, rgba(37,99,235,.07), transparent 18rem),
-    radial-gradient(circle at 85% 0%, rgba(229,72,77,.07), transparent 18rem),
-    linear-gradient(180deg, #f7f9fc 0%, #f2f6fb 100%) !important;
-  color: var(--ms-text);
-}
-
+/* ---------- Hero ---------- */
 .tricolore-ribbon,
 .hero-star {
   display: none !important;
 }
 
-/* ---------- HERO ---------- */
 .allstar-hero {
   position: relative;
   overflow: hidden;
-  background: var(--ms-surface) !important;
-  border: 1px solid var(--ms-border);
-  border-radius: 28px;
-  box-shadow: var(--ms-shadow);
-  padding-bottom: 40px !important;
+  background:
+    linear-gradient(90deg, rgba(17,104,255,.22) 0%, rgba(7,11,18,.92) 34%, rgba(7,11,18,.92) 66%, rgba(232,32,61,.22) 100%),
+    radial-gradient(circle at center top, rgba(255,255,255,.06), transparent 22rem),
+    linear-gradient(180deg, #101827 0%, #080d16 100%) !important;
+  border: 1px solid var(--sb-border-strong) !important;
+  border-radius: 24px !important;
+  box-shadow: var(--sb-shadow) !important;
 }
 
 .allstar-hero::before {
   content: "";
   position: absolute;
   inset: 0 0 auto 0;
-  height: 6px;
-  background: linear-gradient(90deg, var(--ms-blue) 0 50%, var(--ms-red) 50% 100%);
+  height: 5px;
+  background: linear-gradient(90deg, var(--sb-blue) 0 50%, var(--sb-red) 50% 100%);
+}
+
+.allstar-hero::after {
+  content: "LIVE BROADCAST";
+  position: absolute;
+  right: 28px;
+  bottom: 22px;
+  color: rgba(255,255,255,.05);
+  font-size: clamp(28px, 5vw, 74px);
+  font-weight: 950;
+  letter-spacing: .08em;
+  pointer-events: none;
 }
 
 .hero-glow-left {
-  background: radial-gradient(circle, rgba(37,99,235,.10), transparent 65%) !important;
-  filter: blur(8px);
+  background: radial-gradient(circle, rgba(17,104,255,.24), transparent 65%) !important;
+  filter: blur(12px);
 }
 
 .hero-glow-right {
-  background: radial-gradient(circle, rgba(229,72,77,.10), transparent 65%) !important;
-  filter: blur(8px);
+  background: radial-gradient(circle, rgba(232,32,61,.24), transparent 65%) !important;
+  filter: blur(12px);
 }
 
 .hero-meta span {
-  background: rgba(255,255,255,.88) !important;
-  border: 1px solid var(--ms-border) !important;
-  box-shadow: var(--ms-shadow-soft);
-  color: var(--ms-text) !important;
+  background: rgba(255,255,255,.06) !important;
+  border: 1px solid var(--sb-border) !important;
+  color: var(--sb-text) !important;
+  box-shadow: none !important;
 }
 
 .hero-title-box h1 {
-  letter-spacing: 0.02em;
-  color: var(--ms-text) !important;
+  color: #fff !important;
+  text-transform: uppercase;
+  font-weight: 950;
+  letter-spacing: .025em;
+  text-shadow: 0 10px 24px rgba(0,0,0,.35);
 }
 
 .hero-title-box h2 {
   display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
   align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
   gap: 12px;
   margin-top: 12px;
 }
 
 .green-text,
 .red-text {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 48px;
-  padding: 0 18px;
-  border-radius: 999px;
-  font-size: clamp(16px, 2.2vw, 22px);
-  font-weight: 900;
-  letter-spacing: .02em;
-  line-height: 1;
-  text-shadow: none !important;
-  border: 1px solid transparent;
-  box-shadow: var(--ms-shadow-soft);
+  min-height: 46px;
+  padding: 0 20px;
+  border-radius: 10px;
+  font-weight: 950;
+  letter-spacing: .045em;
+  text-transform: uppercase;
+  color: #fff !important;
+  border: 1px solid var(--sb-border);
+  box-shadow: var(--sb-shadow-soft);
+  transform: skew(-7deg);
 }
 
 .green-text {
-  color: var(--ms-blue) !important;
-  background: var(--ms-blue-soft) !important;
-  border-color: var(--ms-blue-line) !important;
+  background: linear-gradient(135deg, #0d47ad, var(--sb-blue)) !important;
+  border-color: rgba(79,160,255,.28) !important;
 }
 
 .red-text {
-  color: var(--ms-red) !important;
-  background: var(--ms-red-soft) !important;
-  border-color: var(--ms-red-line) !important;
+  background: linear-gradient(135deg, #9d1124, var(--sb-red)) !important;
+  border-color: rgba(255,91,109,.28) !important;
+}
+
+.green-text::first-line,
+.red-text::first-line {
+  transform: skew(7deg);
 }
 
 .versus {
-  color: var(--ms-muted) !important;
-  font-weight: 900;
-  font-size: clamp(18px, 2vw, 26px);
+  color: #fff !important;
+  font-weight: 950;
+  letter-spacing: .08em;
+  padding: 0 4px;
 }
 
-.hero-title-box p,
+.hero-title-box p {
+  color: #dbe4f3 !important;
+}
+
 .hero-festa-note {
-  color: var(--ms-muted) !important;
+  color: var(--sb-gold) !important;
+  letter-spacing: .12em;
+  font-weight: 950;
 }
 
 .hero-badge {
-  background: #fff !important;
-  color: var(--ms-text) !important;
-  border-color: var(--ms-border) !important;
-  box-shadow: var(--ms-shadow-soft);
+  background: rgba(255,255,255,.06) !important;
+  border: 1px solid var(--sb-border) !important;
+  color: #fff !important;
+  box-shadow: none !important;
 }
 
 .badge-pulse {
-  background: var(--ms-blue) !important;
-  box-shadow: 0 0 0 6px rgba(37,99,235,.12) !important;
+  background: var(--sb-green-live) !important;
+  box-shadow: 0 0 0 6px rgba(53,208,127,.13) !important;
 }
 
-/* ---------- GENERIC SURFACES ---------- */
+/* ---------- Cards ---------- */
 .info-card,
 .vote-card,
-.race-section,
+.ranking-card,
+.wide-auto-pick,
 .team-panel,
 .clock-panel,
 .pool-section,
 .admin-panel,
-.ranking-card,
-.auto-pick-card,
-.wide-auto-pick {
-  background: var(--ms-surface) !important;
-  border: 1px solid var(--ms-border) !important;
-  border-radius: var(--ms-radius) !important;
-  box-shadow: var(--ms-shadow-soft) !important;
-}
-
-.section-head h3,
-.ranking-card h4,
-.auto-pick-card h4,
-.team-header h3,
-.info-card strong,
-.vote-form-card .section-head h3,
-.star-card-kicker {
-  color: var(--ms-text) !important;
-}
-
-.section-head p,
-.ranking-subtitle,
-.info-card small,
-.team-header p,
-.team-header span,
-.vote-form-card .section-head p,
-.vote-slot small,
-.week-stars-split p,
-.player-mini span {
-  color: var(--ms-muted) !important;
-}
-
-.section-head.compact {
-  gap: 10px;
-}
-
-/* ---------- STRIP CARDS ---------- */
-.info-card {
-  position: relative;
-  overflow: hidden;
-}
-.info-card::before {
-  content: "";
-  position: absolute;
-  inset: 0 auto 0 0;
-  width: 4px;
-  background: linear-gradient(180deg, var(--ms-blue), var(--ms-red));
-  border-radius: 999px;
-}
-.info-card {
-  padding-left: 18px !important;
-}
-
-/* ---------- MOBILE TABS ---------- */
-.mobile-allstar-tabs {
-  background: rgba(255,255,255,.92) !important;
-  border: 1px solid var(--ms-border) !important;
-  box-shadow: var(--ms-shadow-soft) !important;
-}
-
-.mobile-tab-btn {
-  background: transparent !important;
-  color: var(--ms-muted) !important;
-  border: 0 !important;
-  border-radius: 12px !important;
-  position: relative;
-}
-
-.mobile-tab-btn.is-active {
-  background: #fff !important;
-  color: var(--ms-text) !important;
-  box-shadow: inset 0 -3px 0 0 var(--ms-blue), var(--ms-shadow-soft) !important;
-  text-shadow: none !important;
-}
-
-.mobile-tab-btn.is-active::after {
-  content: "";
-  position: absolute;
-  left: 16%;
-  right: 16%;
-  bottom: 6px;
-  height: 3px;
-  border-radius: 999px;
-  background: linear-gradient(90deg, var(--ms-blue), var(--ms-red));
-}
-
-/* ---------- VOTE ---------- */
-.vote-form-card,
-.star-of-week-card {
-  position: relative;
-  overflow: hidden;
-  background: #fff !important;
-}
-
-.vote-form-card::before,
-.star-of-week-card::before {
-  content: "";
-  position: absolute;
-  inset: 0 0 auto 0;
-  height: 4px;
-  display: block !important;
-  background: linear-gradient(90deg, var(--ms-blue), var(--ms-red));
-}
-
-.vote-week-pill {
-  background: var(--ms-text) !important;
-  color: #fff !important;
-  box-shadow: none !important;
-}
-
-.vote-conference-select {
-  background: #f8fbff !important;
-  border-color: var(--ms-border) !important;
-}
-
-.vote-slot {
-  border: 1px solid var(--ms-border) !important;
-  background: #fff !important;
-}
-
-.vote-slot-gold {
-  box-shadow: inset 4px 0 0 0 #f0b53b;
-}
-.vote-slot-silver {
-  box-shadow: inset 4px 0 0 0 #9aadc8;
-}
-.vote-slot-bronze {
-  box-shadow: inset 4px 0 0 0 #d17d45;
-}
-
-.vote-medal {
-  box-shadow: none !important;
-}
-
-.vote-submit-btn,
-.primary-call-btn,
-.pick-btn {
-  background: var(--ms-text) !important;
-  color: #fff !important;
-  box-shadow: none !important;
-}
-
-.vote-submit-btn:hover,
-.primary-call-btn:hover,
-.pick-btn:hover {
-  filter: brightness(1.05);
-}
-
-.star-card-kicker {
-  letter-spacing: .12em;
-  text-transform: uppercase;
-}
-
-.star-card-icon {
-  filter: none !important;
-}
-
-.week-stars-split > div {
-  border-radius: var(--ms-radius-sm) !important;
-  box-shadow: none !important;
-}
-
-.week-stars-split > div:first-child {
-  background: var(--ms-blue-soft) !important;
-  border: 1px solid var(--ms-blue-line) !important;
-}
-
-.week-stars-split > div:last-child {
-  background: var(--ms-red-soft) !important;
-  border: 1px solid var(--ms-red-line) !important;
-}
-
-.week-stars-split > div:first-child small,
-.week-stars-split > div:first-child h3 {
-  color: var(--ms-blue) !important;
-}
-
-.week-stars-split > div:last-child small,
-.week-stars-split > div:last-child h3 {
-  color: var(--ms-red) !important;
-}
-
-/* ---------- RANKINGS ---------- */
-.race-section {
-  background: transparent !important;
-  border: 0 !important;
-  box-shadow: none !important;
-  padding: 0 !important;
-}
-
-.ranking-card,
-.wide-auto-pick {
-  position: relative;
-  overflow: hidden;
-}
-
-.ranking-card.ranking-championship::before,
-.ranking-card.ranking-league::before,
-.wide-auto-pick::before {
-  content: "";
-  position: absolute;
-  inset: 0 0 auto 0;
-  height: 4px;
-}
-
-.ranking-card.ranking-championship::before {
-  background: var(--ms-blue);
-}
-.ranking-card.ranking-league::before {
-  background: var(--ms-red);
-}
-.wide-auto-pick::before {
-  background: linear-gradient(90deg, var(--ms-blue), var(--ms-red));
-}
-
-.ranking-card.ranking-championship {
-  background: #fff !important;
-  border-color: var(--ms-blue-line) !important;
-}
-
-.ranking-card.ranking-league {
-  background: #fff !important;
-  border-color: var(--ms-red-line) !important;
-}
-
-.ranking-card.ranking-championship h4,
-.ranking-card.ranking-championship .ranking-subtitle {
-  color: var(--ms-blue) !important;
-}
-
-.ranking-card.ranking-league h4,
-.ranking-card.ranking-league .ranking-subtitle {
-  color: var(--ms-red) !important;
-}
-
-.ranking-row {
-  background: #fff !important;
-  border: 1px solid var(--ms-border);
-  border-radius: 14px !important;
-  box-shadow: none !important;
-}
-
-.ranking-card.ranking-championship .ranking-pos {
-  background: var(--ms-blue-soft) !important;
-  color: var(--ms-blue) !important;
-}
-
-.ranking-card.ranking-league .ranking-pos {
-  background: var(--ms-red-soft) !important;
-  color: var(--ms-red) !important;
-}
-
-.auto-badge {
-  border-radius: 999px !important;
-  font-weight: 800;
-}
-
-.ranking-card.ranking-championship .auto-badge {
-  background: var(--ms-blue-soft) !important;
-  color: var(--ms-blue) !important;
-}
-
-.ranking-card.ranking-league .auto-badge {
-  background: var(--ms-red-soft) !important;
-  color: var(--ms-red) !important;
-}
-
-.ranking-empty {
-  border-radius: var(--ms-radius-sm) !important;
-  border: 1px dashed var(--ms-border);
-  box-shadow: none !important;
-}
-
-.wide-auto-pick {
-  background: #fff !important;
-}
-
-.auto-pick-row {
-  border-radius: var(--ms-radius-sm) !important;
-  box-shadow: none !important;
-}
-
-.auto-pick-row.championship {
-  background: #fff !important;
-  border: 1px solid var(--ms-blue-line) !important;
-  box-shadow: inset 4px 0 0 0 var(--ms-blue) !important;
-}
-
-.auto-pick-row.league {
-  background: #fff !important;
-  border: 1px solid var(--ms-red-line) !important;
-  box-shadow: inset 4px 0 0 0 var(--ms-red) !important;
-}
-
-.auto-pick-row.championship strong,
-.auto-pick-row.championship small {
-  color: var(--ms-blue) !important;
-}
-
-.auto-pick-row.league strong,
-.auto-pick-row.league small {
-  color: var(--ms-red) !important;
-}
-
-.auto-pick-row .pick-number-pill {
-  background: var(--ms-text) !important;
-  color: #fff !important;
-  box-shadow: none !important;
-}
-
-.duplicate-badge {
-  background: #fff4d6 !important;
-  color: #9b6a00 !important;
-  border: 1px solid rgba(155,106,0,.18);
-}
-
-/* ---------- DRAFT ---------- */
-.draft-info-strip {
-  margin-top: 8px;
-}
-
-.team-panel,
-.clock-panel {
-  position: relative;
-  overflow: hidden;
-}
-
-.team-championship::before,
-.team-league::before,
-.clock-panel::before {
-  content: "";
-  position: absolute;
-  inset: 0 0 auto 0;
-  height: 4px;
-}
-
-.team-championship::before {
-  background: var(--ms-blue);
-}
-.team-league::before {
-  background: var(--ms-red);
-}
-.clock-panel::before {
-  background: linear-gradient(90deg, var(--ms-blue), var(--ms-red));
-}
-
-.team-championship {
-  background: #fff !important;
-  border-color: var(--ms-blue-line) !important;
-}
-
-.team-league {
-  background: #fff !important;
-  border-color: var(--ms-red-line) !important;
-}
-
-.team-championship .team-header {
-  border-bottom: 1px solid rgba(37,99,235,.12) !important;
-}
-
-.team-league .team-header {
-  border-bottom: 1px solid rgba(229,72,77,.12) !important;
-}
-
-.team-championship .team-header h3,
-.team-championship .team-header span,
-.team-championship .role-badge {
-  color: var(--ms-blue) !important;
-}
-
-.team-league .team-header h3,
-.team-league .team-header span,
-.team-league .role-badge {
-  color: var(--ms-red) !important;
-}
-
-.crest-gold {
-  background: var(--ms-blue-soft) !important;
-  color: var(--ms-blue) !important;
-  border: 1px solid var(--ms-blue-line);
-  box-shadow: none !important;
-}
-
-.crest-blue {
-  background: var(--ms-red-soft) !important;
-  color: var(--ms-red) !important;
-  border: 1px solid var(--ms-red-line);
-  box-shadow: none !important;
-}
-
-.team-championship .role-badge {
-  background: var(--ms-blue-soft) !important;
-  border-color: var(--ms-blue-line) !important;
-}
-
-.team-league .role-badge {
-  background: var(--ms-red-soft) !important;
-  border-color: var(--ms-red-line) !important;
-}
-
-.role-group,
-.player-mini,
-.last-picks,
-.last-pick-row {
-  box-shadow: none !important;
-}
-
-.player-mini {
-  border: 1px solid var(--ms-border);
-}
-
-.clock-panel {
-  background: #fff !important;
-  border-color: var(--ms-border) !important;
-}
-
-.clock-kicker {
-  color: var(--ms-muted) !important;
-}
-
-#currentConferenceBig[data-conf="Conference Championship"] {
-  background: var(--ms-blue-soft) !important;
-  color: var(--ms-blue) !important;
-  border: 1px solid var(--ms-blue-line);
-}
-
-#currentConferenceBig[data-conf="Conference League"] {
-  background: var(--ms-red-soft) !important;
-  color: var(--ms-red) !important;
-  border: 1px solid var(--ms-red-line);
-}
-
-/* ---------- POOL / ADMIN ---------- */
-.pool-section,
-.admin-panel {
-  position: relative;
-  overflow: hidden;
-}
-
-.pool-section::before,
-.admin-panel::before {
-  content: "";
-  position: absolute;
-  inset: 0 0 auto 0;
-  height: 4px;
-  background: linear-gradient(90deg, var(--ms-blue), var(--ms-red));
-}
-
-.pool-filters input,
-.pool-filters select,
-.vote-slot select,
-.vote-conference-select select,
-#modalSearchInput {
-  background: #fff !important;
-  border: 1px solid var(--ms-border) !important;
-  color: var(--ms-text) !important;
-  box-shadow: none !important;
-}
-
-.table-wrap {
-  border: 1px solid var(--ms-border) !important;
-  box-shadow: none !important;
-}
-
-.players-table thead th {
-  background: #f7f9fc !important;
-  color: var(--ms-text) !important;
-}
-
-.ghost-btn,
-.admin-toggle {
-  background: #fff !important;
-  color: var(--ms-text) !important;
-  border: 1px solid var(--ms-border) !important;
-  box-shadow: none !important;
-}
-
-.admin-btn.green,
-.admin-btn.blue {
-  background: var(--ms-blue) !important;
-  color: #fff !important;
-}
-
-.admin-btn.red {
-  background: var(--ms-red) !important;
-  color: #fff !important;
-}
-
-.admin-btn.gold {
-  background: linear-gradient(90deg, var(--ms-blue), var(--ms-red)) !important;
-  color: #fff !important;
-}
-
-/* ---------- MODAL ---------- */
 .pick-modal {
-  border: 1px solid var(--ms-border);
-  border-radius: 24px;
-  box-shadow: 0 24px 60px rgba(17,37,68,.18);
-}
-
-.modal-player-row {
-  border: 1px solid var(--ms-border);
-  border-radius: 14px;
-}
-
-/* ---------- MOBILE ---------- */
-@media (max-width: 768px) {
-  body {
-    background:
-      radial-gradient(circle at 12% 0%, rgba(37,99,235,.06), transparent 12rem),
-      radial-gradient(circle at 88% 0%, rgba(229,72,77,.06), transparent 12rem),
-      linear-gradient(180deg, #f7f9fc 0%, #f2f6fb 100%) !important;
-  }
-
-  .allstar-page {
-    padding-left: 10px;
-    padding-right: 10px;
-  }
-
-  .allstar-hero {
-    border-radius: 24px !important;
-    box-shadow: var(--ms-shadow-soft) !important;
-  }
-
-  .hero-meta span {
-    font-size: 10.5px;
-  }
-
-  .green-text,
-  .red-text {
-    min-height: 38px;
-    padding: 0 14px;
-    font-size: 13px;
-  }
-
-  .mobile-tab-btn.is-active {
-    box-shadow: inset 0 -3px 0 0 var(--ms-blue) !important;
-  }
-
-  .mobile-tab-btn.is-active::after {
-    left: 10%;
-    right: 10%;
-  }
-
-  .ranking-card,
-  .wide-auto-pick,
-  .team-panel,
-  .clock-panel,
-  .vote-card,
-  .pool-section,
-  .admin-panel {
-    border-radius: 18px !important;
-  }
-}
-
-
-/* =========================================================
-   NBA PARTY EDITION
-   All-Star Weekend / showtime / bold arena vibes
-   League = fiery red-orange
-   Championship = electric purple-pink
-   ========================================================= */
-
-:root{
-  --nba-bg-1:#090c16;
-  --nba-bg-2:#12182b;
-  --nba-surface:#121827;
-  --nba-surface-2:#171f33;
-  --nba-border:rgba(255,255,255,.08);
-  --nba-text:#f7f8fc;
-  --nba-muted:#aeb9d0;
-
-  --nba-league:#ff5a36;
-  --nba-league-2:#ff884a;
-  --nba-league-soft:rgba(255,90,54,.14);
-
-  --nba-champ:#b14dff;
-  --nba-champ-2:#ff57c7;
-  --nba-champ-soft:rgba(177,77,255,.14);
-
-  --nba-gold:#ffcc4d;
-  --nba-gold-2:#ff9b2f;
-
-  --nba-shadow:0 18px 40px rgba(0,0,0,.30);
-  --nba-shadow-soft:0 12px 24px rgba(0,0,0,.22);
-  --nba-radius:24px;
-  --nba-radius-sm:18px;
-}
-
-html, body{
-  background:#090c16 !important;
-}
-
-body{
+  position: relative;
+  overflow: hidden;
   background:
-    radial-gradient(circle at 15% 0%, rgba(177,77,255,.16), transparent 22rem),
-    radial-gradient(circle at 85% 0%, rgba(255,90,54,.16), transparent 22rem),
-    radial-gradient(circle at 50% 100%, rgba(255,204,77,.07), transparent 26rem),
-    linear-gradient(180deg, #0a0e18 0%, #10162a 55%, #0a0e18 100%) !important;
-  color:var(--nba-text) !important;
-}
-
-.allstar-page{
-  position:relative;
-}
-
-.allstar-page::before{
-  content:"";
-  position:fixed;
-  inset:0;
-  pointer-events:none;
-  background:
-    radial-gradient(circle at 50% -10%, rgba(255,255,255,.07), transparent 32rem),
-    linear-gradient(180deg, rgba(255,255,255,.02), transparent 18%);
-}
-
-/* ---------- GENERAL TEXT ---------- */
-h1,h2,h3,h4,strong{
-  color:var(--nba-text) !important;
-}
-
-p, small, .hero-festa-note, .section-head p, .ranking-subtitle,
-.info-card small, .team-header p, .team-header span,
-.player-mini span, .vote-slot small, .week-stars-split p,
-.ranking-player small, .auto-pick-row small{
-  color:var(--nba-muted) !important;
-}
-
-/* ---------- HERO ---------- */
-.tricolore-ribbon{
-  display:none !important;
-}
-
-.allstar-hero{
-  position:relative;
-  overflow:hidden;
-  background:
-    radial-gradient(circle at top center, rgba(255,255,255,.05), transparent 16rem),
-    linear-gradient(135deg, rgba(177,77,255,.12), transparent 28%),
-    linear-gradient(225deg, rgba(255,90,54,.12), transparent 28%),
-    linear-gradient(180deg, #171d30 0%, #0f1424 100%) !important;
-  border:1px solid rgba(255,255,255,.07) !important;
-  border-radius:30px !important;
-  box-shadow:0 24px 54px rgba(0,0,0,.34) !important;
-}
-
-.allstar-hero::before{
-  content:"";
-  position:absolute;
-  inset:0 0 auto 0;
-  height:6px;
-  background:linear-gradient(90deg, var(--nba-champ), var(--nba-gold), var(--nba-league));
-}
-
-.allstar-hero::after{
-  content:"";
-  position:absolute;
-  inset:auto auto 0 0;
-  width:100%;
-  height:120px;
-  background:
-    radial-gradient(circle at 10% 100%, rgba(177,77,255,.18), transparent 25%),
-    radial-gradient(circle at 90% 100%, rgba(255,90,54,.18), transparent 25%);
-  pointer-events:none;
-}
-
-.hero-glow-left{
-  background:radial-gradient(circle, rgba(177,77,255,.28), transparent 65%) !important;
-  filter:blur(14px);
-}
-
-.hero-glow-right{
-  background:radial-gradient(circle, rgba(255,90,54,.28), transparent 65%) !important;
-  filter:blur(14px);
-}
-
-.hero-meta span{
-  background:rgba(255,255,255,.06) !important;
-  border:1px solid rgba(255,255,255,.08) !important;
-  color:#fff !important;
-  box-shadow:none !important;
-  backdrop-filter:blur(10px);
-}
-
-.hero-title-box h1{
-  color:#ffffff !important;
-  text-transform:uppercase;
-  letter-spacing:.03em;
-  text-shadow:0 6px 20px rgba(0,0,0,.24);
-}
-
-.hero-title-box h2{
-  display:flex;
-  justify-content:center;
-  flex-wrap:wrap;
-  align-items:center;
-  gap:14px;
-  margin-top:14px;
-}
-
-.green-text, .red-text{
-  min-height:52px;
-  padding:0 22px;
-  border-radius:999px;
-  font-weight:950;
-  letter-spacing:.04em;
-  text-transform:uppercase;
-  box-shadow:0 10px 20px rgba(0,0,0,.24);
-  border:1px solid transparent;
-}
-
-.green-text{
-  background:linear-gradient(135deg, rgba(177,77,255,.20), rgba(255,87,199,.16)) !important;
-  color:#fff !important;
-  border-color:rgba(255,87,199,.28) !important;
-  text-shadow:0 0 14px rgba(255,87,199,.22);
-}
-
-.red-text{
-  background:linear-gradient(135deg, rgba(255,90,54,.22), rgba(255,136,74,.16)) !important;
-  color:#fff !important;
-  border-color:rgba(255,136,74,.30) !important;
-  text-shadow:0 0 14px rgba(255,90,54,.20);
-}
-
-.versus{
-  color:var(--nba-gold) !important;
-  font-weight:950;
-  text-transform:uppercase;
-  letter-spacing:.08em;
-}
-
-.hero-title-box p{
-  color:#f0f2ff !important;
-  font-style:italic;
-}
-
-.hero-festa-note{
-  color:var(--nba-gold) !important;
-  font-weight:900;
-  letter-spacing:.10em;
-  text-transform:uppercase;
-}
-
-.hero-badge{
-  background:rgba(255,255,255,.07) !important;
-  border-color:rgba(255,255,255,.09) !important;
-  color:#fff !important;
-  box-shadow:none !important;
-}
-
-.badge-pulse{
-  background:var(--nba-gold) !important;
-  box-shadow:0 0 0 6px rgba(255,204,77,.12) !important;
-}
-
-/* ---------- SHARED CARDS ---------- */
-.info-card,
-.vote-card,
-.ranking-card,
-.wide-auto-pick,
-.team-panel,
-.clock-panel,
-.pool-section,
-.admin-panel,
-.pick-modal{
-  background:linear-gradient(180deg, rgba(23,31,51,.96), rgba(16,23,39,.96)) !important;
-  border:1px solid rgba(255,255,255,.08) !important;
-  border-radius:var(--nba-radius) !important;
-  box-shadow:var(--nba-shadow-soft) !important;
-}
-
-.info-card,
-.vote-card,
-.ranking-card,
-.wide-auto-pick,
-.team-panel,
-.clock-panel,
-.pool-section,
-.admin-panel{
-  position:relative;
-  overflow:hidden;
+    linear-gradient(180deg, rgba(21,30,44,.98), rgba(12,18,28,.98)) !important;
+  border: 1px solid var(--sb-border) !important;
+  border-radius: var(--sb-radius) !important;
+  box-shadow: var(--sb-shadow-soft) !important;
 }
 
 .info-card::before,
@@ -3894,44 +2792,43 @@ p, small, .hero-festa-note, .section-head p, .ranking-subtitle,
 .team-panel::before,
 .clock-panel::before,
 .pool-section::before,
-.admin-panel::before{
-  content:"";
-  position:absolute;
-  inset:0 0 auto 0;
-  height:4px;
+.admin-panel::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 4px;
 }
 
 .vote-form-card::before,
-.star-of-week-card::before{
-  height:4px !important;
-}
-
-.vote-form-card::before,
-.wide-auto-pick::before,
 .clock-panel::before,
+.wide-auto-pick::before,
 .pool-section::before,
-.admin-panel::before{
-  background:linear-gradient(90deg, var(--nba-champ), var(--nba-gold), var(--nba-league)) !important;
+.admin-panel::before {
+  background: linear-gradient(90deg, var(--sb-blue), var(--sb-red)) !important;
 }
 
-.star-of-week-card::before{
-  background:linear-gradient(90deg, var(--nba-gold), var(--nba-league)) !important;
+.star-of-week-card::before {
+  background: linear-gradient(90deg, var(--sb-gold), var(--sb-red)) !important;
 }
 
 .ranking-card.ranking-championship::before,
-.team-championship::before{
-  background:linear-gradient(90deg, var(--nba-champ), var(--nba-champ-2)) !important;
+.team-championship::before {
+  background: var(--sb-blue) !important;
 }
 
 .ranking-card.ranking-league::before,
-.team-league::before{
-  background:linear-gradient(90deg, var(--nba-league), var(--nba-league-2)) !important;
+.team-league::before {
+  background: var(--sb-red) !important;
 }
 
-.info-card:nth-child(1)::before{background:linear-gradient(90deg, var(--nba-champ), var(--nba-league));}
-.info-card:nth-child(2)::before{background:linear-gradient(90deg, var(--nba-gold), var(--nba-league));}
-.info-card:nth-child(3)::before{background:linear-gradient(90deg, var(--nba-league), var(--nba-league-2));}
-.info-card:nth-child(4)::before{background:linear-gradient(90deg, var(--nba-champ), var(--nba-champ-2));}
+.info-card:nth-child(1)::before { background: linear-gradient(90deg, var(--sb-blue), var(--sb-red)); }
+.info-card:nth-child(2)::before { background: var(--sb-gold); }
+.info-card:nth-child(3)::before { background: var(--sb-red); }
+.info-card:nth-child(4)::before { background: var(--sb-blue); }
+
+.info-card {
+  padding-left: 18px !important;
+}
 
 .info-card strong,
 .section-head h3,
@@ -3939,448 +2836,409 @@ p, small, .hero-festa-note, .section-head p, .ranking-subtitle,
 .auto-pick-card h4,
 .team-header h3,
 .vote-form-card .section-head h3,
-.star-card-kicker{
-  color:#fff !important;
+.star-card-kicker {
+  color: #fff !important;
+  text-transform: uppercase;
+  letter-spacing: .04em;
 }
 
-/* ---------- INFO ICONS ---------- */
-.info-icon{
-  filter:drop-shadow(0 4px 8px rgba(0,0,0,.16));
+/* ---------- Info strip broadcast labels ---------- */
+.info-icon {
+  width: 40px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+  border-radius: 11px;
+  background: rgba(255,255,255,.06);
+  font-size: 20px !important;
 }
 
-/* ---------- MOBILE TABS ---------- */
-.mobile-allstar-tabs{
-  background:rgba(18,24,39,.92) !important;
-  border:1px solid rgba(255,255,255,.08) !important;
-  box-shadow:var(--nba-shadow-soft) !important;
-  backdrop-filter:blur(14px);
+/* ---------- Mobile tabs ---------- */
+.mobile-allstar-tabs {
+  background: rgba(12,18,28,.95) !important;
+  border: 1px solid var(--sb-border) !important;
+  box-shadow: var(--sb-shadow-soft) !important;
+  backdrop-filter: blur(14px);
 }
 
-.mobile-tab-btn{
-  background:transparent !important;
-  color:var(--nba-muted) !important;
-  border:0 !important;
+.mobile-tab-btn {
+  background: transparent !important;
+  color: var(--sb-muted) !important;
+  border: 0 !important;
+  border-radius: 10px !important;
 }
 
-.mobile-tab-btn.is-active{
-  background:rgba(255,255,255,.06) !important;
-  color:#fff !important;
-  box-shadow:none !important;
+.mobile-tab-btn.is-active {
+  background: rgba(255,255,255,.06) !important;
+  color: #fff !important;
+  box-shadow: none !important;
 }
 
-.mobile-tab-btn.is-active::after{
-  background:linear-gradient(90deg, var(--nba-champ), var(--nba-gold), var(--nba-league)) !important;
-  height:4px !important;
+.mobile-tab-btn.is-active::after {
+  background: linear-gradient(90deg, var(--sb-blue), var(--sb-red)) !important;
+  height: 4px !important;
 }
 
-/* ---------- VOTE ---------- */
-.vote-week-pill{
-  background:linear-gradient(90deg, var(--nba-champ), var(--nba-league)) !important;
-  color:#fff !important;
-  box-shadow:none !important;
+/* ---------- Voting ---------- */
+.vote-week-pill {
+  background: var(--sb-red) !important;
+  color: #fff !important;
+  border-radius: 8px !important;
+  box-shadow: none !important;
 }
 
-.vote-conference-select{
-  background:rgba(255,255,255,.04) !important;
-  border-color:rgba(255,255,255,.08) !important;
+.vote-conference-select,
+.vote-slot {
+  background: rgba(255,255,255,.035) !important;
+  border: 1px solid var(--sb-border) !important;
+  box-shadow: none !important;
 }
 
-.vote-conference-select span{
-  color:#fff !important;
+.vote-conference-select span {
+  color: #fff !important;
 }
 
-.vote-slot{
-  background:rgba(255,255,255,.03) !important;
-  border:1px solid rgba(255,255,255,.08) !important;
-  box-shadow:none !important;
-}
+.vote-slot-gold { box-shadow: inset 5px 0 0 0 var(--sb-gold) !important; }
+.vote-slot-silver { box-shadow: inset 5px 0 0 0 #8fa4c3 !important; }
+.vote-slot-bronze { box-shadow: inset 5px 0 0 0 #c87545 !important; }
 
-.vote-slot-gold{
-  box-shadow:inset 5px 0 0 0 var(--nba-gold) !important;
-}
-
-.vote-slot-silver{
-  box-shadow:inset 5px 0 0 0 #9caed2 !important;
-}
-
-.vote-slot-bronze{
-  box-shadow:inset 5px 0 0 0 #d9804c !important;
-}
-
-.vote-medal{
-  color:#111 !important;
+.vote-medal {
+  box-shadow: none !important;
 }
 
 .vote-slot select,
 .vote-conference-select select,
 .pool-filters input,
 .pool-filters select,
-#modalSearchInput{
-  background:rgba(255,255,255,.06) !important;
-  border:1px solid rgba(255,255,255,.08) !important;
-  color:#fff !important;
+#modalSearchInput {
+  background: rgba(255,255,255,.055) !important;
+  border: 1px solid var(--sb-border) !important;
+  color: #fff !important;
 }
 
 .vote-slot select option,
 .vote-conference-select select option,
-.pool-filters select option{
-  color:#111 !important;
+.pool-filters select option {
+  color: #101722 !important;
 }
 
 .vote-submit-btn,
 .primary-call-btn,
-.pick-btn{
-  background:linear-gradient(90deg, var(--nba-champ), var(--nba-league)) !important;
-  color:#fff !important;
-  border:none !important;
-  box-shadow:0 10px 20px rgba(0,0,0,.18) !important;
-  text-transform:uppercase;
-  letter-spacing:.04em;
-  font-weight:900;
+.pick-btn {
+  background: linear-gradient(90deg, var(--sb-red), #b8142b) !important;
+  color: #fff !important;
+  border: none !important;
+  box-shadow: 0 10px 22px rgba(232,32,61,.18) !important;
+  border-radius: 10px !important;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+  font-weight: 950;
 }
 
 .vote-submit-btn:hover,
 .primary-call-btn:hover,
-.pick-btn:hover{
-  filter:brightness(1.08);
+.pick-btn:hover {
+  filter: brightness(1.08);
 }
 
-.star-card-kicker{
-  color:var(--nba-gold) !important;
-  letter-spacing:.12em;
+.star-card-kicker {
+  color: var(--sb-gold) !important;
 }
 
-.star-card-icon{
-  filter:drop-shadow(0 10px 20px rgba(255,204,77,.14)) !important;
+.star-card-icon {
+  filter: drop-shadow(0 10px 18px rgba(255,191,63,.18)) !important;
 }
 
-.week-stars-split > div{
-  border-radius:18px !important;
-  box-shadow:none !important;
+.week-stars-split > div {
+  border-radius: 14px !important;
+  background: rgba(255,255,255,.04) !important;
+  border: 1px solid var(--sb-border) !important;
+  box-shadow: none !important;
 }
 
-.week-stars-split > div:first-child{
-  background:linear-gradient(180deg, rgba(255,90,54,.12), rgba(255,90,54,.06)) !important;
-  border:1px solid rgba(255,90,54,.18) !important;
+.week-stars-split > div:first-child {
+  border-color: rgba(232,32,61,.24) !important;
+  background: linear-gradient(180deg, rgba(232,32,61,.12), rgba(255,255,255,.03)) !important;
 }
 
-.week-stars-split > div:last-child{
-  background:linear-gradient(180deg, rgba(177,77,255,.12), rgba(177,77,255,.06)) !important;
-  border:1px solid rgba(177,77,255,.18) !important;
+.week-stars-split > div:last-child {
+  border-color: rgba(17,104,255,.24) !important;
+  background: linear-gradient(180deg, rgba(17,104,255,.12), rgba(255,255,255,.03)) !important;
 }
 
-.week-stars-split > div:first-child small,
-.week-stars-split > div:first-child h3{
-  color:#fff !important;
+.week-stars-split small,
+.week-stars-split h3 {
+  color: #fff !important;
 }
 
-.week-stars-split > div:last-child small,
-.week-stars-split > div:last-child h3{
-  color:#fff !important;
+/* ---------- Rankings ---------- */
+.race-section {
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  padding: 0 !important;
 }
 
-/* ---------- RANKINGS ---------- */
-.race-section{
-  background:transparent !important;
-  border:0 !important;
-  box-shadow:none !important;
-  padding:0 !important;
-}
-
-.ranking-card.ranking-championship{
+.ranking-card.ranking-championship {
   background:
-    radial-gradient(circle at top right, rgba(177,77,255,.10), transparent 14rem),
-    linear-gradient(180deg, rgba(23,31,51,.98), rgba(16,23,39,.98)) !important;
-  border-color:rgba(177,77,255,.18) !important;
+    linear-gradient(180deg, rgba(14,42,91,.78), rgba(13,19,30,.98)) !important;
+  border-color: rgba(17,104,255,.24) !important;
 }
 
-.ranking-card.ranking-league{
+.ranking-card.ranking-league {
   background:
-    radial-gradient(circle at top left, rgba(255,90,54,.10), transparent 14rem),
-    linear-gradient(180deg, rgba(23,31,51,.98), rgba(16,23,39,.98)) !important;
-  border-color:rgba(255,90,54,.18) !important;
+    linear-gradient(180deg, rgba(85,15,26,.78), rgba(13,19,30,.98)) !important;
+  border-color: rgba(232,32,61,.24) !important;
 }
 
-.ranking-card.ranking-championship h4,
-.ranking-card.ranking-championship .ranking-subtitle{
-  color:#fff !important;
+.ranking-row {
+  background: rgba(255,255,255,.045) !important;
+  border: 1px solid var(--sb-border) !important;
+  border-radius: 10px !important;
+  box-shadow: none !important;
 }
 
-.ranking-card.ranking-league h4,
-.ranking-card.ranking-league .ranking-subtitle{
-  color:#fff !important;
+.ranking-card.ranking-championship .ranking-pos {
+  background: linear-gradient(135deg, var(--sb-blue), var(--sb-blue-2)) !important;
+  color: #fff !important;
 }
 
-.ranking-row{
-  background:rgba(255,255,255,.04) !important;
-  border:1px solid rgba(255,255,255,.06) !important;
-  box-shadow:none !important;
+.ranking-card.ranking-league .ranking-pos {
+  background: linear-gradient(135deg, var(--sb-red), var(--sb-red-2)) !important;
+  color: #fff !important;
 }
 
-.ranking-card.ranking-championship .ranking-pos{
-  background:linear-gradient(135deg, var(--nba-champ), var(--nba-champ-2)) !important;
-  color:#fff !important;
+.ranking-card.ranking-championship .auto-badge {
+  background: rgba(17,104,255,.15) !important;
+  color: #d9e8ff !important;
 }
 
-.ranking-card.ranking-league .ranking-pos{
-  background:linear-gradient(135deg, var(--nba-league), var(--nba-league-2)) !important;
-  color:#fff !important;
+.ranking-card.ranking-league .auto-badge {
+  background: rgba(232,32,61,.15) !important;
+  color: #ffdce1 !important;
 }
 
-.ranking-card.ranking-championship .auto-badge{
-  background:rgba(177,77,255,.16) !important;
-  color:#fff !important;
+.ranking-empty {
+  background: rgba(255,255,255,.035) !important;
+  border: 1px dashed var(--sb-border-strong) !important;
 }
 
-.ranking-card.ranking-league .auto-badge{
-  background:rgba(255,90,54,.16) !important;
-  color:#fff !important;
+.ranking-empty strong {
+  color: #fff !important;
 }
 
-.ranking-empty{
-  background:rgba(255,255,255,.03) !important;
-  border:1px dashed rgba(255,255,255,.10) !important;
-}
-
-.ranking-empty strong{
-  color:#fff !important;
-}
-
-.wide-auto-pick{
+/* ---------- Provisional picks ---------- */
+.wide-auto-pick {
   background:
-    radial-gradient(circle at top center, rgba(255,204,77,.06), transparent 12rem),
-    linear-gradient(180deg, rgba(23,31,51,.98), rgba(16,23,39,.98)) !important;
+    linear-gradient(180deg, rgba(21,30,44,.98), rgba(12,18,28,.98)) !important;
 }
 
-.auto-pick-row{
-  background:rgba(255,255,255,.04) !important;
-  border-radius:16px !important;
-  box-shadow:none !important;
+.auto-pick-row {
+  background: rgba(255,255,255,.045) !important;
+  border-radius: 12px !important;
+  border: 1px solid var(--sb-border) !important;
+  box-shadow: none !important;
 }
 
-.auto-pick-row.championship{
-  border:1px solid rgba(177,77,255,.18) !important;
-  box-shadow:inset 4px 0 0 0 var(--nba-champ) !important;
+.auto-pick-row.championship {
+  box-shadow: inset 5px 0 0 0 var(--sb-blue) !important;
 }
 
-.auto-pick-row.league{
-  border:1px solid rgba(255,90,54,.18) !important;
-  box-shadow:inset 4px 0 0 0 var(--nba-league) !important;
+.auto-pick-row.league {
+  box-shadow: inset 5px 0 0 0 var(--sb-red) !important;
 }
 
-.auto-pick-row.championship strong{color:#fff !important;}
-.auto-pick-row.league strong{color:#fff !important;}
-
-.auto-pick-row .pick-number-pill{
-  background:linear-gradient(135deg, #ffffff, #dcdfea) !important;
-  color:#111b2e !important;
-  box-shadow:none !important;
+.auto-pick-row .pick-number-pill {
+  background: rgba(255,255,255,.10) !important;
+  color: #fff !important;
+  border: 1px solid var(--sb-border) !important;
 }
 
-.duplicate-badge{
-  background:rgba(255,204,77,.14) !important;
-  color:var(--nba-gold) !important;
-  border:1px solid rgba(255,204,77,.18);
+.auto-pick-row strong {
+  color: #fff !important;
 }
 
-/* ---------- DRAFT ---------- */
-.team-championship{
+.duplicate-badge {
+  background: rgba(255,191,63,.15) !important;
+  color: var(--sb-gold) !important;
+  border: 1px solid rgba(255,191,63,.22);
+}
+
+/* ---------- Draft ---------- */
+.team-championship {
   background:
-    radial-gradient(circle at top right, rgba(177,77,255,.10), transparent 14rem),
-    linear-gradient(180deg, rgba(23,31,51,.98), rgba(16,23,39,.98)) !important;
-  border-color:rgba(177,77,255,.18) !important;
+    linear-gradient(180deg, rgba(14,42,91,.78), rgba(13,19,30,.98)) !important;
+  border-color: rgba(17,104,255,.24) !important;
 }
 
-.team-league{
+.team-league {
   background:
-    radial-gradient(circle at top left, rgba(255,90,54,.10), transparent 14rem),
-    linear-gradient(180deg, rgba(23,31,51,.98), rgba(16,23,39,.98)) !important;
-  border-color:rgba(255,90,54,.18) !important;
+    linear-gradient(180deg, rgba(85,15,26,.78), rgba(13,19,30,.98)) !important;
+  border-color: rgba(232,32,61,.24) !important;
 }
 
-.team-championship .team-header{
-  border-bottom:1px solid rgba(177,77,255,.16) !important;
+.team-championship .team-header,
+.team-league .team-header {
+  border-bottom: 1px solid var(--sb-border) !important;
 }
 
-.team-league .team-header{
-  border-bottom:1px solid rgba(255,90,54,.16) !important;
+.crest-gold {
+  background: linear-gradient(135deg, var(--sb-blue), var(--sb-blue-2)) !important;
+  color: #fff !important;
+  border: 0 !important;
+  box-shadow: none !important;
 }
 
-.team-championship .team-header h3,
-.team-championship .team-header span{
-  color:#fff !important;
+.crest-blue {
+  background: linear-gradient(135deg, var(--sb-red), var(--sb-red-2)) !important;
+  color: #fff !important;
+  border: 0 !important;
+  box-shadow: none !important;
 }
 
-.team-league .team-header h3,
-.team-league .team-header span{
-  color:#fff !important;
+.team-championship .role-badge {
+  background: rgba(17,104,255,.16) !important;
+  border-color: rgba(17,104,255,.22) !important;
+  color: #fff !important;
 }
 
-.crest-gold{
-  background:linear-gradient(135deg, var(--nba-champ), var(--nba-champ-2)) !important;
-  color:#fff !important;
-  border:none !important;
+.team-league .role-badge {
+  background: rgba(232,32,61,.16) !important;
+  border-color: rgba(232,32,61,.22) !important;
+  color: #fff !important;
 }
 
-.crest-blue{
-  background:linear-gradient(135deg, var(--nba-league), var(--nba-league-2)) !important;
-  color:#fff !important;
-  border:none !important;
-}
-
-.team-championship .role-badge{
-  background:rgba(177,77,255,.16) !important;
-  border-color:rgba(177,77,255,.20) !important;
-  color:#fff !important;
-}
-
-.team-league .role-badge{
-  background:rgba(255,90,54,.16) !important;
-  border-color:rgba(255,90,54,.20) !important;
-  color:#fff !important;
-}
-
-.player-mini{
-  background:rgba(255,255,255,.04) !important;
-  border:1px solid rgba(255,255,255,.06) !important;
+.player-mini {
+  background: rgba(255,255,255,.045) !important;
+  border: 1px solid var(--sb-border) !important;
 }
 
 .player-mini strong,
-.player-mini b{
-  color:#fff !important;
+.player-mini b {
+  color: #fff !important;
 }
 
-.clock-panel{
+.clock-panel {
   background:
-    radial-gradient(circle at top center, rgba(255,204,77,.06), transparent 10rem),
-    linear-gradient(180deg, rgba(23,31,51,.98), rgba(16,23,39,.98)) !important;
+    radial-gradient(circle at top center, rgba(255,191,63,.08), transparent 10rem),
+    linear-gradient(180deg, rgba(21,30,44,.98), rgba(12,18,28,.98)) !important;
 }
 
-.clock-kicker{
-  color:var(--nba-gold) !important;
-  letter-spacing:.18em;
-  text-transform:uppercase;
+.clock-kicker {
+  color: var(--sb-gold) !important;
 }
 
-#currentPickBig{
-  color:#fff !important;
-  text-shadow:0 10px 20px rgba(0,0,0,.22);
+#currentPickBig {
+  color: #fff !important;
+  text-shadow: 0 10px 22px rgba(0,0,0,.28);
 }
 
-#currentConferenceBig[data-conf="Conference Championship"]{
-  background:rgba(177,77,255,.16) !important;
-  color:#fff !important;
-  border:1px solid rgba(177,77,255,.18) !important;
+#currentConferenceBig[data-conf="Conference Championship"] {
+  background: rgba(17,104,255,.16) !important;
+  color: #fff !important;
+  border: 1px solid rgba(17,104,255,.24) !important;
 }
 
-#currentConferenceBig[data-conf="Conference League"]{
-  background:rgba(255,90,54,.16) !important;
-  color:#fff !important;
-  border:1px solid rgba(255,90,54,.18) !important;
+#currentConferenceBig[data-conf="Conference League"] {
+  background: rgba(232,32,61,.16) !important;
+  color: #fff !important;
+  border: 1px solid rgba(232,32,61,.24) !important;
 }
 
-.last-picks{
-  background:rgba(255,255,255,.04) !important;
+.last-picks {
+  background: rgba(255,255,255,.045) !important;
+  border-color: var(--sb-border) !important;
 }
 
-/* ---------- POOL / TABLE ---------- */
-.pool-section,
-.admin-panel{
-  background:
-    linear-gradient(180deg, rgba(23,31,51,.98), rgba(16,23,39,.98)) !important;
+/* ---------- Pool / Admin ---------- */
+.table-wrap {
+  background: rgba(255,255,255,.025) !important;
+  border: 1px solid var(--sb-border) !important;
 }
 
-.table-wrap{
-  background:rgba(255,255,255,.02) !important;
-  border:1px solid rgba(255,255,255,.08) !important;
+.players-table thead th {
+  background: rgba(255,255,255,.045) !important;
+  color: #fff !important;
 }
 
-.players-table thead th{
-  background:#181f31 !important;
-  color:#fff !important;
-}
-
-.players-table td{
-  color:#eef2ff !important;
-  border-color:rgba(255,255,255,.05) !important;
+.players-table td {
+  color: #eef3ff !important;
+  border-color: rgba(255,255,255,.05) !important;
 }
 
 .ghost-btn,
-.admin-toggle{
-  background:rgba(255,255,255,.05) !important;
-  color:#fff !important;
-  border:1px solid rgba(255,255,255,.08) !important;
-  box-shadow:none !important;
+.admin-toggle {
+  background: rgba(255,255,255,.045) !important;
+  color: #fff !important;
+  border: 1px solid var(--sb-border) !important;
+  box-shadow: none !important;
 }
 
 .admin-btn.green,
-.admin-btn.blue{
-  background:linear-gradient(90deg, var(--nba-champ), var(--nba-champ-2)) !important;
-  color:#fff !important;
+.admin-btn.blue {
+  background: linear-gradient(90deg, var(--sb-blue), var(--sb-blue-2)) !important;
+  color: #fff !important;
 }
 
-.admin-btn.red{
-  background:linear-gradient(90deg, var(--nba-league), var(--nba-league-2)) !important;
-  color:#fff !important;
+.admin-btn.red {
+  background: linear-gradient(90deg, var(--sb-red), var(--sb-red-2)) !important;
+  color: #fff !important;
 }
 
-.admin-btn.gold{
-  background:linear-gradient(90deg, var(--nba-gold), var(--nba-league)) !important;
-  color:#111 !important;
+.admin-btn.gold {
+  background: linear-gradient(90deg, var(--sb-gold), #f08c24) !important;
+  color: #111722 !important;
 }
 
-/* ---------- MODAL ---------- */
-.pick-modal{
-  background:linear-gradient(180deg, #171e31, #111728) !important;
-  border:1px solid rgba(255,255,255,.08) !important;
-  box-shadow:var(--nba-shadow) !important;
+/* ---------- Modal ---------- */
+.pick-modal {
+  background: linear-gradient(180deg, var(--sb-panel), #0d131d) !important;
+  border: 1px solid var(--sb-border) !important;
 }
 
-.modal-player-row{
-  background:rgba(255,255,255,.03) !important;
-  border:1px solid rgba(255,255,255,.06) !important;
+.modal-player-row {
+  background: rgba(255,255,255,.045) !important;
+  border: 1px solid var(--sb-border) !important;
 }
 
 .modal-head strong,
-.modal-player-row strong,
 .modal-head p,
-.modal-player-row small{
-  color:#fff !important;
+.modal-player-row strong,
+.modal-player-row small {
+  color: #fff !important;
 }
 
-.modal-close{
-  color:#fff !important;
+.modal-close {
+  color: #fff !important;
 }
 
-/* ---------- MOBILE ---------- */
-@media (max-width:768px){
-  body{
+/* ---------- Mobile ---------- */
+@media (max-width: 768px) {
+  body {
     background:
-      radial-gradient(circle at 20% 0%, rgba(177,77,255,.14), transparent 12rem),
-      radial-gradient(circle at 80% 0%, rgba(255,90,54,.14), transparent 12rem),
-      linear-gradient(180deg, #0a0e18 0%, #10162a 100%) !important;
+      radial-gradient(circle at 0% 0%, rgba(17,104,255,.15), transparent 15rem),
+      radial-gradient(circle at 100% 0%, rgba(232,32,61,.15), transparent 15rem),
+      linear-gradient(180deg, #070b12 0%, #0d131d 100%) !important;
   }
 
-  .allstar-hero{
-    border-radius:24px !important;
+  .allstar-hero {
+    border-radius: 22px !important;
   }
 
-  .hero-title-box h1{
-    font-size:clamp(34px, 12vw, 58px);
+  .hero-title-box h1 {
+    font-size: clamp(32px, 11vw, 56px);
   }
 
-  .green-text, .red-text{
-    min-height:40px;
-    padding:0 14px;
-    font-size:13px;
+  .green-text,
+  .red-text {
+    min-height: 38px;
+    padding: 0 14px;
+    font-size: 12px;
+    transform: none;
   }
 
-  .hero-festa-note{
-    font-size:10px;
-  }
-
-  .mobile-tab-btn.is-active{
-    background:rgba(255,255,255,.06) !important;
+  .mobile-tab-btn.is-active {
+    background: rgba(255,255,255,.06) !important;
   }
 
   .info-card,
@@ -4390,7 +3248,7 @@ p, small, .hero-festa-note, .section-head p, .ranking-subtitle,
   .team-panel,
   .clock-panel,
   .pool-section,
-  .admin-panel{
-    border-radius:20px !important;
+  .admin-panel {
+    border-radius: 16px !important;
   }
 }
