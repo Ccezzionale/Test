@@ -1942,3 +1942,16 @@ nav.site-nav{
     gap: 5px;
   }
 }
+
+/* =========================================================
+   QUICK ACTIONS - FIX DIMENSIONE ICONA WAIVER
+   ========================================================= */
+
+@media (max-width: 900px){
+
+  .quick-waiver .quick-icon img{
+    transform: scale(1.18) !important;
+    transform-origin: center;
+  }
+
+}
