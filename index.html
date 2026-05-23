@@ -309,7 +309,107 @@
     </div>
   </nav>
 
-    <main class="home-wrap">
+  <main class="home-wrap home-dashboard">
+
+    <section class="mobile-app-hero" aria-label="Dashboard squadra">
+      <div class="team-card">
+        <div class="team-card-main">
+          <div class="team-logo-shell">
+            <img id="dashboard-team-logo" src="icon-192.png" alt="Logo squadra">
+          </div>
+
+          <div class="team-info">
+            <span class="team-kicker">La tua squadra</span>
+            <h1 id="dashboard-team-name">Lega degli Eroi</h1>
+            <p id="dashboard-team-conference">Dashboard ufficiale</p>
+          </div>
+        </div>
+
+        <div class="team-status-row">
+          <span class="status-pill status-live">Stagione 2026/27</span>
+          <span class="status-pill" id="dashboard-user-role">Coach</span>
+        </div>
+      </div>
+
+      <section class="quick-actions" aria-label="Azioni rapide">
+        <a href="waiver.html" class="quick-card quick-waiver">
+          <span class="quick-icon">⚡</span>
+          <span class="quick-title">Waiver</span>
+          <span class="quick-sub">Chiamate</span>
+        </a>
+
+        <a href="dinamico-draft.html" class="quick-card quick-draft">
+          <span class="quick-icon">🎯</span>
+          <span class="quick-title">Draft</span>
+          <span class="quick-sub">Board</span>
+        </a>
+
+        <a href="trade-room.html" class="quick-card quick-trade">
+          <span class="quick-icon">🔁</span>
+          <span class="quick-title">Trade</span>
+          <span class="quick-sub">Mercato</span>
+        </a>
+
+        <a href="classifica.html" class="quick-card quick-classifica">
+          <span class="quick-icon">🏆</span>
+          <span class="quick-title">Classifica</span>
+          <span class="quick-sub">Ranking</span>
+        </a>
+      </section>
+
+      <section class="home-section">
+        <div class="section-heading">
+          <span>In evidenza</span>
+        </div>
+
+        <div class="featured-grid">
+          <a href="playoff.html" class="feature-card">
+            <span class="feature-icon">🔥</span>
+            <div>
+              <strong>Playoff</strong>
+              <small>Il tabellone della stagione</small>
+            </div>
+          </a>
+
+          <a href="rose.html" class="feature-card">
+            <span class="feature-icon">👕</span>
+            <div>
+              <strong>Rose</strong>
+              <small>Squadre e giocatori</small>
+            </div>
+          </a>
+        </div>
+      </section>
+
+      <section class="gazzetta-preview-card">
+        <div class="gazzetta-preview-copy">
+          <span class="gazzetta-kicker">Media & Storia</span>
+          <h2>La Gazzetta degli Eroi</h2>
+          <p>Il giornale ufficiale della Lega. Notizie, drammi, trionfi e cadute settimanali.</p>
+        </div>
+
+        <a href="#gazzetta-section" class="gazzetta-preview-btn">
+          Leggi ora
+        </a>
+      </section>
+
+      <section class="home-section">
+        <div class="section-heading">
+          <span>Competizioni</span>
+        </div>
+
+        <div class="mini-link-grid">
+          <a href="arena.html">Highlander</a>
+          <a href="crashoutcup.html">Crash Out Cup</a>
+          <a href="supercoppa.html">Supercoppa</a>
+          <a href="allstar.html">All-Star Game</a>
+          <a href="statistiche.html">Statistiche</a>
+          <a href="medagliere.html">Hall of Fame</a>
+        </div>
+      </section>
+    </section>
+
+    <section id="gazzetta-section" class="gazzetta-home-section">
       <iframe
         id="gazzettaFrame"
         class="gazzetta-frame"
@@ -318,6 +418,7 @@
         scrolling="no">
       </iframe>
     </section>
+
   </main>
 
   <script>
@@ -383,6 +484,7 @@ iframe.style.height = Math.ceil(h + extra) + "px";
     }
   </script>
 
+  <script type="module" src="home-dashboard.js"></script>
   <script type="module" src="home_auth.js"></script>
   <script src="navbar.js"></script>
   <script type="module" src="admin-nav.js?v=1"></script>
