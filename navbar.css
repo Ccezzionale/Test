@@ -1910,3 +1910,35 @@ nav.site-nav{
   }
 
 }
+
+/* =========================================================
+   QUICK ACTIONS - ICONE SENZA CERCHIO/QUADRATO DORATO
+   ========================================================= */
+
+@media (max-width: 900px){
+
+  .quick-icon{
+    width: 58px;
+    height: 58px;
+    padding: 0 !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    overflow: visible;
+  }
+
+  .quick-icon img{
+    width: 58px;
+    height: 58px;
+    object-fit: contain;
+    display: block;
+    transform: none !important;
+    filter: drop-shadow(0 6px 10px rgba(6,19,38,.20));
+  }
+
+  .quick-card{
+    min-height: 104px;
+    padding-top: 9px;
+    gap: 5px;
+  }
+}
