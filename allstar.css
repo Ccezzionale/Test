@@ -2020,3 +2020,528 @@ body {
     letter-spacing: .01em;
   }
 }
+
+
+/* =========================================================
+   MOBILE TABS ALIGNMENT FIX
+   Piccola rifinitura della barra tab mobile
+   ========================================================= */
+
+@media (max-width: 768px) {
+  .mobile-allstar-tabs {
+    width: 100%;
+    max-width: 100%;
+    margin: 10px 0 16px;
+    padding: 6px;
+    gap: 4px;
+    border-radius: 16px;
+    align-items: stretch;
+    box-sizing: border-box;
+  }
+
+  .mobile-tab-btn {
+    min-height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    line-height: 1;
+    white-space: nowrap;
+    padding: 0 4px;
+    border-radius: 12px;
+  }
+
+  .allstar-page > .mobile-allstar-tabs + [data-mobile-section] {
+    margin-top: 0;
+  }
+}
+
+@media (max-width: 520px) {
+  .mobile-allstar-tabs {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    margin: 8px 0 14px;
+    padding: 5px;
+    gap: 3px;
+  }
+
+  .mobile-tab-btn {
+    min-height: 38px;
+    font-size: 9.5px;
+    letter-spacing: 0;
+    padding: 0 2px;
+  }
+}
+
+
+/* =========================================================
+   MOBILE FINAL POLISH
+   Ultima passata mobile: compattezza, gerarchia, leggibilità
+   ========================================================= */
+
+@media (max-width: 768px) {
+  html,
+  body {
+    overflow-x: hidden;
+  }
+
+  body {
+    background:
+      radial-gradient(circle at 0% 12%, rgba(35,164,84,.12), transparent 18rem),
+      radial-gradient(circle at 100% 12%, rgba(214,64,64,.12), transparent 18rem),
+      linear-gradient(180deg, #fbfdff 0%, #f3f8ff 100%);
+  }
+
+  .allstar-page {
+    padding: 10px 10px 80px;
+  }
+
+  /* HERO più corto sul telefono */
+  .allstar-hero {
+    min-height: auto;
+    padding: 18px 12px 20px;
+    border-radius: 22px;
+    margin-bottom: 8px;
+  }
+
+  .hero-meta {
+    gap: 6px;
+    justify-content: center;
+  }
+
+  .hero-meta span {
+    padding: 7px 9px;
+    font-size: 11px;
+  }
+
+  .hero-title-box {
+    margin-top: 18px;
+  }
+
+  .hero-star {
+    font-size: 24px;
+  }
+
+  .hero-title-box h1 {
+    font-size: clamp(34px, 12vw, 54px);
+    letter-spacing: .035em;
+    line-height: .95;
+  }
+
+  .hero-title-box h2 {
+    display: grid;
+    gap: 2px;
+    font-size: 15px;
+    line-height: 1.12;
+  }
+
+  .hero-title-box .versus {
+    padding: 0;
+    font-size: 12px;
+  }
+
+  .hero-title-box p {
+    margin-top: 8px;
+    font-size: 16px;
+  }
+
+  .hero-festa-note {
+    margin-top: 9px;
+    font-size: 10px;
+    letter-spacing: .08em;
+  }
+
+  .hero-badge {
+    margin-top: 14px;
+    padding: 8px 11px;
+    font-size: 11px;
+  }
+
+  /* TAB più stabile */
+  .mobile-allstar-tabs {
+    top: 58px;
+    margin: 8px 0 12px;
+    border-radius: 16px;
+  }
+
+  .mobile-tab-btn {
+    font-size: 10px;
+    min-height: 38px;
+  }
+
+  /* Card generali */
+  .info-card,
+  .vote-card,
+  .race-section,
+  .team-panel,
+  .clock-panel,
+  .pool-section,
+  .admin-panel {
+    border-radius: 20px;
+    box-shadow: 0 12px 28px rgba(18,45,86,.09);
+  }
+
+  .draft-info-strip {
+    gap: 8px;
+    margin: 10px 0;
+  }
+
+  .info-card {
+    padding: 12px;
+    gap: 9px;
+  }
+
+  .info-icon {
+    font-size: 20px;
+  }
+
+  .info-card strong {
+    font-size: 10.5px;
+  }
+
+  .info-card small {
+    font-size: 12px;
+  }
+
+  /* Vota */
+  .vote-card {
+    padding: 14px;
+  }
+
+  .section-head {
+    margin-bottom: 12px;
+  }
+
+  .section-head h3 {
+    font-size: 21px;
+    line-height: 1.05;
+  }
+
+  .section-head p {
+    font-size: 13px;
+    line-height: 1.35;
+  }
+
+  .vote-week-pill {
+    align-self: flex-start;
+    padding: 8px 11px;
+    font-size: 10px;
+  }
+
+  .vote-form {
+    gap: 9px;
+  }
+
+  .vote-conference-select,
+  .vote-slot {
+    border-radius: 16px;
+    padding: 11px;
+    gap: 10px;
+  }
+
+  .vote-conference-select span,
+  .vote-slot strong {
+    font-size: 11px;
+  }
+
+  .vote-slot small {
+    font-size: 12px;
+    line-height: 1.25;
+  }
+
+  .vote-medal {
+    width: 46px;
+    height: 46px;
+    border-radius: 15px;
+    font-size: 18px;
+  }
+
+  .vote-slot select,
+  .vote-conference-select select {
+    min-height: 42px;
+  }
+
+  .vote-submit-btn {
+    width: 100%;
+    justify-self: stretch;
+    min-height: 46px;
+  }
+
+  /* Stelle settimana */
+  .star-of-week-card {
+    padding-bottom: 16px;
+  }
+
+  .star-card-icon {
+    font-size: 42px;
+    margin: 8px 0 2px;
+  }
+
+  .week-stars-split {
+    gap: 10px;
+  }
+
+  .week-stars-split > div {
+    padding: 12px;
+    border-radius: 16px;
+  }
+
+  .week-stars-split h3 {
+    font-size: 20px;
+    line-height: 1.1;
+  }
+
+  .week-stars-split p {
+    font-size: 12.5px;
+    line-height: 1.35;
+  }
+
+  /* Classifiche */
+  .race-section {
+    padding: 14px;
+  }
+
+  .race-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    width: 100%;
+  }
+
+  .race-actions .ghost-btn {
+    min-height: 40px;
+    font-size: 11px;
+  }
+
+  .ranking-card,
+  .auto-pick-card,
+  .trend-card,
+  .wide-auto-pick {
+    border-radius: 17px;
+    padding: 12px;
+  }
+
+  .ranking-card h4,
+  .wide-auto-pick h4 {
+    font-size: 15px;
+    line-height: 1.15;
+  }
+
+  .ranking-subtitle {
+    font-size: 12px;
+  }
+
+  .ranking-row {
+    grid-template-columns: 30px 1fr auto;
+    gap: 8px;
+    padding: 9px;
+    border-radius: 13px;
+  }
+
+  .ranking-pos {
+    width: 28px;
+    height: 28px;
+    border-radius: 9px;
+  }
+
+  .ranking-player strong {
+    font-size: 13px;
+  }
+
+  .ranking-player small,
+  .ranking-points {
+    font-size: 11.5px;
+  }
+
+  .auto-badge {
+    grid-column: 2 / -1;
+    width: fit-content;
+    margin-top: 2px;
+  }
+
+  .auto-pick-row {
+    grid-template-columns: 54px 1fr;
+    padding: 10px;
+    border-radius: 14px;
+  }
+
+  .pick-number-pill {
+    padding: 8px 6px;
+    border-radius: 12px;
+    font-size: 13px;
+  }
+
+  .auto-pick-row strong {
+    font-size: 13px;
+  }
+
+  .auto-pick-row small {
+    font-size: 12px;
+  }
+
+  /* Draft */
+  .draft-arena {
+    gap: 10px;
+  }
+
+  .team-header {
+    padding: 14px;
+    gap: 12px;
+  }
+
+  .conference-crest {
+    width: 52px;
+    height: 52px;
+    border-radius: 16px;
+    font-size: 20px;
+  }
+
+  .team-header h3 {
+    font-size: 22px;
+    line-height: 1.08;
+  }
+
+  .team-header p {
+    font-size: 12px;
+    letter-spacing: .12em;
+  }
+
+  .team-header span {
+    font-size: 12px;
+  }
+
+  .role-list {
+    padding: 12px;
+    gap: 10px;
+  }
+
+  .role-group {
+    grid-template-columns: 34px 1fr;
+    gap: 8px;
+  }
+
+  .role-badge {
+    height: 34px;
+    border-radius: 10px;
+  }
+
+  .player-mini {
+    padding: 8px 9px;
+    border-radius: 11px;
+  }
+
+  .player-mini strong {
+    font-size: 12.5px;
+  }
+
+  .player-mini b {
+    font-size: 12px;
+  }
+
+  .clock-panel {
+    padding: 16px;
+  }
+
+  .clock-kicker {
+    font-size: 12px;
+  }
+
+  #currentPickBig {
+    font-size: clamp(70px, 25vw, 102px);
+  }
+
+  #currentConferenceBig {
+    max-width: 100%;
+    font-size: 12px;
+    padding: 9px 12px;
+  }
+
+  .last-picks {
+    margin-top: 16px;
+    padding: 11px;
+  }
+
+  .last-pick-row {
+    grid-template-columns: 28px 1fr;
+  }
+
+  .last-pick-row em {
+    grid-column: 2 / -1;
+  }
+
+  /* Pool */
+  .pool-section {
+    padding: 14px;
+  }
+
+  .pool-filters {
+    gap: 8px;
+  }
+
+  .pool-filters input,
+  .pool-filters select {
+    min-height: 42px;
+    font-size: 13px;
+  }
+
+  .table-wrap {
+    border: 1px solid rgba(16,33,63,.08);
+    border-radius: 16px;
+    background: rgba(255,255,255,.70);
+  }
+
+  .players-table th,
+  .players-table td {
+    padding: 10px 8px;
+    font-size: 12px;
+  }
+
+  .pick-btn {
+    padding: 8px 10px;
+    font-size: 11px;
+  }
+
+  /* Admin */
+  .admin-toggle {
+    padding: 13px 14px;
+    font-size: 13px;
+  }
+
+  .admin-body {
+    padding: 13px;
+    display: none;
+  }
+
+  .admin-body.open {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  .admin-btn {
+    width: 100%;
+    min-height: 42px;
+  }
+
+  /* Evita micro overflow da bottoni/select */
+  button,
+  select,
+  input {
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 390px) {
+  .hero-title-box h1 {
+    font-size: 31px;
+  }
+
+  .mobile-tab-btn {
+    font-size: 9px;
+  }
+
+  .section-head h3 {
+    font-size: 19px;
+  }
+
+  .race-actions {
+    grid-template-columns: 1fr;
+  }
+}
