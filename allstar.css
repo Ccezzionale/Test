@@ -1293,3 +1293,159 @@ body {
     width: fit-content;
   }
 }
+
+
+/* =========================================================
+   TOP 5 PER CONFERENCE - PATCH
+   ========================================================= */
+
+.vote-conference-select {
+  display: grid;
+  grid-template-columns: 180px 1fr;
+  align-items: center;
+  gap: 14px;
+  padding: 14px;
+  border-radius: 18px;
+  border: 1px solid rgba(16,33,63,.08);
+  background:
+    linear-gradient(90deg, rgba(27,126,255,.06), rgba(255,255,255,.9), rgba(242,182,63,.08));
+}
+
+.vote-conference-select span {
+  color: #17345a;
+  font-weight: 950;
+  text-transform: uppercase;
+  font-size: 12px;
+  letter-spacing: .04em;
+}
+
+.vote-conference-select select {
+  width: 100%;
+  background: rgba(255,255,255,.9);
+  border: 1px solid rgba(16,33,63,.12);
+  color: var(--as-text);
+  border-radius: 13px;
+  padding: 11px 12px;
+  outline: none;
+}
+
+.week-stars-split {
+  display: grid;
+  gap: 18px;
+  margin-top: 16px;
+}
+
+.week-stars-split > div {
+  padding: 14px;
+  border-radius: 18px;
+  background: rgba(255,255,255,.72);
+  border: 1px solid rgba(16,33,63,.08);
+}
+
+.week-stars-split small {
+  display: block;
+  color: var(--as-muted);
+  font-weight: 950;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  margin-bottom: 5px;
+}
+
+.week-stars-split h3 {
+  font-size: 24px;
+}
+
+.week-stars-split p {
+  margin-bottom: 0;
+}
+
+.race-layout.two-rankings {
+  grid-template-columns: 1fr 1fr;
+}
+
+.ranking-card.ranking-league {
+  background:
+    radial-gradient(circle at top left, rgba(27,126,255,.11), transparent 15rem),
+    rgba(249,252,255,.82);
+}
+
+.ranking-card.ranking-championship {
+  background:
+    radial-gradient(circle at top right, rgba(242,182,63,.16), transparent 15rem),
+    rgba(249,252,255,.82);
+}
+
+.ranking-subtitle {
+  margin: -5px 0 14px;
+  color: var(--as-muted);
+  font-size: 13px;
+  line-height: 1.35;
+}
+
+.ranking-empty {
+  min-height: 132px;
+  display: flex;
+  align-items: center;
+  padding: 18px;
+  border-radius: 16px;
+  background: white;
+  border: 1px solid rgba(16,33,63,.07);
+}
+
+.ranking-empty strong {
+  display: block;
+  color: #17345a;
+  margin-bottom: 5px;
+}
+
+.ranking-empty small {
+  display: block;
+  color: var(--as-muted);
+  line-height: 1.4;
+}
+
+.wide-auto-pick {
+  margin-top: 14px;
+  border: 1px solid rgba(16,33,63,.08);
+  border-radius: 20px;
+  padding: 14px;
+  background:
+    linear-gradient(90deg, rgba(27,126,255,.05), rgba(255,255,255,.86), rgba(242,182,63,.08));
+}
+
+.auto-pick-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.duplicate-badge {
+  display: inline-flex;
+  width: fit-content;
+  margin-top: 5px;
+  border-radius: 999px;
+  padding: 4px 8px;
+  background: rgba(214,64,64,.10);
+  color: #b72e2e;
+  font-size: 10px;
+  font-weight: 950;
+  text-transform: uppercase;
+}
+
+@media (max-width: 1120px) {
+  .race-layout.two-rankings {
+    grid-template-columns: 1fr;
+  }
+
+  .auto-pick-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .vote-conference-select {
+    grid-template-columns: 1fr;
+  }
+
+  .auto-pick-grid {
+    grid-template-columns: 1fr;
+  }
+}

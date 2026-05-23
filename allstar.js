@@ -1,7 +1,6 @@
 // =========================================================
-// ALL STAR GAME 2027 - VOTAZIONI + DRAFT
+// ALL STAR GAME 2027 - TOP 5 PER CONFERENCE + DRAFT
 // Versione front-end con dati demo + localStorage.
-// Pronta per collegamento Supabase nella fase successiva.
 // =========================================================
 
 // import { supabase } from "./supabase.js";
@@ -13,9 +12,9 @@ const AUTO_PICK_COUNT = 6;
 const CONFERENCE_LEAGUE = "Conference League";
 const CONFERENCE_CHAMPIONSHIP = "Conference Championship";
 
-const STORAGE_KEY = "lega_eroi_allstar_2027_picks_v2";
-const STATE_KEY = "lega_eroi_allstar_2027_state_v2";
-const VOTES_KEY = "lega_eroi_allstar_2027_votes_v1";
+const STORAGE_KEY = "lega_eroi_allstar_2027_picks_v3";
+const STATE_KEY = "lega_eroi_allstar_2027_state_v3";
+const VOTES_KEY = "lega_eroi_allstar_2027_votes_v3";
 const ACTIVE_WEEK_KEY = "lega_eroi_allstar_2027_active_week_v1";
 
 const demoPlayers = [
@@ -58,22 +57,25 @@ const els = {
   navMenu: document.getElementById("navMenu"),
 
   draftStatusLabel: document.getElementById("draftStatusLabel"),
-
   activeWeekInfo: document.getElementById("activeWeekInfo"),
   voteWeekPill: document.getElementById("voteWeekPill"),
-  voteLeaderInfo: document.getElementById("voteLeaderInfo"),
+  leagueVoteLeaderInfo: document.getElementById("leagueVoteLeaderInfo"),
+  champVoteLeaderInfo: document.getElementById("champVoteLeaderInfo"),
+  voterConference: document.getElementById("voterConference"),
   voteForm: document.getElementById("voteForm"),
   vote10: document.getElementById("vote10"),
   vote5: document.getElementById("vote5"),
   vote2: document.getElementById("vote2"),
   voteFeedback: document.getElementById("voteFeedback"),
-  weekStarName: document.getElementById("weekStarName"),
-  weekStarDetails: document.getElementById("weekStarDetails"),
-  weekStarPoints: document.getElementById("weekStarPoints"),
-  weekStarTotal: document.getElementById("weekStarTotal"),
-  voteRankingList: document.getElementById("voteRankingList"),
+
+  leagueWeekStarName: document.getElementById("leagueWeekStarName"),
+  leagueWeekStarDetails: document.getElementById("leagueWeekStarDetails"),
+  champWeekStarName: document.getElementById("champWeekStarName"),
+  champWeekStarDetails: document.getElementById("champWeekStarDetails"),
+
+  leagueVoteRankingList: document.getElementById("leagueVoteRankingList"),
+  champVoteRankingList: document.getElementById("champVoteRankingList"),
   autoPickPreview: document.getElementById("autoPickPreview"),
-  trendBars: document.getElementById("trendBars"),
   demoVotesBtn: document.getElementById("demoVotesBtn"),
   resetVotesBtn: document.getElementById("resetVotesBtn"),
   generateAutoPicksBtn: document.getElementById("generateAutoPicksBtn"),
@@ -126,7 +128,6 @@ function bindEvents() {
   els.voteForm.addEventListener("submit", handleVoteSubmit);
   els.demoVotesBtn.addEventListener("click", addDemoVotes);
   els.resetVotesBtn.addEventListener("click", resetVotes);
-
   els.generateAutoPicksBtn.addEventListener("click", generateAutoPicksFromVotes);
 
   [els.searchInput, els.roleFilter, els.teamFilter, els.originFilter, els.conferenceFilter].forEach((el) => {
@@ -221,10 +222,6 @@ function loadActiveWeek() {
   return Number(localStorage.getItem(ACTIVE_WEEK_KEY) || 1);
 }
 
-function saveActiveWeek() {
-  localStorage.setItem(ACTIVE_WEEK_KEY, String(activeWeek));
-}
-
 function populateVoteSelects() {
   const options = players
     .slice()
@@ -239,6 +236,8 @@ function populateVoteSelects() {
 
 function handleVoteSubmit(event) {
   event.preventDefault();
+
+  const voterConference = els.voterConference.value;
 
   const selected = [
     { playerId: els.vote10.value, points: 10, slot: "first" },
@@ -257,8 +256,8 @@ function handleVoteSubmit(event) {
     return;
   }
 
-  // Demo voter locale. Con Supabase useremo team_id reale da profiles.
-  const demoVoterTeamId = "demo-team";
+  // Demo voter locale. Con Supabase sarà profiles.team_id e teams.conference.
+  const demoVoterTeamId = `demo-team-${voterConference}`;
 
   votes = votes.filter((vote) => !(vote.week === activeWeek && vote.voterTeamId === demoVoterTeamId));
 
@@ -269,6 +268,7 @@ function handleVoteSubmit(event) {
       season: 2027,
       week: activeWeek,
       voterTeamId: demoVoterTeamId,
+      voterConference,
       playerId: vote.playerId,
       player,
       points: vote.points,
@@ -278,7 +278,7 @@ function handleVoteSubmit(event) {
   });
 
   saveVotes();
-  showVoteFeedback("Voti salvati. La corsa alle stelle si aggiorna subito.");
+  showVoteFeedback(`Voti salvati per ${voterConference}.`);
   renderVotesArea();
 }
 
@@ -288,11 +288,20 @@ function showVoteFeedback(message, isError = false) {
 }
 
 function addDemoVotes() {
-  const sampleIds = ["p14", "p23", "p25", "p17", "p20", "p22", "p8", "p13", "p16", "p18", "p5", "p10"];
-  const demoTeams = ["Rubinkebab", "Bayern", "Bartowski", "Ibla", "PokerMantra", "Wildboys"];
+  const sampleLeague = ["p14", "p23", "p25", "p17", "p22", "p8", "p13", "p16"];
+  const sampleChamp = ["p20", "p14", "p24", "p10", "p18", "p5", "p25", "p23"];
 
-  demoTeams.forEach((teamName, idx) => {
+  addDemoVotesForConference(CONFERENCE_LEAGUE, sampleLeague, ["Rubinkebab", "Bartowski", "Ibla", "Wildboys", "Pandinicoccolosini"]);
+  addDemoVotesForConference(CONFERENCE_CHAMPIONSHIP, sampleChamp, ["Bayern", "PokerMantra", "Golden Knights", "Disoneste", "Riverfilo"]);
+
+  saveVotes();
+  renderVotesArea();
+}
+
+function addDemoVotesForConference(conference, sampleIds, teams) {
+  teams.forEach((teamName, idx) => {
     const shuffled = sampleIds.slice().sort(() => Math.random() - 0.5);
+
     [
       { playerId: shuffled[0], points: 10, slot: "first" },
       { playerId: shuffled[1], points: 5, slot: "second" },
@@ -303,7 +312,8 @@ function addDemoVotes() {
         id: crypto.randomUUID ? crypto.randomUUID() : String(Date.now() + Math.random()),
         season: 2027,
         week: activeWeek,
-        voterTeamId: `demo-${teamName}-${idx}-${Date.now()}`,
+        voterTeamId: `demo-${conference}-${teamName}-${idx}-${Date.now()}`,
+        voterConference: conference,
         playerId: vote.playerId,
         player,
         points: vote.points,
@@ -312,9 +322,6 @@ function addDemoVotes() {
       });
     });
   });
-
-  saveVotes();
-  renderVotesArea();
 }
 
 function resetVotes() {
@@ -326,169 +333,178 @@ function resetVotes() {
   renderVotesArea();
 }
 
-function getVoteTotals() {
+function getVoteTotalsByConference(conference) {
   const map = new Map();
 
-  votes.forEach((vote) => {
-    if (!map.has(vote.playerId)) {
-      const player = players.find((p) => p.id === vote.playerId) || vote.player;
-      map.set(vote.playerId, {
-        playerId: vote.playerId,
-        player,
-        total: 0,
-        weekTotal: 0
-      });
-    }
+  votes
+    .filter((vote) => vote.voterConference === conference)
+    .forEach((vote) => {
+      if (!map.has(vote.playerId)) {
+        const player = players.find((p) => p.id === vote.playerId) || vote.player;
+        map.set(vote.playerId, {
+          playerId: vote.playerId,
+          player,
+          total: 0,
+          weekTotal: 0
+        });
+      }
 
-    const entry = map.get(vote.playerId);
-    entry.total += Number(vote.points || 0);
+      const entry = map.get(vote.playerId);
+      entry.total += Number(vote.points || 0);
 
-    if (vote.week === activeWeek) {
-      entry.weekTotal += Number(vote.points || 0);
-    }
-  });
+      if (vote.week === activeWeek) {
+        entry.weekTotal += Number(vote.points || 0);
+      }
+    });
 
   return [...map.values()]
     .filter((entry) => entry.player)
     .sort((a, b) => b.total - a.total || a.player.name.localeCompare(b.player.name));
 }
 
-function getWeekRanking() {
-  return getVoteTotals()
+function getWeekRankingByConference(conference) {
+  return getVoteTotalsByConference(conference)
     .filter((entry) => entry.weekTotal > 0)
     .sort((a, b) => b.weekTotal - a.weekTotal || a.player.name.localeCompare(b.player.name));
 }
 
 function renderVotesArea() {
-  const totals = getVoteTotals();
-  const weekRanking = getWeekRanking();
-  const leader = totals[0];
+  const leagueTotals = getVoteTotalsByConference(CONFERENCE_LEAGUE);
+  const champTotals = getVoteTotalsByConference(CONFERENCE_CHAMPIONSHIP);
+
+  const leagueLeader = leagueTotals[0];
+  const champLeader = champTotals[0];
 
   els.activeWeekInfo.textContent = `Week ${activeWeek}`;
   els.voteWeekPill.textContent = `Week ${activeWeek}`;
-  els.voteLeaderInfo.textContent = leader ? `${leader.player.name} (${leader.total} pt)` : "-";
+  els.leagueVoteLeaderInfo.textContent = leagueLeader ? `${leagueLeader.player.name} (${leagueLeader.total} pt)` : "-";
+  els.champVoteLeaderInfo.textContent = champLeader ? `${champLeader.player.name} (${champLeader.total} pt)` : "-";
 
-  renderWeekStar(weekRanking, totals);
-  renderRanking(totals);
-  renderAutoPickPreview(totals);
-  renderTrendBars(totals);
+  renderWeekStars(leagueTotals, champTotals);
+  renderConferenceRanking(els.leagueVoteRankingList, leagueTotals, CONFERENCE_LEAGUE);
+  renderConferenceRanking(els.champVoteRankingList, champTotals, CONFERENCE_CHAMPIONSHIP);
+  renderAutoPickPreview(leagueTotals, champTotals);
 }
 
-function renderWeekStar(weekRanking, totals) {
-  const star = weekRanking[0];
+function renderWeekStars() {
+  const leagueStar = getWeekRankingByConference(CONFERENCE_LEAGUE)[0];
+  const champStar = getWeekRankingByConference(CONFERENCE_CHAMPIONSHIP)[0];
 
+  renderSingleWeekStar(leagueStar, els.leagueWeekStarName, els.leagueWeekStarDetails);
+  renderSingleWeekStar(champStar, els.champWeekStarName, els.champWeekStarDetails);
+}
+
+function renderSingleWeekStar(star, nameEl, detailsEl) {
   if (!star) {
-    els.weekStarName.textContent = "-";
-    els.weekStarDetails.textContent = "Nessun voto registrato per questa settimana.";
-    els.weekStarPoints.textContent = "0";
-    els.weekStarTotal.textContent = "0";
+    nameEl.textContent = "-";
+    detailsEl.textContent = "Nessun voto registrato.";
     return;
   }
 
-  els.weekStarName.textContent = star.player.name;
-  els.weekStarDetails.textContent = `${star.player.role} · ${star.player.serieATeam} · ${star.player.quotation} Q`;
-  els.weekStarPoints.textContent = String(star.weekTotal);
-  els.weekStarTotal.textContent = String(star.total);
+  nameEl.textContent = star.player.name;
+  detailsEl.textContent = `${star.weekTotal} pt questa week · Totale ${star.total} · ${star.player.role} · ${star.player.serieATeam}`;
 }
 
-function renderRanking(totals) {
-  const top = totals.slice(0, 12);
+function renderConferenceRanking(container, totals, conference) {
+  const top = totals.slice(0, 5);
 
   if (!top.length) {
-    els.voteRankingList.innerHTML = `<div class="ranking-row"><div class="ranking-player"><strong>Nessun voto registrato</strong><small>La corsa parte appena arrivano i primi voti.</small></div></div>`;
+    container.innerHTML = `
+      <div class="ranking-empty">
+        <div>
+          <strong>Nessun voto registrato</strong>
+          <small>La Top 5 ${escapeHtml(conference)} apparirà appena arrivano i primi voti.</small>
+        </div>
+      </div>
+    `;
     return;
   }
 
-  els.voteRankingList.innerHTML = top.map((entry, index) => {
+  container.innerHTML = top.map((entry, index) => {
     const pos = index + 1;
-    const isAuto = pos <= AUTO_PICK_COUNT;
-
     return `
-      <div class="ranking-row ${isAuto ? "auto-zone" : ""}">
+      <div class="ranking-row auto-zone">
         <span class="ranking-pos">${pos}</span>
         <span class="ranking-player">
           <strong>${escapeHtml(entry.player.name)}</strong>
           <small>${escapeHtml(entry.player.role)} · ${escapeHtml(entry.player.serieATeam)} · Q. ${entry.player.quotation}</small>
         </span>
         <span class="ranking-points">${entry.total} pt</span>
-        ${isAuto ? `<span class="auto-badge">Auto Pick</span>` : `<span></span>`}
+        <span class="auto-badge">Top 5</span>
       </div>
     `;
   }).join("");
 }
 
-function renderAutoPickPreview(totals) {
-  const topSix = totals.slice(0, AUTO_PICK_COUNT);
+function getAutoPickPreviewRows(leagueTotals, champTotals) {
+  return [
+    { pickNumber: 1, conference: CONFERENCE_LEAGUE, entry: leagueTotals[0] },
+    { pickNumber: 2, conference: CONFERENCE_CHAMPIONSHIP, entry: champTotals[0] },
+    { pickNumber: 3, conference: CONFERENCE_LEAGUE, entry: leagueTotals[1] },
+    { pickNumber: 4, conference: CONFERENCE_CHAMPIONSHIP, entry: champTotals[1] },
+    { pickNumber: 5, conference: CONFERENCE_LEAGUE, entry: leagueTotals[2] },
+    { pickNumber: 6, conference: CONFERENCE_CHAMPIONSHIP, entry: champTotals[2] }
+  ];
+}
 
-  if (!topSix.length) {
-    els.autoPickPreview.innerHTML = `<div class="auto-pick-row"><div><strong>Nessuna auto pick provvisoria</strong><small>Servono voti per generare la top 6.</small></div></div>`;
-    return;
-  }
+function renderAutoPickPreview(leagueTotals, champTotals) {
+  const rows = getAutoPickPreviewRows(leagueTotals, champTotals);
+  const selectedIds = rows.filter((row) => row.entry).map((row) => row.entry.playerId);
+  const duplicateIds = selectedIds.filter((id, index) => selectedIds.indexOf(id) !== index);
 
-  els.autoPickPreview.innerHTML = topSix.map((entry, index) => {
-    const pickNumber = index + 1;
-    const team = pickNumber % 2 === 1 ? CONFERENCE_LEAGUE : CONFERENCE_CHAMPIONSHIP;
-    const className = team === CONFERENCE_CHAMPIONSHIP ? "championship" : "league";
+  els.autoPickPreview.innerHTML = rows.map((row) => {
+    const className = row.conference === CONFERENCE_CHAMPIONSHIP ? "championship" : "league";
+
+    if (!row.entry) {
+      return `
+        <div class="auto-pick-row ${className}">
+          <span class="pick-number-pill">Pick ${row.pickNumber}</span>
+          <div>
+            <strong>In attesa</strong>
+            <small>${escapeHtml(row.conference)} · servono voti</small>
+          </div>
+        </div>
+      `;
+    }
+
+    const isDuplicate = duplicateIds.includes(row.entry.playerId);
 
     return `
       <div class="auto-pick-row ${className}">
-        <span class="pick-number-pill">Pick ${pickNumber}</span>
+        <span class="pick-number-pill">Pick ${row.pickNumber}</span>
         <div>
-          <strong>${escapeHtml(entry.player.name)}</strong>
-          <small>${escapeHtml(team)} · ${entry.total} pt</small>
+          <strong>${escapeHtml(row.entry.player.name)}</strong>
+          <small>${escapeHtml(row.conference)} · ${row.entry.total} pt</small>
+          ${isDuplicate ? `<span class="duplicate-badge">Doppione manuale</span>` : ""}
         </div>
-      </div>
-    `;
-  }).join("");
-}
-
-function renderTrendBars(totals) {
-  const topSix = totals.slice(0, AUTO_PICK_COUNT);
-  const max = topSix[0]?.total || 1;
-
-  if (!topSix.length) {
-    els.trendBars.innerHTML = `<div class="trend-row"><div><div class="trend-name">Nessun dato</div><div class="trend-track"><div class="trend-fill" style="width:0%"></div></div></div><span class="trend-points">0</span></div>`;
-    return;
-  }
-
-  els.trendBars.innerHTML = topSix.map((entry) => {
-    const width = Math.max(4, Math.round((entry.total / max) * 100));
-    return `
-      <div class="trend-row">
-        <div>
-          <div class="trend-name">${escapeHtml(entry.player.name)}</div>
-          <div class="trend-track"><div class="trend-fill" style="width:${width}%"></div></div>
-        </div>
-        <span class="trend-points">${entry.total}</span>
       </div>
     `;
   }).join("");
 }
 
 function generateAutoPicksFromVotes() {
-  const totals = getVoteTotals().slice(0, AUTO_PICK_COUNT);
+  const leagueTotals = getVoteTotalsByConference(CONFERENCE_LEAGUE);
+  const champTotals = getVoteTotalsByConference(CONFERENCE_CHAMPIONSHIP);
+  const rows = getAutoPickPreviewRows(leagueTotals, champTotals);
 
-  if (totals.length < AUTO_PICK_COUNT) {
-    alert("Servono almeno 6 giocatori votati per generare le auto pick.");
+  if (rows.some((row) => !row.entry)) {
+    alert("Servono almeno 3 giocatori votati per ciascuna conference.");
     return;
   }
 
-  const ok = confirm("Generare le prime 6 auto-pick dalla classifica voti attuale?");
+  const ok = confirm("Generare le prime 6 auto-pick dalle due Top 5 di conference?");
   if (!ok) return;
 
   picks = picks.filter((pick) => pick.pickNumber > AUTO_PICK_COUNT);
 
-  totals.forEach((entry, index) => {
-    const pickNumber = index + 1;
-    const conference = pickNumber % 2 === 1 ? CONFERENCE_LEAGUE : CONFERENCE_CHAMPIONSHIP;
-
+  rows.forEach((row) => {
     picks.push({
-      pickNumber,
-      conference,
-      playerId: entry.playerId,
-      player: entry.player,
+      pickNumber: row.pickNumber,
+      conference: row.conference,
+      playerId: row.entry.playerId,
+      player: row.entry.player,
       source: "vote",
-      pointsTotal: entry.total,
+      pointsTotal: row.entry.total,
       createdAt: new Date().toISOString()
     });
   });

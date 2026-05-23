@@ -89,18 +89,18 @@
       </article>
 
       <article class="info-card">
-        <span class="info-icon">⭐</span>
+        <span class="info-icon">🔵</span>
         <div>
-          <strong>Leader provvisorio</strong>
-          <small id="voteLeaderInfo">-</small>
+          <strong>Leader League</strong>
+          <small id="leagueVoteLeaderInfo">-</small>
         </div>
       </article>
 
       <article class="info-card">
-        <span class="info-icon">🎯</span>
+        <span class="info-icon">🟡</span>
         <div>
-          <strong>Auto Pick</strong>
-          <small>Top 6 a fine stagione</small>
+          <strong>Leader Championship</strong>
+          <small id="champVoteLeaderInfo">-</small>
         </div>
       </article>
     </section>
@@ -111,12 +111,20 @@
         <div class="section-head compact">
           <div>
             <h3>Vota le stelle</h3>
-            <p>Scegli tre giocatori dalla lista ufficiale Fantacalcio. Puoi modificare i voti finché la settimana resta aperta.</p>
+            <p>Scegli tre giocatori dalla lista ufficiale Fantacalcio. La classifica viene divisa in base alla conference della squadra che vota.</p>
           </div>
           <span class="vote-week-pill" id="voteWeekPill">Week 1</span>
         </div>
 
         <form id="voteForm" class="vote-form">
+          <label class="vote-conference-select">
+            <span>Conference votante</span>
+            <select id="voterConference">
+              <option value="Conference League">Conference League</option>
+              <option value="Conference Championship">Conference Championship</option>
+            </select>
+          </label>
+
           <label class="vote-slot vote-slot-gold">
             <span class="vote-medal">10</span>
             <div>
@@ -156,19 +164,21 @@
       </article>
 
       <article class="vote-card star-of-week-card">
-        <div class="star-card-kicker">Stella della settimana</div>
+        <div class="star-card-kicker">Stelle della settimana</div>
         <div class="star-card-icon">🌟</div>
-        <h3 id="weekStarName">-</h3>
-        <p id="weekStarDetails">Nessun voto registrato per questa settimana.</p>
 
-        <div class="mini-stat-row">
-          <span>Punti week</span>
-          <strong id="weekStarPoints">0</strong>
-        </div>
+        <div class="week-stars-split">
+          <div>
+            <small>Conference League</small>
+            <h3 id="leagueWeekStarName">-</h3>
+            <p id="leagueWeekStarDetails">Nessun voto registrato.</p>
+          </div>
 
-        <div class="mini-stat-row">
-          <span>Totale stagione</span>
-          <strong id="weekStarTotal">0</strong>
+          <div>
+            <small>Conference Championship</small>
+            <h3 id="champWeekStarName">-</h3>
+            <p id="champWeekStarDetails">Nessun voto registrato.</p>
+          </div>
         </div>
       </article>
     </section>
@@ -178,7 +188,7 @@
       <div class="section-head">
         <div>
           <h3>Corsa alle Stelle</h3>
-          <p>La classifica live delle votazioni. I primi 6 diventano auto-pick provvisorie.</p>
+          <p>Top 5 live votata dalle due Conference. I doppioni restano visibili e li puoi gestire manualmente.</p>
         </div>
         <div class="race-actions">
           <button id="demoVotesBtn" class="ghost-btn">Aggiungi voti demo</button>
@@ -186,23 +196,27 @@
         </div>
       </div>
 
-      <div class="race-layout">
-        <article class="ranking-card">
-          <h4>Classifica voti live</h4>
-          <div id="voteRankingList" class="ranking-list"></div>
+      <div class="race-layout two-rankings">
+        <article class="ranking-card ranking-league">
+          <h4>Top 5 Conference League</h4>
+          <p class="ranking-subtitle">Voti espressi dalle squadre della Conference League</p>
+          <div id="leagueVoteRankingList" class="ranking-list"></div>
         </article>
 
-        <article class="auto-pick-card">
-          <h4>Prime pick se il voto finisse oggi</h4>
-          <div id="autoPickPreview" class="auto-pick-list"></div>
-        </article>
-
-        <article class="trend-card">
-          <h4>Andamento top 6</h4>
-          <div id="trendBars" class="trend-bars"></div>
-          <small>Versione light: qui vediamo il totale live. Quando colleghiamo Supabase possiamo trasformarlo in grafico settimanale vero.</small>
+        <article class="ranking-card ranking-championship">
+          <h4>Top 5 Conference Championship</h4>
+          <p class="ranking-subtitle">Voti espressi dalle squadre della Conference Championship</p>
+          <div id="champVoteRankingList" class="ranking-list"></div>
         </article>
       </div>
+
+      <article class="auto-pick-card wide-auto-pick">
+        <h4>Prime pick provvisorie</h4>
+        <p class="ranking-subtitle">
+          Pick 1/3/5 dai voti League, Pick 2/4/6 dai voti Championship. Se ci sono doppioni, li sistemi manualmente.
+        </p>
+        <div id="autoPickPreview" class="auto-pick-list auto-pick-grid"></div>
+      </article>
     </section>
 
     <!-- DRAFT INFO STRIP -->
