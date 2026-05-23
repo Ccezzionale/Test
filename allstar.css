@@ -4050,3 +4050,38 @@ body {
     margin-top: 4px;
   }
 }
+
+
+/* =========================================================
+   SMALL FIXES V3
+   - ranking points more visible
+   - Conference League title on two lines like Championship
+   ========================================================= */
+
+.ranking-points{
+  color:#ffffff !important;
+  text-shadow:0 0 10px rgba(255,255,255,.08);
+  opacity:1 !important;
+}
+
+.ranking-card.ranking-championship .ranking-points{
+  color:#8fc0ff !important;
+}
+
+.ranking-card.ranking-league .ranking-points{
+  color:#ff9aa8 !important;
+}
+
+.team-panel .team-header h3{
+  line-height:1.02 !important;
+}
+
+.team-panel.team-league .team-header h3{
+  max-width: 260px;
+}
+
+@media (max-width: 768px){
+  .ranking-points{
+    color:#ffffff !important;
+  }
+}
