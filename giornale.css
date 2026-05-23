@@ -927,3 +927,23 @@ button:hover{ transform:translateY(-1px); background:var(--navy-2); }
   letter-spacing: .08em;
   text-transform: uppercase;
 }
+
+@media (max-width: 768px){
+
+  .gazette-toolbar{
+    border-top: none !important;
+    border-bottom: none !important;
+  }
+
+  .front-hero,
+  .editorial-wide,
+  .lower-grid,
+  .next-section,
+  .paper-foot{
+    border-top: none !important;
+  }
+
+  .gazette-paper > section{
+    border-top: none !important;
+  }
+}
