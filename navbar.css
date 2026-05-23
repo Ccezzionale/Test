@@ -493,3 +493,408 @@ nav.site-nav{
     height: 28px;
   }
 }
+
+/* =========================================================
+   HOME DASHBOARD MOBILE-FIRST
+   ========================================================= */
+
+.home-dashboard{
+  padding-bottom: 36px;
+}
+
+.mobile-app-hero{
+  display: none;
+}
+
+.gazzetta-home-section{
+  width: 100%;
+}
+
+/* Desktop: manteniamo la Gazzetta protagonista */
+@media (min-width: 901px){
+  .gazzetta-home-section{
+    margin-top: 0;
+  }
+}
+
+/* Mobile: nuova home app-style */
+@media (max-width: 900px){
+
+  body{
+    background:
+      radial-gradient(520px 260px at 20% 0%, rgba(0, 116, 217, .24), transparent 65%),
+      linear-gradient(180deg, #eef5ff 0%, #f7f9fc 42%, #ffffff 100%) !important;
+    color: #10213d;
+  }
+
+  .home-wrap.home-dashboard{
+    padding: 14px 12px 88px;
+    max-width: 520px;
+    margin: 0 auto;
+  }
+
+  .mobile-app-hero{
+    display: block;
+  }
+
+  .team-card{
+    position: relative;
+    overflow: hidden;
+    border-radius: 26px;
+    padding: 18px;
+    background:
+      radial-gradient(180px 140px at 92% 8%, rgba(255, 204, 0, .34), transparent 60%),
+      linear-gradient(135deg, #003366 0%, #0057a8 58%, #0b76d1 100%);
+    color: #fff;
+    box-shadow: 0 18px 36px rgba(0, 45, 90, .24);
+  }
+
+  .team-card::after{
+    content: "";
+    position: absolute;
+    right: -38px;
+    bottom: -54px;
+    width: 170px;
+    height: 170px;
+    border-radius: 999px;
+    background: rgba(255,255,255,.08);
+  }
+
+  .team-card-main{
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .team-logo-shell{
+    width: 82px;
+    height: 82px;
+    border-radius: 24px;
+    padding: 8px;
+    background: rgba(255,255,255,.16);
+    border: 1px solid rgba(255,255,255,.26);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: inset 0 0 0 1px rgba(255,255,255,.10);
+    flex-shrink: 0;
+  }
+
+  .team-logo-shell img{
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+    filter: drop-shadow(0 8px 12px rgba(0,0,0,.22));
+  }
+
+  .team-info{
+    min-width: 0;
+  }
+
+  .team-kicker{
+    display: block;
+    font-size: .72rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: .12em;
+    color: #ffdf7e;
+    margin-bottom: 4px;
+  }
+
+  .team-info h1{
+    margin: 0;
+    font-size: 1.45rem;
+    line-height: 1.05;
+    letter-spacing: -.03em;
+    word-break: break-word;
+  }
+
+  .team-info p{
+    margin: 6px 0 0;
+    font-size: .88rem;
+    font-weight: 700;
+    color: rgba(255,255,255,.82);
+  }
+
+  .team-status-row{
+    position: relative;
+    z-index: 1;
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-top: 16px;
+  }
+
+  .status-pill{
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 28px;
+    padding: 6px 10px;
+    border-radius: 999px;
+    background: rgba(255,255,255,.14);
+    border: 1px solid rgba(255,255,255,.18);
+    color: rgba(255,255,255,.92);
+    font-size: .74rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: .06em;
+  }
+
+  .status-pill.status-live{
+    background: linear-gradient(135deg, #ffcc00, #f59e0b);
+    color: #14213d;
+    border-color: rgba(255,255,255,.34);
+  }
+
+  .quick-actions{
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 9px;
+    margin-top: 14px;
+  }
+
+  .quick-card{
+    min-height: 88px;
+    border-radius: 20px;
+    padding: 11px 7px;
+    background: #fff;
+    color: #10213d;
+    border: 1px solid rgba(0, 31, 63, .08);
+    box-shadow: 0 10px 24px rgba(0, 31, 63, .10);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    text-align: center;
+    text-decoration: none;
+    transition: transform .18s ease, box-shadow .18s ease;
+  }
+
+  .quick-card:active{
+    transform: scale(.97);
+  }
+
+  .quick-icon{
+    width: 34px;
+    height: 34px;
+    border-radius: 14px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: #eef5ff;
+    font-size: 1.1rem;
+  }
+
+  .quick-title{
+    font-size: .82rem;
+    font-weight: 1000;
+    line-height: 1;
+  }
+
+  .quick-sub{
+    font-size: .68rem;
+    font-weight: 800;
+    color: #6b7a90;
+    line-height: 1;
+  }
+
+  .quick-waiver .quick-icon{
+    background: rgba(255, 204, 0, .22);
+  }
+
+  .quick-draft .quick-icon{
+    background: rgba(0, 116, 217, .14);
+  }
+
+  .quick-trade .quick-icon{
+    background: rgba(34, 197, 94, .14);
+  }
+
+  .quick-classifica .quick-icon{
+    background: rgba(245, 158, 11, .18);
+  }
+
+  .home-section{
+    margin-top: 18px;
+  }
+
+  .section-heading{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 0 2px 9px;
+  }
+
+  .section-heading span{
+    font-size: .84rem;
+    font-weight: 1000;
+    color: #10213d;
+    text-transform: uppercase;
+    letter-spacing: .08em;
+  }
+
+  .featured-grid{
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  .feature-card{
+    min-height: 82px;
+    padding: 13px;
+    border-radius: 20px;
+    background: #fff;
+    border: 1px solid rgba(0,31,63,.08);
+    box-shadow: 0 10px 24px rgba(0,31,63,.08);
+    color: #10213d;
+    text-decoration: none;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+  }
+
+  .feature-icon{
+    width: 38px;
+    height: 38px;
+    border-radius: 15px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: #eef5ff;
+    flex-shrink: 0;
+  }
+
+  .feature-card strong{
+    display: block;
+    font-size: .92rem;
+    font-weight: 1000;
+    line-height: 1.1;
+  }
+
+  .feature-card small{
+    display: block;
+    margin-top: 4px;
+    font-size: .72rem;
+    font-weight: 700;
+    color: #6b7a90;
+    line-height: 1.15;
+  }
+
+  .gazzetta-preview-card{
+    margin-top: 18px;
+    border-radius: 24px;
+    padding: 17px;
+    background:
+      radial-gradient(180px 140px at 100% 0%, rgba(255,204,0,.24), transparent 64%),
+      linear-gradient(135deg, #111827 0%, #1f2937 58%, #334155 100%);
+    color: #fff;
+    box-shadow: 0 16px 32px rgba(15,23,42,.20);
+  }
+
+  .gazzetta-kicker{
+    display: block;
+    margin-bottom: 6px;
+    color: #ffdf7e;
+    font-size: .72rem;
+    font-weight: 1000;
+    text-transform: uppercase;
+    letter-spacing: .12em;
+  }
+
+  .gazzetta-preview-copy h2{
+    margin: 0;
+    font-size: 1.28rem;
+    line-height: 1.05;
+  }
+
+  .gazzetta-preview-copy p{
+    margin: 8px 0 14px;
+    color: rgba(255,255,255,.78);
+    font-size: .86rem;
+    line-height: 1.35;
+    font-weight: 650;
+  }
+
+  .gazzetta-preview-btn{
+    display: inline-flex;
+    width: 100%;
+    min-height: 42px;
+    align-items: center;
+    justify-content: center;
+    border-radius: 15px;
+    background: linear-gradient(135deg, #ffcc00, #f59e0b);
+    color: #14213d;
+    font-size: .88rem;
+    font-weight: 1000;
+    text-decoration: none;
+    box-shadow: 0 10px 20px rgba(245,158,11,.22);
+  }
+
+  .mini-link-grid{
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 9px;
+  }
+
+  .mini-link-grid a{
+    min-height: 46px;
+    padding: 12px 13px;
+    border-radius: 16px;
+    background: #fff;
+    border: 1px solid rgba(0,31,63,.08);
+    box-shadow: 0 8px 18px rgba(0,31,63,.07);
+    color: #10213d;
+    text-decoration: none;
+    font-size: .82rem;
+    font-weight: 950;
+    display: flex;
+    align-items: center;
+  }
+
+  .gazzetta-home-section{
+    margin-top: 22px;
+    border-radius: 22px;
+    overflow: hidden;
+    background: transparent;
+  }
+
+  .gazzetta-frame{
+    border-radius: 22px;
+  }
+}
+
+@media (max-width: 430px){
+  .quick-actions{
+    gap: 7px;
+  }
+
+  .quick-card{
+    min-height: 82px;
+    border-radius: 17px;
+    padding-left: 4px;
+    padding-right: 4px;
+  }
+
+  .quick-title{
+    font-size: .76rem;
+  }
+
+  .quick-sub{
+    font-size: .64rem;
+  }
+
+  .team-info h1{
+    font-size: 1.28rem;
+  }
+
+  .team-logo-shell{
+    width: 74px;
+    height: 74px;
+    border-radius: 22px;
+  }
+}
