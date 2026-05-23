@@ -334,7 +334,8 @@ function resizeGazzetta() {
       html.scrollHeight
     );
 
-    iframe.style.height = Math.ceil(h + 8) + "px";
+    const extra = window.innerWidth <= 900 ? 90 : 12;
+iframe.style.height = Math.ceil(h + extra) + "px";
   } catch (e) {
     console.warn("Impossibile auto-resize iframe:", e);
   }
@@ -346,9 +347,12 @@ function resizeGazzetta() {
       if (iframe) {
         iframe.addEventListener("load", () => {
           resizeGazzetta();
-          setTimeout(resizeGazzetta, 400);
-          setTimeout(resizeGazzetta, 1200);
-          setTimeout(resizeGazzetta, 2500);
+            setTimeout(resizeGazzetta, 400);
+  setTimeout(resizeGazzetta, 1200);
+  setTimeout(resizeGazzetta, 2500);
+  setTimeout(resizeGazzetta, 4000);
+  setTimeout(resizeGazzetta, 6000);
+
         });
       }
 
