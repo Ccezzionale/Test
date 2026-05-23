@@ -135,6 +135,10 @@ async function initTradeRoom() {
 applyMarketOpenState();
 }
 
+function isMobileTradeView() {
+  return window.matchMedia("(max-width: 700px)").matches;
+}
+
 function isDraftPhase() {
   return currentTradePhase === "draft";
 }
@@ -635,27 +639,35 @@ function renderMyAssets() {
 
 const myAssetGroups = [];
 
-if (showCurrentDraftAssets()) {
-  myAssetGroups.push(renderAssetGroup({
-    title: "Pick draft in corso",
-    emptyText: "Nessuna pick disponibile.",
-    items: myPicks,
-    inputClass: "my-pick-checkbox",
-    getValue: pick => pick[CONFIG.PICK_NUMBER_COL],
-    getLabel: formatPickLabel
-  }));
-}
+const myPlayersGroup = showPlayerAssets()
+  ? renderAssetGroup({
+      title: "Giocatori",
+      emptyText: "Nessun giocatore disponibile.",
+      items: myPlayers,
+      inputClass: "my-player-checkbox",
+      getValue: player => player[CONFIG.PICKS_ID_COL],
+      getLabel: formatPlayerLabel,
+      getBadgeHtml: renderTradeBadgeImages
+    })
+  : "";
 
-if (showPlayerAssets()) {
-  myAssetGroups.push(renderAssetGroup({
-    title: "Giocatori",
-    emptyText: "Nessun giocatore disponibile.",
-    items: myPlayers,
-    inputClass: "my-player-checkbox",
-    getValue: player => player[CONFIG.PICKS_ID_COL],
-    getLabel: formatPlayerLabel,
-    getBadgeHtml: renderTradeBadgeImages
-  }));
+const myCurrentPicksGroup = showCurrentDraftAssets()
+  ? renderAssetGroup({
+      title: "Pick draft in corso",
+      emptyText: "Nessuna pick disponibile.",
+      items: myPicks,
+      inputClass: "my-pick-checkbox",
+      getValue: pick => pick[CONFIG.PICK_NUMBER_COL],
+      getLabel: formatPickLabel
+    })
+  : "";
+
+if (isDraftPhase() && isMobileTradeView()) {
+  if (myPlayersGroup) myAssetGroups.push(myPlayersGroup);
+  if (myCurrentPicksGroup) myAssetGroups.push(myCurrentPicksGroup);
+} else {
+  if (myCurrentPicksGroup) myAssetGroups.push(myCurrentPicksGroup);
+  if (myPlayersGroup) myAssetGroups.push(myPlayersGroup);
 }
 
 if (showFuturePickAssets()) {
@@ -699,27 +711,35 @@ const theirFuturePicks = allFuturePicks.filter(
    
 const theirAssetGroups = [];
 
-if (showCurrentDraftAssets()) {
-  theirAssetGroups.push(renderAssetGroup({
-    title: `Pick draft in corso di ${selectedTeamName}`,
-    emptyText: `Nessuna pick disponibile per ${selectedTeamName}.`,
-    items: theirPicks,
-    inputClass: "their-pick-checkbox",
-    getValue: pick => pick[CONFIG.PICK_NUMBER_COL],
-    getLabel: formatPickLabel
-  }));
-}
+const theirPlayersGroup = showPlayerAssets()
+  ? renderAssetGroup({
+      title: `Giocatori di ${selectedTeamName}`,
+      emptyText: `Nessun giocatore disponibile per ${selectedTeamName}.`,
+      items: theirPlayers,
+      inputClass: "their-player-checkbox",
+      getValue: player => player[CONFIG.PICKS_ID_COL],
+      getLabel: formatPlayerLabel,
+      getBadgeHtml: renderTradeBadgeImages
+    })
+  : "";
 
-if (showPlayerAssets()) {
-  theirAssetGroups.push(renderAssetGroup({
-    title: `Giocatori di ${selectedTeamName}`,
-    emptyText: `Nessun giocatore disponibile per ${selectedTeamName}.`,
-    items: theirPlayers,
-    inputClass: "their-player-checkbox",
-    getValue: player => player[CONFIG.PICKS_ID_COL],
-    getLabel: formatPlayerLabel,
-    getBadgeHtml: renderTradeBadgeImages
-  }));
+const theirCurrentPicksGroup = showCurrentDraftAssets()
+  ? renderAssetGroup({
+      title: `Pick draft in corso di ${selectedTeamName}`,
+      emptyText: `Nessuna pick disponibile per ${selectedTeamName}.`,
+      items: theirPicks,
+      inputClass: "their-pick-checkbox",
+      getValue: pick => pick[CONFIG.PICK_NUMBER_COL],
+      getLabel: formatPickLabel
+    })
+  : "";
+
+if (isDraftPhase() && isMobileTradeView()) {
+  if (theirPlayersGroup) theirAssetGroups.push(theirPlayersGroup);
+  if (theirCurrentPicksGroup) theirAssetGroups.push(theirCurrentPicksGroup);
+} else {
+  if (theirCurrentPicksGroup) theirAssetGroups.push(theirCurrentPicksGroup);
+  if (theirPlayersGroup) theirAssetGroups.push(theirPlayersGroup);
 }
 
 if (showFuturePickAssets()) {
