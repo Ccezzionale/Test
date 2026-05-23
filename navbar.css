@@ -1854,3 +1854,47 @@ nav.site-nav{
     filter: drop-shadow(0 3px 5px rgba(6,19,38,.14));
   }
 }
+
+/* =========================================================
+   QUICK ACTIONS - ICONE PIU' GRANDI
+   ========================================================= */
+
+@media (max-width: 900px){
+
+  .quick-actions{
+    gap: 10px;
+  }
+
+  .quick-card{
+    min-height: 104px;
+    padding: 10px 6px 8px;
+    gap: 6px;
+  }
+
+  .quick-icon{
+    width: 56px;
+    height: 56px;
+    padding: 4px;
+    border-radius: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .quick-icon img{
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+  }
+
+  .quick-title{
+    font-size: .82rem;
+    line-height: 1;
+  }
+
+  .quick-sub{
+    font-size: .70rem;
+    line-height: 1;
+  }
+}
