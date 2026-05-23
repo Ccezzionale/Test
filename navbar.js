@@ -55,6 +55,21 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   });
 
+  document.querySelectorAll("#mainMenu a").forEach(function (link) {
+  link.addEventListener("click", function () {
+    if (!isMobile()) return;
+
+    const isSubmenuToggle = link.classList.contains("toggle-submenu");
+    if (isSubmenuToggle) return;
+
+    if (mainMenu) mainMenu.classList.remove("show");
+
+    document.querySelectorAll(".dropdown.show").forEach(function (item) {
+      item.classList.remove("show");
+    });
+  });
+});
+
   updateAuthButtons();
 });
 
