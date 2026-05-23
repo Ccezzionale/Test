@@ -1493,7 +1493,7 @@ nav.site-nav{
   /* IN EVIDENZA */
 
   .featured-grid{
-    gap: 11px;
+    gap: 11px;v
   }
 
   .feature-card{
@@ -1730,275 +1730,47 @@ nav.site-nav{
 }
 
 /* =========================================================
-   DESKTOP HOME DASHBOARD FIX
-   Mostra la nuova home anche su desktop
+   DESKTOP RESTORE: GAZZETTA COME HOME
+   MOBILE: DASHBOARD APP
    ========================================================= */
 
+.desktop-gazzetta-section{
+  display: none;
+}
+
 @media (min-width: 901px){
-
-  .home-wrap.home-dashboard{
-    max-width: 1180px;
-    margin: 0 auto;
-    padding: 42px 24px 72px;
-  }
-
-  .mobile-app-hero{
-    display: block !important;
-    max-width: 920px;
-    margin: 0 auto;
-  }
-
-  .team-card{
-    position: relative;
-    overflow: hidden;
-    max-width: 920px;
-    margin: 0 auto 24px;
-    padding: 26px 30px;
-    border-radius: 28px;
-    background:
-      radial-gradient(320px 220px at 100% 0%, rgba(212,164,55,.20), transparent 62%),
-      linear-gradient(135deg, #061326 0%, #0b223f 58%, #102b4e 100%);
-    border: 1px solid rgba(212,164,55,.36);
-    box-shadow:
-      0 22px 46px rgba(0,0,0,.26),
-      inset 0 1px 0 rgba(255,255,255,.08);
-    color: #fff;
-  }
-
-  .team-card-main{
-    position: relative;
-    z-index: 1;
-    display: flex;
-    align-items: center;
-    gap: 22px;
-  }
-
-  .team-logo-shell{
-    width: 118px;
-    height: 118px;
-    min-width: 118px;
-    max-width: 118px;
-    padding: 12px;
-    border-radius: 28px;
-    background: rgba(255,255,255,.10);
-    border: 1px solid rgba(212,164,55,.32);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .team-logo-shell img{
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-    display: block;
-    filter: drop-shadow(0 12px 18px rgba(0,0,0,.32));
-  }
-
-  .team-kicker{
-    display: block;
-    margin-bottom: 6px;
-    color: #d4a437;
-    font-size: .8rem;
-    font-weight: 1000;
-    text-transform: uppercase;
-    letter-spacing: .16em;
-  }
-
-  .team-info h1{
-    margin: 0;
-    color: #fff;
-    font-family: Georgia, "Times New Roman", serif;
-    font-size: 2.4rem;
-    line-height: 1;
-    font-weight: 900;
-  }
-
-  .team-info p{
-    margin: 8px 0 0;
-    color: rgba(255,255,255,.78);
-    font-size: 1rem;
-    font-weight: 800;
-  }
-
-  .team-status-row{
-    position: relative;
-    z-index: 1;
-    display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
-    margin-top: 20px;
-  }
-
-  .status-pill{
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 32px;
-    padding: 7px 13px;
-    border-radius: 999px;
-    background: rgba(255,255,255,.10);
-    border: 1px solid rgba(212,164,55,.24);
-    color: rgba(255,255,255,.90);
-    font-size: .76rem;
-    font-weight: 1000;
-    text-transform: uppercase;
-    letter-spacing: .08em;
-  }
-
-  .status-pill.status-live{
-    background: linear-gradient(135deg, #e4bd62, #b98425);
-    color: #061326;
-  }
-
-  .quick-actions{
-    max-width: 920px;
-    margin: 18px auto 0;
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 14px;
-  }
-
-  .quick-card{
-    min-height: 108px;
-    padding: 16px 12px;
-    border-radius: 22px;
-    background: linear-gradient(180deg, #fffaf0 0%, #f7efe2 100%);
-    border: 1px solid rgba(120,83,32,.13);
-    box-shadow: 0 14px 28px rgba(0,0,0,.10);
-    color: #081a31;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 6px;
-    text-align: center;
-  }
-
-  .quick-icon{
-    width: 42px;
-    height: 42px;
-    border-radius: 999px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    background: radial-gradient(circle at 35% 25%, #fff6d8, #e7c46a 60%, #b98425 100%);
-  }
-
-  .quick-title{
-    font-size: .95rem;
-    font-weight: 1000;
-  }
-
-  .quick-sub{
-    font-size: .76rem;
-    font-weight: 800;
-    color: #6f6048;
-  }
-
-  .home-section,
-  .gazzetta-preview-card{
-    max-width: 920px;
-    margin-left: auto;
-    margin-right: auto;
-  }
-
-  .home-section{
-    margin-top: 28px;
-  }
-
-  .section-heading span{
-    color: #fff;
-    font-size: .82rem;
-    font-weight: 1000;
-    text-transform: uppercase;
-    letter-spacing: .16em;
-  }
-
-  .featured-grid{
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 14px;
-  }
-
-  .feature-card{
-    min-height: 98px;
-    padding: 18px;
-    border-radius: 22px;
-    background: linear-gradient(180deg, #fffaf2 0%, #f7efe3 100%);
-    border: 1px solid rgba(120,83,32,.13);
-    box-shadow: 0 14px 28px rgba(0,0,0,.10);
-    color: #081a31;
-    display: flex;
-    align-items: center;
-    gap: 14px;
-  }
-
-  .feature-icon{
-    width: 46px;
-    height: 46px;
-    border-radius: 999px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    background: rgba(212,164,55,.18);
-  }
-
-  .gazzetta-preview-card{
-    margin-top: 28px;
-    border-radius: 28px;
-    padding: 28px;
-    background:
-      radial-gradient(320px 220px at 100% 0%, rgba(212,164,55,.18), transparent 62%),
-      linear-gradient(135deg, #081426 0%, #111d2d 58%, #241f18 100%);
-    border: 1px solid rgba(212,164,55,.34);
-    color: #fff;
-    box-shadow: 0 22px 46px rgba(0,0,0,.24);
-  }
-
-  .gazzetta-preview-copy h2{
-    margin: 0;
-    font-family: Georgia, "Times New Roman", serif;
-    font-size: 2rem;
-    color: #fff8e8;
-  }
-
-  .gazzetta-preview-copy p{
-    max-width: 680px;
-    color: rgba(255,248,232,.78);
-  }
-
-  .gazzetta-preview-btn{
-    display: inline-flex;
-    width: auto;
-    min-width: 220px;
-    min-height: 44px;
-    padding: 0 24px;
-    align-items: center;
-    justify-content: center;
-    border-radius: 999px;
-    background: linear-gradient(135deg, #f4d27a, #c7902e);
-    color: #071326;
-    font-weight: 1000;
-  }
-
-  .mini-link-grid{
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 12px;
-  }
-
-  .mini-link-grid a{
-    min-height: 52px;
-    padding: 14px 16px;
-    border-radius: 18px;
-    background: linear-gradient(180deg, #fffaf2 0%, #f7efe3 100%);
-    color: #081a31;
-    font-weight: 950;
-  }
-
+  .mobile-app-hero,
   .mobile-bottom-nav,
   .mobile-more-panel{
+    display: none !important;
+  }
+
+  .desktop-gazzetta-section{
+    display: block;
+    width: 100%;
+  }
+
+  .home-wrap.home-dashboard{
+    max-width: none;
+    width: 100%;
+    margin: 0;
+    padding: 20px 12px 30px;
+  }
+
+  .gazzetta-frame{
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    border: 0;
+    border-radius: 14px;
+    background: transparent;
+    box-shadow: none;
+    overflow: hidden;
+  }
+}
+
+@media (max-width: 900px){
+  .desktop-gazzetta-section{
     display: none !important;
   }
 }
