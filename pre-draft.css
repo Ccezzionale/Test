@@ -433,7 +433,7 @@ body{
   width:100%;
   border-collapse:separate;
   border-spacing:0;
-  min-width:760px;
+  min-width:620px;
   overflow:hidden;
 }
 
@@ -477,11 +477,6 @@ body{
 }
 
 .predraft-table-wrap td:nth-child(2){
-  font-weight:800;
-  color:#0b2447;
-}
-
-.predraft-table-wrap td:nth-child(4){
   font-weight:800;
   color:#0b2447;
 }
@@ -1166,7 +1161,6 @@ body{
 }
 
 .predraft-table-wrap td:nth-child(2),
-.predraft-table-wrap td:nth-child(4),
 .roster-player-name{
   color:#ffffff;
 }
