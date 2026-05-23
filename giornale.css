@@ -954,3 +954,11 @@ button:hover{ transform:translateY(-1px); background:var(--navy-2); }
     margin-bottom: 18px !important;
   }
 }
+
+@media (max-width: 768px){
+  .gazette-frame::before{
+    display: none !important;
+    content: none !important;
+    border: 0 !important;
+  }
+}
