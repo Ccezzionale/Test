@@ -1955,3 +1955,220 @@ nav.site-nav{
   }
 
 }
+
+@media (max-width: 900px){
+
+  body{
+    background:
+      radial-gradient(520px 260px at 50% -80px, rgba(0, 85, 170, .22), transparent 65%),
+      linear-gradient(180deg, #f2f6fb 0%, #ffffff 48%, #f6f8fb 100%) !important;
+    color:#10213d !important;
+  }
+
+  nav.site-nav{
+    background: linear-gradient(180deg, #003f8f 0%, #00306f 100%) !important;
+    border-bottom: 0 !important;
+    box-shadow: 0 10px 24px rgba(0, 48, 111, .20) !important;
+  }
+
+  nav.site-nav .hamburger,
+  nav.site-nav .brand-home,
+  nav.site-nav #attiva-notifiche-btn{
+    background: rgba(255,255,255,.12) !important;
+    border: 1px solid rgba(255,255,255,.20) !important;
+    box-shadow: none !important;
+  }
+
+  .home-wrap.home-dashboard{
+    background: transparent !important;
+  }
+
+  /* HERO: più app moderna, meno pergamena */
+  .team-card{
+    background:
+      radial-gradient(320px 180px at 20% 20%, rgba(255,255,255,.24), transparent 58%),
+      linear-gradient(135deg, #0065c8 0%, #004b9e 55%, #00346f 100%) !important;
+    border: 0 !important;
+    border-radius: 18px !important;
+    box-shadow: 0 14px 28px rgba(0, 61, 130, .26) !important;
+  }
+
+  .team-card::before{
+    display:none !important;
+  }
+
+  .team-card::after{
+    background: rgba(255,255,255,.10) !important;
+  }
+
+  .team-logo-shell{
+    background: rgba(255,255,255,.18) !important;
+    border: 1px solid rgba(255,255,255,.30) !important;
+    box-shadow: 0 10px 20px rgba(0,0,0,.18) !important;
+  }
+
+  .team-kicker{
+    color: #ffe082 !important;
+  }
+
+  .team-info h1{
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
+    color: #fff !important;
+    text-shadow: none !important;
+  }
+
+  .team-info p{
+    color: rgba(255,255,255,.86) !important;
+  }
+
+  .status-pill{
+    background: rgba(255,255,255,.16) !important;
+    border: 1px solid rgba(255,255,255,.22) !important;
+    color: #fff !important;
+  }
+
+  .status-pill.status-live{
+    background: #28b463 !important;
+    color: #fff !important;
+    border: 0 !important;
+    box-shadow: 0 8px 18px rgba(40,180,99,.25) !important;
+  }
+
+  /* QUICK ACTIONS */
+  .quick-card{
+    background: #ffffff !important;
+    border: 1px solid rgba(15, 35, 65, .07) !important;
+    box-shadow: 0 8px 20px rgba(15, 35, 65, .10) !important;
+    border-radius: 15px !important;
+  }
+
+  .quick-title{
+    color:#10213d !important;
+  }
+
+  .quick-sub{
+    color:#6b7a90 !important;
+  }
+
+  .quick-icon,
+  .quick-icon img{
+    width: 54px !important;
+    height: 54px !important;
+  }
+
+  .quick-waiver .quick-icon img{
+    transform: scale(1.16) !important;
+  }
+
+  /* CARD IN EVIDENZA */
+  .section-heading span{
+    color:#10213d !important;
+    letter-spacing:.08em !important;
+  }
+
+  .section-heading::after{
+    background: linear-gradient(90deg, rgba(0,88,180,.35), transparent) !important;
+  }
+
+  .feature-card,
+  .mini-link-grid a{
+    background: #ffffff !important;
+    border: 1px solid rgba(15, 35, 65, .07) !important;
+    box-shadow: 0 8px 18px rgba(15, 35, 65, .09) !important;
+    border-radius: 15px !important;
+  }
+
+  .feature-card strong,
+  .mini-link-grid a span,
+  .mini-link-grid a{
+    color:#10213d !important;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
+  }
+
+  .feature-card small{
+    color:#6b7a90 !important;
+  }
+
+  .feature-icon{
+    background: #eef5ff !important;
+    box-shadow: none !important;
+  }
+
+  /* GAZZETTA CARD: blu moderna */
+  .gazzetta-preview-card{
+    background:
+      radial-gradient(260px 180px at 100% 0%, rgba(255,255,255,.16), transparent 62%),
+      linear-gradient(135deg, #003f8f 0%, #00306f 62%, #071b34 100%) !important;
+    border: 0 !important;
+    border-radius: 18px !important;
+    box-shadow: 0 14px 30px rgba(0,48,111,.24) !important;
+  }
+
+  .gazzetta-preview-card::before{
+    display:none !important;
+  }
+
+  .gazzetta-preview-card::after{
+    color: rgba(255,255,255,.12) !important;
+  }
+
+  .gazzetta-kicker{
+    color:#ffe082 !important;
+  }
+
+  .gazzetta-preview-copy h2{
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
+    color:#fff !important;
+  }
+
+  .gazzetta-preview-copy p{
+    color: rgba(255,255,255,.86) !important;
+  }
+
+  .gazzetta-preview-btn{
+    background: #ffffff !important;
+    color:#00306f !important;
+    box-shadow: 0 8px 18px rgba(0,0,0,.14) !important;
+  }
+
+  /* COMPETIZIONI */
+  .mini-link-grid a img{
+    filter: none !important;
+  }
+
+  /* BOTTOM NAV CHIARA */
+  .mobile-bottom-nav{
+    background: rgba(255,255,255,.96) !important;
+    border: 1px solid rgba(15,35,65,.08) !important;
+    box-shadow: 0 18px 38px rgba(15,35,65,.18) !important;
+  }
+
+  .mobile-bottom-link{
+    color:#7a8798 !important;
+  }
+
+  .mobile-bottom-link.active{
+    background: #eef5ff !important;
+    color:#0057b8 !important;
+    border: 0 !important;
+    box-shadow: none !important;
+  }
+
+  .mobile-bottom-link.active span:last-child{
+    color:#0057b8 !important;
+  }
+
+  .mobile-bottom-icon img{
+    opacity:.78 !important;
+    filter:none !important;
+  }
+
+  .mobile-bottom-link.active .mobile-bottom-icon img{
+    opacity:1 !important;
+    filter:none !important;
+  }
+
+}
+
+</style>
+`);
