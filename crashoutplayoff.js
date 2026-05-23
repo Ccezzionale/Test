@@ -99,12 +99,19 @@ async function initCrashAdminPanel() {
 
   if (!panel || !isAdmin) return;
 
-  panel.classList.remove("hidden");
-  renderCrashAdminPanel();
+panel.classList.remove("hidden");
+renderCrashAdminPanel();
 
-  document
-    .getElementById("crash-admin-save")
-    ?.addEventListener("click", saveCrashAdminScores);
+const toggle = document.getElementById("crash-admin-toggle");
+
+toggle?.addEventListener("click", () => {
+  const isOpen = panel.classList.toggle("is-open");
+  toggle.setAttribute("aria-expanded", String(isOpen));
+});
+
+document
+  .getElementById("crash-admin-save")
+  ?.addEventListener("click", saveCrashAdminScores);
 }
 
 function renderCrashAdminPanel() {
