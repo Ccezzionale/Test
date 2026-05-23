@@ -1606,3 +1606,119 @@ body {
     display: none;
   }
 }
+
+
+/* =========================================================
+   CORSA ALLE STELLE - CONFERENCE SWITCH + COLOR FIX
+   Championship: sinistra, verde
+   League: destra, rosso
+   ========================================================= */
+
+.ranking-card.ranking-championship {
+  background:
+    radial-gradient(circle at top left, rgba(35,164,84,.14), transparent 15rem),
+    linear-gradient(180deg, #f4fff7 0%, #ebf8ef 100%);
+  border-color: rgba(35,164,84,.18);
+}
+
+.ranking-card.ranking-league {
+  background:
+    radial-gradient(circle at top right, rgba(214,64,64,.14), transparent 15rem),
+    linear-gradient(180deg, #fff6f6 0%, #ffeded 100%);
+  border-color: rgba(214,64,64,.18);
+}
+
+.ranking-card.ranking-championship h4 {
+  color: #167344;
+}
+
+.ranking-card.ranking-league h4 {
+  color: #b02b2b;
+}
+
+.ranking-card.ranking-championship .ranking-subtitle {
+  color: #4b8161;
+}
+
+.ranking-card.ranking-league .ranking-subtitle {
+  color: #9d5f5f;
+}
+
+.ranking-card.ranking-championship .ranking-pos {
+  background: rgba(35,164,84,.12);
+  color: #167344;
+}
+
+.ranking-card.ranking-league .ranking-pos {
+  background: rgba(214,64,64,.12);
+  color: #b02b2b;
+}
+
+.ranking-card.ranking-championship .auto-badge {
+  background: rgba(35,164,84,.16);
+  color: #167344;
+}
+
+.ranking-card.ranking-league .auto-badge {
+  background: rgba(214,64,64,.14);
+  color: #b02b2b;
+}
+
+.wide-auto-pick {
+  background:
+    linear-gradient(90deg,
+      rgba(35,164,84,.07) 0%,
+      rgba(35,164,84,.03) 30%,
+      rgba(255,255,255,.90) 50%,
+      rgba(214,64,64,.03) 70%,
+      rgba(214,64,64,.07) 100%);
+  border-color: rgba(16,33,63,.08);
+}
+
+.wide-auto-pick h4 {
+  color: #17345a;
+}
+
+.auto-pick-row.championship .pick-number-pill {
+  background: linear-gradient(135deg, #78d49b, #1ea34a);
+  color: #ffffff;
+}
+
+.auto-pick-row.league .pick-number-pill {
+  background: linear-gradient(135deg, #ef7a7a, #d64040);
+  color: #ffffff;
+}
+
+.auto-pick-row.championship {
+  border-color: rgba(35,164,84,.10);
+  background:
+    linear-gradient(180deg, rgba(244,255,247,.95), rgba(235,248,239,.9));
+}
+
+.auto-pick-row.league {
+  border-color: rgba(214,64,64,.10);
+  background:
+    linear-gradient(180deg, rgba(255,246,246,.95), rgba(255,237,237,.9));
+}
+
+.auto-pick-row.championship strong {
+  color: #167344;
+}
+
+.auto-pick-row.league strong {
+  color: #b02b2b;
+}
+
+.auto-pick-row.championship small {
+  color: #4b8161;
+}
+
+.auto-pick-row.league small {
+  color: #9d5f5f;
+}
+
+@media (max-width: 1120px) {
+  .race-layout.two-rankings {
+    grid-template-columns: 1fr;
+  }
+}
