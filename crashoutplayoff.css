@@ -1600,3 +1600,224 @@ body::before{
     grid-template-columns:1fr 64px 64px;
   }
 }
+
+/* =========================================================
+   CRASH OUT CUP - ADMIN PANEL ACCORDION
+   ========================================================= */
+
+.crash-admin-panel{
+  margin:18px 0 0;
+  border:1px solid rgba(255,49,223,.22);
+  border-radius:22px;
+  background:
+    radial-gradient(circle at 92% 0%, rgba(255,49,223,.15), transparent 32%),
+    linear-gradient(180deg, rgba(10,14,34,.88), rgba(5,7,21,.92));
+  box-shadow:
+    0 18px 38px rgba(0,0,0,.28),
+    inset 0 1px 0 rgba(255,255,255,.07);
+  overflow:hidden;
+}
+
+.crash-admin-toggle{
+  width:100%;
+  appearance:none;
+  border:0;
+  background:transparent;
+  color:#fff;
+  padding:18px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:16px;
+  text-align:left;
+  font-family:inherit;
+  cursor:pointer;
+}
+
+.crash-admin-toggle strong{
+  display:block;
+  color:#fff;
+  font-size:1.35rem;
+  line-height:1;
+  font-weight:950;
+}
+
+.crash-admin-toggle small{
+  display:block;
+  margin-top:6px;
+  color:rgba(255,255,255,.68);
+  font-size:.9rem;
+  font-weight:650;
+}
+
+.crash-admin-kicker{
+  display:block;
+  margin-bottom:5px;
+  color:var(--crash-blue);
+  font-size:.72rem;
+  font-weight:950;
+  letter-spacing:.16em;
+  text-transform:uppercase;
+}
+
+.crash-admin-chevron{
+  width:38px;
+  height:38px;
+  flex:0 0 38px;
+  border-radius:999px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  background:rgba(255,255,255,.08);
+  border:1px solid rgba(255,49,223,.24);
+  color:#ffd6ff;
+  font-size:1.35rem;
+  font-weight:950;
+  transition:transform .18s ease, background .18s ease, color .18s ease;
+}
+
+.crash-admin-panel.is-open .crash-admin-chevron{
+  transform:rotate(180deg);
+  background:rgba(255,49,223,.20);
+  color:#fff;
+}
+
+.crash-admin-body{
+  display:none;
+  padding:0 18px 18px;
+  border-top:1px solid rgba(255,49,223,.14);
+}
+
+.crash-admin-panel.is-open .crash-admin-body{
+  display:block;
+}
+
+.crash-admin-head{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:16px;
+  margin:16px 0;
+}
+
+.crash-admin-head h2{
+  margin:0;
+  color:#fff;
+  font-size:1.35rem;
+  line-height:1;
+}
+
+.crash-admin-head p{
+  margin:6px 0 0;
+  color:rgba(255,255,255,.68);
+  font-weight:650;
+}
+
+.crash-admin-save{
+  border:1px solid rgba(255,49,223,.38);
+  border-radius:14px;
+  padding:11px 16px;
+  background:linear-gradient(180deg, rgba(255,49,223,.38), rgba(32,199,255,.20));
+  color:#fff;
+  font-weight:950;
+  cursor:pointer;
+  box-shadow:0 0 18px rgba(255,49,223,.18);
+}
+
+.crash-admin-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit, minmax(220px, 1fr));
+  gap:10px;
+}
+
+.crash-admin-row{
+  display:grid;
+  grid-template-columns:1fr 72px 72px;
+  gap:10px;
+  align-items:end;
+  padding:12px;
+  border:1px solid rgba(255,255,255,.10);
+  border-radius:16px;
+  background:rgba(255,255,255,.045);
+}
+
+.crash-admin-series strong{
+  display:block;
+  color:#fff;
+  font-size:1rem;
+}
+
+.crash-admin-series span{
+  display:block;
+  margin-top:3px;
+  color:rgba(255,255,255,.62);
+  font-size:.76rem;
+  font-weight:800;
+}
+
+.crash-admin-row label{
+  display:flex;
+  flex-direction:column;
+  gap:5px;
+  color:rgba(255,255,255,.64);
+  font-size:.68rem;
+  font-weight:900;
+  text-transform:uppercase;
+  letter-spacing:.08em;
+}
+
+.crash-admin-row input{
+  width:100%;
+  height:38px;
+  border:1px solid rgba(255,49,223,.28);
+  border-radius:11px;
+  background:rgba(4,5,16,.72);
+  color:#fff;
+  text-align:center;
+  font-size:1rem;
+  font-weight:950;
+  outline:none;
+}
+
+.crash-admin-row input:focus{
+  border-color:rgba(32,199,255,.68);
+  box-shadow:0 0 0 3px rgba(32,199,255,.12);
+}
+
+.crash-admin-status{
+  margin:12px 0 0;
+  color:#dff8ff;
+  font-weight:850;
+}
+
+@media (max-width:900px){
+  .crash-admin-panel{
+    margin:14px 0 0;
+    border-radius:20px;
+  }
+
+  .crash-admin-toggle{
+    padding:16px;
+  }
+
+  .crash-admin-toggle strong{
+    font-size:1.12rem;
+  }
+
+  .crash-admin-toggle small{
+    font-size:.78rem;
+    line-height:1.25;
+  }
+
+  .crash-admin-head{
+    flex-direction:column;
+  }
+
+  .crash-admin-save{
+    width:100%;
+  }
+
+  .crash-admin-row{
+    grid-template-columns:1fr 64px 64px;
+  }
+}
