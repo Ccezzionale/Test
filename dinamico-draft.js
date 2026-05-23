@@ -875,7 +875,7 @@ function generaMobileDraftCards(containerId, draftData, squadreOrdine) {
       });
     }
 
-    const openClass = index === 0 ? "is-open" : "";
+   const openClass = "";
     const logoPath = `img/${squadra}.png`;
 
     html += `
@@ -944,7 +944,7 @@ function generaMobileDraftCards(containerId, draftData, squadreOrdine) {
 
   for (let r = 1; r <= maxRounds; r++) {
     const picks = roundMap[r] || [];
-    const openClass = r === 1 ? "is-open" : "";
+    const openClass = "";
 
     html += `
       <article class="mobile-round-card ${openClass}">
