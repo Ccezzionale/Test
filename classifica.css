@@ -1169,3 +1169,14 @@ th {
     color: #66758a !important;
   }
 }
+
+  /* DESKTOP - nasconde i dettagli nel podio, ma li lascia nel mobile */
+@media (min-width: 769px) {
+  .podio-card .ranking-details {
+    display: none !important;
+  }
+
+  .podio-card.is-open .ranking-details {
+    display: none !important;
+  }
+}
