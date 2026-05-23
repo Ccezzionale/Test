@@ -1,35 +1,34 @@
+import { supabase } from "./supabase.js";
+
 // ======== CONFIG ========
 const URL_STANDINGS = "https://docs.google.com/spreadsheets/d/1xPual_RkDPsnAW1Gy_ZCcVlAUATtquTbbym3NPk8UfI/export?format=csv&gid=1127607135";
 const LOGO_BASE_PATH = "img/";
 const LOGO_EXT = ".png";
 
-// PUNTEGGI (best-of-5: 0..3)
-const SCORES = {
-  // Round 1 — Left
-  L1:   { home: 3, away: 2 },
-  L2:   { home: 3, away: 2 },
-  L3:   { home: 3, away: 1 },
-  L4:   { home: 3, away: 1 },
+// PUNTEGGI caricati da Supabase
+let SCORES = {};
 
-  // Round 1 — Right
-  R1:   { home: 3, away: 1 },
-  R2:   { home: 3, away: 2 },
-  R3:   { home: 3, away: 1 },
-  R4:   { home: 3, away: 2 },
+const SERIES_META = [
+  { id: "L1", label: "Ottavo 1", side: "Sinistra" },
+  { id: "L2", label: "Ottavo 2", side: "Sinistra" },
+  { id: "L3", label: "Ottavo 3", side: "Sinistra" },
+  { id: "L4", label: "Ottavo 4", side: "Sinistra" },
 
-  // Semifinali
-  LSF1: { home: 3, away: 2 },
-  LSF2: { home: 3, away: 0 },
-  RSF1: { home: 0, away: 3 },
-  RSF2: { home: 2, away: 3 },
+  { id: "R1", label: "Ottavo 1", side: "Destra" },
+  { id: "R2", label: "Ottavo 2", side: "Destra" },
+  { id: "R3", label: "Ottavo 3", side: "Destra" },
+  { id: "R4", label: "Ottavo 4", side: "Destra" },
 
-  // Finali di conference
-  LCF:  { home: 1, away: 3 },
-  RCF:  { home: 3, away: 1 },
+  { id: "LSF1", label: "Quarto 1", side: "Sinistra" },
+  { id: "LSF2", label: "Quarto 2", side: "Sinistra" },
+  { id: "RSF1", label: "Quarto 1", side: "Destra" },
+  { id: "RSF2", label: "Quarto 2", side: "Destra" },
 
-  // Finals
-  F:    { home: 1, away: 3 },
-};
+  { id: "LCF", label: "Semifinale", side: "Sinistra" },
+  { id: "RCF", label: "Semifinale", side: "Destra" },
+
+  { id: "F", label: "Finale", side: "Finale" }
+];
 
 // ======== UTILS ========
 const $ = (sel, root = document) => root.querySelector(sel);
@@ -51,6 +50,155 @@ function logoSrc(team) {
 function clamp03(n) {
   n = Number(n || 0);
   return Math.max(0, Math.min(3, n));
+}
+
+async function loadScoresFromSupabase() {
+  const { data, error } = await supabase
+    .from("crashout_playoff_scores")
+    .select("series_id, home_score, away_score");
+
+  if (error) {
+    console.error("Errore caricamento risultati Crash Out:", error);
+    return;
+  }
+
+  SCORES = {};
+
+  (data || []).forEach(row => {
+    SCORES[row.series_id] = {
+      home: clamp03(row.home_score),
+      away: clamp03(row.away_score)
+    };
+  });
+}
+
+async function isCurrentUserAdmin() {
+  const { data: userData, error: userError } = await supabase.auth.getUser();
+
+  if (userError || !userData?.user) {
+    return false;
+  }
+
+  const { data: profile, error: profileError } = await supabase
+    .from("profiles")
+    .select("role")
+    .eq("id", userData.user.id)
+    .single();
+
+  if (profileError) {
+    console.error("Errore profilo admin Crash Out:", profileError);
+    return false;
+  }
+
+  return String(profile?.role || "").toLowerCase() === "admin";
+}
+
+async function initCrashAdminPanel() {
+  const isAdmin = await isCurrentUserAdmin();
+  const panel = document.getElementById("crash-admin-panel");
+
+  if (!panel || !isAdmin) return;
+
+  panel.classList.remove("hidden");
+  renderCrashAdminPanel();
+
+  document
+    .getElementById("crash-admin-save")
+    ?.addEventListener("click", saveCrashAdminScores);
+}
+
+function renderCrashAdminPanel() {
+  const grid = document.getElementById("crash-admin-grid");
+  if (!grid) return;
+
+  grid.innerHTML = SERIES_META.map(series => {
+    const score = getScoreFor(series.id);
+
+    return `
+      <article class="crash-admin-row">
+        <div class="crash-admin-series">
+          <strong>${series.id}</strong>
+          <span>${series.label} · ${series.side}</span>
+        </div>
+
+        <label>
+          Casa
+          <input
+            type="number"
+            min="0"
+            max="3"
+            value="${score.home}"
+            data-series-id="${series.id}"
+            data-score-side="home"
+          >
+        </label>
+
+        <label>
+          Trasferta
+          <input
+            type="number"
+            min="0"
+            max="3"
+            value="${score.away}"
+            data-series-id="${series.id}"
+            data-score-side="away"
+          >
+        </label>
+      </article>
+    `;
+  }).join("");
+}
+
+async function saveCrashAdminScores() {
+  const status = document.getElementById("crash-admin-status");
+  const inputs = Array.from(
+    document.querySelectorAll("#crash-admin-grid input[data-series-id]")
+  );
+
+  const grouped = {};
+
+  inputs.forEach(input => {
+    const seriesId = input.dataset.seriesId;
+    const side = input.dataset.scoreSide;
+
+    if (!grouped[seriesId]) {
+      grouped[seriesId] = {
+        series_id: seriesId,
+        home_score: 0,
+        away_score: 0
+      };
+    }
+
+    const value = clamp03(input.value);
+
+    if (side === "home") grouped[seriesId].home_score = value;
+    if (side === "away") grouped[seriesId].away_score = value;
+  });
+
+  const payload = Object.values(grouped).map(row => ({
+    ...row,
+    updated_at: new Date().toISOString()
+  }));
+
+  if (status) status.textContent = "Salvataggio in corso...";
+
+  const { error } = await supabase
+    .from("crashout_playoff_scores")
+    .upsert(payload, {
+      onConflict: "series_id"
+    });
+
+  if (error) {
+    console.error("Errore salvataggio risultati Crash Out:", error);
+    if (status) status.textContent = "Errore durante il salvataggio.";
+    return;
+  }
+
+  if (status) status.textContent = "Risultati salvati. Bracket aggiornato.";
+
+  await loadScoresFromSupabase();
+  await buildBracket();
+  renderCrashAdminPanel();
 }
 
 function getScoreFor(seriesId) {
@@ -673,6 +821,7 @@ function drawWires() {
 // ======== BUILD ========
 async function buildBracket() {
   try {
+       await loadScoresFromSupabase();
     clearBracket();
 
     const seeds = await loadStandings();
@@ -717,8 +866,9 @@ window.addEventListener("resize", () => {
   requestAnimationFrame(drawWires);
 });
 
-document.addEventListener("DOMContentLoaded", () => {
-  buildBracket();
+document.addEventListener("DOMContentLoaded", async () => {
+  await buildBracket();
+  await initCrashAdminPanel();
 });
 
 // =========================================================
