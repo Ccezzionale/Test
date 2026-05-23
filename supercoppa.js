@@ -1,8 +1,11 @@
 // supercoppa.js
 // Supercoppa a 5 partecipanti con play-in, sorteggio semifinali e admin panel.
 
+import { supabase as sb } from "./supabase-config.js";
+
 (function () {
-  var STORAGE_KEY = "legaEroiSupercoppaData_v5";
+  var SUPERCOPPA_ID = "supercoppa-2026-27";
+  var SUPERCOPPA_SEASON = "2026/27";
 
   var SQUADRE_SUPERCOPPA = [
     { nome: "Rubinkebab", logo: "img/Rubinkebab.png" },
@@ -67,13 +70,16 @@
     }
   };
 
-  var state = loadState();
+var state = clone(defaultData);
 
-  document.addEventListener("DOMContentLoaded", function () {
-    setupNavbar();
-    setupAdmin();
-    renderAll();
-  });
+document.addEventListener("DOMContentLoaded", async function () {
+  setupNavbar();
+
+  state = await loadState();
+
+  setupAdmin();
+  renderAll();
+});
 
   function setupNavbar() {
     var hamburger = document.getElementById("hamburger");
@@ -95,20 +101,51 @@
     });
   }
 
-  function loadState() {
-    try {
-      var saved = localStorage.getItem(STORAGE_KEY);
-      if (!saved) return clone(defaultData);
-      return mergeData(clone(defaultData), JSON.parse(saved));
-    } catch (err) {
-      console.warn("Impossibile caricare i dati Supercoppa", err);
+async function loadState() {
+  try {
+    var response = await sb
+      .from("supercoppa_settings")
+      .select("data")
+      .eq("id", SUPERCOPPA_ID)
+      .single();
+
+    if (response.error) {
+      console.warn("Impossibile caricare la Supercoppa da Supabase:", response.error);
       return clone(defaultData);
     }
-  }
 
-  function saveState() {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    return mergeData(
+      clone(defaultData),
+      response.data && response.data.data ? response.data.data : {}
+    );
+  } catch (err) {
+    console.warn("Errore caricamento Supercoppa:", err);
+    return clone(defaultData);
   }
+}
+
+async function saveState() {
+  try {
+    var response = await sb
+      .from("supercoppa_settings")
+      .upsert({
+        id: SUPERCOPPA_ID,
+        season: SUPERCOPPA_SEASON,
+        data: state,
+        updated_at: new Date().toISOString()
+      }, {
+        onConflict: "id"
+      });
+
+    if (response.error) {
+      console.error("Errore salvataggio Supercoppa:", response.error);
+      alert("Errore nel salvataggio Supercoppa.");
+    }
+  } catch (err) {
+    console.error("Errore salvataggio Supercoppa:", err);
+    alert("Errore nel salvataggio Supercoppa.");
+  }
+}
 
   function clone(obj) {
     return JSON.parse(JSON.stringify(obj));
