@@ -3,11 +3,15 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
   <title>All Star Game 2027 - Lega degli Eroi</title>
+
   <link rel="stylesheet" href="navbar.css" />
   <link rel="stylesheet" href="allstar.css" />
+
   <script type="module" src="allstar.js" defer></script>
 </head>
+
 <body>
   <nav class="site-nav">
     <div class="nav-inner">
@@ -15,7 +19,9 @@
         <img src="img/logo.png" alt="Lega degli Eroi" class="brand-logo">
         <span>Lega degli Eroi</span>
       </a>
+
       <button id="hamburger" class="hamburger" aria-label="Apri menu">☰</button>
+
       <div id="navMenu" class="nav-links">
         <a href="index.html">Home</a>
         <a href="rose.html">Rose</a>
@@ -28,6 +34,7 @@
   </nav>
 
   <main class="allstar-page">
+    <!-- HERO -->
     <section class="allstar-hero">
       <div class="hero-glow hero-glow-left"></div>
       <div class="hero-glow hero-glow-right"></div>
@@ -54,21 +61,157 @@
           <span class="gold-text">Conference Championship</span>
         </h2>
         <p>Le stelle della Lega degli Eroi</p>
-        <div class="hero-festa-note">Edizione di gala • Serie A Celebration • Notte delle Stelle</div>
+        <div class="hero-festa-note">Votazioni live • Draft finale • Notte delle Stelle</div>
       </div>
 
       <div class="hero-badge">
         <span class="badge-pulse"></span>
-        <span id="draftStatusLabel">Draft in corso</span>
+        <span id="draftStatusLabel">Votazioni aperte</span>
       </div>
     </section>
 
+    <!-- VOTE INFO STRIP -->
     <section class="draft-info-strip">
+      <article class="info-card">
+        <span class="info-icon">🗳️</span>
+        <div>
+          <strong>Votazione settimanale</strong>
+          <small>Ogni squadra vota 3 giocatori: 10, 5 e 2 punti</small>
+        </div>
+      </article>
+
+      <article class="info-card">
+        <span class="info-icon">🔥</span>
+        <div>
+          <strong>Settimana attiva</strong>
+          <small id="activeWeekInfo">Week 1</small>
+        </div>
+      </article>
+
+      <article class="info-card">
+        <span class="info-icon">⭐</span>
+        <div>
+          <strong>Leader provvisorio</strong>
+          <small id="voteLeaderInfo">-</small>
+        </div>
+      </article>
+
+      <article class="info-card">
+        <span class="info-icon">🎯</span>
+        <div>
+          <strong>Auto Pick</strong>
+          <small>Top 6 a fine stagione</small>
+        </div>
+      </article>
+    </section>
+
+    <!-- VOTING AREA -->
+    <section class="vote-grid">
+      <article class="vote-card vote-form-card">
+        <div class="section-head compact">
+          <div>
+            <h3>Vota le stelle</h3>
+            <p>Scegli tre giocatori dalla lista ufficiale Fantacalcio. Puoi modificare i voti finché la settimana resta aperta.</p>
+          </div>
+          <span class="vote-week-pill" id="voteWeekPill">Week 1</span>
+        </div>
+
+        <form id="voteForm" class="vote-form">
+          <label class="vote-slot vote-slot-gold">
+            <span class="vote-medal">10</span>
+            <div>
+              <strong>Prima scelta</strong>
+              <small>Il giocatore simbolo della settimana</small>
+            </div>
+            <select id="vote10" required>
+              <option value="">Seleziona giocatore</option>
+            </select>
+          </label>
+
+          <label class="vote-slot vote-slot-silver">
+            <span class="vote-medal">5</span>
+            <div>
+              <strong>Seconda scelta</strong>
+              <small>La stella che merita punti pesanti</small>
+            </div>
+            <select id="vote5" required>
+              <option value="">Seleziona giocatore</option>
+            </select>
+          </label>
+
+          <label class="vote-slot vote-slot-bronze">
+            <span class="vote-medal">2</span>
+            <div>
+              <strong>Terza scelta</strong>
+              <small>Il nome da tenere nella corsa</small>
+            </div>
+            <select id="vote2" required>
+              <option value="">Seleziona giocatore</option>
+            </select>
+          </label>
+
+          <button type="submit" class="primary-call-btn vote-submit-btn">Invia voti</button>
+          <p id="voteFeedback" class="vote-feedback"></p>
+        </form>
+      </article>
+
+      <article class="vote-card star-of-week-card">
+        <div class="star-card-kicker">Stella della settimana</div>
+        <div class="star-card-icon">🌟</div>
+        <h3 id="weekStarName">-</h3>
+        <p id="weekStarDetails">Nessun voto registrato per questa settimana.</p>
+
+        <div class="mini-stat-row">
+          <span>Punti week</span>
+          <strong id="weekStarPoints">0</strong>
+        </div>
+
+        <div class="mini-stat-row">
+          <span>Totale stagione</span>
+          <strong id="weekStarTotal">0</strong>
+        </div>
+      </article>
+    </section>
+
+    <!-- LIVE RACE -->
+    <section class="race-section">
+      <div class="section-head">
+        <div>
+          <h3>Corsa alle Stelle</h3>
+          <p>La classifica live delle votazioni. I primi 6 diventano auto-pick provvisorie.</p>
+        </div>
+        <div class="race-actions">
+          <button id="demoVotesBtn" class="ghost-btn">Aggiungi voti demo</button>
+          <button id="resetVotesBtn" class="ghost-btn danger">Reset voti</button>
+        </div>
+      </div>
+
+      <div class="race-layout">
+        <article class="ranking-card">
+          <h4>Classifica voti live</h4>
+          <div id="voteRankingList" class="ranking-list"></div>
+        </article>
+
+        <article class="auto-pick-card">
+          <h4>Prime pick se il voto finisse oggi</h4>
+          <div id="autoPickPreview" class="auto-pick-list"></div>
+        </article>
+
+        <article class="trend-card">
+          <h4>Andamento top 6</h4>
+          <div id="trendBars" class="trend-bars"></div>
+          <small>Versione light: qui vediamo il totale live. Quando colleghiamo Supabase possiamo trasformarlo in grafico settimanale vero.</small>
+        </article>
+      </div>
+    </section>
+
+    <!-- DRAFT INFO STRIP -->
+    <section class="draft-info-strip draft-strip-secondary">
       <article class="info-card">
         <span class="info-icon">🔁</span>
         <div>
           <strong>Ordine draft: fisso</strong>
-          <small>Ogni round: Conference League poi Conference Championship</small>
+          <small>Pick dispari League, pick pari Championship</small>
         </div>
       </article>
 
@@ -76,7 +219,7 @@
         <span class="info-icon">🎯</span>
         <div>
           <strong>Pick attuale</strong>
-          <small id="currentPickInfo">1</small>
+          <small id="currentPickInfo">7</small>
         </div>
       </article>
 
@@ -97,6 +240,7 @@
       </article>
     </section>
 
+    <!-- DRAFT AREA -->
     <section class="draft-arena">
       <article class="team-panel team-league">
         <header class="team-header">
@@ -107,14 +251,19 @@
             <span id="leagueCount">0 / 22 giocatori selezionati</span>
           </div>
         </header>
+
         <div class="role-list" id="leagueRoster"></div>
       </article>
 
       <article class="clock-panel">
         <span class="clock-kicker">On the clock</span>
-        <strong id="currentPickBig">1</strong>
+        <strong id="currentPickBig">7</strong>
         <p id="currentConferenceBig">Conference League</p>
-        <button id="openPickModalBtn" class="primary-call-btn">Effettua chiamata</button>
+
+        <button id="openPickModalBtn" class="primary-call-btn">
+          Effettua chiamata
+        </button>
+
         <div class="last-picks">
           <h4>Ultimi pick</h4>
           <div id="lastPicksList"></div>
@@ -130,21 +279,25 @@
             <span id="championshipCount">0 / 22 giocatori selezionati</span>
           </div>
         </header>
+
         <div class="role-list" id="championshipRoster"></div>
       </article>
     </section>
 
+    <!-- POOL -->
     <section class="pool-section">
       <div class="section-head">
         <div>
           <h3>Pool Giocatori</h3>
-          <p>Seleziona i giocatori disponibili per costruire le due rose All Star.</p>
+          <p>Lista ufficiale Fantacalcio per votazioni e draft All Star.</p>
         </div>
+
         <button id="clearFiltersBtn" class="ghost-btn">Azzera filtri</button>
       </div>
 
       <div class="pool-filters">
         <input id="searchInput" type="search" placeholder="Cerca giocatore..." />
+
         <select id="roleFilter">
           <option value="">Ruolo</option>
           <option value="P">P</option>
@@ -153,8 +306,14 @@
           <option value="A">A</option>
         </select>
 
-        <select id="teamFilter"><option value="">Squadra Serie A</option></select>
-        <select id="originFilter"><option value="">Team di origine</option></select>
+        <select id="teamFilter">
+          <option value="">Squadra Serie A</option>
+        </select>
+
+        <select id="originFilter">
+          <option value="">Team di origine</option>
+        </select>
+
         <select id="conferenceFilter">
           <option value="">Conference</option>
           <option value="Conference League">Conference League</option>
@@ -180,6 +339,7 @@
       </div>
     </section>
 
+    <!-- ADMIN PANEL -->
     <section id="adminPanel" class="admin-panel">
       <button class="admin-toggle" id="adminToggle">
         <span>⚙️ Admin Panel</span>
@@ -188,6 +348,7 @@
 
       <div class="admin-body" id="adminBody">
         <button id="toggleDraftBtn" class="admin-btn green">Apri / Chiudi Draft</button>
+        <button id="generateAutoPicksBtn" class="admin-btn gold">Genera Auto Pick</button>
         <button id="undoPickBtn" class="admin-btn blue">Annulla ultima pick</button>
         <button id="resetDraftBtn" class="admin-btn red">Reset Draft</button>
         <small>Visibile solo ad admin/commissioner quando colleghiamo Supabase.</small>
@@ -195,15 +356,18 @@
     </section>
   </main>
 
+  <!-- PICK MODAL -->
   <dialog id="pickModal" class="pick-modal">
     <div class="modal-head">
       <div>
         <strong>Effettua chiamata</strong>
-        <p id="modalPickText">Pick 1 - Conference League</p>
+        <p id="modalPickText">Pick 7 - Conference League</p>
       </div>
       <button id="closePickModalBtn" class="modal-close">×</button>
     </div>
+
     <input id="modalSearchInput" type="search" placeholder="Cerca giocatore da chiamare..." />
+
     <div id="modalPlayersList" class="modal-player-list"></div>
   </dialog>
 </body>
