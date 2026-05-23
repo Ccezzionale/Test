@@ -1898,3 +1898,15 @@ nav.site-nav{
     line-height: 1;
   }
 }
+
+/* =========================================================
+   FIX ICONA WAIVER - riempie meglio il cerchio
+   ========================================================= */
+
+@media (max-width: 900px){
+
+  .quick-waiver .quick-icon img{
+    transform: scale(1.22);
+  }
+
+}
