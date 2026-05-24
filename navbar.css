@@ -3560,19 +3560,3 @@ nav.site-nav{
     transform: none !important;
   }
 }
-
-  /* =========================================================
-   MOBILE - CLASSIFICHE & PLAYOFF PIU' COMPATTI
-   ========================================================= */
-
-@media (max-width: 900px){
-
-  .competition-primary-card.competition-square-banner{
-    aspect-ratio: 1 / 0.82 !important;
-    border-radius: 17px !important;
-  }
-
-  .competitions-square-grid{
-    gap: 10px !important;
-  }
-}
