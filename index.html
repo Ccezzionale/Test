@@ -110,6 +110,90 @@
   min-height: 0;
 }
 
+    @media (max-width: 768px) {
+  .splash-intro {
+    position: fixed;
+    inset: 0;
+    z-index: 99999;
+    background:
+      radial-gradient(circle at center, rgba(0, 123, 255, .35) 0%, transparent 38%),
+      linear-gradient(180deg, #071b3a 0%, #020817 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    animation: splashExit .7s ease forwards;
+    animation-delay: 2.5s;
+  }
+
+  .splash-energy {
+    position: absolute;
+    width: 210px;
+    height: 210px;
+    border-radius: 999px;
+    background: rgba(0, 153, 255, .22);
+    box-shadow:
+      0 0 35px rgba(0, 153, 255, .9),
+      0 0 90px rgba(0, 153, 255, .65);
+    animation: energyPulse 1.55s ease-in-out infinite;
+  }
+
+  .splash-logo {
+    position: relative;
+    z-index: 2;
+    width: min(76vw, 330px);
+    height: auto;
+    border-radius: 0;
+    opacity: 0;
+    transform: scale(.62) rotate(-3deg);
+    filter:
+      drop-shadow(0 0 18px rgba(0, 153, 255, .9))
+      drop-shadow(0 0 34px rgba(255, 193, 7, .38));
+    animation: logoIntro 2.25s ease forwards;
+  }
+
+  @keyframes logoIntro {
+    0% {
+      opacity: 0;
+      transform: scale(.55) rotate(-4deg);
+    }
+
+    38% {
+      opacity: 1;
+      transform: scale(1.08) rotate(1deg);
+    }
+
+    68% {
+      transform: scale(.96) rotate(0deg);
+    }
+
+    100% {
+      opacity: 1;
+      transform: scale(1) rotate(0deg);
+    }
+  }
+
+  @keyframes energyPulse {
+    0%, 100% {
+      transform: scale(.75);
+      opacity: .45;
+    }
+
+    50% {
+      transform: scale(1.35);
+      opacity: .95;
+    }
+  }
+
+  @keyframes splashExit {
+    to {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+  }
+}
+
     @media (min-width: 769px) {
   .splash-intro {
     display: none !important;
