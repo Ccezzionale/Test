@@ -404,3 +404,31 @@ body{
   padding-bottom:4px;
   border-bottom:1px solid rgba(216,180,74,.16);
 }
+
+/* FIX BACKGROUND MOBILE SUPERCOPPA DOPO NAVBAR MOBILE */
+@media (max-width: 768px){
+
+  html,
+  body{
+    background-color:#061a31 !important;
+  }
+
+  body{
+    background:
+      radial-gradient(circle at 50% 0%, rgba(244,215,121,.20), transparent 30%),
+      radial-gradient(circle at 12% 20%, rgba(255,255,255,.08), transparent 18%),
+      linear-gradient(180deg, rgba(6,26,49,.94), rgba(6,26,49,.86)),
+      url("img/sfondocrash.jpg") center top / cover no-repeat scroll !important;
+    min-height:100vh;
+    overflow-x:hidden;
+  }
+
+  .supercup-main,
+  .supercup-hero{
+    background:transparent !important;
+  }
+
+  .supercup-main{
+    padding-bottom:130px !important;
+  }
+}
