@@ -3327,3 +3327,17 @@ nav.site-nav{
   }
 
 }
+
+  @media (max-width: 900px){
+
+  .comp-crashout-playoff::before{
+    background:
+      radial-gradient(120px 80px at 100% 0%, rgba(0,200,255,.20), transparent 62%),
+      radial-gradient(90px 70px at 0% 100%, rgba(255,60,220,.18), transparent 62%),
+      linear-gradient(135deg, rgba(242,248,255,.96), rgba(255,242,255,.96)) !important;
+  }
+
+  .comp-crashout-playoff::after{
+    background: linear-gradient(180deg, #00b8ff, #c13cff);
+  }
+}
