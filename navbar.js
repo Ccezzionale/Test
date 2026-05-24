@@ -170,14 +170,16 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 });
-
 document.addEventListener("DOMContentLoaded", function () {
   const titleBtn = document.getElementById("mobile-nav-title");
-  const hamburger = document.getElementById("hamburger");
+  const mainMenu = document.getElementById("mainMenu");
 
-  if (titleBtn && hamburger) {
-    titleBtn.addEventListener("click", function () {
-      hamburger.click();
-    });
-  }
+  if (!titleBtn || !mainMenu) return;
+
+  titleBtn.addEventListener("click", function (e) {
+    e.preventDefault();
+    e.stopPropagation();
+
+    mainMenu.classList.toggle("show");
+  });
 });
