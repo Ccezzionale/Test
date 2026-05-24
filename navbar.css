@@ -3218,3 +3218,61 @@ nav.site-nav{
     object-fit: contain;
   }
 }
+
+  /* =========================================================
+   MOBILE TOP NAV - SOLO LOGO/TITOLO MENU
+   ========================================================= */
+
+@media (max-width: 900px){
+
+  /* Nasconde le tre lineette solo su mobile */
+  nav.site-nav #hamburger{
+    display: none !important;
+  }
+
+  nav.site-nav .nav-inner{
+    grid-template-columns: 1fr auto !important;
+    min-height: 66px !important;
+    padding: 9px 10px !important;
+  }
+
+  nav.site-nav .nav-left{
+    grid-column: 1 !important;
+    display: flex !important;
+    align-items: center !important;
+    min-width: 0 !important;
+    width: 100% !important;
+  }
+
+  .mobile-nav-title{
+    max-width: 100% !important;
+    min-width: 0 !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+  }
+
+  .mobile-nav-logo{
+    flex: 0 0 28px !important;
+    width: 28px !important;
+    height: 28px !important;
+  }
+
+  .mobile-nav-title span:nth-child(2){
+    display: inline-block !important;
+    max-width: calc(100vw - 170px) !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+  }
+
+  .mobile-nav-caret{
+    flex: 0 0 auto !important;
+  }
+
+  nav.site-nav .nav-right.hero-actions{
+    grid-column: 2 !important;
+    justify-self: end !important;
+    flex-shrink: 0 !important;
+  }
+}
