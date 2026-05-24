@@ -3450,3 +3450,56 @@ nav.site-nav{
     transform: none !important;
   }
 }
+
+  /* =========================================================
+   MOBILE - GAZZETTA COME BANNER PIENO
+   Solo mobile, desktop intatto
+   ========================================================= */
+
+@media (max-width: 900px){
+
+  .gazzetta-preview-card.gazzetta-banner-card{
+    display: block !important;
+    position: relative !important;
+    width: 100% !important;
+
+    aspect-ratio: 1200 / 544 !important;
+    min-height: unset !important;
+    height: auto !important;
+
+    padding: 0 !important;
+    margin-top: 18px !important;
+    margin-bottom: 28px !important;
+
+    background: transparent !important;
+    border: 0 !important;
+    border-radius: 22px !important;
+    overflow: hidden !important;
+
+    box-shadow: 0 14px 30px rgba(0,48,111,.22) !important;
+  }
+
+  .gazzetta-preview-card.gazzetta-banner-card::before,
+  .gazzetta-preview-card.gazzetta-banner-card::after{
+    display: none !important;
+    content: none !important;
+  }
+
+  .gazzetta-preview-card.gazzetta-banner-card img{
+    display: block !important;
+    position: static !important;
+
+    width: 100% !important;
+    height: 100% !important;
+    max-width: none !important;
+
+    object-fit: cover !important;
+    object-position: center !important;
+
+    border: 0 !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    filter: none !important;
+    transform: none !important;
+  }
+}
