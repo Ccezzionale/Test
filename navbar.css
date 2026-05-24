@@ -3299,3 +3299,15 @@ nav.site-nav{
     text-overflow: clip !important;
   }
 }
+
+  /* =========================================================
+   HOME MOBILE - SPAZIO TRA GAZZETTA E COMPETIZIONI
+   ========================================================= */
+
+@media (max-width: 900px){
+
+  .competitions-home-section{
+    margin-top: 30px !important;
+  }
+
+}
