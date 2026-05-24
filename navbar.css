@@ -3077,3 +3077,144 @@ nav.site-nav{
     font-size: .76rem;
   }
 }
+
+  /* =========================================================
+   MOBILE TOP NAV - TITLE APP STYLE
+   ========================================================= */
+
+@media (max-width: 900px){
+
+  nav.site-nav .nav-inner{
+    grid-template-columns: auto 1fr auto !important;
+    min-height: 66px !important;
+    padding: 9px 10px !important;
+  }
+
+  nav.site-nav .nav-left{
+    grid-column: 1 / 3;
+    display: flex !important;
+    align-items: center !important;
+    gap: 9px !important;
+    min-width: 0;
+  }
+
+  /* Nasconde la casetta sopra solo su mobile */
+  nav.site-nav .brand-home.desktop-home-link,
+  nav.site-nav .brand-home{
+    display: none !important;
+  }
+
+  nav.site-nav .hamburger{
+    display: inline-flex !important;
+    width: 42px !important;
+    height: 42px !important;
+    min-width: 42px !important;
+    border-radius: 13px !important;
+    background: rgba(255,255,255,.12) !important;
+    border: 1px solid rgba(255,255,255,.18) !important;
+    color: #fff !important;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.08);
+  }
+
+  .mobile-nav-title{
+    appearance: none;
+    border: 0;
+    background: transparent;
+    color: #ffffff;
+    padding: 0;
+    min-width: 0;
+
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+
+    font-family: inherit;
+    font-weight: 900;
+    font-size: .92rem;
+    line-height: 1;
+    cursor: pointer;
+  }
+
+  .mobile-nav-logo{
+    width: 26px;
+    height: 26px;
+    border-radius: 999px;
+    overflow: hidden;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255,255,255,.14);
+    border: 1px solid rgba(255,255,255,.18);
+    flex: 0 0 26px;
+  }
+
+  .mobile-nav-logo img{
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .mobile-nav-title span:nth-child(2){
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .mobile-nav-caret{
+    font-size: .7rem;
+    opacity: .82;
+    transform: translateY(1px);
+  }
+
+  nav.site-nav .nav-right.hero-actions{
+    grid-column: 3;
+    justify-self: end;
+    display: flex !important;
+    align-items: center !important;
+    gap: 7px !important;
+    margin: 0 !important;
+  }
+
+  /* Nascondiamo solo Trade Room dalla top mobile */
+  nav.site-nav #trade-badge{
+    display: none !important;
+  }
+
+  /* Login / Logout / Notifiche visibili solo se lo script non li tiene nascosti */
+  nav.site-nav #login-btn:not([style*="display:none"]):not([style*="display: none"]),
+  nav.site-nav #logout-btn:not([style*="display:none"]):not([style*="display: none"]),
+  nav.site-nav #attiva-notifiche-btn{
+    display: inline-flex !important;
+  }
+
+  nav.site-nav #login-btn,
+  nav.site-nav #logout-btn,
+  nav.site-nav #attiva-notifiche-btn{
+    width: 42px !important;
+    height: 42px !important;
+    min-width: 42px !important;
+    min-height: 42px !important;
+    max-width: 42px !important;
+    padding: 0 !important;
+    border-radius: 13px !important;
+    background: rgba(255,255,255,.12) !important;
+    border: 1px solid rgba(255,255,255,.18) !important;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.08);
+  }
+
+  nav.site-nav #attiva-notifiche-btn{
+    background: rgba(255,204,0,.16) !important;
+    border-color: rgba(255,204,0,.25) !important;
+  }
+
+  nav.site-nav .btn-hero .btn-label{
+    display: none !important;
+  }
+
+  nav.site-nav .action-icon{
+    width: 29px !important;
+    height: 29px !important;
+    object-fit: contain;
+  }
+}
