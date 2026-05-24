@@ -3276,3 +3276,26 @@ nav.site-nav{
     flex-shrink: 0 !important;
   }
 }
+
+  /* =========================================================
+   MOBILE TOP NAV - TITOLO NON TAGLIATO
+   ========================================================= */
+
+@media (max-width: 900px){
+
+  nav.site-nav .nav-left{
+    flex: 1 1 auto !important;
+    max-width: none !important;
+  }
+
+  .mobile-nav-title{
+    width: auto !important;
+    max-width: calc(100vw - 105px) !important;
+  }
+
+  .mobile-nav-title span:nth-child(2){
+    max-width: none !important;
+    overflow: visible !important;
+    text-overflow: clip !important;
+  }
+}
