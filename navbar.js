@@ -170,3 +170,14 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 });
+
+document.addEventListener("DOMContentLoaded", function () {
+  const titleBtn = document.getElementById("mobile-nav-title");
+  const hamburger = document.getElementById("hamburger");
+
+  if (titleBtn && hamburger) {
+    titleBtn.addEventListener("click", function () {
+      hamburger.click();
+    });
+  }
+});
