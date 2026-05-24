@@ -2924,25 +2924,26 @@ nav.site-nav{
     min-width: 0;
   }
 
-  .team-mini-logo{
-    width: 74px;
-    height: 74px;
-    border-radius: 18px;
-    margin-bottom: 10px;
-    background: rgba(255,255,255,.14);
-    border: 1px solid rgba(255,255,255,.24);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 8px 16px rgba(0,0,0,.16);
-  }
+.team-mini-logo{
+  width: auto;
+  height: auto;
+  margin-bottom: 10px;
+  background: transparent !important;
+  border: none !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 0 !important;
+}
 
-  .team-mini-logo img{
-    width: 82%;
-    height: 82%;
-    object-fit: contain;
-    display: block;
-  }
+.team-mini-logo img{
+  width: 72px;
+  height: 72px;
+  object-fit: contain;
+  display: block;
+}
 
   .team-copy{
     min-width: 0;
