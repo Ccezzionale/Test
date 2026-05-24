@@ -3341,3 +3341,61 @@ nav.site-nav{
     background: linear-gradient(180deg, #00b8ff, #c13cff);
   }
 }
+
+  /* =========================================================
+   MOBILE - ALL STAR SPOTLIGHT HERO
+   Solo mobile, desktop intatto
+   ========================================================= */
+
+@media (max-width: 900px){
+
+  .competition-spotlight{
+    min-height: 126px !important;
+    padding: 18px 18px !important;
+    border-radius: 22px !important;
+    background:
+      radial-gradient(190px 140px at 92% 48%, rgba(255,255,255,.18), transparent 62%),
+      radial-gradient(190px 130px at 100% 100%, rgba(255,35,80,.30), transparent 62%),
+      radial-gradient(190px 130px at 0% 0%, rgba(0,120,255,.34), transparent 62%),
+      linear-gradient(135deg, #004f9f 0%, #00306f 58%, #071b34 100%) !important;
+    box-shadow: 0 16px 34px rgba(0,48,111,.28) !important;
+  }
+
+  .competition-spotlight::before{
+    content:"";
+    position:absolute;
+    inset:0;
+    background:
+      linear-gradient(120deg, rgba(255,255,255,.14), transparent 38%),
+      radial-gradient(circle at 78% 20%, rgba(255,224,130,.28), transparent 26%);
+    pointer-events:none;
+    z-index:1;
+  }
+
+  .competition-spotlight-copy{
+    z-index:3 !important;
+  }
+
+  .competition-spotlight-copy span{
+    color:#ffe082 !important;
+    font-size:.74rem !important;
+  }
+
+  .competition-spotlight-copy strong{
+    font-size:1.55rem !important;
+    letter-spacing:-.04em;
+  }
+
+  .competition-spotlight-copy small{
+    font-size:.86rem !important;
+  }
+
+  .competition-spotlight img{
+    width: 102px !important;
+    height: 102px !important;
+    flex: 0 0 102px !important;
+    object-fit: contain !important;
+    transform: scale(1.18);
+    filter: drop-shadow(0 12px 18px rgba(0,0,0,.32));
+  }
+}
