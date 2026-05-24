@@ -928,3 +928,37 @@ td:nth-child(6){
     font-size:.9rem;
   }
 }
+
+/* FIX BACKGROUND MOBILE MEDAGLIERE DOPO NAVBAR MOBILE */
+@media (max-width: 768px){
+
+  html,
+  body.medagliere-page{
+    background-color:#03162b !important;
+  }
+
+  body.medagliere-page{
+    background:
+      radial-gradient(circle at 20% 16%, rgba(63,143,255,0.20), transparent 24%),
+      radial-gradient(circle at 85% 10%, rgba(255,204,67,0.16), transparent 22%),
+      linear-gradient(180deg, #041c35 0%, #03162b 48%, #061b31 100%) !important;
+    min-height:100vh;
+    overflow-x:hidden;
+  }
+
+  body.medagliere-page::before,
+  body.medagliere-page::after{
+    display:none !important;
+  }
+
+  .hero-medagliere,
+  .hall-wrapper,
+  .podio-section,
+  .tabella-section{
+    background-color:transparent;
+  }
+
+  .hall-wrapper{
+    padding-bottom:120px !important;
+  }
+}
