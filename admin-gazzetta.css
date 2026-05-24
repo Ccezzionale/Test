@@ -191,3 +191,80 @@ input:focus,textarea:focus{border-color:#84a9d6;box-shadow:0 0 0 4px rgba(0,58,1
     grid-template-columns:1fr;
   }
 }
+
+/* FIX MOBILE ADMIN GAZZETTA - leggibilità dopo navbar mobile */
+@media (max-width: 768px){
+
+  html,
+  body{
+    background:
+      radial-gradient(circle at 20% 0%, rgba(0,116,217,.18), transparent 34%),
+      radial-gradient(circle at 85% 20%, rgba(255,215,0,.12), transparent 34%),
+      linear-gradient(180deg, #071b3a 0%, #eef4fb 34%, #f7f9fc 100%) !important;
+    color:#061326 !important;
+    min-height:100vh;
+  }
+
+  main,
+  .admin-gazzetta-page,
+  .admin-page,
+  .gazzetta-admin,
+  .admin-wrapper{
+    color:#061326 !important;
+  }
+
+  .admin-gazzetta-page h1,
+  .admin-page h1,
+  .gazzetta-admin h1,
+  h1{
+    color:#ffc400 !important;
+    text-shadow:
+      0 2px 0 rgba(0,0,0,.18),
+      0 6px 18px rgba(0,0,0,.18);
+  }
+
+  .admin-gazzetta-page p,
+  .admin-page p,
+  .gazzetta-admin p,
+  p{
+    color:#24405f !important;
+  }
+
+  .admin-gazzetta-page a,
+  .admin-page a,
+  .gazzetta-admin a{
+    color:#0066c9 !important;
+  }
+
+  .admin-card,
+  .cms-card,
+  .editor-card,
+  .archive-card,
+  .edition-card,
+  .gazzetta-card,
+  .admin-panel,
+  section{
+    color:#061326 !important;
+  }
+
+  .admin-card *,
+  .cms-card *,
+  .editor-card *,
+  .archive-card *,
+  .edition-card *,
+  .gazzetta-card *,
+  .admin-panel *{
+    color:inherit;
+  }
+
+  .edition-card,
+  .gazzetta-card,
+  .admin-panel,
+  .archive-card{
+    background:rgba(255,255,255,.94) !important;
+  }
+
+  body{
+    padding-bottom:110px !important;
+  }
+}
