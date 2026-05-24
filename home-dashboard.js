@@ -134,6 +134,7 @@ function formatRole(role) {
 
 async function loadDashboardTeam() {
   const logoEl = document.getElementById("dashboard-team-logo");
+  const bgLogoEl = document.getElementById("dashboard-team-bg-logo");
   const shirtEl = document.getElementById("dashboard-team-shirt");
   const nameEl = document.getElementById("dashboard-team-name");
   const coachEl = document.getElementById("dashboard-team-coach");
