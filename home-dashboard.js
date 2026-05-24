@@ -151,6 +151,7 @@ async function loadDashboardTeam() {
       conferenceEl.textContent = "Accedi per vedere la tua squadra";
       roleEl.textContent = "Guest";
       logoEl.src = "icon-192.png";
+      if (bgLogoEl) bgLogoEl.src = "icon-192.png";
 
       if (shirtEl) shirtEl.src = "img/maglie/default-shirt.png";
       if (coachEl) coachEl.textContent = "Guest";
@@ -173,6 +174,7 @@ async function loadDashboardTeam() {
       conferenceEl.textContent = user.email || "Profilo non collegato";
       roleEl.textContent = "Coach";
       logoEl.src = "icon-192.png";
+      if (bgLogoEl) bgLogoEl.src = "icon-192.png";
 
       if (shirtEl) shirtEl.src = "img/maglie/default-shirt.png";
       if (coachEl) coachEl.textContent = "Allenatore";
@@ -193,6 +195,7 @@ async function loadDashboardTeam() {
       conferenceEl.textContent = "Controlla collegamento profilo";
       roleEl.textContent = formatRole(profile.role);
       logoEl.src = "icon-192.png";
+      if (bgLogoEl) bgLogoEl.src = "icon-192.png";
 
       if (shirtEl) shirtEl.src = "img/maglie/default-shirt.png";
       if (coachEl) coachEl.textContent = "Allenatore";
@@ -206,8 +209,15 @@ async function loadDashboardTeam() {
     conferenceEl.textContent = team.conference || "Conference";
     roleEl.textContent = formatRole(profile.role);
 
-    logoEl.src = findTeamLogo(teamName);
-    logoEl.alt = teamName || "Logo squadra";
+ const teamLogo = findTeamLogo(teamName);
+
+logoEl.src = teamLogo;
+logoEl.alt = teamName || "Logo squadra";
+
+if (bgLogoEl) {
+  bgLogoEl.src = teamLogo;
+  bgLogoEl.alt = "";
+}
 
     if (shirtEl) {
       shirtEl.src = findTeamShirt(teamName);
@@ -225,6 +235,7 @@ async function loadDashboardTeam() {
     conferenceEl.textContent = "Dashboard ufficiale";
     roleEl.textContent = "Coach";
     logoEl.src = "icon-192.png";
+    if (bgLogoEl) bgLogoEl.src = "icon-192.png";
 
     if (shirtEl) shirtEl.src = "img/maglie/default-shirt.png";
     if (coachEl) coachEl.textContent = "Allenatore";
