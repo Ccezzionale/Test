@@ -268,3 +268,61 @@ input:focus,textarea:focus{border-color:#84a9d6;box-shadow:0 0 0 4px rgba(0,58,1
     padding-bottom:110px !important;
   }
 }
+
+/* FIX MOBILE ADMIN GAZZETTA DOPO NAVBAR MOBILE */
+@media(max-width:768px){
+
+  html,
+  body{
+    background:
+      radial-gradient(circle at top left, rgba(255,204,0,.18), transparent 34%),
+      linear-gradient(180deg,#042647 0,#063565 150px,#f4f7fb 420px,#fff 100%) !important;
+    color:var(--ink) !important;
+  }
+
+  .admin-shell{
+    padding:28px 18px 130px !important;
+  }
+
+  .admin-hero{
+    color:#061326 !important;
+  }
+
+  .admin-hero .subtitle{
+    color:#24405f !important;
+  }
+
+  .hero-card{
+    background:rgba(255,255,255,.72) !important;
+    border-color:rgba(219,230,244,.95) !important;
+  }
+
+  .hero-card strong{
+    color:#061326 !important;
+  }
+
+  .hero-card small{
+    color:#3b5d80 !important;
+  }
+
+  .gate-card,
+  .editor-panel,
+  .editions-panel,
+  .edition-item,
+  .mini-editor-card{
+    color:var(--ink) !important;
+  }
+
+  .back-link{
+    color:#ffe89a !important;
+    text-shadow:0 2px 8px rgba(0,0,0,.28);
+  }
+
+  .eyebrow{
+    color:#8aa0ba !important;
+  }
+
+  h1{
+    color:var(--gold) !important;
+  }
+}
