@@ -821,6 +821,11 @@ body::after{
     overflow-x:hidden;
   }
 
+  body::before,
+  body::after{
+    display:none !important;
+  }
+
   /* Nasconde desktop playoff, tiene la navbar vera */
   .hero-playoff,
   .playoff-intro,
