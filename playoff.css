@@ -846,11 +846,11 @@ body::after{
   }
 
   /* Mostra layout mobile */
-  .playoff-mobile-app{
-    display:block;
-    min-height:100vh;
-    padding:18px 14px 30px;
-  }
+.playoff-mobile-app{
+  display:block;
+  min-height:100vh;
+  padding:18px 14px 120px;
+}
 
   .mobile-playoff-shell{
     width:min(100%, 520px);
@@ -1478,11 +1478,11 @@ body::after{
 }
 
 @media (max-width: 768px){
-  .playoff-admin-panel{
-    width:min(100%, 520px);
-    margin:8px auto 18px;
-    padding:0 14px;
-  }
+.playoff-admin-panel{
+  width:min(100%, 520px);
+  margin:8px auto 120px;
+  padding:0 14px;
+}
 
   .admin-playoff-results{
     grid-template-columns:1fr;
