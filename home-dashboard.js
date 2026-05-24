@@ -17,7 +17,7 @@ const squadreBase = [
     nome: "Team Bartowski",
     logo: "img/Team Bartowski.png",
     shirt: "img/maglie/Team Bartowski.png",
-    coach: "Marco Rossi"
+    coach: "Marco Tringali"
   },
   {
     nome: "Golden Knights",
