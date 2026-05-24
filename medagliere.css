@@ -825,3 +825,36 @@ body::after {
     opacity: 1;
   }
 }
+
+/* FIX BACKGROUND MOBILE ALBO D'ORO DOPO NAVBAR MOBILE */
+@media (max-width: 768px){
+
+  html,
+  body{
+    background-color:#020914 !important;
+  }
+
+  body{
+    background:
+      radial-gradient(circle at 50% 0%, rgba(255, 204, 77, 0.20) 0, transparent 18rem),
+      radial-gradient(circle at 14% 18%, rgba(34, 111, 190, 0.32) 0, transparent 22rem),
+      radial-gradient(circle at 87% 28%, rgba(0, 168, 126, 0.14) 0, transparent 20rem),
+      linear-gradient(180deg, #020914 0%, #061b36 46%, #031124 100%) !important;
+    min-height:100vh;
+    overflow-x:hidden;
+  }
+
+  body::before,
+  body::after{
+    display:none !important;
+  }
+
+  .hero-albo,
+  .hall-container{
+    background:transparent !important;
+  }
+
+  .hall-container{
+    padding-bottom:120px !important;
+  }
+}
