@@ -692,10 +692,19 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 </script>
 
-  <script>
+<script>
   window.addEventListener("load", function () {
     const splash = document.getElementById("splashIntro");
     if (!splash) return;
+
+    const splashAlreadySeen = sessionStorage.getItem("legaEroiSplashSeen");
+
+    if (splashAlreadySeen === "true") {
+      splash.classList.add("splash-hidden");
+      return;
+    }
+
+    sessionStorage.setItem("legaEroiSplashSeen", "true");
 
     setTimeout(function () {
       splash.classList.add("splash-hidden");
