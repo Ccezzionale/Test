@@ -3503,3 +3503,60 @@ nav.site-nav{
     transform: none !important;
   }
 }
+
+  /* =========================================================
+   MOBILE - CLASSIFICHE & PLAYOFF SQUARE BANNERS
+   Solo mobile, desktop intatto
+   ========================================================= */
+
+@media (max-width: 900px){
+
+  .competitions-square-grid{
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 12px !important;
+  }
+
+  .competition-primary-card.competition-square-banner{
+    display: block !important;
+    position: relative !important;
+
+    width: 100% !important;
+    aspect-ratio: 1 / 1 !important;
+
+    min-height: 0 !important;
+    height: auto !important;
+    padding: 0 !important;
+
+    border: 0 !important;
+    border-radius: 18px !important;
+    overflow: hidden !important;
+
+    background: transparent !important;
+    box-shadow: 0 10px 22px rgba(15,35,65,.16) !important;
+  }
+
+  .competition-primary-card.competition-square-banner::before,
+  .competition-primary-card.competition-square-banner::after{
+    display: none !important;
+    content: none !important;
+  }
+
+  .competition-primary-card.competition-square-banner img{
+    display: block !important;
+    position: static !important;
+
+    width: 100% !important;
+    height: 100% !important;
+    max-width: none !important;
+
+    object-fit: cover !important;
+    object-position: center !important;
+
+    border: 0 !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    filter: none !important;
+    transform: none !important;
+  }
+}
