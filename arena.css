@@ -1070,3 +1070,30 @@ h1 {
   background:linear-gradient(180deg, rgba(255,75,46,.34), rgba(120,20,10,.32));
   color:#fff;
 }
+
+/* FIX BACKGROUND MOBILE HIGHLANDER DOPO NAVBAR MOBILE */
+@media (max-width: 768px){
+
+  html,
+  body{
+    background-color:#050b12 !important;
+  }
+
+  body{
+    background:
+      linear-gradient(180deg, rgba(0,0,0,.46), rgba(0,0,0,.72)),
+      radial-gradient(circle at 18% 22%, rgba(255,120,30,0.20), transparent 24%),
+      radial-gradient(circle at 80% 80%, rgba(255,95,0,0.16), transparent 28%),
+      url("img/arena_bg.jpg") center top / cover no-repeat scroll !important;
+    min-height:100vh;
+  }
+
+  .arena-page{
+    background:transparent !important;
+    padding-bottom:120px !important;
+  }
+
+  .hero-arena{
+    background:transparent !important;
+  }
+}
