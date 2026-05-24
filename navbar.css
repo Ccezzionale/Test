@@ -3494,7 +3494,7 @@ nav.site-nav{
     max-width: none !important;
 
     object-fit: cover !important;
-    object-position: center !important;
+    object-position: center 42% !important;
 
     border: 0 !important;
     border-radius: 0 !important;
