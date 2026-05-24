@@ -3399,3 +3399,67 @@ nav.site-nav{
     filter: drop-shadow(0 12px 18px rgba(0,0,0,.32));
   }
 }
+
+  /* =========================================================
+   MOBILE - ALL STAR SPOTLIGHT LOGO INTEGRATO
+   Mettere in fondo a navbar.css
+   ========================================================= */
+
+@media (max-width: 900px){
+
+  .competition-spotlight{
+    min-height: 126px !important;
+    padding: 18px 18px !important;
+    border-radius: 22px !important;
+    overflow: hidden !important;
+    align-items: center !important;
+  }
+
+  .competition-spotlight-copy{
+    position: relative !important;
+    z-index: 4 !important;
+    max-width: 56%;
+  }
+
+  .competition-spotlight img{
+    position: absolute !important;
+    right: -4px !important;
+    top: 50% !important;
+
+    width: 142px !important;
+    height: 142px !important;
+    max-width: none !important;
+
+    transform: translateY(-50%) !important;
+    object-fit: contain !important;
+
+    background: transparent !important;
+    border: 0 !important;
+    box-shadow: none !important;
+
+    filter:
+      drop-shadow(0 14px 20px rgba(0,0,0,.34))
+      drop-shadow(0 0 18px rgba(0,120,255,.30));
+    
+    z-index: 3 !important;
+  }
+
+  .competition-spotlight::after{
+    content: "" !important;
+    position: absolute !important;
+    right: -40px !important;
+    top: 50% !important;
+
+    width: 185px !important;
+    height: 185px !important;
+    border-radius: 999px !important;
+
+    transform: translateY(-50%) !important;
+
+    background:
+      radial-gradient(circle, rgba(255,255,255,.18) 0%, rgba(0,120,255,.18) 36%, rgba(255,35,80,.16) 58%, transparent 72%) !important;
+
+    pointer-events: none !important;
+    z-index: 2 !important;
+  }
+}
