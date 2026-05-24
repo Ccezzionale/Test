@@ -432,3 +432,100 @@ body{
     padding-bottom:130px !important;
   }
 }
+
+/* ADMIN SUPERCOPPA A TENDINA */
+.admin-panel-collapsible{
+  padding:0 !important;
+  overflow:hidden;
+}
+
+.admin-panel-collapsible details{
+  width:100%;
+}
+
+.admin-summary{
+  list-style:none;
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:14px;
+  padding:18px 20px;
+  border-radius:24px;
+  background:
+    radial-gradient(circle at 0% 0%, rgba(244,215,121,.16), transparent 36%),
+    linear-gradient(180deg, rgba(8,31,57,.98), rgba(4,18,35,.98));
+  color:#fff;
+  border:1px solid rgba(216,180,74,.34);
+}
+
+.admin-summary::-webkit-details-marker{
+  display:none;
+}
+
+.admin-summary span{
+  display:flex;
+  flex-direction:column;
+  gap:4px;
+}
+
+.admin-summary strong{
+  color:var(--gold2);
+  text-transform:uppercase;
+  letter-spacing:1px;
+  font-size:1.05rem;
+}
+
+.admin-summary small{
+  color:rgba(255,255,255,.72);
+  font-weight:700;
+}
+
+.admin-summary em{
+  font-style:normal;
+  padding:8px 12px;
+  border-radius:999px;
+  background:rgba(255,255,255,.10);
+  border:1px solid rgba(255,255,255,.16);
+  color:#fff7d1;
+  font-weight:900;
+  font-size:.82rem;
+}
+
+.admin-panel-collapsible details[open] .admin-summary{
+  border-bottom-left-radius:0;
+  border-bottom-right-radius:0;
+}
+
+.admin-panel-collapsible details[open] .admin-summary em{
+  font-size:0;
+}
+
+.admin-panel-collapsible details[open] .admin-summary em::after{
+  content:"Chiudi";
+  font-size:.82rem;
+}
+
+.admin-panel-content{
+  padding:22px;
+  background:linear-gradient(180deg, rgba(8,31,57,.96), rgba(4,18,35,.96));
+}
+
+@media (max-width:768px){
+  .admin-summary{
+    padding:16px;
+    border-radius:20px;
+  }
+
+  .admin-summary strong{
+    font-size:.98rem;
+  }
+
+  .admin-summary small{
+    font-size:.78rem;
+  }
+
+  .admin-panel-content{
+    padding:16px 14px 20px;
+  }
+}
