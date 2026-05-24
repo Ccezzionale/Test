@@ -3311,3 +3311,19 @@ nav.site-nav{
   }
 
 }
+
+  /* =========================================================
+   HOME MOBILE - GAP REALE SOTTO GAZZETTA
+   ========================================================= */
+
+@media (max-width: 900px){
+
+  .mobile-app-hero > .gazzetta-preview-card{
+    margin-bottom: 28px !important;
+  }
+
+  .mobile-app-hero > .competitions-home-section{
+    margin-top: 0 !important;
+  }
+
+}
