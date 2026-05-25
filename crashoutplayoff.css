@@ -1900,3 +1900,14 @@ body::before{
 .hidden {
   display: none !important;
 }
+
+.page-header-banner picture{
+  display: block;
+  width: 100%;
+}
+
+.page-header-banner picture img{
+  display: block;
+  width: 100%;
+  height: auto;
+}
