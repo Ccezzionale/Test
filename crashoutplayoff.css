@@ -1863,3 +1863,46 @@ body::before{
     display: none !important;
   }
 }
+
+/* =========================================================
+   CRASH OUT PLAYOFF - BANNER HEADER SAFE
+   ========================================================= */
+
+.page-header-banner{
+  display: block;
+  width: calc(100% - 32px);
+  max-width: 1600px;
+  margin: 18px auto 16px;
+}
+
+.crash-playoff-banner{
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 24px;
+  box-shadow:
+    0 22px 48px rgba(0,0,0,.34),
+    0 0 28px rgba(255,49,223,.16);
+}
+
+.crash-header-hidden{
+  display: none !important;
+}
+
+/* Mobile: nasconde solo la coppa grande sopra i tab */
+@media (max-width: 900px){
+  .page-header-banner{
+    width: 100%;
+    margin: 14px 0 14px;
+    padding: 0 10px;
+  }
+
+  .crash-playoff-banner{
+    border-radius: 20px;
+  }
+
+  .mobile-trophy-hero,
+  .mobile-trophy-image{
+    display: none !important;
+  }
+}
