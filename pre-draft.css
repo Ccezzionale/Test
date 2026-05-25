@@ -1444,3 +1444,41 @@ body{
 #admin-apply-status{
   color:#001f3f !important;
 }
+
+/* =========================================================
+   HERO BANNER PRE-DRAFT
+   ========================================================= */
+
+.predraft-hero-banner {
+  padding: 0;
+  margin-bottom: 20px;
+  min-height: 0;
+  border-radius: 28px;
+  background: transparent;
+  border: 0;
+  box-shadow: 0 28px 70px rgba(0, 0, 0, .30);
+  overflow: hidden;
+}
+
+.predraft-hero-banner::before,
+.predraft-hero-banner::after {
+  display: none;
+}
+
+.predraft-banner-img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 28px;
+  object-fit: cover;
+}
+
+@media (max-width: 900px) {
+  .predraft-hero-banner {
+    border-radius: 22px;
+  }
+
+  .predraft-banner-img {
+    border-radius: 22px;
+  }
+}
