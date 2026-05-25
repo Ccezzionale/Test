@@ -1822,8 +1822,12 @@ body::before{
   }
 }
 
+
+
 /* =========================================================
-   CRASH OUT PLAYOFF - BANNER HEADER + NO TROPHY
+   CRASH OUT PLAYOFF - BANNER HEADER
+   Desktop: cambia solo il titolo in banner
+   Mobile: nasconde solo la coppa grande sopra i tab
    ========================================================= */
 
 .page-header-banner{
@@ -1843,33 +1847,6 @@ body::before{
     0 0 28px rgba(255,49,223,.16);
 }
 
-/* Toglie la coppa centrale nel bracket desktop */
-.finals-centerpiece{
-  display: none !important;
-}
-
-/* Ricompatta la finale desktop dopo aver tolto la coppa */
-.finals-split{
-  grid-template-rows: 1fr 1fr;
-  gap: 36px;
-  padding-top: 42px;
-}
-
-/* Toglie la coppa grande mobile generata sopra ai tab */
-.mobile-trophy-hero,
-.mobile-final-hero,
-.mobile-trophy-image,
-.mobile-final-mini-trophy,
-.mini-trophy{
-  display: none !important;
-}
-
-/* Admin subito sotto al banner */
-.crash-admin-panel{
-  margin: 0 0 18px;
-}
-
-/* Mobile */
 @media (max-width: 900px){
   .page-header-banner{
     width: 100%;
@@ -1881,15 +1858,8 @@ body::before{
     border-radius: 20px;
   }
 
-  .cup-container{
-    padding-top: 0 !important;
-  }
-
-  .crash-admin-panel{
-    margin: 0 0 14px;
-  }
-
-  .bracket-mobile{
-    margin-top: 0;
+  .mobile-trophy-hero,
+  .mobile-trophy-image{
+    display: none !important;
   }
 }
