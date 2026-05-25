@@ -85,6 +85,11 @@ nav.site-nav{
   background: rgba(255,255,255,0.08);
 }
 
+/* Nasconde il titolo mobile sul desktop */
+.mobile-nav-title{
+  display: none;
+}
+
 .site-nav .navbar,
 .site-nav .submenu{
   list-style: none;
@@ -3564,5 +3569,46 @@ nav.site-nav{
   @media (max-width: 768px){
   body{
     padding-bottom:90px;
+  }
+}
+
+  /* =========================================================
+   DESKTOP NAV FIX DEFINITIVO
+   ========================================================= */
+
+@media (min-width: 901px){
+
+  nav.site-nav .hamburger,
+  nav.site-nav .mobile-nav-title{
+    display: none !important;
+  }
+
+  nav.site-nav .brand-home,
+  nav.site-nav .desktop-home-link{
+    display: inline-flex !important;
+  }
+
+  nav.site-nav{
+    min-height: 72px;
+    overflow: visible;
+  }
+
+  nav.site-nav .nav-inner{
+    min-height: 72px;
+    height: 72px;
+    display: flex;
+    align-items: center;
+  }
+
+  nav.site-nav .nav-left{
+    display: flex;
+    align-items: center;
+    width: auto;
+    flex: 0 0 auto;
+  }
+
+  nav.site-nav .navbar{
+    display: flex;
+    align-items: center;
   }
 }
