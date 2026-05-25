@@ -212,18 +212,5 @@
   <script type="module" src="crashoutplayoff.js" defer></script>
   <script src="navbar.js"></script>
 
-  <script>
-    document.addEventListener("DOMContentLoaded", function () {
-      const panel = document.getElementById("crash-admin-panel");
-      const toggle = document.getElementById("crash-admin-toggle");
-
-      if (!panel || !toggle) return;
-
-      toggle.addEventListener("click", function () {
-        const isOpen = panel.classList.toggle("is-open");
-        toggle.setAttribute("aria-expanded", isOpen ? "true" : "false");
-      });
-    });
-  </script>
 </body>
 </html>
