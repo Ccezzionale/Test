@@ -6763,3 +6763,28 @@ h1, h2, h3, h4, p{
     height: 206px !important;
   }
 }
+
+@media (max-width: 768px){
+  .mobile-bottom-nav{
+    grid-template-columns: repeat(6, 1fr);
+    gap: 2px;
+    padding-left: 6px;
+    padding-right: 6px;
+  }
+
+  .mobile-bottom-nav a{
+    min-width: 0;
+    padding-left: 4px;
+    padding-right: 4px;
+  }
+
+  .mobile-bottom-nav img{
+    width: 24px;
+    height: 24px;
+  }
+
+  .mobile-bottom-nav span{
+    font-size: 10px;
+    line-height: 1.1;
+  }
+}
