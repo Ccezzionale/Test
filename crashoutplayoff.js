@@ -94,24 +94,31 @@ async function isCurrentUserAdmin() {
 }
 
 async function initCrashAdminPanel() {
-  const isAdmin = await isCurrentUserAdmin();
   const panel = document.getElementById("crash-admin-panel");
+  const toggle = document.getElementById("crash-admin-toggle");
+  const saveBtn = document.getElementById("crash-admin-save");
 
-  if (!panel || !isAdmin) return;
+  if (!panel) return;
 
-panel.classList.remove("hidden");
-renderCrashAdminPanel();
+  const isAdmin = await isCurrentUserAdmin();
 
-const toggle = document.getElementById("crash-admin-toggle");
+  if (!isAdmin) {
+    panel.classList.add("hidden");
+    return;
+  }
 
-toggle?.addEventListener("click", () => {
-  const isOpen = panel.classList.toggle("is-open");
-  toggle.setAttribute("aria-expanded", String(isOpen));
-});
+  panel.classList.remove("hidden");
 
-document
-  .getElementById("crash-admin-save")
-  ?.addEventListener("click", saveCrashAdminScores);
+  // Ricarica i risultati e popola sempre la griglia admin
+  await loadScoresFromSupabase();
+  renderCrashAdminPanel();
+
+  toggle?.addEventListener("click", () => {
+    const isOpen = panel.classList.toggle("is-open");
+    toggle.setAttribute("aria-expanded", String(isOpen));
+  });
+
+  saveBtn?.addEventListener("click", saveCrashAdminScores);
 }
 
 function renderCrashAdminPanel() {
