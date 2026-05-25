@@ -93,11 +93,20 @@
   </nav>
 
 <header class="page-header page-header-banner">
-  <img
-    src="icons/nav/cocfasefinale.webp"
-    alt="Crash Out Cup Playoff"
-    class="crash-playoff-banner"
-  >
+  <picture>
+    <!-- Mobile -->
+    <source
+      media="(max-width: 900px)"
+      srcset="icons/nav/cocfasefinale.webp"
+    >
+
+    <!-- Desktop -->
+    <img
+      src="icons/nav/cocdesktop.webp"
+      alt="Crash Out Cup Playoff"
+      class="crash-playoff-banner"
+    >
+  </picture>
 
   <div class="page-title-block crash-header-hidden">
     <div class="page-kicker">Lega degli Eroi</div>
