@@ -459,13 +459,13 @@
     <span class="quick-sub">Keeper</span>
   </a>
 
-  <a href="draft_conference.html" class="quick-card quick-draft">
-    <span class="quick-icon">
-      <img src="icons/nav/draft-2026.webp" alt="">
-    </span>
-    <span class="quick-title">Draft</span>
-    <span class="quick-sub">Board</span>
-  </a>
+<a id="quick-draft-link" href="draft_conference.html" class="quick-card quick-draft">
+  <span class="quick-icon">
+    <img src="icons/nav/draft-2026.webp" alt="">
+  </span>
+  <span class="quick-title">Draft</span>
+  <span id="quick-draft-sub" class="quick-sub">Board</span>
+</a>
 
   <a href="trade-room.html" class="quick-card quick-trade">
     <span class="quick-icon">
@@ -632,6 +632,56 @@ document.addEventListener("DOMContentLoaded", function () {
   <script src="mobile-nav.js"></script>
   <script src="navbar.js"></script>
   <script type="module" src="admin-nav.js?v=1"></script>
+  <script type="module">
+  import { supabase as sb } from "./supabase-config.js";
 
+  async function setQuickDraftLinkByConference() {
+    const draftLink = document.getElementById("quick-draft-link");
+    const draftSub = document.getElementById("quick-draft-sub");
+
+    if (!draftLink || !sb) return;
+
+    try {
+      const { data: authData } = await sb.auth.getUser();
+      const user = authData?.user;
+
+      if (!user) {
+        draftLink.href = "draft_conference.html";
+        if (draftSub) draftSub.textContent = "Board";
+        return;
+      }
+
+      const { data: profile, error } = await sb
+        .from("profiles")
+        .select(`
+          team_id,
+          teams (
+            conference
+          )
+        `)
+        .eq("id", user.id)
+        .single();
+
+      if (error) throw error;
+
+      const conference = profile?.teams?.conference || "";
+
+      if (conference === "Conference Championship") {
+        draftLink.href = "draft_championship.html";
+        if (draftSub) draftSub.textContent = "Championship";
+      } else {
+        draftLink.href = "draft_conference.html";
+        if (draftSub) draftSub.textContent = "League";
+      }
+
+    } catch (err) {
+      console.warn("Errore link Draft rapido:", err);
+      draftLink.href = "draft_conference.html";
+      if (draftSub) draftSub.textContent = "Board";
+    }
+  }
+
+  document.addEventListener("DOMContentLoaded", setQuickDraftLinkByConference);
+</script>
 </body>
 </html>
