@@ -1906,3 +1906,7 @@ body::before{
     display: none !important;
   }
 }
+
+.hidden {
+  display: none !important;
+}
