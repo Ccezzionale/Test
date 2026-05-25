@@ -22,7 +22,7 @@ const squadreBase = [
   {
     nome: "Golden Knights",
     logo: "img/Golden Knights.png",
-    shirt: "img/maglie/Golden Knights.png",
+    shirt: "img/maglie/golden-mascotte.webp",
     coach: "Coach Golden Knights"
   },
   {
