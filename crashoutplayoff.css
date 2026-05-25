@@ -35,23 +35,13 @@ body{
   color:var(--crash-text);
   font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   background:
-    radial-gradient(circle at 50% 28%, rgba(255,49,223,.18), transparent 34%),
-    radial-gradient(circle at 47% 62%, rgba(32,199,255,.13), transparent 30%),
-    linear-gradient(180deg, #040510 0%, #07081a 48%, #03040d 100%);
+    radial-gradient(circle at 50% 30%, rgba(255,49,223,.12), transparent 32%),
+    radial-gradient(circle at 50% 58%, rgba(32,199,255,.10), transparent 28%),
+    linear-gradient(180deg, #0a0f2a 0%, #0d1638 50%, #091126 100%);
 }
 
 body::before{
-  content:"";
-  position:fixed;
-  inset:0;
-  pointer-events:none;
-  background:
-    radial-gradient(ellipse at center, transparent 0%, transparent 44%, rgba(0,0,0,.46) 100%),
-    linear-gradient(90deg, rgba(0,0,0,.38), transparent 24%, transparent 76%, rgba(0,0,0,.42)),
-    radial-gradient(circle at 50% 64%, rgba(255,49,223,.18), transparent 34%);
-  mix-blend-mode:multiply;
-  opacity:.92;
-  z-index:-1;
+  display:none;
 }
 
 /* ========== NAVBAR POLISH ONLY ON THIS PAGE ========== */
