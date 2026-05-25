@@ -1595,3 +1595,58 @@ body::after{
     border-radius: 20px;
   }
 }
+
+/* =========================================================
+   PLAYOFF - FIX BANNER DESKTOP/MOBILE
+   ========================================================= */
+
+.playoff-hero-banner{
+  display:block;
+  width:calc(100% - 64px);
+  max-width:1700px;
+  margin:28px auto 28px;
+  padding:0;
+  background:transparent;
+  border:0;
+  box-shadow:none;
+}
+
+.playoff-hero-banner picture{
+  display:block;
+  width:100%;
+}
+
+.playoff-banner-img{
+  display:block;
+  width:100%;
+  height:auto;
+  border-radius:28px;
+  box-shadow:
+    0 22px 54px rgba(0, 24, 70, .25),
+    0 0 28px rgba(212, 175, 55, .12);
+}
+
+@media (max-width: 768px){
+  .playoff-hero-banner{
+    display:block !important;
+    width:100%;
+    margin:14px 0 14px;
+    padding:0 12px;
+  }
+
+  .playoff-banner-img{
+    border-radius:20px;
+  }
+
+  .mobile-playoff-topbar{
+    display:none !important;
+  }
+
+  .mobile-hero-card{
+    display:none !important;
+  }
+
+  .playoff-mobile-app{
+    padding-top:0 !important;
+  }
+}
