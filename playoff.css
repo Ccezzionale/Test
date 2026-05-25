@@ -1553,3 +1553,45 @@ body::after{
     background:transparent !important;
   }
 }
+
+/* =========================================================
+   PLAYOFF - HERO BANNER
+   ========================================================= */
+
+.playoff-hero-banner{
+  width: calc(100% - 64px);
+  max-width: 1700px;
+  margin: 28px auto 28px;
+  padding: 0;
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+}
+
+.playoff-hero-banner picture{
+  display: block;
+  width: 100%;
+}
+
+.playoff-banner-img{
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 28px;
+  box-shadow:
+    0 22px 54px rgba(0, 24, 70, .25),
+    0 0 28px rgba(212, 175, 55, .12);
+}
+
+/* Mobile */
+@media (max-width: 900px){
+  .playoff-hero-banner{
+    width: 100%;
+    margin: 14px 0 18px;
+    padding: 0 12px;
+  }
+
+  .playoff-banner-img{
+    border-radius: 20px;
+  }
+}
