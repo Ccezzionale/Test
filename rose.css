@@ -1069,3 +1069,40 @@ tbody tr:last-child {
     margin-bottom: 6px;
   }
 }
+
+/* =========================================================
+   HERO BANNER ROSE
+   ========================================================= */
+
+.rose-hero-banner {
+  padding: 0;
+  margin-bottom: 22px;
+  border-radius: 24px;
+  background: transparent;
+  box-shadow: 0 18px 42px rgba(0, 31, 63, 0.16);
+  overflow: hidden;
+}
+
+.rose-hero-banner::after {
+  display: none;
+}
+
+.rose-banner-img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 24px;
+  object-fit: cover;
+}
+
+/* Mobile */
+@media (max-width: 600px) {
+  .rose-hero-banner {
+    margin-bottom: 18px;
+    border-radius: 20px;
+  }
+
+  .rose-banner-img {
+    border-radius: 20px;
+  }
+}
