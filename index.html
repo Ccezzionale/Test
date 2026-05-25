@@ -207,6 +207,25 @@
     display: none !important;
   }
 }
+
+    /* =========================================================
+   DESKTOP NAV FIX
+   ========================================================= */
+
+@media (min-width: 901px) {
+  .mobile-nav-title,
+  .hamburger {
+    display: none !important;
+  }
+
+  .desktop-home-link {
+    display: inline-flex !important;
+  }
+
+  .site-nav .nav-inner {
+    align-items: center;
+  }
+}
   </style>
 </head>
 
@@ -558,6 +577,21 @@ function resizeGazzetta() {
 
   try {
     const doc = iframe.contentDocument || iframe.contentWindow.document;
+
+    /* Nasconde elementi della pagina Gazzetta quando è dentro la home */
+    const embeddedNav = doc.querySelector("nav.site-nav");
+    if (embeddedNav) embeddedNav.remove();
+
+    const embeddedSplash = doc.querySelector("#splashIntro");
+    if (embeddedSplash) embeddedSplash.remove();
+
+    const embeddedMobileHero = doc.querySelector(".mobile-app-hero");
+    if (embeddedMobileHero) embeddedMobileHero.remove();
+
+    doc.documentElement.style.overflow = "hidden";
+    doc.body.style.margin = "0";
+    doc.body.style.padding = "0";
+    doc.body.style.overflow = "hidden";
 
     iframe.style.height = "1px";
 
