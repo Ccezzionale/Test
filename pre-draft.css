@@ -1615,3 +1615,10 @@ body{
       linear-gradient(135deg, rgba(5,24,52,.98), rgba(4,42,82,.95));
   }
 }
+
+/* Nasconde la card squadra nel Pre-Draft su mobile */
+@media (max-width: 700px) {
+  #keeper-team-box {
+    display: none !important;
+  }
+}
