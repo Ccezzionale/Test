@@ -529,3 +529,46 @@ body{
     padding:16px 14px 20px;
   }
 }
+
+/* =========================================================
+   SUPERCOPPA HERO BANNER
+   ========================================================= */
+
+.supercup-hero-banner {
+  width: min(1500px, calc(100% - 48px));
+  margin: 24px auto 26px;
+  padding: 0;
+  overflow: visible;
+}
+
+.supercup-banner-img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 26px;
+  object-fit: cover;
+  box-shadow:
+    0 24px 54px rgba(0, 0, 0, .34),
+    0 0 28px rgba(244, 215, 121, .16);
+}
+
+/* Evita che rimanga la vecchia coppa fantasma della hero */
+.supercup-hero-banner::before {
+  display: none !important;
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+  .supercup-hero-banner {
+    width: 100%;
+    margin: 12px auto 18px;
+    padding: 0 12px;
+  }
+
+  .supercup-banner-img {
+    height: 138px;
+    border-radius: 20px;
+    object-fit: cover;
+    object-position: center;
+  }
+}
