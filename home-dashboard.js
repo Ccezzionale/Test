@@ -1,5 +1,7 @@
 import { supabase } from "./supabase.js";
 
+
+
 const squadreBase = [
   {
     nome: "Rubinkebab",
