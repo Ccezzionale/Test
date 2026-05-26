@@ -1367,3 +1367,10 @@ nav.site-nav .action-icon{opacity:1!important;filter:none!important;}
   }
 }
 
+@media (max-width: 768px) {
+  .mobile-pick-origin span {
+    white-space: normal;
+    line-height: 1.1;
+  }
+}
+
