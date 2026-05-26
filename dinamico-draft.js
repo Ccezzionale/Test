@@ -600,7 +600,8 @@ function applicaProprietariFuturePicks(draftBase, futurePicks, draftName) {
 }
 
 function shortTeamName(name) {
-  const cleaned = cleanTeamName(name);
+  return cleanTeamName(name);
+}
 
 function getCanonicalTeamName(name, squadre) {
   const key = teamKey(name);
