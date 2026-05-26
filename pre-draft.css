@@ -1572,3 +1572,46 @@ body{
     padding-top: 12px;
   }
 }
+
+/* =========================================================
+   MOBILE TEAM CARD COMPACT
+   ========================================================= */
+
+@media (max-width: 700px) {
+  #keeper-team-box {
+    padding: 18px 16px;
+    border-radius: 20px;
+    gap: 10px;
+    background:
+      linear-gradient(135deg, rgba(7,31,63,.98), rgba(10,67,124,.90));
+  }
+
+  .team-box-accent {
+    width: 64px;
+    height: 5px;
+  }
+
+  .team-box-logo-wrap {
+    width: 74px;
+    height: 74px;
+  }
+
+  #keeper-team-logo {
+    width: 62px;
+    height: 62px;
+  }
+
+  #keeper-team-name {
+    font-size: 1.45rem;
+    margin-bottom: 4px;
+  }
+
+  #keeper-season-label {
+    font-size: 0.9rem;
+  }
+
+  #keeper-selections .choice-card {
+    background:
+      linear-gradient(135deg, rgba(5,24,52,.98), rgba(4,42,82,.95));
+  }
+}
