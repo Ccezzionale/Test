@@ -1250,3 +1250,43 @@ h1 {
     color:#ffb4a4 !important;
   }
 }
+
+/* =========================================================
+   HIGHLANDER HERO BANNER
+   ========================================================= */
+
+.highlander-hero-banner {
+  width: min(1500px, calc(100% - 48px));
+  margin: 8px auto 20px;
+}
+
+.highlander-banner-img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 26px;
+  object-fit: cover;
+  box-shadow:
+    0 24px 54px rgba(0, 0, 0, .34),
+    0 0 28px rgba(255, 215, 0, .14);
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+  .hero-arena {
+    padding-top: 12px;
+  }
+
+  .highlander-hero-banner {
+    width: 100%;
+    margin: 8px auto 14px;
+    padding: 0 12px;
+  }
+
+  .highlander-banner-img {
+    height: 138px;
+    border-radius: 20px;
+    object-fit: cover;
+    object-position: center;
+  }
+}
