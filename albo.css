@@ -962,3 +962,42 @@ td:nth-child(6){
     padding-bottom:120px !important;
   }
 }
+
+/* =========================================================
+   MEDAGLIERE HERO BANNER
+   ========================================================= */
+
+.hero-medagliere-banner {
+  width: min(1500px, calc(100% - 48px));
+  margin: 24px auto 22px;
+  padding: 0;
+  overflow: visible;
+  text-align: initial;
+}
+
+.hero-medagliere-banner-img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 26px;
+  object-fit: cover;
+  box-shadow:
+    0 24px 54px rgba(0, 0, 0, .34),
+    0 0 28px rgba(244, 215, 121, .16);
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+  .hero-medagliere-banner {
+    width: 100%;
+    margin: 12px auto 16px;
+    padding: 0 12px;
+  }
+
+  .hero-medagliere-banner-img {
+    height: 138px;
+    border-radius: 20px;
+    object-fit: cover;
+    object-position: center;
+  }
+}
