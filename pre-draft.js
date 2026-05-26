@@ -68,6 +68,7 @@ function bindEvents() {
   document.getElementById("btn-save-fp")?.addEventListener("click", () => saveSelection("FP"));
   document.getElementById("btn-save-u21")?.addEventListener("click", () => saveSelection("U21_KEEPER"));
   document.getElementById("btn-save-rfa")?.addEventListener("click", () => saveSelection("RFA"));
+  setupMobileChoiceAccordion();
   document.getElementById("btn-save-settings")?.addEventListener("click", saveKeeperSettings);
   document.getElementById("btn-scan-conflicts")?.addEventListener("click", scanKeeperConflicts);
   document.getElementById("btn-apply-predraft")?.addEventListener("click", applyPreDraftToDraft);
@@ -1268,6 +1269,42 @@ function getMainRoleRank(roleValue) {
   }
 
   return 99;
+}
+
+function setupMobileChoiceAccordion() {
+  const cards = [...document.querySelectorAll("#keeper-selections .choice-card")];
+  if (!cards.length) return;
+
+  cards.forEach((card, index) => {
+    card.classList.add("mobile-choice-accordion");
+
+    if (index === 0) {
+      card.classList.add("is-open");
+    }
+
+    card.addEventListener("click", event => {
+      const isMobile = window.matchMedia("(max-width: 700px)").matches;
+      if (!isMobile) return;
+
+      if (
+        event.target.closest("select") ||
+        event.target.closest("button") ||
+        event.target.closest(".current-selection")
+      ) {
+        return;
+      }
+
+      const isAlreadyOpen = card.classList.contains("is-open");
+
+      cards.forEach(otherCard => {
+        otherCard.classList.remove("is-open");
+      });
+
+      if (!isAlreadyOpen) {
+        card.classList.add("is-open");
+      }
+    });
+  });
 }
 
 function escapeHtml(value) {
