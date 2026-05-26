@@ -534,7 +534,20 @@ function abortAndFetch(key, url, tries = 4, baseDelay = 1200, timeoutMs = 25000)
 
 // Tab/endpoint
 const urlParams = new URLSearchParams(window.location.search);
-const tab = urlParams.get("tab") || (window.location.href.includes("conference") ? "Draft Conference" : "Draft Championship");
+
+const tab = urlParams.get("tab") || (
+  window.location.href.includes("conference")
+    ? "Draft Conference"
+    : "Draft Championship"
+);
+
+const draftDisplayName =
+  tab === "Draft Conference"
+    ? "Draft Conference League"
+    : tab === "Draft Championship"
+      ? "Draft Conference Championship"
+      : tab;
+
 const draftPool = tab === "Draft Championship"
   ? "conference_championship"
   : "conference_league";
