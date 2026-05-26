@@ -10,92 +10,92 @@ const squadreBase = [
   {
     nome: "Bayern Christiansen",
     logo: "img/Bayern Christiansen.png",
-    shirt: "img/maglie/Bayern Christiansen.png",
-    coach: "Coach Bayern"
+    shirt: "img/maglie/bayern-mascotte.webp",
+    coach: "Coach Christian"
   },
   {
     nome: "Team Bartowski",
     logo: "img/Team Bartowski.png",
     shirt: "img/maglie/bartowski-mascotte.webp",
-    coach: "Marco"
+    coach: "Coach Marco"
   },
   {
     nome: "Golden Knights",
     logo: "img/Golden Knights.png",
     shirt: "img/maglie/golden-mascotte.webp",
-    coach: "Coach Golden Knights"
+    coach: "Coach Mimmp&Francesco"
   },
   {
     nome: "Ibla",
     logo: "img/Ibla.png",
     shirt: "img/maglie/Ibla.png",
-    coach: "Coach Ibla"
+    coach: "Coach Francesco"
   },
   {
     nome: "Fantaugusta",
     logo: "img/Fantaugusta.png",
     shirt: "img/maglie/Fantaugusta.png",
-    coach: "Coach Fantaugusta"
+    coach: "Coach Giancarlo"
   },
   {
     nome: "Riverfilo",
     logo: "img/Riverfilo.png",
-    shirt: "img/maglie/Riverfilo.png",
-    coach: "Coach Riverfilo"
+    shirt: "img/maglie/riverfilo-mascotte.webp",
+    coach: "Coach Federico"
   },
   {
     nome: "Desperados",
     logo: "img/Desperados.png",
     shirt: "img/maglie/Desperados.png",
-    coach: "Coach Desperados"
+    coach: "Coach Stefano"
   },
   {
     nome: "Wildboys 78",
     logo: "img/wildboys78.png",
-    shirt: "img/maglie/Wildboys 78.png",
-    coach: "Coach Wildboys"
+    shirt: "img/maglie/wildboys-mascotte.webp",
+    coach: "Coach Francesco"
   },
   {
     nome: "Pandinicoccolosini",
     logo: "img/Pandinicoccolosini.png",
-    shirt: "img/maglie/Pandinicoccolosini.png",
-    coach: "Coach Pandinicoccolosini"
+    shirt: "img/maglie/pandini-mascotte.webp",
+    coach: "Coach Davide"
   },
   {
     nome: "Pokermantra",
     logo: "img/PokerMantra.png",
-    shirt: "img/maglie/PokerMantra.png",
-    coach: "Coach Pokermantra"
+    shirt: "img/maglie/pokermantra-mascotte.webp",
+    coach: "Coach Omar"
   },
   {
     nome: "Minnesode Timberland",
     logo: "img/Minnesode Timberland.png",
-    shirt: "img/maglie/Minnesode Timberland.png",
-    coach: "Coach Timberland"
+    shirt: "img/maglie/minnesode-mascotte.webp",
+    coach: "Coach Pierpaolo&Leandro"
   },
   {
     nome: "Minnesota Snakes",
     logo: "img/MinneSota Snakes.png",
-    shirt: "img/maglie/MinneSota Snakes.png",
-    coach: "Coach Snakes"
+    shirt: "img/maglie/snakes-mascotte.webp",
+    coach: "Coach Alberto"
   },
   {
     nome: "Eintracht Franco 126",
     logo: "img/Eintracht Franco 126.png",
-    shirt: "img/maglie/Eintracht Franco 126.png",
+    shirt: "img/maglie/franco-mascotte.webp",
     coach: "Coach Eintracht"
   },
   {
     nome: "FC Disoneste",
     logo: "img/FC Disoneste.png",
-    shirt: "img/maglie/FC Disoneste.png",
+    shirt: "img/maglie/disoneste-mascotte.webp",
     coach: "Coach FC Disoneste"
   },
   {
     nome: "Athletic Pongao",
     logo: "img/Athletic Pongao.png",
-    shirt: "img/maglie/Athletic Pongao.png",
-    coach: "Coach Athletic Pongao"
+    shirt: "img/maglie/pongao-mascotte.webp",
+    coach: "Coach Dario"
   }
 ];
 
