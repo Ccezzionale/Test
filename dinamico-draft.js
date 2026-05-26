@@ -602,18 +602,6 @@ function applicaProprietariFuturePicks(draftBase, futurePicks, draftName) {
 function shortTeamName(name) {
   const cleaned = cleanTeamName(name);
 
-  const map = {
-    "Bayern Christiansen": "Bayern",
-    "Pandinicoccolosini": "Pandinico",
-    "Minnesode Timberland": "Minnesode",
-    "MinneSota Snakes": "Snakes",
-    "Eintracht Franco 126": "Eintracht",
-    "Fc Disoneste": "Disoneste"
-  };
-
-  return map[cleaned] || cleaned;
-}
-
 function getCanonicalTeamName(name, squadre) {
   const key = teamKey(name);
   const found = squadre.find(s => teamKey(s) === key);
