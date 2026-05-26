@@ -778,12 +778,19 @@ tbody tr:last-child {
     border-radius: 999px;
   }
 
-  #filtri-rose input,
-  #filtri-rose select,
-  .reset-rose-btn {
-    width: 100%;
-    min-width: 0;
-  }
+#filtri-rose {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+#filtri-rose input,
+#filtri-rose select,
+.reset-rose-btn {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
 
   .rose-content-card {
     padding: 12px;
