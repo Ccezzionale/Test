@@ -1686,3 +1686,39 @@ body{
     flex: 0 0 48px;
   }
 }
+
+/* =========================================================
+   PRE-DRAFT DESKTOP FINAL LAYOUT
+   ========================================================= */
+
+@media (min-width: 1100px) {
+  .predraft-page {
+    display: block;
+    max-width: 1500px;
+  }
+
+  #keeper-selections {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 18px;
+    margin-bottom: 18px;
+  }
+
+  #keeper-selections.hidden {
+    display: none !important;
+  }
+
+  #keeper-selections .choice-card {
+    min-height: 360px;
+    margin-bottom: 0;
+  }
+
+  .roster-card.predraft-summary-only {
+    width: 100%;
+    margin-top: 0;
+  }
+
+  .predraft-summary-only .predraft-summary-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
