@@ -1644,3 +1644,45 @@ body{
     display: block;
   }
 }
+
+/* =========================================================
+   PRE-DRAFT SUMMARY ONLY
+   ========================================================= */
+
+.predraft-summary-only {
+  padding-bottom: 18px;
+}
+
+.predraft-summary-only .section-title-row p {
+  margin-bottom: 0;
+}
+
+.predraft-summary-only .predraft-summary-grid {
+  margin-bottom: 0;
+}
+
+@media (max-width: 700px) {
+  .predraft-summary-only {
+    padding: 18px 16px;
+  }
+
+  .predraft-summary-only .section-title-row h2 {
+    font-size: 1.45rem;
+  }
+
+  .predraft-summary-only .section-title-row p {
+    font-size: 0.95rem;
+    line-height: 1.45;
+  }
+
+  .predraft-summary-only .summary-card {
+    min-height: 78px;
+    padding: 13px;
+  }
+
+  .predraft-summary-only .summary-icon.summary-badge-icon {
+    width: 48px;
+    height: 48px;
+    flex: 0 0 48px;
+  }
+}
