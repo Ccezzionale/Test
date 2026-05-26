@@ -1333,3 +1333,37 @@ nav.site-nav .action-icon{opacity:1!important;filter:none!important;}
   }
 }
 
+/* =========================================================
+   DRAFT DINAMICO BANNER
+   ========================================================= */
+
+.dynamic-draft-banner {
+  width: 100%;
+  max-width: 1500px;
+  margin: 18px auto 22px;
+  padding: 0;
+}
+
+.dynamic-draft-banner-img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 26px;
+  object-fit: cover;
+  box-shadow: 0 18px 42px rgba(0, 31, 63, 0.22);
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+  .dynamic-draft-banner {
+    margin: 12px auto 14px;
+  }
+
+  .dynamic-draft-banner-img {
+    height: 138px;
+    border-radius: 20px;
+    object-fit: cover;
+    object-position: center;
+  }
+}
+
