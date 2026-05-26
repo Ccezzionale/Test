@@ -1622,3 +1622,25 @@ body{
     display: none !important;
   }
 }
+
+/* =========================================================
+   PRE-DRAFT RESPONSIVE BANNERS
+   ========================================================= */
+
+.predraft-banner-mobile {
+  display: none;
+}
+
+.predraft-banner-desktop {
+  display: block;
+}
+
+@media (max-width: 700px) {
+  .predraft-banner-desktop {
+    display: none;
+  }
+
+  .predraft-banner-mobile {
+    display: block;
+  }
+}
