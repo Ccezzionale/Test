@@ -1057,8 +1057,8 @@ function aggiornaDesktopDraftRoom(dati = [], prossima = null) {
   const picked = dati.filter(r => (r["Giocatore"] || "").trim()).length;
   const currentPick = Number(currentDraftState?.current_pick || 0);
 
-  const title = document.getElementById("desktop-board-title");
-  if (title) title.textContent = tab || "Draft Room";
+const title = document.getElementById("desktop-board-title");
+if (title) title.textContent = draftDisplayName || "Draft Room";
 
   const liveTeam = document.getElementById("desktop-live-team");
   const livePick = document.getElementById("desktop-live-pick");
