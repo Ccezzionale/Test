@@ -1278,10 +1278,6 @@ function setupMobileChoiceAccordion() {
   cards.forEach((card, index) => {
     card.classList.add("mobile-choice-accordion");
 
-    if (index === 0) {
-      card.classList.add("is-open");
-    }
-
     card.addEventListener("click", event => {
       const isMobile = window.matchMedia("(max-width: 700px)").matches;
       if (!isMobile) return;
