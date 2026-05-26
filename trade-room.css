@@ -2689,3 +2689,39 @@ textarea{
     word-break:normal;
   }
 }
+
+/* =====================================================
+   TRADE ROOM HERO BANNER
+   ===================================================== */
+
+.trade-room-banner-wrap {
+  width: 100%;
+  max-width: 1180px;
+  margin: 0 auto 22px;
+  padding: 0;
+}
+
+.trade-room-banner-img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 28px;
+  object-fit: cover;
+  box-shadow:
+    0 22px 56px rgba(0,0,0,.28),
+    0 0 28px rgba(255,204,0,.10);
+}
+
+/* Mobile */
+@media (max-width: 700px) {
+  .trade-room-banner-wrap {
+    margin: 0 auto 18px;
+  }
+
+  .trade-room-banner-img {
+    height: 138px;
+    border-radius: 22px;
+    object-fit: cover;
+    object-position: center;
+  }
+}
