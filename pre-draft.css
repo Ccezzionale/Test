@@ -1482,3 +1482,93 @@ body{
     border-radius: 22px;
   }
 }
+
+/* =========================================================
+   MOBILE CHOICE ACCORDION - PRE-DRAFT
+   ========================================================= */
+
+@media (max-width: 700px) {
+  #keeper-selections {
+    gap: 12px;
+  }
+
+  #keeper-selections .choice-card {
+    min-height: 0;
+    margin-bottom: 0;
+    padding: 16px 16px;
+    border-radius: 20px;
+    cursor: pointer;
+  }
+
+  #keeper-selections .choice-card::after {
+    content: "+";
+    position: absolute;
+    top: 22px;
+    right: 18px;
+    width: 28px;
+    height: 28px;
+    border-radius: 999px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255,255,255,.10);
+    border: 1px solid rgba(255,255,255,.18);
+    color: #ffffff;
+    font-size: 1.15rem;
+    font-weight: 900;
+    z-index: 2;
+  }
+
+  #keeper-selections .choice-card.is-open::after {
+    content: "−";
+  }
+
+  #keeper-selections .choice-icon.badge-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 16px;
+    margin-bottom: 10px;
+  }
+
+  #keeper-selections .choice-card h3 {
+    margin: 0;
+    padding-right: 38px;
+    font-size: 1rem;
+    line-height: 1.2;
+  }
+
+  #keeper-selections .choice-card p,
+  #keeper-selections .choice-card select,
+  #keeper-selections .choice-card .predraft-btn,
+  #keeper-selections .choice-card .current-selection {
+    display: none;
+  }
+
+  #keeper-selections .choice-card.is-open p,
+  #keeper-selections .choice-card.is-open select,
+  #keeper-selections .choice-card.is-open .predraft-btn,
+  #keeper-selections .choice-card.is-open .current-selection {
+    display: block;
+  }
+
+  #keeper-selections .choice-card.is-open p {
+    margin: 12px 0 14px;
+    min-height: 0;
+    font-size: 0.95rem;
+    line-height: 1.45;
+  }
+
+  #keeper-selections .choice-card.is-open select {
+    margin: 8px 0 10px;
+  }
+
+  #keeper-selections .choice-card.is-open .predraft-btn {
+    width: 100%;
+    margin-top: 4px;
+  }
+
+  #keeper-selections .current-selection {
+    margin-top: 12px;
+    padding-top: 12px;
+  }
+}
