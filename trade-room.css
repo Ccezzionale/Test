@@ -2719,9 +2719,10 @@ textarea{
   }
 
   .trade-room-banner-img {
-    height: 138px;
+    width: 100%;
+    height: auto;
     border-radius: 22px;
-    object-fit: cover;
+    object-fit: contain;
     object-position: center;
   }
 }
