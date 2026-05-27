@@ -187,13 +187,13 @@ body{
 
 .draft-columns{
   display:grid;
-  grid-template-columns:repeat(8,minmax(150px,1fr));
-  gap:12px;
+  grid-template-columns:repeat(8,minmax(132px,1fr));
+  gap:10px;
   width:100%;
 }
 
 .draft-card{
-  min-width:150px;
+  min-width:132px;
   background:transparent;
 }
 
