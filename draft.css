@@ -6689,7 +6689,10 @@ h1, h2, h3, h4, p{
   .desktop-team-rule-chip.warn{
     background: linear-gradient(180deg, #fff2b8 0%, #ffd54a 100%);
     color: #4b3700;
-  }
+  } 
+}
+
+
 /* =========================
    DESKTOP LOGHI 120PX
    Nome visibile + U21/POR attaccati
