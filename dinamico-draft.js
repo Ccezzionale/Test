@@ -603,6 +603,31 @@ function shortTeamName(name) {
   return cleanTeamName(name);
 }
 
+function shortDesktopTeamName(name) {
+  const clean = cleanTeamName(name);
+
+  const shortNames = {
+    "Golden Knights": "Golden",
+    "MinneSota Snakes": "Snakes",
+    "Minnesode Timberland": "Minnesode",
+    "Team Bartowski": "Bartowski",
+    "Athletic Pongao": "Pongao",
+    "Bayern Christiansen": "Bayern",
+    "Eintracht Franco 126": "Eintracht",
+    "Pandinicoccolosini": "Pandini",
+    "Fc Disoneste": "Disoneste",
+    "PokerMantra": "Poker",
+    "Rubinkebab": "Kebab",
+    "Fantaugusta": "Fantaugusta",
+    "Riverfilo": "River",
+    "Desperados": "Desperados",
+    "Ibla": "Ibla",
+    "wildboys78": "Wildboys"
+  };
+
+  return shortNames[clean] || clean;
+}
+
 function getCanonicalTeamName(name, squadre) {
   const key = teamKey(name);
   const found = squadre.find(s => teamKey(s) === key);
@@ -680,7 +705,7 @@ function generaTabellaVerticale(containerId, draftData, squadreOrdine) {
         const tradedClass = pick.traded ? "pick-traded" : "";
         const bonusClass = pick.bonus ? "pick-bonus" : "";
         const source = pick.traded || pick.bonus
-          ? `<span class="pick-source">da ${shortTeamName(pick.originalTeam)}</span>`
+       ? `<span class="pick-source">da ${shortDesktopTeamName(pick.originalTeam)}</span>`
           : "";
 
         const title = pick.traded
