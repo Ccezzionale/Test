@@ -858,4 +858,9 @@ td {
     object-fit: cover;
     object-position: center;
   }
+
+  .regolamento-banner-wrap picture {
+  display: block;
+  width: 100%;
+}
 }
