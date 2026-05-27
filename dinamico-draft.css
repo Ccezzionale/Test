@@ -226,6 +226,7 @@ body{
   .rounds-col {
     --round-col-w: 50px;
   }
+    }
 
 .draft-header::before{
   content:"";
