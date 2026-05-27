@@ -1260,6 +1260,11 @@ h1 {
   margin: 8px auto 20px;
 }
 
+.highlander-hero-banner picture {
+  display: block;
+  width: 100%;
+}
+
 .highlander-banner-img {
   display: block;
   width: 100%;
