@@ -864,3 +864,23 @@ td {
   width: 100%;
 }
 }
+
+@media (max-width: 768px) {
+  .regolamento-banner-wrap {
+    width: 100%;
+    margin: 12px auto 18px;
+    padding: 0 12px;
+    overflow: hidden;
+  }
+
+  .regolamento-banner-img {
+    width: 100%;
+    max-width: none;
+    height: 138px;
+    border-radius: 20px;
+    object-fit: cover;
+    object-position: center;
+    transform: translateX(-4%);
+    transform-origin: center;
+  }
+}
