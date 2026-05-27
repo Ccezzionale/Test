@@ -212,6 +212,21 @@ body{
   overflow:hidden;
 }
 
+@media (min-width: 769px) {
+  .page-wrap {
+    width: min(1920px, calc(100% - 16px));
+  }
+
+  .draft-block {
+    padding-left: 16px;
+    padding-right: 16px;
+    gap: 8px;
+  }
+
+  .rounds-col {
+    --round-col-w: 50px;
+  }
+
 .draft-header::before{
   content:"";
   position:absolute;
