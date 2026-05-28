@@ -335,17 +335,9 @@ function renderPRMobile(res){
   const wrap = document.getElementById('pr-mobile');
   if (!wrap) return;
 
-  const logoTag = (team, cls = "") => {
-    const png = `${LOGO_DIR}${team}.png`;
-    const jpg = `${LOGO_DIR}${team}.jpg`;
-    const ph  = `${LOGO_DIR}_placeholder.png`;
-
-    return `
-      <img class="${cls}" src="${png}" alt="${team}" loading="lazy"
-        onerror="if(!this.dataset.jpg){ this.dataset.jpg=1; this.src='${jpg}'; }
-        else { this.onerror=null; this.src='${ph}'; }">
-    `;
-  };
+const logoTag = (team, cls = "") => {
+  return teamMascotImg(team, cls);
+};
 
   const trendTag = (r) => {
     const trend = r.delta > 0 ? `▲ ${r.delta}` : (r.delta < 0 ? `▼ ${Math.abs(r.delta)}` : '•');
@@ -371,7 +363,7 @@ function renderPRMobile(res){
       <article class="mobile-pr-king">
         <div class="mobile-rank-badge">#${champion.rank}</div>
         <div class="mobile-state-badge">${mobileState(champion)}</div>
-        ${logoTag(champion.team, "mobile-king-logo")}
+        ${mascotTag(champion.team, "mobile-king-logo mobile-king-mascot")}
         <h3>${champion.team}</h3>
         <div class="mobile-king-score">${champion.score.toFixed(1)}</div>
         ${trendTag(champion)}
@@ -390,7 +382,7 @@ function renderPRMobile(res){
               <span class="mobile-rank-small">#${r.rank}</span>
               ${trendTag(r)}
             </div>
-            ${logoTag(r.team, "mobile-mini-logo")}
+          ${mascotTag(r.team, "mobile-mini-logo mobile-mini-mascot")}
             <h3>${r.team}</h3>
             <strong>${r.score.toFixed(1)}</strong>
             <span class="mobile-mini-state">${mobileState(r)}</span>
