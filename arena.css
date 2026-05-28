@@ -1471,4 +1471,12 @@ h1 {
   .admin-highlander-msg.error{
     color:#ffb4a4;
   }
+
+#admin-salva-eliminazione{
+  margin-right: 32px;
+}
+
+#admin-reset-highlander{
+  margin-left: 8px;
+}
 }
