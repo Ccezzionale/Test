@@ -540,7 +540,7 @@ function renderZonaPericolo() {
         dangerZone.length
           ? dangerZone.map((s, index) => `
               <div class="danger-row ${index === 0 ? "safe-line" : ""}">
-                <span>${index === 0 ? "Prima salva" : "A rischio"}</span>
+                <span>${index === 0 ? "Sull’orlo del baratro" : "A rischio"}</span>
                 <strong>${s.team_name}</strong>
                 <em>${formatPunti(s.magic_punti)} MP</em>
               </div>
