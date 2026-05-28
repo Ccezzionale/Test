@@ -30,13 +30,13 @@ const squadreBase = [
   {
     nome: "Ibla",
     logo: "img/Ibla.png",
-    shirt: "img/maglie/Ibla.png",
+    shirt: "img/maglie/ibla-mascotte.webp",
     coach: "Coach Francesco"
   },
   {
     nome: "Fantaugusta",
     logo: "img/Fantaugusta.png",
-    shirt: "img/maglie/Fantaugusta.png",
+    shirt: "img/maglie/fantaugusta-mascotte.webp",
     coach: "Coach Giancarlo"
   },
   {
@@ -48,7 +48,7 @@ const squadreBase = [
   {
     nome: "Desperados",
     logo: "img/Desperados.png",
-    shirt: "img/maglie/Desperados.png",
+    shirt: "img/maglie/desperados-mascotte.webp",
     coach: "Coach Stefano"
   },
   {
