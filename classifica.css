@@ -1167,6 +1167,23 @@ th {
   .mobile-standing-card.mobile-top4 .ranking-details b {
     color: #66758a !important;
   }
+
+  .classifica-hero {
+  margin: 0 -12px;
+  min-height: 260px;
+  padding: 0;
+}
+
+.hero-banner {
+  min-height: 260px;
+  padding: 20px 18px 72px;
+  justify-content: center;
+  background-position: center;
+}
+
+.hero-copy {
+  display: none;
+}
 }
 
   /* DESKTOP - nasconde i dettagli nel podio, ma li lascia nel mobile */
