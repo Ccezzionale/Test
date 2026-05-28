@@ -6,6 +6,7 @@ const DEFAULT_CSV_URL =
 const PHASE_FILTER = "";
 const LOGO_DIR = "img/";
 const RACE_IMG_DIR = "img/maglie/";
+const MASCOT_DIR = "img/mascotte/";
 
 /********** UTILS **********/
 function slug(s){
@@ -180,6 +181,23 @@ function teamLogoImg(team, extraClass=''){
                     else { this.onerror=null; this.src='${ph}'; }">`;
 }
 
+function podiumMascotImg(team){
+  const webp = `${MASCOT_DIR}${team}.webp`;
+  const png  = `${MASCOT_DIR}${team}.png`;
+  const jpg  = `${MASCOT_DIR}${team}.jpg`;
+  const ph   = `${LOGO_DIR}_placeholder.png`;
+
+  return `<img class="podium-mascot" src="${webp}" alt="${team}" loading="lazy"
+    onerror="
+      if(!this.dataset.png){
+        this.dataset.png=1; this.src='${png}';
+      } else if(!this.dataset.jpg){
+        this.dataset.jpg=1; this.src='${jpg}';
+      } else {
+        this.onerror=null; this.src='${ph}';
+      }">`;
+}
+
 function rankingState(r){
   if (r.rank === 1) return { label:"MINACCIA MASSIMA", cls:"danger" };
   if (r.rank <= 3) return { label:"CONTENDER", cls:"gold" };
@@ -207,7 +225,7 @@ function renderPR(res){
         <article class="podium-card rank-${r.rank}">
           <div class="podium-rank">#${r.rank}</div>
           <div class="podium-status ${state.cls}">${state.label}</div>
-          ${teamLogoImg(r.team, 'podium-logo')}
+         ${podiumMascotImg(r.team)}
           <div class="podium-team">${r.team}</div>
           <div class="podium-score">${r.score.toFixed(1)}</div>
           <div class="podium-trend trend ${trendClass}">${arrow}</div>
