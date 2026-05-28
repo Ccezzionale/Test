@@ -13,26 +13,26 @@ const COMPETITIONS = {
     title: "Classifica Conference League",
     conference: "Conf A",
     highlight: "top1",
-    banner: "img/banner-conference-league.webp"
+    banner: "img/bannerleague.webp"
   },
   "Conf. Championship": {
     title: "Classifica Conference Championship",
     conference: "Conf B",
     highlight: "top1",
-    banner: "img/banner-conference-championship.webp"
+    banner: "img/bannerchampionship.webp"
   },
   "Round Robin": {
     title: "Classifica Round Robin",
     conference: "Unificata",
     onlyUnifiedCalendar: true,
     highlight: "top1",
-    banner: "img/banner-round-robin.webp"
+    banner: "img/bannerrobin.webp"
   },
   "Totale": {
     title: "Classifica Totale",
     conference: "ALL",
     highlight: "top4-bottom4",
-    banner: "img/banner-totale.webp"
+    banner: "img/bannertotale.webp"
   }
 };
 
