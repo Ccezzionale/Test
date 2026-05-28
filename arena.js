@@ -153,9 +153,12 @@ const db = supabase;
 
 function getTeamImage(team) {
   if (!team) return "";
-  return team.eliminata && team.highlander
-    ? team.highlander
-    : (team.mascotte || team.logo);
+
+  if (team.eliminata) {
+    return team.highlander || team.mascotte || team.logo;
+  }
+
+  return team.mascotte || team.logo;
 }
 
 function getTeamFallback(team) {
@@ -282,18 +285,18 @@ function buildSquadreState() {
     const eliminazione = eliminazioniByTeam.get(team.nome);
     const eliminata = Boolean(eliminazione);
 
-    return {
-      nome: team.nome,
-      logo: team.logo,
-      mascotte: team.mascotte,
-      highlander: team.highlander,
-      eliminata,
-      ultimaEliminata: eliminata && Number(eliminazione.turno) === maxTurno,
-      turnoEliminazione: eliminazione ? Number(eliminazione.turno) : null,
-      magicPunti: eliminazione && eliminazione.magic_punti !== null
-        ? Number(eliminazione.magic_punti)
-        : null
-    };
+return {
+  nome: team.nome,
+  logo: team.logo,
+  mascotte: team.mascotte,
+  highlander: team.highlander,
+  eliminata,
+  ultimaEliminata: eliminata && Number(eliminazione.turno) === maxTurno,
+  turnoEliminazione: eliminazione ? Number(eliminazione.turno) : null,
+  magicPunti: eliminazione && eliminazione.magic_punti !== null
+    ? Number(eliminazione.magic_punti)
+    : null
+};
   });
 
   ultimaEliminata = squadre.find(s => s.ultimaEliminata) || null;
