@@ -12,23 +12,27 @@ const COMPETITIONS = {
   "Conf.League": {
     title: "Classifica Conference League",
     conference: "Conf A",
-    highlight: "top1"
+    highlight: "top1",
+    banner: "img/banner-conference-league.webp"
   },
   "Conf. Championship": {
     title: "Classifica Conference Championship",
     conference: "Conf B",
-    highlight: "top1"
+    highlight: "top1",
+    banner: "img/banner-conference-championship.webp"
   },
-"Round Robin": {
-  title: "Classifica Round Robin",
-  conference: "Unificata",
-  onlyUnifiedCalendar: true,
-  highlight: "top1"
-},
+  "Round Robin": {
+    title: "Classifica Round Robin",
+    conference: "Unificata",
+    onlyUnifiedCalendar: true,
+    highlight: "top1",
+    banner: "img/banner-round-robin.webp"
+  },
   "Totale": {
     title: "Classifica Totale",
     conference: "ALL",
-    highlight: "top4-bottom4"
+    highlight: "top4-bottom4",
+    banner: "img/banner-totale.webp"
   }
 };
 
@@ -503,6 +507,11 @@ async function caricaClassifica(competitionName = "Conf.League") {
 
   const h1 = document.querySelector("h1");
   if (h1) h1.textContent = config.title;
+   const heroBanner = document.getElementById("heroBanner");
+
+if (heroBanner && config.banner) {
+  heroBanner.style.backgroundImage = `url('${config.banner}')`;
+}
 
   resetClassificaDOM();
   renderHeader();
