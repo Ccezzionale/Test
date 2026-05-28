@@ -6,7 +6,25 @@ const DEFAULT_CSV_URL =
 const PHASE_FILTER = "";
 const LOGO_DIR = "img/";
 const RACE_IMG_DIR = "img/maglie/";
-const MASCOT_DIR = "img/mascotte/";
+const TEAM_MASCOTS = {
+  "Rubinkebab": "Rubinkebab.png",
+  "Bayern Christiansen": "bayern-mascotte.webp",
+  "Team Bartowski": "bartowski-mascotte.webp",
+  "Golden Knights": "golden-mascotte.webp",
+  "Ibla": "ibla-mascotte.webp",
+  "Fantaugusta": "fantaugusta-mascotte.webp",
+  "Riverfilo": "riverfilo-mascotte.webp",
+  "Desperados": "desperados-mascotte.webp",
+  "Wildboys 78": "wildboys-mascotte.webp",
+  "Pandinicoccolosini": "pandini-mascotte.webp",
+  "Pokermantra": "pokermantra-mascotte.webp",
+  "PokerMantra": "pokermantra-mascotte.webp",
+  "Minnesode Timberland": "minnesode-mascotte.webp",
+  "Minnesota Snakes": "snakes-mascotte.webp",
+  "Eintracht Franco 126": "franco-mascotte.webp",
+  "FC Disoneste": "disoneste-mascotte.webp",
+  "Athletic Pongao": "pongao-mascotte.webp"
+};
 
 /********** UTILS **********/
 function slug(s){
@@ -179,6 +197,27 @@ function teamLogoImg(team, extraClass=''){
   return `<img class="${extraClass}" src="${png}" alt="${team}" loading="lazy"
            onerror="if(!this.dataset.jpg){ this.dataset.jpg=1; this.src='${jpg}'; }
                     else { this.onerror=null; this.src='${ph}'; }">`;
+}
+
+function teamMascotImg(team, extraClass = ""){
+  const file = TEAM_MASCOTS[team];
+  const fallbackLogo = `${LOGO_DIR}${team}.png`;
+  const fallbackJpg = `${LOGO_DIR}${team}.jpg`;
+  const placeholder = `${LOGO_DIR}_placeholder.png`;
+
+  if (!file) {
+    return teamLogoImg(team, extraClass);
+  }
+
+  return `<img class="${extraClass}" src="${RACE_IMG_DIR}${file}" alt="${team}" loading="lazy"
+    onerror="
+      if(!this.dataset.logo){
+        this.dataset.logo=1; this.src='${fallbackLogo}';
+      } else if(!this.dataset.jpg){
+        this.dataset.jpg=1; this.src='${fallbackJpg}';
+      } else {
+        this.onerror=null; this.src='${placeholder}';
+      }">`;
 }
 
 function podiumMascotImg(team){
