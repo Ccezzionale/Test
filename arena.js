@@ -377,9 +377,9 @@ function renderArenaTeams() {
 
   arena.querySelectorAll(".squadra").forEach(el => el.remove());
 
-  const cx = 350;
-  const cy = 350;
-  const r = 255;
+const cx = 450;
+const cy = 450;
+const r = 350;
 
   squadre.forEach((s, i) => {
     const angle = (-Math.PI / 2) + (2 * Math.PI / squadre.length) * i;
