@@ -201,7 +201,29 @@ function teamLogoImg(team, extraClass=''){
 }
 
 function teamMascotImg(team, extraClass = ""){
-  const file = TEAM_MASCOTS[team];
+  const key = String(team || "").trim().toLowerCase();
+
+  const TEAM_MASCOTS_BY_KEY = {
+    "rubinkebab": "Rubinkebab.png",
+    "bayern christiansen": "bayern-mascotte.webp",
+    "team bartowski": "bartowski-mascotte.webp",
+    "golden knights": "golden-mascotte.webp",
+    "ibla": "ibla-mascotte.webp",
+    "fantaugusta": "fantaugusta-mascotte.webp",
+    "riverfilo": "riverfilo-mascotte.webp",
+    "desperados": "desperados-mascotte.webp",
+    "wildboys 78": "wildboys-mascotte.webp",
+    "pandinicoccolosini": "pandini-mascotte.webp",
+    "pokermantra": "pokermantra-mascotte.webp",
+    "minnesode timberland": "minnesode-mascotte.webp",
+    "minnesota snakes": "snakes-mascotte.webp",
+    "eintracht franco 126": "franco-mascotte.webp",
+    "fc disoneste": "disoneste-mascotte.webp",
+    "athletic pongao": "pongao-mascotte.webp"
+  };
+
+  const file = TEAM_MASCOTS_BY_KEY[key];
+
   const fallbackLogo = `${LOGO_DIR}${team}.png`;
   const fallbackJpg = `${LOGO_DIR}${team}.jpg`;
   const placeholder = `${LOGO_DIR}_placeholder.png`;
@@ -220,7 +242,6 @@ function teamMascotImg(team, extraClass = ""){
         this.onerror=null; this.src='${placeholder}';
       }">`;
 }
-
 function rankingState(r){
   if (r.rank === 1) return { label:"MINACCIA MASSIMA", cls:"danger" };
   if (r.rank <= 3) return { label:"CONTENDER", cls:"gold" };
