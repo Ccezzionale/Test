@@ -1362,3 +1362,39 @@ th {
     margin-top: -22px;
   }
 }
+
+/* FIX MICRO SPAZIO DESTRO MOBILE HERO */
+@media (max-width: 768px) {
+  html,
+  body {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden;
+  }
+
+  .classifica-page {
+    width: 100%;
+    padding-left: 0;
+    padding-right: 0;
+    overflow-x: hidden;
+  }
+
+  .classifica-hero {
+    width: 100vw;
+    max-width: 100vw;
+    margin-left: 50%;
+    transform: translateX(-50%);
+  }
+
+  .hero-banner {
+    width: 100vw;
+    max-width: 100vw;
+    background-size: 100% auto !important;
+    background-position: center top !important;
+  }
+
+  .classifica-card {
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+}
