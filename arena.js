@@ -7,22 +7,102 @@ import { supabase } from './supabase.js';
 const HIGHLANDER_SEASON = "2026";
 
 const squadreBase = [
-  { nome: "Rubinkebab", logo: "img/Rubinkebab.png" },
-  { nome: "Bayern Christiansen", logo: "img/Bayern Christiansen.png" },
-  { nome: "Team Bartowski", logo: "img/Team Bartowski.png" },
-  { nome: "Golden Knights", logo: "img/Golden Knights.png" },
-  { nome: "Ibla", logo: "img/Ibla.png" },
-  { nome: "Fantaugusta", logo: "img/Fantaugusta.png" },
-  { nome: "Riverfilo", logo: "img/Riverfilo.png" },
-  { nome: "Desperados", logo: "img/Desperados.png" },
-  { nome: "Wildboys 78", logo: "img/wildboys78.png" },
-  { nome: "Pandinicoccolosini", logo: "img/Pandinicoccolosini.png" },
-  { nome: "Pokermantra", logo: "img/PokerMantra.png" },
-  { nome: "Minnesode Timberland", logo: "img/Minnesode Timberland.png" },
-  { nome: "Minnesota Snakes", logo: "img/MinneSota Snakes.png" },
-  { nome: "Eintracht Franco 126", logo: "img/Eintracht Franco 126.png" },
-  { nome: "FC Disoneste", logo: "img/FC Disoneste.png" },
-  { nome: "Athletic Pongao", logo: "img/Athletic Pongao.png" }
+  {
+    nome: "Rubinkebab",
+    logo: "img/Rubinkebab.png",
+    mascotte: "img/maglie/rubinkebab-mascotte.webp",
+    highlander: "img/maglie/rubinkebab-highlander.webp"
+  },
+  {
+    nome: "Bayern Christiansen",
+    logo: "img/Bayern Christiansen.png",
+    mascotte: "img/maglie/bayern-mascotte.webp",
+    highlander: "img/maglie/bayern-highlander.webp"
+  },
+  {
+    nome: "Team Bartowski",
+    logo: "img/Team Bartowski.png",
+    mascotte: "img/maglie/bartowski-mascotte.webp",
+    highlander: "img/maglie/bartowski-highlander.webp"
+  },
+  {
+    nome: "Golden Knights",
+    logo: "img/Golden Knights.png",
+    mascotte: "img/maglie/golden-mascotte.webp",
+    highlander: "img/maglie/golden-highlander.webp"
+  },
+  {
+    nome: "Ibla",
+    logo: "img/Ibla.png",
+    mascotte: "img/maglie/ibla-mascotte.webp",
+    highlander: "img/maglie/ibla-highlander.webp"
+  },
+  {
+    nome: "Fantaugusta",
+    logo: "img/Fantaugusta.png",
+    mascotte: "img/maglie/fantaugusta-mascotte.webp",
+    highlander: "img/maglie/fantaugusta-highlander.webp"
+  },
+  {
+    nome: "Riverfilo",
+    logo: "img/Riverfilo.png",
+    mascotte: "img/maglie/riverfilo-mascotte.webp",
+    highlander: "img/maglie/riverfilo-highlander.webp"
+  },
+  {
+    nome: "Desperados",
+    logo: "img/Desperados.png",
+    mascotte: "img/maglie/desperados-mascotte.webp",
+    highlander: "img/maglie/desperados-highlander.webp"
+  },
+  {
+    nome: "Wildboys 78",
+    logo: "img/wildboys78.png",
+    mascotte: "img/maglie/wildboys-mascotte.webp",
+    highlander: "img/maglie/wildboys-highlander.webp"
+  },
+  {
+    nome: "Pandinicoccolosini",
+    logo: "img/Pandinicoccolosini.png",
+    mascotte: "img/maglie/pandini-mascotte.webp",
+    highlander: "img/maglie/pandini-highlander.webp"
+  },
+  {
+    nome: "Pokermantra",
+    logo: "img/PokerMantra.png",
+    mascotte: "img/maglie/pokermantra-mascotte.webp",
+    highlander: "img/maglie/pokermantra-highlander.webp"
+  },
+  {
+    nome: "Minnesode Timberland",
+    logo: "img/Minnesode Timberland.png",
+    mascotte: "img/maglie/minnesode-mascotte.webp",
+    highlander: "img/maglie/minnesode-highlander.webp"
+  },
+  {
+    nome: "Minnesota Snakes",
+    logo: "img/MinneSota Snakes.png",
+    mascotte: "img/maglie/minnesota-mascotte.webp",
+    highlander: "img/maglie/minnesota-highlander.webp"
+  },
+  {
+    nome: "Eintracht Franco 126",
+    logo: "img/Eintracht Franco 126.png",
+    mascotte: "img/maglie/franco-mascotte.webp",
+    highlander: "img/maglie/franco-highlander.webp"
+  },
+  {
+    nome: "FC Disoneste",
+    logo: "img/FC Disoneste.png",
+    mascotte: "img/maglie/disoneste-mascotte.webp",
+    highlander: "img/maglie/disoneste-highlander.webp"
+  },
+  {
+    nome: "Athletic Pongao",
+    logo: "img/Athletic Pongao.png",
+    mascotte: "img/maglie/pongao-mascotte.webp",
+    highlander: "img/maglie/pongao-highlander.webp"
+  }
 ];
 
 let squadre = [];
@@ -70,6 +150,41 @@ const adminResetBtn = document.getElementById("admin-reset-highlander");
    ========================= */
 
 const db = supabase;
+
+function getTeamImage(team) {
+  if (!team) return "";
+  return team.eliminata && team.highlander
+    ? team.highlander
+    : (team.mascotte || team.logo);
+}
+
+function getTeamFallback(team) {
+  return team?.logo || "";
+}
+
+function escapeAttr(value = "") {
+  return String(value).replace(/"/g, "&quot;");
+}
+
+function buildImgHtml(team, className = "") {
+  const src = escapeAttr(getTeamImage(team));
+  const fallback = escapeAttr(getTeamFallback(team));
+  const alt = escapeAttr(team?.nome || "");
+
+  return `<img src="${src}" class="${className}" alt="${alt}" onerror="this.onerror=null; this.src='${fallback}'" />`;
+}
+
+function setTeamImage(img, team) {
+  if (!img || !team) return;
+
+  img.src = getTeamImage(team);
+  img.alt = team.nome;
+  img.onerror = () => {
+    img.onerror = null;
+    img.src = getTeamFallback(team);
+  };
+}
+
 
 /* =========================
    DATA
@@ -170,6 +285,8 @@ function buildSquadreState() {
     return {
       nome: team.nome,
       logo: team.logo,
+      mascotte: team.mascotte,
+      highlander: team.highlander,
       eliminata,
       ultimaEliminata: eliminata && Number(eliminazione.turno) === maxTurno,
       turnoEliminazione: eliminazione ? Number(eliminazione.turno) : null,
@@ -223,7 +340,7 @@ function renderCenter() {
     center.innerHTML = `
       <div class="eliminata-wrapper finale-wrapper">
         <div class="center-ring"></div>
-        <img src="${vincitore.logo}" class="eliminata-logo vincitore-logo" alt="${vincitore.nome}" />
+        ${buildImgHtml(vincitore, "eliminata-logo vincitore-logo")}
         <div class="eliminata-testo vincitore-box">
           <span class="label-top">🏆 Ultimo sopravvissuto</span>
           <span class="main-name">${vincitore.nome}</span>
@@ -238,7 +355,7 @@ function renderCenter() {
     center.innerHTML = `
       <div class="eliminata-wrapper">
         <div class="center-ring danger-ring"></div>
-        <img src="${ultimaEliminata.logo}" class="eliminata-logo ultimo-logo" alt="${ultimaEliminata.nome}" />
+        ${buildImgHtml(ultimaEliminata, "eliminata-logo ultimo-logo")}
         <div class="eliminata-testo danger-box">
           <span class="label-top">❌ Ultima eliminata</span>
           <span class="main-name">${ultimaEliminata.nome}</span>
@@ -293,8 +410,7 @@ function renderArenaTeams() {
     div.title = s.nome;
 
     const img = document.createElement("img");
-    img.src = s.logo;
-    img.alt = s.nome;
+    setTeamImage(img, s);
 
     div.appendChild(img);
     arena.appendChild(div);
@@ -322,7 +438,7 @@ function renderMobileDashboard() {
     `;
   } else if (ultimaEliminata) {
     mobileVerdict.innerHTML = `
-      <img src="${ultimaEliminata.logo}" alt="${ultimaEliminata.nome}" class="mobile-verdict-logo">
+      ${buildImgHtml(ultimaEliminata, "mobile-verdict-logo")}
       <div class="mobile-verdict-kicker danger">Ultima eliminata</div>
       <div class="mobile-verdict-name">${ultimaEliminata.nome}</div>
       <div class="mobile-verdict-subtitle">L’arena reclama un’altra vittima.</div>
@@ -349,7 +465,7 @@ function renderMobileDashboard() {
     card.title = s.nome;
 
     card.innerHTML = `
-      <img src="${s.logo}" alt="${s.nome}">
+      ${buildImgHtml(s)}
       <span>${s.nome}</span>
     `;
 
@@ -391,7 +507,7 @@ function renderZonaPericolo() {
 
     zonaPericoloEl.innerHTML = `
       <div class="danger-head champion">
-        <img src="${vincitore.logo}" alt="${vincitore.nome}">
+        ${buildImgHtml(vincitore)}
         <div>
           <span class="mini-label">Campione dell’Arena</span>
           <h3>${vincitore.nome}</h3>
@@ -469,7 +585,7 @@ function renderRegistroEliminazioni() {
       <div class="registro-marker">${s.ultimaEliminata ? "💀" : "☠️"}</div>
       <div class="registro-turno">Turno ${s.turnoEliminazione || "--"}</div>
       <div class="registro-team">
-        <img src="${s.logo}" alt="${s.nome}">
+        ${buildImgHtml(s)}
         <span>${s.nome}</span>
       </div>
       <div class="registro-score">${formatPunti(s.magicPunti)} MP</div>
