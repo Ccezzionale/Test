@@ -154,15 +154,7 @@ const db = supabase;
 function getTeamImage(team) {
   if (!team) return "";
 
-  if (team.eliminata) {
-    return team.highlander || team.mascotte || team.logo;
-  }
-
-  return team.mascotte || team.logo;
-}
-
-function getTeamFallback(team) {
-  return team?.logo || "";
+  return team.eliminata ? team.highlander : team.mascotte;
 }
 
 function escapeAttr(value = "") {
@@ -171,10 +163,9 @@ function escapeAttr(value = "") {
 
 function buildImgHtml(team, className = "") {
   const src = escapeAttr(getTeamImage(team));
-  const fallback = escapeAttr(getTeamFallback(team));
   const alt = escapeAttr(team?.nome || "");
 
-  return `<img src="${src}" class="${className}" alt="${alt}" onerror="this.onerror=null; this.src='${fallback}'" />`;
+  return `<img src="${src}" class="${className}" alt="${alt}" />`;
 }
 
 function setTeamImage(img, team) {
@@ -182,12 +173,7 @@ function setTeamImage(img, team) {
 
   img.src = getTeamImage(team);
   img.alt = team.nome;
-  img.onerror = () => {
-    img.onerror = null;
-    img.src = getTeamFallback(team);
-  };
 }
-
 
 /* =========================
    DATA
