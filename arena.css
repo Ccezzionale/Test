@@ -1296,3 +1296,179 @@ h1 {
     object-position: center;
   }
 }
+
+/* =========================================================
+   ADMIN HIGHLANDER DESKTOP - CLEAN LAYOUT
+   ========================================================= */
+
+@media (min-width: 769px){
+
+  #highlander-admin-panel.admin-highlander-panel{
+    width:min(1180px, calc(100% - 48px));
+    margin:28px auto 80px;
+    padding:24px 28px 28px;
+    border-radius:24px;
+    background:
+      radial-gradient(circle at 50% 0%, rgba(255,215,0,.10), transparent 34%),
+      linear-gradient(180deg, rgba(5,15,25,.96), rgba(2,8,14,.97));
+    border:1px solid rgba(255,215,0,.34);
+    box-shadow:
+      0 20px 44px rgba(0,0,0,.38),
+      inset 0 1px 0 rgba(255,255,255,.05);
+    overflow:hidden;
+  }
+
+  #highlander-admin-panel .panel-title-row{
+    margin-bottom:24px;
+  }
+
+  #highlander-admin-panel .panel-title-row h2{
+    font-size:1.75rem;
+    color:var(--gold);
+    text-align:center;
+  }
+
+  .admin-highlander-form{
+    position:relative;
+    z-index:2;
+    display:grid;
+    grid-template-columns:130px 1fr 190px;
+    gap:18px;
+    align-items:end;
+  }
+
+  .admin-highlander-form > label{
+    display:grid;
+    grid-template-columns:1fr;
+    gap:8px;
+    color:#ffe27a;
+    font-size:.9rem;
+    font-weight:900;
+    text-align:left;
+  }
+
+  .admin-highlander-form input,
+  .admin-highlander-form select{
+    width:100%;
+    min-height:44px;
+    padding:10px 12px;
+    border-radius:12px;
+    border:1px solid rgba(255,215,0,.32);
+    background:#fffdf5;
+    color:#06101d;
+    font-size:.98rem;
+    font-weight:750;
+    outline:none;
+    box-shadow:
+      0 8px 18px rgba(0,0,0,.22),
+      inset 0 1px 0 rgba(255,255,255,.75);
+  }
+
+  .admin-highlander-form input:focus,
+  .admin-highlander-form select:focus{
+    border-color:var(--gold);
+    box-shadow:
+      0 0 0 3px rgba(255,215,0,.18),
+      0 8px 18px rgba(0,0,0,.22);
+  }
+
+  .admin-danger-zone{
+    grid-column:1 / -1;
+    margin-top:4px;
+    padding:18px 18px 20px;
+    border-radius:18px;
+    background:
+      linear-gradient(180deg, rgba(0,0,0,.34), rgba(0,0,0,.22));
+    border:1px solid rgba(255,215,0,.25);
+  }
+
+  .admin-danger-zone h3{
+    margin:0 0 5px;
+    color:var(--gold);
+    font-size:1.18rem;
+    text-align:left;
+  }
+
+  .admin-danger-zone p{
+    margin:0 0 18px;
+    color:#f1dfb8;
+    font-size:.94rem;
+    line-height:1.35;
+    text-align:left;
+  }
+
+  .admin-danger-grid{
+    display:grid;
+    grid-template-columns:1.3fr 110px 1.3fr 110px 1.3fr 110px;
+    gap:14px;
+    align-items:end;
+  }
+
+  .admin-danger-grid label{
+    display:grid;
+    grid-template-columns:1fr;
+    gap:7px;
+    color:#ffe27a;
+    font-size:.86rem;
+    font-weight:900;
+    text-align:left;
+  }
+
+  #admin-salva-eliminazione,
+  #admin-reset-highlander{
+    min-height:46px;
+    padding:0 22px;
+    border-radius:999px;
+    font-size:.95rem;
+    font-weight:950;
+    cursor:pointer;
+  }
+
+  #admin-salva-eliminazione{
+    justify-self:start;
+    min-width:190px;
+    border:1px solid rgba(255,215,0,.75);
+    background:linear-gradient(180deg, #ffe27a, #d6a82c);
+    color:#06101d;
+    box-shadow:
+      0 10px 20px rgba(0,0,0,.30),
+      0 0 18px rgba(255,215,0,.20);
+  }
+
+  #admin-salva-eliminazione:hover{
+    filter:brightness(1.06);
+  }
+
+  #admin-reset-highlander{
+    justify-self:start;
+    min-width:190px;
+    border:1px solid rgba(255,90,55,.65);
+    background:linear-gradient(180deg, rgba(255,75,46,.92), rgba(120,20,10,.92));
+    color:#fff;
+    box-shadow:
+      0 10px 20px rgba(0,0,0,.30),
+      0 0 18px rgba(255,75,46,.18);
+  }
+
+  #admin-reset-highlander:hover{
+    filter:brightness(1.08);
+  }
+
+  .admin-highlander-msg{
+    position:relative;
+    z-index:2;
+    margin:18px 0 0;
+    color:#f1dfb8;
+    font-weight:850;
+    text-align:center;
+    line-height:1.35;
+  }
+
+  .admin-highlander-msg.ok{
+    color:#86efac;
+  }
+
+  .admin-highlander-msg.error{
+    color:#ffb4a4;
+  }
+}
