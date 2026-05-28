@@ -13,9 +13,9 @@
   --dead-glow:rgba(255,255,255,0.04);
   --panel:#06101d;
   --panel-2:#071827;
-  --alive-size:96px;
-  --dead-size:82px;
-  --center-size:235px;
+--alive-size:122px;
+--dead-size:108px;
+--center-size:310px;
 }
 
 *{
@@ -186,8 +186,8 @@ h1 {
 
 .arena {
   position:relative;
-  width:700px;
-  height:700px;
+  width:900px;
+  height:900px;
   margin:0 auto;
   border-radius:50%;
   border:2px dashed rgba(255, 223, 140, 0.20);
@@ -200,7 +200,7 @@ h1 {
 .arena::before{
   content:"";
   position:absolute;
-  inset:76px;
+  inset:96px;
   border-radius:50%;
   border:2px solid rgba(0,0,0,.25);
   box-shadow:inset 0 0 24px rgba(0,0,0,.16), 0 0 16px rgba(255,174,0,.05);
@@ -209,7 +209,7 @@ h1 {
 .arena::after{
   content:"";
   position:absolute;
-  inset:128px;
+  inset:165px;
   border-radius:50%;
   border:1px dashed rgba(255, 220, 160, 0.18);
 }
@@ -234,8 +234,8 @@ h1 {
 }
 
 .arena .squadra img {
-  max-width:105%;
-  max-height:105%;
+  max-width:112%;
+  max-height:112%;
   object-fit:contain;
   filter:drop-shadow(0 2px 4px rgba(0,0,0,.35));
 }
