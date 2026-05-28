@@ -1251,3 +1251,30 @@ th {
 .hero-crest {
   display: none;
 }
+
+/* FIX HERO BANNER MOBILE */
+@media (max-width: 768px) {
+  .classifica-hero {
+    margin: 0 -12px 0;
+    min-height: 220px;
+    padding: 0;
+    overflow: hidden;
+  }
+
+  .hero-banner {
+    min-height: 220px;
+    width: 100%;
+    padding: 0;
+    background-size: cover;
+    background-position: center center;
+    background-repeat: no-repeat;
+  }
+
+  .hero-copy {
+    display: none;
+  }
+
+  .classifica-card {
+    margin-top: -32px;
+  }
+}
