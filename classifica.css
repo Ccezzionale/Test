@@ -1196,3 +1196,41 @@ th {
   display: none;
 }
 }
+
+.classifica-hero {
+  position: relative;
+  max-width: 100%;
+  margin: 0 -20px 0;
+  min-height: 340px;
+  padding: 0;
+  overflow: hidden;
+  color: #fff;
+  background: none;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.classifica-hero::before {
+  content: none;
+}
+
+.hero-banner {
+  position: relative;
+  min-height: 340px;
+  padding: 66px clamp(24px, 6vw, 80px) 92px;
+  display: flex;
+  align-items: center;
+  background-image: url("img/bannerleague.webp");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.hero-copy {
+  position: relative;
+  z-index: 2;
+  max-width: 780px;
+}
+
+.hero-crest {
+  display: none;
+}
