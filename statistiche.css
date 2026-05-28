@@ -2708,3 +2708,24 @@ body::before{
     letter-spacing:.02em;
   }
 }
+
+.podium-mascot{
+  width: 180px;
+  height: 180px;
+  object-fit: contain;
+  object-position: center bottom;
+
+  margin-top: 46px;
+  margin-bottom: 10px;
+
+  filter:
+    drop-shadow(0 16px 20px rgba(0,0,0,.34))
+    drop-shadow(0 0 18px rgba(255,255,255,.08));
+}
+
+.podium-card.rank-1 .podium-mascot{
+  width: 210px;
+  height: 210px;
+  margin-top: 34px;
+  margin-bottom: 8px;
+}
