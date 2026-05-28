@@ -14,6 +14,7 @@ const TEAM_MASCOTS = {
   "Ibla": "ibla-mascotte.webp",
   "Fantaugusta": "fantaugusta-mascotte.webp",
   "Riverfilo": "riverfilo-mascotte.webp",
+  "RIVERFILO": "riverfilo-mascotte.webp",
   "Desperados": "desperados-mascotte.webp",
   "Wildboys 78": "wildboys-mascotte.webp",
   "Pandinicoccolosini": "pandini-mascotte.webp",
