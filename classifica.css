@@ -1513,3 +1513,38 @@ th {
     padding-bottom: 0;
   }
 }
+
+/* FIX DESKTOP HERO: banner centrato e non troppo zoomato */
+@media (min-width: 769px) {
+  .classifica-hero {
+    height: 420px !important;
+    min-height: 420px !important;
+    margin: 0 -20px 0 !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+    background: #061326 !important;
+  }
+
+  .hero-banner {
+    width: min(100%, 1440px) !important;
+    height: 420px !important;
+    min-height: 420px !important;
+    margin: 0 auto !important;
+    padding: 0 !important;
+    display: block !important;
+
+    background-size: cover !important;
+    background-position: center center !important;
+    background-repeat: no-repeat !important;
+    background-color: #061326 !important;
+  }
+
+  .hero-copy,
+  .hero-crest {
+    display: none !important;
+  }
+
+  .classifica-card {
+    margin-top: -54px !important;
+  }
+}
