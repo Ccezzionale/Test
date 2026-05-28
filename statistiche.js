@@ -336,6 +336,18 @@ function renderPRMobile(res){
   if (!wrap) return;
 
 const logoTag = (team, cls = "") => {
+  const png = `${LOGO_DIR}${team}.png`;
+  const jpg = `${LOGO_DIR}${team}.jpg`;
+  const ph  = `${LOGO_DIR}_placeholder.png`;
+
+  return `
+    <img class="${cls}" src="${png}" alt="${team}" loading="lazy"
+      onerror="if(!this.dataset.jpg){ this.dataset.jpg=1; this.src='${jpg}'; }
+      else { this.onerror=null; this.src='${ph}'; }">
+  `;
+};
+
+const mascotTag = (team, cls = "") => {
   return teamMascotImg(team, cls);
 };
 
