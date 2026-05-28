@@ -1332,7 +1332,7 @@ h1 {
     position:relative;
     z-index:2;
     display:grid;
-    grid-template-columns:130px 1fr 190px;
+   grid-template-columns:180px 1fr 220px;
     gap:18px;
     align-items:end;
   }
@@ -1473,14 +1473,24 @@ h1 {
   }
 
 #admin-salva-eliminazione{
-  margin-right: 32px;
+  grid-column:1 / 2;
+  width:180px;
+  min-width:0;
+  margin:0 !important;
 }
 
 #admin-reset-highlander{
-  margin-left: 8px;
+  grid-column:2 / 3;
+  width:220px;
+  min-width:0;
+  margin-left:42px !important;
+}
+  .danger-head.neutral.no-icon{
+  display:block !important;
+  grid-template-columns:none !important;
 }
 
-    .danger-head.no-icon{
-    grid-template-columns: 1fr;
-  }
+.danger-head.neutral.no-icon > div{
+  width:100%;
+}
 }
