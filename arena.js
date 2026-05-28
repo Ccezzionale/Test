@@ -512,6 +512,7 @@ function renderZonaPericolo() {
     .sort((a, b) => Number(b.turno) - Number(a.turno))[0];
 
   const eliminata = ultimaEliminata || eliminateOrdinate[0];
+
   const dangerZone = Array.isArray(latestRow?.danger_zone)
     ? latestRow.danger_zone
     : [];
@@ -523,17 +524,20 @@ function renderZonaPericolo() {
   if (zonaTitle) zonaTitle.textContent = "Zona Pericolo";
 
   zonaPericoloEl.innerHTML = `
-    <div class="danger-head neutral">
-<div class="danger-head neutral no-icon">
-  <div>
-    <span class="mini-label">Soglia salvezza turno ${eliminata?.turnoEliminazione || turnoAttuale}</span>
-    <h3>${formatPunti(sogliaSalvezza)} MP</h3>
-    <p>
-      ${eliminata?.nome || "La squadra eliminata"} è caduta con ${formatPunti(eliminata?.magicPunti)} MP.
-      Bastava mezzo punto in più per restare nell’arena.
-    </p>
-  </div>
-</div>
+    <div class="danger-head neutral no-icon">
+      <div class="danger-content-full">
+        <span class="mini-label">
+          Soglia salvezza turno ${eliminata?.turnoEliminazione || turnoAttuale}
+        </span>
+
+        <h3>${formatPunti(sogliaSalvezza)} MP</h3>
+
+        <p>
+          ${eliminata?.nome || "La squadra eliminata"} è caduta con ${formatPunti(eliminata?.magicPunti)} MP.
+          Bastava mezzo punto in più per restare nell’arena.
+        </p>
+      </div>
+    </div>
 
     <div class="danger-table">
       ${
