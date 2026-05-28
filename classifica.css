@@ -1178,4 +1178,21 @@ th {
   .podio-card.is-open .ranking-details {
     display: none !important;
   }
+
+  .classifica-hero {
+  margin: 0 -12px;
+  min-height: 260px;
+  padding: 0;
+}
+
+.hero-banner {
+  min-height: 260px;
+  padding: 20px 18px 72px;
+  justify-content: center;
+  background-position: center;
+}
+
+.hero-copy {
+  display: none;
+}
 }
