@@ -524,16 +524,16 @@ function renderZonaPericolo() {
 
   zonaPericoloEl.innerHTML = `
     <div class="danger-head neutral">
-      <div class="danger-icon">🛡️</div>
-      <div>
-        <span class="mini-label">Soglia salvezza turno ${eliminata?.turnoEliminazione || turnoAttuale}</span>
-        <h3>${formatPunti(sogliaSalvezza)} MP</h3>
-        <p>
-          ${eliminata?.nome || "La squadra eliminata"} è caduta con ${formatPunti(eliminata?.magicPunti)} MP.
-          Bastava mezzo punto in più per restare nell’arena.
-        </p>
-      </div>
-    </div>
+<div class="danger-head neutral no-icon">
+  <div>
+    <span class="mini-label">Soglia salvezza turno ${eliminata?.turnoEliminazione || turnoAttuale}</span>
+    <h3>${formatPunti(sogliaSalvezza)} MP</h3>
+    <p>
+      ${eliminata?.nome || "La squadra eliminata"} è caduta con ${formatPunti(eliminata?.magicPunti)} MP.
+      Bastava mezzo punto in più per restare nell’arena.
+    </p>
+  </div>
+</div>
 
     <div class="danger-table">
       ${
