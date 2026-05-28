@@ -1479,4 +1479,8 @@ h1 {
 #admin-reset-highlander{
   margin-left: 8px;
 }
+
+    .danger-head.no-icon{
+    grid-template-columns: 1fr;
+  }
 }
