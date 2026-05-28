@@ -2729,3 +2729,22 @@ body::before{
   margin-top: 34px;
   margin-bottom: 8px;
 }
+
+/* MOBILE - mascotte nel podio Power Ranking */
+.mobile-king-mascot{
+  width: 190px !important;
+  height: 190px !important;
+  object-fit: contain !important;
+  object-position: center bottom !important;
+  margin-top: 46px !important;
+  filter: drop-shadow(0 18px 20px rgba(0,0,0,.42));
+}
+
+.mobile-mini-mascot{
+  width: 112px !important;
+  height: 112px !important;
+  object-fit: contain !important;
+  object-position: center bottom !important;
+  margin: 0 auto 6px !important;
+  filter: drop-shadow(0 12px 16px rgba(0,0,0,.36));
+}
