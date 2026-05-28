@@ -1218,7 +1218,7 @@ th {
   position: relative;
   max-width: 100%;
   margin: 0 -20px 0;
-  min-height: 340px;
+  min-height: 420px;
   padding: 0;
   overflow: hidden;
   color: #fff;
@@ -1232,13 +1232,13 @@ th {
 
 .hero-banner {
   position: relative;
-  min-height: 340px;
-  padding: 66px clamp(24px, 6vw, 80px) 92px;
+  min-height: 420px;
+  padding: 66px clamp(24px, 6vw, 80px) 120px;
   display: flex;
   align-items: center;
   background-image: url("img/bannerleague.webp");
   background-size: cover;
-  background-position: center;
+  background-position: center center;
   background-repeat: no-repeat;
 }
 
