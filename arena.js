@@ -82,7 +82,7 @@ const squadreBase = [
   {
     nome: "Minnesota Snakes",
     logo: "img/MinneSota Snakes.png",
-    mascotte: "img/maglie/minnesota-mascotte.webp",
+    mascotte: "img/maglie/snakes-mascotte.webp",
     highlander: "img/maglie/minnesota-highlander.webp"
   },
   {
