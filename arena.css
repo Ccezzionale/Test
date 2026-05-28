@@ -1494,3 +1494,31 @@ h1 {
   width:100%;
 }
 }
+
+/* FIX ZONA PERICOLO SENZA ICONA */
+.danger-head.neutral.no-icon{
+  display:block !important;
+  grid-template-columns:unset !important;
+  padding:18px 20px !important;
+}
+
+.danger-head.neutral.no-icon .danger-content-full{
+  width:100% !important;
+  max-width:none !important;
+}
+
+.danger-head.neutral.no-icon .mini-label{
+  display:block;
+  max-width:none;
+  white-space:normal;
+}
+
+.danger-head.neutral.no-icon h3{
+  font-size:1.55rem;
+  line-height:1.1;
+}
+
+.danger-head.neutral.no-icon p{
+  max-width:none;
+  line-height:1.45;
+}
