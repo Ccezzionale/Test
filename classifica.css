@@ -1278,3 +1278,87 @@ th {
     margin-top: -32px;
   }
 }
+
+/* FIX FINALE HERO BANNER - DESKTOP + MOBILE */
+
+/* Desktop */
+@media (min-width: 769px) {
+  .classifica-hero {
+    position: relative;
+    max-width: 100%;
+    margin: 0 -20px 0;
+    min-height: 420px;
+    padding: 0;
+    overflow: hidden;
+    color: #fff;
+    background: none;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+  }
+
+  .classifica-hero::before {
+    content: none;
+  }
+
+  .hero-banner {
+    position: relative;
+    min-height: 420px;
+    width: 100%;
+    padding: 0;
+    display: block;
+    background-image: url("img/bannerleague.webp");
+    background-size: cover;
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-color: #061326;
+  }
+
+  .hero-copy,
+  .hero-crest {
+    display: none !important;
+  }
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+  .classifica-page {
+    padding: 0 12px 34px;
+    overflow-x: hidden;
+  }
+
+  .classifica-hero {
+    position: relative;
+    margin: 0 -12px 0;
+    min-height: 140px;
+    height: 140px;
+    padding: 0;
+    overflow: hidden;
+    background: #061326;
+    border-bottom: 1px solid rgba(255,255,255,0.12);
+  }
+
+  .classifica-hero::before {
+    content: none !important;
+  }
+
+  .hero-banner {
+    position: relative;
+    width: 100%;
+    min-height: 140px;
+    height: 140px;
+    padding: 0;
+    display: block;
+    background-size: 100% auto !important;
+    background-position: center top !important;
+    background-repeat: no-repeat !important;
+    background-color: #061326;
+  }
+
+  .hero-copy,
+  .hero-crest {
+    display: none !important;
+  }
+
+  .classifica-card {
+    margin-top: -22px;
+  }
+}
