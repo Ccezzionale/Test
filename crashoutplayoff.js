@@ -3,7 +3,7 @@ import { supabase } from "./supabase.js";
 // ======== CONFIG ========
 const URL_STANDINGS = "https://docs.google.com/spreadsheets/d/1xPual_RkDPsnAW1Gy_ZCcVlAUATtquTbbym3NPk8UfI/export?format=csv&gid=1127607135";
 const LOGO_BASE_PATH = "img/";
-const LOGO_EXT = ".png";
+const LOGO_EXT = ".webp";
 
 // PUNTEGGI caricati da Supabase
 let SCORES = {};
