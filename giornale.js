@@ -1,4 +1,4 @@
-import { supabase as sb } from "./supabase-config.js";
+import { supabase as sb } from "./supabase.js";
 
 // =====================================
 // LA GAZZETTA DEGLI EROI
