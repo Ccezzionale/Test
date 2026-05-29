@@ -3523,3 +3523,45 @@ button:disabled {
     margin-right: 8px;
   }
 }
+
+/* =========================================================
+   WAIVER HERO MOBILE BANNER IMAGE
+   ========================================================= */
+
+@media (max-width: 768px) {
+
+  .waiver-hero {
+    min-height: auto;
+    padding: 250px 14px 14px;
+
+    background-image:
+      linear-gradient(180deg, rgba(0, 20, 45, 0.00) 0%, rgba(0, 20, 45, 0.18) 42%, rgba(0, 20, 45, 0.88) 100%),
+      url("img/waiverbanner-mobile.webp");
+
+    background-repeat: no-repeat;
+    background-size: 100% auto;
+    background-position: center top;
+
+    border-radius: 24px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    align-items: stretch;
+  }
+
+  .waiver-hero::after {
+    display: none !important;
+    content: none !important;
+  }
+
+  .waiver-hero-copy {
+    display: none !important;
+  }
+
+  .waiver-hero-team {
+    margin-top: 0;
+    width: 100%;
+    min-width: 0;
+  }
+}
