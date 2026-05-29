@@ -22,6 +22,53 @@ function escapeHtml(value){
     .replace(/"/g, "&quot;");
 }
 
+const teamVisuals = {
+  "Bayern Christiansen": "img/maglie/bayern-mascotte.webp",
+  "Team Bartowski": "img/maglie/bartowski-mascotte.webp",
+  "Golden Knights": "img/maglie/golden-mascotte.webp",
+  "Ibla": "img/maglie/ibla-mascotte.webp",
+  "Fantaugusta": "img/maglie/fantaugusta-mascotte.webp",
+  "Riverfilo": "img/maglie/riverfilo-mascotte.webp",
+  "Desperados": "img/maglie/desperados-mascotte.webp",
+  "Wildboys 78": "img/maglie/wildboys-mascotte.webp",
+  "Pandinicoccolosini": "img/maglie/pandini-mascotte.webp",
+  "Pokermantra": "img/maglie/pokermantra-mascotte.webp",
+  "Minnesode Timberland": "img/maglie/minnesode-mascotte.webp",
+  "Minnesota Snakes": "img/maglie/snakes-mascotte.webp",
+  "Eintracht Franco 126": "img/maglie/franco-mascotte.webp",
+  "FC Disoneste": "img/maglie/disoneste-mascotte.webp",
+  "Athletic Pongao": "img/maglie/pongao-mascotte.webp"
+};
+
+function teamImageByName(teamName) {
+  const clean = String(teamName || "").trim().toLowerCase();
+
+  const teamMap = {
+    "bayern christiansen": "Bayern Christiansen",
+    "team bartowski": "Team Bartowski",
+    "golden knights": "Golden Knights",
+    "ibla": "Ibla",
+    "fantaugusta": "Fantaugusta",
+    "riverfilo": "Riverfilo",
+    "desperados": "Desperados",
+    "wildboys 78": "Wildboys 78",
+    "wildboys78": "Wildboys 78",
+    "pandinicoccolosini": "Pandinicoccolosini",
+    "pokermantra": "Pokermantra",
+    "poker mantra": "Pokermantra",
+    "minnesode timberland": "Minnesode Timberland",
+    "minnesota snakes": "Minnesota Snakes",
+    "minnesota snakes ": "Minnesota Snakes",
+    "minnesota snakes": "Minnesota Snakes",
+    "eintracht franco 126": "Eintracht Franco 126",
+    "fc disoneste": "FC Disoneste",
+    "athletic pongao": "Athletic Pongao"
+  };
+
+  const canonical = teamMap[clean];
+  return canonical ? teamVisuals[canonical] || "" : "";
+}
+
 function splitParagraphsRaw(text){
   return String(text ?? "")
     .split(/\n\s*\n/g)
@@ -161,7 +208,7 @@ function buildRatings(row){
     const vote = norm(row[`rating_${i}_vote`]);
     const label = norm(row[`rating_${i}_label`]);
     const text = norm(row[`rating_${i}_text`]);
-    const icon = normalizeImageUrl(row[`rating_${i}_icon_url`]);
+    const icon = teamImageByName(team) || normalizeImageUrl(row[`rating_${i}_icon_url`]);
     if (team || vote || label || text || icon) {
       ratings.push({ team, vote, label, text, icon });
     }
