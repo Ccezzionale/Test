@@ -12,9 +12,9 @@ const AUTO_PICK_COUNT = 6;
 const CONFERENCE_LEAGUE = "Conference League";
 const CONFERENCE_CHAMPIONSHIP = "Conference Championship";
 
-const STORAGE_KEY = "lega_eroi_allstar_2027_picks_v3";
-const STATE_KEY = "lega_eroi_allstar_2027_state_v3";
-const VOTES_KEY = "lega_eroi_allstar_2027_votes_v3";
+const STORAGE_KEY = "lega_eroi_allstar_2027_picks_v4";
+const STATE_KEY = "lega_eroi_allstar_2027_state_v4";
+const VOTES_KEY = "lega_eroi_allstar_2027_votes_v4";
 const ACTIVE_WEEK_KEY = "lega_eroi_allstar_2027_active_week_v1";
 
 const demoPlayers = [
@@ -54,7 +54,7 @@ let activeWeek = loadActiveWeek();
 
 const els = {
   hamburger: document.getElementById("hamburger"),
-  navMenu: document.getElementById("navMenu"),
+  navMenu: document.getElementById("navMenu") || document.getElementById("mainMenu"),
 
   draftStatusLabel: document.getElementById("draftStatusLabel"),
   activeWeekInfo: document.getElementById("activeWeekInfo"),
@@ -79,6 +79,10 @@ const els = {
   demoVotesBtn: document.getElementById("demoVotesBtn"),
   resetVotesBtn: document.getElementById("resetVotesBtn"),
   generateAutoPicksBtn: document.getElementById("generateAutoPicksBtn"),
+  winnerConferenceSelect: document.getElementById("winnerConferenceSelect"),
+  saveWinnerConferenceBtn: document.getElementById("saveWinnerConferenceBtn"),
+  winnerConferenceInfo: document.getElementById("winnerConferenceInfo"),
+  firstConferenceInfo: document.getElementById("firstConferenceInfo"),
 
   currentPickInfo: document.getElementById("currentPickInfo"),
   currentConferenceInfo: document.getElementById("currentConferenceInfo"),
@@ -122,13 +126,14 @@ function init() {
 
 function bindEvents() {
   els.hamburger?.addEventListener("click", () => {
-    els.navMenu.classList.toggle("open");
+    els.navMenu?.classList.toggle("open");
   });
 
   els.voteForm.addEventListener("submit", handleVoteSubmit);
   els.demoVotesBtn.addEventListener("click", addDemoVotes);
   els.resetVotesBtn.addEventListener("click", resetVotes);
   els.generateAutoPicksBtn.addEventListener("click", generateAutoPicksFromVotes);
+  els.saveWinnerConferenceBtn?.addEventListener("click", saveWinnerConferenceFromAdmin);
 
   [els.searchInput, els.roleFilter, els.teamFilter, els.originFilter, els.conferenceFilter].forEach((el) => {
     el?.addEventListener("input", renderPool);
@@ -176,15 +181,33 @@ function bindEvents() {
 function defaultState() {
   return {
     year: 2027,
-    isOpen: true,
+    isOpen: false,
+    votingOpen: true,
     currentPick: 7,
-    firstConference: CONFERENCE_LEAGUE
+    winnerConference: null,
+    firstConference: null
   };
+}
+
+function normalizeState(rawState) {
+  const base = defaultState();
+  const next = { ...base, ...(rawState || {}) };
+
+  if (!isValidConference(next.winnerConference)) next.winnerConference = null;
+  if (!isValidConference(next.firstConference)) {
+    next.firstConference = getOppositeConference(next.winnerConference);
+  }
+
+  next.currentPick = Math.max(AUTO_PICK_COUNT + 1, Number(next.currentPick || AUTO_PICK_COUNT + 1));
+  next.isOpen = Boolean(next.isOpen && next.firstConference);
+  next.votingOpen = next.votingOpen !== false;
+
+  return next;
 }
 
 function loadState() {
   try {
-    return JSON.parse(localStorage.getItem(STATE_KEY)) || defaultState();
+    return normalizeState(JSON.parse(localStorage.getItem(STATE_KEY)) || defaultState());
   } catch {
     return defaultState();
   }
@@ -436,15 +459,67 @@ function renderConferenceRanking(container, totals, conference) {
   }).join("");
 }
 
+function isValidConference(conference) {
+  return conference === CONFERENCE_LEAGUE || conference === CONFERENCE_CHAMPIONSHIP;
+}
+
+function getOppositeConference(conference) {
+  if (conference === CONFERENCE_LEAGUE) return CONFERENCE_CHAMPIONSHIP;
+  if (conference === CONFERENCE_CHAMPIONSHIP) return CONFERENCE_LEAGUE;
+  return null;
+}
+
+function getConferenceForPickNumber(pickNumber) {
+  if (!state.firstConference) return null;
+  const secondConference = getOppositeConference(state.firstConference);
+  return pickNumber % 2 === 1 ? state.firstConference : secondConference;
+}
+
+function saveWinnerConferenceFromAdmin() {
+  const winner = els.winnerConferenceSelect?.value || "";
+
+  if (!isValidConference(winner)) {
+    alert("Seleziona prima la Conference vincitrice.");
+    return;
+  }
+
+  const firstConference = getOppositeConference(winner);
+  const hasPicks = picks.length > 0;
+
+  if (hasPicks) {
+    const ok = confirm("Ci sono già pick generate. Cambiare la vincitrice può rendere incoerente l'ordine. Vuoi continuare?");
+    if (!ok) return;
+  }
+
+  state.winnerConference = winner;
+  state.firstConference = firstConference;
+  state.isOpen = false;
+  state.currentPick = Math.max(AUTO_PICK_COUNT + 1, state.currentPick || AUTO_PICK_COUNT + 1);
+
+  saveState();
+  renderAll();
+}
+
 function getAutoPickPreviewRows(leagueTotals, champTotals) {
-  return [
-    { pickNumber: 1, conference: CONFERENCE_LEAGUE, entry: leagueTotals[0] },
-    { pickNumber: 2, conference: CONFERENCE_CHAMPIONSHIP, entry: champTotals[0] },
-    { pickNumber: 3, conference: CONFERENCE_LEAGUE, entry: leagueTotals[1] },
-    { pickNumber: 4, conference: CONFERENCE_CHAMPIONSHIP, entry: champTotals[1] },
-    { pickNumber: 5, conference: CONFERENCE_LEAGUE, entry: leagueTotals[2] },
-    { pickNumber: 6, conference: CONFERENCE_CHAMPIONSHIP, entry: champTotals[2] }
-  ];
+  const conferenceIndexes = {
+    [CONFERENCE_LEAGUE]: 0,
+    [CONFERENCE_CHAMPIONSHIP]: 0
+  };
+
+  return Array.from({ length: AUTO_PICK_COUNT }, (_, idx) => {
+    const pickNumber = idx + 1;
+    const conference = getConferenceForPickNumber(pickNumber);
+
+    if (!conference) {
+      return { pickNumber, conference: null, entry: null };
+    }
+
+    const source = conference === CONFERENCE_LEAGUE ? leagueTotals : champTotals;
+    const entry = source[conferenceIndexes[conference]] || null;
+    conferenceIndexes[conference] += 1;
+
+    return { pickNumber, conference, entry };
+  });
 }
 
 function renderAutoPickPreview(leagueTotals, champTotals) {
@@ -454,6 +529,18 @@ function renderAutoPickPreview(leagueTotals, champTotals) {
 
   els.autoPickPreview.innerHTML = rows.map((row) => {
     const className = row.conference === CONFERENCE_CHAMPIONSHIP ? "championship" : "league";
+
+    if (!row.conference) {
+      return `
+        <div class="auto-pick-row pending">
+          <span class="pick-number-pill">Pick ${row.pickNumber}</span>
+          <div>
+            <strong>Ordine da decidere</strong>
+            <small>Imposta la Conference vincitrice dall'area admin.</small>
+          </div>
+        </div>
+      `;
+    }
 
     if (!row.entry) {
       return `
@@ -487,12 +574,17 @@ function generateAutoPicksFromVotes() {
   const champTotals = getVoteTotalsByConference(CONFERENCE_CHAMPIONSHIP);
   const rows = getAutoPickPreviewRows(leagueTotals, champTotals);
 
-  if (rows.some((row) => !row.entry)) {
-    alert("Servono almeno 3 giocatori votati per ciascuna conference.");
+  if (!state.firstConference) {
+    alert("Prima devi impostare la Conference vincitrice: il draft parte dalla Conference opposta.");
     return;
   }
 
-  const ok = confirm("Generare le prime 6 auto-pick dalle due Top 5 di conference?");
+  if (rows.some((row) => !row.entry)) {
+    alert("Servono almeno 3 giocatori votati per ciascuna conference nell'ordine deciso.");
+    return;
+  }
+
+  const ok = confirm(`Generare le prime 6 auto-pick? Prima pick: ${state.firstConference}.`);
   if (!ok) return;
 
   picks = picks.filter((pick) => pick.pickNumber > AUTO_PICK_COUNT);
@@ -519,7 +611,7 @@ function generateAutoPicksFromVotes() {
 /* DRAFT */
 
 function getCurrentConference() {
-  return state.currentPick % 2 === 1 ? CONFERENCE_LEAGUE : CONFERENCE_CHAMPIONSHIP;
+  return getConferenceForPickNumber(state.currentPick);
 }
 
 function getAvailablePlayers() {
@@ -529,6 +621,7 @@ function getAvailablePlayers() {
 
 function renderAll() {
   renderVotesArea();
+  renderAdminState();
   renderHeader();
   renderRosters();
   renderLastPicks();
@@ -536,19 +629,53 @@ function renderAll() {
   renderModalPlayers();
 }
 
+function renderAdminState() {
+  if (els.winnerConferenceSelect) {
+    els.winnerConferenceSelect.value = state.winnerConference || "";
+  }
+
+  if (els.winnerConferenceInfo) {
+    els.winnerConferenceInfo.textContent = state.winnerConference || "Non ancora decisa";
+  }
+
+  if (els.firstConferenceInfo) {
+    els.firstConferenceInfo.textContent = state.firstConference || "In attesa";
+  }
+
+  if (els.toggleDraftBtn) {
+    els.toggleDraftBtn.disabled = !state.firstConference;
+    els.toggleDraftBtn.textContent = state.isOpen ? "Chiudi Draft" : "Apri Draft";
+  }
+}
+
 function renderHeader() {
   const currentConference = getCurrentConference();
   const selected = picks.length;
 
-  els.currentPickInfo.textContent = String(state.currentPick);
-  els.currentConferenceInfo.textContent = currentConference;
-  els.selectedCountInfo.textContent = `${selected} / ${TOTAL_PLAYERS}`;
-  els.currentPickBig.textContent = String(state.currentPick);
-  els.currentConferenceBig.textContent = currentConference;
-  els.currentConferenceBig.dataset.conf = currentConference;
+  const currentConferenceLabel = currentConference || "Da decidere";
+  const draftReady = Boolean(state.firstConference);
 
-  els.openPickModalBtn.disabled = !state.isOpen || selected >= TOTAL_PLAYERS;
-  els.openPickModalBtn.textContent = selected >= TOTAL_PLAYERS ? "Draft completato" : "Effettua chiamata";
+  els.currentPickInfo.textContent = String(state.currentPick);
+  els.currentConferenceInfo.textContent = currentConferenceLabel;
+  els.selectedCountInfo.textContent = `${selected} / ${TOTAL_PLAYERS}`;
+  els.currentPickBig.textContent = draftReady ? String(state.currentPick) : "?";
+  els.currentConferenceBig.textContent = currentConferenceLabel;
+  els.currentConferenceBig.dataset.conf = currentConference || "pending";
+
+  if (els.draftStatusLabel) {
+    els.draftStatusLabel.textContent = !draftReady
+      ? "In attesa vincitrice"
+      : state.isOpen
+        ? "Draft aperto"
+        : "Votazioni aperte";
+  }
+
+  els.openPickModalBtn.disabled = !draftReady || !state.isOpen || selected >= TOTAL_PLAYERS;
+  els.openPickModalBtn.textContent = selected >= TOTAL_PLAYERS
+    ? "Draft completato"
+    : !draftReady
+      ? "Imposta vincitrice"
+      : "Effettua chiamata";
 }
 
 function renderRosters() {
@@ -671,6 +798,11 @@ function renderPool() {
 }
 
 function openPickModal() {
+  if (!state.firstConference) {
+    alert("Prima devi impostare la Conference vincitrice dall'area admin.");
+    return;
+  }
+
   if (!state.isOpen) {
     alert("Il draft è chiuso.");
     return;
@@ -721,6 +853,11 @@ function renderModalPlayers() {
 }
 
 function makePick(playerId) {
+  if (!state.firstConference) {
+    alert("Prima devi impostare la Conference vincitrice dall'area admin.");
+    return;
+  }
+
   if (!state.isOpen) {
     alert("Il draft è chiuso.");
     return;

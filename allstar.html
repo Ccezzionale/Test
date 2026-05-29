@@ -440,7 +440,7 @@
         <span class="info-icon">🔁</span>
         <div>
           <strong>Ordine draft: fisso</strong>
-          <small>Pick dispari League, pick pari Championship</small>
+          <small>Parte la Conference opposta alla vincitrice, poi alternanza fissa</small>
         </div>
       </article>
 
@@ -572,11 +572,34 @@
       </button>
 
       <div class="admin-body" id="adminBody">
+        <div class="allstar-admin-state">
+          <label>
+            <span>Conference vincitrice</span>
+            <select id="winnerConferenceSelect">
+              <option value="">Da decidere</option>
+              <option value="Conference League">Conference League</option>
+              <option value="Conference Championship">Conference Championship</option>
+            </select>
+          </label>
+
+          <button id="saveWinnerConferenceBtn" class="admin-btn gold" type="button">Salva Vincitrice</button>
+
+          <div class="admin-state-readout">
+            <strong>Vincitrice</strong>
+            <span id="winnerConferenceInfo">Non ancora decisa</span>
+          </div>
+
+          <div class="admin-state-readout">
+            <strong>Inizia il draft</strong>
+            <span id="firstConferenceInfo">In attesa</span>
+          </div>
+        </div>
+
         <button id="toggleDraftBtn" class="admin-btn green">Apri / Chiudi Draft</button>
         <button id="generateAutoPicksBtn" class="admin-btn gold">Genera Auto Pick</button>
         <button id="undoPickBtn" class="admin-btn blue">Annulla ultima pick</button>
         <button id="resetDraftBtn" class="admin-btn red">Reset Draft</button>
-        <small>Visibile solo ad admin/commissioner quando colleghiamo Supabase.</small>
+        <small>Regola: chi vince fa partire il draft alla Conference opposta. Su Supabase questa sezione sarà visibile solo ad admin/commissioner.</small>
       </div>
     </section>
   </main>

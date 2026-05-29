@@ -4085,3 +4085,87 @@ body {
     color:#ffffff !important;
   }
 }
+
+/* =========================================================
+   ALL STAR ADMIN STATE PATCH
+   Draft start decided only after winner Conference is known
+   ========================================================= */
+
+.allstar-admin-state {
+  width: 100%;
+  display: grid;
+  grid-template-columns: minmax(220px, 1fr) auto minmax(160px, .7fr) minmax(160px, .7fr);
+  gap: 10px;
+  align-items: end;
+  padding: 12px;
+  border: 1px solid rgba(255,255,255,.08);
+  border-radius: 14px;
+  background: rgba(255,255,255,.045);
+}
+
+.allstar-admin-state label {
+  display: grid;
+  gap: 6px;
+}
+
+.allstar-admin-state label span,
+.admin-state-readout strong {
+  color: var(--br-muted, #a9b5c8);
+  font-size: 11px;
+  font-weight: 950;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+}
+
+.allstar-admin-state select {
+  width: 100%;
+  min-height: 42px;
+  border: 1px solid rgba(255,255,255,.10);
+  border-radius: 12px;
+  background: rgba(255,255,255,.07);
+  color: #fff;
+  padding: 0 12px;
+  font-weight: 850;
+}
+
+.allstar-admin-state select option {
+  color: #111722;
+}
+
+.admin-state-readout {
+  display: grid;
+  gap: 5px;
+  min-height: 42px;
+  padding: 9px 12px;
+  border: 1px solid rgba(255,255,255,.08);
+  border-radius: 12px;
+  background: rgba(0,0,0,.14);
+}
+
+.admin-state-readout span {
+  color: #fff;
+  font-weight: 900;
+}
+
+.auto-pick-row.pending {
+  opacity: .82;
+  border-style: dashed !important;
+}
+
+#currentConferenceBig[data-conf="pending"] {
+  background: rgba(255,191,63,.13) !important;
+  color: #fff !important;
+  border: 1px solid rgba(255,191,63,.24) !important;
+}
+
+.admin-btn:disabled {
+  opacity: .5;
+  cursor: not-allowed;
+  filter: grayscale(.35);
+}
+
+@media (max-width: 900px) {
+  .allstar-admin-state {
+    grid-template-columns: 1fr;
+  }
+}
