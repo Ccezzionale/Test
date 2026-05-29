@@ -890,7 +890,7 @@ function generaMobileDraftCards(containerId, draftData, squadreOrdine) {
     }
 
    const openClass = "";
-    const logoPath = `img/${squadra}.png`;
+    const logoPath = `img/${squadra}.webp`;
 
     html += `
       <article class="mobile-team-card ${openClass}" data-mobile-team="${escapeDraftHtml(squadra)}">
