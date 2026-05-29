@@ -2802,3 +2802,42 @@ body::before{
     pointer-events: auto;
   }
 }
+
+/* =========================================================
+   POWER RANKING MOBILE BANNER IMAGE
+   ========================================================= */
+
+@media (max-width: 768px){
+
+  .stats-hero-banner{
+    min-height: unset !important;
+    aspect-ratio: 3 / 1;
+    padding: 0 !important;
+    margin: 0 auto 12px !important;
+
+    border: 0;
+    border-radius: 0;
+
+    background-image: url("img/powerbanner.webp") !important;
+    background-size: cover !important;
+    background-position: center center !important;
+    background-repeat: no-repeat !important;
+
+    box-shadow:
+      0 14px 34px rgba(0,0,0,.24),
+      inset 0 -1px 0 rgba(255,255,255,.08);
+  }
+
+  .stats-hero-banner::before,
+  .stats-hero-banner::after{
+    display: none !important;
+  }
+
+  .stats-hero-banner .hero-stars,
+  .stats-hero-banner h1,
+  .stats-hero-banner .hero-script,
+  .stats-hero-banner .hero-subtitle,
+  .stats-hero-banner .hero-gw-pill{
+    display: none !important;
+  }
+}
