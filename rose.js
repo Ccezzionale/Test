@@ -67,7 +67,34 @@ function trovaLogo(nomeSquadra) {
 }
 
 function trovaMaglia(nomeSquadra) {
-  return buildImageCandidates("img/maglie/", nomeSquadra);
+  const key = String(nomeSquadra || "").trim().toLowerCase();
+
+  const mascotteMap = {
+    "bayern christiansen": "img/maglie/bayern-mascotte.webp",
+    "team bartowski": "img/maglie/bartowski-mascotte.webp",
+    "golden knights": "img/maglie/golden-mascotte.webp",
+    "ibla": "img/maglie/ibla-mascotte.webp",
+    "fantaugusta": "img/maglie/fantaugusta-mascotte.webp",
+    "riverfilo": "img/maglie/riverfilo-mascotte.webp",
+    "desperados": "img/maglie/desperados-mascotte.webp",
+    "wildboys 78": "img/maglie/wildboys-mascotte.webp",
+    "wildboys78": "img/maglie/wildboys-mascotte.webp",
+    "pandinicoccolosini": "img/maglie/pandini-mascotte.webp",
+    "pokermantra": "img/maglie/pokermantra-mascotte.webp",
+    "poker mantra": "img/maglie/pokermantra-mascotte.webp",
+    "minnesode timberland": "img/maglie/minnesode-mascotte.webp",
+    "minnesota snakes": "img/maglie/snakes-mascotte.webp",
+    "minnesota snakes": "img/maglie/snakes-mascotte.webp",
+    "eintracht franco 126": "img/maglie/franco-mascotte.webp",
+    "fc disoneste": "img/maglie/disoneste-mascotte.webp",
+    "athletic pongao": "img/maglie/pongao-mascotte.webp"
+  };
+
+  const mascotte = mascotteMap[key];
+
+  return mascotte
+    ? [mascotte, ...buildImageCandidates("img/maglie/", nomeSquadra)]
+    : buildImageCandidates("img/maglie/", nomeSquadra);
 }
 
 async function caricaRose() {
