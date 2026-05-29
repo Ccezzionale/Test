@@ -13,96 +13,96 @@ const squadreBase = [
     mascotte: "img/maglie/rubinkebab-mascotte.webp",
     highlander: "img/maglie/rubinkebab-higlander.webp"
   },
-  {
-    nome: "Bayern Christiansen",
-    logo: "img/Bayern Christiansen.png",
-    mascotte: "img/maglie/bayern-mascotte.webp",
-    highlander: "img/maglie/bayern-higlander.webp"
-  },
-  {
-    nome: "Team Bartowski",
-    logo: "img/Team Bartowski.png",
-    mascotte: "img/maglie/bartowski-mascotte.webp",
-    highlander: "img/maglie/bartowski-higlander.webp"
-  },
-  {
-    nome: "Golden Knights",
-    logo: "img/Golden Knights.png",
-    mascotte: "img/maglie/golden-mascotte.webp",
-    highlander: "img/maglie/golden-higlander.webp"
-  },
-  {
-    nome: "Ibla",
-    logo: "img/Ibla.png",
-    mascotte: "img/maglie/ibla-mascotte.webp",
-    highlander: "img/maglie/ibla-higlander.webp"
-  },
-  {
-    nome: "Fantaugusta",
-    logo: "img/Fantaugusta.png",
-    mascotte: "img/maglie/fantaugusta-mascotte.webp",
-    highlander: "img/maglie/fantaugusta-higlander.webp"
-  },
-  {
-    nome: "Riverfilo",
-    logo: "img/Riverfilo.png",
-    mascotte: "img/maglie/riverfilo-mascotte.webp",
-    highlander: "img/maglie/riverfilo-higlander.webp"
-  },
-  {
-    nome: "Desperados",
-    logo: "img/Desperados.png",
-    mascotte: "img/maglie/desperados-mascotte.webp",
-    highlander: "img/maglie/desperados-higlander.webp"
-  },
-  {
-    nome: "Wildboys 78",
-    logo: "img/wildboys78.png",
-    mascotte: "img/maglie/wildboys-mascotte.webp",
-    highlander: "img/maglie/wildboys-higlander.webp"
-  },
-  {
-    nome: "Pandinicoccolosini",
-    logo: "img/Pandinicoccolosini.png",
-    mascotte: "img/maglie/pandini-mascotte.webp",
-    highlander: "img/maglie/pandini-higlander.webp"
-  },
-  {
-    nome: "Pokermantra",
-    logo: "img/PokerMantra.png",
-    mascotte: "img/maglie/pokermantra-mascotte.webp",
-    highlander: "img/maglie/pokermantra-higlander.webp"
-  },
-  {
-    nome: "Minnesode Timberland",
-    logo: "img/Minnesode Timberland.png",
-    mascotte: "img/maglie/minnesode-mascotte.webp",
-    highlander: "img/maglie/minnesode-higlander.webp"
-  },
-  {
-    nome: "Minnesota Snakes",
-    logo: "img/MinneSota Snakes.png",
-    mascotte: "img/maglie/snakes-mascotte.webp",
-    highlander: "img/maglie/minnesota-higlander.webp"
-  },
-  {
-    nome: "Eintracht Franco 126",
-    logo: "img/Eintracht Franco 126.png",
-    mascotte: "img/maglie/franco-mascotte.webp",
-    highlander: "img/maglie/franco-higlander.webp"
-  },
-  {
-    nome: "FC Disoneste",
-    logo: "img/FC Disoneste.png",
-    mascotte: "img/maglie/disoneste-mascotte.webp",
-    highlander: "img/maglie/disoneste-higlander.webp"
-  },
-  {
-    nome: "Athletic Pongao",
-    logo: "img/Athletic Pongao.png",
-    mascotte: "img/maglie/pongao-mascotte.webp",
-    highlander: "img/maglie/pongao-higlander.webp"
-  }
+{
+  nome: "Bayern Christiansen",
+  logo: "img/Bayern Christiansen.webp",
+  mascotte: "img/maglie/bayern-mascotte.webp",
+  highlander: "img/maglie/bayern-higlander.webp"
+},
+{
+  nome: "Team Bartowski",
+  logo: "img/Team Bartowski.webp",
+  mascotte: "img/maglie/bartowski-mascotte.webp",
+  highlander: "img/maglie/bartowski-higlander.webp"
+},
+{
+  nome: "Golden Knights",
+  logo: "img/Golden Knights.webp",
+  mascotte: "img/maglie/golden-mascotte.webp",
+  highlander: "img/maglie/golden-higlander.webp"
+},
+{
+  nome: "Ibla",
+  logo: "img/Ibla.webp",
+  mascotte: "img/maglie/ibla-mascotte.webp",
+  highlander: "img/maglie/ibla-higlander.webp"
+},
+{
+  nome: "Fantaugusta",
+  logo: "img/Fantaugusta.webp",
+  mascotte: "img/maglie/fantaugusta-mascotte.webp",
+  highlander: "img/maglie/fantaugusta-higlander.webp"
+},
+{
+  nome: "Riverfilo",
+  logo: "img/Riverfilo.webp",
+  mascotte: "img/maglie/riverfilo-mascotte.webp",
+  highlander: "img/maglie/riverfilo-higlander.webp"
+},
+{
+  nome: "Desperados",
+  logo: "img/Desperados.webp",
+  mascotte: "img/maglie/desperados-mascotte.webp",
+  highlander: "img/maglie/desperados-higlander.webp"
+},
+{
+  nome: "Wildboys 78",
+  logo: "img/wildboys78.webp",
+  mascotte: "img/maglie/wildboys-mascotte.webp",
+  highlander: "img/maglie/wildboys-higlander.webp"
+},
+{
+  nome: "Pandinicoccolosini",
+  logo: "img/Pandinicoccolosini.webp",
+  mascotte: "img/maglie/pandini-mascotte.webp",
+  highlander: "img/maglie/pandini-higlander.webp"
+},
+{
+  nome: "Pokermantra",
+  logo: "img/PokerMantra.webp",
+  mascotte: "img/maglie/pokermantra-mascotte.webp",
+  highlander: "img/maglie/pokermantra-higlander.webp"
+},
+{
+  nome: "Minnesode Timberland",
+  logo: "img/Minnesode Timberland.webp",
+  mascotte: "img/maglie/minnesode-mascotte.webp",
+  highlander: "img/maglie/minnesode-higlander.webp"
+},
+{
+  nome: "Minnesota Snakes",
+  logo: "img/MinneSota Snakes.webp",
+  mascotte: "img/maglie/snakes-mascotte.webp",
+  highlander: "img/maglie/minnesota-higlander.webp"
+},
+{
+  nome: "Eintracht Franco 126",
+  logo: "img/Eintracht Franco 126.webp",
+  mascotte: "img/maglie/franco-mascotte.webp",
+  highlander: "img/maglie/franco-higlander.webp"
+},
+{
+  nome: "FC Disoneste",
+  logo: "img/FC Disoneste.webp",
+  mascotte: "img/maglie/disoneste-mascotte.webp",
+  highlander: "img/maglie/disoneste-higlander.webp"
+},
+{
+  nome: "Athletic Pongao",
+  logo: "img/Athletic Pongao.webp",
+  mascotte: "img/maglie/pongao-mascotte.webp",
+  highlander: "img/maglie/pongao-higlander.webp"
+}
 ];
 
 let squadre = [];
