@@ -303,7 +303,7 @@ function logoCell(team) {
   div.className = "logo-nome";
 
   const img = document.createElement("img");
-  img.src = `${LOGO_DIR}${team}.png`;
+  img.src = `${LOGO_DIR}${team}.webp`;
   img.alt = team;
   img.onerror = function () {
     if (!this.dataset.jpg) {
@@ -392,7 +392,7 @@ function renderMobile(standings, competitionName) {
     header.className = "accordion-header";
 
     const img = document.createElement("img");
-    img.src = `${LOGO_DIR}${r.squadra}.png`;
+    img.src = `${LOGO_DIR}${r.squadra}.webp`;
     img.alt = r.squadra;
     img.onerror = function () {
       if (!this.dataset.jpg) {
