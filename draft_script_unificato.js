@@ -716,7 +716,7 @@ let desktopDraftRoomReady = false;
 let desktopResizeTimer = null;
 
 function getDraftTeamLogoPath(team) {
-  return `img/${team}.png`;
+  return `img/${team}.webp`;
 }
 
 
@@ -3109,7 +3109,7 @@ if (openTeams.has(team)) {
   div.classList.add("is-open");
 }
 
-    const logoPath = `img/${team}.png`;
+    const logoPath = `img/${team}.webp`;
 
     const header = document.createElement("button");
     header.type = "button";
