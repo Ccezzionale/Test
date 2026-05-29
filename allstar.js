@@ -20,6 +20,7 @@ let currentTeam = null;
 let isAdmin = false;
 
 let players = [];
+let playerIdAliasMap = new Map();
 let teamsById = new Map();
 let state = defaultState();
 let picks = [];
@@ -211,10 +212,12 @@ async function loadPlayers() {
 
   if (error) throw error;
 
-  players = (data || [])
+  const rawPlayers = (data || [])
     .filter((p) => !p.status || !["inactive", "archived"].includes(String(p.status).toLowerCase()))
     .map(normalizePlayer)
     .filter((p) => p.name);
+
+  players = dedupePlayers(rawPlayers);
 }
 
 async function loadVotes() {
@@ -256,15 +259,71 @@ function normalizePlayer(raw) {
   };
 }
 
+function getPlayerDedupeKey(player) {
+  return normalizeTextKey(player.name);
+}
+
+function normalizeTextKey(value) {
+  return String(value || "")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/\s+/g, " ")
+    .trim()
+    .toLowerCase();
+}
+
+function getPlayerQualityScore(player) {
+  const quotation = Number(player.quotation);
+  let score = Number.isFinite(quotation) ? quotation : 0;
+
+  // Prefer the cleaner “quotazioni/listone” row when duplicates come from conference pools.
+  if (!player.pool) score += 1000;
+  if (String(player.pool || "").toLowerCase() === "quotazioni") score += 900;
+  if (String(player.pool || "").toLowerCase() === "allstar") score += 800;
+
+  // If every duplicate is a pool row, prefer the free-agent row over an owned/conference clone.
+  if (!player.ownerTeamId) score += 100;
+  if (player.serieATeam && player.serieATeam !== "-") score += 10;
+  if (player.role && player.role !== "-") score += 5;
+
+  return score;
+}
+
+function dedupePlayers(rawPlayers) {
+  const byKey = new Map();
+  playerIdAliasMap = new Map();
+
+  rawPlayers.forEach((player) => {
+    const key = getPlayerDedupeKey(player);
+    const current = byKey.get(key);
+
+    if (!current || getPlayerQualityScore(player) > getPlayerQualityScore(current)) {
+      byKey.set(key, player);
+    }
+  });
+
+  rawPlayers.forEach((player) => {
+    const canonical = byKey.get(getPlayerDedupeKey(player));
+    if (canonical) playerIdAliasMap.set(player.id, canonical.id);
+  });
+
+  return [...byKey.values()].sort((a, b) => a.name.localeCompare(b.name));
+}
+
+function getCanonicalPlayerId(playerId) {
+  return playerIdAliasMap.get(playerId) || playerId;
+}
+
 function normalizeVote(raw) {
-  const player = players.find((p) => p.id === raw.player_id) || null;
+  const canonicalPlayerId = getCanonicalPlayerId(raw.player_id);
+  const player = players.find((p) => p.id === canonicalPlayerId) || null;
   return {
     id: raw.id,
     season: raw.season,
     week: raw.week,
     voterTeamId: raw.voter_team_id,
     voterConference: raw.voter_conference,
-    playerId: raw.player_id,
+    playerId: canonicalPlayerId,
     player,
     points: Number(raw.points || 0),
     slot: raw.slot,
@@ -274,13 +333,14 @@ function normalizeVote(raw) {
 }
 
 function normalizePick(raw) {
-  const player = players.find((p) => p.id === raw.player_id) || null;
+  const canonicalPlayerId = getCanonicalPlayerId(raw.player_id);
+  const player = players.find((p) => p.id === canonicalPlayerId) || null;
   return {
     id: raw.id,
     season: raw.season,
     pickNumber: Number(raw.pick_number),
     conference: raw.conference,
-    playerId: raw.player_id,
+    playerId: canonicalPlayerId,
     player,
     source: raw.source,
     pointsTotal: raw.points_total,
