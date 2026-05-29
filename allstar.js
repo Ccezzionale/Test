@@ -1,10 +1,12 @@
 // =========================================================
-// ALL STAR GAME 2027 - TOP 5 PER CONFERENCE + DRAFT
-// Versione front-end con dati demo + localStorage.
+// ALL STAR GAME 2027 - SUPABASE EDITION
+// Voti reali + Top 5 per Conference + Draft dinamico
+// Regola: chi vince fa iniziare il draft alla Conference opposta.
 // =========================================================
 
-// import { supabase } from "./supabase.js";
+import { supabase } from "./supabase.js";
 
+const SEASON = 2027;
 const TOTAL_PLAYERS = 44;
 const PLAYERS_PER_TEAM = 22;
 const AUTO_PICK_COUNT = 6;
@@ -12,45 +14,16 @@ const AUTO_PICK_COUNT = 6;
 const CONFERENCE_LEAGUE = "Conference League";
 const CONFERENCE_CHAMPIONSHIP = "Conference Championship";
 
-const STORAGE_KEY = "lega_eroi_allstar_2027_picks_v4";
-const STATE_KEY = "lega_eroi_allstar_2027_state_v4";
-const VOTES_KEY = "lega_eroi_allstar_2027_votes_v4";
-const ACTIVE_WEEK_KEY = "lega_eroi_allstar_2027_active_week_v1";
+let currentUser = null;
+let currentProfile = null;
+let currentTeam = null;
+let isAdmin = false;
 
-const demoPlayers = [
-  { id: "p1", name: "Maignan M.", role: "P", serieATeam: "Milan", quotation: 94, originTeam: "Rubinkebab", conference: CONFERENCE_LEAGUE },
-  { id: "p2", name: "Donnarumma G.", role: "P", serieATeam: "PSG", quotation: 91, originTeam: "Bayern Christiansen", conference: CONFERENCE_CHAMPIONSHIP },
-  { id: "p3", name: "Sommer Y.", role: "P", serieATeam: "Inter", quotation: 88, originTeam: "Team Bartowski", conference: CONFERENCE_LEAGUE },
-  { id: "p4", name: "Bastoni A.", role: "D", serieATeam: "Inter", quotation: 92, originTeam: "Golden Knights", conference: CONFERENCE_CHAMPIONSHIP },
-  { id: "p5", name: "Theo Hernández", role: "D", serieATeam: "Milan", quotation: 89, originTeam: "Ibla", conference: CONFERENCE_LEAGUE },
-  { id: "p6", name: "Di Lorenzo G.", role: "D", serieATeam: "Napoli", quotation: 88, originTeam: "PokerMantra", conference: CONFERENCE_CHAMPIONSHIP },
-  { id: "p7", name: "Bremer", role: "D", serieATeam: "Juventus", quotation: 89, originTeam: "Riverfilo", conference: CONFERENCE_LEAGUE },
-  { id: "p8", name: "Barella N.", role: "C", serieATeam: "Inter", quotation: 93, originTeam: "FC Disoneste", conference: CONFERENCE_CHAMPIONSHIP },
-  { id: "p9", name: "Calhanoglu H.", role: "C", serieATeam: "Inter", quotation: 87, originTeam: "I Predestinati", conference: CONFERENCE_LEAGUE },
-  { id: "p10", name: "Bellingham J.", role: "C", serieATeam: "Real Madrid", quotation: 95, originTeam: "Minnesota Snakes", conference: CONFERENCE_CHAMPIONSHIP },
-  { id: "p11", name: "Rice D.", role: "C", serieATeam: "Arsenal", quotation: 90, originTeam: "Minnesode Timberland", conference: CONFERENCE_LEAGUE },
-  { id: "p12", name: "Mbappé K.", role: "A", serieATeam: "Real Madrid", quotation: 96, originTeam: "Athletic Pongao", conference: CONFERENCE_CHAMPIONSHIP },
-  { id: "p13", name: "Osimhen V.", role: "A", serieATeam: "Napoli", quotation: 90, originTeam: "Pandinicoccolosini", conference: CONFERENCE_LEAGUE },
-  { id: "p14", name: "Lautaro Martinez", role: "A", serieATeam: "Inter", quotation: 92, originTeam: "Eintracht Franco 126", conference: CONFERENCE_CHAMPIONSHIP },
-  { id: "p15", name: "Kane H.", role: "A", serieATeam: "Bayern", quotation: 93, originTeam: "Wildboys 78", conference: CONFERENCE_LEAGUE },
-  { id: "p16", name: "Leao R.", role: "A", serieATeam: "Milan", quotation: 89, originTeam: "Rubinkebab", conference: CONFERENCE_CHAMPIONSHIP },
-  { id: "p17", name: "Lookman A.", role: "A", serieATeam: "Atalanta", quotation: 86, originTeam: "Ibla", conference: CONFERENCE_LEAGUE },
-  { id: "p18", name: "Vlahovic D.", role: "A", serieATeam: "Juventus", quotation: 88, originTeam: "I Gladiatori", conference: CONFERENCE_CHAMPIONSHIP },
-  { id: "p19", name: "Zapata D.", role: "A", serieATeam: "Torino", quotation: 82, originTeam: "Nemesi", conference: CONFERENCE_LEAGUE },
-  { id: "p20", name: "Kvaratskhelia K.", role: "A", serieATeam: "Napoli", quotation: 90, originTeam: "Gli Immortali", conference: CONFERENCE_CHAMPIONSHIP },
-  { id: "p21", name: "Rabiot A.", role: "C", serieATeam: "Juventus", quotation: 80, originTeam: "Titani", conference: CONFERENCE_LEAGUE },
-  { id: "p22", name: "Dimarco F.", role: "D", serieATeam: "Inter", quotation: 85, originTeam: "Team Bartowski", conference: CONFERENCE_CHAMPIONSHIP },
-  { id: "p23", name: "Yildiz K.", role: "A", serieATeam: "Juventus", quotation: 83, originTeam: "PokerMantra", conference: CONFERENCE_LEAGUE },
-  { id: "p24", name: "Soulé M.", role: "A", serieATeam: "Roma", quotation: 81, originTeam: "Ibla", conference: CONFERENCE_CHAMPIONSHIP },
-  { id: "p25", name: "De Ketelaere C.", role: "A", serieATeam: "Atalanta", quotation: 84, originTeam: "Rubinkebab", conference: CONFERENCE_LEAGUE },
-  { id: "p26", name: "Orsolini R.", role: "A", serieATeam: "Bologna", quotation: 82, originTeam: "Bayern Christiansen", conference: CONFERENCE_CHAMPIONSHIP }
-];
-
-let players = [...demoPlayers];
-let state = loadState();
-let picks = loadPicks();
-let votes = loadVotes();
-let activeWeek = loadActiveWeek();
+let players = [];
+let teamsById = new Map();
+let state = defaultState();
+let picks = [];
+let votes = [];
 
 const els = {
   hamburger: document.getElementById("hamburger"),
@@ -76,6 +49,7 @@ const els = {
   leagueVoteRankingList: document.getElementById("leagueVoteRankingList"),
   champVoteRankingList: document.getElementById("champVoteRankingList"),
   autoPickPreview: document.getElementById("autoPickPreview"),
+  autoPickPreviewBroadcast: document.getElementById("autoPickPreviewBroadcast"),
   demoVotesBtn: document.getElementById("demoVotesBtn"),
   resetVotesBtn: document.getElementById("resetVotesBtn"),
   generateAutoPicksBtn: document.getElementById("generateAutoPicksBtn"),
@@ -107,6 +81,7 @@ const els = {
   modalPickText: document.getElementById("modalPickText"),
   modalSearchInput: document.getElementById("modalSearchInput"),
   modalPlayersList: document.getElementById("modalPlayersList"),
+  adminPanel: document.getElementById("adminPanel"),
   adminToggle: document.getElementById("adminToggle"),
   adminBody: document.getElementById("adminBody"),
   adminChevron: document.getElementById("adminChevron"),
@@ -117,11 +92,22 @@ const els = {
 
 init();
 
-function init() {
-  populateFilters();
-  populateVoteSelects();
+async function init() {
   bindEvents();
-  renderAll();
+  setLoadingUI();
+
+  try {
+    await loadSessionAndProfile();
+    await loadAllData();
+    setupUserControls();
+    populateFilters();
+    populateVoteSelects();
+    renderAll();
+    subscribeRealtime();
+  } catch (error) {
+    console.error("Errore init All Star:", error);
+    showVoteFeedback("Errore caricamento All Star. Controlla login, tabelle Supabase o console.", true);
+  }
 }
 
 function bindEvents() {
@@ -129,10 +115,10 @@ function bindEvents() {
     els.navMenu?.classList.toggle("open");
   });
 
-  els.voteForm.addEventListener("submit", handleVoteSubmit);
-  els.demoVotesBtn.addEventListener("click", addDemoVotes);
-  els.resetVotesBtn.addEventListener("click", resetVotes);
-  els.generateAutoPicksBtn.addEventListener("click", generateAutoPicksFromVotes);
+  els.voteForm?.addEventListener("submit", handleVoteSubmit);
+  els.demoVotesBtn?.addEventListener("click", () => alert("I voti demo sono stati disattivati: ora la pagina usa Supabase."));
+  els.resetVotesBtn?.addEventListener("click", resetVotes);
+  els.generateAutoPicksBtn?.addEventListener("click", generateAutoPicksFromVotes);
   els.saveWinnerConferenceBtn?.addEventListener("click", saveWinnerConferenceFromAdmin);
 
   [els.searchInput, els.roleFilter, els.teamFilter, els.originFilter, els.conferenceFilter].forEach((el) => {
@@ -140,7 +126,7 @@ function bindEvents() {
     el?.addEventListener("change", renderPool);
   });
 
-  els.clearFiltersBtn.addEventListener("click", () => {
+  els.clearFiltersBtn?.addEventListener("click", () => {
     els.searchInput.value = "";
     els.roleFilter.value = "";
     els.teamFilter.value = "";
@@ -149,41 +135,167 @@ function bindEvents() {
     renderPool();
   });
 
-  els.openPickModalBtn.addEventListener("click", openPickModal);
-  els.closePickModalBtn.addEventListener("click", () => els.pickModal.close());
-  els.modalSearchInput.addEventListener("input", renderModalPlayers);
+  els.openPickModalBtn?.addEventListener("click", openPickModal);
+  els.closePickModalBtn?.addEventListener("click", () => els.pickModal?.close());
+  els.modalSearchInput?.addEventListener("input", renderModalPlayers);
 
-  els.adminToggle.addEventListener("click", () => {
+  els.adminToggle?.addEventListener("click", () => {
     els.adminBody.classList.toggle("open");
     els.adminChevron.textContent = els.adminBody.classList.contains("open") ? "⌃" : "⌄";
   });
 
-  els.toggleDraftBtn.addEventListener("click", () => {
-    state.isOpen = !state.isOpen;
-    saveState();
-    renderAll();
-  });
+  els.toggleDraftBtn?.addEventListener("click", toggleDraftOpen);
+  els.undoPickBtn?.addEventListener("click", undoLastPick);
+  els.resetDraftBtn?.addEventListener("click", resetDraft);
+}
 
-  els.undoPickBtn.addEventListener("click", undoLastPick);
+function setLoadingUI() {
+  if (els.playersTbody) els.playersTbody.innerHTML = `<tr><td colspan="7">Caricamento dati All Star...</td></tr>`;
+  if (els.draftStatusLabel) els.draftStatusLabel.textContent = "Caricamento";
+  if (els.openPickModalBtn) els.openPickModalBtn.disabled = true;
+}
 
-  els.resetDraftBtn.addEventListener("click", () => {
-    const ok = confirm("Vuoi davvero resettare il draft All Star?");
-    if (!ok) return;
+async function loadSessionAndProfile() {
+  const { data: userData, error: userError } = await supabase.auth.getUser();
+  if (userError) throw userError;
 
-    picks = [];
-    state = defaultState();
-    savePicks();
-    saveState();
-    renderAll();
-  });
+  currentUser = userData?.user || null;
+  if (!currentUser) {
+    throw new Error("Utente non autenticato");
+  }
+
+  const { data: profile, error: profileError } = await supabase
+    .from("profiles")
+    .select("id, email, team_id, role")
+    .eq("id", currentUser.id)
+    .maybeSingle();
+
+  if (profileError) throw profileError;
+  currentProfile = profile;
+  isAdmin = ["admin", "commissioner"].includes(String(profile?.role || "").toLowerCase());
+}
+
+async function loadAllData() {
+  await loadTeams();
+  await Promise.all([loadState(), loadPlayers(), loadVotes(), loadPicks()]);
+}
+
+async function loadTeams() {
+  const { data, error } = await supabase
+    .from("teams")
+    .select("id, name, conference")
+    .order("name", { ascending: true });
+
+  if (error) throw error;
+
+  teamsById = new Map((data || []).map((team) => [team.id, team]));
+  currentTeam = currentProfile?.team_id ? teamsById.get(currentProfile.team_id) : null;
+}
+
+async function loadState() {
+  const { data, error } = await supabase
+    .from("allstar_state")
+    .select("season, voting_open, draft_open, active_week, winner_conference, first_conference, current_pick")
+    .eq("season", SEASON)
+    .maybeSingle();
+
+  if (error) throw error;
+  state = normalizeState(data);
+}
+
+async function loadPlayers() {
+  const { data, error } = await supabase
+    .from("players")
+    .select("id, name, role, role_mantra, serie_a_team, quotation, owner_team_id, status, pool")
+    .order("name", { ascending: true });
+
+  if (error) throw error;
+
+  players = (data || [])
+    .filter((p) => !p.status || !["inactive", "archived"].includes(String(p.status).toLowerCase()))
+    .map(normalizePlayer)
+    .filter((p) => p.name);
+}
+
+async function loadVotes() {
+  const { data, error } = await supabase
+    .from("allstar_votes")
+    .select("id, season, week, voter_team_id, voter_conference, player_id, points, slot, created_at, updated_at")
+    .eq("season", SEASON);
+
+  if (error) throw error;
+  votes = (data || []).map(normalizeVote);
+}
+
+async function loadPicks() {
+  const { data, error } = await supabase
+    .from("allstar_picks")
+    .select("id, season, pick_number, conference, player_id, source, points_total, created_by, created_at")
+    .eq("season", SEASON)
+    .order("pick_number", { ascending: true });
+
+  if (error) throw error;
+  picks = (data || []).map(normalizePick).filter((pick) => pick.player);
+}
+
+function normalizePlayer(raw) {
+  const ownerTeam = raw.owner_team_id ? teamsById.get(raw.owner_team_id) : null;
+
+  return {
+    id: raw.id,
+    name: raw.name || "",
+    role: raw.role || raw.role_mantra || "-",
+    roleMantra: raw.role_mantra || "",
+    serieATeam: raw.serie_a_team || "-",
+    quotation: raw.quotation ?? "-",
+    ownerTeamId: raw.owner_team_id || null,
+    originTeam: ownerTeam?.name || "Svincolato",
+    conference: ownerTeam?.conference || "Senza Conference",
+    status: raw.status || "active",
+    pool: raw.pool || null
+  };
+}
+
+function normalizeVote(raw) {
+  const player = players.find((p) => p.id === raw.player_id) || null;
+  return {
+    id: raw.id,
+    season: raw.season,
+    week: raw.week,
+    voterTeamId: raw.voter_team_id,
+    voterConference: raw.voter_conference,
+    playerId: raw.player_id,
+    player,
+    points: Number(raw.points || 0),
+    slot: raw.slot,
+    createdAt: raw.created_at,
+    updatedAt: raw.updated_at
+  };
+}
+
+function normalizePick(raw) {
+  const player = players.find((p) => p.id === raw.player_id) || null;
+  return {
+    id: raw.id,
+    season: raw.season,
+    pickNumber: Number(raw.pick_number),
+    conference: raw.conference,
+    playerId: raw.player_id,
+    player,
+    source: raw.source,
+    pointsTotal: raw.points_total,
+    createdBy: raw.created_by,
+    createdAt: raw.created_at
+  };
 }
 
 function defaultState() {
   return {
-    year: 2027,
-    isOpen: false,
+    season: SEASON,
     votingOpen: true,
-    currentPick: 7,
+    isOpen: false,
+    activeWeek: 1,
+    currentPick: AUTO_PICK_COUNT + 1,
     winnerConference: null,
     firstConference: null
   };
@@ -191,76 +303,85 @@ function defaultState() {
 
 function normalizeState(rawState) {
   const base = defaultState();
-  const next = { ...base, ...(rawState || {}) };
+  const next = {
+    ...base,
+    season: rawState?.season ?? SEASON,
+    votingOpen: rawState?.voting_open ?? rawState?.votingOpen ?? true,
+    isOpen: rawState?.draft_open ?? rawState?.isOpen ?? false,
+    activeWeek: Number(rawState?.active_week ?? rawState?.activeWeek ?? 1),
+    currentPick: Number(rawState?.current_pick ?? rawState?.currentPick ?? AUTO_PICK_COUNT + 1),
+    winnerConference: rawState?.winner_conference ?? rawState?.winnerConference ?? null,
+    firstConference: rawState?.first_conference ?? rawState?.firstConference ?? null
+  };
 
   if (!isValidConference(next.winnerConference)) next.winnerConference = null;
-  if (!isValidConference(next.firstConference)) {
-    next.firstConference = getOppositeConference(next.winnerConference);
-  }
+  if (!isValidConference(next.firstConference)) next.firstConference = getOppositeConference(next.winnerConference);
 
   next.currentPick = Math.max(AUTO_PICK_COUNT + 1, Number(next.currentPick || AUTO_PICK_COUNT + 1));
   next.isOpen = Boolean(next.isOpen && next.firstConference);
   next.votingOpen = next.votingOpen !== false;
+  next.activeWeek = Math.max(1, Number(next.activeWeek || 1));
 
   return next;
 }
 
-function loadState() {
-  try {
-    return normalizeState(JSON.parse(localStorage.getItem(STATE_KEY)) || defaultState());
-  } catch {
-    return defaultState();
+function setupUserControls() {
+  if (els.voterConference && currentTeam?.conference) {
+    els.voterConference.value = currentTeam.conference;
+    els.voterConference.disabled = true;
   }
-}
 
-function saveState() {
-  localStorage.setItem(STATE_KEY, JSON.stringify(state));
-}
-
-function loadPicks() {
-  try {
-    return JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
-  } catch {
-    return [];
+  if (els.adminPanel) {
+    els.adminPanel.style.display = isAdmin ? "" : "none";
   }
-}
 
-function savePicks() {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(picks));
-}
-
-function loadVotes() {
-  try {
-    return JSON.parse(localStorage.getItem(VOTES_KEY)) || [];
-  } catch {
-    return [];
+  if (els.demoVotesBtn) {
+    els.demoVotesBtn.style.display = isAdmin ? "" : "none";
+    els.demoVotesBtn.textContent = "Demo disattivata";
   }
+
+  if (els.resetVotesBtn) els.resetVotesBtn.style.display = isAdmin ? "" : "none";
 }
 
-function saveVotes() {
-  localStorage.setItem(VOTES_KEY, JSON.stringify(votes));
-}
+function populateFilters() {
+  const serieATeams = unique(players.map((p) => p.serieATeam)).filter((v) => v !== "-").sort();
+  const originTeams = unique(players.map((p) => p.originTeam)).filter((v) => v !== "Svincolato").sort();
 
-function loadActiveWeek() {
-  return Number(localStorage.getItem(ACTIVE_WEEK_KEY) || 1);
+  if (els.teamFilter) {
+    els.teamFilter.innerHTML = `<option value="">Squadra Serie A</option>` +
+      serieATeams.map((team) => `<option value="${escapeAttr(team)}">${escapeHtml(team)}</option>`).join("");
+  }
+
+  if (els.originFilter) {
+    els.originFilter.innerHTML = `<option value="">Team di origine</option>` +
+      originTeams.map((team) => `<option value="${escapeAttr(team)}">${escapeHtml(team)}</option>`).join("");
+  }
 }
 
 function populateVoteSelects() {
   const options = players
     .slice()
     .sort((a, b) => a.name.localeCompare(b.name))
-    .map((p) => `<option value="${escapeAttr(p.id)}">${escapeHtml(p.name)} · ${escapeHtml(p.role)} · ${escapeHtml(p.serieATeam)}</option>`)
+    .map((p) => `<option value="${escapeAttr(p.id)}">${escapeHtml(p.name)} · ${escapeHtml(p.role)} · ${escapeHtml(p.serieATeam)} · ${escapeHtml(p.originTeam)}</option>`)
     .join("");
 
   [els.vote10, els.vote5, els.vote2].forEach((select) => {
-    select.innerHTML = `<option value="">Seleziona giocatore</option>${options}`;
+    if (select) select.innerHTML = `<option value="">Seleziona giocatore</option>${options}`;
   });
 }
 
-function handleVoteSubmit(event) {
+async function handleVoteSubmit(event) {
   event.preventDefault();
 
-  const voterConference = els.voterConference.value;
+  if (!state.votingOpen) {
+    showVoteFeedback("Le votazioni sono chiuse.", true);
+    return;
+  }
+
+  if (!currentTeam?.id || !currentTeam?.conference) {
+    showVoteFeedback("Non riesco a trovare la tua squadra/profilo. Controlla il login.", true);
+    return;
+  }
 
   const selected = [
     { playerId: els.vote10.value, points: 10, slot: "first" },
@@ -279,80 +400,54 @@ function handleVoteSubmit(event) {
     return;
   }
 
-  // Demo voter locale. Con Supabase sarà profiles.team_id e teams.conference.
-  const demoVoterTeamId = `demo-team-${voterConference}`;
+  const rows = selected.map((vote) => ({
+    season: SEASON,
+    week: state.activeWeek,
+    voter_team_id: currentTeam.id,
+    voter_conference: currentTeam.conference,
+    player_id: vote.playerId,
+    points: vote.points,
+    slot: vote.slot
+  }));
 
-  votes = votes.filter((vote) => !(vote.week === activeWeek && vote.voterTeamId === demoVoterTeamId));
+  const { error } = await supabase
+    .from("allstar_votes")
+    .upsert(rows, { onConflict: "season,week,voter_team_id,slot" });
 
-  selected.forEach((vote) => {
-    const player = players.find((p) => p.id === vote.playerId);
-    votes.push({
-      id: crypto.randomUUID ? crypto.randomUUID() : String(Date.now() + Math.random()),
-      season: 2027,
-      week: activeWeek,
-      voterTeamId: demoVoterTeamId,
-      voterConference,
-      playerId: vote.playerId,
-      player,
-      points: vote.points,
-      slot: vote.slot,
-      createdAt: new Date().toISOString()
-    });
-  });
+  if (error) {
+    console.error("Errore salvataggio voti:", error);
+    showVoteFeedback("Errore salvataggio voti. Controlla RLS/permessi.", true);
+    return;
+  }
 
-  saveVotes();
-  showVoteFeedback(`Voti salvati per ${voterConference}.`);
+  await loadVotes();
+  showVoteFeedback(`Voti salvati per ${currentTeam.name}.`);
   renderVotesArea();
 }
 
 function showVoteFeedback(message, isError = false) {
+  if (!els.voteFeedback) return;
   els.voteFeedback.textContent = message;
-  els.voteFeedback.style.color = isError ? "#b72e2e" : "#198749";
+  els.voteFeedback.style.color = isError ? "#ff8e9d" : "#35d07f";
 }
 
-function addDemoVotes() {
-  const sampleLeague = ["p14", "p23", "p25", "p17", "p22", "p8", "p13", "p16"];
-  const sampleChamp = ["p20", "p14", "p24", "p10", "p18", "p5", "p25", "p23"];
-
-  addDemoVotesForConference(CONFERENCE_LEAGUE, sampleLeague, ["Rubinkebab", "Bartowski", "Ibla", "Wildboys", "Pandinicoccolosini"]);
-  addDemoVotesForConference(CONFERENCE_CHAMPIONSHIP, sampleChamp, ["Bayern", "PokerMantra", "Golden Knights", "Disoneste", "Riverfilo"]);
-
-  saveVotes();
-  renderVotesArea();
-}
-
-function addDemoVotesForConference(conference, sampleIds, teams) {
-  teams.forEach((teamName, idx) => {
-    const shuffled = sampleIds.slice().sort(() => Math.random() - 0.5);
-
-    [
-      { playerId: shuffled[0], points: 10, slot: "first" },
-      { playerId: shuffled[1], points: 5, slot: "second" },
-      { playerId: shuffled[2], points: 2, slot: "third" }
-    ].forEach((vote) => {
-      const player = players.find((p) => p.id === vote.playerId);
-      votes.push({
-        id: crypto.randomUUID ? crypto.randomUUID() : String(Date.now() + Math.random()),
-        season: 2027,
-        week: activeWeek,
-        voterTeamId: `demo-${conference}-${teamName}-${idx}-${Date.now()}`,
-        voterConference: conference,
-        playerId: vote.playerId,
-        player,
-        points: vote.points,
-        slot: vote.slot,
-        createdAt: new Date().toISOString()
-      });
-    });
-  });
-}
-
-function resetVotes() {
-  const ok = confirm("Vuoi davvero cancellare tutti i voti demo/locali?");
+async function resetVotes() {
+  if (!isAdmin) return;
+  const ok = confirm("Vuoi davvero cancellare tutti i voti All Star della stagione?");
   if (!ok) return;
 
+  const { error } = await supabase
+    .from("allstar_votes")
+    .delete()
+    .eq("season", SEASON);
+
+  if (error) {
+    alert("Errore reset voti. Controlla RLS/permessi admin.");
+    console.error(error);
+    return;
+  }
+
   votes = [];
-  saveVotes();
   renderVotesArea();
 }
 
@@ -362,8 +457,10 @@ function getVoteTotalsByConference(conference) {
   votes
     .filter((vote) => vote.voterConference === conference)
     .forEach((vote) => {
+      const player = vote.player || players.find((p) => p.id === vote.playerId);
+      if (!player) return;
+
       if (!map.has(vote.playerId)) {
-        const player = players.find((p) => p.id === vote.playerId) || vote.player;
         map.set(vote.playerId, {
           playerId: vote.playerId,
           player,
@@ -375,7 +472,7 @@ function getVoteTotalsByConference(conference) {
       const entry = map.get(vote.playerId);
       entry.total += Number(vote.points || 0);
 
-      if (vote.week === activeWeek) {
+      if (vote.week === state.activeWeek) {
         entry.weekTotal += Number(vote.points || 0);
       }
     });
@@ -398,12 +495,12 @@ function renderVotesArea() {
   const leagueLeader = leagueTotals[0];
   const champLeader = champTotals[0];
 
-  els.activeWeekInfo.textContent = `Week ${activeWeek}`;
-  els.voteWeekPill.textContent = `Week ${activeWeek}`;
-  els.leagueVoteLeaderInfo.textContent = leagueLeader ? `${leagueLeader.player.name} (${leagueLeader.total} pt)` : "-";
-  els.champVoteLeaderInfo.textContent = champLeader ? `${champLeader.player.name} (${champLeader.total} pt)` : "-";
+  setText(els.activeWeekInfo, `Week ${state.activeWeek}`);
+  setText(els.voteWeekPill, `Week ${state.activeWeek}`);
+  setText(els.leagueVoteLeaderInfo, leagueLeader ? `${leagueLeader.player.name} (${leagueLeader.total} pt)` : "-");
+  setText(els.champVoteLeaderInfo, champLeader ? `${champLeader.player.name} (${champLeader.total} pt)` : "-");
 
-  renderWeekStars(leagueTotals, champTotals);
+  renderWeekStars();
   renderConferenceRanking(els.leagueVoteRankingList, leagueTotals, CONFERENCE_LEAGUE);
   renderConferenceRanking(els.champVoteRankingList, champTotals, CONFERENCE_CHAMPIONSHIP);
   renderAutoPickPreview(leagueTotals, champTotals);
@@ -419,16 +516,17 @@ function renderWeekStars() {
 
 function renderSingleWeekStar(star, nameEl, detailsEl) {
   if (!star) {
-    nameEl.textContent = "-";
-    detailsEl.textContent = "Nessun voto registrato.";
+    setText(nameEl, "-");
+    setText(detailsEl, "Nessun voto registrato.");
     return;
   }
 
-  nameEl.textContent = star.player.name;
-  detailsEl.textContent = `${star.weekTotal} pt questa week · Totale ${star.total} · ${star.player.role} · ${star.player.serieATeam}`;
+  setText(nameEl, star.player.name);
+  setText(detailsEl, `${star.weekTotal} pt questa week · Totale ${star.total} · ${star.player.role} · ${star.player.serieATeam}`);
 }
 
 function renderConferenceRanking(container, totals, conference) {
+  if (!container) return;
   const top = totals.slice(0, 5);
 
   if (!top.length) {
@@ -450,7 +548,7 @@ function renderConferenceRanking(container, totals, conference) {
         <span class="ranking-pos">${pos}</span>
         <span class="ranking-player">
           <strong>${escapeHtml(entry.player.name)}</strong>
-          <small>${escapeHtml(entry.player.role)} · ${escapeHtml(entry.player.serieATeam)} · Q. ${entry.player.quotation}</small>
+          <small>${escapeHtml(entry.player.role)} · ${escapeHtml(entry.player.serieATeam)} · ${escapeHtml(entry.player.originTeam)} · Q. ${escapeHtml(entry.player.quotation)}</small>
         </span>
         <span class="ranking-points">${entry.total} pt</span>
         <span class="auto-badge">Top 5</span>
@@ -459,66 +557,35 @@ function renderConferenceRanking(container, totals, conference) {
   }).join("");
 }
 
-function isValidConference(conference) {
-  return conference === CONFERENCE_LEAGUE || conference === CONFERENCE_CHAMPIONSHIP;
-}
-
-function getOppositeConference(conference) {
-  if (conference === CONFERENCE_LEAGUE) return CONFERENCE_CHAMPIONSHIP;
-  if (conference === CONFERENCE_CHAMPIONSHIP) return CONFERENCE_LEAGUE;
-  return null;
-}
-
-function getConferenceForPickNumber(pickNumber) {
-  if (!state.firstConference) return null;
-  const secondConference = getOppositeConference(state.firstConference);
-  return pickNumber % 2 === 1 ? state.firstConference : secondConference;
-}
-
-function saveWinnerConferenceFromAdmin() {
-  const winner = els.winnerConferenceSelect?.value || "";
-
-  if (!isValidConference(winner)) {
-    alert("Seleziona prima la Conference vincitrice.");
-    return;
-  }
-
-  const firstConference = getOppositeConference(winner);
-  const hasPicks = picks.length > 0;
-
-  if (hasPicks) {
-    const ok = confirm("Ci sono già pick generate. Cambiare la vincitrice può rendere incoerente l'ordine. Vuoi continuare?");
-    if (!ok) return;
-  }
-
-  state.winnerConference = winner;
-  state.firstConference = firstConference;
-  state.isOpen = false;
-  state.currentPick = Math.max(AUTO_PICK_COUNT + 1, state.currentPick || AUTO_PICK_COUNT + 1);
-
-  saveState();
-  renderAll();
-}
-
 function getAutoPickPreviewRows(leagueTotals, champTotals) {
-  const conferenceIndexes = {
+  if (!state.firstConference) {
+    return Array.from({ length: AUTO_PICK_COUNT }, (_, index) => ({
+      pickNumber: index + 1,
+      conference: null,
+      entry: null
+    }));
+  }
+
+  const first = state.firstConference;
+  const second = getOppositeConference(first);
+  const indexesByConference = {
     [CONFERENCE_LEAGUE]: 0,
     [CONFERENCE_CHAMPIONSHIP]: 0
   };
 
-  return Array.from({ length: AUTO_PICK_COUNT }, (_, idx) => {
-    const pickNumber = idx + 1;
-    const conference = getConferenceForPickNumber(pickNumber);
+  const totalsByConference = {
+    [CONFERENCE_LEAGUE]: leagueTotals,
+    [CONFERENCE_CHAMPIONSHIP]: champTotals
+  };
 
-    if (!conference) {
-      return { pickNumber, conference: null, entry: null };
-    }
-
-    const source = conference === CONFERENCE_LEAGUE ? leagueTotals : champTotals;
-    const entry = source[conferenceIndexes[conference]] || null;
-    conferenceIndexes[conference] += 1;
-
-    return { pickNumber, conference, entry };
+  return Array.from({ length: AUTO_PICK_COUNT }, (_, index) => {
+    const conference = index % 2 === 0 ? first : second;
+    const rankingIndex = indexesByConference[conference]++;
+    return {
+      pickNumber: index + 1,
+      conference,
+      entry: totalsByConference[conference][rankingIndex]
+    };
   });
 }
 
@@ -527,20 +594,20 @@ function renderAutoPickPreview(leagueTotals, champTotals) {
   const selectedIds = rows.filter((row) => row.entry).map((row) => row.entry.playerId);
   const duplicateIds = selectedIds.filter((id, index) => selectedIds.indexOf(id) !== index);
 
-  els.autoPickPreview.innerHTML = rows.map((row) => {
-    const className = row.conference === CONFERENCE_CHAMPIONSHIP ? "championship" : "league";
-
+  const html = rows.map((row) => {
     if (!row.conference) {
       return `
-        <div class="auto-pick-row pending">
+        <div class="auto-pick-row">
           <span class="pick-number-pill">Pick ${row.pickNumber}</span>
           <div>
-            <strong>Ordine da decidere</strong>
-            <small>Imposta la Conference vincitrice dall'area admin.</small>
+            <strong>In attesa</strong>
+            <small>Prima imposta la Conference vincitrice</small>
           </div>
         </div>
       `;
     }
+
+    const className = row.conference === CONFERENCE_CHAMPIONSHIP ? "championship" : "league";
 
     if (!row.entry) {
       return `
@@ -567,51 +634,107 @@ function renderAutoPickPreview(leagueTotals, champTotals) {
       </div>
     `;
   }).join("");
+
+  if (els.autoPickPreview) els.autoPickPreview.innerHTML = html;
+  if (els.autoPickPreviewBroadcast) els.autoPickPreviewBroadcast.innerHTML = html;
 }
 
-function generateAutoPicksFromVotes() {
+async function generateAutoPicksFromVotes() {
+  if (!isAdmin) return;
+
+  if (!state.firstConference) {
+    alert("Prima scegli la Conference vincitrice: il draft partirà dalla Conference opposta.");
+    return;
+  }
+
   const leagueTotals = getVoteTotalsByConference(CONFERENCE_LEAGUE);
   const champTotals = getVoteTotalsByConference(CONFERENCE_CHAMPIONSHIP);
   const rows = getAutoPickPreviewRows(leagueTotals, champTotals);
 
-  if (!state.firstConference) {
-    alert("Prima devi impostare la Conference vincitrice: il draft parte dalla Conference opposta.");
-    return;
-  }
-
   if (rows.some((row) => !row.entry)) {
-    alert("Servono almeno 3 giocatori votati per ciascuna conference nell'ordine deciso.");
+    alert("Servono almeno 3 giocatori votati per ciascuna conference.");
     return;
   }
 
-  const ok = confirm(`Generare le prime 6 auto-pick? Prima pick: ${state.firstConference}.`);
+  const selectedIds = rows.map((row) => row.entry.playerId);
+  if (new Set(selectedIds).size !== selectedIds.length) {
+    alert("Ci sono doppioni nelle prime auto-pick. Sistemali manualmente prima di generare.");
+    return;
+  }
+
+  const ok = confirm("Generare/sostituire le prime 6 auto-pick da Supabase?");
   if (!ok) return;
 
-  picks = picks.filter((pick) => pick.pickNumber > AUTO_PICK_COUNT);
+  const { error: deleteError } = await supabase
+    .from("allstar_picks")
+    .delete()
+    .eq("season", SEASON)
+    .lte("pick_number", AUTO_PICK_COUNT);
 
-  rows.forEach((row) => {
-    picks.push({
-      pickNumber: row.pickNumber,
-      conference: row.conference,
-      playerId: row.entry.playerId,
-      player: row.entry.player,
-      source: "vote",
-      pointsTotal: row.entry.total,
-      createdAt: new Date().toISOString()
-    });
-  });
+  if (deleteError) {
+    alert("Errore eliminazione auto-pick esistenti.");
+    console.error(deleteError);
+    return;
+  }
 
-  picks.sort((a, b) => a.pickNumber - b.pickNumber);
-  state.currentPick = Math.max(7, state.currentPick);
-  savePicks();
-  saveState();
-  renderAll();
+  const insertRows = rows.map((row) => ({
+    season: SEASON,
+    pick_number: row.pickNumber,
+    conference: row.conference,
+    player_id: row.entry.playerId,
+    source: "vote",
+    points_total: row.entry.total,
+    created_by: currentUser.id
+  }));
+
+  const { error: insertError } = await supabase.from("allstar_picks").insert(insertRows);
+
+  if (insertError) {
+    alert("Errore generazione auto-pick. Controlla duplicati/RLS.");
+    console.error(insertError);
+    return;
+  }
+
+  await updateState({ current_pick: Math.max(AUTO_PICK_COUNT + 1, state.currentPick) });
+  await refreshAndRender();
 }
 
-/* DRAFT */
+async function saveWinnerConferenceFromAdmin() {
+  if (!isAdmin) return;
+
+  const winner = els.winnerConferenceSelect?.value || "";
+  if (!isValidConference(winner)) {
+    alert("Scegli una Conference vincitrice valida.");
+    return;
+  }
+
+  const first = getOppositeConference(winner);
+
+  const { error } = await supabase
+    .from("allstar_state")
+    .update({
+      winner_conference: winner,
+      first_conference: first,
+      draft_open: false,
+      current_pick: Math.max(AUTO_PICK_COUNT + 1, state.currentPick || AUTO_PICK_COUNT + 1)
+    })
+    .eq("season", SEASON);
+
+  if (error) {
+    alert("Errore salvataggio Conference vincitrice.");
+    console.error(error);
+    return;
+  }
+
+  await refreshAndRender();
+}
 
 function getCurrentConference() {
-  return getConferenceForPickNumber(state.currentPick);
+  if (!state.firstConference) return null;
+
+  const first = state.firstConference;
+  const second = getOppositeConference(first);
+  return state.currentPick % 2 === 1 ? first : second;
 }
 
 function getAvailablePlayers() {
@@ -621,7 +744,6 @@ function getAvailablePlayers() {
 
 function renderAll() {
   renderVotesArea();
-  renderAdminState();
   renderHeader();
   renderRosters();
   renderLastPicks();
@@ -629,64 +751,57 @@ function renderAll() {
   renderModalPlayers();
 }
 
-function renderAdminState() {
+function renderHeader() {
+  const currentConference = getCurrentConference();
+  const selected = picks.length;
+  const completed = selected >= TOTAL_PLAYERS;
+
+  setText(els.draftStatusLabel, state.votingOpen ? "Votazioni aperte" : state.isOpen ? "Draft aperto" : "Draft chiuso");
+  setText(els.currentPickInfo, String(state.currentPick));
+  setText(els.currentConferenceInfo, currentConference || "Da decidere");
+  setText(els.selectedCountInfo, `${selected} / ${TOTAL_PLAYERS}`);
+  setText(els.currentPickBig, String(state.currentPick));
+  setText(els.currentConferenceBig, currentConference || "Da decidere");
+
+  if (els.currentConferenceBig) {
+    els.currentConferenceBig.dataset.conf = currentConference || "";
+  }
+
   if (els.winnerConferenceSelect) {
     els.winnerConferenceSelect.value = state.winnerConference || "";
   }
 
-  if (els.winnerConferenceInfo) {
-    els.winnerConferenceInfo.textContent = state.winnerConference || "Non ancora decisa";
-  }
+  setText(els.winnerConferenceInfo, state.winnerConference || "Non ancora decisa");
+  setText(els.firstConferenceInfo, state.firstConference || "In attesa");
 
-  if (els.firstConferenceInfo) {
-    els.firstConferenceInfo.textContent = state.firstConference || "In attesa";
+  if (els.openPickModalBtn) {
+    const canPick = isAdmin && state.isOpen && state.firstConference && !completed;
+    els.openPickModalBtn.disabled = !canPick;
+    if (completed) {
+      els.openPickModalBtn.textContent = "Draft completato";
+    } else if (!state.firstConference) {
+      els.openPickModalBtn.textContent = "Scegli vincitrice";
+    } else if (!state.isOpen) {
+      els.openPickModalBtn.textContent = "Draft chiuso";
+    } else {
+      els.openPickModalBtn.textContent = "Effettua chiamata";
+    }
   }
 
   if (els.toggleDraftBtn) {
-    els.toggleDraftBtn.disabled = !state.firstConference;
     els.toggleDraftBtn.textContent = state.isOpen ? "Chiudi Draft" : "Apri Draft";
   }
-}
-
-function renderHeader() {
-  const currentConference = getCurrentConference();
-  const selected = picks.length;
-
-  const currentConferenceLabel = currentConference || "Da decidere";
-  const draftReady = Boolean(state.firstConference);
-
-  els.currentPickInfo.textContent = String(state.currentPick);
-  els.currentConferenceInfo.textContent = currentConferenceLabel;
-  els.selectedCountInfo.textContent = `${selected} / ${TOTAL_PLAYERS}`;
-  els.currentPickBig.textContent = draftReady ? String(state.currentPick) : "?";
-  els.currentConferenceBig.textContent = currentConferenceLabel;
-  els.currentConferenceBig.dataset.conf = currentConference || "pending";
-
-  if (els.draftStatusLabel) {
-    els.draftStatusLabel.textContent = !draftReady
-      ? "In attesa vincitrice"
-      : state.isOpen
-        ? "Draft aperto"
-        : "Votazioni aperte";
-  }
-
-  els.openPickModalBtn.disabled = !draftReady || !state.isOpen || selected >= TOTAL_PLAYERS;
-  els.openPickModalBtn.textContent = selected >= TOTAL_PLAYERS
-    ? "Draft completato"
-    : !draftReady
-      ? "Imposta vincitrice"
-      : "Effettua chiamata";
 }
 
 function renderRosters() {
   const leaguePicks = picks.filter((pick) => pick.conference === CONFERENCE_LEAGUE);
   const championshipPicks = picks.filter((pick) => pick.conference === CONFERENCE_CHAMPIONSHIP);
 
-  els.leagueCount.textContent = `${leaguePicks.length} / ${PLAYERS_PER_TEAM} giocatori selezionati`;
-  els.championshipCount.textContent = `${championshipPicks.length} / ${PLAYERS_PER_TEAM} giocatori selezionati`;
+  setText(els.leagueCount, `${leaguePicks.length} / ${PLAYERS_PER_TEAM} giocatori selezionati`);
+  setText(els.championshipCount, `${championshipPicks.length} / ${PLAYERS_PER_TEAM} giocatori selezionati`);
 
-  els.leagueRoster.innerHTML = renderRosterByRole(leaguePicks);
-  els.championshipRoster.innerHTML = renderRosterByRole(championshipPicks);
+  if (els.leagueRoster) els.leagueRoster.innerHTML = renderRosterByRole(leaguePicks);
+  if (els.championshipRoster) els.championshipRoster.innerHTML = renderRosterByRole(championshipPicks);
 }
 
 function renderRosterByRole(teamPicks) {
@@ -695,14 +810,14 @@ function renderRosterByRole(teamPicks) {
   return roles.map((role) => {
     const rolePlayers = teamPicks
       .map((pick) => ({ ...pick.player, source: pick.source, pickNumber: pick.pickNumber }))
-      .filter((player) => player.role === role);
+      .filter((player) => player.role === role || String(player.role).startsWith(role));
 
     const rows = rolePlayers.length
       ? rolePlayers.map((player) => `
           <div class="player-mini">
             <strong>${escapeHtml(player.name)}${player.source === "vote" ? " ⭐" : ""}</strong>
             <span>Pick ${player.pickNumber} · ${escapeHtml(player.serieATeam)}</span>
-            <b>${player.quotation ?? "-"}</b>
+            <b>${escapeHtml(player.quotation ?? "-")}</b>
           </div>
         `).join("")
       : `<div class="player-mini"><strong>In attesa</strong><span>-</span><b>-</b></div>`;
@@ -717,6 +832,7 @@ function renderRosterByRole(teamPicks) {
 }
 
 function renderLastPicks() {
+  if (!els.lastPicksList) return;
   const recent = picks.slice().sort((a, b) => b.pickNumber - a.pickNumber).slice(0, 5);
 
   if (!recent.length) {
@@ -733,20 +849,12 @@ function renderLastPicks() {
   `).join("");
 }
 
-function populateFilters() {
-  const serieATeams = unique(players.map((p) => p.serieATeam)).sort();
-  const originTeams = unique(players.map((p) => p.originTeam)).sort();
-
-  els.teamFilter.innerHTML += serieATeams.map((team) => `<option value="${escapeAttr(team)}">${escapeHtml(team)}</option>`).join("");
-  els.originFilter.innerHTML += originTeams.map((team) => `<option value="${escapeAttr(team)}">${escapeHtml(team)}</option>`).join("");
-}
-
 function getFilteredPlayers() {
-  const q = els.searchInput.value.trim().toLowerCase();
-  const role = els.roleFilter.value;
-  const serieATeam = els.teamFilter.value;
-  const originTeam = els.originFilter.value;
-  const conference = els.conferenceFilter.value;
+  const q = (els.searchInput?.value || "").trim().toLowerCase();
+  const role = els.roleFilter?.value || "";
+  const serieATeam = els.teamFilter?.value || "";
+  const originTeam = els.originFilter?.value || "";
+  const conference = els.conferenceFilter?.value || "";
 
   return getAvailablePlayers().filter((player) => {
     const matchesSearch =
@@ -757,7 +865,7 @@ function getFilteredPlayers() {
 
     return (
       matchesSearch &&
-      (!role || player.role === role) &&
+      (!role || player.role === role || String(player.role).startsWith(role)) &&
       (!serieATeam || player.serieATeam === serieATeam) &&
       (!originTeam || player.originTeam === originTeam) &&
       (!conference || player.conference === conference)
@@ -766,6 +874,7 @@ function getFilteredPlayers() {
 }
 
 function renderPool() {
+  if (!els.playersTbody) return;
   const filtered = getFilteredPlayers();
 
   if (!filtered.length) {
@@ -781,25 +890,27 @@ function renderPool() {
           <span>${escapeHtml(player.name)}</span>
         </div>
       </td>
-      <td><span class="role-pill role-${escapeAttr(player.role)}">${escapeHtml(player.role)}</span></td>
+      <td><span class="role-pill role-${escapeAttr(String(player.role).charAt(0))}">${escapeHtml(player.role)}</span></td>
       <td>${escapeHtml(player.serieATeam)}</td>
-      <td>${player.quotation ?? "-"}</td>
+      <td>${escapeHtml(player.quotation ?? "-")}</td>
       <td>${escapeHtml(player.originTeam)}</td>
       <td>${escapeHtml(player.conference)}</td>
       <td>
-        <button class="pick-btn" data-player-id="${escapeAttr(player.id)}">Scegli</button>
+        <button class="pick-btn" data-player-id="${escapeAttr(player.id)}" ${!isAdmin || !state.isOpen ? "disabled" : ""}>Scegli</button>
       </td>
     </tr>
   `).join("");
 
-  document.querySelectorAll(".pick-btn").forEach((btn) => {
+  document.querySelectorAll(".pick-btn[data-player-id]").forEach((btn) => {
     btn.addEventListener("click", () => makePick(btn.dataset.playerId));
   });
 }
 
 function openPickModal() {
+  if (!isAdmin) return;
+
   if (!state.firstConference) {
-    alert("Prima devi impostare la Conference vincitrice dall'area admin.");
+    alert("Prima scegli la Conference vincitrice.");
     return;
   }
 
@@ -808,13 +919,15 @@ function openPickModal() {
     return;
   }
 
-  els.modalPickText.textContent = `Pick ${state.currentPick} - ${getCurrentConference()}`;
-  els.modalSearchInput.value = "";
+  if (els.modalPickText) els.modalPickText.textContent = `Pick ${state.currentPick} - ${getCurrentConference()}`;
+  if (els.modalSearchInput) els.modalSearchInput.value = "";
   renderModalPlayers();
-  els.pickModal.showModal();
+  els.pickModal?.showModal();
 }
 
 function renderModalPlayers() {
+  if (!els.modalPlayersList) return;
+
   const query = (els.modalSearchInput?.value || "").trim().toLowerCase();
   const available = getAvailablePlayers()
     .filter((player) => {
@@ -825,9 +938,7 @@ function renderModalPlayers() {
         player.originTeam.toLowerCase().includes(query)
       );
     })
-    .slice(0, 80);
-
-  if (!els.modalPlayersList) return;
+    .slice(0, 100);
 
   if (!available.length) {
     els.modalPlayersList.innerHTML = `<div class="modal-player-row"><strong>Nessun giocatore disponibile</strong></div>`;
@@ -838,28 +949,30 @@ function renderModalPlayers() {
     <div class="modal-player-row">
       <div>
         <strong>${escapeHtml(player.name)}</strong>
-        <small>${escapeHtml(player.role)} · ${escapeHtml(player.serieATeam)} · Q. ${player.quotation ?? "-"} · ${escapeHtml(player.originTeam)}</small>
+        <small>${escapeHtml(player.role)} · ${escapeHtml(player.serieATeam)} · Q. ${escapeHtml(player.quotation ?? "-")} · ${escapeHtml(player.originTeam)}</small>
       </div>
-      <button class="pick-btn" data-modal-player-id="${escapeAttr(player.id)}">Scegli</button>
+      <button class="pick-btn" data-modal-player-id="${escapeAttr(player.id)}" ${!isAdmin || !state.isOpen ? "disabled" : ""}>Scegli</button>
     </div>
   `).join("");
 
   document.querySelectorAll("[data-modal-player-id]").forEach((btn) => {
-    btn.addEventListener("click", () => {
-      makePick(btn.dataset.modalPlayerId);
-      els.pickModal.close();
+    btn.addEventListener("click", async () => {
+      await makePick(btn.dataset.modalPlayerId);
+      els.pickModal?.close();
     });
   });
 }
 
-function makePick(playerId) {
-  if (!state.firstConference) {
-    alert("Prima devi impostare la Conference vincitrice dall'area admin.");
-    return;
-  }
+async function makePick(playerId) {
+  if (!isAdmin) return;
 
   if (!state.isOpen) {
     alert("Il draft è chiuso.");
+    return;
+  }
+
+  if (!state.firstConference) {
+    alert("Prima scegli la Conference vincitrice.");
     return;
   }
 
@@ -885,26 +998,28 @@ function makePick(playerId) {
     return;
   }
 
-  picks.push({
-    pickNumber: state.currentPick,
+  const { error: insertError } = await supabase.from("allstar_picks").insert({
+    season: SEASON,
+    pick_number: state.currentPick,
     conference,
-    playerId: player.id,
-    player,
+    player_id: player.id,
     source: "manual",
-    createdAt: new Date().toISOString()
+    created_by: currentUser.id
   });
 
-  state.currentPick += 1;
+  if (insertError) {
+    alert("Errore salvataggio pick. Controlla duplicati/RLS.");
+    console.error(insertError);
+    return;
+  }
 
-  savePicks();
-  saveState();
-  renderAll();
+  await updateState({ current_pick: state.currentPick + 1 });
+  await refreshAndRender();
 }
 
-function undoLastPick() {
-  if (!picks.length) return;
-
-  const manualPicks = picks.filter((pick) => pick.pickNumber >= 7);
+async function undoLastPick() {
+  if (!isAdmin) return;
+  const manualPicks = picks.filter((pick) => pick.pickNumber >= AUTO_PICK_COUNT + 1 && pick.source === "manual");
   const lastManual = manualPicks.sort((a, b) => b.pickNumber - a.pickNumber)[0];
 
   if (!lastManual) {
@@ -912,16 +1027,125 @@ function undoLastPick() {
     return;
   }
 
-  picks = picks.filter((pick) => pick.pickNumber !== lastManual.pickNumber);
-  state.currentPick = Math.max(7, lastManual.pickNumber);
+  const { error } = await supabase
+    .from("allstar_picks")
+    .delete()
+    .eq("id", lastManual.id);
 
-  savePicks();
-  saveState();
+  if (error) {
+    alert("Errore annullamento pick.");
+    console.error(error);
+    return;
+  }
+
+  await updateState({ current_pick: Math.max(AUTO_PICK_COUNT + 1, lastManual.pickNumber) });
+  await refreshAndRender();
+}
+
+async function resetDraft() {
+  if (!isAdmin) return;
+
+  const ok = confirm("Vuoi davvero resettare tutto il draft All Star? I voti resteranno salvati.");
+  if (!ok) return;
+
+  const { error: deleteError } = await supabase
+    .from("allstar_picks")
+    .delete()
+    .eq("season", SEASON);
+
+  if (deleteError) {
+    alert("Errore reset pick.");
+    console.error(deleteError);
+    return;
+  }
+
+  const { error: stateError } = await supabase
+    .from("allstar_state")
+    .update({
+      draft_open: false,
+      current_pick: AUTO_PICK_COUNT + 1,
+      winner_conference: null,
+      first_conference: null
+    })
+    .eq("season", SEASON);
+
+  if (stateError) {
+    alert("Errore reset stato draft.");
+    console.error(stateError);
+    return;
+  }
+
+  await refreshAndRender();
+}
+
+async function toggleDraftOpen() {
+  if (!isAdmin) return;
+
+  if (!state.firstConference) {
+    alert("Prima scegli la Conference vincitrice.");
+    return;
+  }
+
+  await updateState({ draft_open: !state.isOpen });
+  await refreshAndRender();
+}
+
+async function updateState(patch) {
+  const { error } = await supabase
+    .from("allstar_state")
+    .update(patch)
+    .eq("season", SEASON);
+
+  if (error) {
+    console.error("Errore update state:", error);
+    throw error;
+  }
+}
+
+async function refreshAndRender() {
+  await Promise.all([loadState(), loadVotes(), loadPicks()]);
   renderAll();
+}
+
+function subscribeRealtime() {
+  supabase
+    .channel(`allstar-${SEASON}`)
+    .on("postgres_changes", { event: "*", schema: "public", table: "allstar_state" }, refreshAndRender)
+    .on("postgres_changes", { event: "*", schema: "public", table: "allstar_votes" }, refreshVotesAndRender)
+    .on("postgres_changes", { event: "*", schema: "public", table: "allstar_picks" }, refreshPicksAndRender)
+    .subscribe();
+}
+
+async function refreshVotesAndRender() {
+  await loadVotes();
+  renderVotesArea();
+}
+
+async function refreshPicksAndRender() {
+  await loadPicks();
+  renderHeader();
+  renderRosters();
+  renderLastPicks();
+  renderPool();
+  renderModalPlayers();
+}
+
+function isValidConference(conference) {
+  return conference === CONFERENCE_LEAGUE || conference === CONFERENCE_CHAMPIONSHIP;
+}
+
+function getOppositeConference(conference) {
+  if (conference === CONFERENCE_LEAGUE) return CONFERENCE_CHAMPIONSHIP;
+  if (conference === CONFERENCE_CHAMPIONSHIP) return CONFERENCE_LEAGUE;
+  return null;
 }
 
 function unique(arr) {
   return [...new Set(arr.filter(Boolean))];
+}
+
+function setText(el, value) {
+  if (el) el.textContent = value;
 }
 
 function escapeHtml(value) {
@@ -936,7 +1160,6 @@ function escapeHtml(value) {
 function escapeAttr(value) {
   return escapeHtml(value);
 }
-
 
 // =========================================================
 // MOBILE ALL STAR TABS
@@ -974,9 +1197,7 @@ function initMobileAllStarTabs() {
     btn.addEventListener("click", () => {
       activateTab(btn.dataset.allstarTab);
       const tabs = document.querySelector(".mobile-allstar-tabs");
-      if (tabs) {
-        tabs.scrollIntoView({ behavior: "smooth", block: "start" });
-      }
+      if (tabs) tabs.scrollIntoView({ behavior: "smooth", block: "start" });
     });
   });
 
@@ -990,28 +1211,3 @@ function initMobileAllStarTabs() {
 }
 
 document.addEventListener("DOMContentLoaded", initMobileAllStarTabs);
-
-
-// =========================================================
-// BROADCAST DUPLICATE AUTO PICK SYNC
-// Mirrors #autoPickPreview into #autoPickPreviewBroadcast when present.
-// =========================================================
-
-function syncBroadcastAutoPickPreview() {
-  const source = document.getElementById("autoPickPreview");
-  const target = document.getElementById("autoPickPreviewBroadcast");
-  if (!source || !target) return;
-  target.innerHTML = source.innerHTML;
-}
-
-const originalRenderAutoPickPreviewBroadcastSafe = typeof renderAutoPickPreview === "function" ? renderAutoPickPreview : null;
-if (originalRenderAutoPickPreviewBroadcastSafe) {
-  renderAutoPickPreview = function(...args) {
-    originalRenderAutoPickPreviewBroadcastSafe.apply(this, args);
-    syncBroadcastAutoPickPreview();
-  };
-}
-
-document.addEventListener("DOMContentLoaded", () => {
-  setTimeout(syncBroadcastAutoPickPreview, 50);
-});
