@@ -1195,7 +1195,7 @@ function hideMainSections() {
 }
 
 function getTeamLogoPath(teamName) {
-  return `img/${encodeURIComponent(teamName)}.png`;
+  return `img/${encodeURIComponent(teamName)}.webp`;
 }
 
 function sortRosterByMantraLine(a, b) {
