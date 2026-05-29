@@ -2748,3 +2748,57 @@ body::before{
   margin: 0 auto 6px !important;
   filter: drop-shadow(0 12px 16px rgba(0,0,0,.36));
 }
+
+/* =========================================================
+   POWER RANKING DESKTOP BANNER IMAGE
+   ========================================================= */
+
+@media (min-width: 769px){
+
+  .stats-hero-banner{
+    min-height: unset !important;
+    aspect-ratio: 3 / 1;
+    padding: 0 !important;
+    margin: 0 auto 28px !important;
+
+    border-radius: 0;
+    border: 0;
+
+    background-image: url("img/powerbanner.webp") !important;
+    background-size: cover !important;
+    background-position: center center !important;
+    background-repeat: no-repeat !important;
+
+    box-shadow:
+      0 20px 50px rgba(0,0,0,.22),
+      inset 0 -1px 0 rgba(255,255,255,.08);
+  }
+
+  .stats-hero-banner::before,
+  .stats-hero-banner::after{
+    display: none !important;
+  }
+
+  .stats-hero-banner .hero-stars,
+  .stats-hero-banner h1,
+  .stats-hero-banner .hero-script,
+  .stats-hero-banner .hero-subtitle{
+    display: none !important;
+  }
+
+  .hero-banner-content{
+    position: absolute !important;
+    inset: 0 !important;
+    width: 100% !important;
+    max-width: none !important;
+    pointer-events: none;
+  }
+
+  .hero-gw-pill{
+    position: absolute;
+    left: 50%;
+    bottom: 22px;
+    transform: translateX(-50%);
+    pointer-events: auto;
+  }
+}
