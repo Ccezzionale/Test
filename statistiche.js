@@ -34,14 +34,14 @@ function slug(s){
     .toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,'');
 }
 function logoFor(team){
-  return TEAM_LOGOS[team] || `img/${slug(team)}.png`;
+  return TEAM_LOGOS[team] || `img/${slug(team)}.webp`;
 }
 
 function logoHTML(team, mini=false){
   const cls = mini ? 'logo-nome mini' : 'logo-nome';
-  const png = `${LOGO_DIR}${team}.png`;
+  const png = `${LOGO_DIR}${team}.webp`;
   const jpg = `${LOGO_DIR}${team}.jpg`;
-  const ph  = `${LOGO_DIR}_placeholder.png`;
+  const ph  = `${LOGO_DIR}_placeholder.webp`;
   return `
     <div class="${cls}">
       <img src="${png}" alt="${team}" loading="lazy"
@@ -192,9 +192,9 @@ for (const r of clean){
 
 
 function teamLogoImg(team, extraClass=''){
-  const png = `${LOGO_DIR}${team}.png`;
+  const png = `${LOGO_DIR}${team}.webp`;
   const jpg = `${LOGO_DIR}${team}.jpg`;
-  const ph  = `${LOGO_DIR}_placeholder.png`;
+  const ph  = `${LOGO_DIR}_placeholder.webp`;
   return `<img class="${extraClass}" src="${png}" alt="${team}" loading="lazy"
            onerror="if(!this.dataset.jpg){ this.dataset.jpg=1; this.src='${jpg}'; }
                     else { this.onerror=null; this.src='${ph}'; }">`;
@@ -224,9 +224,9 @@ function teamMascotImg(team, extraClass = ""){
 
   const file = TEAM_MASCOTS_BY_KEY[key];
 
-  const fallbackLogo = `${LOGO_DIR}${team}.png`;
+  const fallbackLogo = `${LOGO_DIR}${team}.webp`;
   const fallbackJpg = `${LOGO_DIR}${team}.jpg`;
-  const placeholder = `${LOGO_DIR}_placeholder.png`;
+  const placeholder = `${LOGO_DIR}_placeholder.webp`;
 
   if (!file) {
     return teamLogoImg(team, extraClass);
@@ -336,9 +336,9 @@ function renderPRMobile(res){
   if (!wrap) return;
 
 const logoTag = (team, cls = "") => {
-  const png = `${LOGO_DIR}${team}.png`;
+  const png = `${LOGO_DIR}${team}.webp`;
   const jpg = `${LOGO_DIR}${team}.jpg`;
-  const ph  = `${LOGO_DIR}_placeholder.png`;
+  const ph  = `${LOGO_DIR}_placeholder.webp`;
 
   return `
     <img class="${cls}" src="${png}" alt="${team}" loading="lazy"
@@ -884,7 +884,7 @@ function initRaceDOM(teamNames){
     bar.style.background = getRaceTeamColor(teamName);
 
     const img = document.createElement("img");
-img.src = `${RACE_IMG_DIR}${teamName}.png`;
+img.src = `${RACE_IMG_DIR}${teamName}.webp`;
 img.alt = teamName;
 img.loading = "lazy";
 img.onerror = function(){
