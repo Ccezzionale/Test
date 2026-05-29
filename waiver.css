@@ -3486,46 +3486,7 @@ button:disabled {
 }
 
 /* =========================================================
-   WAIVER HERO DESKTOP BANNER IMAGE
-   ========================================================= */
-
-@media (min-width: 1024px) {
-
-  .waiver-hero {
-    min-height: 300px;
-    padding: 34px 38px;
-
-    background-image:
-      linear-gradient(90deg, rgba(0, 20, 45, 0.10), rgba(0, 20, 45, 0.08)),
-      url("img/waiverbanner.webp");
-
-    background-repeat: no-repeat;
-    background-size: cover;
-    background-position: center 18%; /* prova anche 15% o 12% se vuoi vedere ancora più sopra */
-
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-    overflow: hidden;
-  }
-
-  .waiver-hero::after {
-    display: none !important;
-    content: none !important;
-  }
-
-  .waiver-hero-copy {
-    display: none !important;
-  }
-
-  .waiver-hero-team {
-    margin-left: auto;
-    margin-right: 8px;
-  }
-}
-
-/* =========================================================
-   WAIVER HERO DESKTOP BANNER IMAGE - FINAL FIT
+   WAIVER HERO DESKTOP BANNER IMAGE - FINAL
    ========================================================= */
 
 @media (min-width: 1024px) {
@@ -3539,8 +3500,8 @@ button:disabled {
       url("img/waiverbanner.webp");
 
     background-repeat: no-repeat;
-    background-size: 100% auto;
-    background-position: center top;
+    background-size: 100% 100%;
+    background-position: center center;
 
     display: flex;
     align-items: center;
