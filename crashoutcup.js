@@ -83,7 +83,7 @@ function createLogo(teamName) {
   img.className = "logo";
   img.alt = teamName;
   img.loading = "lazy";
-  img.src = `${LOGO_DIR}${teamName}.png`;
+  img.src = `${LOGO_DIR}${teamName}.webp`;
 
   img.onerror = function () {
     this.style.display = "none";
