@@ -1026,3 +1026,9 @@ button:hover{ transform:translateY(-1px); background:var(--navy-2); }
     line-height: 1.45;
   }
 }
+
+
+/* Layout Gazzetta: se viene pubblicata solo una sezione tra Pagelle e Top & Flop */
+.lower-grid.lower-grid-single{
+  grid-template-columns: 1fr;
+}

@@ -18,6 +18,15 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Lega Eroi">
+
+<style>
+  .section-options{
+    display:flex;
+    flex-wrap:wrap;
+    gap:12px;
+    margin:14px 0 18px;
+  }
+</style>
 </head>
 <body>
 
@@ -274,6 +283,18 @@
             </label>
           </div>
 
+          <div class="section-options">
+            <label class="publish-toggle">
+              <input id="showRatings" type="checkbox" checked />
+              <span>Mostra Pagelle</span>
+            </label>
+
+            <label class="publish-toggle">
+              <input id="showTopFlop" type="checkbox" checked />
+              <span>Mostra Top & Flop</span>
+            </label>
+          </div>
+
           <label>
             <span>Titolo principale</span>
             <input id="title" type="text" placeholder="Trionfi, cadute e leggende: la verità è servita" />
@@ -482,7 +503,7 @@
 <script type="module" src="home_auth.js"></script>
 <script src="navbar.js"></script>
 <script type="module" src="admin-nav.js?v=1"></script>
-<script type="module" src="admin-gazzetta.js?v=21"></script>
+<script type="module" src="admin-gazzetta.js?v=22"></script>
 </body>
 </html>
 

@@ -361,14 +361,12 @@ function renderEdition(row){
       </article>
     </section>
 
-    <section class="lower-grid">
-      <div>
-        ${buildRatings(row)}
-      </div>
-      <div>
-        ${buildTopFlop(row)}
-      </div>
-    </section>
+    ${((row.show_ratings !== false) || (row.show_topflop !== false)) ? `
+      <section class="lower-grid ${((row.show_ratings !== false) !== (row.show_topflop !== false)) ? "lower-grid-single" : ""}">
+        ${row.show_ratings !== false ? `<div>${buildRatings(row)}</div>` : ""}
+        ${row.show_topflop !== false ? `<div>${buildTopFlop(row)}</div>` : ""}
+      </section>
+    ` : ""}
 
     ${buildNextOn(row)}
 

@@ -50,6 +50,8 @@ const fields = {
   id: "editionId",
   gw: "gw",
   is_published: "isPublished",
+  show_ratings: "showRatings",
+  show_topflop: "showTopFlop",
   edition_date: "editionDate",
   title: "title",
   deck: "deck",
@@ -155,6 +157,8 @@ function fillForm(row = null){
   setValue("id", row?.id || "");
   setValue("gw", row?.gw || "");
   setValue("is_published", Boolean(row?.is_published));
+  setValue("show_ratings", row ? row.show_ratings !== false : true);
+  setValue("show_topflop", row ? row.show_topflop !== false : true);
   setValue("edition_date", row?.edition_date || "");
   setValue("title", row?.title || "");
   setValue("deck", row?.deck || "");
@@ -202,6 +206,8 @@ function collectPayload(){
   const payload = {
     gw,
     is_published: Boolean($(fields.is_published)?.checked),
+    show_ratings: Boolean($(fields.show_ratings)?.checked),
+    show_topflop: Boolean($(fields.show_topflop)?.checked),
     edition_date: formValue(fields.edition_date),
     title: formValue(fields.title),
     deck: formValue(fields.deck),
