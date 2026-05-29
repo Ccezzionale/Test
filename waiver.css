@@ -3565,3 +3565,33 @@ button:disabled {
     min-width: 0;
   }
 }
+
+/* =========================================================
+   WAIVER HERO MOBILE - DARK BACKGROUND FIX
+   ========================================================= */
+
+@media (max-width: 768px) {
+
+  .waiver-hero {
+    background-color: #001f3f !important;
+
+    background-image:
+      linear-gradient(
+        180deg,
+        rgba(0, 20, 45, 0.00) 0%,
+        rgba(0, 20, 45, 0.10) 38%,
+        rgba(0, 20, 45, 0.95) 62%,
+        rgba(0, 20, 45, 1) 100%
+      ),
+      url("img/waiverbanner-mobile.webp") !important;
+
+    background-repeat: no-repeat !important;
+    background-size: 100% auto !important;
+    background-position: center top !important;
+  }
+
+  .waiver-hero-team {
+    background:
+      linear-gradient(180deg, rgba(18, 41, 75, 0.92), rgba(24, 43, 73, 0.88)) !important;
+  }
+}
