@@ -4169,3 +4169,148 @@ body {
     grid-template-columns: 1fr;
   }
 }
+
+/* =========================================================
+   ALL STAR V4 FIX
+   - vote search filter
+   - draft rosters as vertical scroll tables from pick 7
+   ========================================================= */
+
+.vote-player-search {
+  display: grid;
+  grid-template-columns: 180px 1fr;
+  align-items: center;
+  gap: 14px;
+  padding: 14px;
+  border-radius: 18px;
+  border: 1px solid var(--br-border, rgba(255,255,255,.08));
+  background: rgba(255,255,255,.04);
+}
+
+.vote-player-search span {
+  color: #fff;
+  font-weight: 950;
+  text-transform: uppercase;
+  font-size: 12px;
+  letter-spacing: .04em;
+}
+
+.vote-player-search input {
+  width: 100%;
+  min-height: 44px;
+  border-radius: 13px;
+  padding: 11px 12px;
+  outline: none;
+  background: rgba(255,255,255,.07);
+  border: 1px solid var(--br-border, rgba(255,255,255,.08));
+  color: #fff;
+}
+
+.vote-player-search input::placeholder {
+  color: rgba(255,255,255,.48);
+}
+
+.role-list {
+  min-height: 0;
+}
+
+.allstar-draft-table-wrap {
+  max-height: 320px;
+  overflow-y: auto;
+  overflow-x: auto;
+  border-radius: 16px;
+  border: 1px solid var(--br-border, rgba(255,255,255,.08));
+  background: rgba(255,255,255,.035);
+}
+
+.allstar-draft-table-wrap.empty {
+  overflow: hidden;
+}
+
+.empty-draft-table {
+  min-height: 140px;
+  display: grid;
+  place-content: center;
+  text-align: center;
+  gap: 6px;
+  color: var(--br-muted, #a9b5c8);
+  padding: 18px;
+}
+
+.empty-draft-table strong {
+  color: #fff !important;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+}
+
+.empty-draft-table span {
+  color: var(--br-muted, #a9b5c8);
+  font-size: 13px;
+}
+
+.allstar-draft-table {
+  width: 100%;
+  min-width: 520px;
+  border-collapse: collapse;
+}
+
+.allstar-draft-table th,
+.allstar-draft-table td {
+  padding: 11px 10px;
+  border-bottom: 1px solid rgba(255,255,255,.06);
+  text-align: left;
+  vertical-align: middle;
+  color: #edf3ff;
+  font-size: 13px;
+}
+
+.allstar-draft-table th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background: rgba(16,23,34,.98);
+  color: #fff;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  font-size: 11px;
+}
+
+.allstar-draft-table tr:last-child td {
+  border-bottom: 0;
+}
+
+.allstar-draft-table .pick-col {
+  width: 54px;
+  color: var(--br-gold, #ffc247);
+  font-weight: 950;
+}
+
+.allstar-draft-table td strong {
+  display: block;
+  color: #fff !important;
+  line-height: 1.15;
+}
+
+.team-championship .allstar-draft-table-wrap {
+  box-shadow: inset 4px 0 0 rgba(18,107,255,.75);
+}
+
+.team-league .allstar-draft-table-wrap {
+  box-shadow: inset 4px 0 0 rgba(235,30,63,.75);
+}
+
+@media (max-width: 768px) {
+  .vote-player-search {
+    grid-template-columns: 1fr;
+    padding: 11px;
+    gap: 8px;
+  }
+
+  .allstar-draft-table-wrap {
+    max-height: 360px;
+  }
+
+  .allstar-draft-table {
+    min-width: 470px;
+  }
+}

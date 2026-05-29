@@ -36,6 +36,7 @@ const els = {
   leagueVoteLeaderInfo: document.getElementById("leagueVoteLeaderInfo"),
   champVoteLeaderInfo: document.getElementById("champVoteLeaderInfo"),
   voterConference: document.getElementById("voterConference"),
+  voteSearchInput: document.getElementById("voteSearchInput"),
   voteForm: document.getElementById("voteForm"),
   vote10: document.getElementById("vote10"),
   vote5: document.getElementById("vote5"),
@@ -117,6 +118,7 @@ function bindEvents() {
   });
 
   els.voteForm?.addEventListener("submit", handleVoteSubmit);
+  els.voteSearchInput?.addEventListener("input", populateVoteSelects);
   els.demoVotesBtn?.addEventListener("click", () => alert("I voti demo sono stati disattivati: ora la pagina usa Supabase."));
   els.resetVotesBtn?.addEventListener("click", resetVotes);
   els.generateAutoPicksBtn?.addEventListener("click", generateAutoPicksFromVotes);
@@ -419,14 +421,31 @@ function populateFilters() {
 }
 
 function populateVoteSelects() {
-  const options = players
-    .slice()
-    .sort((a, b) => a.name.localeCompare(b.name))
-    .map((p) => `<option value="${escapeAttr(p.id)}">${escapeHtml(p.name)} · ${escapeHtml(p.role)} · ${escapeHtml(p.serieATeam)} · ${escapeHtml(p.originTeam)}</option>`)
-    .join("");
+  const search = normalizeTextKey(els.voteSearchInput?.value || "");
 
   [els.vote10, els.vote5, els.vote2].forEach((select) => {
-    if (select) select.innerHTML = `<option value="">Seleziona giocatore</option>${options}`;
+    if (!select) return;
+
+    const previousValue = select.value;
+    const filteredPlayers = players
+      .slice()
+      .sort((a, b) => a.name.localeCompare(b.name))
+      .filter((p) => {
+        if (!search) return true;
+        if (p.id === previousValue) return true;
+
+        const haystack = normalizeTextKey(`${p.name} ${p.role} ${p.serieATeam} ${p.originTeam}`);
+        return haystack.includes(search);
+      });
+
+    const options = filteredPlayers
+      .map((p) => `<option value="${escapeAttr(p.id)}">${escapeHtml(p.name)} · ${escapeHtml(p.role)} · ${escapeHtml(p.serieATeam)} · ${escapeHtml(p.originTeam)}</option>`)
+      .join("");
+
+    select.innerHTML = `<option value="">Seleziona giocatore</option>${options}`;
+    if (previousValue && filteredPlayers.some((p) => p.id === previousValue)) {
+      select.value = previousValue;
+    }
   });
 }
 
@@ -628,10 +647,7 @@ function getAutoPickPreviewRows(leagueTotals, champTotals) {
 
   const first = state.firstConference;
   const second = getOppositeConference(first);
-  const indexesByConference = {
-    [CONFERENCE_LEAGUE]: 0,
-    [CONFERENCE_CHAMPIONSHIP]: 0
-  };
+  const usedPlayerIds = new Set();
 
   const totalsByConference = {
     [CONFERENCE_LEAGUE]: leagueTotals,
@@ -640,11 +656,15 @@ function getAutoPickPreviewRows(leagueTotals, champTotals) {
 
   return Array.from({ length: AUTO_PICK_COUNT }, (_, index) => {
     const conference = index % 2 === 0 ? first : second;
-    const rankingIndex = indexesByConference[conference]++;
+    const ranking = totalsByConference[conference] || [];
+    const entry = ranking.find((candidate) => !usedPlayerIds.has(candidate.playerId)) || null;
+
+    if (entry) usedPlayerIds.add(entry.playerId);
+
     return {
       pickNumber: index + 1,
       conference,
-      entry: totalsByConference[conference][rankingIndex]
+      entry
     };
   });
 }
@@ -713,12 +733,6 @@ async function generateAutoPicksFromVotes() {
 
   if (rows.some((row) => !row.entry)) {
     alert("Servono almeno 3 giocatori votati per ciascuna conference.");
-    return;
-  }
-
-  const selectedIds = rows.map((row) => row.entry.playerId);
-  if (new Set(selectedIds).size !== selectedIds.length) {
-    alert("Ci sono doppioni nelle prime auto-pick. Sistemali manualmente prima di generare.");
     return;
   }
 
@@ -860,35 +874,55 @@ function renderRosters() {
   setText(els.leagueCount, `${leaguePicks.length} / ${PLAYERS_PER_TEAM} giocatori selezionati`);
   setText(els.championshipCount, `${championshipPicks.length} / ${PLAYERS_PER_TEAM} giocatori selezionati`);
 
-  if (els.leagueRoster) els.leagueRoster.innerHTML = renderRosterByRole(leaguePicks);
-  if (els.championshipRoster) els.championshipRoster.innerHTML = renderRosterByRole(championshipPicks);
+  if (els.leagueRoster) els.leagueRoster.innerHTML = renderDraftPickTable(leaguePicks);
+  if (els.championshipRoster) els.championshipRoster.innerHTML = renderDraftPickTable(championshipPicks);
 }
 
-function renderRosterByRole(teamPicks) {
-  const roles = ["P", "D", "C", "A"];
+function renderDraftPickTable(teamPicks) {
+  const rows = teamPicks
+    .filter((pick) => pick.pickNumber >= AUTO_PICK_COUNT + 1)
+    .slice()
+    .sort((a, b) => a.pickNumber - b.pickNumber);
 
-  return roles.map((role) => {
-    const rolePlayers = teamPicks
-      .map((pick) => ({ ...pick.player, source: pick.source, pickNumber: pick.pickNumber }))
-      .filter((player) => player.role === role || String(player.role).startsWith(role));
-
-    const rows = rolePlayers.length
-      ? rolePlayers.map((player) => `
-          <div class="player-mini">
-            <strong>${escapeHtml(player.name)}${player.source === "vote" ? " ⭐" : ""}</strong>
-            <span>Pick ${player.pickNumber} · ${escapeHtml(player.serieATeam)}</span>
-            <b>${escapeHtml(player.quotation ?? "-")}</b>
-          </div>
-        `).join("")
-      : `<div class="player-mini"><strong>In attesa</strong><span>-</span><b>-</b></div>`;
-
+  if (!rows.length) {
     return `
-      <div class="role-group">
-        <div class="role-badge">${role}</div>
-        <div class="player-mini-list">${rows}</div>
+      <div class="allstar-draft-table-wrap empty">
+        <div class="empty-draft-table">
+          <strong>Nessuna chiamata manuale</strong>
+          <span>La tabella partirà dalla pick ${AUTO_PICK_COUNT + 1}.</span>
+        </div>
       </div>
     `;
-  }).join("");
+  }
+
+  return `
+    <div class="allstar-draft-table-wrap">
+      <table class="allstar-draft-table">
+        <thead>
+          <tr>
+            <th>Pick</th>
+            <th>Giocatore</th>
+            <th>Ruolo</th>
+            <th>Squadra</th>
+            <th>Q</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${rows.map((pick) => `
+            <tr>
+              <td class="pick-col">${pick.pickNumber}</td>
+              <td>
+                <strong>${escapeHtml(pick.player.name)}${pick.source === "vote" ? " ⭐" : ""}</strong>
+              </td>
+              <td><span class="role-pill role-${escapeAttr(String(pick.player.role).charAt(0))}">${escapeHtml(pick.player.role)}</span></td>
+              <td>${escapeHtml(pick.player.serieATeam)}</td>
+              <td>${escapeHtml(pick.player.quotation ?? "-")}</td>
+            </tr>
+          `).join("")}
+        </tbody>
+      </table>
+    </div>
+  `;
 }
 
 function renderLastPicks() {
