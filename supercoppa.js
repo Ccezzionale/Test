@@ -1,7 +1,7 @@
 // supercoppa.js
 // Supercoppa a 5 partecipanti con play-in, sorteggio semifinali e admin panel.
 
-import { supabase as sb } from "./supabase-config.js";
+import { supabase as sb } from "./supabase.js";
 
 (function () {
   var SUPERCOPPA_ID = "supercoppa-2026-27";
