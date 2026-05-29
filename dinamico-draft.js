@@ -689,7 +689,7 @@ function generaTabellaVerticale(containerId, draftData, squadreOrdine) {
     html += `
       <article class="draft-card" title="${squadra}">
         <div class="draft-header">
-          <img src="img/${squadra}.png" alt="${squadra}" class="draft-logo" onerror="this.style.visibility='hidden'">
+          <img src="img/${squadra}.webp" alt="${squadra}" class="draft-logo" onerror="this.style.visibility='hidden'">
         </div>
         <div class="draft-picks">`;
 
