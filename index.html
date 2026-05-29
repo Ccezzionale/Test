@@ -667,7 +667,7 @@ document.addEventListener("DOMContentLoaded", function () {
   <script src="navbar.js"></script>
   <script type="module" src="admin-nav.js?v=1"></script>
   <script type="module">
-  import { supabase as sb } from "./supabase-config.js";
+  import { supabase as sb } from "./supabase.js";
 
   async function setQuickDraftLinkByConference() {
     const draftLink = document.getElementById("quick-draft-link");
