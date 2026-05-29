@@ -156,7 +156,7 @@ function getMobileStageData(P) {
 function creaMatchRowHTML(team, score, isWinner = false, isPlaceholder = false, isFinal = false) {
   const nomePulito = stripSeed(team?.name || "");
   const seed = team?.seed || "";
-  const fileLogo = `img/${nomePulito}.png`;
+  const fileLogo = `img/${nomePulito}.webp`;
 
   return `
     <div class="match-row ${isWinner ? "is-winner" : ""} ${isPlaceholder ? "placeholder" : ""}">
@@ -852,7 +852,7 @@ function getMobileScoreDisplay(code) {
 function createMobileTeamSide(team, side, isWinner) {
   const cleanName = stripSeed(team?.name || "In attesa");
   const placeholder = isPlaceholderTeam(team);
-  const logo = `img/${cleanName}.png`;
+  const logo = `img/${cleanName}.webp`;
 
   return `
     <div class="mobile-team-side ${side} ${isWinner ? "is-winner" : ""} ${placeholder ? "is-placeholder" : ""}">
