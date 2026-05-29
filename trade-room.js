@@ -260,7 +260,7 @@ if (teamDashboardStatus) {
 }
 
 if (teamDashboardLogo) {
-  teamDashboardLogo.src = `img/${currentTeamName}.png`;
+  teamDashboardLogo.src = `img/${currentTeamName}.webp`;
   teamDashboardLogo.alt = currentTeamName;
 }
 
