@@ -91,7 +91,7 @@ let activeCompensatoryCallId = null;
 
 function getTeamLogoPath(teamName) {
   if (!teamName) return "";
-  return `img/${teamName}.png`;
+  return `img/${teamName}.webp`;
 }
 
 function formatWaiverDateTime(value) {
