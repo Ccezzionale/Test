@@ -334,11 +334,6 @@
             </select>
           </label>
 
-          <label class="vote-player-search">
-            <span>Cerca giocatore</span>
-            <input id="voteSearchInput" type="search" placeholder="Scrivi nome, ruolo, squadra o team..." autocomplete="off" />
-          </label>
-
           <label class="vote-slot vote-slot-gold">
             <span class="vote-medal">10</span>
             <div>
@@ -445,7 +440,7 @@
         <span class="info-icon">🔁</span>
         <div>
           <strong>Ordine draft: fisso</strong>
-          <small>Parte la Conference opposta alla vincitrice, poi alternanza fissa</small>
+          <small>Pick dispari League, pick pari Championship</small>
         </div>
       </article>
 
@@ -577,34 +572,46 @@
       </button>
 
       <div class="admin-body" id="adminBody">
-        <div class="allstar-admin-state">
-          <label>
-            <span>Conference vincitrice</span>
-            <select id="winnerConferenceSelect">
-              <option value="">Da decidere</option>
-              <option value="Conference League">Conference League</option>
-              <option value="Conference Championship">Conference Championship</option>
-            </select>
-          </label>
+        <div class="allstar-admin-grid">
+          <article class="allstar-admin-box">
+            <h4>Votazioni</h4>
+            <p>Avvia una volta le votazioni: da quel momento la week cambia automaticamente ogni 7 giorni.</p>
+            <div class="admin-status-list">
+              <span><strong>Stato</strong><em id="votingStatusInfo">-</em></span>
+              <span><strong>Week attiva</strong><em id="activeWeekAdminInfo">-</em></span>
+              <span><strong>Inizio</strong><em id="votingStartedInfo">-</em></span>
+              <span><strong>Chiusura</strong><em id="votingClosedInfo">-</em></span>
+            </div>
+            <button id="startVotingBtn" class="admin-btn green" type="button">Inizia votazioni All Star</button>
+          </article>
 
-          <button id="saveWinnerConferenceBtn" class="admin-btn gold" type="button">Salva Vincitrice</button>
-
-          <div class="admin-state-readout">
-            <strong>Vincitrice</strong>
-            <span id="winnerConferenceInfo">Non ancora decisa</span>
-          </div>
-
-          <div class="admin-state-readout">
-            <strong>Inizia il draft</strong>
-            <span id="firstConferenceInfo">In attesa</span>
-          </div>
+          <article class="allstar-admin-box">
+            <h4>Conference vincitrice</h4>
+            <p>La Conference vincitrice fa iniziare il draft alla Conference opposta.</p>
+            <label class="admin-field">
+              <span>Vincitrice</span>
+              <select id="winnerConferenceSelect">
+                <option value="">Da decidere</option>
+                <option value="Conference League">Conference League</option>
+                <option value="Conference Championship">Conference Championship</option>
+              </select>
+            </label>
+            <div class="admin-status-list compact">
+              <span><strong>Vincitrice</strong><em id="winnerConferenceInfo">Non ancora decisa</em></span>
+              <span><strong>Inizia il draft</strong><em id="firstConferenceInfo">In attesa</em></span>
+            </div>
+            <button id="saveWinnerConferenceBtn" class="admin-btn blue" type="button">Salva vincitrice</button>
+          </article>
         </div>
 
-        <button id="toggleDraftBtn" class="admin-btn green">Apri / Chiudi Draft</button>
-        <button id="generateAutoPicksBtn" class="admin-btn gold">Genera Auto Pick</button>
-        <button id="undoPickBtn" class="admin-btn blue">Annulla ultima pick</button>
-        <button id="resetDraftBtn" class="admin-btn red">Reset Draft</button>
-        <small>Regola: chi vince fa partire il draft alla Conference opposta. Su Supabase questa sezione sarà visibile solo ad admin/commissioner.</small>
+        <div class="allstar-admin-actions">
+          <button id="toggleDraftBtn" class="admin-btn green" type="button">Apri / Chiudi Draft</button>
+          <button id="generateAutoPicksBtn" class="admin-btn gold" type="button">Genera Auto Pick</button>
+          <button id="undoPickBtn" class="admin-btn blue" type="button">Annulla ultima pick</button>
+          <button id="resetDraftBtn" class="admin-btn red" type="button">Reset Draft</button>
+        </div>
+
+        <small>Visibile solo ad admin/commissioner.</small>
       </div>
     </section>
   </main>

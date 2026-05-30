@@ -4087,290 +4087,125 @@ body {
 }
 
 /* =========================================================
-   ALL STAR ADMIN STATE PATCH
-   Draft start decided only after winner Conference is known
+   ALL STAR ADMIN AUTOWEEK PATCH
    ========================================================= */
 
-.allstar-admin-state {
+.allstar-admin-grid {
   width: 100%;
   display: grid;
-  grid-template-columns: minmax(220px, 1fr) auto minmax(160px, .7fr) minmax(160px, .7fr);
-  gap: 10px;
-  align-items: end;
-  padding: 12px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.allstar-admin-box {
+  padding: 14px;
   border: 1px solid rgba(255,255,255,.08);
-  border-radius: 14px;
+  border-radius: 16px;
   background: rgba(255,255,255,.045);
 }
 
-.allstar-admin-state label {
-  display: grid;
-  gap: 6px;
+.allstar-admin-box h4 {
+  margin: 0 0 6px;
+  color: #fff;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+  font-size: 14px;
 }
 
-.allstar-admin-state label span,
-.admin-state-readout strong {
+.allstar-admin-box p {
+  margin: 0 0 12px;
   color: var(--br-muted, #a9b5c8);
-  font-size: 11px;
-  font-weight: 950;
+  font-size: 13px;
+  line-height: 1.35;
+}
+
+.admin-status-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.admin-status-list.compact {
+  grid-template-columns: 1fr;
+}
+
+.admin-status-list span {
+  display: grid;
+  gap: 3px;
+  padding: 9px 10px;
+  border-radius: 12px;
+  background: rgba(255,255,255,.055);
+  border: 1px solid rgba(255,255,255,.07);
+}
+
+.admin-status-list strong {
+  color: var(--br-muted, #a9b5c8) !important;
+  font-size: 10px;
   text-transform: uppercase;
   letter-spacing: .06em;
 }
 
-.allstar-admin-state select {
-  width: 100%;
-  min-height: 42px;
-  border: 1px solid rgba(255,255,255,.10);
-  border-radius: 12px;
-  background: rgba(255,255,255,.07);
+.admin-status-list em {
   color: #fff;
-  padding: 0 12px;
+  font-style: normal;
   font-weight: 850;
+  font-size: 12px;
 }
 
-.allstar-admin-state select option {
-  color: #111722;
-}
-
-.admin-state-readout {
+.admin-field {
   display: grid;
-  gap: 5px;
-  min-height: 42px;
-  padding: 9px 12px;
-  border: 1px solid rgba(255,255,255,.08);
-  border-radius: 12px;
-  background: rgba(0,0,0,.14);
+  gap: 6px;
+  margin-bottom: 10px;
 }
 
-.admin-state-readout span {
-  color: #fff;
+.admin-field span {
+  color: var(--br-muted, #a9b5c8);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: .06em;
   font-weight: 900;
 }
 
-.auto-pick-row.pending {
-  opacity: .82;
-  border-style: dashed !important;
+.admin-field select {
+  width: 100%;
+  min-height: 40px;
+  color: #fff;
+  background: rgba(255,255,255,.07);
+  border: 1px solid rgba(255,255,255,.10);
+  border-radius: 12px;
+  padding: 9px 10px;
 }
 
-#currentConferenceBig[data-conf="pending"] {
-  background: rgba(255,191,63,.13) !important;
-  color: #fff !important;
-  border: 1px solid rgba(255,191,63,.24) !important;
+.admin-field select option {
+  color: #111722;
+}
+
+.allstar-admin-actions {
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 2px;
 }
 
 .admin-btn:disabled {
-  opacity: .5;
+  opacity: .52;
   cursor: not-allowed;
-  filter: grayscale(.35);
-}
-
-@media (max-width: 900px) {
-  .allstar-admin-state {
-    grid-template-columns: 1fr;
-  }
-}
-
-/* =========================================================
-   ALL STAR V4 FIX
-   - vote search filter
-   - draft rosters as vertical scroll tables from pick 7
-   ========================================================= */
-
-.vote-player-search {
-  display: grid;
-  grid-template-columns: 180px 1fr;
-  align-items: center;
-  gap: 14px;
-  padding: 14px;
-  border-radius: 18px;
-  border: 1px solid var(--br-border, rgba(255,255,255,.08));
-  background: rgba(255,255,255,.04);
-}
-
-.vote-player-search span {
-  color: #fff;
-  font-weight: 950;
-  text-transform: uppercase;
-  font-size: 12px;
-  letter-spacing: .04em;
-}
-
-.vote-player-search input {
-  width: 100%;
-  min-height: 44px;
-  border-radius: 13px;
-  padding: 11px 12px;
-  outline: none;
-  background: rgba(255,255,255,.07);
-  border: 1px solid var(--br-border, rgba(255,255,255,.08));
-  color: #fff;
-}
-
-.vote-player-search input::placeholder {
-  color: rgba(255,255,255,.48);
-}
-
-.role-list {
-  min-height: 0;
-}
-
-.allstar-draft-table-wrap {
-  max-height: 300px;
-  overflow-y: auto;
-  overflow-x: hidden;
-  border-radius: 16px;
-  border: 1px solid var(--br-border, rgba(255,255,255,.08));
-  background: rgba(255,255,255,.035);
-}
-
-.allstar-draft-table-wrap.empty {
-  overflow: hidden;
-}
-
-.empty-draft-table {
-  min-height: 140px;
-  display: grid;
-  place-content: center;
-  text-align: center;
-  gap: 6px;
-  color: var(--br-muted, #a9b5c8);
-  padding: 18px;
-}
-
-.empty-draft-table strong {
-  color: #fff !important;
-  text-transform: uppercase;
-  letter-spacing: .05em;
-}
-
-.empty-draft-table span {
-  color: var(--br-muted, #a9b5c8);
-  font-size: 13px;
-}
-
-.allstar-draft-table {
-  width: 100%;
-  min-width: 0;
-  border-collapse: collapse;
-}
-
-.allstar-draft-table th,
-.allstar-draft-table td {
-  padding: 11px 10px;
-  border-bottom: 1px solid rgba(255,255,255,.06);
-  text-align: left;
-  vertical-align: middle;
-  color: #edf3ff;
-  font-size: 13px;
-}
-
-.allstar-draft-table th {
-  position: sticky;
-  top: 0;
-  z-index: 1;
-  background: rgba(16,23,34,.98);
-  color: #fff;
-  text-transform: uppercase;
-  letter-spacing: .06em;
-  font-size: 11px;
-}
-
-.allstar-draft-table tr:last-child td {
-  border-bottom: 0;
-}
-
-.allstar-draft-table .pick-col {
-  width: 54px;
-  color: var(--br-gold, #ffc247);
-  font-weight: 950;
-}
-
-.allstar-draft-table td strong {
-  display: block;
-  color: #fff !important;
-  line-height: 1.15;
-}
-
-.team-championship .allstar-draft-table-wrap {
-  box-shadow: inset 4px 0 0 rgba(18,107,255,.75);
-}
-
-.team-league .allstar-draft-table-wrap {
-  box-shadow: inset 4px 0 0 rgba(235,30,63,.75);
+  filter: grayscale(.25);
 }
 
 @media (max-width: 768px) {
-  .vote-player-search {
+  .allstar-admin-grid {
     grid-template-columns: 1fr;
-    padding: 11px;
-    gap: 8px;
   }
 
-  .allstar-draft-table-wrap {
-    max-height: 340px;
-    overflow-x: auto;
+  .admin-status-list {
+    grid-template-columns: 1fr;
   }
 
-  .allstar-draft-table {
-    min-width: 430px;
-  }
-}
-
-
-/* =========================================================
-   ALL STAR V5 - TABLE SCROLL + NO QUOTATION IN DRAFT ROSTERS
-   ========================================================= */
-
-.broadcast-pool .table-wrap {
-  max-height: 520px;
-  overflow-y: auto;
-  overflow-x: auto;
-  border-radius: 16px;
-}
-
-.broadcast-pool .players-table thead th {
-  position: sticky;
-  top: 0;
-  z-index: 2;
-}
-
-.allstar-draft-table-wrap {
-  max-height: 300px;
-  overflow-y: auto;
-  overflow-x: hidden;
-}
-
-.allstar-draft-table {
-  width: 100%;
-  min-width: 0;
-}
-
-.allstar-draft-table th:nth-child(1),
-.allstar-draft-table td:nth-child(1) {
-  width: 58px;
-}
-
-.allstar-draft-table th:nth-child(3),
-.allstar-draft-table td:nth-child(3) {
-  width: 88px;
-}
-
-.allstar-draft-table th:nth-child(4),
-.allstar-draft-table td:nth-child(4) {
-  width: 140px;
-}
-
-@media (max-width: 768px) {
-  .broadcast-pool .table-wrap {
-    max-height: 460px;
-  }
-
-  .allstar-draft-table-wrap {
-    max-height: 340px;
-    overflow-x: auto;
-  }
-
-  .allstar-draft-table {
-    min-width: 430px;
+  .allstar-admin-actions {
+    display: grid;
+    grid-template-columns: 1fr;
   }
 }

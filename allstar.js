@@ -60,6 +60,11 @@ const els = {
   saveWinnerConferenceBtn: document.getElementById("saveWinnerConferenceBtn"),
   winnerConferenceInfo: document.getElementById("winnerConferenceInfo"),
   firstConferenceInfo: document.getElementById("firstConferenceInfo"),
+  startVotingBtn: document.getElementById("startVotingBtn"),
+  activeWeekAdminInfo: document.getElementById("activeWeekAdminInfo"),
+  votingStatusInfo: document.getElementById("votingStatusInfo"),
+  votingStartedInfo: document.getElementById("votingStartedInfo"),
+  votingClosedInfo: document.getElementById("votingClosedInfo"),
 
   currentPickInfo: document.getElementById("currentPickInfo"),
   currentConferenceInfo: document.getElementById("currentConferenceInfo"),
@@ -107,6 +112,7 @@ async function init() {
     populateVoteSelects();
     renderAll();
     subscribeRealtime();
+    startAutoWeekTicker();
   } catch (error) {
     console.error("Errore init All Star:", error);
     showVoteFeedback("Errore caricamento All Star. Controlla login, tabelle Supabase o console.", true);
@@ -124,6 +130,7 @@ function bindEvents() {
   els.resetVotesBtn?.addEventListener("click", resetVotes);
   els.generateAutoPicksBtn?.addEventListener("click", generateAutoPicksFromVotes);
   els.saveWinnerConferenceBtn?.addEventListener("click", saveWinnerConferenceFromAdmin);
+  els.startVotingBtn?.addEventListener("click", startAllStarVoting);
 
   [els.searchInput, els.roleFilter, els.teamFilter, els.originFilter, els.conferenceFilter].forEach((el) => {
     el?.addEventListener("input", renderPool);
@@ -206,7 +213,7 @@ async function loadTeams() {
 async function loadState() {
   const { data, error } = await supabase
     .from("allstar_state")
-    .select("season, voting_open, draft_open, active_week, winner_conference, first_conference, current_pick")
+    .select("season, voting_open, draft_open, active_week, winner_conference, first_conference, current_pick, voting_started_at, voting_closed_at")
     .eq("season", SEASON)
     .maybeSingle();
 
@@ -379,6 +386,8 @@ function defaultState() {
     votingOpen: true,
     isOpen: false,
     activeWeek: 1,
+    votingStartedAt: null,
+    votingClosedAt: null,
     currentPick: AUTO_PICK_COUNT + 1,
     winnerConference: null,
     firstConference: null
@@ -393,6 +402,8 @@ function normalizeState(rawState) {
     votingOpen: rawState?.voting_open ?? rawState?.votingOpen ?? true,
     isOpen: rawState?.draft_open ?? rawState?.isOpen ?? false,
     activeWeek: Number(rawState?.active_week ?? rawState?.activeWeek ?? 1),
+    votingStartedAt: rawState?.voting_started_at ?? rawState?.votingStartedAt ?? null,
+    votingClosedAt: rawState?.voting_closed_at ?? rawState?.votingClosedAt ?? null,
     currentPick: Number(rawState?.current_pick ?? rawState?.currentPick ?? AUTO_PICK_COUNT + 1),
     winnerConference: rawState?.winner_conference ?? rawState?.winnerConference ?? null,
     firstConference: rawState?.first_conference ?? rawState?.firstConference ?? null
@@ -404,7 +415,7 @@ function normalizeState(rawState) {
   next.currentPick = Math.max(AUTO_PICK_COUNT + 1, Number(next.currentPick || AUTO_PICK_COUNT + 1));
   next.isOpen = Boolean(next.isOpen && next.firstConference);
   next.votingOpen = next.votingOpen !== false;
-  next.activeWeek = Math.max(1, Number(next.activeWeek || 1));
+  next.activeWeek = getComputedActiveWeek(next);
 
   return next;
 }
@@ -425,6 +436,38 @@ function setupUserControls() {
   }
 
   if (els.resetVotesBtn) els.resetVotesBtn.style.display = isAdmin ? "" : "none";
+}
+
+async function startAllStarVoting() {
+  if (!isAdmin) return;
+
+  if (state.votingStartedAt && !state.votingClosedAt) {
+    alert("Le votazioni All Star sono già iniziate.");
+    return;
+  }
+
+  const ok = confirm("Vuoi iniziare le votazioni All Star? Da questo momento la Week 1 parte e le settimane avanzeranno automaticamente ogni 7 giorni.");
+  if (!ok) return;
+
+  const now = new Date().toISOString();
+
+  const { error } = await supabase
+    .from("allstar_state")
+    .update({
+      voting_started_at: now,
+      voting_closed_at: null,
+      voting_open: true,
+      active_week: 1
+    })
+    .eq("season", SEASON);
+
+  if (error) {
+    alert("Errore avvio votazioni All Star. Controlla colonne SQL/RLS.");
+    console.error(error);
+    return;
+  }
+
+  await refreshAndRender();
 }
 
 function populateFilters() {
@@ -474,8 +517,8 @@ function populateVoteSelects() {
 async function handleVoteSubmit(event) {
   event.preventDefault();
 
-  if (!state.votingOpen) {
-    showVoteFeedback("Le votazioni sono chiuse.", true);
+  if (!canVoteNow()) {
+    showVoteFeedback(getVotingClosedMessage(), true);
     return;
   }
 
@@ -791,7 +834,12 @@ async function generateAutoPicksFromVotes() {
     return;
   }
 
-  await updateState({ current_pick: Math.max(AUTO_PICK_COUNT + 1, state.currentPick) });
+  await updateState({
+    current_pick: Math.max(AUTO_PICK_COUNT + 1, state.currentPick),
+    voting_open: false,
+    voting_closed_at: new Date().toISOString(),
+    active_week: state.activeWeek
+  });
   await refreshAndRender();
 }
 
@@ -858,7 +906,7 @@ function renderHeader() {
   const selected = picks.length;
   const completed = selected >= TOTAL_PLAYERS;
 
-  setText(els.draftStatusLabel, state.votingOpen ? "Votazioni aperte" : state.isOpen ? "Draft aperto" : "Draft chiuso");
+  setText(els.draftStatusLabel, getAllStarStatusLabel());
   setText(els.currentPickInfo, String(state.currentPick));
   setText(els.currentConferenceInfo, currentConference || "Da decidere");
   setText(els.selectedCountInfo, `${selected} / ${TOTAL_PLAYERS}`);
@@ -875,6 +923,15 @@ function renderHeader() {
 
   setText(els.winnerConferenceInfo, state.winnerConference || "Non ancora decisa");
   setText(els.firstConferenceInfo, state.firstConference || "In attesa");
+  setText(els.activeWeekAdminInfo, state.votingStartedAt ? `Week ${state.activeWeek}` : "Non iniziata");
+  setText(els.votingStatusInfo, getAllStarStatusLabel());
+  setText(els.votingStartedInfo, formatDateTime(state.votingStartedAt));
+  setText(els.votingClosedInfo, formatDateTime(state.votingClosedAt));
+
+  if (els.startVotingBtn) {
+    els.startVotingBtn.textContent = state.votingStartedAt && !state.votingClosedAt ? "Votazioni già iniziate" : "Inizia votazioni All Star";
+    els.startVotingBtn.disabled = !isAdmin || Boolean(state.votingStartedAt && !state.votingClosedAt);
+  }
 
   if (els.openPickModalBtn) {
     const canPick = isAdmin && state.isOpen && state.firstConference && !completed;
@@ -1228,6 +1285,17 @@ async function refreshAndRender() {
   renderAll();
 }
 
+function startAutoWeekTicker() {
+  // If the page stays open over the weekly boundary, update the active week without requiring a refresh.
+  setInterval(() => {
+    const nextWeek = getComputedActiveWeek(state);
+    if (nextWeek !== state.activeWeek) {
+      state.activeWeek = nextWeek;
+      renderAll();
+    }
+  }, 60 * 1000);
+}
+
 function subscribeRealtime() {
   supabase
     .channel(`allstar-${SEASON}`)
@@ -1249,6 +1317,51 @@ async function refreshPicksAndRender() {
   renderLastPicks();
   renderPool();
   renderModalPlayers();
+}
+
+function getComputedActiveWeek(stateLike = state) {
+  const startedAt = stateLike?.votingStartedAt;
+  if (!startedAt) return Math.max(1, Number(stateLike?.activeWeek || 1));
+
+  const startMs = Date.parse(startedAt);
+  if (!Number.isFinite(startMs)) return Math.max(1, Number(stateLike?.activeWeek || 1));
+
+  const endSource = stateLike?.votingClosedAt || new Date().toISOString();
+  const endMs = Date.parse(endSource);
+  if (!Number.isFinite(endMs)) return Math.max(1, Number(stateLike?.activeWeek || 1));
+
+  const diffMs = Math.max(0, endMs - startMs);
+  const weekMs = 7 * 24 * 60 * 60 * 1000;
+  return Math.floor(diffMs / weekMs) + 1;
+}
+
+function canVoteNow() {
+  return Boolean(state.votingOpen && state.votingStartedAt && !state.votingClosedAt);
+}
+
+function getVotingClosedMessage() {
+  if (!state.votingStartedAt) return "Le votazioni All Star non sono ancora iniziate.";
+  if (state.votingClosedAt) return "Le votazioni All Star sono chiuse.";
+  return "Le votazioni sono chiuse.";
+}
+
+function getAllStarStatusLabel() {
+  if (!state.votingStartedAt) return "Votazioni non iniziate";
+  if (state.votingClosedAt || !state.votingOpen) return state.isOpen ? "Draft aperto" : "Votazioni chiuse";
+  return `Votazioni aperte · Week ${state.activeWeek}`;
+}
+
+function formatDateTime(value) {
+  if (!value) return "-";
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "-";
+  return date.toLocaleString("it-IT", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit"
+  });
 }
 
 function isValidConference(conference) {
