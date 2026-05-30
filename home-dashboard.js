@@ -1,7 +1,5 @@
 import { supabase } from "./supabase.js";
 
-
-
 const squadreBase = [
   {
     nome: "Rubinkebab",
@@ -184,6 +182,8 @@ async function loadDashboardTeam() {
       return;
     }
 
+    scheduleHomeActionBadgesRefresh(profile.team_id);
+
     const { data: team, error: teamError } = await supabase
       .from("teams")
       .select("name, conference")
@@ -244,4 +244,162 @@ if (bgLogoEl) {
   }
 }
 
-document.addEventListener("DOMContentLoaded", loadDashboardTeam);
+let currentDashboardTeamId = null;
+
+async function countRows(tableName, filters) {
+  let query = supabase
+    .from(tableName)
+    .select("id", { count: "exact", head: true });
+
+  filters.forEach(filter => {
+    query = query.eq(filter.column, filter.value);
+  });
+
+  const { count, error } = await query;
+
+  if (error) {
+    console.warn(`Errore conteggio ${tableName}:`, error);
+    return 0;
+  }
+
+  return count || 0;
+}
+
+function ensureBadge(target, count, label) {
+  if (!target) return;
+
+  target.classList.add("app-alert-anchor");
+
+  let badge = target.querySelector(":scope > .app-alert-badge");
+
+  if (!badge) {
+    badge = document.createElement("span");
+    badge.className = "app-alert-badge";
+    target.appendChild(badge);
+  }
+
+  if (count > 0) {
+    badge.textContent = count > 9 ? "9+" : String(count);
+    badge.setAttribute("aria-label", label || `${count} avvisi`);
+    target.classList.add("has-app-alert");
+  } else {
+    badge.textContent = "";
+    badge.removeAttribute("aria-label");
+    target.classList.remove("has-app-alert");
+  }
+}
+
+function findDraftMenuLink() {
+  const toggles = [...document.querySelectorAll("#mainMenu .toggle-submenu")];
+
+  return toggles.find(link =>
+    String(link.textContent || "").toLowerCase().includes("draft")
+  );
+}
+
+function updateBadgeTargets({ tradeCount, rfaCount }) {
+  // HOME: card Trade
+  ensureBadge(
+    document.querySelector(".quick-trade"),
+    tradeCount,
+    `${tradeCount} proposta/e trade da valutare`
+  );
+
+  // HOME: card Draft
+  ensureBadge(
+    document.getElementById("quick-draft-link"),
+    rfaCount,
+    `${rfaCount} decisione/i RFA da prendere`
+  );
+
+  // TOP DESKTOP: bottone Trade Room
+  ensureBadge(
+    document.getElementById("trade-badge"),
+    tradeCount,
+    `${tradeCount} proposta/e trade da valutare`
+  );
+
+  // BOTTOM NAV: Mercato
+  document
+    .querySelectorAll('.mobile-bottom-link[href="trade-room.html"]')
+    .forEach(el => {
+      ensureBadge(
+        el,
+        tradeCount,
+        `${tradeCount} proposta/e trade da valutare`
+      );
+    });
+
+  // PANNELLO "ALTRO": Trade Room
+  document
+    .querySelectorAll('.mobile-more-grid a[href="trade-room.html"]')
+    .forEach(el => {
+      ensureBadge(
+        el,
+        tradeCount,
+        `${tradeCount} proposta/e trade da valutare`
+      );
+    });
+
+  // MENU HAMBURGER/TITOLO: voce Draft
+  ensureBadge(
+    findDraftMenuLink(),
+    rfaCount,
+    `${rfaCount} decisione/i RFA da prendere`
+  );
+
+  // BOTTOM NAV: se c'è RFA, segnaliamo anche "Altro"
+  ensureBadge(
+    document.getElementById("mobile-more-btn"),
+    rfaCount,
+    `${rfaCount} decisione/i RFA da prendere`
+  );
+}
+
+async function updateHomeActionBadges(teamId) {
+  if (!teamId) return;
+
+  try {
+    const [tradeCount, rfaCount] = await Promise.all([
+      countRows("trade_proposals", [
+        { column: "to_team", value: teamId },
+        { column: "status", value: "pending" }
+      ]),
+      countRows("rfa_draft_claims", [
+        { column: "original_team_id", value: teamId },
+        { column: "status", value: "pending" }
+      ])
+    ]);
+
+    updateBadgeTargets({ tradeCount, rfaCount });
+  } catch (err) {
+    console.warn("Errore aggiornamento badge home:", err);
+  }
+}
+
+function scheduleHomeActionBadgesRefresh(teamId) {
+  currentDashboardTeamId = teamId;
+
+  // Subito
+  updateHomeActionBadges(teamId);
+
+  // Dopo che mobile-nav.js ha creato bottom nav e pannello Altro
+  setTimeout(() => updateHomeActionBadges(teamId), 350);
+  setTimeout(() => updateHomeActionBadges(teamId), 1200);
+
+  // Quando torni sulla home dalla PWA
+  window.addEventListener("focus", () => {
+    updateHomeActionBadges(teamId);
+  });
+
+  document.addEventListener("visibilitychange", () => {
+    if (!document.hidden) {
+      updateHomeActionBadges(teamId);
+    }
+  });
+}
+
+document.addEventListener("DOMContentLoaded", async function () {
+  await loadDashboardTeam();
+});
+
