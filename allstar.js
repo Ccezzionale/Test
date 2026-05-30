@@ -55,6 +55,7 @@ const els = {
   autoPickPreviewBroadcast: document.getElementById("autoPickPreviewBroadcast"),
   demoVotesBtn: document.getElementById("demoVotesBtn"),
   resetVotesBtn: document.getElementById("resetVotesBtn"),
+  adminResetVotesBtn: document.getElementById("adminResetVotesBtn"),
   generateAutoPicksBtn: document.getElementById("generateAutoPicksBtn"),
   winnerConferenceSelect: document.getElementById("winnerConferenceSelect"),
   saveWinnerConferenceBtn: document.getElementById("saveWinnerConferenceBtn"),
@@ -128,6 +129,7 @@ function bindEvents() {
   els.voteSearchInput?.addEventListener("input", populateVoteSelects);
   els.demoVotesBtn?.addEventListener("click", () => alert("I voti demo sono stati disattivati: ora la pagina usa Supabase."));
   els.resetVotesBtn?.addEventListener("click", resetVotes);
+  els.adminResetVotesBtn?.addEventListener("click", resetVotes);
   els.generateAutoPicksBtn?.addEventListener("click", generateAutoPicksFromVotes);
   els.saveWinnerConferenceBtn?.addEventListener("click", saveWinnerConferenceFromAdmin);
   els.startVotingBtn?.addEventListener("click", startAllStarVoting);
@@ -436,6 +438,7 @@ function setupUserControls() {
   }
 
   if (els.resetVotesBtn) els.resetVotesBtn.style.display = isAdmin ? "" : "none";
+  if (els.adminResetVotesBtn) els.adminResetVotesBtn.style.display = isAdmin ? "" : "none";
 }
 
 async function startAllStarVoting() {
@@ -592,7 +595,7 @@ async function resetVotes() {
   }
 
   votes = [];
-  renderVotesArea();
+  await refreshAndRender();
 }
 
 function getVoteTotalsByConference(conference) {
