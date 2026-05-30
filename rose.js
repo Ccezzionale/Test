@@ -303,7 +303,7 @@ function getTeamStats(giocatori = []) {
   return {
     totale: giocatori.length,
     fp: giocatori.filter(g => g.fp || g.fpKeeper).length,
-    u21: giocatori.filter(g => g.u21 || g.u21Slot || g.u21Keeper).length,
+    u21: giocatori.filter(g => g.u21Slot || g.u21Keeper).length,
     rfa: giocatori.filter(g => g.rfaMatched).length,
     protetti: giocatori.filter(g => g.top6Protected).length
   };
