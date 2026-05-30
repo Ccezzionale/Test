@@ -1418,6 +1418,29 @@ async function loadMyWaiverCalls() {
   renderMyWaiverCalls();
 }
 
+function getOwnedPlayerBadges(player) {
+  const badges = [];
+
+  // U21 normale
+  if (player.is_u21) {
+    badges.push("🟡 U21");
+  }
+
+  // Altri badge già disponibili nella tabella players
+  if (player.is_fp) {
+    badges.push("⭐ FP");
+  }
+
+  return badges;
+}
+
+function getOwnedPlayerOptionLabel(player) {
+  const role = player.role ? ` (${player.role})` : "";
+  const badges = getOwnedPlayerBadges(player);
+
+  return `${player.name}${role}${badges.length ? `  ${badges.join(" ")}` : ""}`;
+}
+
 function buildPlayerOutOptions(savedPlayerOutId = null, savedPlayerOutName = "") {
   const options = [
     `<option value="">Seleziona giocatore da svincolare</option>`
@@ -1429,7 +1452,7 @@ function buildPlayerOutOptions(savedPlayerOutId = null, savedPlayerOutName = "")
         ? "selected"
         : "";
 
-    const label = `${player.name}${player.role ? ` (${player.role})` : ""}`;
+    const label = getOwnedPlayerOptionLabel(player);
 
     options.push(`
       <option value="${player.id}" ${selected}>
