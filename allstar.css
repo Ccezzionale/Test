@@ -4412,3 +4412,171 @@ body {
     min-width: 500px;
   }
 }
+
+/* =========================================================
+   ALL STAR V10 - COMPACT TABLES + MOBILE CLEANUP
+   ========================================================= */
+
+/* Draft tables: no horizontal scrollbar on desktop */
+.allstar-draft-table-wrap {
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
+}
+
+.allstar-draft-table {
+  width: 100% !important;
+  min-width: 0 !important;
+  table-layout: fixed !important;
+}
+
+.allstar-draft-table th,
+.allstar-draft-table td {
+  padding: 11px 8px !important;
+  font-size: 13px !important;
+}
+
+.allstar-draft-table th:nth-child(1),
+.allstar-draft-table td:nth-child(1) {
+  width: 48px !important;
+}
+
+.allstar-draft-table th:nth-child(2),
+.allstar-draft-table td:nth-child(2) {
+  width: auto !important;
+}
+
+.allstar-draft-table th:nth-child(3),
+.allstar-draft-table td:nth-child(3) {
+  width: 88px !important;
+}
+
+.allstar-draft-table th:nth-child(4),
+.allstar-draft-table td:nth-child(4) {
+  width: 132px !important;
+}
+
+.allstar-draft-table td strong {
+  display: block;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.allstar-draft-table .role-pill {
+  min-width: 38px !important;
+  max-width: 64px !important;
+  padding-left: 7px !important;
+  padding-right: 7px !important;
+}
+
+@media (max-width: 768px) {
+  /* Mobile rankings: hide admin/test buttons from the public-looking tab */
+  .broadcast-race-mobile .race-actions {
+    display: none !important;
+  }
+
+  /* Mobile pool filters: keep only search, role and Serie A team */
+  #originFilter,
+  #conferenceFilter {
+    display: none !important;
+  }
+
+  .pool-filters {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Mobile draft tables: tighter, no horizontal scrollbar */
+  .allstar-draft-table-wrap {
+    overflow-x: hidden !important;
+    max-height: 310px !important;
+  }
+
+  .allstar-draft-table {
+    min-width: 0 !important;
+  }
+
+  .allstar-draft-table th,
+  .allstar-draft-table td {
+    padding: 10px 6px !important;
+    font-size: 12px !important;
+  }
+
+  .allstar-draft-table th:nth-child(1),
+  .allstar-draft-table td:nth-child(1) {
+    width: 38px !important;
+  }
+
+  .allstar-draft-table th:nth-child(3),
+  .allstar-draft-table td:nth-child(3) {
+    width: 58px !important;
+  }
+
+  .allstar-draft-table th:nth-child(4),
+  .allstar-draft-table td:nth-child(4) {
+    width: 88px !important;
+  }
+
+  .allstar-draft-table .role-pill {
+    min-width: 32px !important;
+    max-width: 48px !important;
+    font-size: 10px !important;
+    padding: 4px 5px !important;
+  }
+
+  /* Mobile player pool: hide origin/conference columns too, so the table fits better */
+  .players-table {
+    min-width: 0 !important;
+    table-layout: fixed !important;
+  }
+
+  .players-table th:nth-child(5),
+  .players-table td:nth-child(5),
+  .players-table th:nth-child(6),
+  .players-table td:nth-child(6) {
+    display: none !important;
+  }
+
+  .players-table th,
+  .players-table td {
+    padding: 9px 6px !important;
+    font-size: 11px !important;
+  }
+
+  .players-table th:nth-child(1),
+  .players-table td:nth-child(1) {
+    width: 38% !important;
+  }
+
+  .players-table th:nth-child(2),
+  .players-table td:nth-child(2) {
+    width: 18% !important;
+  }
+
+  .players-table th:nth-child(3),
+  .players-table td:nth-child(3) {
+    width: 26% !important;
+  }
+
+  .players-table th:nth-child(4),
+  .players-table td:nth-child(4) {
+    width: 10% !important;
+  }
+
+  .players-table th:nth-child(7),
+  .players-table td:nth-child(7) {
+    width: 8% !important;
+  }
+
+  .player-name-cell span:last-child {
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .broadcast-pool .table-wrap,
+  .pool-section .table-wrap {
+    overflow-x: hidden !important;
+  }
+}
