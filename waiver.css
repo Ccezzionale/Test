@@ -3830,3 +3830,62 @@ button:disabled {
     text-align: center !important;
   }
 }
+
+/* =========================================================
+   MOBILE SVINCOLATI - AUTO WIDTH LIKE EXCEL
+   ========================================================= */
+
+@media (max-width: 768px) {
+  .free-agents-table-wrap {
+    width: 100% !important;
+    max-width: 100% !important;
+    max-height: 520px !important;
+    overflow-x: auto !important;
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+  }
+
+  #freeAgentsTable {
+    display: table !important;
+    width: max-content !important;
+    min-width: 100% !important;
+    table-layout: auto !important;
+    border-collapse: separate !important;
+    border-spacing: 0 !important;
+  }
+
+  #freeAgentsTable th,
+  #freeAgentsTable td {
+    display: table-cell !important;
+    width: auto !important;
+    min-width: unset !important;
+    max-width: none !important;
+    white-space: nowrap !important;
+    padding: 10px 12px !important;
+    font-size: 0.82rem !important;
+  }
+
+  #freeAgentsTable th:nth-child(1),
+  #freeAgentsTable td:nth-child(1),
+  #freeAgentsTable th:nth-child(2),
+  #freeAgentsTable td:nth-child(2),
+  #freeAgentsTable th:nth-child(3),
+  #freeAgentsTable td:nth-child(3),
+  #freeAgentsTable th:nth-child(4),
+  #freeAgentsTable td:nth-child(4),
+  #freeAgentsTable th:nth-child(5),
+  #freeAgentsTable td:nth-child(5) {
+    width: auto !important;
+    min-width: unset !important;
+    max-width: none !important;
+  }
+
+  #freeAgentsTable th:nth-child(2),
+  #freeAgentsTable td:nth-child(2),
+  #freeAgentsTable th:nth-child(4),
+  #freeAgentsTable td:nth-child(4),
+  #freeAgentsTable th:nth-child(5),
+  #freeAgentsTable td:nth-child(5) {
+    text-align: center !important;
+  }
+}
