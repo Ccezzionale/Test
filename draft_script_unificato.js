@@ -890,11 +890,38 @@ function buildDesktopFixedBoardColumns() {
     CASO 1:
     Se draft_visual_order è popolata, usiamo quella.
   */
-  if (visualRows.length) {
-    return teamsOrder.map(team => {
-      const teamVisualRows = visualRows
-        .filter(row => String(row.team_id) === String(team.id))
-        .sort((a, b) => Number(a.visual_round) - Number(b.visual_round));
+if (visualRows.length) {
+  return teamsOrder.map(team => {
+    const teamVisualRows = visualRows
+      .filter(row => String(row.team_id) === String(team.id))
+      .sort((a, b) => Number(a.visual_round) - Number(b.visual_round));
+
+    if (!teamVisualRows.length) {
+      const baseSlots = orderRows
+        .filter(row => String(row.original_team_id || row.team_id) === String(team.id))
+        .sort((a, b) => Number(a.pick_number) - Number(b.pick_number))
+        .slice(0, DESKTOP_FIXED_ROUNDS);
+
+      const rounds = baseSlots.map((slot, index) => {
+        const pickNumber = Number(slot.pick_number);
+
+        const isTradedPick =
+          slot.original_team_id &&
+          String(slot.original_team_id) !== String(slot.team_id);
+
+        return {
+          round: index + 1,
+          pick_number: pickNumber,
+          pickData: picksMap[pickNumber] || null,
+          isTradedPick
+        };
+      });
+
+      return {
+        team,
+        rounds
+      };
+    }
 
       const rounds = Array.from({ length: DESKTOP_FIXED_ROUNDS }, (_, index) => {
         const visualRound = index + 1;
