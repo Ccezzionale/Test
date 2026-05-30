@@ -181,7 +181,14 @@ async function loadSessionAndProfile() {
 
 async function loadAllData() {
   await loadTeams();
-  await Promise.all([loadState(), loadPlayers(), loadVotes(), loadPicks()]);
+
+  // IMPORTANT:
+  // players must be loaded before votes and picks.
+  // Votes/picks need playerIdAliasMap and allPlayersById to rebuild old saved picks
+  // after the deduplication of the All Star player pool.
+  await loadPlayers();
+
+  await Promise.all([loadState(), loadVotes(), loadPicks()]);
 }
 
 async function loadTeams() {
