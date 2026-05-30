@@ -3782,3 +3782,51 @@ button:disabled {
     text-align: center !important;
   }
 }
+
+/* =========================================================
+   MOBILE SVINCOLATI - EXTRA COMPACT SQUADRA / QUOTAZIONE
+   ========================================================= */
+
+@media (max-width: 768px) {
+  #freeAgentsTable {
+    min-width: 470px !important;
+  }
+
+  #freeAgentsTable th,
+  #freeAgentsTable td {
+    padding-left: 7px !important;
+    padding-right: 7px !important;
+  }
+
+  #freeAgentsTable th:nth-child(1),
+  #freeAgentsTable td:nth-child(1) {
+    min-width: 135px !important;
+    max-width: 135px !important;
+  }
+
+  #freeAgentsTable th:nth-child(2),
+  #freeAgentsTable td:nth-child(2) {
+    min-width: 50px !important;
+    max-width: 50px !important;
+  }
+
+  #freeAgentsTable th:nth-child(3),
+  #freeAgentsTable td:nth-child(3) {
+    min-width: 88px !important;
+    max-width: 88px !important;
+  }
+
+  #freeAgentsTable th:nth-child(4),
+  #freeAgentsTable td:nth-child(4) {
+    min-width: 38px !important;
+    max-width: 38px !important;
+    text-align: center !important;
+  }
+
+  #freeAgentsTable th:nth-child(5),
+  #freeAgentsTable td:nth-child(5) {
+    min-width: 48px !important;
+    max-width: 48px !important;
+    text-align: center !important;
+  }
+}
