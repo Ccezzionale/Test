@@ -3612,3 +3612,74 @@ nav.site-nav{
     align-items: center;
   }
 }
+
+/* =========================================================
+   ALERT BADGES - TRADE / RFA / DRAFT
+   ========================================================= */
+
+.app-alert-anchor {
+  position: relative !important;
+}
+
+.app-alert-badge {
+  position: absolute;
+  top: 6px;
+  right: 8px;
+  z-index: 20;
+
+  min-width: 19px;
+  height: 19px;
+  padding: 0 6px;
+
+  display: none;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 999px;
+  background: #ef233c;
+  color: #ffffff;
+
+  font-size: 0.68rem;
+  font-weight: 1000;
+  line-height: 1;
+
+  border: 2px solid #ffffff;
+  box-shadow: 0 6px 12px rgba(239, 35, 60, 0.35);
+}
+
+.app-alert-anchor.has-app-alert .app-alert-badge {
+  display: inline-flex;
+}
+
+.quick-card .app-alert-badge {
+  top: 7px;
+  right: 7px;
+}
+
+.mobile-bottom-link .app-alert-badge {
+  top: 2px;
+  right: 10px;
+  min-width: 17px;
+  height: 17px;
+  font-size: 0.58rem;
+  border-width: 2px;
+}
+
+.mobile-more-grid a .app-alert-badge,
+.mobile-more-grid button .app-alert-badge {
+  top: 8px;
+  right: 8px;
+}
+
+nav.site-nav .toggle-submenu .app-alert-badge {
+  position: static;
+  margin-left: 8px;
+  transform: none;
+}
+
+@media (min-width: 901px) {
+  .btn-hero .app-alert-badge {
+    top: -6px;
+    right: -6px;
+  }
+}
