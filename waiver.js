@@ -3094,14 +3094,29 @@ async function deleteAdminCompensatoryCall(callId) {
   const confirmed = confirm("Vuoi eliminare questa chiamata compensativa?");
   if (!confirmed) return;
 
-  const { error } = await supabase
+  console.log("Elimino compensativa:", callId);
+
+  const { data, error } = await supabase
     .from("waiver_compensatory_calls")
     .delete()
-    .eq("id", callId);
+    .eq("id", callId)
+    .select("id");
 
   if (error) {
     console.error("Errore eliminazione compensativa:", error);
     setAdminMessage("Errore eliminazione compensativa: " + error.message, true);
+    return;
+  }
+
+  if (!data || data.length === 0) {
+    console.warn("Nessuna compensativa eliminata. Probabile policy RLS DELETE mancante.", {
+      callId
+    });
+
+    setAdminMessage(
+      "Nessuna compensativa eliminata. Probabile policy DELETE mancante su Supabase.",
+      true
+    );
     return;
   }
 
