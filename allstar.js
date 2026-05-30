@@ -20,6 +20,7 @@ let currentTeam = null;
 let isAdmin = false;
 
 let players = [];
+let allPlayersById = new Map();
 let playerIdAliasMap = new Map();
 let teamsById = new Map();
 let state = defaultState();
@@ -214,12 +215,16 @@ async function loadPlayers() {
 
   if (error) throw error;
 
-  const rawPlayers = (data || [])
-    .filter((p) => !p.status || !["inactive", "archived"].includes(String(p.status).toLowerCase()))
+  const allRawPlayers = (data || [])
     .map(normalizePlayer)
     .filter((p) => p.name);
 
-  players = dedupePlayers(rawPlayers);
+  allPlayersById = new Map(allRawPlayers.map((player) => [player.id, player]));
+
+  const activeRawPlayers = allRawPlayers
+    .filter((p) => !p.status || !["inactive", "archived"].includes(String(p.status).toLowerCase()));
+
+  players = dedupePlayers(activeRawPlayers, allRawPlayers);
 }
 
 async function loadVotes() {
@@ -291,7 +296,7 @@ function getPlayerQualityScore(player) {
   return score;
 }
 
-function dedupePlayers(rawPlayers) {
+function dedupePlayers(rawPlayers, aliasSourcePlayers = rawPlayers) {
   const byKey = new Map();
   playerIdAliasMap = new Map();
 
@@ -304,7 +309,7 @@ function dedupePlayers(rawPlayers) {
     }
   });
 
-  rawPlayers.forEach((player) => {
+  aliasSourcePlayers.forEach((player) => {
     const canonical = byKey.get(getPlayerDedupeKey(player));
     if (canonical) playerIdAliasMap.set(player.id, canonical.id);
   });
@@ -316,9 +321,19 @@ function getCanonicalPlayerId(playerId) {
   return playerIdAliasMap.get(playerId) || playerId;
 }
 
+function getPlayerForStoredId(originalPlayerId, canonicalPlayerId = getCanonicalPlayerId(originalPlayerId)) {
+  return (
+    players.find((p) => p.id === canonicalPlayerId) ||
+    players.find((p) => p.id === originalPlayerId) ||
+    allPlayersById.get(originalPlayerId) ||
+    allPlayersById.get(canonicalPlayerId) ||
+    null
+  );
+}
+
 function normalizeVote(raw) {
   const canonicalPlayerId = getCanonicalPlayerId(raw.player_id);
-  const player = players.find((p) => p.id === canonicalPlayerId) || null;
+  const player = getPlayerForStoredId(raw.player_id, canonicalPlayerId);
   return {
     id: raw.id,
     season: raw.season,
@@ -336,7 +351,7 @@ function normalizeVote(raw) {
 
 function normalizePick(raw) {
   const canonicalPlayerId = getCanonicalPlayerId(raw.player_id);
-  const player = players.find((p) => p.id === canonicalPlayerId) || null;
+  const player = getPlayerForStoredId(raw.player_id, canonicalPlayerId);
   return {
     id: raw.id,
     season: raw.season,
@@ -813,7 +828,13 @@ function getCurrentConference() {
 
 function getAvailablePlayers() {
   const pickedIds = new Set(picks.map((pick) => pick.playerId));
-  return players.filter((player) => !pickedIds.has(player.id));
+  const pickedNames = new Set(picks.map((pick) => getPlayerDedupeKey(pick.player)).filter(Boolean));
+
+  return players.filter((player) => {
+    const canonicalId = getCanonicalPlayerId(player.id);
+    const key = getPlayerDedupeKey(player);
+    return !pickedIds.has(player.id) && !pickedIds.has(canonicalId) && !pickedNames.has(key);
+  });
 }
 
 function renderAll() {
@@ -1076,7 +1097,8 @@ async function makePick(playerId) {
   const player = players.find((p) => p.id === playerId);
   if (!player) return;
 
-  const alreadyPicked = picks.some((pick) => pick.playerId === playerId);
+  const playerKey = getPlayerDedupeKey(player);
+  const alreadyPicked = picks.some((pick) => pick.playerId === playerId || getPlayerDedupeKey(pick.player) === playerKey);
   if (alreadyPicked) {
     alert("Giocatore già selezionato.");
     return;
