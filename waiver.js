@@ -52,6 +52,13 @@ const slot2CloseInput = document.getElementById("slot2CloseInput");
 const slot2SOpenInput = document.getElementById("slot2SOpenInput");
 const slot2SCloseInput = document.getElementById("slot2SCloseInput");
 
+const compensatoryOpenInput = document.getElementById("compensatoryOpenInput");
+const compensatoryCloseInput = document.getElementById("compensatoryCloseInput");
+
+const adminCompTeamSelect = document.getElementById("adminCompTeamSelect");
+const adminCompPriorityInput = document.getElementById("adminCompPriorityInput");
+const addCompensatoryBtn = document.getElementById("addCompensatoryBtn");
+
 const setStandardFridayBtn = document.getElementById("setStandardFridayBtn");
 const setPlayoffFridayBtn = document.getElementById("setPlayoffFridayBtn");
 const saveWaiverSettingsBtn = document.getElementById("saveWaiverSettingsBtn");
@@ -177,18 +184,30 @@ function populateFreeAgentsFilters() {
   serieATeamFilter.value = currentTeam;
 }
 
+function getCompensatoryTimes() {
+  if (!currentSettings) return { openAt: null, closeAt: null };
+
+  return {
+    openAt: currentSettings.compensatory_open_at || null,
+    closeAt: currentSettings.compensatory_close_at || null
+  };
+}
+
+function isCompensatoryOpen() {
+  const { openAt, closeAt } = getCompensatoryTimes();
+  const now = new Date();
+
+  if (!openAt || !closeAt) return true;
+
+  return now >= new Date(openAt) && now < new Date(closeAt);
+}
+
 function getCompensatoryPublishAt() {
   if (!currentSettings) return null;
 
-  if (isPlayoffPhase()) {
-    return (
-      currentSettings.slot2s_close_at ||
-      currentSettings.slot2_close_at ||
-      currentSettings.slot1_close_at
-    );
-  }
-
   return (
+    currentSettings.compensatory_close_at ||
+    currentSettings.slot2s_close_at ||
     currentSettings.slot2_close_at ||
     currentSettings.slot1_close_at
   );
@@ -746,6 +765,27 @@ async function loadTeams() {
   teamsCache.forEach(team => {
     teamMap[team.id] = team;
   });
+}
+
+function populateAdminCompensatoryTeamSelect() {
+  if (!adminCompTeamSelect) return;
+
+  const currentValue = adminCompTeamSelect.value;
+
+  adminCompTeamSelect.innerHTML = `
+    <option value="">Seleziona squadra</option>
+    ${
+      teamsCache
+        .map(team => `
+          <option value="${team.id}">
+            ${team.name}
+          </option>
+        `)
+        .join("")
+    }
+  `;
+
+  adminCompTeamSelect.value = currentValue;
 }
 
 /* ===============================
@@ -1607,7 +1647,9 @@ if (mobileExtraBadge) {
   myCompensatoryCallsEl.innerHTML = "";
 
   myCompensatoryCalls.forEach(call => {
-    const isEditable = call.status === "pending" || call.status === "submitted";
+    const isEditable =
+  (call.status === "pending" || call.status === "submitted") &&
+  isCompensatoryOpen();
 
     const card = document.createElement("div");
     card.className = "dynamic-call-card compensatory-call-card";
@@ -1672,7 +1714,9 @@ if (mobileExtraBadge) {
         ${
           call.player_in
             ? `✅ Compensativa salvata: ${call.player_in}`
-            : "Nessuna compensativa salvata."
+            : isCompensatoryOpen()
+  ? "Nessuna compensativa salvata."
+  : "Compensative chiuse o non disponibili."
         }
         <br>
         Stato: <strong>${call.status || "pending"}</strong>
@@ -2055,14 +2099,33 @@ async function loadAllCompensatoryCalls() {
     const team = teamMap[call.team_id];
 
     const div = document.createElement("div");
+    div.className = "admin-compensatory-row";
 
     div.innerHTML = `
-      <strong>#${call.priority_order || "-"} ${team?.name || "Squadra sconosciuta"}</strong>
-      → ${call.player_in || "nessun giocatore selezionato"}
-      <strong>${call.status || "pending"}</strong>
+      <div class="admin-compensatory-main">
+        <strong>C${call.priority_order || "-"} ${team?.name || "Squadra sconosciuta"}</strong>
+        <span>
+          ${call.player_in ? `→ ${call.player_in}` : "nessun giocatore selezionato"}
+        </span>
+        <small>Stato: ${call.status || "pending"}</small>
+      </div>
+
+      <button
+        type="button"
+        class="secondary-btn small-btn delete-compensatory-btn"
+        data-call-id="${call.id}"
+      >
+        Elimina
+      </button>
     `;
 
     allCompensatoryCallsEl.appendChild(div);
+  });
+
+  document.querySelectorAll(".delete-compensatory-btn").forEach(button => {
+    button.addEventListener("click", () => {
+      deleteAdminCompensatoryCall(button.dataset.callId);
+    });
   });
 }
 
@@ -2785,6 +2848,14 @@ function syncSettingsPanel() {
   if (slot2SCloseInput) {
     slot2SCloseInput.value = toDateTimeLocalValue(currentSettings.slot2s_close_at);
   }
+
+   if (compensatoryOpenInput) {
+  compensatoryOpenInput.value = toDateTimeLocalValue(currentSettings.compensatory_open_at);
+}
+
+if (compensatoryCloseInput) {
+  compensatoryCloseInput.value = toDateTimeLocalValue(currentSettings.compensatory_close_at);
+}
 }
 
 function getNextFriday() {
@@ -2922,6 +2993,9 @@ async function saveWaiverSettings() {
 
     slot2s_open_at: fromDateTimeLocalValue(slot2SOpenInput?.value),
     slot2s_close_at: fromDateTimeLocalValue(slot2SCloseInput?.value)
+
+   compensatory_open_at: fromDateTimeLocalValue(compensatoryOpenInput?.value),
+compensatory_close_at: fromDateTimeLocalValue(compensatoryCloseInput?.value)
   };
 
   setSettingsMessage("Salvataggio impostazioni in corso...");
@@ -2959,10 +3033,83 @@ if (activeWeekEl) activeWeekEl.textContent = currentSettings.active_week || "-";
 await loadMyOwnedPlayers();
 await loadMyWaiverCalls();
 await loadFreeAgents();
+await loadMyCompensatoryCalls();
+
+if (currentUserEmail === "tringali0511@gmail.com") {
+  await loadAllCompensatoryCalls();
+}
 
 syncSettingsPanel();
 
 setSettingsMessage("Impostazioni waiver salvate correttamente.");
+}
+
+async function addManualCompensatoryCall() {
+  if (!currentSettings) return;
+
+  const teamId = adminCompTeamSelect?.value || "";
+  const priority = Number(adminCompPriorityInput?.value || 0);
+
+  if (!teamId) {
+    setAdminMessage("Seleziona una squadra per la compensativa.", true);
+    return;
+  }
+
+  if (!priority || priority < 1) {
+    setAdminMessage("Inserisci una priorità valida per la compensativa.", true);
+    return;
+  }
+
+  const { error } = await supabase
+    .from("waiver_compensatory_calls")
+    .insert({
+      team_id: teamId,
+      week: currentSettings.active_week,
+      phase: currentSettings.active_phase,
+      priority_order: priority,
+      status: "pending",
+      player_in: null,
+      player_in_id: null,
+      player_out: null,
+      player_out_id: null,
+      updated_at: new Date().toISOString()
+    });
+
+  if (error) {
+    console.error("Errore aggiunta compensativa:", error);
+    setAdminMessage("Errore aggiunta compensativa: " + error.message, true);
+    return;
+  }
+
+  setAdminMessage("Compensativa aggiunta correttamente.");
+
+  if (adminCompPriorityInput) adminCompPriorityInput.value = "";
+
+  await loadMyCompensatoryCalls();
+  await loadAllCompensatoryCalls();
+  await renderPublicWaiverOrder();
+}
+
+async function deleteAdminCompensatoryCall(callId) {
+  const confirmed = confirm("Vuoi eliminare questa chiamata compensativa?");
+  if (!confirmed) return;
+
+  const { error } = await supabase
+    .from("waiver_compensatory_calls")
+    .delete()
+    .eq("id", callId);
+
+  if (error) {
+    console.error("Errore eliminazione compensativa:", error);
+    setAdminMessage("Errore eliminazione compensativa: " + error.message, true);
+    return;
+  }
+
+  setAdminMessage("Compensativa eliminata.");
+
+  await loadMyCompensatoryCalls();
+  await loadAllCompensatoryCalls();
+  await renderPublicWaiverOrder();
 }
 
 /* ===============================
@@ -2997,6 +3144,7 @@ if (settings) {
    syncSettingsPanel();
 
   await loadTeams();
+   populateAdminCompensatoryTeamSelect();
   await loadWaiverOrder();
    await renderPublicWaiverOrder();
 
