@@ -3006,29 +3006,54 @@ avviaAutoRefresh();
 
 
 function mappaIndiceAssolutoPerTeam() {
+  const indexMap = {};
+
+  /*
+    Se esiste draft_visual_order, usiamo quello.
+    Così le pick restano nello slot/round visuale corretto,
+    anche quando una pick alta tipo #77 è stata acquisita e deve stare al Round 5.
+  */
+  if (Array.isArray(lastDraftVisualRows) && lastDraftVisualRows.length) {
+    lastDraftVisualRows.forEach(row => {
+      const pick = Number(row.pick_number);
+      const visualRound = Number(row.visual_round);
+      const team = getTeamByIdDesktop(row.team_id);
+      const teamName = team?.name || "";
+
+      if (!teamName || !pick || !visualRound) return;
+
+      indexMap[`${teamName}|${pick}`] = visualRound;
+    });
+
+    return indexMap;
+  }
+
+  /*
+    Fallback vecchio: se per qualche motivo manca draft_visual_order,
+    usiamo ancora le pick dalla tabella, ma solo come piano B.
+  */
   const righe = document.querySelectorAll("#tabella-pick tbody tr");
-  const picksPerTeam = {};           // { team: [pick,...] }
-  const indexMap = {};               // { "team|pick": posizioneAssoluta }
+  const picksPerTeam = {};
 
   righe.forEach(r => {
     const celle = r.querySelectorAll("td");
     const pick = parseInt(celle[0]?.textContent);
     const team = getTeamNameFromDraftCell(celle[1]);
+
     if (!team || isNaN(pick)) return;
+
     if (!picksPerTeam[team]) picksPerTeam[team] = [];
     picksPerTeam[team].push(pick);
   });
 
   Object.keys(picksPerTeam).forEach(team => {
-    picksPerTeam[team].sort((a, b) => a - b);
     picksPerTeam[team].forEach((p, i) => {
-      indexMap[`${team}|${p}`] = i + 1; // 1-based
+      indexMap[`${team}|${p}`] = i + 1;
     });
   });
 
   return indexMap;
 }
-
 function aggiornaChiamatePerSquadra() {
   const righe = document.querySelectorAll("#tabella-pick tbody tr");
   const riepilogo = {};
