@@ -1649,9 +1649,10 @@ async function acceptTrade(proposalId) {
           `Trade accettata. La trade sarà conclusa quando ${result.cut_team_name} svincolerà ${result.cuts_required} giocatore/i.`
         );
       }
-    } else {
-      alert("Trade accettata. Pick e giocatori sono stati aggiornati.");
-    }
+ } else {
+  await sendOfficialTradeBroadcast(proposalId);
+  alert("Trade accettata. Pick e giocatori sono stati aggiornati.");
+}
 
     await refreshAll();
 
@@ -1803,11 +1804,12 @@ async function confirmTradeWithCuts() {
 
     closeCutPlayersModal();
 
-    if (data?.trade_completed) {
-      alert(`Svincoli completati. Trade conclusa.`);
-    } else {
-      alert(`Svincoli registrati.`);
-    }
+if (data?.trade_completed) {
+  await sendOfficialTradeBroadcast(pendingAcceptProposalId);
+  alert(`Svincoli completati. Trade conclusa.`);
+} else {
+  alert(`Svincoli registrati.`);
+}
 
     await refreshAll();
 
@@ -2243,6 +2245,50 @@ async function sendTradeNotification(toTeamId) {
     }
   } catch (err) {
     console.warn("Errore notifica trade:", err);
+  }
+}
+
+async function sendOfficialTradeBroadcast(proposalId) {
+  try {
+    console.log("📣 Invio broadcast trade ufficiale:", proposalId);
+
+    const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
+
+    if (sessionError || !sessionData?.session?.access_token) {
+      console.warn("Sessione non valida per inviare broadcast trade.", sessionError);
+      return;
+    }
+
+    const response = await fetch(
+      `${supabaseUrl}/functions/v1/broadcast-trade-notification`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${sessionData.session.access_token}`,
+          "apikey": supabaseKey
+        },
+        body: JSON.stringify({
+          proposal_id: proposalId
+        })
+      }
+    );
+
+    let result = null;
+
+    try {
+      result = await response.json();
+    } catch (jsonError) {
+      result = { error: "Risposta non JSON", details: String(jsonError) };
+    }
+
+    console.log("📬 Risposta broadcast-trade-notification:", response.status, result);
+
+    if (!response.ok) {
+      console.warn("Broadcast trade non inviato:", result);
+    }
+  } catch (err) {
+    console.warn("Errore broadcast trade:", err);
   }
 }
 
