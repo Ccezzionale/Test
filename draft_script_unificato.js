@@ -872,10 +872,6 @@ function buildDesktopFixedBoardColumns() {
     orderMap[Number(row.pick_number)] = row;
   });
 
-// Se esiste draft_visual_order, usiamo quello per posizionare le card.
-// Ma l'ordine delle colonne deve restare quello originale del draft,
-// altrimenti una trade visuale sposta anche le squadre/header.
-if (visualRows.length) {
   const originalTeamsOrder = [];
 
   orderRows.forEach(row => {
@@ -890,14 +886,19 @@ if (visualRows.length) {
 
   const teamsOrder = originalTeamsOrder;
 
-  return teamsOrder.map(team => {
+  /*
+    CASO 1:
+    Se draft_visual_order è popolata, usiamo quella.
+  */
+  if (visualRows.length) {
+    return teamsOrder.map(team => {
       const teamVisualRows = visualRows
         .filter(row => String(row.team_id) === String(team.id))
-        .sort((a, b) => Number(a.visual_round) - Number(b.visual_round))
-        .slice(0, DESKTOP_FIXED_ROUNDS);
+        .sort((a, b) => Number(a.visual_round) - Number(b.visual_round));
 
       const rounds = Array.from({ length: DESKTOP_FIXED_ROUNDS }, (_, index) => {
         const visualRound = index + 1;
+
         const visualRow = teamVisualRows.find(
           row => Number(row.visual_round) === visualRound
         );
@@ -933,30 +934,68 @@ if (visualRows.length) {
     });
   }
 
-  // Fallback vecchio: se manca draft_visual_order, usa draft_order.
-  const teamsOrder = [];
+  /*
+    CASO 2:
+    Se draft_visual_order NON è popolata, ricostruiamo noi l'ordine visuale.
 
-  orderRows.forEach(row => {
-    const originalTeamId = row.original_team_id || row.team_id;
-    if (!originalTeamId) return;
+    Regola:
+    - le pick originali della squadra restano nei loro slot
+    - le pick acquisite via trade entrano nello slot del loro round originale
+    - tutto quello che viene dopo scala giù
 
-    if (!teamsOrder.some(t => String(t.id) === String(originalTeamId))) {
-      const team = getTeamByIdDesktop(originalTeamId);
-      if (team) teamsOrder.push(team);
-    }
+    Esempio Minnesode:
+    #3, #14, #19, #30, #77, #46, #51, #62...
+  */
+  const originalRoundByPick = {};
+
+  teamsOrder.forEach(team => {
+    const originalSlots = orderRows
+      .filter(row => String(row.original_team_id || row.team_id) === String(team.id))
+      .sort((a, b) => Number(a.pick_number) - Number(b.pick_number));
+
+    originalSlots.forEach((row, index) => {
+      originalRoundByPick[Number(row.pick_number)] = index + 1;
+    });
   });
 
   return teamsOrder.map(team => {
-    const baseSlots = orderRows
-      .filter(row => String(row.original_team_id || row.team_id) === String(team.id))
-      .sort((a, b) => Number(a.pick_number) - Number(b.pick_number))
-      .slice(0, DESKTOP_FIXED_ROUNDS);
-
     const ownedPicks = orderRows
       .filter(row => String(row.team_id) === String(team.id))
-      .sort((a, b) => Number(a.pick_number) - Number(b.pick_number));
+      .map(row => {
+        const pickNumber = Number(row.pick_number);
 
-    const rounds = baseSlots.map((slot, index) => {
+        const isTradedPick =
+          row.original_team_id &&
+          String(row.original_team_id) !== String(row.team_id);
+
+        return {
+          row,
+          pickNumber,
+          isTradedPick,
+          visualRound: isTradedPick
+            ? originalRoundByPick[pickNumber] || 999
+            : originalRoundByPick[pickNumber] || 999
+        };
+      })
+      .sort((a, b) => {
+        if (a.visualRound !== b.visualRound) {
+          return a.visualRound - b.visualRound;
+        }
+
+        /*
+          Se due pick finiscono nello stesso round visuale,
+          prima mostriamo quella acquisita via trade.
+          Così #77 entra al Round 5 e #46 scala sotto.
+        */
+        if (a.isTradedPick !== b.isTradedPick) {
+          return a.isTradedPick ? -1 : 1;
+        }
+
+        return a.pickNumber - b.pickNumber;
+      })
+      .slice(0, DESKTOP_FIXED_ROUNDS);
+
+    const rounds = Array.from({ length: DESKTOP_FIXED_ROUNDS }, (_, index) => {
       const ownedPick = ownedPicks[index] || null;
 
       if (!ownedPick) {
@@ -968,15 +1007,11 @@ if (visualRows.length) {
         };
       }
 
-      const isTradedPick =
-        ownedPick.original_team_id &&
-        String(ownedPick.original_team_id) !== String(ownedPick.team_id);
-
       return {
         round: index + 1,
-        pick_number: Number(ownedPick.pick_number),
-        pickData: picksMap[Number(ownedPick.pick_number)] || null,
-        isTradedPick
+        pick_number: ownedPick.pickNumber,
+        pickData: picksMap[ownedPick.pickNumber] || null,
+        isTradedPick: ownedPick.isTradedPick
       };
     });
 
