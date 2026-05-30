@@ -1421,12 +1421,14 @@ async function loadMyWaiverCalls() {
 function getOwnedPlayerBadges(player) {
   const badges = [];
 
-  // U21 normale
-  if (player.is_u21) {
+  if (player.is_u21_slot) {
     badges.push("🟡 U21");
   }
 
-  // Altri badge già disponibili nella tabella players
+  if (player.is_u21_keeper) {
+    badges.push("🔒 U21 confermato");
+  }
+
   if (player.is_fp) {
     badges.push("⭐ FP");
   }
@@ -2177,8 +2179,10 @@ function mapPlayerRow(p) {
     role: p.role || p.role_mantra || "",
     serieATeam: p.serie_a_team || "",
     quotation: p.quotation ?? "",
-    is_u21: !!p.is_u21,
-    is_fp: !!p.is_fp,
+is_u21: !!p.is_u21,
+is_u21_slot: !!p.is_u21_slot,
+is_u21_keeper: !!p.is_u21_keeper,
+is_fp: !!p.is_fp,
     pool: p.pool,
     unavailable_until_week: p.unavailable_until_week,
     unavailable_until_phase: p.unavailable_until_phase,
@@ -2203,20 +2207,22 @@ function filterAvailableFreeAgents(players) {
 async function loadMyOwnedPlayers() {
   if (!currentTeam || !currentSettings) return;
 
-  const selectFields = `
-    id,
-    external_id,
-    name,
-    role,
-    role_mantra,
-    serie_a_team,
-    quotation,
-    is_u21,
-    is_fp,
-    owner_team_id,
-    status,
-    pool
-  `;
+const selectFields = `
+  id,
+  external_id,
+  name,
+  role,
+  role_mantra,
+  serie_a_team,
+  quotation,
+  is_u21,
+  is_u21_slot,
+  is_u21_keeper,
+  is_fp,
+  owner_team_id,
+  status,
+  pool
+`;
 
   let query = supabase
     .from("players")
