@@ -3730,3 +3730,55 @@ button:disabled {
     word-break: normal !important;
   }
 }
+
+/* =========================================================
+   MOBILE SVINCOLATI - HORIZONTAL SCROLL COMPACT WIDTHS
+   ========================================================= */
+
+@media (max-width: 768px) {
+  #freeAgentsTable {
+    width: max-content !important;
+    min-width: 520px !important;
+    table-layout: auto !important;
+  }
+
+  #freeAgentsTable th,
+  #freeAgentsTable td {
+    padding: 10px 9px !important;
+    font-size: 0.82rem !important;
+    white-space: nowrap !important;
+  }
+
+  #freeAgentsTable th:nth-child(1),
+  #freeAgentsTable td:nth-child(1) {
+    min-width: 145px !important;
+    max-width: 145px !important;
+  }
+
+  #freeAgentsTable th:nth-child(2),
+  #freeAgentsTable td:nth-child(2) {
+    min-width: 55px !important;
+    max-width: 55px !important;
+    text-align: center !important;
+  }
+
+  #freeAgentsTable th:nth-child(3),
+  #freeAgentsTable td:nth-child(3) {
+    min-width: 105px !important;
+    max-width: 105px !important;
+  }
+
+  #freeAgentsTable th:nth-child(4),
+  #freeAgentsTable td:nth-child(4) {
+    min-width: 48px !important;
+    max-width: 48px !important;
+    text-align: center !important;
+  }
+
+  #freeAgentsTable th:nth-child(5),
+  #freeAgentsTable td:nth-child(5) {
+    min-width: 55px !important;
+    max-width: 55px !important;
+    text-align: center !important;
+  }
+}
