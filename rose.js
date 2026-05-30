@@ -26,7 +26,7 @@ function variantiNomeSquadra(nomeSquadra) {
 }
 
 function buildImageCandidates(dir, nomeSquadra) {
-  const estensioni = [".png", ".jpg", ".jpeg", ".webp"];
+  const estensioni = [".webp", ".jpg", ".jpeg", ".png"];
   const varianti = variantiNomeSquadra(nomeSquadra);
   const paths = [];
 
