@@ -2992,7 +2992,7 @@ async function saveWaiverSettings() {
     slot2_close_at: fromDateTimeLocalValue(slot2CloseInput?.value),
 
     slot2s_open_at: fromDateTimeLocalValue(slot2SOpenInput?.value),
-    slot2s_close_at: fromDateTimeLocalValue(slot2SCloseInput?.value)
+    slot2s_close_at: fromDateTimeLocalValue(slot2SCloseInput?.value),
 
    compensatory_open_at: fromDateTimeLocalValue(compensatoryOpenInput?.value),
 compensatory_close_at: fromDateTimeLocalValue(compensatoryCloseInput?.value)
@@ -3223,6 +3223,10 @@ calculateSlot2SBtn?.addEventListener("click", () => {
 
 calculateCompensatoryBtn?.addEventListener("click", () => {
   calculateCompensatoryResults();
+});
+
+addCompensatoryBtn?.addEventListener("click", () => {
+  addManualCompensatoryCall();
 });
 
 [searchInput, roleFilter, serieATeamFilter, u21Filter].forEach(el => {
