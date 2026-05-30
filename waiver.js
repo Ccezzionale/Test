@@ -209,6 +209,93 @@ function getGeneratedSlots() {
   return ["1", "2"];
 }
 
+function getRecallSlotAfterLoss(slot) {
+  const normalizedSlot = normalizeSlot(slot);
+
+  if (normalizedSlot === "1") return "2";
+
+  // In caso playoff, se vuoi usare anche i supplementari:
+  if (normalizedSlot === "1S") return "2S";
+
+  return null;
+}
+
+async function activateRecallSlotForLosers(currentSlot, loserEntries = []) {
+  if (!currentSettings || !loserEntries.length) return;
+
+  const recallSlot = getRecallSlotAfterLoss(currentSlot);
+
+  if (!recallSlot) return;
+
+  const losersByTeam = new Map();
+
+  loserEntries.forEach(entry => {
+    const call = entry.call;
+    const order = entry.order;
+
+    const loserTeamId = call.owner_team_id || call.team_id;
+    const conference = order?.conference || call.conference || "Totale";
+
+    if (!loserTeamId) return;
+
+    const key = `${loserTeamId}__${conference}`;
+
+    if (!losersByTeam.has(key)) {
+      losersByTeam.set(key, {
+        teamId: loserTeamId,
+        conference
+      });
+    }
+  });
+
+  for (const loser of losersByTeam.values()) {
+    const { data: recallOrder, error: recallOrderError } = await supabase
+      .from("waiver_order")
+      .select("id, owner_team_id")
+      .eq("week", currentSettings.active_week)
+      .eq("phase", currentSettings.active_phase)
+      .eq("conference", loser.conference)
+      .eq("slot", recallSlot)
+      .eq("original_team_id", loser.teamId)
+      .maybeSingle();
+
+    if (recallOrderError) {
+      console.error("Errore ricerca richiamo waiver:", recallOrderError);
+      continue;
+    }
+
+    if (!recallOrder) {
+      console.warn("Nessuna chiamata richiamo trovata per:", loser);
+      continue;
+    }
+
+    // Se lo slot è vuoto, lo assegniamo alla squadra che ha perso.
+    // Se è già suo, non facciamo nulla.
+    // Se è di un'altra squadra, non lo tocchiamo per evitare di sovrascrivere modifiche admin/manuali.
+    if (
+      !recallOrder.owner_team_id ||
+      String(recallOrder.owner_team_id) === String(loser.teamId)
+    ) {
+      const { error: updateError } = await supabase
+        .from("waiver_order")
+        .update({
+          owner_team_id: loser.teamId,
+          updated_at: new Date().toISOString()
+        })
+        .eq("id", recallOrder.id);
+
+      if (updateError) {
+        console.error("Errore assegnazione richiamo waiver:", updateError);
+      }
+    } else {
+      console.warn("Richiamo già assegnato ad altra squadra, non sovrascrivo:", {
+        recallOrder,
+        loser
+      });
+    }
+  }
+}
+
 function populateFreeAgentsFilters() {
   if (!roleFilter || !serieATeamFilter) return;
 
@@ -2654,6 +2741,7 @@ const playerKey = call.player_in_id
     });
   });
 
+const loserEntriesForRecall = [];   
   for (const playerKey in callsByPlayer) {
     const entries = callsByPlayer[playerKey];
 
@@ -2672,26 +2760,35 @@ const playerKey = call.player_in_id
     .update({ status: "won" })
     .eq("id", winner.call.id);
 
-  for (const loser of losers) {
-    await supabase
-      .from("waiver_calls")
-      .update({ status: "lost" })
-      .eq("id", loser.call.id);
-  }
+for (const loser of losers) {
+  await supabase
+    .from("waiver_calls")
+    .update({ status: "lost" })
+    .eq("id", loser.call.id);
+
+  loserEntriesForRecall.push(loser);
+}
 } catch (err) {
   console.error("Errore aggiornamento rosa waiver:", err);
   alert(`Errore aggiornamento rosa: ${err.message || err}`);
   return;
 }
   }
-
+   
+await activateRecallSlotForLosers(normalizedSlot, loserEntriesForRecall);
   alert(`Risultati slot ${normalizedSlot} calcolati.`);
 
- await loadMyOwnedPlayers();
+await loadWaiverOrder();
+await loadMyOwnedPlayers();
 await loadFreeAgents();
 await loadAllCalls();
 await loadMyWaiverCalls();
-await renderPublicWaiverOrder();;
+
+if (currentUserEmail === "tringali0511@gmail.com") {
+  renderWaiverOrderAdmin();
+}
+
+await renderPublicWaiverOrder();
 }
 
 async function applyWinningCompensatoryCall(call) {
