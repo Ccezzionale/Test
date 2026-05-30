@@ -4209,3 +4209,206 @@ body {
     grid-template-columns: 1fr;
   }
 }
+
+/* =========================================================
+   ALL STAR V9 FIX
+   - Pool con scroll verticale
+   - Tabelle draft leggibili e non schiacciate
+   - Search box votazioni
+   ========================================================= */
+
+.vote-search-field {
+  display: grid;
+  grid-template-columns: 180px 1fr;
+  align-items: center;
+  gap: 14px;
+  padding: 14px;
+  border-radius: 18px;
+  background: rgba(255,255,255,.04) !important;
+  border: 1px solid var(--br-border, rgba(255,255,255,.08)) !important;
+}
+
+.vote-search-field span {
+  color: #fff !important;
+  font-weight: 950;
+  text-transform: uppercase;
+  font-size: 12px;
+  letter-spacing: .04em;
+}
+
+.vote-search-field input {
+  width: 100%;
+  min-height: 44px;
+  border-radius: 13px;
+  padding: 11px 12px;
+  outline: none;
+  background: rgba(255,255,255,.07) !important;
+  border: 1px solid var(--br-border, rgba(255,255,255,.08)) !important;
+  color: #fff !important;
+}
+
+.vote-search-field input::placeholder {
+  color: rgba(255,255,255,.48);
+}
+
+.broadcast-pool .table-wrap,
+.pool-section .table-wrap {
+  max-height: 520px !important;
+  overflow: auto !important;
+  border-radius: 16px !important;
+  border: 1px solid var(--br-border, rgba(255,255,255,.08)) !important;
+}
+
+.broadcast-pool .players-table thead th,
+.pool-section .players-table thead th {
+  position: sticky;
+  top: 0;
+  z-index: 3;
+  background: #101722 !important;
+}
+
+.team-panel .role-list {
+  display: block !important;
+  padding: 16px 18px 20px !important;
+}
+
+.allstar-draft-table-wrap {
+  width: 100%;
+  max-height: 360px;
+  overflow: auto;
+  border-radius: 16px;
+  border: 1px solid rgba(255,255,255,.08);
+  background: rgba(255,255,255,.035);
+}
+
+.allstar-draft-table-wrap.empty {
+  display: grid;
+  place-items: center;
+  min-height: 160px;
+  max-height: none;
+  padding: 18px;
+}
+
+.empty-draft-table {
+  width: 100%;
+  min-height: 120px;
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: 8px;
+  text-align: center;
+  border-radius: 16px;
+  border-left: 5px solid currentColor;
+  background: rgba(255,255,255,.035);
+}
+
+.team-championship .empty-draft-table {
+  color: var(--br-blue, #126bff);
+}
+
+.team-league .empty-draft-table {
+  color: var(--br-red, #eb1e3f);
+}
+
+.empty-draft-table strong {
+  color: #fff !important;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+  font-size: 17px;
+}
+
+.empty-draft-table span {
+  color: var(--br-muted, #a9b5c8);
+  font-size: 13px;
+}
+
+.allstar-draft-table {
+  width: 100%;
+  min-width: 520px;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+.allstar-draft-table th,
+.allstar-draft-table td {
+  padding: 12px 12px;
+  border-bottom: 1px solid rgba(255,255,255,.06);
+  vertical-align: middle;
+  color: #fff;
+  white-space: nowrap;
+}
+
+.allstar-draft-table thead th {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background: #101722;
+  color: #fff !important;
+  text-align: left;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+  font-size: 12px;
+}
+
+.allstar-draft-table th:nth-child(1),
+.allstar-draft-table td:nth-child(1) {
+  width: 54px;
+}
+
+.allstar-draft-table th:nth-child(2),
+.allstar-draft-table td:nth-child(2) {
+  width: 46%;
+}
+
+.allstar-draft-table th:nth-child(3),
+.allstar-draft-table td:nth-child(3) {
+  width: 96px;
+}
+
+.allstar-draft-table th:nth-child(4),
+.allstar-draft-table td:nth-child(4) {
+  width: 28%;
+}
+
+.allstar-draft-table .pick-col {
+  color: var(--br-gold, #ffc247) !important;
+  font-weight: 950;
+}
+
+.allstar-draft-table td strong {
+  color: #fff !important;
+  font-size: 14px;
+}
+
+.allstar-draft-table .role-pill {
+  min-width: 42px;
+  max-width: 78px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.team-panel .team-header {
+  min-height: 154px;
+}
+
+@media (max-width: 768px) {
+  .vote-search-field {
+    grid-template-columns: 1fr;
+    gap: 8px;
+    padding: 11px;
+    border-radius: 16px;
+  }
+
+  .broadcast-pool .table-wrap,
+  .pool-section .table-wrap {
+    max-height: 440px !important;
+  }
+
+  .allstar-draft-table-wrap {
+    max-height: 310px;
+  }
+
+  .allstar-draft-table {
+    min-width: 500px;
+  }
+}
