@@ -136,6 +136,63 @@ function normalizePlayerName(name) {
     .trim();
 }
 
+function parseQuotation(value) {
+  const n = Number(String(value ?? "").replace(",", ".").trim());
+  return Number.isFinite(n) ? n : 0;
+}
+
+function findMyOwnedPlayerById(playerId) {
+  if (!playerId) return null;
+
+  return myOwnedPlayers.find(player =>
+    String(player.id) === String(playerId)
+  ) || null;
+}
+
+function findFreeAgentById(playerId) {
+  if (!playerId) return null;
+
+  return freeAgents.find(player =>
+    String(player.id) === String(playerId)
+  ) || null;
+}
+
+function validateU21WaiverRule(playerOutId, playerInId) {
+  const playerOut = findMyOwnedPlayerById(playerOutId);
+  const playerIn = findFreeAgentById(playerInId);
+
+  if (!playerOut || !playerIn) {
+    return { valid: true };
+  }
+
+  // Regola SOLO per U21 normali.
+  // Gli U21 confermati/keeper non entrano in questa regola.
+  const isDroppingNormalU21 = playerOut.is_u21_slot === true;
+
+  if (!isDroppingNormalU21) {
+    return { valid: true };
+  }
+
+  const incomingIsU21 = playerIn.is_u21 === true;
+  const incomingQuotation = parseQuotation(playerIn.quotation);
+
+  if (!incomingIsU21) {
+    return {
+      valid: false,
+      message: `${playerOut.name} è un U21 normale: puoi svincolarlo solo per prendere un altro U21.`
+    };
+  }
+
+  if (incomingQuotation > 5) {
+    return {
+      valid: false,
+      message: `${playerOut.name} è un U21 normale: puoi svincolarlo solo per un U21 con quotazione uguale o inferiore a 5. ${playerIn.name} ha quotazione ${incomingQuotation}.`
+    };
+  }
+
+  return { valid: true };
+}
+
 function getPriorityGroupForTeam(team) {
   if (isConferencePhase()) {
     return team.conference || "Senza Conference";
@@ -1946,6 +2003,13 @@ const playerOut = selectedOutOption && playerOutId
 
 if (!playerIn || !playerInId || !playerOut || !playerOutId) {
   setMessage("Seleziona giocatore chiamato e giocatore da svincolare.", true);
+  return;
+}
+
+   const u21RuleCheck = validateU21WaiverRule(playerOutId, playerInId);
+
+if (!u21RuleCheck.valid) {
+  setMessage(u21RuleCheck.message, true);
   return;
 }
 
