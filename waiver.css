@@ -3595,3 +3595,64 @@ button:disabled {
       linear-gradient(180deg, rgba(18, 41, 75, 0.92), rgba(24, 43, 73, 0.88)) !important;
   }
 }
+
+/* =========================================================
+   ADMIN COMPENSATIVE MANAGER
+   ========================================================= */
+
+.admin-compensatory-manager {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.admin-compensatory-form {
+  display: grid;
+  gap: 8px;
+  padding: 12px;
+  border-radius: 16px;
+  background: rgba(255, 204, 0, 0.10);
+  border: 1px solid rgba(255, 204, 0, 0.24);
+  margin-bottom: 12px;
+}
+
+.admin-compensatory-form label {
+  margin: 4px 0 2px;
+}
+
+.admin-compensatory-row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 10px;
+  align-items: center;
+  border-radius: 14px;
+  border: 1px solid rgba(0, 31, 63, 0.09);
+  background: #f8fafc;
+  padding: 12px;
+}
+
+.admin-compensatory-main {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.admin-compensatory-main strong {
+  color: #001f3f;
+}
+
+.admin-compensatory-main span {
+  color: #334155;
+  font-weight: 800;
+}
+
+.admin-compensatory-main small {
+  color: #64748b;
+  font-weight: 700;
+}
+
+@media (max-width: 700px) {
+  .admin-compensatory-row {
+    grid-template-columns: 1fr;
+  }
+}
