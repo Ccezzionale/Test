@@ -904,7 +904,6 @@ function renderDraftPickTable(teamPicks) {
             <th>Giocatore</th>
             <th>Ruolo</th>
             <th>Squadra</th>
-            <th>Q</th>
           </tr>
         </thead>
         <tbody>
@@ -916,7 +915,6 @@ function renderDraftPickTable(teamPicks) {
               </td>
               <td><span class="role-pill role-${escapeAttr(String(pick.player.role).charAt(0))}">${escapeHtml(pick.player.role)}</span></td>
               <td>${escapeHtml(pick.player.serieATeam)}</td>
-              <td>${escapeHtml(pick.player.quotation ?? "-")}</td>
             </tr>
           `).join("")}
         </tbody>

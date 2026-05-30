@@ -4215,9 +4215,9 @@ body {
 }
 
 .allstar-draft-table-wrap {
-  max-height: 320px;
+  max-height: 300px;
   overflow-y: auto;
-  overflow-x: auto;
+  overflow-x: hidden;
   border-radius: 16px;
   border: 1px solid var(--br-border, rgba(255,255,255,.08));
   background: rgba(255,255,255,.035);
@@ -4250,7 +4250,7 @@ body {
 
 .allstar-draft-table {
   width: 100%;
-  min-width: 520px;
+  min-width: 0;
   border-collapse: collapse;
 }
 
@@ -4307,10 +4307,70 @@ body {
   }
 
   .allstar-draft-table-wrap {
-    max-height: 360px;
+    max-height: 340px;
+    overflow-x: auto;
   }
 
   .allstar-draft-table {
-    min-width: 470px;
+    min-width: 430px;
+  }
+}
+
+
+/* =========================================================
+   ALL STAR V5 - TABLE SCROLL + NO QUOTATION IN DRAFT ROSTERS
+   ========================================================= */
+
+.broadcast-pool .table-wrap {
+  max-height: 520px;
+  overflow-y: auto;
+  overflow-x: auto;
+  border-radius: 16px;
+}
+
+.broadcast-pool .players-table thead th {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+}
+
+.allstar-draft-table-wrap {
+  max-height: 300px;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.allstar-draft-table {
+  width: 100%;
+  min-width: 0;
+}
+
+.allstar-draft-table th:nth-child(1),
+.allstar-draft-table td:nth-child(1) {
+  width: 58px;
+}
+
+.allstar-draft-table th:nth-child(3),
+.allstar-draft-table td:nth-child(3) {
+  width: 88px;
+}
+
+.allstar-draft-table th:nth-child(4),
+.allstar-draft-table td:nth-child(4) {
+  width: 140px;
+}
+
+@media (max-width: 768px) {
+  .broadcast-pool .table-wrap {
+    max-height: 460px;
+  }
+
+  .allstar-draft-table-wrap {
+    max-height: 340px;
+    overflow-x: auto;
+  }
+
+  .allstar-draft-table {
+    min-width: 430px;
   }
 }
