@@ -3683,3 +3683,49 @@ nav.site-nav .toggle-submenu .app-alert-badge {
     right: -6px;
   }
 }
+
+/* =========================================================
+   FIX BADGE NEL PANNELLO "ALTRO" MOBILE
+   Evita il quadratino bianco su Trade Room / RFA / Draft
+   ========================================================= */
+
+@media (max-width: 900px){
+
+  .mobile-more-grid a.app-alert-anchor,
+  .mobile-more-grid button.app-alert-anchor{
+    position: relative !important;
+  }
+
+  .mobile-more-grid a .app-alert-badge,
+  .mobile-more-grid button .app-alert-badge{
+    position: absolute !important;
+    top: 8px !important;
+    right: 8px !important;
+    z-index: 30 !important;
+
+    width: auto !important;
+    min-width: 18px !important;
+    height: 18px !important;
+    padding: 0 5px !important;
+
+    display: none !important;
+    align-items: center !important;
+    justify-content: center !important;
+
+    border-radius: 999px !important;
+    background: #ef233c !important;
+    color: #ffffff !important;
+
+    font-size: 0.58rem !important;
+    font-weight: 1000 !important;
+    line-height: 1 !important;
+
+    border: 2px solid #ffffff !important;
+    box-shadow: 0 6px 12px rgba(239, 35, 60, 0.35) !important;
+  }
+
+  .mobile-more-grid a.has-app-alert .app-alert-badge,
+  .mobile-more-grid button.has-app-alert .app-alert-badge{
+    display: inline-flex !important;
+  }
+}
