@@ -221,11 +221,20 @@ function getRecallSlotAfterLoss(slot) {
 }
 
 async function activateRecallSlotForLosers(currentSlot, loserEntries = []) {
-  if (!currentSettings || !loserEntries.length) return;
+  if (!currentSettings || !loserEntries.length) {
+    console.log("Nessun perdente da richiamare.", {
+      currentSlot,
+      loserEntries
+    });
+    return 0;
+  }
 
   const recallSlot = getRecallSlotAfterLoss(currentSlot);
 
-  if (!recallSlot) return;
+  if (!recallSlot) {
+    console.log("Nessuno slot di richiamo previsto dopo:", currentSlot);
+    return 0;
+  }
 
   const losersByTeam = new Map();
 
@@ -248,10 +257,12 @@ async function activateRecallSlotForLosers(currentSlot, loserEntries = []) {
     }
   });
 
+  let activated = 0;
+
   for (const loser of losersByTeam.values()) {
     const { data: recallOrder, error: recallOrderError } = await supabase
       .from("waiver_order")
-      .select("id, owner_team_id")
+      .select("id, owner_team_id, original_team_id, conference, slot")
       .eq("week", currentSettings.active_week)
       .eq("phase", currentSettings.active_phase)
       .eq("conference", loser.conference)
@@ -269,31 +280,137 @@ async function activateRecallSlotForLosers(currentSlot, loserEntries = []) {
       continue;
     }
 
-    // Se lo slot è vuoto, lo assegniamo alla squadra che ha perso.
-    // Se è già suo, non facciamo nulla.
-    // Se è di un'altra squadra, non lo tocchiamo per evitare di sovrascrivere modifiche admin/manuali.
     if (
-      !recallOrder.owner_team_id ||
-      String(recallOrder.owner_team_id) === String(loser.teamId)
+      recallOrder.owner_team_id &&
+      String(recallOrder.owner_team_id) !== String(loser.teamId)
     ) {
-      const { error: updateError } = await supabase
-        .from("waiver_order")
-        .update({
-          owner_team_id: loser.teamId,
-          updated_at: new Date().toISOString()
-        })
-        .eq("id", recallOrder.id);
-
-      if (updateError) {
-        console.error("Errore assegnazione richiamo waiver:", updateError);
-      }
-    } else {
       console.warn("Richiamo già assegnato ad altra squadra, non sovrascrivo:", {
         recallOrder,
         loser
       });
+      continue;
+    }
+
+    const { data: updatedRecall, error: updateError } = await supabase
+      .from("waiver_order")
+      .update({
+        owner_team_id: loser.teamId,
+        updated_at: new Date().toISOString()
+      })
+      .eq("id", recallOrder.id)
+      .select("id, owner_team_id")
+      .maybeSingle();
+
+    if (updateError) {
+      console.error("Errore assegnazione richiamo waiver:", updateError);
+      continue;
+    }
+
+    if (!updatedRecall || String(updatedRecall.owner_team_id) !== String(loser.teamId)) {
+      console.warn("Richiamo non aggiornato davvero:", {
+        recallOrder,
+        updatedRecall,
+        loser
+      });
+      continue;
+    }
+
+    activated++;
+  }
+
+  console.log(`Richiami automatici attivati nello slot ${recallSlot}:`, activated);
+
+  return activated;
+}
+
+async function syncRecallSlotsFromLostCalls(sourceSlot) {
+  if (!currentSettings) return 0;
+
+  const normalizedSourceSlot = normalizeSlot(sourceSlot);
+  const recallSlot = getRecallSlotAfterLoss(normalizedSourceSlot);
+
+  if (!recallSlot) return 0;
+
+  const { data: lostCalls, error: lostError } = await supabase
+    .from("waiver_calls")
+    .select("*")
+    .eq("week", currentSettings.active_week)
+    .eq("phase", currentSettings.active_phase)
+    .eq("slot", normalizedSourceSlot)
+    .eq("status", "lost");
+
+  if (lostError) {
+    console.error("Errore caricamento chiamate perse per richiamo:", lostError);
+    return 0;
+  }
+
+  if (!lostCalls || lostCalls.length === 0) {
+    console.log("Nessuna chiamata persa da sincronizzare.");
+    return 0;
+  }
+
+  let activated = 0;
+
+  for (const call of lostCalls) {
+    const loserTeamId = call.owner_team_id || call.team_id;
+    const conference = call.conference || "Totale";
+
+    if (!loserTeamId) continue;
+
+    const { data: recallOrder, error: recallOrderError } = await supabase
+      .from("waiver_order")
+      .select("id, owner_team_id, original_team_id, conference, slot")
+      .eq("week", currentSettings.active_week)
+      .eq("phase", currentSettings.active_phase)
+      .eq("conference", conference)
+      .eq("slot", recallSlot)
+      .eq("original_team_id", loserTeamId)
+      .maybeSingle();
+
+    if (recallOrderError) {
+      console.error("Errore ricerca slot richiamo:", recallOrderError);
+      continue;
+    }
+
+    if (!recallOrder) {
+      console.warn("Slot richiamo non trovato per chiamata persa:", call);
+      continue;
+    }
+
+    if (
+      recallOrder.owner_team_id &&
+      String(recallOrder.owner_team_id) !== String(loserTeamId)
+    ) {
+      console.warn("Slot richiamo già assegnato ad altra squadra:", {
+        recallOrder,
+        call
+      });
+      continue;
+    }
+
+    const { data: updatedRecall, error: updateError } = await supabase
+      .from("waiver_order")
+      .update({
+        owner_team_id: loserTeamId,
+        updated_at: new Date().toISOString()
+      })
+      .eq("id", recallOrder.id)
+      .select("id, owner_team_id")
+      .maybeSingle();
+
+    if (updateError) {
+      console.error("Errore aggiornamento slot richiamo:", updateError);
+      continue;
+    }
+
+    if (updatedRecall && String(updatedRecall.owner_team_id) === String(loserTeamId)) {
+      activated++;
     }
   }
+
+  console.log(`Richiami sincronizzati da chiamate lost nello slot ${recallSlot}:`, activated);
+
+  return activated;
 }
 
 function populateFreeAgentsFilters() {
@@ -2775,8 +2892,27 @@ for (const loser of losers) {
 }
   }
    
-await activateRecallSlotForLosers(normalizedSlot, loserEntriesForRecall);
-  alert(`Risultati slot ${normalizedSlot} calcolati.`);
+const activatedFromLiveCalc = await activateRecallSlotForLosers(
+  normalizedSlot,
+  loserEntriesForRecall
+);
+
+const activatedFromLostCalls = await syncRecallSlotsFromLostCalls(normalizedSlot);
+
+const totalActivated = activatedFromLiveCalc + activatedFromLostCalls;
+
+if (totalActivated > 0) {
+  setAdminMessage(
+    `Risultati slot ${normalizedSlot} calcolati. Richiami automatici attivati: ${totalActivated}.`
+  );
+} else {
+  setAdminMessage(
+    `Risultati slot ${normalizedSlot} calcolati. Nessun richiamo automatico attivato.`,
+    true
+  );
+}
+
+alert(`Risultati slot ${normalizedSlot} calcolati.`);
 
 await loadWaiverOrder();
 await loadMyOwnedPlayers();
