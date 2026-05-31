@@ -221,20 +221,25 @@ function getRecallSlotAfterLoss(slot) {
 }
 
 async function activateRecallSlotForLosers(currentSlot, loserEntries = []) {
+  console.log("=== RICHIAMO AUTOMATICO START ===", {
+    currentSlot,
+    loserEntries,
+    currentSettings
+  });
+
   if (!currentSettings || !loserEntries.length) {
-    console.log("Nessun perdente da richiamare.", {
-      currentSlot,
-      loserEntries
-    });
-    return 0;
+    console.warn("Stop richiamo: mancano settings o loserEntries vuoto.");
+    return;
   }
 
   const recallSlot = getRecallSlotAfterLoss(currentSlot);
 
-  if (!recallSlot) {
-    console.log("Nessuno slot di richiamo previsto dopo:", currentSlot);
-    return 0;
-  }
+  console.log("Slot richiamo calcolato:", {
+    currentSlot,
+    recallSlot
+  });
+
+  if (!recallSlot) return;
 
   const losersByTeam = new Map();
 
@@ -244,6 +249,13 @@ async function activateRecallSlotForLosers(currentSlot, loserEntries = []) {
 
     const loserTeamId = call.owner_team_id || call.team_id;
     const conference = order?.conference || call.conference || "Totale";
+
+    console.log("Analizzo loser:", {
+      call,
+      order,
+      loserTeamId,
+      conference
+    });
 
     if (!loserTeamId) return;
 
@@ -257,18 +269,31 @@ async function activateRecallSlotForLosers(currentSlot, loserEntries = []) {
     }
   });
 
-  let activated = 0;
+  console.log("Loser unici per squadra/conference:", Array.from(losersByTeam.values()));
 
   for (const loser of losersByTeam.values()) {
+    console.log("Cerco riga waiver_order richiamo:", {
+      week: currentSettings.active_week,
+      phase: currentSettings.active_phase,
+      conference: loser.conference,
+      slot: recallSlot,
+      original_team_id: loser.teamId
+    });
+
     const { data: recallOrder, error: recallOrderError } = await supabase
       .from("waiver_order")
-      .select("id, owner_team_id, original_team_id, conference, slot")
+      .select("id, owner_team_id, original_team_id, conference, slot, priority_number")
       .eq("week", currentSettings.active_week)
       .eq("phase", currentSettings.active_phase)
       .eq("conference", loser.conference)
       .eq("slot", recallSlot)
       .eq("original_team_id", loser.teamId)
       .maybeSingle();
+
+    console.log("Risultato ricerca richiamo:", {
+      recallOrder,
+      recallOrderError
+    });
 
     if (recallOrderError) {
       console.error("Errore ricerca richiamo waiver:", recallOrderError);
@@ -298,29 +323,20 @@ async function activateRecallSlotForLosers(currentSlot, loserEntries = []) {
         updated_at: new Date().toISOString()
       })
       .eq("id", recallOrder.id)
-      .select("id, owner_team_id")
+      .select("id, owner_team_id, original_team_id, conference, slot, priority_number")
       .maybeSingle();
+
+    console.log("Risultato update richiamo:", {
+      updatedRecall,
+      updateError
+    });
 
     if (updateError) {
       console.error("Errore assegnazione richiamo waiver:", updateError);
-      continue;
     }
-
-    if (!updatedRecall || String(updatedRecall.owner_team_id) !== String(loser.teamId)) {
-      console.warn("Richiamo non aggiornato davvero:", {
-        recallOrder,
-        updatedRecall,
-        loser
-      });
-      continue;
-    }
-
-    activated++;
   }
 
-  console.log(`Richiami automatici attivati nello slot ${recallSlot}:`, activated);
-
-  return activated;
+  console.log("=== RICHIAMO AUTOMATICO END ===");
 }
 
 async function syncRecallSlotsFromLostCalls(sourceSlot) {
@@ -2795,6 +2811,12 @@ async function calculateResultsForSlot(slot) {
   if (!currentSettings) return;
 
   const normalizedSlot = normalizeSlot(slot);
+   console.log("=== CALCOLO SLOT START ===", {
+  slot,
+  normalizedSlot,
+  activeWeek: currentSettings?.active_week,
+  activePhase: currentSettings?.active_phase
+});
 
   const { data: calls, error: callsError } = await supabase
     .from("waiver_calls")
@@ -2802,6 +2824,7 @@ async function calculateResultsForSlot(slot) {
     .eq("week", currentSettings.active_week)
     .eq("phase", currentSettings.active_phase)
     .eq("slot", normalizedSlot);
+   console.log("Chiamate trovate per slot:", calls);
 
   if (callsError) {
     console.error("Errore caricamento chiamate:", callsError);
@@ -2834,6 +2857,7 @@ async function calculateResultsForSlot(slot) {
   orders?.forEach(order => {
     orderMap[order.id] = order;
   });
+   console.log("Ordini collegati alle chiamate:", orders);
 
   const callsByPlayer = {};
 
@@ -2868,6 +2892,12 @@ const loserEntriesForRecall = [];
 
     const winner = entries[0];
     const losers = entries.slice(1);
+
+     console.log("Gruppo chiamate stesso giocatore:", {
+  playerKey,
+  winner,
+  losers
+});
 
     try {
   await applyWinningWaiverCall(winner.call);
