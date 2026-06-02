@@ -939,7 +939,7 @@ body {
 
 .pool-filters {
   display: grid;
-  grid-template-columns: 2fr repeat(4, 1fr);
+  grid-template-columns: 2fr 1fr 1fr;
   gap: 10px;
   margin-bottom: 14px;
 }
