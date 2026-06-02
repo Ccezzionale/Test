@@ -134,19 +134,17 @@ function bindEvents() {
   els.saveWinnerConferenceBtn?.addEventListener("click", saveWinnerConferenceFromAdmin);
   els.startVotingBtn?.addEventListener("click", startAllStarVoting);
 
-  [els.searchInput, els.roleFilter, els.teamFilter, els.originFilter, els.conferenceFilter].forEach((el) => {
-    el?.addEventListener("input", renderPool);
-    el?.addEventListener("change", renderPool);
-  });
+[els.searchInput, els.roleFilter, els.teamFilter].forEach((el) => {
+  el?.addEventListener("input", renderPool);
+  el?.addEventListener("change", renderPool);
+});
 
-  els.clearFiltersBtn?.addEventListener("click", () => {
-    els.searchInput.value = "";
-    els.roleFilter.value = "";
-    els.teamFilter.value = "";
-    els.originFilter.value = "";
-    els.conferenceFilter.value = "";
-    renderPool();
-  });
+els.clearFiltersBtn?.addEventListener("click", () => {
+  els.searchInput.value = "";
+  els.roleFilter.value = "";
+  els.teamFilter.value = "";
+  renderPool();
+});
 
   els.openPickModalBtn?.addEventListener("click", openPickModal);
   els.closePickModalBtn?.addEventListener("click", () => els.pickModal?.close());
@@ -485,16 +483,10 @@ async function startAllStarVoting() {
 
 function populateFilters() {
   const serieATeams = unique(players.map((p) => p.serieATeam)).filter((v) => v !== "-").sort();
-  const originTeams = unique(players.map((p) => p.originTeam)).filter((v) => v !== "Svincolato").sort();
 
   if (els.teamFilter) {
     els.teamFilter.innerHTML = `<option value="">Squadra Serie A</option>` +
       serieATeams.map((team) => `<option value="${escapeAttr(team)}">${escapeHtml(team)}</option>`).join("");
-  }
-
-  if (els.originFilter) {
-    els.originFilter.innerHTML = `<option value="">Team di origine</option>` +
-      originTeams.map((team) => `<option value="${escapeAttr(team)}">${escapeHtml(team)}</option>`).join("");
   }
 }
 
@@ -1043,22 +1035,17 @@ function getFilteredPlayers() {
   const q = (els.searchInput?.value || "").trim().toLowerCase();
   const role = els.roleFilter?.value || "";
   const serieATeam = els.teamFilter?.value || "";
-  const originTeam = els.originFilter?.value || "";
-  const conference = els.conferenceFilter?.value || "";
 
   return getAvailablePlayers().filter((player) => {
     const matchesSearch =
       !q ||
       player.name.toLowerCase().includes(q) ||
-      player.serieATeam.toLowerCase().includes(q) ||
-      player.originTeam.toLowerCase().includes(q);
+      player.serieATeam.toLowerCase().includes(q);
 
     return (
       matchesSearch &&
       (!role || player.role === role || String(player.role).startsWith(role)) &&
-      (!serieATeam || player.serieATeam === serieATeam) &&
-      (!originTeam || player.originTeam === originTeam) &&
-      (!conference || player.conference === conference)
+      (!serieATeam || player.serieATeam === serieATeam)
     );
   });
 }
@@ -1072,25 +1059,22 @@ function renderPool() {
     return;
   }
 
-  els.playersTbody.innerHTML = filtered.map((player) => `
-    <tr>
-      <td>
-        <div class="player-name-cell">
-          <span class="player-dot"></span>
-          <span>${escapeHtml(player.name)}</span>
-        </div>
-      </td>
-      <td><span class="role-pill role-${escapeAttr(String(player.role).charAt(0))}">${escapeHtml(player.role)}</span></td>
-      <td>${escapeHtml(player.serieATeam)}</td>
-      <td>${escapeHtml(player.quotation ?? "-")}</td>
-      <td>${escapeHtml(player.originTeam)}</td>
-      <td>${escapeHtml(player.conference)}</td>
-      <td>
-        <button class="pick-btn" data-player-id="${escapeAttr(player.id)}" ${!isAdmin || !state.isOpen ? "disabled" : ""}>Scegli</button>
-      </td>
-    </tr>
-  `).join("");
-
+ els.playersTbody.innerHTML = filtered.map((player) => `
+  <tr>
+    <td>
+      <div class="player-name-cell">
+        <span class="player-dot"></span>
+        <span>${escapeHtml(player.name)}</span>
+      </div>
+    </td>
+    <td><span class="role-pill role-${escapeAttr(String(player.role).charAt(0))}">${escapeHtml(player.role)}</span></td>
+    <td>${escapeHtml(player.serieATeam)}</td>
+    <td>${escapeHtml(player.quotation ?? "-")}</td>
+    <td>
+      <button class="pick-btn" data-player-id="${escapeAttr(player.id)}" ${!isAdmin || !state.isOpen ? "disabled" : ""}>Scegli</button>
+    </td>
+  </tr>
+`).join("");
   document.querySelectorAll(".pick-btn[data-player-id]").forEach((btn) => {
     btn.addEventListener("click", () => makePick(btn.dataset.playerId));
   });
