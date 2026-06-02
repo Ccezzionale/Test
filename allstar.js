@@ -1055,7 +1055,7 @@ function renderPool() {
   const filtered = getFilteredPlayers();
 
   if (!filtered.length) {
-    els.playersTbody.innerHTML = `<tr><td colspan="7">Nessun giocatore disponibile.</td></tr>`;
+   els.playersTbody.innerHTML = `<tr><td colspan="5">Nessun giocatore disponibile.</td></tr>`;
     return;
   }
 
