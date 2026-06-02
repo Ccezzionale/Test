@@ -226,21 +226,31 @@ async function loadState() {
 async function loadPlayers() {
   const { data, error } = await supabase
     .from("players")
-    .select("id, name, role, role_mantra, serie_a_team, quotation, owner_team_id, status, pool")
+    .select("id, name, role, role_mantra, serie_a_team, quotation, status, pool")
+    .eq("status", "active")
+    .eq("pool", "quotazioni")
     .order("name", { ascending: true });
 
   if (error) throw error;
 
-  const allRawPlayers = (data || [])
-    .map(normalizePlayer)
+  players = (data || [])
+    .map((raw) => ({
+      id: raw.id,
+      name: raw.name || "",
+      role: raw.role || raw.role_mantra || "-",
+      roleMantra: raw.role_mantra || "",
+      serieATeam: raw.serie_a_team || "-",
+      quotation: raw.quotation ?? "-",
+      ownerTeamId: null,
+      originTeam: "Listone",
+      conference: "Listone",
+      status: raw.status || "active",
+      pool: raw.pool || "quotazioni"
+    }))
     .filter((p) => p.name);
 
-  allPlayersById = new Map(allRawPlayers.map((player) => [player.id, player]));
-
-  const activeRawPlayers = allRawPlayers
-    .filter((p) => !p.status || !["inactive", "archived"].includes(String(p.status).toLowerCase()));
-
-  players = dedupePlayers(activeRawPlayers, allRawPlayers);
+  allPlayersById = new Map(players.map((player) => [player.id, player]));
+  playerIdAliasMap = new Map(players.map((player) => [player.id, player.id]));
 }
 
 async function loadVotes() {
