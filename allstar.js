@@ -226,7 +226,7 @@ async function loadPlayers() {
     .from("players")
     .select("id, name, role, role_mantra, serie_a_team, quotation, status, pool")
     .eq("status", "active")
-    .eq("pool", "quotazioni")
+    .eq("pool", "conference_championship")
     .order("name", { ascending: true });
 
   if (error) throw error;
