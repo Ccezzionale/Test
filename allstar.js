@@ -303,9 +303,9 @@ function getPlayerQualityScore(player) {
   if (!player.pool) score += 1000;
   if (String(player.pool || "").toLowerCase() === "quotazioni") score += 900;
   if (String(player.pool || "").toLowerCase() === "allstar") score += 800;
-
-  // If every duplicate is a pool row, prefer the free-agent row over an owned/conference clone.
-  if (!player.ownerTeamId) score += 100;
+  
+// Prefer the owned row, so the player keeps team origine and conference.
+if (player.ownerTeamId) score += 100;
   if (player.serieATeam && player.serieATeam !== "-") score += 10;
   if (player.role && player.role !== "-") score += 5;
 
