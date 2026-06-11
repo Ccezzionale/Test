@@ -8,9 +8,9 @@ const HIGHLANDER_SEASON = "2026";
 
 const squadreBase = [
   {
-    nome: "Rubinkebab",
-    logo: "img/Rubinkebab.png",
-    mascotte: "img/maglie/rubinkebab-mascotte.webp",
+    nome: "Atlético Leon",
+    logo: "img/Atlético Leon.png",
+    mascotte: "img/maglie/leon-mascotte.webp",
     highlander: "img/maglie/rubinkebab-higlander.webp"
   },
 {
