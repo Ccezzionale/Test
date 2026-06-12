@@ -4580,3 +4580,38 @@ body {
     overflow-x: hidden !important;
   }
 }
+
+/* =========================================================
+   ALL STAR HERO BANNER CUSTOM
+   ========================================================= */
+
+.broadcast-hero {
+  min-height: 0 !important;
+  padding: 0 !important;
+  aspect-ratio: 3 / 1;
+  border-radius: 28px !important;
+  overflow: hidden !important;
+
+  background: url("img/bannerallstargame.webp") center / cover no-repeat !important;
+  box-shadow: 0 24px 70px rgba(0,0,0,.42) !important;
+}
+
+/* Nasconde il vecchio contenuto sopra il banner */
+.broadcast-hero > * {
+  display: none !important;
+}
+
+/* Toglie scritte/overlay automatici del vecchio hero */
+.broadcast-hero::before,
+.broadcast-hero::after {
+  display: none !important;
+  content: none !important;
+}
+
+@media (max-width: 768px) {
+  .broadcast-hero {
+    border-radius: 18px !important;
+    aspect-ratio: 3 / 1;
+    margin-top: 8px;
+  }
+}
