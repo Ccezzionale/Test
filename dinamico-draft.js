@@ -7,7 +7,7 @@ const conferencePerSquadra = {
   "Riverfilo": "Conference Championship",
   "Golden Knights": "Conference Championship",
   "Fantaugusta": "Conference Championship",
-  "Rubinkebab": "Conference Championship",
+  "Atlético Leon": "Conference Championship",
   "Eintracht Franco 126": "Conference Championship",
   "Fc Disoneste": "Conference Championship",
   "PokerMantra": "Conference Championship",
