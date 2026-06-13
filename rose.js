@@ -84,7 +84,7 @@ function trovaMaglia(nomeSquadra) {
     "poker mantra": "img/maglie/pokermantra-mascotte.webp",
     "minnesode timberland": "img/maglie/minnesode-mascotte.webp",
     "minnesota snakes": "img/maglie/snakes-mascotte.webp",
-    "atletico leon": "img/maglie/leon-mascotte.webp",
+    "atlético leon": "img/maglie/leon-mascotte.webp",
     "eintracht franco 126": "img/maglie/franco-mascotte.webp",
     "fc disoneste": "img/maglie/disoneste-mascotte.webp",
     "athletic pongao": "img/maglie/pongao-mascotte.webp"
