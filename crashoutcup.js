@@ -1,317 +1,419 @@
-// Crash Out Cup – JS
-// Desktop table + mobile premium accordion
+// =========================================================
+// CRASH OUT CUP - PRIMA FASE
+// Stile e struttura pensati per convivere con crashoutplayoff.
+// Per i risultati reali, aggiorna DEMO_SCORES o sostituisci la
+// funzione buildFixtures() con una lettura da Supabase/Google Sheet.
+// =========================================================
 
-// ====== CONFIG ======
-const CSV_URL = "https://docs.google.com/spreadsheets/d/1xPual_RkDPsnAW1Gy_ZCcVlAUATtquTbbym3NPk8UfI/export?format=csv&gid=1127607135";
-const LOGO_DIR = "img/";
-const COLONNA_NOME_SQUADRA = "Squadra";
+const LOGO_BASE_PATH = "img/";
+const LOGO_EXT = ".webp";
+const QUALIFIED_LIMIT = 8;
+const MAX_MATCHDAY = 6;
 
-// ====== ELEMENTI DOM ======
-const elThead = document.querySelector("#tabCoppa thead");
-const elTbody = document.querySelector("#tabCoppa tbody");
-const elAcc = document.getElementById("accCoppa");
+const GROUPS = {
+  A: ["Team Bartowski", "MinneSota Snakes", "wildboys78", "Minnesode Timberland"],
+  B: ["Atlètico Leon", "PokerMantra", "Giody", "Giulay"],
+  C: ["Desperados", "Bayern Christiansen", "Ibla", "Los Pollos Hermanos"],
+  D: ["Real Mimmo", "Sharknado 04", "Pandinicoccolosini", "Vecchi Baldoni FC"]
+};
 
-// ====== UTILS ======
-async function fetchCSV(url) {
-  const res = await fetch(url, { cache: "no-store" });
-  if (!res.ok) throw new Error("Errore nel caricamento CSV");
-  return await res.text();
+// Serve solo a generare risultati demo credibili, così la pagina non sembra
+// un foglio Excel abbandonato in un cassetto. Non decide nulla davvero.
+const POWER_RANKING = [
+  "Team Bartowski",
+  "Atlètico Leon",
+  "Desperados",
+  "Real Mimmo",
+  "MinneSota Snakes",
+  "PokerMantra",
+  "Bayern Christiansen",
+  "Sharknado 04",
+  "wildboys78",
+  "Giody",
+  "Ibla",
+  "Pandinicoccolosini",
+  "Minnesode Timberland",
+  "Giulay",
+  "Los Pollos Hermanos",
+  "Vecchi Baldoni FC"
+];
+
+const MATCHDAY_DATES = {
+  1: { date: "Sab 24/05", time: "15:00" },
+  2: { date: "Dom 25/05", time: "18:00" },
+  3: { date: "Sab 31/05", time: "15:00" },
+  4: { date: "Dom 01/06", time: "18:00" },
+  5: { date: "Sab 07/06", time: "15:00" },
+  6: { date: "Dom 08/06", time: "18:00" }
+};
+
+let activeGroup = "all";
+let activeMatchday = 1;
+let fixtures = [];
+
+const $ = (sel, root = document) => root.querySelector(sel);
+const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
+
+function logoSrc(team) {
+  return encodeURI(`${LOGO_BASE_PATH}${team}${LOGO_EXT}`);
 }
 
-// Parser CSV semplice con gestione virgolette
-function parseCSV(text) {
-  const rows = [];
-  let cur = "";
-  let cell = [];
-  let inQuotes = false;
-
-  for (let i = 0; i < text.length; i++) {
-    const ch = text[i];
-
-    if (ch === '"') {
-      if (inQuotes && text[i + 1] === '"') {
-        cur += '"';
-        i++;
-      } else {
-        inQuotes = !inQuotes;
-      }
-    } else if (ch === "," && !inQuotes) {
-      cell.push(cur);
-      cur = "";
-    } else if ((ch === "\n" || ch === "\r") && !inQuotes) {
-      if (cur !== "" || cell.length) {
-        cell.push(cur);
-        rows.push(cell);
-        cell = [];
-        cur = "";
-      }
-    } else {
-      cur += ch;
-    }
-  }
-
-  if (cur !== "" || cell.length) {
-    cell.push(cur);
-    rows.push(cell);
-  }
-
-  return rows.filter((r) => r.some((x) => String(x).trim() !== ""));
+function initials(team) {
+  return String(team || "?")
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map(word => word[0])
+    .join("")
+    .toUpperCase();
 }
 
-function safeTrim(value) {
-  return String(value ?? "").trim();
-}
+function createLogo(team, classPrefix = "team") {
+  const wrap = document.createElement("span");
+  wrap.className = `${classPrefix}-logo-wrap`;
 
-function normalizeHeader(value) {
-  return safeTrim(value).toLowerCase();
-}
-
-function findHeaderIndex(headers, possibleNames) {
-  return headers.findIndex((h) => possibleNames.includes(normalizeHeader(h)));
-}
-
-function getBadgeClass(pos) {
-  const n = Number(pos);
-  if (n === 1) return "badge gold";
-  if (n === 2) return "badge silver";
-  if (n === 3) return "badge bronze";
-  return "badge normal";
-}
-
-function createLogo(teamName) {
   const img = document.createElement("img");
-  img.className = "logo";
-  img.alt = teamName;
-  img.loading = "lazy";
-  img.src = `${LOGO_DIR}${teamName}.webp`;
+  img.className = `${classPrefix}-logo`;
+  img.alt = team;
+  img.src = logoSrc(team);
 
-  img.onerror = function () {
-    this.style.display = "none";
+  img.onerror = () => {
+    wrap.classList.add("logo-fallback");
+    wrap.textContent = initials(team);
+    img.remove();
   };
 
-  return img;
+  wrap.appendChild(img);
+  return wrap;
 }
 
-// ====== DESKTOP ======
-function buildTable(headers, rows) {
-  if (!elThead || !elTbody) return;
+function getTeamGroup(team) {
+  return Object.entries(GROUPS).find(([, teams]) => teams.includes(team))?.[0] || "";
+}
 
-  elThead.innerHTML = "";
-  elTbody.innerHTML = "";
+function power(team) {
+  const idx = POWER_RANKING.indexOf(team);
+  return idx === -1 ? 0 : POWER_RANKING.length - idx;
+}
 
-  const trh = document.createElement("tr");
+function demoScore(home, away, matchday, matchIndex) {
+  const diff = power(home) - power(away) + 0.8;
+  const swing = ((matchday + matchIndex) % 3) - 1;
+  const adjusted = diff + swing;
 
-  headers.forEach((h) => {
-    const th = document.createElement("th");
-    th.textContent = h || "";
-    trh.appendChild(th);
+  if (adjusted >= 7) return { homeGoals: 3, awayGoals: 0 };
+  if (adjusted >= 4) return { homeGoals: 2, awayGoals: 0 };
+  if (adjusted >= 1.25) return { homeGoals: 2, awayGoals: 1 };
+  if (adjusted > -1.25) return { homeGoals: 1, awayGoals: 1 };
+  if (adjusted > -4) return { homeGoals: 1, awayGoals: 2 };
+  if (adjusted > -7) return { homeGoals: 0, awayGoals: 2 };
+  return { homeGoals: 0, awayGoals: 3 };
+}
+
+function buildFixtures() {
+  const pairings = [
+    [[0, 2], [1, 3]],
+    [[0, 3], [2, 1]],
+    [[0, 1], [3, 2]],
+    [[2, 0], [3, 1]],
+    [[3, 0], [1, 2]],
+    [[1, 0], [2, 3]]
+  ];
+
+  const rows = [];
+
+  Object.entries(GROUPS).forEach(([group, teams]) => {
+    pairings.forEach((matchdayPairs, matchdayIndex) => {
+      const matchday = matchdayIndex + 1;
+      const meta = MATCHDAY_DATES[matchday];
+
+      matchdayPairs.forEach(([homeIndex, awayIndex], pairIndex) => {
+        const home = teams[homeIndex];
+        const away = teams[awayIndex];
+        const score = demoScore(home, away, matchday, pairIndex);
+
+        rows.push({
+          id: `${group}-G${matchday}-M${pairIndex + 1}`,
+          group,
+          matchday,
+          home,
+          away,
+          date: meta.date,
+          time: meta.time,
+          ...score
+        });
+      });
+    });
   });
 
-  elThead.appendChild(trh);
+  return rows;
+}
 
-  const teamIdx = headers.indexOf(COLONNA_NOME_SQUADRA);
+function calculateStandings(matches) {
+  const table = new Map();
 
-  rows.forEach((row) => {
-    const tr = document.createElement("tr");
-
-    row.forEach((val, i) => {
-      const td = document.createElement("td");
-
-      if (i === teamIdx && LOGO_DIR) {
-        const wrap = document.createElement("div");
-        wrap.className = "team";
-
-        const img = createLogo(val);
-        wrap.appendChild(img);
-
-        const span = document.createElement("span");
-        span.textContent = val;
-        wrap.appendChild(span);
-
-        td.appendChild(wrap);
-      } else {
-        td.textContent = val;
-      }
-
-      tr.appendChild(td);
+  Object.values(GROUPS).flat().forEach(team => {
+    table.set(team, {
+      team,
+      group: getTeamGroup(team),
+      played: 0,
+      wins: 0,
+      draws: 0,
+      losses: 0,
+      gf: 0,
+      ga: 0,
+      gd: 0,
+      points: 0,
+      fantasyPoints: power(team) * 10
     });
+  });
 
-    elTbody.appendChild(tr);
+  matches.forEach(match => {
+    if (!Number.isFinite(match.homeGoals) || !Number.isFinite(match.awayGoals)) return;
+
+    const home = table.get(match.home);
+    const away = table.get(match.away);
+    if (!home || !away) return;
+
+    home.played += 1;
+    away.played += 1;
+
+    home.gf += match.homeGoals;
+    home.ga += match.awayGoals;
+    away.gf += match.awayGoals;
+    away.ga += match.homeGoals;
+
+    if (match.homeGoals > match.awayGoals) {
+      home.wins += 1;
+      away.losses += 1;
+      home.points += 3;
+    } else if (match.homeGoals < match.awayGoals) {
+      away.wins += 1;
+      home.losses += 1;
+      away.points += 3;
+    } else {
+      home.draws += 1;
+      away.draws += 1;
+      home.points += 1;
+      away.points += 1;
+    }
+  });
+
+  const rows = Array.from(table.values()).map(row => ({
+    ...row,
+    gd: row.gf - row.ga
+  }));
+
+  rows.sort((a, b) =>
+    b.points - a.points ||
+    b.gd - a.gd ||
+    b.gf - a.gf ||
+    b.fantasyPoints - a.fantasyPoints ||
+    POWER_RANKING.indexOf(a.team) - POWER_RANKING.indexOf(b.team)
+  );
+
+  return rows;
+}
+
+function formatDiff(n) {
+  return n > 0 ? `+${n}` : String(n);
+}
+
+function renderStandings() {
+  const body = $("#standings-body");
+  if (!body) return;
+
+  const standings = calculateStandings(fixtures);
+
+  body.innerHTML = standings.map((row, index) => {
+    const pos = index + 1;
+    const qualified = pos <= QUALIFIED_LIMIT;
+    const className = [
+      qualified ? "is-qualified" : "is-out",
+      pos === QUALIFIED_LIMIT ? "is-borderline" : ""
+    ].filter(Boolean).join(" ");
+
+    const status = qualified ? "Qualificata" : "Crash zone";
+    const diffClass = row.gd > 0 ? "diff-positive" : row.gd < 0 ? "diff-negative" : "";
+
+    return `
+      <tr class="${className}">
+        <td class="pos-cell">${pos}</td>
+        <td>
+          <div class="team-cell" data-team="${row.team}">
+            <span class="logo-mount" data-logo-team="${row.team}" data-logo-class="team"></span>
+            <span class="team-main">
+              <span class="team-name">${row.team}</span>
+              <span class="team-status">${status}</span>
+            </span>
+          </div>
+        </td>
+        <td><span class="group-badge group-${row.group}">${row.group}</span></td>
+        <td>${row.played}</td>
+        <td>${row.wins}</td>
+        <td>${row.draws}</td>
+        <td>${row.losses}</td>
+        <td>${row.gf}</td>
+        <td>${row.ga}</td>
+        <td class="${diffClass}">${formatDiff(row.gd)}</td>
+        <td class="points-cell">${row.points}</td>
+      </tr>
+    `;
+  }).join("");
+
+  mountLogos(body);
+}
+
+function renderGroups() {
+  const grid = $("#groups-grid");
+  if (!grid) return;
+
+  grid.innerHTML = Object.entries(GROUPS).map(([group, teams]) => `
+    <article class="group-card" data-group="${group}">
+      <h3>Girone ${group}</h3>
+      ${teams.map(team => `
+        <div class="group-team">
+          <span class="logo-mount" data-logo-team="${team}" data-logo-class="group"></span>
+          <span>${team}</span>
+        </div>
+      `).join("")}
+    </article>
+  `).join("");
+
+  mountLogos(grid);
+}
+
+function getVisibleFixtures() {
+  return fixtures.filter(match => {
+    const groupMatch = activeGroup === "all" || match.group === activeGroup;
+    return groupMatch && match.matchday === activeMatchday;
   });
 }
 
-// ====== MOBILE ======
-function buildAccordion(headers, rows) {
-  if (!elAcc) return;
+function renderSchedule() {
+  const list = $("#schedule-list");
+  const label = $("#matchday-label");
+  if (!list || !label) return;
 
-  elAcc.innerHTML = "";
+  label.textContent = `Giornata ${activeMatchday}`;
 
-  const teamIdx = headers.indexOf(COLONNA_NOME_SQUADRA);
-  const posIdx = findHeaderIndex(headers, ["pos"]);
-  const gIdx = findHeaderIndex(headers, ["g"]);
-  const vIdx = findHeaderIndex(headers, ["v"]);
-  const nIdx = findHeaderIndex(headers, ["n"]);
-  const pIdx = findHeaderIndex(headers, ["p"]);
-  const ptIdx = headers.findIndex((h) => {
-    const hh = normalizeHeader(h);
-    return hh === "pt." || hh === "pt";
-  });
-  const ptTotIdx = headers.findIndex((h) => {
-    const hh = normalizeHeader(h);
-    return hh.includes("tot");
-  });
+  const visible = getVisibleFixtures();
 
-  rows.forEach((row, idx) => {
-    const teamName = teamIdx >= 0 ? safeTrim(row[teamIdx]) : `Squadra ${idx + 1}`;
-    const posValue = posIdx >= 0 ? safeTrim(row[posIdx]) : String(idx + 1);
-    const puntiValue = ptIdx >= 0 ? safeTrim(row[ptIdx]) : "";
-    const gValue = gIdx >= 0 ? safeTrim(row[gIdx]) : "";
-    const vValue = vIdx >= 0 ? safeTrim(row[vIdx]) : "";
-    const nValue = nIdx >= 0 ? safeTrim(row[nIdx]) : "";
-    const pValue = pIdx >= 0 ? safeTrim(row[pIdx]) : "";
-    const ptTotValue = ptTotIdx >= 0 ? safeTrim(row[ptTotIdx]) : "";
-
-    const details = document.createElement("details");
-
-    const summary = document.createElement("summary");
-
-    const shell = document.createElement("div");
-    shell.className = "summary-shell";
-
-    const left = document.createElement("div");
-    left.className = "summary-left";
-
-    const badge = document.createElement("span");
-    badge.className = getBadgeClass(posValue);
-    badge.textContent = `#${posValue}`;
-    left.appendChild(badge);
-
-    if (LOGO_DIR) {
-      left.appendChild(createLogo(teamName));
-    }
-
-    const title = document.createElement("div");
-    title.className = "summary-title";
-
-    const name = document.createElement("div");
-    name.className = "team-name";
-    name.textContent = teamName;
-    title.appendChild(name);
-
-    const sub = document.createElement("div");
-    sub.className = "sub";
-
-    const recordParts = [];
-    if (vValue) recordParts.push(`${vValue}V`);
-    if (nValue) recordParts.push(`${nValue}N`);
-    if (pValue) recordParts.push(`${pValue}P`);
-
-    sub.textContent = recordParts.join(" • ");
-    title.appendChild(sub);
-
-    left.appendChild(title);
-
-    const right = document.createElement("div");
-    right.className = "summary-right";
-
-    const pointsBox = document.createElement("div");
-    pointsBox.className = "points-box";
-
-    const pointsValue = document.createElement("span");
-    pointsValue.className = "points-value";
-    pointsValue.textContent = puntiValue;
-    pointsBox.appendChild(pointsValue);
-
-    const pointsLabel = document.createElement("span");
-    pointsLabel.className = "points-label";
-    pointsLabel.textContent = "Pt.";
-    pointsBox.appendChild(pointsLabel);
-
-    right.appendChild(pointsBox);
-
-    const chevron = document.createElement("span");
-    chevron.className = "chevron";
-    chevron.textContent = "▾";
-    right.appendChild(chevron);
-
-    shell.appendChild(left);
-    shell.appendChild(right);
-    summary.appendChild(shell);
-    details.appendChild(summary);
-
-    const body = document.createElement("div");
-    body.className = "accordion-body";
-
-    const kv = document.createElement("div");
-    kv.className = "kv";
-
-    const detailItems = [
-      { label: "G", value: gValue },
-      { label: "V", value: vValue },
-      { label: "N", value: nValue },
-      { label: "P", value: pValue },
-      { label: "Pt.", value: puntiValue },
-      { label: "Pt. Totali", value: ptTotValue }
-    ];
-
-    detailItems.forEach((item) => {
-      const card = document.createElement("div");
-      card.className = "kv-item";
-
-      const label = document.createElement("span");
-      label.className = "kv-label";
-      label.textContent = item.label;
-
-      const value = document.createElement("span");
-      value.className = "kv-value";
-      value.textContent = item.value;
-
-      card.appendChild(label);
-      card.appendChild(value);
-      kv.appendChild(card);
-    });
-
-    body.appendChild(kv);
-    details.appendChild(body);
-
-    elAcc.appendChild(details);
-  });
-}
-
-// ====== LOAD ======
-async function loadAndRender() {
-  try {
-    const text = await fetchCSV(CSV_URL);
-    const parsed = parseCSV(text);
-
-    if (!parsed.length) {
-      throw new Error("CSV vuoto");
-    }
-
-    const headerIdx = parsed.findIndex((row) => {
-      const cells = row.map((c) => safeTrim(c).toLowerCase());
-      return cells.includes("pos") && cells.includes("squadra");
-    });
-
-    if (headerIdx === -1) {
-      throw new Error("Intestazione non trovata. Servono 'Pos' e 'Squadra'.");
-    }
-
-    const headers = parsed[headerIdx].slice(0, 9).map((h) => safeTrim(h));
-
-    const start = headerIdx + 1;
-    const end = start + 16;
-    const rows = parsed
-      .slice(start, end)
-      .map((r) => r.slice(0, 9));
-
-    buildTable(headers, rows);
-    buildAccordion(headers, rows);
-  } catch (error) {
-    console.error(error);
-    alert("Impossibile caricare la classifica della Crash Out Cup. Controlla l'URL CSV.");
+  if (!visible.length) {
+    list.innerHTML = `<div class="empty-state">Nessuna partita per questo filtro.</div>`;
+    return;
   }
+
+  list.innerHTML = visible.map(match => `
+    <article class="fixture-card" data-group="${match.group}">
+      <div class="fixture-team home">
+        <span class="logo-mount" data-logo-team="${match.home}" data-logo-class="fixture"></span>
+        <span>
+          <span class="fixture-team-name">${match.home}</span>
+          <span class="fixture-score">${match.homeGoals}</span>
+        </span>
+      </div>
+
+      <div class="fixture-vs"><span>VS</span></div>
+
+      <div class="fixture-team away">
+        <span>
+          <span class="fixture-team-name">${match.away}</span>
+          <span class="fixture-score">${match.awayGoals}</span>
+        </span>
+        <span class="logo-mount" data-logo-team="${match.away}" data-logo-class="fixture"></span>
+      </div>
+
+      <div class="fixture-meta">
+        <span>${match.date}<br>${match.time}</span>
+        <span class="group-badge group-${match.group}">${match.group}</span>
+      </div>
+    </article>
+  `).join("");
+
+  mountLogos(list);
 }
 
-// ====== AVVIO ======
-window.addEventListener("DOMContentLoaded", loadAndRender);
+function mountLogos(root = document) {
+  root.querySelectorAll(".logo-mount").forEach(mount => {
+    const team = mount.dataset.logoTeam;
+    const logoClass = mount.dataset.logoClass || "team";
+    mount.replaceWith(createLogo(team, logoClass));
+  });
+}
+
+function bindScheduleControls() {
+  const tabs = $("#schedule-tabs");
+  const prev = $("#prev-matchday");
+  const next = $("#next-matchday");
+
+  tabs?.addEventListener("click", event => {
+    const btn = event.target.closest(".schedule-tab");
+    if (!btn) return;
+
+    activeGroup = btn.dataset.group || "all";
+
+    tabs.querySelectorAll(".schedule-tab").forEach(tab => {
+      tab.classList.toggle("is-active", tab === btn);
+    });
+
+    renderSchedule();
+  });
+
+  prev?.addEventListener("click", () => {
+    activeMatchday = activeMatchday <= 1 ? MAX_MATCHDAY : activeMatchday - 1;
+    renderSchedule();
+  });
+
+  next?.addEventListener("click", () => {
+    activeMatchday = activeMatchday >= MAX_MATCHDAY ? 1 : activeMatchday + 1;
+    renderSchedule();
+  });
+}
+
+function initMobileMenuFallback() {
+  const hamburger = document.getElementById("hamburger");
+  const mainMenu = document.getElementById("mainMenu");
+
+  if (!hamburger || !mainMenu) return;
+
+  hamburger.addEventListener("click", event => {
+    event.preventDefault();
+    event.stopPropagation();
+    mainMenu.classList.toggle("show");
+  });
+
+  document.querySelectorAll("#mainMenu .toggle-submenu").forEach(toggle => {
+    toggle.addEventListener("click", event => {
+      if (window.innerWidth > 900) return;
+
+      event.preventDefault();
+      event.stopPropagation();
+
+      toggle.closest(".dropdown")?.classList.toggle("show");
+    });
+  });
+
+  document.addEventListener("click", event => {
+    if (window.innerWidth > 900) return;
+
+    const clickedInsideNav = event.target.closest(".site-nav");
+    if (clickedInsideNav) return;
+
+    mainMenu.classList.remove("show");
+    document.querySelectorAll("#mainMenu .dropdown.show").forEach(dropdown => {
+      dropdown.classList.remove("show");
+    });
+  });
+}
+
+function initCrashOutCup() {
+  fixtures = buildFixtures();
+  renderStandings();
+  renderGroups();
+  renderSchedule();
+  bindScheduleControls();
+  initMobileMenuFallback();
+}
+
+document.addEventListener("DOMContentLoaded", initCrashOutCup);

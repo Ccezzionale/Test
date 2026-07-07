@@ -2,16 +2,19 @@
 <html lang="it">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Crash Out Cup</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Lega degli Eroi – Crash Out Cup • Prima fase</title>
+
   <link rel="stylesheet" href="navbar.css">
-  <link rel="stylesheet" href="crashoutcup.css?v=5">
+  <link rel="stylesheet" href="crashoutcup.css">
 </head>
+
 <body>
   <nav class="site-nav">
     <div class="nav-inner">
       <div class="nav-left">
         <span id="hamburger" class="hamburger" aria-label="Apri menu">☰</span>
+
         <a href="index.html" class="brand-home" aria-label="Home">
           <img src="icons/nav/home.webp" alt="" class="nav-home-icon">
         </a>
@@ -24,6 +27,7 @@
           <a href="#" class="toggle-submenu">
             Draft <span class="caret">▾</span>
           </a>
+
           <ul class="submenu">
             <li><a href="pre-draft.html"><img src="icons/nav/pre-draft.webp" class="menu-icon" alt="">Pre-Draft</a></li>
             <li><a href="draft_championship.html"><img src="icons/nav/conf-championship.webp" class="menu-icon" alt="">Conf. Championship</a></li>
@@ -36,6 +40,7 @@
           <a href="#" class="toggle-submenu">
             Competizioni <span class="caret">▾</span>
           </a>
+
           <ul class="submenu">
             <li><a href="classifica.html"><img src="icons/nav/classifiche.webp" class="menu-icon" alt="">Classifiche</a></li>
             <li><a href="playoff.html"><img src="icons/nav/playoff.webp" class="menu-icon" alt="">Playoff</a></li>
@@ -43,12 +48,7 @@
             <li><a href="crashoutcup.html"><img src="icons/nav/crashout-cup.webp" class="menu-icon" alt="">Crash Out Cup</a></li>
             <li><a href="crashoutplayoff.html"><img src="icons/nav/crashout-playoff.webp" class="menu-icon" alt="">Crash Out Cup - Playoff</a></li>
             <li><a href="supercoppa.html"><img src="icons/nav/supercoppa.webp" class="menu-icon" alt="">Supercoppa</a></li>
-                                    <li>
-              <a href="allstar.html">
-                <img src="icons/nav/allstar.webp" class="menu-icon" alt="">
-                All-Star Game
-              </a>
-            </li>
+            <li><a href="allstar.html"><img src="icons/nav/allstar.webp" class="menu-icon" alt="">All-Star Game</a></li>
             <li><a href="statistiche.html"><img src="icons/nav/statistiche.webp" class="menu-icon" alt="">Statistiche</a></li>
           </ul>
         </li>
@@ -59,6 +59,7 @@
           <a href="#" class="toggle-submenu">
             Hall of Fame <span class="caret">▾</span>
           </a>
+
           <ul class="submenu">
             <li><a href="medagliere.html"><img src="icons/nav/albo-oro.webp" class="menu-icon" alt="">Albo d'Oro</a></li>
             <li><a href="albo.html"><img src="icons/nav/medagliere.webp" class="menu-icon" alt="">Medagliere</a></li>
@@ -92,32 +93,144 @@
     </div>
   </nav>
 
-  <header class="hero">
-    <div class="hero-inner">
-      <p class="eyebrow">Competizioni</p>
-      <h1 class="page-title">Crash Out Cup</h1>
-      <p class="page-subtitle">Classifica generale della competizione</p>
+  <header class="page-header page-header-banner">
+    <picture>
+      <source
+        media="(max-width: 900px)"
+        srcset="icons/nav/crash_out_cup - banner.webp"
+      >
+
+      <img
+        src="icons/nav/cocdesktop.webp"
+        alt="Crash Out Cup"
+        class="crash-cup-banner"
+      >
+    </picture>
+
+    <div class="page-title-block crash-header-hidden">
+      <div class="page-kicker">Lega degli Eroi</div>
+      <h1>Crash Out <span>Cup</span></h1>
+      <div class="page-subtitle">Prima fase • Classifica unica generale</div>
     </div>
   </header>
 
-  <main class="container main">
-    <section class="desktop">
-      <div class="table-card">
-        <div class="table-wrap">
-          <table id="tabCoppa">
-            <thead></thead>
-            <tbody></tbody>
-          </table>
-        </div>
+  <main class="cup-container">
+    <section class="phase-intro-card" aria-label="Formula Crash Out Cup">
+      <div class="phase-intro-copy">
+        <span class="section-kicker">Prima fase</span>
+        <h2>Gironi separati, classifica unica.</h2>
+        <p>
+          Quattro gironi da quattro squadre con andata e ritorno. I gironi servono per creare il calendario,
+          ma la graduatoria finale somma tutti i punti in una sola classifica generale.
+        </p>
+      </div>
+
+      <div class="crash-stats" aria-label="Crash Out Cup stats">
+        <div class="stat-card"><strong>4</strong><span>Gironi</span></div>
+        <div class="stat-card"><strong>16</strong><span>Squadre</span></div>
+        <div class="stat-card"><strong>6</strong><span>Partite</span></div>
+        <div class="stat-card"><strong>Unica</strong><span>Classifica</span></div>
       </div>
     </section>
 
-    <section class="mobile">
-      <div id="accCoppa" class="mobile-list"></div>
+    <section class="phase-layout" aria-label="Prima fase Crash Out Cup">
+      <section class="crash-panel standings-panel" aria-labelledby="standings-title">
+        <div class="panel-head">
+          <div>
+            <span class="section-kicker">Classifica generale</span>
+            <h2 id="standings-title">Classifica unica</h2>
+          </div>
+
+          <div class="qualification-pill">
+            <span class="pulse-dot"></span>
+            Top 8 qualificate
+          </div>
+        </div>
+
+        <div class="table-scroll">
+          <table class="standings-table">
+            <thead>
+              <tr>
+                <th>Pos</th>
+                <th>Squadra</th>
+                <th>Girone</th>
+                <th>G</th>
+                <th>V</th>
+                <th>N</th>
+                <th>P</th>
+                <th>GF</th>
+                <th>GS</th>
+                <th>DR</th>
+                <th>Pt</th>
+              </tr>
+            </thead>
+            <tbody id="standings-body"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <aside class="crash-panel calendar-panel" aria-labelledby="calendar-title">
+        <div class="panel-head compact">
+          <div>
+            <span class="section-kicker">Calendario</span>
+            <h2 id="calendar-title">Giornate</h2>
+          </div>
+        </div>
+
+        <div class="schedule-tabs" id="schedule-tabs" role="tablist" aria-label="Filtra calendario">
+          <button type="button" class="schedule-tab is-active" data-group="all">Tutte</button>
+          <button type="button" class="schedule-tab" data-group="A">Girone A</button>
+          <button type="button" class="schedule-tab" data-group="B">Girone B</button>
+          <button type="button" class="schedule-tab" data-group="C">Girone C</button>
+          <button type="button" class="schedule-tab" data-group="D">Girone D</button>
+        </div>
+
+        <div class="matchday-control" aria-label="Seleziona giornata">
+          <button type="button" id="prev-matchday" class="round-arrow" aria-label="Giornata precedente">‹</button>
+          <strong id="matchday-label">Giornata 1</strong>
+          <button type="button" id="next-matchday" class="round-arrow" aria-label="Giornata successiva">›</button>
+        </div>
+
+        <div id="schedule-list" class="schedule-list"></div>
+      </aside>
     </section>
+
+    <section class="bottom-grid">
+      <section class="crash-panel groups-panel" aria-labelledby="groups-title">
+        <div class="panel-head compact">
+          <div>
+            <span class="section-kicker">Composizione</span>
+            <h2 id="groups-title">Gironi</h2>
+          </div>
+        </div>
+
+        <div id="groups-grid" class="groups-grid"></div>
+      </section>
+
+      <section class="crash-panel rules-panel" aria-labelledby="rules-title">
+        <div class="panel-head compact">
+          <div>
+            <span class="section-kicker">Spareggi</span>
+            <h2 id="rules-title">Criteri</h2>
+          </div>
+        </div>
+
+        <ol class="rules-list">
+          <li><strong>1</strong><span>Differenza reti</span></li>
+          <li><strong>2</strong><span>Gol fatti</span></li>
+          <li><strong>3</strong><span>Fantapunti</span></li>
+          <li><strong>4</strong><span>Sorteggio</span></li>
+        </ol>
+      </section>
+    </section>
+
+    <div class="crash-footer-strip">
+      <div class="crash-quote">“ I gironi decidono il percorso. La classifica unica decide chi sopravvive. ”</div>
+    </div>
   </main>
-<script src="mobile-nav.js"></script>
-  <script src="crashoutcup.js"></script>
+
+  <script src="mobile-nav.js"></script>
+  <script src="crashoutcup.js" defer></script>
   <script src="navbar.js"></script>
 </body>
 </html>
