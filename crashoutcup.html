@@ -6,7 +6,7 @@
   <title>Lega degli Eroi – Crash Out Cup • Prima fase</title>
 
   <link rel="stylesheet" href="navbar.css">
-  <link rel="stylesheet" href="crashoutcup.css?v=20260707-seed-playoff-v3">
+  <link rel="stylesheet" href="crashoutcup.css?v=20260707-admin-v4">
 </head>
 
 <body>
@@ -224,13 +224,64 @@
       </section>
     </section>
 
+
+    <section id="crash-admin-panel" class="crash-admin-panel hidden" aria-label="Admin Crash Out Cup">
+      <button id="crash-admin-toggle" type="button" class="crash-admin-toggle" aria-expanded="false">
+        <span>
+          <span class="crash-admin-kicker">Admin Panel</span>
+          <strong>Setup prima fase</strong>
+          <small>Assegna i gironi, genera il calendario e inserisci i magic punteggi.</small>
+        </span>
+        <span class="crash-admin-chevron">⌄</span>
+      </button>
+
+      <div class="crash-admin-body">
+        <section class="admin-block" aria-labelledby="admin-groups-title">
+          <div class="admin-block-head">
+            <div>
+              <h2 id="admin-groups-title">Composizione gironi</h2>
+              <p>Scegli le 4 squadre per ogni girone. L'ordine degli slot crea automaticamente le 6 giornate andata/ritorno.</p>
+            </div>
+            <button id="admin-save-groups-generate" type="button" class="crash-admin-save">
+              Salva gironi e genera calendario
+            </button>
+          </div>
+
+          <div id="admin-groups-grid" class="admin-groups-grid"></div>
+          <p id="admin-groups-status" class="crash-admin-status"></p>
+        </section>
+
+        <section class="admin-block" aria-labelledby="admin-results-title">
+          <div class="admin-block-head">
+            <div>
+              <h2 id="admin-results-title">Risultati giornata</h2>
+              <p>Inserisci i magic punteggi. I gol e la classifica unica vengono calcolati in automatico.</p>
+            </div>
+
+            <div class="admin-actions-inline">
+              <label class="admin-matchday-picker">
+                Giornata
+                <select id="admin-matchday-select"></select>
+              </label>
+              <button id="admin-save-results" type="button" class="crash-admin-save">
+                Salva risultati
+              </button>
+            </div>
+          </div>
+
+          <div id="admin-results-grid" class="admin-results-grid"></div>
+          <p id="admin-results-status" class="crash-admin-status"></p>
+        </section>
+      </div>
+    </section>
+
     <div class="crash-footer-strip">
       <div class="crash-quote">“ I gironi decidono il calendario. La classifica unica costruisce il tabellone. ”</div>
     </div>
   </main>
 
   <script src="mobile-nav.js"></script>
-  <script src="crashoutcup.js?v=20260707-seed-playoff-v3" defer></script>
+  <script type="module" src="crashoutcup.js?v=20260707-admin-v4" defer></script>
   <script src="navbar.js"></script>
 </body>
 </html>
