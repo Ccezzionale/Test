@@ -1,3 +1,4 @@
+/* Crash Out Cup prima fase - Versione: 20260707-seed-playoff-v3 */
 :root{
   --crash-bg:#040510;
   --crash-bg-2:#08091a;
@@ -255,7 +256,8 @@ body::before{
   line-height:1;
 }
 
-.qualification-pill{
+.qualification-pill,
+.seeding-pill{
   display:flex;
   align-items:center;
   gap:8px;
@@ -328,19 +330,28 @@ body::before{
   border-radius:0 12px 12px 0;
 }
 
-.standings-table tr.is-qualified td{
+.standings-table tr.is-seeded td{
   background:
-    linear-gradient(90deg, rgba(255,49,223,.13), rgba(32,199,255,.07));
-  border-color:rgba(255,49,223,.16);
-  box-shadow:inset 0 0 0 1px rgba(32,199,255,.025);
+    linear-gradient(90deg, rgba(255,49,223,.09), rgba(32,199,255,.045));
+  border-color:rgba(255,49,223,.12);
+  box-shadow:inset 0 0 0 1px rgba(32,199,255,.018);
 }
 
-.standings-table tr.is-borderline td{
-  border-bottom-color:rgba(32,199,255,.42);
+.standings-table tr.seed-tier-1 td{
+  background:
+    linear-gradient(90deg, rgba(255,49,223,.17), rgba(32,199,255,.09));
+  border-color:rgba(255,49,223,.24);
 }
 
-.standings-table tr.is-out td{
-  opacity:.75;
+.standings-table tr.seed-tier-2 td{
+  background:
+    linear-gradient(90deg, rgba(255,49,223,.12), rgba(32,199,255,.065));
+}
+
+.standings-table tr.seed-tier-3 td,
+.standings-table tr.seed-tier-4 td{
+  background:
+    linear-gradient(90deg, rgba(255,255,255,.035), rgba(32,199,255,.035));
 }
 
 .pos-cell{
@@ -349,7 +360,7 @@ body::before{
   text-shadow:0 0 10px rgba(255,49,223,.28);
 }
 
-.is-qualified .pos-cell{
+.is-seeded .pos-cell{
   color:#dff8ff !important;
   text-shadow:0 0 12px rgba(32,199,255,.42);
 }
@@ -425,7 +436,7 @@ body::before{
   text-shadow:0 0 12px rgba(255,49,223,.24);
 }
 
-.is-qualified .points-cell{
+.is-seeded .points-cell{
   color:#9cfbff !important;
   text-shadow:0 0 14px rgba(32,199,255,.42);
 }
@@ -878,7 +889,8 @@ body::before{
     font-size:1.22rem;
   }
 
-  .qualification-pill{
+  .qualification-pill,
+  .seeding-pill{
     display:none;
   }
 

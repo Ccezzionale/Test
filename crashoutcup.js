@@ -1,42 +1,112 @@
 // =========================================================
+const CRASHOUT_PHASE_VERSION = "20260707-seed-playoff-v3";
 // CRASH OUT CUP - PRIMA FASE
 // Stile e struttura pensati per convivere con crashoutplayoff.
-// Per i risultati reali, aggiorna DEMO_SCORES o sostituisci la
-// funzione buildFixtures() con una lettura da Supabase/Google Sheet.
+// Per i risultati reali, sostituisci la funzione buildFixtures()
+// con una lettura da Supabase/Google Sheet.
 // =========================================================
 
 const LOGO_BASE_PATH = "img/";
 const LOGO_EXT = ".webp";
-const QUALIFIED_LIMIT = 8;
 const MAX_MATCHDAY = 6;
 
+const TEAM_DATA = [
+  {
+    nome: "Atlètico Leon",
+    logo: "img/Atlético Leon.webp",
+    coach: "Coach Rubinkebab"
+  },
+  {
+    nome: "Bayern Christiansen",
+    logo: "img/Bayern Christiansen.webp",
+    coach: "Coach Christian"
+  },
+  {
+    nome: "Team Bartowski",
+    logo: "img/Team Bartowski.webp",
+    coach: "Coach Marco"
+  },
+  {
+    nome: "Golden Knights",
+    logo: "img/Golden Knights.webp",
+    coach: "Coach Mimmo&Francesco"
+  },
+  {
+    nome: "Ibla",
+    logo: "img/Ibla.webp",
+    coach: "Coach Francesco"
+  },
+  {
+    nome: "Fantaugusta",
+    logo: "img/Fantaugusta.webp",
+    coach: "Coach Giancarlo"
+  },
+  {
+    nome: "Riverfilo",
+    logo: "img/Riverfilo.webp",
+    coach: "Coach Federico"
+  },
+  {
+    nome: "Desperados",
+    logo: "img/Desperados.webp",
+    coach: "Coach Stefano"
+  },
+  {
+    nome: "Wildboys 78",
+    logo: "img/wildboys78.webp",
+    coach: "Coach Francesco"
+  },
+  {
+    nome: "Pandinicoccolosini",
+    logo: "img/Pandinicoccolosini.webp",
+    coach: "Coach Davide"
+  },
+  {
+    nome: "Pokermantra",
+    logo: "img/PokerMantra.webp",
+    coach: "Coach Omar"
+  },
+  {
+    nome: "Minnesode Timberland",
+    logo: "img/Minnesode Timberland.webp",
+    coach: "Coach Pierpaolo&Leandro"
+  },
+  {
+    nome: "Minnesota Snakes",
+    logo: "img/MinneSota Snakes.webp",
+    coach: "Coach Alberto"
+  },
+  {
+    nome: "Eintracht Franco 126",
+    logo: "img/Eintracht Franco 126.webp",
+    coach: "Coach Eintracht"
+  },
+  {
+    nome: "FC Disoneste",
+    logo: "img/FC Disoneste.webp",
+    coach: "Coach FC Disoneste"
+  },
+  {
+    nome: "Athletic Pongao",
+    logo: "img/Athletic Pongao.webp",
+    coach: "Coach Dario"
+  }
+];
+
+const TEAM_LOGOS = Object.fromEntries(TEAM_DATA.map(team => [team.nome, team.logo]));
+
+// Al momento divido i gironi usando l'ordine che mi hai dato: 4 squadre per gruppo.
+// Se il sorteggio sarà diverso, basta spostare i nomi qui sotto. Sì, incredibilmente semplice.
 const GROUPS = {
-  A: ["Team Bartowski", "MinneSota Snakes", "wildboys78", "Minnesode Timberland"],
-  B: ["Atlètico Leon", "PokerMantra", "Giody", "Giulay"],
-  C: ["Desperados", "Bayern Christiansen", "Ibla", "Los Pollos Hermanos"],
-  D: ["Real Mimmo", "Sharknado 04", "Pandinicoccolosini", "Vecchi Baldoni FC"]
+  A: ["Atlètico Leon", "Bayern Christiansen", "Team Bartowski", "Golden Knights"],
+  B: ["Ibla", "Fantaugusta", "Riverfilo", "Desperados"],
+  C: ["Wildboys 78", "Pandinicoccolosini", "Pokermantra", "Minnesode Timberland"],
+  D: ["Minnesota Snakes", "Eintracht Franco 126", "FC Disoneste", "Athletic Pongao"]
 };
 
 // Serve solo a generare risultati demo credibili, così la pagina non sembra
 // un foglio Excel abbandonato in un cassetto. Non decide nulla davvero.
-const POWER_RANKING = [
-  "Team Bartowski",
-  "Atlètico Leon",
-  "Desperados",
-  "Real Mimmo",
-  "MinneSota Snakes",
-  "PokerMantra",
-  "Bayern Christiansen",
-  "Sharknado 04",
-  "wildboys78",
-  "Giody",
-  "Ibla",
-  "Pandinicoccolosini",
-  "Minnesode Timberland",
-  "Giulay",
-  "Los Pollos Hermanos",
-  "Vecchi Baldoni FC"
-];
+const POWER_RANKING = Object.values(GROUPS).flat();
 
 const MATCHDAY_DATES = {
   1: { date: "Sab 24/05", time: "15:00" },
@@ -55,7 +125,7 @@ const $ = (sel, root = document) => root.querySelector(sel);
 const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
 
 function logoSrc(team) {
-  return encodeURI(`${LOGO_BASE_PATH}${team}${LOGO_EXT}`);
+  return encodeURI(TEAM_LOGOS[team] || `${LOGO_BASE_PATH}${team}${LOGO_EXT}`);
 }
 
 function initials(team) {
@@ -227,13 +297,9 @@ function renderStandings() {
 
   body.innerHTML = standings.map((row, index) => {
     const pos = index + 1;
-    const qualified = pos <= QUALIFIED_LIMIT;
-    const className = [
-      qualified ? "is-qualified" : "is-out",
-      pos === QUALIFIED_LIMIT ? "is-borderline" : ""
-    ].filter(Boolean).join(" ");
-
-    const status = qualified ? "Qualificata" : "Crash zone";
+    const seedTier = Math.ceil(pos / 4);
+    const className = `is-seeded seed-tier-${seedTier}`;
+    const status = `Seed #${pos} playoff`;
     const diffClass = row.gd > 0 ? "diff-positive" : row.gd < 0 ? "diff-negative" : "";
 
     return `
@@ -408,6 +474,7 @@ function initMobileMenuFallback() {
 }
 
 function initCrashOutCup() {
+  console.info(`Crash Out Cup prima fase loaded: ${CRASHOUT_PHASE_VERSION}`);
   fixtures = buildFixtures();
   renderStandings();
   renderGroups();
