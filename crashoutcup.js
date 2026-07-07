@@ -1,15 +1,20 @@
 import { supabase } from "./supabase.js";
 
 // =========================================================
-// CRASH OUT CUP - PRIMA FASE SERIA
-// Supabase salva gironi, calendario e magic punteggi.
-// La classifica pubblica si calcola automaticamente dai risultati.
+// CRASH OUT CUP - RIVALRY GAMES
+// Prima fase: 3 rivalità storiche + 2 extra conference.
+// Supabase salva conference, calendario sorteggiato e magic punteggi.
 // =========================================================
 
 const CRASHOUT_SEASON = "2026";
-const MAX_MATCHDAY = 6;
-const GROUP_IDS = ["A", "B", "C", "D"];
-const GROUP_SIZE = 4;
+const MAX_MATCHDAY = 5;
+const CONFERENCE_IDS = ["CHAMPIONSHIP", "LEAGUE"];
+const CONFERENCE_SIZE = 8;
+
+const CONFERENCE_LABELS = {
+  CHAMPIONSHIP: "Championship",
+  LEAGUE: "League"
+};
 
 const TEAM_DATA = [
   { nome: "Atlètico Leon", logo: "img/Atlético Leon.webp", coach: "Coach Rubinkebab" },
@@ -33,47 +38,115 @@ const TEAM_DATA = [
 const TEAM_NAMES = TEAM_DATA.map(team => team.nome);
 const TEAM_LOGOS = Object.fromEntries(TEAM_DATA.map(team => [team.nome, team.logo]));
 
-const DEFAULT_GROUPS = {
-  A: ["Atlètico Leon", "Bayern Christiansen", "Team Bartowski", "Golden Knights"],
-  B: ["Ibla", "Fantaugusta", "Riverfilo", "Desperados"],
-  C: ["Wildboys 78", "Pandinicoccolosini", "Pokermantra", "Minnesode Timberland"],
-  D: ["Minnesota Snakes", "Eintracht Franco 126", "FC Disoneste", "Athletic Pongao"]
+// Default solo per fallback/admin: puoi cambiare tutto dal panel.
+const DEFAULT_CONFERENCES = {
+  CHAMPIONSHIP: [
+    "Atlètico Leon",
+    "Bayern Christiansen",
+    "Team Bartowski",
+    "Golden Knights",
+    "Ibla",
+    "Fantaugusta",
+    "Riverfilo",
+    "Desperados"
+  ],
+  LEAGUE: [
+    "Wildboys 78",
+    "Pandinicoccolosini",
+    "Pokermantra",
+    "Minnesode Timberland",
+    "Minnesota Snakes",
+    "Eintracht Franco 126",
+    "FC Disoneste",
+    "Athletic Pongao"
+  ]
 };
 
-// 4 squadre, 6 giornate, andata/ritorno.
-// Gli indici si riferiscono agli slot del girone: 0, 1, 2, 3.
-const PAIRINGS = [
-  [[0, 2], [1, 3]],
-  [[0, 3], [2, 1]],
-  [[0, 1], [3, 2]],
-  [[2, 0], [3, 1]],
-  [[3, 0], [1, 2]],
-  [[1, 0], [2, 3]]
-];
+// Rivalità ufficiali lette dall'immagine. Sono coppie reciproche: ogni squadra ha 3 rivalità.
+const RIVALRIES = {
+  "Minnesota Snakes": ["Minnesode Timberland", "Desperados", "Bayern Christiansen"],
+  "Golden Knights": ["Bayern Christiansen", "Team Bartowski", "FC Disoneste"],
+  "Team Bartowski": ["Golden Knights", "Bayern Christiansen", "Fantaugusta"],
+  "Bayern Christiansen": ["Golden Knights", "Team Bartowski", "Minnesota Snakes"],
+  "Fantaugusta": ["Team Bartowski", "Pokermantra", "Riverfilo"],
+  "Riverfilo": ["Atlètico Leon", "Wildboys 78", "Fantaugusta"],
+  "Ibla": ["Wildboys 78", "Desperados", "Athletic Pongao"],
+  "Athletic Pongao": ["Minnesode Timberland", "Ibla", "Pandinicoccolosini"],
+  "Desperados": ["Minnesota Snakes", "Minnesode Timberland", "Ibla"],
+  "FC Disoneste": ["Golden Knights", "Eintracht Franco 126", "Pandinicoccolosini"],
+  "Pokermantra": ["Atlètico Leon", "Wildboys 78", "Fantaugusta"],
+  "Wildboys 78": ["Pokermantra", "Ibla", "Riverfilo"],
+  "Minnesode Timberland": ["Minnesota Snakes", "Desperados", "Athletic Pongao"],
+  "Pandinicoccolosini": ["Eintracht Franco 126", "FC Disoneste", "Athletic Pongao"],
+  "Atlètico Leon": ["Riverfilo", "Pokermantra", "Eintracht Franco 126"],
+  "Eintracht Franco 126": ["FC Disoneste", "Pandinicoccolosini", "Atlètico Leon"]
+};
+
+// Rivalità distribuite in 3 giornate: ogni squadra gioca una sola volta per giornata.
+const RIVALRY_MATCHDAYS = {
+  1: [
+    ["FC Disoneste", "Golden Knights"],
+    ["Bayern Christiansen", "Team Bartowski"],
+    ["Desperados", "Minnesota Snakes"],
+    ["Ibla", "Wildboys 78"],
+    ["Eintracht Franco 126", "Pandinicoccolosini"],
+    ["Fantaugusta", "Pokermantra"],
+    ["Atlètico Leon", "Riverfilo"],
+    ["Athletic Pongao", "Minnesode Timberland"]
+  ],
+  2: [
+    ["Golden Knights", "Team Bartowski"],
+    ["Bayern Christiansen", "Minnesota Snakes"],
+    ["Pokermantra", "Wildboys 78"],
+    ["Athletic Pongao", "Ibla"],
+    ["Fantaugusta", "Riverfilo"],
+    ["Desperados", "Minnesode Timberland"],
+    ["FC Disoneste", "Pandinicoccolosini"],
+    ["Atlètico Leon", "Eintracht Franco 126"]
+  ],
+  3: [
+    ["Eintracht Franco 126", "FC Disoneste"],
+    ["Athletic Pongao", "Pandinicoccolosini"],
+    ["Fantaugusta", "Team Bartowski"],
+    ["Bayern Christiansen", "Golden Knights"],
+    ["Minnesode Timberland", "Minnesota Snakes"],
+    ["Desperados", "Ibla"],
+    ["Atlètico Leon", "Pokermantra"],
+    ["Riverfilo", "Wildboys 78"]
+  ]
+};
 
 const MATCHDAY_DATES = {
   1: { date: "Da definire", time: "--:--" },
   2: { date: "Da definire", time: "--:--" },
   3: { date: "Da definire", time: "--:--" },
   4: { date: "Da definire", time: "--:--" },
-  5: { date: "Da definire", time: "--:--" },
-  6: { date: "Da definire", time: "--:--" }
+  5: { date: "Da definire", time: "--:--" }
 };
 
-let activeGroup = "all";
+let activeFilter = "all";
 let activeMatchday = 1;
-let currentGroups = cloneGroups(DEFAULT_GROUPS);
+let currentConferences = cloneConferences(DEFAULT_CONFERENCES);
 let fixtures = [];
 let isAdminUser = false;
 
 const $ = (sel, root = document) => root.querySelector(sel);
-const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
 
-function cloneGroups(groups) {
+function cloneConferences(conferences) {
   return Object.fromEntries(
-    GROUP_IDS.map(group => [group, [...(groups[group] || [])]])
+    CONFERENCE_IDS.map(conf => [conf, [...(conferences[conf] || [])]])
   );
 }
+
+function pairKey(a, b) {
+  return [a, b].sort().join("||");
+}
+
+const RIVALRY_PAIR_KEYS = new Set(
+  Object.entries(RIVALRIES).flatMap(([team, rivals]) =>
+    rivals.map(rival => pairKey(team, rival))
+  )
+);
 
 function logoSrc(team) {
   return encodeURI(TEAM_LOGOS[team] || `img/${team}.webp`);
@@ -116,18 +189,22 @@ function mountLogos(root = document) {
   });
 }
 
-function getTeamGroup(team) {
-  return Object.entries(currentGroups).find(([, teams]) => teams.includes(team))?.[0] || "";
+function getTeamConference(team) {
+  return Object.entries(currentConferences).find(([, teams]) => teams.includes(team))?.[0] || "";
+}
+
+function conferenceLabel(conf) {
+  return CONFERENCE_LABELS[conf] || conf || "-";
 }
 
 function initialRank(team) {
-  const flat = GROUP_IDS.flatMap(group => currentGroups[group] || []);
-  const idx = flat.indexOf(team);
+  const idx = TEAM_NAMES.indexOf(team);
   return idx === -1 ? 999 : idx;
 }
 
-function matchId(group, matchday, matchIndex) {
-  return `${CRASHOUT_SEASON}-${group}-G${matchday}-M${matchIndex}`;
+function matchId(type, matchday, matchIndex, suffix = "") {
+  const label = type === "rivalry" ? "RIV" : "CONF";
+  return `${CRASHOUT_SEASON}-${label}-G${matchday}-M${matchIndex}${suffix ? `-${suffix}` : ""}`;
 }
 
 function goalsFromMagic(score) {
@@ -150,35 +227,30 @@ function parseMagic(value) {
   return Number.isFinite(n) ? n : null;
 }
 
-function buildFixturesFromGroups(groups) {
+function buildRivalryFixtures() {
   const rows = [];
 
-  GROUP_IDS.forEach(group => {
-    const teams = groups[group] || [];
-    if (teams.length !== GROUP_SIZE || teams.some(team => !team)) return;
+  Object.entries(RIVALRY_MATCHDAYS).forEach(([day, pairs]) => {
+    const matchday = Number(day);
+    const meta = MATCHDAY_DATES[matchday];
 
-    PAIRINGS.forEach((matchdayPairs, matchdayIndex) => {
-      const matchday = matchdayIndex + 1;
-      const meta = MATCHDAY_DATES[matchday];
-
-      matchdayPairs.forEach(([homeIndex, awayIndex], pairIndex) => {
-        const matchIndex = pairIndex + 1;
-        rows.push({
-          id: matchId(group, matchday, matchIndex),
-          season: CRASHOUT_SEASON,
-          group,
-          matchday,
-          matchIndex,
-          home: teams[homeIndex],
-          away: teams[awayIndex],
-          date: meta.date,
-          time: meta.time,
-          homeMagic: null,
-          awayMagic: null,
-          homeGoals: null,
-          awayGoals: null,
-          isPlayed: false
-        });
+    pairs.forEach(([home, away], index) => {
+      rows.push({
+        id: matchId("rivalry", matchday, index + 1),
+        season: CRASHOUT_SEASON,
+        type: "rivalry",
+        bucket: "RIV",
+        matchday,
+        matchIndex: index + 1,
+        home,
+        away,
+        date: meta.date,
+        time: meta.time,
+        homeMagic: null,
+        awayMagic: null,
+        homeGoals: null,
+        awayGoals: null,
+        isPlayed: false
       });
     });
   });
@@ -186,17 +258,136 @@ function buildFixturesFromGroups(groups) {
   return rows;
 }
 
+function shuffleCopy(arr) {
+  const copy = [...arr];
+  for (let i = copy.length - 1; i > 0; i -= 1) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [copy[i], copy[j]] = [copy[j], copy[i]];
+  }
+  return copy;
+}
+
+function findPerfectMatching(teams, forbidden) {
+  const sorted = shuffleCopy(teams);
+
+  function backtrack(remaining, pairs) {
+    if (!remaining.length) return pairs;
+
+    const [first, ...rest] = remaining;
+    const candidates = shuffleCopy(rest).filter(second => !forbidden.has(pairKey(first, second)));
+
+    for (const second of candidates) {
+      const nextRemaining = rest.filter(team => team !== second);
+      const result = backtrack(nextRemaining, [...pairs, [first, second]]);
+      if (result) return result;
+    }
+
+    return null;
+  }
+
+  return backtrack(sorted, []);
+}
+
+function buildConferenceExtraFixtures(conferences) {
+  const rows = [];
+  let globalIndexG4 = 1;
+  let globalIndexG5 = 1;
+
+  CONFERENCE_IDS.forEach(conf => {
+    const teams = conferences[conf] || [];
+    if (teams.length !== CONFERENCE_SIZE) {
+      throw new Error(`${conferenceLabel(conf)} deve avere ${CONFERENCE_SIZE} squadre.`);
+    }
+
+    let matching4 = null;
+    let matching5 = null;
+
+    for (let attempt = 0; attempt < 300; attempt += 1) {
+      const forbidden4 = new Set(RIVALRY_PAIR_KEYS);
+      const candidate4 = findPerfectMatching(teams, forbidden4);
+      if (!candidate4) continue;
+
+      const forbidden5 = new Set([...RIVALRY_PAIR_KEYS, ...candidate4.map(([a, b]) => pairKey(a, b))]);
+      const candidate5 = findPerfectMatching(teams, forbidden5);
+      if (!candidate5) continue;
+
+      matching4 = candidate4;
+      matching5 = candidate5;
+      break;
+    }
+
+    if (!matching4 || !matching5) {
+      throw new Error(`Non riesco a sorteggiare le extra per ${conferenceLabel(conf)} senza duplicare rivalità. Colpa del destino, non mia.`);
+    }
+
+    matching4.forEach(([home, away]) => {
+      const meta = MATCHDAY_DATES[4];
+      rows.push({
+        id: matchId("conference", 4, globalIndexG4, conf),
+        season: CRASHOUT_SEASON,
+        type: "conference",
+        bucket: conf,
+        matchday: 4,
+        matchIndex: globalIndexG4,
+        home,
+        away,
+        date: meta.date,
+        time: meta.time,
+        homeMagic: null,
+        awayMagic: null,
+        homeGoals: null,
+        awayGoals: null,
+        isPlayed: false
+      });
+      globalIndexG4 += 1;
+    });
+
+    matching5.forEach(([home, away]) => {
+      const meta = MATCHDAY_DATES[5];
+      rows.push({
+        id: matchId("conference", 5, globalIndexG5, conf),
+        season: CRASHOUT_SEASON,
+        type: "conference",
+        bucket: conf,
+        matchday: 5,
+        matchIndex: globalIndexG5,
+        home,
+        away,
+        date: meta.date,
+        time: meta.time,
+        homeMagic: null,
+        awayMagic: null,
+        homeGoals: null,
+        awayGoals: null,
+        isPlayed: false
+      });
+      globalIndexG5 += 1;
+    });
+  });
+
+  return rows;
+}
+
+function buildFixturesFromConferences(conferences) {
+  return [
+    ...buildRivalryFixtures(),
+    ...buildConferenceExtraFixtures(conferences)
+  ].sort((a, b) => a.matchday - b.matchday || a.matchIndex - b.matchIndex);
+}
+
 function rowToFixture(row) {
+  const matchday = Number(row.matchday);
   return {
     id: row.id,
     season: row.season || CRASHOUT_SEASON,
-    group: row.group_id,
-    matchday: Number(row.matchday),
+    type: row.match_type,
+    bucket: row.bucket_id,
+    matchday,
     matchIndex: Number(row.match_index),
     home: row.home_team,
     away: row.away_team,
-    date: MATCHDAY_DATES[Number(row.matchday)]?.date || "Da definire",
-    time: MATCHDAY_DATES[Number(row.matchday)]?.time || "--:--",
+    date: MATCHDAY_DATES[matchday]?.date || "Da definire",
+    time: MATCHDAY_DATES[matchday]?.time || "--:--",
     homeMagic: row.home_magic,
     awayMagic: row.away_magic,
     homeGoals: row.home_goals,
@@ -214,7 +405,8 @@ function fixtureToRow(match, resetScores = false) {
   return {
     id: match.id,
     season: CRASHOUT_SEASON,
-    group_id: match.group,
+    match_type: match.type,
+    bucket_id: match.bucket,
     matchday: match.matchday,
     match_index: match.matchIndex,
     home_team: match.home,
@@ -228,78 +420,59 @@ function fixtureToRow(match, resetScores = false) {
   };
 }
 
-async function loadGroupsFromSupabase() {
+async function loadConferencesFromSupabase() {
   const { data, error } = await supabase
-    .from("crashout_group_slots")
-    .select("group_id, slot, team_name")
+    .from("crashout_rivalry_team_conferences")
+    .select("conference_id, slot, team_name")
     .eq("season", CRASHOUT_SEASON)
-    .order("group_id", { ascending: true })
+    .order("conference_id", { ascending: true })
     .order("slot", { ascending: true });
 
   if (error) throw error;
-  if (!data || data.length !== GROUP_IDS.length * GROUP_SIZE) return null;
+  if (!data || data.length !== TEAM_NAMES.length) return null;
 
-  const groups = Object.fromEntries(GROUP_IDS.map(group => [group, []]));
+  const conferences = Object.fromEntries(CONFERENCE_IDS.map(conf => [conf, []]));
   data.forEach(row => {
-    if (!GROUP_IDS.includes(row.group_id)) return;
-    groups[row.group_id][Number(row.slot)] = row.team_name;
+    if (!CONFERENCE_IDS.includes(row.conference_id)) return;
+    conferences[row.conference_id][Number(row.slot)] = row.team_name;
   });
 
-  const isComplete = GROUP_IDS.every(group =>
-    groups[group].length === GROUP_SIZE && groups[group].every(Boolean)
+  const complete = CONFERENCE_IDS.every(conf =>
+    conferences[conf].length === CONFERENCE_SIZE && conferences[conf].every(Boolean)
   );
 
-  return isComplete ? groups : null;
+  return complete ? conferences : null;
 }
 
-async function loadMatchesFromSupabase(generatedFixtures) {
+async function loadMatchesFromSupabase() {
   const { data, error } = await supabase
-    .from("crashout_group_matches")
+    .from("crashout_rivalry_matches")
     .select("*")
     .eq("season", CRASHOUT_SEASON)
-    .order("group_id", { ascending: true })
     .order("matchday", { ascending: true })
     .order("match_index", { ascending: true });
 
   if (error) throw error;
+  if (!data || !data.length) return null;
 
-  const savedById = new Map((data || []).map(row => [row.id, rowToFixture(row)]));
-
-  return generatedFixtures.map(match => {
-    const saved = savedById.get(match.id);
-
-    // Se i gironi sono cambiati, non ricicliamo risultati di una vecchia partita con lo stesso id.
-    if (!saved || saved.home !== match.home || saved.away !== match.away) {
-      return match;
-    }
-
-    return {
-      ...match,
-      homeMagic: saved.homeMagic,
-      awayMagic: saved.awayMagic,
-      homeGoals: saved.homeGoals,
-      awayGoals: saved.awayGoals,
-      isPlayed: saved.isPlayed
-    };
-  });
+  return data.map(rowToFixture);
 }
 
 async function loadInitialData() {
   try {
-    const savedGroups = await loadGroupsFromSupabase();
-    currentGroups = savedGroups ? cloneGroups(savedGroups) : cloneGroups(DEFAULT_GROUPS);
+    const savedConferences = await loadConferencesFromSupabase();
+    currentConferences = savedConferences ? cloneConferences(savedConferences) : cloneConferences(DEFAULT_CONFERENCES);
   } catch (error) {
-    console.warn("Crash Out Cup: impossibile caricare i gironi da Supabase, uso il fallback JS.", error);
-    currentGroups = cloneGroups(DEFAULT_GROUPS);
+    console.warn("Crash Out Cup: impossibile caricare le conference da Supabase, uso il fallback JS.", error);
+    currentConferences = cloneConferences(DEFAULT_CONFERENCES);
   }
 
-  const generated = buildFixturesFromGroups(currentGroups);
-
   try {
-    fixtures = await loadMatchesFromSupabase(generated);
+    const savedMatches = await loadMatchesFromSupabase();
+    fixtures = savedMatches || buildFixturesFromConferences(currentConferences);
   } catch (error) {
-    console.warn("Crash Out Cup: impossibile caricare il calendario da Supabase, mostro calendario generato senza risultati.", error);
-    fixtures = generated;
+    console.warn("Crash Out Cup: impossibile caricare il calendario da Supabase, mostro un calendario generato senza risultati.", error);
+    fixtures = buildFixturesFromConferences(currentConferences);
   }
 }
 
@@ -324,10 +497,10 @@ async function isCurrentUserAdmin() {
 function calculateStandings(matches) {
   const table = new Map();
 
-  GROUP_IDS.flatMap(group => currentGroups[group] || []).forEach(team => {
+  TEAM_NAMES.forEach(team => {
     table.set(team, {
       team,
-      group: getTeamGroup(team),
+      conference: getTeamConference(team),
       played: 0,
       wins: 0,
       draws: 0,
@@ -421,7 +594,7 @@ function renderStandings() {
             </span>
           </div>
         </td>
-        <td><span class="group-badge group-${row.group}">${row.group}</span></td>
+        <td><span class="conference-badge conference-${row.conference}">${conferenceLabel(row.conference)}</span></td>
         <td>${row.played}</td>
         <td>${row.wins}</td>
         <td>${row.draws}</td>
@@ -437,32 +610,37 @@ function renderStandings() {
   mountLogos(body);
 }
 
-function renderGroups() {
+function renderRivalries() {
   const grid = $("#groups-grid");
   if (!grid) return;
 
-  grid.innerHTML = GROUP_IDS.map(group => {
-    const teams = currentGroups[group] || [];
-    return `
-      <article class="group-card" data-group="${group}">
-        <h3>Girone ${group}</h3>
-        ${teams.map(team => `
-          <div class="group-team">
-            <span class="logo-mount" data-logo-team="${team}" data-logo-class="group"></span>
-            <span>${team}</span>
-          </div>
-        `).join("")}
-      </article>
-    `;
-  }).join("");
+  grid.innerHTML = TEAM_NAMES.map(team => `
+    <article class="group-card rivalry-card" data-group="RIV">
+      <h3>${team}</h3>
+      ${(RIVALRIES[team] || []).map(rival => `
+        <div class="group-team">
+          <span class="logo-mount" data-logo-team="${rival}" data-logo-class="group"></span>
+          <span>${rival}</span>
+        </div>
+      `).join("")}
+    </article>
+  `).join("");
 
   mountLogos(grid);
 }
 
+function fixtureTypeLabel(match) {
+  if (match.type === "rivalry") return "Rivalry";
+  return conferenceLabel(match.bucket);
+}
+
 function getVisibleFixtures() {
   return fixtures.filter(match => {
-    const groupMatch = activeGroup === "all" || match.group === activeGroup;
-    return groupMatch && match.matchday === activeMatchday;
+    if (match.matchday !== activeMatchday) return false;
+    if (activeFilter === "all") return true;
+    if (activeFilter === "rivalry") return match.type === "rivalry";
+    if (activeFilter === "conference") return match.type === "conference";
+    return match.bucket === activeFilter;
   });
 }
 
@@ -484,9 +662,10 @@ function renderSchedule() {
     const scoreText = match.isPlayed ? `${match.homeGoals} - ${match.awayGoals}` : "Da giocare";
     const homeScore = match.isPlayed ? `${formatMagic(match.homeMagic)} → ${match.homeGoals}` : "-";
     const awayScore = match.isPlayed ? `${formatMagic(match.awayMagic)} → ${match.awayGoals}` : "-";
+    const badgeClass = match.type === "rivalry" ? "group-RIV" : `conference-${match.bucket}`;
 
     return `
-      <article class="fixture-card ${match.isPlayed ? "is-played" : "is-unplayed"}" data-group="${match.group}">
+      <article class="fixture-card ${match.isPlayed ? "is-played" : "is-unplayed"}" data-type="${match.type}" data-bucket="${match.bucket}">
         <div class="fixture-team home">
           <span class="logo-mount" data-logo-team="${match.home}" data-logo-class="fixture"></span>
           <span>
@@ -507,7 +686,7 @@ function renderSchedule() {
 
         <div class="fixture-meta">
           <span>${match.date}<br>${match.time}</span>
-          <span class="group-badge group-${match.group}">${match.group}</span>
+          <span class="group-badge ${badgeClass}">${fixtureTypeLabel(match)}</span>
         </div>
       </article>
     `;
@@ -518,7 +697,7 @@ function renderSchedule() {
 
 function renderAllPublic() {
   renderStandings();
-  renderGroups();
+  renderRivalries();
   renderSchedule();
 }
 
@@ -531,7 +710,7 @@ function bindScheduleControls() {
     const btn = event.target.closest(".schedule-tab");
     if (!btn) return;
 
-    activeGroup = btn.dataset.group || "all";
+    activeFilter = btn.dataset.filter || "all";
 
     tabs.querySelectorAll(".schedule-tab").forEach(tab => {
       tab.classList.toggle("is-active", tab === btn);
@@ -559,22 +738,22 @@ function setStatus(id, message, type = "") {
   el.classList.toggle("is-ok", type === "ok");
 }
 
-function renderAdminGroups() {
+function renderAdminConferences() {
   const grid = document.getElementById("admin-groups-grid");
   if (!grid) return;
 
   const options = TEAM_NAMES.map(team => `<option value="${team}">${team}</option>`).join("");
 
-  grid.innerHTML = GROUP_IDS.map(group => `
-    <article class="admin-group-card" data-admin-group="${group}">
-      <h3>Girone ${group}</h3>
-      ${Array.from({ length: GROUP_SIZE }).map((_, slot) => {
-        const selectedTeam = currentGroups[group]?.[slot] || "";
+  grid.innerHTML = CONFERENCE_IDS.map(conf => `
+    <article class="admin-group-card" data-admin-conference="${conf}">
+      <h3>${conferenceLabel(conf)}</h3>
+      ${Array.from({ length: CONFERENCE_SIZE }).map((_, slot) => {
+        const selectedTeam = currentConferences[conf]?.[slot] || "";
         return `
           <div class="admin-slot-row">
             <label>
               Slot ${slot + 1}
-              <select data-group="${group}" data-slot="${slot}">
+              <select data-conference="${conf}" data-slot="${slot}">
                 <option value="">Seleziona squadra</option>
                 ${options}
               </select>
@@ -586,9 +765,9 @@ function renderAdminGroups() {
   `).join("");
 
   grid.querySelectorAll("select").forEach(select => {
-    const group = select.dataset.group;
+    const conf = select.dataset.conference;
     const slot = Number(select.dataset.slot);
-    select.value = currentGroups[group]?.[slot] || "";
+    select.value = currentConferences[conf]?.[slot] || "";
   });
 }
 
@@ -598,7 +777,8 @@ function renderAdminMatchdaySelect() {
 
   select.innerHTML = Array.from({ length: MAX_MATCHDAY }).map((_, index) => {
     const day = index + 1;
-    return `<option value="${day}">Giornata ${day}</option>`;
+    const label = day <= 3 ? `Giornata ${day} · Rivalry` : `Giornata ${day} · Extra conf.`;
+    return `<option value="${day}">${label}</option>`;
   }).join("");
 
   select.value = String(activeMatchday);
@@ -624,7 +804,7 @@ function renderAdminResults() {
     <article class="admin-result-card" data-match-id="${match.id}">
       <div class="admin-result-match">
         <div class="admin-result-kicker">
-          <span class="group-badge group-${match.group}">${match.group}</span>
+          <span class="group-badge ${match.type === "rivalry" ? "group-RIV" : `conference-${match.bucket}`}">${fixtureTypeLabel(match)}</span>
           <span>Giornata ${match.matchday}</span>
         </div>
         <div class="admin-result-teams">${match.home}<br>vs ${match.away}</div>
@@ -646,23 +826,23 @@ function renderAdminResults() {
   `).join("");
 }
 
-function readGroupsFromAdmin() {
-  const groups = Object.fromEntries(GROUP_IDS.map(group => [group, []]));
+function readConferencesFromAdmin() {
+  const conferences = Object.fromEntries(CONFERENCE_IDS.map(conf => [conf, []]));
 
-  document.querySelectorAll("#admin-groups-grid select[data-group]").forEach(select => {
-    const group = select.dataset.group;
+  document.querySelectorAll("#admin-groups-grid select[data-conference]").forEach(select => {
+    const conf = select.dataset.conference;
     const slot = Number(select.dataset.slot);
-    groups[group][slot] = select.value;
+    conferences[conf][slot] = select.value;
   });
 
-  return groups;
+  return conferences;
 }
 
-function validateGroups(groups) {
-  const teams = GROUP_IDS.flatMap(group => groups[group] || []);
+function validateConferences(conferences) {
+  const teams = CONFERENCE_IDS.flatMap(conf => conferences[conf] || []);
 
-  if (GROUP_IDS.some(group => (groups[group] || []).length !== GROUP_SIZE || groups[group].some(team => !team))) {
-    return "Ogni girone deve avere 4 squadre.";
+  if (CONFERENCE_IDS.some(conf => (conferences[conf] || []).length !== CONFERENCE_SIZE || conferences[conf].some(team => !team))) {
+    return `Ogni conference deve avere ${CONFERENCE_SIZE} squadre.`;
   }
 
   const unique = new Set(teams);
@@ -682,60 +862,69 @@ function validateGroups(groups) {
   return "";
 }
 
-async function saveGroupsAndGenerateCalendar() {
-  const groups = readGroupsFromAdmin();
-  const validationError = validateGroups(groups);
+async function saveConferencesAndGenerateCalendar() {
+  const conferences = readConferencesFromAdmin();
+  const validationError = validateConferences(conferences);
 
   if (validationError) {
     setStatus("admin-groups-status", validationError, "error");
     return;
   }
 
-  setStatus("admin-groups-status", "Salvataggio gironi e generazione calendario...", "");
+  let generated;
+  try {
+    generated = buildFixturesFromConferences(conferences);
+  } catch (error) {
+    console.error("Errore sorteggio extra conference:", error);
+    setStatus("admin-groups-status", error.message || "Errore nel sorteggio extra conference.", "error");
+    return;
+  }
 
-  const groupPayload = GROUP_IDS.flatMap(group =>
-    groups[group].map((team, slot) => ({
+  setStatus("admin-groups-status", "Salvataggio conference e calendario rivalry...", "");
+
+  const conferencePayload = CONFERENCE_IDS.flatMap(conf =>
+    conferences[conf].map((team, slot) => ({
       season: CRASHOUT_SEASON,
-      group_id: group,
+      conference_id: conf,
       slot,
       team_name: team,
       updated_at: new Date().toISOString()
     }))
   );
 
-  const { error: groupError } = await supabase
-    .from("crashout_group_slots")
-    .upsert(groupPayload, { onConflict: "season,group_id,slot" });
+  const { error: conferenceError } = await supabase
+    .from("crashout_rivalry_team_conferences")
+    .upsert(conferencePayload, { onConflict: "season,conference_id,slot" });
 
-  if (groupError) {
-    console.error("Errore salvataggio gironi Crash Out Cup:", groupError);
-    setStatus("admin-groups-status", "Errore salvataggio gironi. Controlla tabella Supabase e policy.", "error");
+  if (conferenceError) {
+    console.error("Errore salvataggio conference Crash Out Cup:", conferenceError);
+    setStatus("admin-groups-status", "Errore salvataggio conference. Controlla tabella Supabase e policy.", "error");
     return;
   }
 
-  currentGroups = cloneGroups(groups);
-  const generated = buildFixturesFromGroups(currentGroups);
   const matchPayload = generated.map(match => fixtureToRow(match, true));
 
   const { error: matchError } = await supabase
-    .from("crashout_group_matches")
+    .from("crashout_rivalry_matches")
     .upsert(matchPayload, { onConflict: "id" });
 
   if (matchError) {
     console.error("Errore generazione calendario Crash Out Cup:", matchError);
-    setStatus("admin-groups-status", "Gironi salvati, ma errore nel calendario. Controlla la tabella match.", "error");
+    setStatus("admin-groups-status", "Conference salvate, ma errore nel calendario. Controlla la tabella match.", "error");
     return;
   }
 
+  currentConferences = cloneConferences(conferences);
   fixtures = generated;
   activeMatchday = 1;
-  document.getElementById("admin-matchday-select").value = "1";
+  const select = document.getElementById("admin-matchday-select");
+  if (select) select.value = "1";
 
   renderAllPublic();
-  renderAdminGroups();
+  renderAdminConferences();
   renderAdminResults();
 
-  setStatus("admin-groups-status", "Gironi salvati e calendario generato. Risultati resettati, come è giusto che sia.", "ok");
+  setStatus("admin-groups-status", "Conference salvate, rivalità fisse e due extra sorteggiate. Risultati resettati, come è giusto che sia.", "ok");
 }
 
 async function saveAdminResults() {
@@ -770,7 +959,7 @@ async function saveAdminResults() {
   });
 
   const { error } = await supabase
-    .from("crashout_group_matches")
+    .from("crashout_rivalry_matches")
     .upsert(updates, { onConflict: "id" });
 
   if (error) {
@@ -787,7 +976,7 @@ async function saveAdminResults() {
 async function initAdminPanel() {
   const panel = document.getElementById("crash-admin-panel");
   const toggle = document.getElementById("crash-admin-toggle");
-  const saveGroupsBtn = document.getElementById("admin-save-groups-generate");
+  const saveConferencesBtn = document.getElementById("admin-save-groups-generate");
   const saveResultsBtn = document.getElementById("admin-save-results");
 
   if (!panel) return;
@@ -805,7 +994,7 @@ async function initAdminPanel() {
   }
 
   panel.classList.remove("hidden");
-  renderAdminGroups();
+  renderAdminConferences();
   renderAdminMatchdaySelect();
   renderAdminResults();
 
@@ -814,7 +1003,7 @@ async function initAdminPanel() {
     toggle.setAttribute("aria-expanded", String(isOpen));
   });
 
-  saveGroupsBtn?.addEventListener("click", saveGroupsAndGenerateCalendar);
+  saveConferencesBtn?.addEventListener("click", saveConferencesAndGenerateCalendar);
   saveResultsBtn?.addEventListener("click", saveAdminResults);
 }
 

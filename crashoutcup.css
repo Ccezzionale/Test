@@ -1477,3 +1477,96 @@ body::before{
     grid-column:1 / -1;
   }
 }
+
+/* =========================================================
+   CRASH OUT CUP V5 - RIVALRY GAMES
+   Niente gironi: 3 rivalry + 2 extra conference.
+   ========================================================= */
+
+.group-RIV{
+  color:var(--crash-pink);
+}
+
+.group-CONF,
+.conference-CHAMPIONSHIP{
+  color:var(--crash-blue);
+}
+
+.conference-LEAGUE{
+  color:var(--crash-gold);
+}
+
+.conference-badge{
+  min-width:86px;
+  height:25px;
+  padding:0 9px;
+  display:inline-grid;
+  place-items:center;
+  border-radius:999px;
+  border:1px solid currentColor;
+  background:rgba(255,255,255,.04);
+  box-shadow:0 0 12px color-mix(in srgb, currentColor 34%, transparent);
+  font-size:.68rem;
+  font-weight:950;
+  letter-spacing:.06em;
+  text-transform:uppercase;
+  white-space:nowrap;
+}
+
+.rivalry-card{
+  min-height:166px;
+}
+
+.rivalry-card h3{
+  min-height:38px;
+  display:flex;
+  align-items:center;
+  line-height:1.05;
+}
+
+.rivalry-card[data-group="RIV"]{
+  color:rgba(255,49,223,.30);
+}
+
+.fixture-card[data-type="rivalry"]{
+  border-color:rgba(255,49,223,.24);
+}
+
+.fixture-card[data-type="conference"]{
+  border-color:rgba(32,199,255,.24);
+}
+
+.admin-group-card[data-admin-conference="CHAMPIONSHIP"]{
+  border-color:rgba(32,199,255,.24);
+}
+
+.admin-group-card[data-admin-conference="LEAGUE"]{
+  border-color:rgba(248,185,95,.24);
+}
+
+.admin-group-card[data-admin-conference="CHAMPIONSHIP"] h3{
+  color:#dff8ff;
+  text-shadow:0 0 14px rgba(32,199,255,.30);
+}
+
+.admin-group-card[data-admin-conference="LEAGUE"] h3{
+  color:#ffe2b2;
+  text-shadow:0 0 14px rgba(248,185,95,.24);
+}
+
+@media (max-width:1200px){
+  .groups-grid{
+    grid-template-columns:repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width:900px){
+  .conference-badge{
+    min-width:74px;
+    font-size:.60rem;
+  }
+
+  .rivalry-card{
+    min-height:auto;
+  }
+}

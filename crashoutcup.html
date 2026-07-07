@@ -6,7 +6,7 @@
   <title>Lega degli Eroi – Crash Out Cup • Prima fase</title>
 
   <link rel="stylesheet" href="navbar.css">
-  <link rel="stylesheet" href="crashoutcup.css?v=20260707-admin-v4">
+  <link rel="stylesheet" href="crashoutcup.css?v=20260707-rivalry-v5">
 </head>
 
 <body>
@@ -114,22 +114,22 @@
     </div>
   </header>
 
-  <main class="cup-container" data-page-version="20260707-seed-playoff-v3">
+  <main class="cup-container" data-page-version="20260707-rivalry-v5">
     <section class="phase-intro-card" aria-label="Formula Crash Out Cup">
       <div class="phase-intro-copy">
         <span class="section-kicker">Prima fase</span>
-        <h2>Gironi separati, classifica unica.</h2>
+        <h2>Rivalry Games, classifica unica.</h2>
         <p>
-          Quattro gironi da quattro squadre con andata e ritorno. I gironi servono per creare il calendario,
-          ma la graduatoria finale somma tutti i punti in una sola classifica generale e determina il seed del tabellone playoff.
+          Ogni squadra gioca tre rivalità storiche e due partite extra contro squadre della propria conference.
+          La classifica finale è unica e determina il seed del tabellone playoff.
         </p>
       </div>
 
       <div class="crash-stats" aria-label="Crash Out Cup stats">
-        <div class="stat-card"><strong>4</strong><span>Gironi</span></div>
-        <div class="stat-card"><strong>16</strong><span>Squadre</span></div>
-        <div class="stat-card"><strong>6</strong><span>Partite</span></div>
-        <div class="stat-card"><strong>Unica</strong><span>Classifica</span></div>
+        <div class="stat-card"><strong>3</strong><span>Rivalry</span></div>
+        <div class="stat-card"><strong>2</strong><span>Conference</span></div>
+        <div class="stat-card"><strong>5</strong><span>Partite</span></div>
+        <div class="stat-card"><strong>40</strong><span>Match</span></div>
       </div>
     </section>
 
@@ -153,7 +153,7 @@
               <tr>
                 <th>Pos</th>
                 <th>Squadra</th>
-                <th>Girone</th>
+                <th>Conf.</th>
                 <th>G</th>
                 <th>V</th>
                 <th>N</th>
@@ -178,11 +178,11 @@
         </div>
 
         <div class="schedule-tabs" id="schedule-tabs" role="tablist" aria-label="Filtra calendario">
-          <button type="button" class="schedule-tab is-active" data-group="all">Tutte</button>
-          <button type="button" class="schedule-tab" data-group="A">Girone A</button>
-          <button type="button" class="schedule-tab" data-group="B">Girone B</button>
-          <button type="button" class="schedule-tab" data-group="C">Girone C</button>
-          <button type="button" class="schedule-tab" data-group="D">Girone D</button>
+          <button type="button" class="schedule-tab is-active" data-filter="all">Tutte</button>
+          <button type="button" class="schedule-tab" data-filter="rivalry">Rivalry</button>
+          <button type="button" class="schedule-tab" data-filter="conference">Extra conf.</button>
+          <button type="button" class="schedule-tab" data-filter="CHAMPIONSHIP">Championship</button>
+          <button type="button" class="schedule-tab" data-filter="LEAGUE">League</button>
         </div>
 
         <div class="matchday-control" aria-label="Seleziona giornata">
@@ -199,8 +199,8 @@
       <section class="crash-panel groups-panel" aria-labelledby="groups-title">
         <div class="panel-head compact">
           <div>
-            <span class="section-kicker">Composizione</span>
-            <h2 id="groups-title">Gironi</h2>
+            <span class="section-kicker">Rivalità</span>
+            <h2 id="groups-title">Rivali storici</h2>
           </div>
         </div>
 
@@ -229,8 +229,8 @@
       <button id="crash-admin-toggle" type="button" class="crash-admin-toggle" aria-expanded="false">
         <span>
           <span class="crash-admin-kicker">Admin Panel</span>
-          <strong>Setup prima fase</strong>
-          <small>Assegna i gironi, genera il calendario e inserisci i magic punteggi.</small>
+          <strong>Setup Rivalry Games</strong>
+          <small>Assegna le conference, sorteggia le due extra e inserisci i magic punteggi.</small>
         </span>
         <span class="crash-admin-chevron">⌄</span>
       </button>
@@ -239,11 +239,11 @@
         <section class="admin-block" aria-labelledby="admin-groups-title">
           <div class="admin-block-head">
             <div>
-              <h2 id="admin-groups-title">Composizione gironi</h2>
-              <p>Scegli le 4 squadre per ogni girone. L'ordine degli slot crea automaticamente le 6 giornate andata/ritorno.</p>
+              <h2 id="admin-groups-title">Conference e sorteggio extra</h2>
+              <p>Assegna le squadre alle due conference. Le rivalità storiche sono fisse; il sistema sorteggia due partite extra per ogni squadra nella propria conference.</p>
             </div>
             <button id="admin-save-groups-generate" type="button" class="crash-admin-save">
-              Salva gironi e genera calendario
+              Salva conference e sorteggia calendario
             </button>
           </div>
 
@@ -276,12 +276,12 @@
     </section>
 
     <div class="crash-footer-strip">
-      <div class="crash-quote">“ I gironi decidono il calendario. La classifica unica costruisce il tabellone. ”</div>
+      <div class="crash-quote">“ Le rivalità accendono la coppa. La classifica unica costruisce il tabellone. ”</div>
     </div>
   </main>
 
   <script src="mobile-nav.js"></script>
-  <script type="module" src="crashoutcup.js?v=20260707-admin-v4" defer></script>
+  <script type="module" src="crashoutcup.js?v=20260707-rivalry-v5" defer></script>
   <script src="navbar.js"></script>
 </body>
 </html>
