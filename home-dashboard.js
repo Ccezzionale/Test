@@ -2,9 +2,9 @@ import { supabase } from "./supabase.js";
 
 const squadreBase = [
   {
-    nome: "Rubinkebab",
-    logo: "img/Rubinkebab.png",
-    shirt: "img/maglie/Rubinkebab.png",
+    nome: "Atlético Leon",
+    logo: "img/Atlético Leon.webp",
+    shirt: "img/maglie/leon-mascotte.webp",
     coach: "Coach Rubinkebab"
   },
   {
