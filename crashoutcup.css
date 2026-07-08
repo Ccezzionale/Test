@@ -2240,14 +2240,6 @@ body::before{
   .fixture-team-name{
     font-size:.70rem;
   }
-  .fixture-team[data-team="Athletic Pongao"] .fixture-team-name{
-  display:none;
-}
-
-.fixture-team[data-team="Athletic Pongao"] .fixture-logo-wrap{
-  width:56px;
-  height:56px;
-}
 }
 .rivalry-team-hero{
   position:relative;
