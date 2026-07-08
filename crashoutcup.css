@@ -1609,14 +1609,16 @@ body::before{
       0 0 28px rgba(255,49,223,.25);
   }
 
-  .crash-cup-banner{
-    width:100%;
-    height:clamp(230px, 58vw, 350px);
-    object-fit:cover;
-    object-position:center;
-    border-radius:0;
-    box-shadow:none;
-  }
+.crash-cup-banner{
+  display:block;
+  width:100%;
+  height:auto !important;
+  max-height:none !important;
+  object-fit:contain !important;
+  object-position:center center !important;
+  border-radius:0;
+  box-shadow:none;
+}
 
   .cup-container{
     padding:0 8px 26px;
