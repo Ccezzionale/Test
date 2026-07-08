@@ -2051,3 +2051,12 @@ body::before{
     padding-top:18px !important;
   }
 }
+
+/* Nasconde placeholder TBD nel bracket */
+.team.is-tbd .logo-wrap{
+  visibility:hidden !important;
+}
+
+.team.is-tbd .team-name{
+  display:none !important;
+}
