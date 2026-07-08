@@ -388,7 +388,7 @@
           <p>Usa email e password della tua squadra per entrare nella Web App.</p>
         </div>
 
-        <div class="login-form">
+        <div id="loginForm" class="login-form">
           <div class="field">
             <label for="email">Email</label>
             <div class="input-wrap">
@@ -408,6 +408,26 @@
           <button id="loginButton" class="login-button" type="button">Entra nella Lega</button>
         </div>
 
+        <div id="resetPasswordForm" class="login-form" style="display: none;">
+          <div class="field">
+            <label for="newPassword">Nuova password</label>
+            <div class="input-wrap">
+              <span class="input-icon">🔐</span>
+              <input type="password" id="newPassword" placeholder="Nuova password" autocomplete="new-password">
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="confirmNewPassword">Conferma password</label>
+            <div class="input-wrap">
+              <span class="input-icon">✅</span>
+              <input type="password" id="confirmNewPassword" placeholder="Conferma nuova password" autocomplete="new-password">
+            </div>
+          </div>
+
+          <button id="savePasswordButton" class="login-button" type="button">Salva nuova password</button>
+        </div>
+
         <p id="status" class="status" aria-live="polite"></p>
 
         <div class="login-footnote">
@@ -422,21 +442,78 @@
   <script type="module">
     import { supabase } from './supabase.js';
 
+    const loginForm = document.getElementById('loginForm');
+    const resetPasswordForm = document.getElementById('resetPasswordForm');
+    const status = document.getElementById('status');
+    const loginButton = document.getElementById('loginButton');
+    const savePasswordButton = document.getElementById('savePasswordButton');
+    const title = document.querySelector('.login-card h2');
+    const subtitle = document.querySelector('.login-card .card-top p');
+
+    function setStatus(message, isError = true) {
+      status.innerText = message || '';
+      status.style.color = isError ? '#b91c1c' : '#15803d';
+    }
+
+    function readAuthParams() {
+      const hash = new URLSearchParams(window.location.hash.replace(/^#/, ''));
+      const query = new URLSearchParams(window.location.search);
+      return {
+        hash,
+        query,
+        type: hash.get('type') || query.get('type'),
+        hasAccessToken: hash.has('access_token'),
+        hasCode: query.has('code')
+      };
+    }
+
+    function isPasswordSetupUrl() {
+      const { type, hasAccessToken, hasCode } = readAuthParams();
+
+      return (
+        type === 'recovery' ||
+        type === 'invite' ||
+        type === 'signup' ||
+        hasAccessToken ||
+        hasCode
+      );
+    }
+
+    function showLoginMode() {
+      loginForm.style.display = 'grid';
+      resetPasswordForm.style.display = 'none';
+
+      if (title) title.innerText = 'Accesso riservato';
+      if (subtitle) subtitle.innerText = 'Usa email e password della tua squadra per entrare nella Web App.';
+    }
+
+    function showPasswordSetupMode(message = 'Inserisci una nuova password per completare l\'accesso.') {
+      loginForm.style.display = 'none';
+      resetPasswordForm.style.display = 'grid';
+
+      if (title) title.innerText = 'Imposta la password';
+      if (subtitle) subtitle.innerText = 'Scegli la password che userai per accedere alla Web App.';
+      setStatus(message, false);
+    }
+
     async function login() {
-      const status = document.getElementById('status');
-      const button = document.getElementById('loginButton');
-      const email = document.getElementById('email').value.trim();
-      const password = document.getElementById('password').value;
-
-      status.innerText = '';
-
-      if (!email || !password) {
-        status.innerText = 'Inserisci email e password.';
+      if (resetPasswordForm.style.display !== 'none') {
+        await updatePassword();
         return;
       }
 
-      button.disabled = true;
-      button.innerText = 'Ingresso in corso...';
+      const email = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value;
+
+      setStatus('');
+
+      if (!email || !password) {
+        setStatus('Inserisci email e password.');
+        return;
+      }
+
+      loginButton.disabled = true;
+      loginButton.innerText = 'Ingresso in corso...';
 
       const { error } = await supabase.auth.signInWithPassword({
         email,
@@ -444,19 +521,82 @@
       });
 
       if (error) {
-        status.innerText = error.message;
-        button.disabled = false;
-        button.innerText = 'Entra nella Lega';
+        setStatus(error.message);
+        loginButton.disabled = false;
+        loginButton.innerText = 'Entra nella Lega';
         return;
       }
 
       window.location.href = 'index.html';
     }
 
-    document.getElementById('loginButton').addEventListener('click', login);
+    async function updatePassword() {
+      const newPassword = document.getElementById('newPassword').value;
+      const confirmNewPassword = document.getElementById('confirmNewPassword').value;
+
+      setStatus('');
+
+      if (!newPassword || !confirmNewPassword) {
+        setStatus('Inserisci e conferma la nuova password.');
+        return;
+      }
+
+      if (newPassword !== confirmNewPassword) {
+        setStatus('Le password non coincidono.');
+        return;
+      }
+
+      if (newPassword.length < 8) {
+        setStatus('La password deve avere almeno 8 caratteri.');
+        return;
+      }
+
+      savePasswordButton.disabled = true;
+      savePasswordButton.innerText = 'Salvataggio...';
+
+      const { error } = await supabase.auth.updateUser({
+        password: newPassword
+      });
+
+      if (error) {
+        setStatus(error.message || 'Errore durante l\'aggiornamento della password.');
+        savePasswordButton.disabled = false;
+        savePasswordButton.innerText = 'Salva nuova password';
+        return;
+      }
+
+      setStatus('Password aggiornata. Ora puoi accedere.', false);
+
+      await supabase.auth.signOut();
+
+      setTimeout(() => {
+        window.location.href = 'login.html';
+      }, 1400);
+    }
+
+    if (isPasswordSetupUrl()) {
+      showPasswordSetupMode();
+    } else {
+      showLoginMode();
+    }
+
+    supabase.auth.onAuthStateChange((event) => {
+      if (event === 'PASSWORD_RECOVERY') {
+        showPasswordSetupMode();
+      }
+    });
+
+    loginButton.addEventListener('click', login);
+    savePasswordButton.addEventListener('click', updatePassword);
 
     document.addEventListener('keydown', function (event) {
-      if (event.key === 'Enter') login();
+      if (event.key !== 'Enter') return;
+
+      if (resetPasswordForm.style.display !== 'none') {
+        updatePassword();
+      } else {
+        login();
+      }
     });
   </script>
 </body>
