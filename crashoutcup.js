@@ -714,7 +714,7 @@ function renderSchedule() {
 
     return `
       <article class="fixture-card ${match.isPlayed ? "is-played" : "is-unplayed"}" data-type="${match.type}" data-bucket="${match.bucket}">
-        <div class="fixture-team home">
+        <div class="fixture-team home" data-team="${match.home}">
           <span class="logo-mount" data-logo-team="${match.home}" data-logo-class="fixture"></span>
           <span>
             <span class="fixture-team-name">${match.home}</span>
@@ -724,7 +724,7 @@ function renderSchedule() {
 
         <div class="fixture-vs"><span>${match.isPlayed ? scoreText : "VS"}</span></div>
 
-        <div class="fixture-team away">
+      <div class="fixture-team away" data-team="${match.away}">
           <span>
             <span class="fixture-team-name">${match.away}</span>
             <span class="fixture-score">${awayScore}</span>
