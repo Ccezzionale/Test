@@ -6,7 +6,7 @@
   <title>Lega degli Eroi – Crash Out Cup • Playoff</title>
 
   <link rel="stylesheet" href="navbar.css">
-  <link rel="stylesheet" href="crashoutplayoff.css">
+  <link rel="stylesheet" href="crashoutplayoff.css?v=20260708-dynamic-seeds-v7">
 </head>
 
 <body>
@@ -178,17 +178,33 @@
         <span>
           <span class="crash-admin-kicker">Admin Panel</span>
           <strong>Risultati Crash Out Cup</strong>
-          <small>Aggiorna le serie. Chi arriva a 3 passa automaticamente il turno.</small>
+          <small>Controlla il seed dinamico, blocca il tabellone e aggiorna le serie.</small>
         </span>
 
         <span class="crash-admin-chevron">⌄</span>
       </button>
 
       <div class="crash-admin-body">
+        <section class="crash-seed-lock-panel" aria-label="Seed playoff">
+          <div class="crash-seed-lock-head">
+            <div>
+              <span class="crash-admin-kicker">Seed Playoff</span>
+              <strong>Tabellone dinamico dalla Rivalry</strong>
+              <p id="crash-seed-lock-status">Caricamento stato seed...</p>
+            </div>
+
+            <button id="crash-seed-lock-btn" type="button" class="crash-admin-save">
+              Blocca tabellone playoff
+            </button>
+          </div>
+
+          <div id="crash-seed-preview" class="crash-seed-preview"></div>
+        </section>
+
         <div class="crash-admin-head">
           <div>
             <h2>Risultati serie</h2>
-            <p>Modifica i punteggi e salva. Il bracket si aggiorna subito dopo.</p>
+            <p>Modifica i punteggi e salva. Chi arriva a 3 passa automaticamente il turno.</p>
           </div>
 
           <button id="crash-admin-save" type="button" class="crash-admin-save">
@@ -224,7 +240,7 @@
   </template>
 
   <script src="mobile-nav.js"></script>
-  <script type="module" src="crashoutplayoff.js" defer></script>
+  <script type="module" src="crashoutplayoff.js?v=20260708-dynamic-seeds-v7" defer></script>
   <script src="navbar.js"></script>
 
 </body>

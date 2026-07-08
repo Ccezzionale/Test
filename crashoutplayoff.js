@@ -1,12 +1,36 @@
 import { supabase } from "./supabase.js";
 
 // ======== CONFIG ========
-const URL_STANDINGS = "https://docs.google.com/spreadsheets/d/1xPual_RkDPsnAW1Gy_ZCcVlAUATtquTbbym3NPk8UfI/export?format=csv&gid=1127607135";
+const CRASHOUT_SEASON = "2026";
 const LOGO_BASE_PATH = "img/";
 const LOGO_EXT = ".webp";
 
-// PUNTEGGI caricati da Supabase
+// Stessa lista della pagina Rivalry: serve per calcolare il seeding dinamico.
+const TEAM_DATA = [
+  { nome: "Atlètico Leon", logo: "img/Atlético Leon.webp" },
+  { nome: "Bayern Christiansen", logo: "img/Bayern Christiansen.webp" },
+  { nome: "Team Bartowski", logo: "img/Team Bartowski.webp" },
+  { nome: "Golden Knights", logo: "img/Golden Knights.webp" },
+  { nome: "Ibla", logo: "img/Ibla.webp" },
+  { nome: "Fantaugusta", logo: "img/Fantaugusta.webp" },
+  { nome: "Riverfilo", logo: "img/Riverfilo.webp" },
+  { nome: "Desperados", logo: "img/Desperados.webp" },
+  { nome: "Wildboys 78", logo: "img/wildboys78.webp" },
+  { nome: "Pandinicoccolosini", logo: "img/Pandinicoccolosini.webp" },
+  { nome: "Pokermantra", logo: "img/PokerMantra.webp" },
+  { nome: "Minnesode Timberland", logo: "img/Minnesode Timberland.webp" },
+  { nome: "Minnesota Snakes", logo: "img/MinneSota Snakes.webp" },
+  { nome: "Eintracht Franco 126", logo: "img/Eintracht Franco 126.webp" },
+  { nome: "FC Disoneste", logo: "img/FC Disoneste.webp" },
+  { nome: "Athletic Pongao", logo: "img/Athletic Pongao.webp" }
+];
+
+const TEAM_NAMES = TEAM_DATA.map(team => team.nome);
+const TEAM_LOGOS = Object.fromEntries(TEAM_DATA.map(team => [team.nome, team.logo]));
+
+// PUNTEGGI playoff caricati da Supabase
 let SCORES = {};
+let SEED_LOCK = { locked: false, seeds: [], lockedAt: null };
 
 const SERIES_META = [
   { id: "L1", label: "Ottavo 1", side: "Sinistra" },
@@ -44,7 +68,7 @@ function isNumeric(v) {
 }
 
 function logoSrc(team) {
-  return encodeURI(`${LOGO_BASE_PATH}${team}${LOGO_EXT}`);
+  return encodeURI(TEAM_LOGOS[team] || `${LOGO_BASE_PATH}${team}${LOGO_EXT}`);
 }
 
 function clamp03(n) {
@@ -97,6 +121,7 @@ async function initCrashAdminPanel() {
   const panel = document.getElementById("crash-admin-panel");
   const toggle = document.getElementById("crash-admin-toggle");
   const saveBtn = document.getElementById("crash-admin-save");
+  const seedLockBtn = document.getElementById("crash-seed-lock-btn");
 
   if (!panel) return;
 
@@ -111,6 +136,7 @@ async function initCrashAdminPanel() {
 
   // Ricarica i risultati e popola sempre la griglia admin
   await loadScoresFromSupabase();
+  renderSeedLockPanel();
   renderCrashAdminPanel();
 
   toggle?.addEventListener("click", () => {
@@ -118,6 +144,7 @@ async function initCrashAdminPanel() {
     toggle.setAttribute("aria-expanded", String(isOpen));
   });
 
+  seedLockBtn?.addEventListener("click", lockCurrentPlayoffSeeds);
   saveBtn?.addEventListener("click", saveCrashAdminScores);
 }
 
@@ -194,7 +221,9 @@ async function saveCrashAdminScores() {
     updated_at: new Date().toISOString()
   }));
 
-  if (status) status.textContent = "Salvataggio in corso...";
+  if (status) status.textContent = SEED_LOCK.locked
+    ? "Salvataggio in corso..."
+    : "Salvataggio in corso... Nota: i seed non sono ancora bloccati.";
 
   const { error } = await supabase
     .from("crashout_playoff_scores")
@@ -208,10 +237,13 @@ async function saveCrashAdminScores() {
     return;
   }
 
-  if (status) status.textContent = "Risultati salvati. Bracket aggiornato.";
+  if (status) status.textContent = SEED_LOCK.locked
+    ? "Risultati salvati. Bracket aggiornato."
+    : "Risultati salvati. Bracket aggiornato, ma i seed sono ancora dinamici.";
 
   await loadScoresFromSupabase();
   await buildBracket();
+  renderSeedLockPanel();
   renderCrashAdminPanel();
 }
 
@@ -242,33 +274,238 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 });
 
-// ======== PARSE CSV ========
-async function loadStandings() {
-  const res = await fetch(urlNoCache(URL_STANDINGS));
-  const text = await res.text();
+// ======== SEED PLAYOFF: DINAMICO DA RIVALRY O BLOCCATO DA ADMIN ========
+function initialRank(team) {
+  const idx = TEAM_NAMES.indexOf(team);
+  return idx === -1 ? 999 : idx;
+}
 
-  const lines = text
-    .split(/\r?\n/)
-    .map(line => line.trim())
-    .filter(Boolean);
+function formatSeedLockDate(value) {
+  if (!value) return "";
+  try {
+    return new Intl.DateTimeFormat("it-IT", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit"
+    }).format(new Date(value));
+  } catch {
+    return value;
+  }
+}
 
-  const entries = [];
+async function loadLockedSeedsFromSupabase() {
+  const { data, error } = await supabase
+    .from("crashout_playoff_seeds")
+    .select("seed_number, team_name, locked_at")
+    .eq("season", CRASHOUT_SEASON)
+    .order("seed_number", { ascending: true });
 
-  for (const line of lines) {
-    const cells = line.split(",");
-    const pos = cells[0]?.trim();
-    const name = cells[1]?.trim();
-
-    if (!isNumeric(pos) || !name) continue;
-
-    entries.push({
-      seed: Number(pos),
-      team: name
-    });
+  if (error) {
+    console.warn("Seed playoff non bloccati o tabella non ancora creata:", error.message || error);
+    return null;
   }
 
-  entries.sort((a, b) => a.seed - b.seed);
-  return entries.slice(0, 16);
+  if (!data || data.length < 16) {
+    return { locked: false, seeds: [], lockedAt: null };
+  }
+
+  const seeds = data.slice(0, 16).map(row => ({
+    seed: Number(row.seed_number),
+    team: row.team_name
+  }));
+
+  const complete = seeds.length === 16 && seeds.every(row => row.seed && row.team);
+
+  return {
+    locked: complete,
+    seeds: complete ? seeds : [],
+    lockedAt: complete ? data[0]?.locked_at : null
+  };
+}
+
+async function calculateRivalrySeedsFromSupabase() {
+  const { data, error } = await supabase
+    .from("crashout_rivalry_matches")
+    .select("home_team, away_team, home_goals, away_goals, home_magic, away_magic, is_played")
+    .eq("season", CRASHOUT_SEASON);
+
+  if (error) {
+    console.error("Errore caricamento risultati Rivalry per seed playoff:", error);
+    return TEAM_NAMES.map((team, index) => ({ seed: index + 1, team }));
+  }
+
+  const table = new Map();
+
+  TEAM_NAMES.forEach(team => {
+    table.set(team, {
+      team,
+      played: 0,
+      wins: 0,
+      draws: 0,
+      losses: 0,
+      gf: 0,
+      ga: 0,
+      gd: 0,
+      points: 0,
+      fantasyPoints: 0
+    });
+  });
+
+  (data || []).forEach(match => {
+    if (!match.is_played) return;
+
+    const home = table.get(match.home_team);
+    const away = table.get(match.away_team);
+    if (!home || !away) return;
+
+    const homeGoals = Number(match.home_goals);
+    const awayGoals = Number(match.away_goals);
+    if (!Number.isFinite(homeGoals) || !Number.isFinite(awayGoals)) return;
+
+    home.played += 1;
+    away.played += 1;
+
+    home.gf += homeGoals;
+    home.ga += awayGoals;
+    away.gf += awayGoals;
+    away.ga += homeGoals;
+
+    home.fantasyPoints += Number(match.home_magic || 0);
+    away.fantasyPoints += Number(match.away_magic || 0);
+
+    if (homeGoals > awayGoals) {
+      home.wins += 1;
+      away.losses += 1;
+      home.points += 3;
+    } else if (homeGoals < awayGoals) {
+      away.wins += 1;
+      home.losses += 1;
+      away.points += 3;
+    } else {
+      home.draws += 1;
+      away.draws += 1;
+      home.points += 1;
+      away.points += 1;
+    }
+  });
+
+  const standings = Array.from(table.values()).map(row => ({
+    ...row,
+    gd: row.gf - row.ga
+  }));
+
+  standings.sort((a, b) =>
+    b.points - a.points ||
+    b.gd - a.gd ||
+    b.gf - a.gf ||
+    b.fantasyPoints - a.fantasyPoints ||
+    initialRank(a.team) - initialRank(b.team)
+  );
+
+  return standings.slice(0, 16).map((row, index) => ({
+    seed: index + 1,
+    team: row.team,
+    points: row.points,
+    played: row.played,
+    gd: row.gd,
+    gf: row.gf,
+    fantasyPoints: row.fantasyPoints
+  }));
+}
+
+async function loadStandings() {
+  const locked = await loadLockedSeedsFromSupabase();
+
+  if (locked?.locked) {
+    SEED_LOCK = locked;
+    return locked.seeds;
+  }
+
+  const dynamicSeeds = await calculateRivalrySeedsFromSupabase();
+
+  SEED_LOCK = {
+    locked: false,
+    seeds: dynamicSeeds,
+    lockedAt: null
+  };
+
+  return dynamicSeeds.map(row => ({ seed: row.seed, team: row.team }));
+}
+
+function renderSeedLockPanel() {
+  const status = document.getElementById("crash-seed-lock-status");
+  const btn = document.getElementById("crash-seed-lock-btn");
+  const preview = document.getElementById("crash-seed-preview");
+
+  if (!status || !btn || !preview) return;
+
+  if (SEED_LOCK.locked) {
+    btn.disabled = true;
+    btn.textContent = "Tabellone bloccato";
+    status.textContent = `Seed bloccati${SEED_LOCK.lockedAt ? ` il ${formatSeedLockDate(SEED_LOCK.lockedAt)}` : ""}. Da ora i risultati playoff non cambiano più gli accoppiamenti.`;
+    status.classList.add("is-ok");
+  } else {
+    btn.disabled = false;
+    btn.textContent = "Blocca tabellone playoff";
+    status.textContent = "Seed dinamici attivi: il tabellone segue la classifica Rivalry finché non lo blocchi.";
+    status.classList.remove("is-ok");
+  }
+
+  const seeds = SEED_LOCK.seeds || [];
+  preview.innerHTML = seeds.slice(0, 16).map(row => `
+    <span class="seed-preview-chip">
+      <strong>#${row.seed}</strong>${row.team}
+    </span>
+  `).join("");
+}
+
+async function lockCurrentPlayoffSeeds() {
+  const status = document.getElementById("crash-seed-lock-status");
+  const btn = document.getElementById("crash-seed-lock-btn");
+
+  if (SEED_LOCK.locked) return;
+
+  if (status) status.textContent = "Blocco tabellone in corso...";
+  if (btn) btn.disabled = true;
+
+  const currentSeeds = await calculateRivalrySeedsFromSupabase();
+
+  if (!currentSeeds || currentSeeds.length < 16) {
+    if (status) status.textContent = "Impossibile bloccare: servono 16 seed validi.";
+    if (btn) btn.disabled = false;
+    return;
+  }
+
+  const now = new Date().toISOString();
+  const payload = currentSeeds.slice(0, 16).map(row => ({
+    season: CRASHOUT_SEASON,
+    seed_number: row.seed,
+    team_name: row.team,
+    locked_at: now,
+    updated_at: now
+  }));
+
+  const { error } = await supabase
+    .from("crashout_playoff_seeds")
+    .upsert(payload, { onConflict: "season,seed_number" });
+
+  if (error) {
+    console.error("Errore blocco seed playoff:", error);
+    if (status) status.textContent = "Errore: non riesco a bloccare il tabellone. Controlla SQL/policy Supabase.";
+    if (btn) btn.disabled = false;
+    return;
+  }
+
+  SEED_LOCK = {
+    locked: true,
+    seeds: payload.map(row => ({ seed: row.seed_number, team: row.team_name })),
+    lockedAt: now
+  };
+
+  renderSeedLockPanel();
+  await buildBracket();
 }
 
 // ======== BRACKET MODEL ========
@@ -864,6 +1101,7 @@ async function buildBracket() {
       ?.appendChild(createFinalSide(finalMatch.away, "away", "F"));
 
     renderMobileList(bracket);
+    renderSeedLockPanel();
 
     requestAnimationFrame(() => {
       drawWires();
