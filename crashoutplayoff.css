@@ -2002,3 +2002,37 @@ body::before{
     font-size:.68rem;
   }
 }
+
+@media (min-width:901px){
+  .match{
+    overflow:hidden;
+  }
+
+  .team{
+    min-height:28px !important;
+    grid-template-columns:22px minmax(0, 1fr) 34px !important;
+    gap:6px !important;
+  }
+
+  .conference.right .team{
+    grid-template-columns:34px minmax(0, 1fr) 22px !important;
+  }
+
+  .logo-wrap{
+    width:34px !important;
+    height:34px !important;
+  }
+
+  .logo-wrap .logo{
+    width:100% !important;
+    height:100% !important;
+    object-fit:contain !important;
+  }
+}
+
+@media (min-width:1451px){
+  .logo-wrap{
+    width:38px !important;
+    height:38px !important;
+  }
+}
