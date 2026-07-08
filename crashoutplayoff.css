@@ -2036,3 +2036,121 @@ body::before{
     height:38px !important;
   }
 }
+
+/* =========================================================
+   CRASH OUT PLAYOFF - FIX DESKTOP LOGHI BRACKET V9
+   Solo desktop. Mobile intoccabile.
+   ========================================================= */
+
+@media (min-width:901px){
+
+  .match{
+    height:76px !important;
+    min-height:76px !important;
+    padding:7px 8px !important;
+    gap:4px !important;
+    overflow:hidden !important;
+    justify-content:center !important;
+  }
+
+  .team{
+    height:30px !important;
+    min-height:30px !important;
+    display:grid !important;
+    grid-template-columns:22px 44px 34px !important;
+    gap:4px !important;
+    align-items:center !important;
+  }
+
+  .conference.right .team{
+    grid-template-columns:34px 44px 22px !important;
+  }
+
+  .logo-wrap{
+    width:30px !important;
+    height:30px !important;
+    max-width:30px !important;
+    max-height:30px !important;
+    justify-self:center !important;
+    align-self:center !important;
+    overflow:visible !important;
+    transform:none !important;
+  }
+
+  .logo-wrap .logo{
+    width:30px !important;
+    height:30px !important;
+    max-width:30px !important;
+    max-height:30px !important;
+    object-fit:contain !important;
+    display:block !important;
+  }
+
+  .team.is-winner .logo-wrap{
+    transform:none !important;
+  }
+
+  .score-box{
+    width:30px !important;
+    height:26px !important;
+    font-size:.95rem !important;
+  }
+
+  .seed{
+    width:22px !important;
+    font-size:.76rem !important;
+  }
+
+  .round-final .match{
+    height:58px !important;
+    min-height:58px !important;
+  }
+
+  .match.one-team{
+    height:58px !important;
+    min-height:58px !important;
+  }
+
+  .match.one-team .team{
+    height:38px !important;
+    min-height:38px !important;
+  }
+}
+
+@media (min-width:1451px){
+
+  .match{
+    height:82px !important;
+    min-height:82px !important;
+  }
+
+  .team{
+    height:32px !important;
+    min-height:32px !important;
+    grid-template-columns:24px 46px 36px !important;
+  }
+
+  .conference.right .team{
+    grid-template-columns:36px 46px 24px !important;
+  }
+
+  .logo-wrap,
+  .match.one-team .logo-wrap{
+    width:34px !important;
+    height:34px !important;
+    max-width:34px !important;
+    max-height:34px !important;
+  }
+
+  .logo-wrap .logo{
+    width:34px !important;
+    height:34px !important;
+    max-width:34px !important;
+    max-height:34px !important;
+  }
+
+  .score-box{
+    width:34px !important;
+    height:30px !important;
+  }
+}
