@@ -2304,3 +2304,126 @@ body::before{
     height:min(360px, 24vw) !important;
   }
 }
+
+/* =========================================================
+   CRASH OUT PLAYOFF - DESKTOP BIG LOGOS NO NAMES
+   Solo desktop, mobile intoccato
+   ========================================================= */
+
+@media (min-width:1451px){
+
+  .cup-container,
+  .page-header-banner{
+    max-width:1840px !important;
+  }
+
+  :root{
+    --slot:96px;
+    --match-w:190px;
+    --match-h:90px;
+    --center-w:280px;
+    --round-gap:18px;
+  }
+
+  .bracket{
+    gap:14px !important;
+    padding-top:46px !important;
+  }
+
+  .conference{
+    gap:18px !important;
+  }
+
+  .match{
+    width:190px !important;
+    height:90px !important;
+    min-height:90px !important;
+    padding:10px 12px !important;
+    gap:8px !important;
+    border-radius:16px !important;
+    overflow:hidden !important;
+    justify-content:center !important;
+  }
+
+  .team{
+    height:34px !important;
+    min-height:34px !important;
+    display:grid !important;
+    grid-template-columns:26px 1fr 40px !important;
+    gap:8px !important;
+    align-items:center !important;
+  }
+
+  .conference.right .team{
+    grid-template-columns:40px 1fr 26px !important;
+  }
+
+  .seed{
+    width:26px !important;
+    font-size:.84rem !important;
+  }
+
+  .logo-wrap,
+  .match.one-team .logo-wrap{
+    width:48px !important;
+    height:48px !important;
+    max-width:48px !important;
+    max-height:48px !important;
+    justify-self:center !important;
+    align-self:center !important;
+  }
+
+  .logo-wrap .logo{
+    width:48px !important;
+    height:48px !important;
+    max-width:48px !important;
+    max-height:48px !important;
+    object-fit:contain !important;
+    display:block !important;
+  }
+
+  .team-name{
+    display:none !important;
+  }
+
+  .score-box{
+    width:38px !important;
+    height:32px !important;
+    font-size:1.06rem !important;
+  }
+
+  #left-round-3 .match,
+  #right-round-3 .match{
+    width:190px !important;
+  }
+
+  .round-final .match{
+    width:190px !important;
+    height:70px !important;
+    min-height:70px !important;
+  }
+
+  .match.one-team{
+    height:70px !important;
+    min-height:70px !important;
+  }
+
+  .match.one-team .team{
+    height:42px !important;
+    min-height:42px !important;
+  }
+
+  .team.is-winner .logo-wrap{
+    transform:none !important;
+  }
+
+  .trophy{
+    width:min(320px, 21vw) !important;
+    height:min(320px, 21vw) !important;
+  }
+
+  .trophy-glow{
+    width:min(380px, 25vw) !important;
+    height:min(380px, 25vw) !important;
+  }
+}
