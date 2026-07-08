@@ -2040,3 +2040,14 @@ body::before{
     height:min(395px, 25vw) !important;
   }
 }
+
+@media (min-width:901px){
+  .round-label,
+  .finals-title{
+    display:none !important;
+  }
+
+  .bracket{
+    padding-top:18px !important;
+  }
+}
