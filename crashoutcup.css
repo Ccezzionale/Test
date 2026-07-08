@@ -2302,3 +2302,55 @@ body::before{
     margin-top:2px;
   }
 }
+
+/* =========================================================
+   CRASH OUT CUP - CLASSIFICA MAGIC POINTS FIX
+   ========================================================= */
+
+.magic-cell{
+  color:#ffd6ff !important;
+  font-weight:950 !important;
+  text-shadow:0 0 12px rgba(255,49,223,.34);
+}
+
+@media (min-width:901px){
+  .standings-table{
+    min-width:0 !important;
+    table-layout:fixed !important;
+  }
+
+  .standings-table th,
+  .standings-table td{
+    padding:7px 6px !important;
+  }
+
+  .standings-table th:nth-child(1),
+  .standings-table td:nth-child(1){
+    width:62px;
+  }
+
+  .standings-table th:nth-child(2),
+  .standings-table td:nth-child(2){
+    width:34%;
+  }
+
+  .standings-table th:nth-child(3),
+  .standings-table td:nth-child(3){
+    width:140px;
+  }
+
+  .standings-table th:nth-child(n+4),
+  .standings-table td:nth-child(n+4){
+    width:52px;
+  }
+
+  .team-cell{
+    min-width:0 !important;
+  }
+
+  .conference-badge{
+    min-width:108px;
+    height:25px;
+    font-size:.64rem;
+  }
+}
