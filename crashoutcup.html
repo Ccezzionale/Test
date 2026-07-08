@@ -6,7 +6,7 @@
   <title>Lega degli Eroi – Crash Out Cup • Prima fase</title>
 
   <link rel="stylesheet" href="navbar.css">
-  <link rel="stylesheet" href="crashoutcup.css?v=20260707-rivalry-v5">
+  <link rel="stylesheet" href="crashoutcup.css?v=20260708-mobile-v6">
 </head>
 
 <body>
@@ -97,11 +97,11 @@
     <picture>
       <source
         media="(max-width: 900px)"
-        srcset="img/bannerrivalry.webp"
+        srcset="img/bannerrivalry.webp?v=2"
       >
 
     <img
-      src="img/bannerrivalry.webp?v=1"
+      src="img/bannerrivalry.webp?v=2"
       alt="Crash Out Cup Rivalry Games"
       class="crash-cup-banner"
     >
@@ -114,7 +114,7 @@
     </div>
   </header>
 
-  <main class="cup-container" data-page-version="20260707-rivalry-v5">
+  <main class="cup-container" data-page-version="20260708-mobile-v6">
     <section class="phase-intro-card" aria-label="Formula Crash Out Cup">
       <div class="phase-intro-copy">
         <span class="section-kicker">Prima fase</span>
@@ -133,8 +133,27 @@
       </div>
     </section>
 
+    <nav class="mobile-section-tabs" aria-label="Sezioni Crash Out Cup">
+      <button type="button" class="mobile-section-tab is-active" data-mobile-tab="standings">
+        <span class="mobile-tab-icon">▥</span>
+        <span>Classifica</span>
+      </button>
+      <button type="button" class="mobile-section-tab" data-mobile-tab="calendar">
+        <span class="mobile-tab-icon">◷</span>
+        <span>Calendario</span>
+      </button>
+      <button type="button" class="mobile-section-tab" data-mobile-tab="rivalries">
+        <span class="mobile-tab-icon">⚔</span>
+        <span>Rivalità</span>
+      </button>
+      <button type="button" class="mobile-section-tab" data-mobile-tab="info">
+        <span class="mobile-tab-icon">ⓘ</span>
+        <span>Info</span>
+      </button>
+    </nav>
+
     <section class="phase-layout" aria-label="Prima fase Crash Out Cup">
-      <section class="crash-panel standings-panel" aria-labelledby="standings-title">
+      <section class="crash-panel standings-panel is-mobile-active" data-mobile-panel="standings" aria-labelledby="standings-title">
         <div class="panel-head">
           <div>
             <span class="section-kicker">Classifica generale</span>
@@ -169,7 +188,7 @@
         </div>
       </section>
 
-      <aside class="crash-panel calendar-panel" aria-labelledby="calendar-title">
+      <aside class="crash-panel calendar-panel" data-mobile-panel="calendar" aria-labelledby="calendar-title">
         <div class="panel-head compact">
           <div>
             <span class="section-kicker">Calendario</span>
@@ -196,7 +215,7 @@
     </section>
 
     <section class="bottom-grid">
-      <section class="crash-panel groups-panel" aria-labelledby="groups-title">
+      <section class="crash-panel groups-panel" data-mobile-panel="rivalries" aria-labelledby="groups-title">
         <div class="panel-head compact">
           <div>
             <span class="section-kicker">Rivalità</span>
@@ -207,7 +226,7 @@
         <div id="groups-grid" class="groups-grid"></div>
       </section>
 
-      <section class="crash-panel rules-panel" aria-labelledby="rules-title">
+      <section class="crash-panel rules-panel" data-mobile-panel="info" aria-labelledby="rules-title">
         <div class="panel-head compact">
           <div>
             <span class="section-kicker">Spareggi</span>
@@ -281,7 +300,7 @@
   </main>
 
   <script src="mobile-nav.js"></script>
-  <script type="module" src="crashoutcup.js?v=20260707-rivalry-v5" defer></script>
+  <script type="module" src="crashoutcup.js?v=20260708-mobile-v6" defer></script>
   <script src="navbar.js"></script>
 </body>
 </html>

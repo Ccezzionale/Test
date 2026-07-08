@@ -608,6 +608,54 @@ function renderStandings() {
   }).join("");
 
   mountLogos(body);
+  renderMobileStandings(standings);
+}
+
+function renderMobileStandings(standings) {
+  const panel = document.querySelector('[data-mobile-panel="standings"]');
+  if (!panel) return;
+
+  let list = document.getElementById("mobile-standings-list");
+  if (!list) {
+    list = document.createElement("div");
+    list.id = "mobile-standings-list";
+    list.className = "mobile-standings-list";
+    panel.appendChild(list);
+  }
+
+  list.innerHTML = standings.map((row, index) => {
+    const pos = index + 1;
+    const diffClass = row.gd > 0 ? "diff-positive" : row.gd < 0 ? "diff-negative" : "";
+    const seedTier = Math.ceil(pos / 4);
+
+    return `
+      <article class="mobile-standing-card seed-tier-${seedTier}">
+        <div class="mobile-standing-pos">${pos}</div>
+        <div class="mobile-standing-logo">
+          <span class="logo-mount" data-logo-team="${row.team}" data-logo-class="team"></span>
+        </div>
+        <div class="mobile-standing-main">
+          <strong>${row.team}</strong>
+          <span>Seed #${pos} playoff · ${conferenceLabel(row.conference)}</span>
+        </div>
+        <div class="mobile-standing-points">
+          <strong>${row.points}</strong>
+          <span>PT</span>
+        </div>
+        <div class="mobile-standing-meta">
+          <span>G ${row.played}</span>
+          <span>V ${row.wins}</span>
+          <span>N ${row.draws}</span>
+          <span>P ${row.losses}</span>
+          <span>GF ${row.gf}</span>
+          <span>GS ${row.ga}</span>
+          <span class="${diffClass}">DR ${formatDiff(row.gd)}</span>
+        </div>
+      </article>
+    `;
+  }).join("");
+
+  mountLogos(list);
 }
 
 function renderRivalries() {
@@ -1042,8 +1090,42 @@ function initMobileMenuFallback() {
   });
 }
 
+function bindMobileSectionTabs() {
+  const tabs = Array.from(document.querySelectorAll(".mobile-section-tab[data-mobile-tab]"));
+  const panels = Array.from(document.querySelectorAll("[data-mobile-panel]"));
+
+  if (!tabs.length || !panels.length) return;
+
+  function activate(panelId) {
+    tabs.forEach(tab => {
+      const isActive = tab.dataset.mobileTab === panelId;
+      tab.classList.toggle("is-active", isActive);
+      tab.setAttribute("aria-selected", isActive ? "true" : "false");
+    });
+
+    panels.forEach(panel => {
+      panel.classList.toggle("is-mobile-active", panel.dataset.mobilePanel === panelId);
+    });
+  }
+
+  tabs.forEach(tab => {
+    tab.setAttribute("aria-selected", tab.classList.contains("is-active") ? "true" : "false");
+
+    tab.addEventListener("click", () => {
+      const target = tab.dataset.mobileTab || "standings";
+      activate(target);
+      window.requestAnimationFrame(() => {
+        tab.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" });
+      });
+    });
+  });
+
+  activate(document.querySelector(".mobile-section-tab.is-active")?.dataset.mobileTab || "standings");
+}
+
 async function initCrashOutCup() {
   initMobileMenuFallback();
+  bindMobileSectionTabs();
   await loadInitialData();
   renderAllPublic();
   bindScheduleControls();
