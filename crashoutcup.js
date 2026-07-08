@@ -604,13 +604,13 @@ function calculateStandings(matches) {
     gd: row.gf - row.ga
   }));
 
-  rows.sort((a, b) =>
-    b.points - a.points ||
-    b.gd - a.gd ||
-    b.gf - a.gf ||
-    b.fantasyPoints - a.fantasyPoints ||
-    initialRank(a.team) - initialRank(b.team)
-  );
+rows.sort((a, b) =>
+  b.points - a.points ||
+  b.fantasyPoints - a.fantasyPoints ||
+  b.gd - a.gd ||
+  b.gf - a.gf ||
+  initialRank(a.team) - initialRank(b.team)
+);
 
   return rows;
 }
