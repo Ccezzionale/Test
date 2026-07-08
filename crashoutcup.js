@@ -619,6 +619,12 @@ function formatDiff(n) {
   return n > 0 ? `+${n}` : String(n);
 }
 
+function formatFantasyPoints(value) {
+  const n = Number(value || 0);
+  if (!Number.isFinite(n)) return "0";
+  return Number.isInteger(n) ? String(n) : n.toFixed(1).replace(".", ",");
+}
+
 function renderStandings() {
   const body = $("#standings-body");
   if (!body) return;
@@ -642,15 +648,16 @@ function renderStandings() {
             </span>
           </div>
         </td>
-        <td><span class="conference-badge conference-${row.conference}">${conferenceLabel(row.conference)}</span></td>
-        <td>${row.played}</td>
-        <td>${row.wins}</td>
-        <td>${row.draws}</td>
-        <td>${row.losses}</td>
-        <td>${row.gf}</td>
-        <td>${row.ga}</td>
-        <td class="${diffClass}">${formatDiff(row.gd)}</td>
-        <td class="points-cell">${row.points}</td>
+<td><span class="conference-badge conference-${row.conference}">${conferenceLabel(row.conference)}</span></td>
+<td class="points-cell">${row.points}</td>
+<td class="magic-cell">${formatFantasyPoints(row.fantasyPoints)}</td>
+<td>${row.played}</td>
+<td>${row.wins}</td>
+<td>${row.draws}</td>
+<td>${row.losses}</td>
+<td>${row.gf}</td>
+<td>${row.ga}</td>
+<td class="${diffClass}">${formatDiff(row.gd)}</td>
       </tr>
     `;
   }).join("");
@@ -691,6 +698,7 @@ function renderMobileStandings(standings) {
           <span>PT</span>
         </div>
         <div class="mobile-standing-meta">
+        <span>MP ${formatFantasyPoints(row.fantasyPoints)}</span>
           <span>G ${row.played}</span>
           <span>V ${row.wins}</span>
           <span>N ${row.draws}</span>
