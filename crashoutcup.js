@@ -240,6 +240,11 @@ function conferenceLabel(conf) {
   return CONFERENCE_LABELS[conf] || conf || "-";
 }
 
+function displayTeamName(team) {
+  if (team === "Athletic Pongao") return "Pongao";
+  return team;
+}
+
 function initialRank(team) {
   const idx = TEAM_NAMES.indexOf(team);
   return idx === -1 ? 999 : idx;
@@ -764,7 +769,7 @@ function renderSchedule() {
         <div class="fixture-team home" data-team="${match.home}">
           <span class="logo-mount" data-logo-team="${match.home}" data-logo-class="fixture"></span>
           <span>
-            <span class="fixture-team-name">${match.home}</span>
+            <span class="fixture-team-name">${displayTeamName(match.home)}</span>
             <span class="fixture-score">${homeScore}</span>
           </span>
         </div>
@@ -773,7 +778,7 @@ function renderSchedule() {
 
       <div class="fixture-team away" data-team="${match.away}">
           <span>
-            <span class="fixture-team-name">${match.away}</span>
+            <span class="fixture-team-name">${displayTeamName(match.away)}</span>
             <span class="fixture-score">${awayScore}</span>
           </span>
           <span class="logo-mount" data-logo-team="${match.away}" data-logo-class="fixture"></span>
