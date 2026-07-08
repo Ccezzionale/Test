@@ -649,6 +649,24 @@ function applyWinnerStyles(node, seriesId) {
   }
 }
 
+function applyTeamLogo(img, team) {
+  const wrap = img?.parentElement;
+  const isTbd = !team || team === "TBD";
+
+  if (isTbd) {
+    img.removeAttribute("src");
+    img.alt = "";
+    img.classList.add("hidden");
+    wrap?.classList.add("no-logo", "is-tbd");
+    return;
+  }
+
+  img.alt = team;
+  img.src = logoSrc(team);
+  img.classList.remove("hidden");
+  wrap?.classList.remove("no-logo", "is-tbd");
+}
+
 function createMatchElement(match) {
   const tpl = document.getElementById("match-template");
   const node = tpl.content.firstElementChild.cloneNode(true);
@@ -659,22 +677,23 @@ function createMatchElement(match) {
   const [homeLogo, awayLogo] = node.querySelectorAll(".logo");
   const [homeName, awayName] = node.querySelectorAll(".team-name");
 
+  const homeIsTbd = !match.home.team || match.home.team === "TBD";
+  const awayIsTbd = !match.away.team || match.away.team === "TBD";
+
   homeSeed.textContent = match.home.seed || "";
   awaySeed.textContent = match.away.seed || "";
 
-  homeLogo.alt = safeTeamName(match.home.team);
-  awayLogo.alt = safeTeamName(match.away.team);
+  homeName.textContent = homeIsTbd ? "" : safeTeamName(match.home.team);
+  awayName.textContent = awayIsTbd ? "" : safeTeamName(match.away.team);
 
-  homeName.textContent = safeTeamName(match.home.team);
-  awayName.textContent = safeTeamName(match.away.team);
+  homeEl.classList.toggle("is-tbd", homeIsTbd);
+  awayEl.classList.toggle("is-tbd", awayIsTbd);
 
-  if (match.home.team && match.home.team !== "TBD") {
-    homeLogo.src = logoSrc(match.home.team);
-  }
+  homeEl.title = homeIsTbd ? "" : safeTeamName(match.home.team);
+  awayEl.title = awayIsTbd ? "" : safeTeamName(match.away.team);
 
-  if (match.away.team && match.away.team !== "TBD") {
-    awayLogo.src = logoSrc(match.away.team);
-  }
+  applyTeamLogo(homeLogo, match.home.team);
+  applyTeamLogo(awayLogo, match.away.team);
 
   homeLogo.onerror = () => {
     homeLogo.classList.add("hidden");
@@ -685,9 +704,6 @@ function createMatchElement(match) {
     awayLogo.classList.add("hidden");
     awayLogo.parentElement.classList.add("no-logo");
   };
-
-  homeEl.title = safeTeamName(match.home.team);
-  awayEl.title = safeTeamName(match.away.team);
 
   applyScoresToNode(node, match.id);
   applyWinnerStyles(node, match.id);
