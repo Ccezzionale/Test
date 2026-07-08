@@ -38,6 +38,25 @@ const TEAM_DATA = [
 const TEAM_NAMES = TEAM_DATA.map(team => team.nome);
 const TEAM_LOGOS = Object.fromEntries(TEAM_DATA.map(team => [team.nome, team.logo]));
 
+const TEAM_MASCOTS = {
+  "Atlètico Leon": "img/maglie/leon-mascotte.webp",
+  "Bayern Christiansen": "img/maglie/bayern-mascotte.webp",
+  "Team Bartowski": "img/maglie/bartowski-mascotte.webp",
+  "Golden Knights": "img/maglie/golden-mascotte.webp",
+  "Ibla": "img/maglie/ibla-mascotte.webp",
+  "Fantaugusta": "img/maglie/fantaugusta-mascotte.webp",
+  "Riverfilo": "img/maglie/riverfilo-mascotte.webp",
+  "Desperados": "img/maglie/desperados-mascotte.webp",
+  "Wildboys 78": "img/maglie/wildboys-mascotte.webp",
+  "Pandinicoccolosini": "img/maglie/pandini-mascotte.webp",
+  "Pokermantra": "img/maglie/pokermantra-mascotte.webp",
+  "Minnesode Timberland": "img/maglie/minnesode-mascotte.webp",
+  "Minnesota Snakes": "img/maglie/snakes-mascotte.webp",
+  "Eintracht Franco 126": "img/maglie/franco-mascotte.webp",
+  "FC Disoneste": "img/maglie/disoneste-mascotte.webp",
+  "Athletic Pongao": "img/maglie/pongao-mascotte.webp"
+};
+
 // Default solo per fallback/admin: puoi cambiare tutto dal panel.
 const DEFAULT_CONFERENCES = {
   CHAMPIONSHIP: [
@@ -179,6 +198,30 @@ function createLogo(team, classPrefix = "team") {
 
   wrap.appendChild(img);
   return wrap;
+}
+
+function createMascot(team) {
+  const wrap = document.createElement("span");
+  wrap.className = "rivalry-mascot-wrap";
+
+  const img = document.createElement("img");
+  img.className = "rivalry-mascot-img";
+  img.alt = team;
+  img.src = encodeURI(TEAM_MASCOTS[team] || TEAM_LOGOS[team] || `img/${team}.webp`);
+
+  img.onerror = () => {
+    wrap.replaceWith(createLogo(team, "group"));
+  };
+
+  wrap.appendChild(img);
+  return wrap;
+}
+
+function mountMascots(root = document) {
+  root.querySelectorAll(".mascot-mount").forEach(mount => {
+    const team = mount.dataset.mascotTeam;
+    mount.replaceWith(createMascot(team));
+  });
 }
 
 function mountLogos(root = document) {
@@ -664,7 +707,10 @@ function renderRivalries() {
 
   grid.innerHTML = TEAM_NAMES.map(team => `
     <article class="group-card rivalry-card" data-group="RIV">
-      <h3>${team}</h3>
+      <div class="rivalry-team-hero" title="${team}">
+        <span class="mascot-mount" data-mascot-team="${team}"></span>
+      </div>
+
       ${(RIVALRIES[team] || []).map(rival => `
         <div class="group-team">
           <span class="logo-mount" data-logo-team="${rival}" data-logo-class="group"></span>
@@ -674,6 +720,7 @@ function renderRivalries() {
     </article>
   `).join("");
 
+  mountMascots(grid);
   mountLogos(grid);
 }
 
