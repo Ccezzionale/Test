@@ -458,10 +458,12 @@
     function readAuthParams() {
       const hash = new URLSearchParams(window.location.hash.replace(/^#/, ''));
       const query = new URLSearchParams(window.location.search);
+
       return {
         hash,
         query,
         type: hash.get('type') || query.get('type'),
+        tokenHash: query.get('token_hash'),
         hasAccessToken: hash.has('access_token'),
         hasCode: query.has('code')
       };
@@ -574,10 +576,39 @@
       }, 1400);
     }
 
-    if (isPasswordSetupUrl()) {
-      showPasswordSetupMode();
-    } else {
-      showLoginMode();
+    async function initializePage() {
+      const { type, tokenHash } = readAuthParams();
+
+      // Flusso robusto usato dal link personalizzato nell'email di recupero.
+      if (type === 'recovery' && tokenHash) {
+        showPasswordSetupMode('Verifica del link di recupero...');
+
+        // Evita che una sessione già aperta interferisca con il recupero.
+        await supabase.auth.signOut({ scope: 'local' });
+
+        const { error } = await supabase.auth.verifyOtp({
+          token_hash: tokenHash,
+          type: 'recovery'
+        });
+
+        if (error) {
+          showLoginMode();
+          setStatus('Il link non è valido o è scaduto. Richiedi una nuova email di recupero.');
+          return;
+        }
+
+        // Rimuove il token dall'indirizzo dopo la verifica.
+        window.history.replaceState({}, document.title, 'login.html?password_setup=1');
+        showPasswordSetupMode();
+        return;
+      }
+
+      // Mantiene compatibilità con i vecchi link Supabase.
+      if (isPasswordSetupUrl()) {
+        showPasswordSetupMode();
+      } else {
+        showLoginMode();
+      }
     }
 
     supabase.auth.onAuthStateChange((event) => {
@@ -585,6 +616,8 @@
         showPasswordSetupMode();
       }
     });
+
+    initializePage();
 
     loginButton.addEventListener('click', login);
     savePasswordButton.addEventListener('click', updatePassword);
