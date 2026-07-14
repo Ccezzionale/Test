@@ -171,7 +171,7 @@ function fillGWSelect(){
   for (const e of sorted){
     const opt = document.createElement("option");
     opt.value = String(e.gw);
-    opt.textContent = `GW ${e.gw}`;
+ opt.textContent = String(e.gw);
     if (Number(e.gw) === Number(CURRENT_GW)) opt.selected = true;
     sel.appendChild(opt);
   }
