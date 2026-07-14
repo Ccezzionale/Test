@@ -151,7 +151,8 @@ function setValue(fieldKey, value){
 }
 
 function fillForm(row = null){
-  $("formTitle").textContent = row ? `Modifica GW ${row.gw}` : "Nuova edizione";
+  const editionLabel = row?.edition_date || row?.title || "edizione";
+  $("formTitle").textContent = row ? `Modifica ${editionLabel}` : "Nuova edizione";
   activeGw = row?.gw || null;
 
   setValue("id", row?.id || "");
@@ -197,11 +198,20 @@ function fillForm(row = null){
   setValue("next_cta_url", row?.next_cta_url || "");
 }
 
+function getNextInternalGw(){
+  const maxGw = editions.reduce((max, row) => {
+    const value = Number(row?.gw);
+    return Number.isInteger(value) && value > max ? value : max;
+  }, 0);
+
+  return maxGw + 1;
+}
+
 function collectPayload(){
-  const gw = Number($(fields.gw)?.value || 0);
-  if (!Number.isInteger(gw) || gw <= 0) {
-    throw new Error("Inserisci una GW valida.");
-  }
+  const savedGw = Number($(fields.gw)?.value || 0);
+  const gw = Number.isInteger(savedGw) && savedGw > 0
+    ? savedGw
+    : getNextInternalGw();
 
   const payload = {
     gw,
@@ -298,7 +308,7 @@ function renderEditionsList(){
   list.innerHTML = editions.map(row => `
     <button type="button" class="edition-item ${Number(activeGw) === Number(row.gw) ? "active" : ""}" data-gw="${row.gw}">
       <div class="top">
-        <span>GW ${row.gw}</span>
+        <span>${escapeHtml(row.edition_date || "Edizione senza data")}</span>
         <span class="pub-pill ${row.is_published ? "" : "draft"}">${row.is_published ? "Pubblicata" : "Bozza"}</span>
       </div>
       <div class="title">${escapeHtml(row.title || "Senza titolo")}</div>
