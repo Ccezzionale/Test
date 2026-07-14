@@ -4,7 +4,7 @@ let editions = [];
 let activeGw = null;
 
 const squadreBase = [
-  { nome: "Rubinkebab", logo: "img/Rubinkebab.png" },
+  { nome: "Atlético Leon", logo: "img/Atlético Leon.webp" },
   { nome: "Bayern Christiansen", logo: "img/Bayern Christiansen.png" },
   { nome: "Team Bartowski", logo: "img/Team Bartowski.png" },
   { nome: "Golden Knights", logo: "img/Golden Knights.png" },
