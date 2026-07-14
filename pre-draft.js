@@ -1124,13 +1124,6 @@ async function loadAdminSummary() {
       teams (
         name,
         conference
-      ),
-      players (
-        name,
-        role,
-        role_mantra,
-        serie_a_team,
-        quotation
       )
     `)
     .eq("season", keeperSettings.season)
@@ -1145,7 +1138,6 @@ async function loadAdminSummary() {
 
   if (!data?.length) {
     container.innerHTML = "<p>Nessuna scelta registrata.</p>";
-    await loadAdminConflicts(); // ✅ qui, così aggiorna comunque i conflitti
     return;
   }
 
@@ -1156,27 +1148,24 @@ async function loadAdminSummary() {
           <th>Squadra</th>
           <th>Conference</th>
           <th>Tipo</th>
-          <th>Giocatore</th>
-          <th>Ruolo</th>
-          <th>Serie A</th>
         </tr>
       </thead>
+
       <tbody>
         ${data.map(row => `
           <tr>
             <td>${escapeHtml(row.teams?.name || "-")}</td>
             <td>${escapeHtml(row.teams?.conference || "-")}</td>
-            <td>${escapeHtml(TYPE_LABELS[row.selection_type] || row.selection_type)}</td>
-            <td>${escapeHtml(row.players?.name || "-")}</td>
-            <td>${escapeHtml(row.players?.role || row.players?.role_mantra || "-")}</td>
-            <td>${escapeHtml(row.players?.serie_a_team || "-")}</td>
+            <td>
+              ${escapeHtml(
+                TYPE_LABELS[row.selection_type] || row.selection_type
+              )}
+            </td>
           </tr>
         `).join("")}
       </tbody>
     </table>
   `;
-
-  await loadAdminConflicts(); // ✅ QUI
 }
 
 function isAdmin() {
