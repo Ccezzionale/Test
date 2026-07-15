@@ -1,6 +1,6 @@
 // =========================================================
 // ALL STAR GAME 2027 - SUPABASE EDITION
-// Voti reali + Top 5 per Conference + Draft dinamico
+// Voti reali + Top 5 per Conference + 10 auto-pick + Draft dinamico
 // Regola: chi vince fa iniziare il draft alla Conference opposta.
 // =========================================================
 
@@ -9,7 +9,7 @@ import { supabase } from "./supabase.js";
 const SEASON = 2027;
 const TOTAL_PLAYERS = 44;
 const PLAYERS_PER_TEAM = 22;
-const AUTO_PICK_COUNT = 6;
+const AUTO_PICK_COUNT = 10;
 
 const CONFERENCE_LEAGUE = "Conference League";
 const CONFERENCE_CHAMPIONSHIP = "Conference Championship";
@@ -39,9 +39,11 @@ const els = {
   voterConference: document.getElementById("voterConference"),
   voteSearchInput: document.getElementById("voteSearchInput"),
   voteForm: document.getElementById("voteForm"),
-  vote10: document.getElementById("vote10"),
-  vote5: document.getElementById("vote5"),
-  vote2: document.getElementById("vote2"),
+  vote20: document.getElementById("vote20"),
+  vote12: document.getElementById("vote12"),
+  vote7: document.getElementById("vote7"),
+  vote3: document.getElementById("vote3"),
+  vote1: document.getElementById("vote1"),
   voteFeedback: document.getElementById("voteFeedback"),
 
   leagueWeekStarName: document.getElementById("leagueWeekStarName"),
@@ -493,7 +495,7 @@ function populateFilters() {
 function populateVoteSelects() {
   const search = normalizeTextKey(els.voteSearchInput?.value || "");
 
-  [els.vote10, els.vote5, els.vote2].forEach((select) => {
+  [els.vote20, els.vote12, els.vote7, els.vote3, els.vote1].forEach((select) => {
     if (!select) return;
 
     const previousValue = select.value;
@@ -533,19 +535,21 @@ async function handleVoteSubmit(event) {
   }
 
   const selected = [
-    { playerId: els.vote10.value, points: 10, slot: "first" },
-    { playerId: els.vote5.value, points: 5, slot: "second" },
-    { playerId: els.vote2.value, points: 2, slot: "third" }
+    { playerId: els.vote20.value, points: 20, slot: "first" },
+    { playerId: els.vote12.value, points: 12, slot: "second" },
+    { playerId: els.vote7.value, points: 7, slot: "third" },
+    { playerId: els.vote3.value, points: 3, slot: "fourth" },
+    { playerId: els.vote1.value, points: 1, slot: "fifth" }
   ];
 
   if (selected.some((v) => !v.playerId)) {
-    showVoteFeedback("Seleziona tutti e tre i giocatori.", true);
+    showVoteFeedback("Seleziona tutti e cinque i giocatori.", true);
     return;
   }
 
   const uniqueIds = new Set(selected.map((v) => v.playerId));
-  if (uniqueIds.size !== 3) {
-    showVoteFeedback("Devi scegliere tre giocatori diversi.", true);
+  if (uniqueIds.size !== 5) {
+    showVoteFeedback("Devi scegliere cinque giocatori diversi.", true);
     return;
   }
 
@@ -802,11 +806,11 @@ async function generateAutoPicksFromVotes() {
   const rows = getAutoPickPreviewRows(leagueTotals, champTotals);
 
   if (rows.some((row) => !row.entry)) {
-    alert("Servono almeno 3 giocatori votati per ciascuna conference.");
+    alert("Servono almeno 5 giocatori votati per ciascuna conference.");
     return;
   }
 
-  const ok = confirm("Generare/sostituire le prime 6 auto-pick da Supabase?");
+  const ok = confirm("Generare/sostituire le prime 10 auto-pick da Supabase?");
   if (!ok) return;
 
   const { error: deleteError } = await supabase
@@ -1198,7 +1202,7 @@ async function undoLastPick() {
   const lastManual = manualPicks.sort((a, b) => b.pickNumber - a.pickNumber)[0];
 
   if (!lastManual) {
-    alert("Le prime 6 auto-pick non si annullano da qui. Puoi resettare il draft o rigenerarle.");
+    alert("Le prime 10 auto-pick non si annullano da qui. Puoi resettare il draft o rigenerarle.");
     return;
   }
 
