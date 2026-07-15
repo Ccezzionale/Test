@@ -395,7 +395,7 @@ function normalizePick(raw) {
 function defaultState() {
   return {
     season: SEASON,
-    votingOpen: true,
+    votingOpen: false,
     isOpen: false,
     activeWeek: 1,
     votingStartedAt: null,
@@ -411,7 +411,7 @@ function normalizeState(rawState) {
   const next = {
     ...base,
     season: rawState?.season ?? SEASON,
-    votingOpen: rawState?.voting_open ?? rawState?.votingOpen ?? true,
+    votingOpen: rawState?.voting_open ?? rawState?.votingOpen ?? false,
     isOpen: rawState?.draft_open ?? rawState?.isOpen ?? false,
     activeWeek: Number(rawState?.active_week ?? rawState?.activeWeek ?? 1),
     votingStartedAt: rawState?.voting_started_at ?? rawState?.votingStartedAt ?? null,
@@ -454,8 +454,8 @@ function setupUserControls() {
 async function startAllStarVoting() {
   if (!isAdmin) return;
 
-  if (state.votingStartedAt && !state.votingClosedAt) {
-    alert("Le votazioni All Star sono già iniziate.");
+  if (state.votingStartedAt) {
+    alert("Il conteggio delle votazioni è già stato avviato. Per ripartire dalla Week 1 usa prima ‘Reset votazioni e timer’.");
     return;
   }
 
@@ -586,22 +586,42 @@ function showVoteFeedback(message, isError = false) {
 
 async function resetVotes() {
   if (!isAdmin) return;
-  const ok = confirm("Vuoi davvero cancellare tutti i voti All Star della stagione?");
+
+  const ok = confirm(
+    "Vuoi cancellare tutti i voti e azzerare il conteggio delle settimane? Dopo il reset dovrai premere ‘Inizia votazioni All Star’ per far partire la Week 1."
+  );
   if (!ok) return;
 
-  const { error } = await supabase
+  const { error: votesError } = await supabase
     .from("allstar_votes")
     .delete()
     .eq("season", SEASON);
 
-  if (error) {
+  if (votesError) {
     alert("Errore reset voti. Controlla RLS/permessi admin.");
-    console.error(error);
+    console.error(votesError);
+    return;
+  }
+
+  const { error: stateError } = await supabase
+    .from("allstar_state")
+    .update({
+      voting_started_at: null,
+      voting_closed_at: null,
+      voting_open: false,
+      active_week: 1
+    })
+    .eq("season", SEASON);
+
+  if (stateError) {
+    alert("I voti sono stati cancellati, ma non sono riuscito ad azzerare il timer delle votazioni. Controlla RLS/permessi admin.");
+    console.error(stateError);
     return;
   }
 
   votes = [];
   await refreshAndRender();
+  showVoteFeedback("Votazioni e timer azzerati. La Week 1 partirà quando l’admin darà il via.");
 }
 
 function getVoteTotalsByConference(conference) {
@@ -938,8 +958,15 @@ function renderHeader() {
   setText(els.votingClosedInfo, formatDateTime(state.votingClosedAt));
 
   if (els.startVotingBtn) {
-    els.startVotingBtn.textContent = state.votingStartedAt && !state.votingClosedAt ? "Votazioni già iniziate" : "Inizia votazioni All Star";
-    els.startVotingBtn.disabled = !isAdmin || Boolean(state.votingStartedAt && !state.votingClosedAt);
+    if (state.votingStartedAt && state.votingClosedAt) {
+      els.startVotingBtn.textContent = "Resetta prima le votazioni";
+    } else if (state.votingStartedAt) {
+      els.startVotingBtn.textContent = "Votazioni già iniziate";
+    } else {
+      els.startVotingBtn.textContent = "Inizia votazioni All Star";
+    }
+
+    els.startVotingBtn.disabled = !isAdmin || Boolean(state.votingStartedAt);
   }
 
   if (els.openPickModalBtn) {

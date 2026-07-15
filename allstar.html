@@ -22,9 +22,9 @@
   <meta name="apple-mobile-web-app-title" content="Lega Eroi">
 
   <link rel="stylesheet" href="navbar.css" />
-  <link rel="stylesheet" href="allstar.css?v=top5-20260715-2" />
+  <link rel="stylesheet" href="allstar.css?v=voting-timer-20260715-3" />
 
-  <script type="module" src="allstar.js?v=top5-20260715-2" defer></script>
+  <script type="module" src="allstar.js?v=voting-timer-20260715-3" defer></script>
 </head>
 <body>
   <nav class="site-nav">
@@ -423,7 +423,7 @@
         </div>
         <div class="race-actions">
           <button id="demoVotesBtn" class="ghost-btn">Aggiungi voti demo</button>
-          <button id="resetVotesBtn" class="ghost-btn danger">Reset voti</button>
+          <button id="resetVotesBtn" class="ghost-btn danger">Reset voti + timer</button>
         </div>
       </div>
 
@@ -592,7 +592,7 @@
         <div class="allstar-admin-grid">
           <article class="allstar-admin-box">
             <h4>Votazioni</h4>
-            <p>Avvia una volta le votazioni: da quel momento la week cambia automaticamente ogni 7 giorni.</p>
+            <p>Il conteggio parte solo quando premi “Inizia votazioni”. Per ripartire dalla Week 1 usa “Reset votazioni e timer”.</p>
             <div class="admin-status-list">
               <span><strong>Stato</strong><em id="votingStatusInfo">-</em></span>
               <span><strong>Week attiva</strong><em id="activeWeekAdminInfo">-</em></span>
@@ -625,7 +625,7 @@
           <button id="toggleDraftBtn" class="admin-btn green" type="button">Apri / Chiudi Draft</button>
           <button id="generateAutoPicksBtn" class="admin-btn gold" type="button">Genera Auto Pick</button>
           <button id="undoPickBtn" class="admin-btn blue" type="button">Annulla ultima pick</button>
-          <button id="adminResetVotesBtn" class="admin-btn red" type="button">Reset Voti</button>
+          <button id="adminResetVotesBtn" class="admin-btn red" type="button">Reset votazioni e timer</button>
           <button id="resetDraftBtn" class="admin-btn red" type="button">Reset Draft</button>
         </div>
 
