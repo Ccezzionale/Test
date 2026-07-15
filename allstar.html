@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<!-- ALLSTAR TOP5 BUILD 2026-07-15-2 -->
 <html lang="it">
 <head>
   <meta charset="UTF-8" />
@@ -21,9 +22,9 @@
   <meta name="apple-mobile-web-app-title" content="Lega Eroi">
 
   <link rel="stylesheet" href="navbar.css" />
-  <link rel="stylesheet" href="allstar.css" />
+  <link rel="stylesheet" href="allstar.css?v=top5-20260715-2" />
 
-  <script type="module" src="allstar.js" defer></script>
+  <script type="module" src="allstar.js?v=top5-20260715-2" defer></script>
 </head>
 <body>
   <nav class="site-nav">
@@ -279,7 +280,7 @@
         <span class="info-icon">🗳️</span>
         <div>
           <strong>Votazione settimanale</strong>
-          <small>Ogni squadra vota 3 giocatori: 10, 5 e 2 punti</small>
+          <small>Ogni squadra vota 5 giocatori: 20, 12, 7, 3 e 1 punto</small>
         </div>
       </article>
 
@@ -320,7 +321,7 @@
         <div class="section-head compact">
           <div>
             <h3>Vota le Stelle</h3>
-            <p>Scegli tre giocatori dalla lista ufficiale Fantacalcio.</p>
+            <p>Scegli cinque giocatori dalla lista ufficiale Fantacalcio.</p>
           </div>
           <span class="vote-week-pill" id="voteWeekPill">Week 1</span>
         </div>
@@ -340,34 +341,56 @@
           </label>
 
           <label class="vote-slot vote-slot-gold">
-            <span class="vote-medal">10</span>
+            <span class="vote-medal">20</span>
             <div>
               <strong>Prima scelta</strong>
               <small>Il giocatore simbolo della settimana</small>
             </div>
-            <select id="vote10" required>
+            <select id="vote20" required>
               <option value="">Seleziona giocatore</option>
             </select>
           </label>
 
           <label class="vote-slot vote-slot-silver">
-            <span class="vote-medal">5</span>
+            <span class="vote-medal">12</span>
             <div>
               <strong>Seconda scelta</strong>
               <small>La stella che merita punti pesanti</small>
             </div>
-            <select id="vote5" required>
+            <select id="vote12" required>
               <option value="">Seleziona giocatore</option>
             </select>
           </label>
 
           <label class="vote-slot vote-slot-bronze">
-            <span class="vote-medal">2</span>
+            <span class="vote-medal">7</span>
             <div>
               <strong>Terza scelta</strong>
-              <small>Il colpo a sorpresa della settimana</small>
+              <small>Una delle stelle della settimana</small>
             </div>
-            <select id="vote2" required>
+            <select id="vote7" required>
+              <option value="">Seleziona giocatore</option>
+            </select>
+          </label>
+
+          <label class="vote-slot vote-slot-fourth">
+            <span class="vote-medal">3</span>
+            <div>
+              <strong>Quarta scelta</strong>
+              <small>Un giocatore da premiare</small>
+            </div>
+            <select id="vote3" required>
+              <option value="">Seleziona giocatore</option>
+            </select>
+          </label>
+
+          <label class="vote-slot vote-slot-fifth">
+            <span class="vote-medal">1</span>
+            <div>
+              <strong>Quinta scelta</strong>
+              <small>L'ultimo punto della tua Top 5</small>
+            </div>
+            <select id="vote1" required>
               <option value="">Seleziona giocatore</option>
             </select>
           </label>
@@ -407,7 +430,7 @@
       <article class="auto-pick-card wide-auto-pick">
         <h4>Prime pick provvisorie</h4>
         <p class="ranking-subtitle">
-          Pick 1/3/5 dai voti League, Pick 2/4/6 dai voti Championship. Se ci sono doppioni, li sistemi manualmente.
+          Pick dispari 1/3/5/7/9 e pick pari 2/4/6/8/10 assegnate alle due Conference in base all’ordine del draft.
         </p>
         <div id="autoPickPreview" class="auto-pick-list auto-pick-grid"></div>
       </article>
@@ -453,7 +476,7 @@
         <span class="info-icon">🎯</span>
         <div>
           <strong>Pick attuale</strong>
-          <small id="currentPickInfo">7</small>
+          <small id="currentPickInfo">11</small>
         </div>
       </article>
 
@@ -477,7 +500,7 @@
     <section class="broadcast-draft-grid" data-mobile-section="draft">
       <article class="clock-panel broadcast-clock">
         <span class="clock-kicker">Draft finale - On the clock</span>
-        <strong id="currentPickBig">7</strong>
+        <strong id="currentPickBig">11</strong>
         <p id="currentConferenceBig">Conference League</p>
 
         <button id="openPickModalBtn" class="primary-call-btn">
@@ -616,7 +639,7 @@
     <div class="modal-head">
       <div>
         <strong>Effettua chiamata</strong>
-        <p id="modalPickText">Pick 7 - Conference League</p>
+        <p id="modalPickText">Pick 11 - Conference League</p>
       </div>
       <button id="closePickModalBtn" class="modal-close">×</button>
     </div>
@@ -628,9 +651,10 @@
   <script>
     if ("serviceWorker" in navigator) {
       window.addEventListener("load", function () {
-        navigator.serviceWorker.register("./sw.js")
-          .then(function () {
-            console.log("SW registrato");
+        navigator.serviceWorker.register("./sw.js?v=top5-20260715-2", { updateViaCache: "none" })
+          .then(function (registration) {
+            registration.update();
+            console.log("SW registrato e aggiornato");
           })
           .catch(function (err) {
             console.log("Errore SW:", err);

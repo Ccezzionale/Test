@@ -392,6 +392,8 @@ body {
 .vote-slot-gold { box-shadow: inset 5px 0 0 #f2b63f; }
 .vote-slot-silver { box-shadow: inset 5px 0 0 #8ba0bd; }
 .vote-slot-bronze { box-shadow: inset 5px 0 0 #cf7946; }
+.vote-slot-fourth { box-shadow: inset 5px 0 0 #7868c8; }
+.vote-slot-fifth { box-shadow: inset 5px 0 0 #3d9d78; }
 
 .vote-medal {
   width: 52px;
@@ -418,6 +420,16 @@ body {
 .vote-slot-bronze .vote-medal {
   background: linear-gradient(135deg, #b86838, #e9a46f);
   color: #3b1d08;
+}
+
+.vote-slot-fourth .vote-medal {
+  background: linear-gradient(135deg, #6655b8, #9487dc);
+  color: #ffffff;
+}
+
+.vote-slot-fifth .vote-medal {
+  background: linear-gradient(135deg, #25845f, #54b98f);
+  color: #ffffff;
 }
 
 .vote-slot strong {
@@ -2901,6 +2913,8 @@ p, small,
 .vote-slot-gold { box-shadow: inset 5px 0 0 0 var(--sb-gold) !important; }
 .vote-slot-silver { box-shadow: inset 5px 0 0 0 #8fa4c3 !important; }
 .vote-slot-bronze { box-shadow: inset 5px 0 0 0 #c87545 !important; }
+.vote-slot-fourth { box-shadow: inset 5px 0 0 0 #8b78e6 !important; }
+.vote-slot-fifth { box-shadow: inset 5px 0 0 0 #45b88a !important; }
 
 .vote-medal {
   box-shadow: none !important;
@@ -3670,6 +3684,8 @@ body {
 .vote-slot-gold { box-shadow: inset 5px 0 0 0 var(--br-gold) !important; }
 .vote-slot-silver { box-shadow: inset 5px 0 0 0 #8fa4c3 !important; }
 .vote-slot-bronze { box-shadow: inset 5px 0 0 0 #c87545 !important; }
+.vote-slot-fourth { box-shadow: inset 5px 0 0 0 #8b78e6 !important; }
+.vote-slot-fifth { box-shadow: inset 5px 0 0 0 #45b88a !important; }
 
 .vote-slot select,
 .vote-conference-select select,
