@@ -5,7 +5,7 @@ const squadreBase = [
     nome: "Atlético Leon",
     logo: "img/Atlético Leon.webp",
     shirt: "img/maglie/leon-mascotte.webp",
-    coach: "Coach Rubinkebab"
+    coach: "Coach Leo e Anthony"
   },
   {
   nome: "Bayern Christiansen",
@@ -83,19 +83,19 @@ const squadreBase = [
   nome: "Eintracht Franco 126",
   logo: "img/Eintracht Franco 126.webp",
   shirt: "img/maglie/franco-mascotte.webp",
-  coach: "Coach Eintracht"
+  coach: "Coach Lorenzo"
 },
 {
   nome: "FC Disoneste",
   logo: "img/FC Disoneste.webp",
   shirt: "img/maglie/disoneste-mascotte.webp",
-  coach: "Coach FC Disoneste"
+  coach: "Coach Basilio"
 },
 {
   nome: "Athletic Pongao",
   logo: "img/Athletic Pongao.webp",
   shirt: "img/maglie/pongao-mascotte.webp",
-  coach: "Coach Dario"
+  coach: "Coach Dario&Giorgio"
 }
 ];
 
