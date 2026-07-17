@@ -534,13 +534,13 @@ async function handleVoteSubmit(event) {
     return;
   }
 
-  const selected = [
-    { playerId: els.vote20.value, points: 20, slot: "first" },
-    { playerId: els.vote12.value, points: 12, slot: "second" },
-    { playerId: els.vote7.value, points: 7, slot: "third" },
-    { playerId: els.vote3.value, points: 3, slot: "fourth" },
-    { playerId: els.vote1.value, points: 1, slot: "fifth" }
-  ];
+const selected = [
+  { playerId: els.vote20.value, points: 10, slot: "first" },
+  { playerId: els.vote12.value, points: 5, slot: "second" },
+  { playerId: els.vote7.value, points: 3, slot: "third" },
+  { playerId: els.vote3.value, points: 2, slot: "fourth" },
+  { playerId: els.vote1.value, points: 1, slot: "fifth" }
+];
 
   if (selected.some((v) => !v.playerId)) {
     showVoteFeedback("Seleziona tutti e cinque i giocatori.", true);
