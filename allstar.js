@@ -39,10 +39,10 @@ const els = {
   voterConference: document.getElementById("voterConference"),
   voteSearchInput: document.getElementById("voteSearchInput"),
   voteForm: document.getElementById("voteForm"),
-  vote20: document.getElementById("vote20"),
-  vote12: document.getElementById("vote12"),
-  vote7: document.getElementById("vote7"),
+  vote10: document.getElementById("vote10"),
+  vote5: document.getElementById("vote5"),
   vote3: document.getElementById("vote3"),
+  vote2: document.getElementById("vote2"),
   vote1: document.getElementById("vote1"),
   voteFeedback: document.getElementById("voteFeedback"),
 
@@ -169,34 +169,12 @@ function setLoadingUI() {
 }
 
 async function loadSessionAndProfile() {
-  // getUser() genera AuthSessionMissingError quando Supabase non ha ancora
-  // ripristinato la sessione dal browser. Prima aspettiamo brevemente getSession().
-  let session = null;
+  const { data: userData, error: userError } = await supabase.auth.getUser();
+  if (userError) throw userError;
 
-  for (let attempt = 0; attempt < 5; attempt += 1) {
-    const { data, error } = await supabase.auth.getSession();
-
-    if (error && error.name !== "AuthSessionMissingError") {
-      console.warn("Errore lettura sessione All Star:", error);
-    }
-
-    session = data?.session || null;
-    if (session?.user) break;
-
-    if (attempt < 4) {
-      await new Promise((resolve) => setTimeout(resolve, 250));
-    }
-  }
-
-  currentUser = session?.user || null;
-
-  // Senza sessione la pagina continua comunque a caricare giocatori,
-  // classifiche e draft. Soltanto l'invio del voto richiederà il login.
+  currentUser = userData?.user || null;
   if (!currentUser) {
-    currentProfile = null;
-    currentTeam = null;
-    isAdmin = false;
-    return;
+    throw new Error("Utente non autenticato");
   }
 
   const { data: profile, error: profileError } = await supabase
@@ -246,41 +224,33 @@ async function loadState() {
 }
 
 async function loadPlayers() {
-  const selectFields = "id, name, role, role_mantra, serie_a_team, quotation, owner_team_id, status, pool";
+  const { data, error } = await supabase
+    .from("players")
+    .select("id, name, role, role_mantra, serie_a_team, quotation, status, pool")
+    .eq("status", "active")
+    .eq("pool", "conference_championship")
+    .order("name", { ascending: true });
 
-  // I giocatori esistono in due copie, una per ciascun pool Conference.
-  // Carichiamo entrambi i pool separatamente per non rischiare il limite di righe
-  // di Supabase, poi eliminiamo i doppioni mantenendo una sola scheda per nome.
-  const [leagueResult, championshipResult] = await Promise.all([
-    supabase
-      .from("players")
-      .select(selectFields)
-      .eq("status", "active")
-      .eq("pool", "conference_league")
-      .order("name", { ascending: true }),
-    supabase
-      .from("players")
-      .select(selectFields)
-      .eq("status", "active")
-      .eq("pool", "conference_championship")
-      .order("name", { ascending: true })
-  ]);
+  if (error) throw error;
 
-  if (leagueResult.error) throw leagueResult.error;
-  if (championshipResult.error) throw championshipResult.error;
+  players = (data || [])
+    .map((raw) => ({
+      id: raw.id,
+      name: raw.name || "",
+      role: raw.role || raw.role_mantra || "-",
+      roleMantra: raw.role_mantra || "",
+      serieATeam: raw.serie_a_team || "-",
+      quotation: raw.quotation ?? "-",
+      ownerTeamId: null,
+      originTeam: "Listone",
+      conference: "Listone",
+      status: raw.status || "active",
+      pool: raw.pool || "quotazioni"
+    }))
+    .filter((p) => p.name);
 
-  const normalizedPlayers = [
-    ...(leagueResult.data || []),
-    ...(championshipResult.data || [])
-  ]
-    .map(normalizePlayer)
-    .filter((player) => player.name);
-
-  // Conserva tutte le ID originali per ricostruire voti e pick già salvati.
-  allPlayersById = new Map(normalizedPlayers.map((player) => [player.id, player]));
-
-  // Nella tabella e nelle select compare una sola volta ogni calciatore.
-  players = dedupePlayers(normalizedPlayers, normalizedPlayers);
+  allPlayersById = new Map(players.map((player) => [player.id, player]));
+  playerIdAliasMap = new Map(players.map((player) => [player.id, player.id]));
 }
 
 async function loadVotes() {
@@ -525,7 +495,7 @@ function populateFilters() {
 function populateVoteSelects() {
   const search = normalizeTextKey(els.voteSearchInput?.value || "");
 
-  [els.vote20, els.vote12, els.vote7, els.vote3, els.vote1].forEach((select) => {
+  [els.vote10, els.vote5, els.vote3, els.vote2, els.vote1].forEach((select) => {
     if (!select) return;
 
     const previousValue = select.value;
@@ -564,13 +534,13 @@ async function handleVoteSubmit(event) {
     return;
   }
 
-const selected = [
-  { playerId: els.vote20.value, points: 10, slot: "first" },
-  { playerId: els.vote12.value, points: 5, slot: "second" },
-  { playerId: els.vote7.value, points: 3, slot: "third" },
-  { playerId: els.vote3.value, points: 2, slot: "fourth" },
-  { playerId: els.vote1.value, points: 1, slot: "fifth" }
-];
+  const selected = [
+    { playerId: els.vote10.value, points: 10, slot: "first" },
+    { playerId: els.vote5.value, points: 5, slot: "second" },
+    { playerId: els.vote3.value, points: 3, slot: "third" },
+    { playerId: els.vote2.value, points: 2, slot: "fourth" },
+    { playerId: els.vote1.value, points: 1, slot: "fifth" }
+  ];
 
   if (selected.some((v) => !v.playerId)) {
     showVoteFeedback("Seleziona tutti e cinque i giocatori.", true);

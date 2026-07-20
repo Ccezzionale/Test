@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-<!-- ALLSTAR TOP5 BUILD 2026-07-15-2 -->
 <html lang="it">
 <head>
   <meta charset="UTF-8" />
@@ -22,9 +21,9 @@
   <meta name="apple-mobile-web-app-title" content="Lega Eroi">
 
   <link rel="stylesheet" href="navbar.css" />
-  <link rel="stylesheet" href="allstar.css?v=voting-timer-20260715-3" />
+  <link rel="stylesheet" href="allstar.css?v=oldbase-top5-20260720-1" />
 
-  <script type="module" src="allstar.js?v=auth-fix-20260720-2" defer></script>
+  <script type="module" src="allstar.js?v=oldbase-top5-20260720-1" defer></script>
 </head>
 <body>
   <nav class="site-nav">
@@ -346,7 +345,7 @@
               <strong>Prima scelta</strong>
               <small>Il giocatore simbolo della settimana</small>
             </div>
-            <select id="vote20" required>
+            <select id="vote10" required>
               <option value="">Seleziona giocatore</option>
             </select>
           </label>
@@ -357,7 +356,7 @@
               <strong>Seconda scelta</strong>
               <small>La stella che merita punti pesanti</small>
             </div>
-            <select id="vote12" required>
+            <select id="vote5" required>
               <option value="">Seleziona giocatore</option>
             </select>
           </label>
@@ -368,7 +367,7 @@
               <strong>Terza scelta</strong>
               <small>Una delle stelle della settimana</small>
             </div>
-            <select id="vote7" required>
+            <select id="vote3" required>
               <option value="">Seleziona giocatore</option>
             </select>
           </label>
@@ -379,7 +378,7 @@
               <strong>Quarta scelta</strong>
               <small>Un giocatore da premiare</small>
             </div>
-            <select id="vote3" required>
+            <select id="vote2" required>
               <option value="">Seleziona giocatore</option>
             </select>
           </label>
@@ -420,6 +419,10 @@
         <div>
           <h3>Corsa alle Stelle</h3>
           <p>Top 5 live votata dalle due Conference.</p>
+        </div>
+        <div class="race-actions">
+          <button id="demoVotesBtn" class="ghost-btn">Aggiungi voti demo</button>
+          <button id="resetVotesBtn" class="ghost-btn danger">Reset voti</button>
         </div>
       </div>
 
@@ -647,7 +650,7 @@
   <script>
     if ("serviceWorker" in navigator) {
       window.addEventListener("load", function () {
-        navigator.serviceWorker.register("./sw.js?v=players-fix-20260720-1", { updateViaCache: "none" })
+        navigator.serviceWorker.register("./sw.js?v=oldbase-top5-20260720-1", { updateViaCache: "none" })
           .then(function (registration) {
             registration.update();
             console.log("SW registrato e aggiornato");
