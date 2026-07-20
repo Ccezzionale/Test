@@ -169,12 +169,34 @@ function setLoadingUI() {
 }
 
 async function loadSessionAndProfile() {
-  const { data: userData, error: userError } = await supabase.auth.getUser();
-  if (userError) throw userError;
+  // getUser() genera AuthSessionMissingError quando Supabase non ha ancora
+  // ripristinato la sessione dal browser. Prima aspettiamo brevemente getSession().
+  let session = null;
 
-  currentUser = userData?.user || null;
+  for (let attempt = 0; attempt < 5; attempt += 1) {
+    const { data, error } = await supabase.auth.getSession();
+
+    if (error && error.name !== "AuthSessionMissingError") {
+      console.warn("Errore lettura sessione All Star:", error);
+    }
+
+    session = data?.session || null;
+    if (session?.user) break;
+
+    if (attempt < 4) {
+      await new Promise((resolve) => setTimeout(resolve, 250));
+    }
+  }
+
+  currentUser = session?.user || null;
+
+  // Senza sessione la pagina continua comunque a caricare giocatori,
+  // classifiche e draft. Soltanto l'invio del voto richiederà il login.
   if (!currentUser) {
-    throw new Error("Utente non autenticato");
+    currentProfile = null;
+    currentTeam = null;
+    isAdmin = false;
+    return;
   }
 
   const { data: profile, error: profileError } = await supabase
