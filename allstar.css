@@ -4631,3 +4631,19 @@ body {
     margin-top: 8px;
   }
 }
+
+/* Evita il doppione delle Prime Pick provvisorie */
+
+/* Desktop: nasconde la versione mobile/fallback */
+@media (min-width: 769px) {
+  .broadcast-race-mobile {
+    display: none !important;
+  }
+}
+
+/* Mobile: mantiene la versione grande e nasconde quella accanto alle stelle */
+@media (max-width: 768px) {
+  .broadcast-story-row .broadcast-picks-card {
+    display: none !important;
+  }
+}
