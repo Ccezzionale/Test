@@ -224,33 +224,41 @@ async function loadState() {
 }
 
 async function loadPlayers() {
-  const { data, error } = await supabase
-    .from("players")
-    .select("id, name, role, role_mantra, serie_a_team, quotation, status, pool")
-    .eq("status", "active")
-    .eq("pool", "conference_championship")
-    .order("name", { ascending: true });
+  const selectFields = "id, name, role, role_mantra, serie_a_team, quotation, owner_team_id, status, pool";
 
-  if (error) throw error;
+  // I giocatori esistono in due copie, una per ciascun pool Conference.
+  // Carichiamo entrambi i pool separatamente per non rischiare il limite di righe
+  // di Supabase, poi eliminiamo i doppioni mantenendo una sola scheda per nome.
+  const [leagueResult, championshipResult] = await Promise.all([
+    supabase
+      .from("players")
+      .select(selectFields)
+      .eq("status", "active")
+      .eq("pool", "conference_league")
+      .order("name", { ascending: true }),
+    supabase
+      .from("players")
+      .select(selectFields)
+      .eq("status", "active")
+      .eq("pool", "conference_championship")
+      .order("name", { ascending: true })
+  ]);
 
-  players = (data || [])
-    .map((raw) => ({
-      id: raw.id,
-      name: raw.name || "",
-      role: raw.role || raw.role_mantra || "-",
-      roleMantra: raw.role_mantra || "",
-      serieATeam: raw.serie_a_team || "-",
-      quotation: raw.quotation ?? "-",
-      ownerTeamId: null,
-      originTeam: "Listone",
-      conference: "Listone",
-      status: raw.status || "active",
-      pool: raw.pool || "quotazioni"
-    }))
-    .filter((p) => p.name);
+  if (leagueResult.error) throw leagueResult.error;
+  if (championshipResult.error) throw championshipResult.error;
 
-  allPlayersById = new Map(players.map((player) => [player.id, player]));
-  playerIdAliasMap = new Map(players.map((player) => [player.id, player.id]));
+  const normalizedPlayers = [
+    ...(leagueResult.data || []),
+    ...(championshipResult.data || [])
+  ]
+    .map(normalizePlayer)
+    .filter((player) => player.name);
+
+  // Conserva tutte le ID originali per ricostruire voti e pick già salvati.
+  allPlayersById = new Map(normalizedPlayers.map((player) => [player.id, player]));
+
+  // Nella tabella e nelle select compare una sola volta ogni calciatore.
+  players = dedupePlayers(normalizedPlayers, normalizedPlayers);
 }
 
 async function loadVotes() {
