@@ -169,13 +169,22 @@ function setLoadingUI() {
 }
 
 async function loadSessionAndProfile() {
-  const { data: userData, error: userError } = await supabase.auth.getUser();
-  if (userError) throw userError;
+  // Non usare getUser() come primo controllo: senza sessione genera
+  // AuthSessionMissingError e blocca anche il caricamento dei giocatori.
+  const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
 
-  currentUser = userData?.user || null;
-  if (!currentUser) {
-    throw new Error("Utente non autenticato");
+  if (sessionError) {
+    console.warn("Errore lettura sessione All Star:", sessionError);
   }
+
+  currentUser = sessionData?.session?.user || null;
+  currentProfile = null;
+  currentTeam = null;
+  isAdmin = false;
+
+  // La lista giocatori e le classifiche devono caricarsi anche senza sessione.
+  // Il controllo login resta necessario soltanto quando si prova a votare.
+  if (!currentUser) return;
 
   const { data: profile, error: profileError } = await supabase
     .from("profiles")

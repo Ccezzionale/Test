@@ -21,9 +21,9 @@
   <meta name="apple-mobile-web-app-title" content="Lega Eroi">
 
   <link rel="stylesheet" href="navbar.css" />
-  <link rel="stylesheet" href="allstar.css?v=oldbase-top5-20260720-1" />
+  <link rel="stylesheet" href="allstar.css?v=session-players-20260720-2" />
 
-  <script type="module" src="allstar.js?v=oldbase-top5-20260720-1" defer></script>
+  <script type="module" src="allstar.js?v=session-players-20260720-2" defer></script>
 </head>
 <body>
   <nav class="site-nav">
@@ -650,7 +650,7 @@
   <script>
     if ("serviceWorker" in navigator) {
       window.addEventListener("load", function () {
-        navigator.serviceWorker.register("./sw.js?v=oldbase-top5-20260720-1", { updateViaCache: "none" })
+        navigator.serviceWorker.register("./sw.js?v=session-players-20260720-2", { updateViaCache: "none" })
           .then(function (registration) {
             registration.update();
             console.log("SW registrato e aggiornato");
