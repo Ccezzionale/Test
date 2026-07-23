@@ -26,7 +26,6 @@ let lastPickNotificata = null;
 let pickInInvio = false;
 let isAdmin = false;
 let keeperSelections = [];
-let keeperSettingsDraft = null;
 let pendingRfaClaim = null;
 let allTeams = [];
 let adminFlagPlayers = [];
@@ -140,19 +139,11 @@ async function logoutUtente() {
 async function caricaKeeperSelectionsDraft() {
   const { data: settings, error: settingsError } = await supabase
     .from("keeper_settings")
-    .select(`
-      id,
-      season,
-      is_open,
-      applied_at,
-      is_applied
-    `)
+    .select("season")
     .eq("id", 1)
     .single();
 
   if (settingsError) throw settingsError;
-
-  keeperSettingsDraft = settings;
 
   const { data, error } = await supabase
     .from("keeper_selections")
@@ -162,124 +153,16 @@ async function caricaKeeperSelectionsDraft() {
       team_id,
       player_id,
       selection_type,
-      confirmation_year,
       cost_round,
       actual_paid_round,
       status
     `)
     .eq("season", settings.season)
-    .eq("status", "active")
-    .in("selection_type", ["FP", "U21_KEEPER"]);
+    .eq("status", "active");
 
   if (error) throw error;
 
   keeperSelections = data || [];
-}
-
-function getPendingPreDraftSelection(teamId, visualRound) {
-  /*
-    Dopo l'applicazione definitiva del Pre-Draft
-    non mostriamo più nessuna anteprima.
-  */
-  if (!keeperSettingsDraft || keeperSettingsDraft.is_applied === true) {
-    return null;
-  }
-
-  return keeperSelections.find(selection => {
-    const paidRound = Number(
-      selection.actual_paid_round ?? selection.cost_round
-    );
-
-    return (
-      String(selection.team_id) === String(teamId) &&
-      paidRound === Number(visualRound) &&
-      ["FP", "U21_KEEPER"].includes(selection.selection_type)
-    );
-  }) || null;
-}
-
-function getPendingPreDraftSelectionByPick(pickNumber) {
-  if (!keeperSettingsDraft || keeperSettingsDraft.is_applied === true) {
-    return null;
-  }
-
-  /*
-    Metodo principale: draft_visual_order ci dice
-    squadra e round visuale della pick.
-  */
-  const visualRow = (lastDraftVisualRows || []).find(
-    row => Number(row.pick_number) === Number(pickNumber)
-  );
-
-  if (visualRow) {
-    return getPendingPreDraftSelection(
-      visualRow.team_id,
-      visualRow.visual_round
-    );
-  }
-
-  /*
-    Fallback nel caso in cui draft_visual_order
-    non sia ancora popolata.
-  */
-  const orderRow = (lastDraftOrderRows || []).find(
-    row => Number(row.pick_number) === Number(pickNumber)
-  );
-
-  if (!orderRow) return null;
-
-  const originalTeamId =
-    orderRow.original_team_id ||
-    orderRow.team_id;
-
-  const originalSlots = (lastDraftOrderRows || [])
-    .filter(row =>
-      String(row.original_team_id || row.team_id) ===
-      String(originalTeamId)
-    )
-    .sort((a, b) =>
-      Number(a.pick_number) - Number(b.pick_number)
-    );
-
-  const visualRound =
-    originalSlots.findIndex(
-      row => Number(row.pick_number) === Number(pickNumber)
-    ) + 1;
-
-  if (visualRound <= 0) return null;
-
-  return getPendingPreDraftSelection(
-    originalTeamId,
-    visualRound
-  );
-}
-
-function getPreDraftPreviewMeta(selection) {
-  if (!selection) return null;
-
-  const year = Number(selection.confirmation_year || 1);
-
-  if (selection.selection_type === "FP") {
-    return {
-      className:
-        year >= 2
-          ? "predraft-preview-fp-2"
-          : "predraft-preview-fp-1",
-
-      title: `FP · ${year}° anno`,
-      subtitle: "In attesa di applicazione"
-    };
-  }
-
-  if (selection.selection_type === "U21_KEEPER") {
-    return {
-      className: "predraft-preview-u21",
-      title: `U21 · ${year}° anno`,
-      subtitle: "In attesa di applicazione"
-    };
-  }
-
-  return null;
 }
 
 async function caricaUtenteLoggato() {
@@ -703,13 +586,6 @@ const nome = riga["Giocatore"]?.trim() || "";
 const fantaTeam = riga["Fanta Team"];
 const pick = riga["Pick"];
 const isTradedPick = riga["IsTradedPick"] === true;
-    const pendingPreDraft =
-  !nome
-    ? getPendingPreDraftSelectionByPick(pick)
-    : null;
-
-const pendingPreDraftMeta =
-  getPreDraftPreviewMeta(pendingPreDraft);
 
 if (isTradedPick) {
   tr.classList.add("traded-pick-row");
@@ -724,20 +600,6 @@ tr.innerHTML = `
   </td>
   <td>${escapeHtml(nome)}</td>
 `;
-
-    if (pendingPreDraftMeta && !nome) {
-  tr.classList.add(
-    "predraft-preview-row",
-    pendingPreDraftMeta.className
-  );
-
-  const playerCell = tr.querySelector("td:nth-child(3)");
-
-  if (playerCell) {
-    playerCell.dataset.predraftLabel =
-      pendingPreDraftMeta.title;
-  }
-}
 
     if (i === prossimaIndex) {
       tr.classList.add("next-pick");
@@ -1397,24 +1259,13 @@ const teamColumns = fixedColumns.map(column => {
       const nome = (pick?.player_name || "").trim();
       const isCurrent = Number(pickNum) === currentPick && currentDraftState?.is_open !== false;
      const info = nome ? getDraftPlayerInfoByPick(pick) : {};
-    const pendingPreDraft =
-  pickNum && !nome
-    ? getPendingPreDraftSelection(team.id, cell.round)
-    : null;
 
-const pendingPreDraftMeta =
-  getPreDraftPreviewMeta(pendingPreDraft);
-
- const filledClass = nome ? "is-filled" : "is-empty";
-const currentClass = isCurrent ? "is-current" : "";
-const tradedClass = cell.isTradedPick ? "is-traded" : "";
-
-const preDraftClass = pendingPreDraftMeta
-  ? `predraft-preview-slot ${pendingPreDraftMeta.className}`
-  : "";
+      const filledClass = nome ? "is-filled" : "is-empty";
+      const currentClass = isCurrent ? "is-current" : "";
+      const tradedClass = cell.isTradedPick ? "is-traded" : "";
 
       return `
-        <div class="desktop-pick-slot ${filledClass} ${currentClass} ${tradedClass} ${preDraftClass}" title="${pickNum ? `Pick #${escapeHtml(pickNum)}` : `Round ${cell.round}`}">
+        <div class="desktop-pick-slot ${filledClass} ${currentClass} ${tradedClass}" title="${pickNum ? `Pick #${escapeHtml(pickNum)}` : `Round ${cell.round}`}">
           <div class="desktop-pick-topline">
             <span class="desktop-pick-number">
               ${pickNum ? escapeHtml(pickNum) : "—"}
@@ -1431,13 +1282,10 @@ const preDraftClass = pendingPreDraftMeta
                 ${info.quotazione !== undefined && info.quotazione !== "" ? ` · Q${escapeHtml(info.quotazione)}` : ""}
               </small>
               <span class="desktop-pick-badges">${renderDesktopBadgesForPlayer(info)}</span>
-` : pendingPreDraftMeta ? `
-  <strong>${escapeHtml(pendingPreDraftMeta.title)}</strong>
-  <small>${escapeHtml(pendingPreDraftMeta.subtitle)}</small>
-` : `
-  <strong>Pick #${escapeHtml(pickNum)}</strong>
-  <small>In attesa</small>
-`
+            ` : `
+              <strong>Pick #${escapeHtml(pickNum)}</strong>
+              <small>In attesa</small>
+            `
           ) : `
             <strong>Pick ceduta</strong>
             <small>Nessuna pick in questo slot</small>
@@ -1647,24 +1495,13 @@ const dati = orderRows.map(r => {
 }
 
 function avviaAutoRefresh() {
-  if (autoRefreshInterval) {
-    clearInterval(autoRefreshInterval);
-  }
+  if (autoRefreshInterval) clearInterval(autoRefreshInterval);
 
   autoRefreshInterval = setInterval(async () => {
     try {
-      /*
-        Aggiorna anche le scelte e lo stato del Pre-Draft.
-        Quando is_applied diventa true, le caselle
-        provvisorie spariscono automaticamente.
-      */
-      await caricaKeeperSelectionsDraft();
       await caricaPick();
-
-      aggiornaChiamatePerSquadra();
-
-      await caricaPendingRfaClaim();
-
+aggiornaChiamatePerSquadra();
+await caricaPendingRfaClaim();
     } catch (err) {
       console.warn("Auto refresh fallito:", err);
     }
