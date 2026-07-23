@@ -6845,3 +6845,123 @@ h1, h2, h3, h4, p{
     object-position: center;
   }
 }
+
+/* =========================================================
+   ANTEPRIMA SLOT PRE-DRAFT
+   Visibile solo finché keeper_settings.is_applied = false
+   ========================================================= */
+
+/* ---------- DESKTOP BOARD ---------- */
+@media (min-width: 1101px){
+
+  .desktop-pick-slot.predraft-preview-slot{
+    position: relative !important;
+    overflow: hidden !important;
+  }
+
+  /* Franchise Player primo anno */
+  .desktop-pick-slot.predraft-preview-fp-1{
+    background:
+      linear-gradient(135deg, #fff8d6 0%, #ffe47a 100%) !important;
+
+    border-color: #e4b900 !important;
+
+    box-shadow:
+      0 9px 20px rgba(255, 196, 0, .20),
+      inset 0 1px 0 rgba(255,255,255,.85) !important;
+  }
+
+  /* Franchise Player secondo anno */
+  .desktop-pick-slot.predraft-preview-fp-2{
+    background:
+      linear-gradient(135deg, #fff0d5 0%, #ffb75e 100%) !important;
+
+    border-color: #e38418 !important;
+
+    box-shadow:
+      0 9px 20px rgba(232, 128, 20, .20),
+      inset 0 1px 0 rgba(255,255,255,.82) !important;
+  }
+
+  /* Under 21 confermato */
+  .desktop-pick-slot.predraft-preview-u21{
+    background:
+      linear-gradient(135deg, #e7fff2 0%, #8ee4b7 100%) !important;
+
+    border-color: #35a96d !important;
+
+    box-shadow:
+      0 9px 20px rgba(42, 166, 103, .18),
+      inset 0 1px 0 rgba(255,255,255,.82) !important;
+  }
+
+  .desktop-pick-slot.predraft-preview-slot strong{
+    color: #162845 !important;
+    font-weight: 950 !important;
+  }
+
+  .desktop-pick-slot.predraft-preview-slot small{
+    color: #3f4f65 !important;
+    font-weight: 850 !important;
+  }
+
+  /*
+    Se lo slot speciale diventa anche la pick corrente,
+    il giallo della pick corrente continua ad avere priorità.
+  */
+  .desktop-pick-slot.is-current.predraft-preview-slot{
+    background:
+      linear-gradient(180deg, #ffe67b 0%, #ffc928 100%) !important;
+
+    border-color: #e2ab00 !important;
+
+    box-shadow:
+      0 12px 26px rgba(255, 187, 0, .24),
+      inset 0 0 0 2px rgba(255,255,255,.34) !important;
+  }
+}
+
+
+/* ---------- TABLET E MOBILE ---------- */
+
+#tabella-pick tbody tr.predraft-preview-fp-1{
+  background:
+    linear-gradient(135deg, #fff8d6 0%, #ffe47a 100%) !important;
+
+  border-color: #e4b900 !important;
+}
+
+#tabella-pick tbody tr.predraft-preview-fp-2{
+  background:
+    linear-gradient(135deg, #fff0d5 0%, #ffb75e 100%) !important;
+
+  border-color: #e38418 !important;
+}
+
+#tabella-pick tbody tr.predraft-preview-u21{
+  background:
+    linear-gradient(135deg, #e7fff2 0%, #8ee4b7 100%) !important;
+
+  border-color: #35a96d !important;
+}
+
+#tabella-pick tbody tr.predraft-preview-row td:nth-child(2){
+  color: #102846 !important;
+  text-shadow: none !important;
+}
+
+#tabella-pick tbody tr.predraft-preview-row
+td:nth-child(3)[data-predraft-label]:empty::after{
+  content: attr(data-predraft-label) !important;
+  color: #243b55 !important;
+  font-style: normal !important;
+  font-weight: 950 !important;
+}
+
+/* La pick corrente resta riconoscibile */
+#tabella-pick tbody tr.next-pick.predraft-preview-row{
+  background:
+    linear-gradient(135deg, #ffe36a 0%, #ffcc00 100%) !important;
+
+  border-color: #d8aa00 !important;
+}
