@@ -7,8 +7,8 @@
 import { supabase } from "./supabase.js";
 
 const SEASON = 2027;
-const TOTAL_PLAYERS = 44;
-const PLAYERS_PER_TEAM = 22;
+const TOTAL_PLAYERS = 46;
+const PLAYERS_PER_TEAM = 23;
 const AUTO_PICK_COUNT = 10;
 
 const CONFERENCE_LEAGUE = "Conference League";
