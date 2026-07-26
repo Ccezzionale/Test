@@ -36,28 +36,47 @@ let lastDraftVisualRows = [];
 let lastAcceptedTradeAssets = [];
 const tradeColorByPickNumber = new Map();
 
-function getTradePalette(tradeKey) {
-  if (!tradeKey) {
-    return {
-      solid: "hsl(43 95% 48%)",
-      soft: "hsl(43 100% 82%)",
-      text: "hsl(35 90% 18%)"
-    };
-  }
+const TRADE_PALETTES = [
+  { solid: "#E53935", soft: "#FAD4D3", text: "#7A1512" }, // rosso
+  { solid: "#1E88E5", soft: "#D9ECFF", text: "#0B4F8A" }, // blu
+  { solid: "#43A047", soft: "#DDF3DF", text: "#1E5F22" }, // verde
+  { solid: "#FB8C00", soft: "#FFE8CC", text: "#8A4B00" }, // arancione
+  { solid: "#8E24AA", soft: "#F1DDFC", text: "#541268" }, // viola
+  { solid: "#00897B", soft: "#D8F4F1", text: "#00584F" }, // teal
+  { solid: "#F4511E", soft: "#FFE1D6", text: "#8C2707" }, // arancio rosso
+  { solid: "#3949AB", soft: "#DDE2FF", text: "#1F2B73" }, // indaco
+  { solid: "#C0CA33", soft: "#F4F7D0", text: "#5D660B" }, // lime
+  { solid: "#6D4C41", soft: "#EADFD9", text: "#422820" }, // marrone
+  { solid: "#00ACC1", soft: "#D8F6FA", text: "#005E6A" }, // cyan
+  { solid: "#D81B60", soft: "#FAD7E6", text: "#7D1038" }  // fucsia
+];
 
-  let hash = 0;
-  const text = String(tradeKey);
+function adjustHexColor(hex, amount = 0) {
+  const value = hex.replace('#', '');
+  const num = parseInt(value, 16);
+  const clamp = v => Math.max(0, Math.min(255, v));
 
-  for (let i = 0; i < text.length; i++) {
-    hash = text.charCodeAt(i) + ((hash << 5) - hash);
-  }
+  const r = clamp((num >> 16) + amount);
+  const g = clamp(((num >> 8) & 0x00FF) + amount);
+  const b = clamp((num & 0x0000FF) + amount);
 
-  const hue = Math.abs(hash) % 360;
+  return `#${[r, g, b].map(v => v.toString(16).padStart(2, '0')).join('')}`;
+}
 
+function getTradePaletteByIndex(index) {
+  const fallback = { solid: "#F5B700", soft: "#FFF0B8", text: "#7A5600" };
+  if (index == null || index < 0) return fallback;
+
+  const base = TRADE_PALETTES[index % TRADE_PALETTES.length] || fallback;
+  const cycle = Math.floor(index / TRADE_PALETTES.length);
+
+  if (cycle === 0) return base;
+
+  const delta = cycle % 2 === 1 ? 16 : -16;
   return {
-    solid: `hsl(${hue} 78% 42%)`,
-    soft: `hsl(${hue} 78% 82%)`,
-    text: `hsl(${hue} 70% 18%)`
+    solid: adjustHexColor(base.solid, delta),
+    soft: adjustHexColor(base.soft, cycle % 2 === 1 ? 6 : -10),
+    text: adjustHexColor(base.text, cycle % 2 === 1 ? -6 : 6)
   };
 }
 
@@ -68,14 +87,26 @@ function rebuildTradeColorMap(
 ) {
   tradeColorByPickNumber.clear();
 
+  const tradeKeys = [];
+  const tradeKeySet = new Set();
+  const pickToTradeKey = new Map();
+
+  const registerTradeKey = (pickNumber, tradeKey) => {
+    if (!pickNumber || !tradeKey) return;
+
+    const normalizedKey = String(tradeKey);
+    pickToTradeKey.set(Number(pickNumber), normalizedKey);
+
+    if (!tradeKeySet.has(normalizedKey)) {
+      tradeKeySet.add(normalizedKey);
+      tradeKeys.push(normalizedKey);
+    }
+  };
+
   // Scambi storici salvati in draft_order tramite trade_group
   (orderRows || []).forEach(row => {
     if (!row.trade_group) return;
-
-    tradeColorByPickNumber.set(
-      Number(row.pick_number),
-      getTradePalette(`storico-${row.trade_group}`)
-    );
+    registerTradeKey(Number(row.pick_number), `storico-${row.trade_group}`);
   });
 
   // Scambi effettuati attraverso il sistema delle proposte
@@ -97,11 +128,18 @@ function rebuildTradeColorMap(
       pickNumber = draftPick ? Number(draftPick.pick_number) : null;
     }
 
-    if (!pickNumber) return;
+    registerTradeKey(pickNumber, `proposta-${asset.proposal_id}`);
+  });
 
+  const paletteByTradeKey = new Map();
+  tradeKeys.sort().forEach((tradeKey, index) => {
+    paletteByTradeKey.set(tradeKey, getTradePaletteByIndex(index));
+  });
+
+  pickToTradeKey.forEach((tradeKey, pickNumber) => {
     tradeColorByPickNumber.set(
       Number(pickNumber),
-      getTradePalette(`proposta-${asset.proposal_id}`)
+      paletteByTradeKey.get(tradeKey) || getTradePaletteByIndex(-1)
     );
   });
 }
@@ -109,7 +147,7 @@ function rebuildTradeColorMap(
 function getTradePaletteByPick(pickNumber) {
   return (
     tradeColorByPickNumber.get(Number(pickNumber)) ||
-    getTradePalette(null)
+    { solid: "#F5B700", soft: "#FFF0B8", text: "#7A5600" }
   );
 }
 
