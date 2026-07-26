@@ -6965,3 +6965,10 @@ td:nth-child(3)[data-predraft-label]:empty::after{
 
   border-color: #d8aa00 !important;
 }
+
+.desktop-pick-trade,
+.summary-trade-badge {
+  background-color: var(--trade-color, #f5b700) !important;
+  border-color: var(--trade-color, #f5b700) !important;
+  color: #ffffff !important;
+}
