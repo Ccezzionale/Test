@@ -35,36 +35,46 @@ let lastDraftTeams = [];
 let lastDraftVisualRows = [];
 let lastAcceptedTradeAssets = [];
 const tradeColorByPickNumber = new Map();
+const tradeColorByPickNumber = new Map();
 
-const TRADE_COLOR_CLASSES = [
-  "trade-color-1",
-  "trade-color-2",
-  "trade-color-3",
-  "trade-color-4",
-  "trade-color-5",
-  "trade-color-6",
-  "trade-color-7",
-  "trade-color-8"
-];
-
-function getTradeColorClass(tradeId) {
-  if (!tradeId) return "";
+function getTradeColor(tradeKey) {
+  if (!tradeKey) return "hsl(43 95% 50%)";
 
   let hash = 0;
-  const text = String(tradeId);
+  const text = String(tradeKey);
 
   for (let i = 0; i < text.length; i++) {
     hash = text.charCodeAt(i) + ((hash << 5) - hash);
   }
 
-  return TRADE_COLOR_CLASSES[Math.abs(hash) % TRADE_COLOR_CLASSES.length];
+  const hue = Math.abs(hash) % 360;
+
+  return `hsl(${hue} 78% 44%)`;
 }
 
-function rebuildTradeColorMap(tradeAssets = [], draftPicks = []) {
+function rebuildTradeColorMap(
+  tradeAssets = [],
+  draftPicks = [],
+  orderRows = []
+) {
   tradeColorByPickNumber.clear();
 
+  // Scambi storici salvati direttamente in draft_order
+  (orderRows || []).forEach(row => {
+    if (!row.trade_group) return;
+
+    tradeColorByPickNumber.set(
+      Number(row.pick_number),
+      getTradeColor(`storico-${row.trade_group}`)
+    );
+  });
+
+  // Scambi futuri effettuati tramite il sistema delle proposte
   const draftPickById = new Map(
-    (draftPicks || []).map(pick => [String(pick.id), pick])
+    (draftPicks || []).map(pick => [
+      String(pick.id),
+      pick
+    ])
   );
 
   (tradeAssets || []).forEach(asset => {
@@ -77,24 +87,38 @@ function rebuildTradeColorMap(tradeAssets = [], draftPicks = []) {
     }
 
     if (asset.asset_type === "player") {
-      const draftPick = draftPickById.get(String(asset.asset_id));
-      pickNumber = draftPick ? Number(draftPick.pick_number) : null;
+      const draftPick = draftPickById.get(
+        String(asset.asset_id)
+      );
+
+      pickNumber = draftPick
+        ? Number(draftPick.pick_number)
+        : null;
     }
 
     if (!pickNumber) return;
 
     tradeColorByPickNumber.set(
       Number(pickNumber),
-      getTradeColorClass(asset.proposal_id)
+      getTradeColor(`proposta-${asset.proposal_id}`)
     );
   });
 }
 
-function renderTradeBadgeHtml(pickNumber, className = "desktop-pick-trade") {
-  const colorClass = tradeColorByPickNumber.get(Number(pickNumber)) || "trade-color-1";
+function renderTradeBadgeHtml(
+  pickNumber,
+  className = "desktop-pick-trade"
+) {
+  const color =
+    tradeColorByPickNumber.get(Number(pickNumber)) ||
+    "hsl(43 95% 50%)";
 
   return `
-    <span class="${className} ${colorClass}" title="Pick acquisita via trade">
+    <span
+      class="${className}"
+      style="--trade-color: ${color};"
+      title="Pick acquisita via trade"
+    >
       ↔
     </span>
   `;
@@ -1383,7 +1407,11 @@ if (acceptedTradeIds.length) {
 }
 
 lastAcceptedTradeAssets = acceptedTradeAssets;
-rebuildTradeColorMap(lastAcceptedTradeAssets, pickRows || []);
+rebuildTradeColorMap(
+  lastAcceptedTradeAssets,
+  pickRows || [],
+  orderRows || []
+);
 
 lastDraftTeams = teams || [];
 lastDraftOrderRows = orderRows || [];
