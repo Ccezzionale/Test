@@ -35,7 +35,6 @@ let lastDraftTeams = [];
 let lastDraftVisualRows = [];
 let lastAcceptedTradeAssets = [];
 const tradeColorByPickNumber = new Map();
-const tradeColorByPickNumber = new Map();
 
 function getTradeColor(tradeKey) {
   if (!tradeKey) return "hsl(43 95% 50%)";
@@ -48,7 +47,6 @@ function getTradeColor(tradeKey) {
   }
 
   const hue = Math.abs(hash) % 360;
-
   return `hsl(${hue} 78% 44%)`;
 }
 
@@ -59,7 +57,7 @@ function rebuildTradeColorMap(
 ) {
   tradeColorByPickNumber.clear();
 
-  // Scambi storici salvati direttamente in draft_order
+  // Scambi storici salvati in draft_order tramite trade_group
   (orderRows || []).forEach(row => {
     if (!row.trade_group) return;
 
@@ -69,12 +67,9 @@ function rebuildTradeColorMap(
     );
   });
 
-  // Scambi futuri effettuati tramite il sistema delle proposte
+  // Scambi effettuati attraverso il sistema delle proposte
   const draftPickById = new Map(
-    (draftPicks || []).map(pick => [
-      String(pick.id),
-      pick
-    ])
+    (draftPicks || []).map(pick => [String(pick.id), pick])
   );
 
   (tradeAssets || []).forEach(asset => {
@@ -87,13 +82,8 @@ function rebuildTradeColorMap(
     }
 
     if (asset.asset_type === "player") {
-      const draftPick = draftPickById.get(
-        String(asset.asset_id)
-      );
-
-      pickNumber = draftPick
-        ? Number(draftPick.pick_number)
-        : null;
+      const draftPick = draftPickById.get(String(asset.asset_id));
+      pickNumber = draftPick ? Number(draftPick.pick_number) : null;
     }
 
     if (!pickNumber) return;
@@ -116,14 +106,18 @@ function renderTradeBadgeHtml(
   return `
     <span
       class="${className}"
-      style="--trade-color: ${color};"
+      style="
+        --trade-color: ${color};
+        background-color: ${color} !important;
+        border-color: ${color} !important;
+        color: #ffffff !important;
+      "
       title="Pick acquisita via trade"
     >
       ↔
     </span>
   `;
 }
-
 
 function normalize(nome) { return nome.trim().toLowerCase(); }
 
