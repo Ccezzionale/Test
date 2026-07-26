@@ -36,8 +36,14 @@ let lastDraftVisualRows = [];
 let lastAcceptedTradeAssets = [];
 const tradeColorByPickNumber = new Map();
 
-function getTradeColor(tradeKey) {
-  if (!tradeKey) return "hsl(43 95% 50%)";
+function getTradePalette(tradeKey) {
+  if (!tradeKey) {
+    return {
+      solid: "hsl(43 95% 48%)",
+      soft: "hsl(43 100% 82%)",
+      text: "hsl(35 90% 18%)"
+    };
+  }
 
   let hash = 0;
   const text = String(tradeKey);
@@ -47,7 +53,12 @@ function getTradeColor(tradeKey) {
   }
 
   const hue = Math.abs(hash) % 360;
-  return `hsl(${hue} 78% 44%)`;
+
+  return {
+    solid: `hsl(${hue} 78% 42%)`,
+    soft: `hsl(${hue} 78% 82%)`,
+    text: `hsl(${hue} 70% 18%)`
+  };
 }
 
 function rebuildTradeColorMap(
@@ -63,7 +74,7 @@ function rebuildTradeColorMap(
 
     tradeColorByPickNumber.set(
       Number(row.pick_number),
-      getTradeColor(`storico-${row.trade_group}`)
+      getTradePalette(`storico-${row.trade_group}`)
     );
   });
 
@@ -90,26 +101,31 @@ function rebuildTradeColorMap(
 
     tradeColorByPickNumber.set(
       Number(pickNumber),
-      getTradeColor(`proposta-${asset.proposal_id}`)
+      getTradePalette(`proposta-${asset.proposal_id}`)
     );
   });
+}
+
+function getTradePaletteByPick(pickNumber) {
+  return (
+    tradeColorByPickNumber.get(Number(pickNumber)) ||
+    getTradePalette(null)
+  );
 }
 
 function renderTradeBadgeHtml(
   pickNumber,
   className = "desktop-pick-trade"
 ) {
-  const color =
-    tradeColorByPickNumber.get(Number(pickNumber)) ||
-    "hsl(43 95% 50%)";
+  const palette = getTradePaletteByPick(pickNumber);
 
   return `
     <span
       class="${className}"
       style="
-        --trade-color: ${color};
-        background-color: ${color} !important;
-        border-color: ${color} !important;
+        --trade-color: ${palette.solid};
+        background-color: ${palette.solid} !important;
+        border-color: ${palette.solid} !important;
         color: #ffffff !important;
       "
       title="Pick acquisita via trade"
@@ -117,6 +133,36 @@ function renderTradeBadgeHtml(
       ↔
     </span>
   `;
+}
+
+function ensureTradeColorStyles() {
+  if (document.getElementById("trade-color-styles")) return;
+
+  const style = document.createElement("style");
+  style.id = "trade-color-styles";
+  style.textContent = `
+    .desktop-pick-slot.is-traded[data-trade-colored="true"] {
+      background-color: var(--trade-bg) !important;
+      border-color: var(--trade-color) !important;
+      box-shadow:
+        inset 7px 0 0 var(--trade-color),
+        0 0 0 1px var(--trade-color) !important;
+    }
+
+    .desktop-pick-slot.is-traded[data-trade-colored="true"]
+    .desktop-pick-number {
+      background-color: var(--trade-color) !important;
+      border-color: var(--trade-color) !important;
+      color: #ffffff !important;
+    }
+
+    .desktop-pick-slot.is-traded[data-trade-colored="true"] strong,
+    .desktop-pick-slot.is-traded[data-trade-colored="true"] small {
+      color: var(--trade-text) !important;
+    }
+  `;
+
+  document.head.appendChild(style);
 }
 
 function normalize(nome) { return nome.trim().toLowerCase(); }
@@ -754,6 +800,8 @@ function getDraftPlayerInfoByPick(pick) {
 }
 
 function ensureDesktopDraftRoomShell() {
+  ensureTradeColorStyles();
+
   const page = document.querySelector(".page-shell") || document.querySelector("main") || document.body;
   const container = document.querySelector(".container");
   if (!page || !container) return null;
@@ -1282,8 +1330,29 @@ const teamColumns = fixedColumns.map(column => {
       const currentClass = isCurrent ? "is-current" : "";
       const tradedClass = cell.isTradedPick ? "is-traded" : "";
 
+      const tradePalette = cell.isTradedPick
+        ? getTradePaletteByPick(pickNum)
+        : null;
+
+      const tradeStyle = tradePalette
+        ? `
+          --trade-color: ${tradePalette.solid};
+          --trade-bg: ${tradePalette.soft};
+          --trade-text: ${tradePalette.text};
+        `
+        : "";
+
+      const tradeDataAttribute = tradePalette
+        ? `data-trade-colored="true"`
+        : "";
+
       return `
-        <div class="desktop-pick-slot ${filledClass} ${currentClass} ${tradedClass}" title="${pickNum ? `Pick #${escapeHtml(pickNum)}` : `Round ${cell.round}`}">
+        <div
+          class="desktop-pick-slot ${filledClass} ${currentClass} ${tradedClass}"
+          ${tradeDataAttribute}
+          style="${tradeStyle}"
+          title="${pickNum ? `Pick #${escapeHtml(pickNum)}` : `Round ${cell.round}`}"
+        >
           <div class="desktop-pick-topline">
             <span class="desktop-pick-number">
               ${pickNum ? escapeHtml(pickNum) : "—"}
