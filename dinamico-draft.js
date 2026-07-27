@@ -428,6 +428,12 @@ function applicaProprietariFuturePicks(draftBase, futurePicks, draftName) {
 
       lostNormalSlotsByTeamId.get(originalId).push({
         round: Number(fp.round),
+        // Posizione della pick ceduta nella serpentina: serve soltanto
+        // nella vista mobile "Round", per mostrare la pick ricevuta nello
+        // slot che sostituisce (anziché in fondo al round).
+        displayOrder: draftBase[Number(fp.round) - 1]
+          ?.find(p => teamKey(p.team) === teamKey(fp.original?.name || ""))
+          ?.pickNumber || Number.MAX_SAFE_INTEGER,
         source_trade_id: fp.source_trade_id || null
       });
     }
@@ -439,12 +445,16 @@ function applicaProprietariFuturePicks(draftBase, futurePicks, draftName) {
 
   const usedLostSlotsByTeamId = new Map();
 
-  function getReplacementRoundForNormalTrade(fp) {
+  function getReplacementSlotForNormalTrade(fp) {
     const ownerId = fp.owner?.id;
-    if (!ownerId) return Number(fp.round);
+    if (!ownerId) {
+      return { round: Number(fp.round), displayOrder: Number.MAX_SAFE_INTEGER };
+    }
 
     const slots = lostNormalSlotsByTeamId.get(ownerId) || [];
-    if (!slots.length) return Number(fp.round);
+    if (!slots.length) {
+      return { round: Number(fp.round), displayOrder: Number.MAX_SAFE_INTEGER };
+    }
 
     if (!usedLostSlotsByTeamId.has(ownerId)) {
       usedLostSlotsByTeamId.set(ownerId, new Set());
@@ -467,10 +477,12 @@ function applicaProprietariFuturePicks(draftBase, futurePicks, draftName) {
       slotIndex = slots.findIndex((slot, index) => !used.has(index));
     }
 
-    if (slotIndex === -1) return Number(fp.round);
+    if (slotIndex === -1) {
+      return { round: Number(fp.round), displayOrder: Number.MAX_SAFE_INTEGER };
+    }
 
     used.add(slotIndex);
-    return slots[slotIndex].round;
+    return slots[slotIndex];
   }
 
   /*
@@ -556,9 +568,10 @@ function applicaProprietariFuturePicks(draftBase, futurePicks, draftName) {
 
       const isTraded = teamKey(originalTeam) !== teamKey(ownerTeam);
 
-      const displayRound = isTraded && futurePick
-        ? getReplacementRoundForNormalTrade(futurePick)
-        : roundNumber;
+      const replacementSlot = isTraded && futurePick
+        ? getReplacementSlotForNormalTrade(futurePick)
+        : null;
+      const displayRound = replacementSlot?.round || roundNumber;
 
       normalRoundPicks.push({
         team: ownerTeam,
@@ -568,6 +581,7 @@ function applicaProprietariFuturePicks(draftBase, futurePicks, draftName) {
         bonus: false,
         round: roundNumber,
         displayRound,
+        displayOrder: replacementSlot?.displayOrder || pickBase.pickNumber,
         protection_note: futurePick?.protection_note || "",
         notes: futurePick?.notes || ""
       });
@@ -587,6 +601,7 @@ function applicaProprietariFuturePicks(draftBase, futurePicks, draftName) {
           bonus: true,
           round: roundNumber,
           displayRound: bonusDisplayRoundById.get(fp.id) || roundNumber,
+          displayOrder: globalPickNumber,
           protection_note: fp.protection_note || "",
           notes: fp.notes || ""
         };
@@ -677,6 +692,7 @@ function generaTabellaVerticale(containerId, draftData, squadreOrdine) {
         bonus: p.bonus,
         round: p.round,
         displayRound,
+        displayOrder: p.displayOrder,
         protection_note: p.protection_note,
         notes: p.notes
       });
@@ -814,6 +830,7 @@ function buildDraftPerSquadra(draftData, squadreOrdine) {
         bonus: p.bonus,
         round: p.round,
         displayRound,
+        displayOrder: p.displayOrder,
         protection_note: p.protection_note,
         notes: p.notes
       });
@@ -862,7 +879,13 @@ function generaMobileDraftCards(containerId, draftData, squadreOrdine) {
   });
 
   Object.keys(roundMap).forEach(round => {
-    roundMap[round].sort((a, b) => Number(a.pickNumber) - Number(b.pickNumber));
+    // Nella vista Round una pick ricevuta prende visivamente lo slot della
+    // pick ceduta: #31 ricevuta al posto della #11, non in fondo al Round 2.
+    roundMap[round].sort((a, b) => {
+      const aOrder = Number(a.displayOrder || a.pickNumber);
+      const bOrder = Number(b.displayOrder || b.pickNumber);
+      return aOrder - bOrder;
+    });
   });
 
   let html = `
@@ -996,7 +1019,7 @@ function generaMobileDraftCards(containerId, draftData, squadreOrdine) {
           </span>
 
           <span class="mobile-pick-badges">
-            ${isTraded ? `<span class="mobile-pick-badge trade">da ${escapeDraftHtml(shortTeamName(originalTeam))}</span>` : ""}
+            ${isTraded ? `<span class="mobile-pick-badge trade">↔ Trade · R${pick.round} ${escapeDraftHtml(shortTeamName(originalTeam))}</span>` : ""}
             ${isBonus ? `<span class="mobile-pick-badge bonus">★ Bonus</span>` : ""}
           </span>
         </div>
