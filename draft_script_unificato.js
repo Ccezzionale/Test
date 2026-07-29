@@ -909,65 +909,18 @@ function ensureDesktopDraftRoomShell() {
     }
   }
 
-  syncDraftLayoutForViewport();
+  document.body.classList.add("desktop-draft-v2");
+  placePlayerPoolForViewport();
 
   if (!desktopDraftRoomReady) {
     desktopDraftRoomReady = true;
     window.addEventListener("resize", () => {
       clearTimeout(desktopResizeTimer);
-      desktopResizeTimer = setTimeout(syncDraftLayoutForViewport, 120);
+      desktopResizeTimer = setTimeout(placePlayerPoolForViewport, 120);
     });
   }
 
   return shell;
-}
-
-function isStandaloneDraftApp() {
-  return (
-    window.matchMedia("(display-mode: standalone)").matches ||
-    window.matchMedia("(display-mode: fullscreen)").matches ||
-    window.matchMedia("(display-mode: minimal-ui)").matches ||
-    window.navigator.standalone === true
-  );
-}
-
-function isTouchDraftDevice() {
-  return window.matchMedia("(hover: none) and (pointer: coarse)").matches;
-}
-
-function forceMobileViewportInStandaloneApp() {
-  if (!isStandaloneDraftApp() || !isTouchDraftDevice()) return;
-
-  const viewportMeta = document.querySelector('meta[name="viewport"]');
-  if (!viewportMeta) return;
-
-  viewportMeta.setAttribute(
-    "content",
-    "width=device-width, initial-scale=1.0"
-  );
-}
-
-forceMobileViewportInStandaloneApp();
-
-function usaDraftDesktopPerViewport() {
-  const appMobile = isStandaloneDraftApp() && isTouchDraftDevice();
-  const desktopReale = window.innerWidth >= 1101 && !appMobile;
-  const sitoDesktopSuTouch =
-    !isStandaloneDraftApp() &&
-    window.innerWidth >= 769 &&
-    window.innerWidth <= 1100 &&
-    isTouchDraftDevice();
-
-  return desktopReale || sitoDesktopSuTouch;
-}
-
-function syncDraftLayoutForViewport() {
-  document.body.classList.toggle(
-    "desktop-draft-v2",
-    usaDraftDesktopPerViewport()
-  );
-
-  placePlayerPoolForViewport();
 }
 
 function placePlayerPoolForViewport() {
@@ -976,7 +929,7 @@ function placePlayerPoolForViewport() {
   const container = document.querySelector(".container");
   if (!pool || !desktopSlot || !container) return;
 
-  if (usaDraftDesktopPerViewport()) {
+  if (window.innerWidth >= 1101) {
     if (pool.parentElement !== desktopSlot) desktopSlot.appendChild(pool);
   } else {
     if (pool.parentElement !== container) container.appendChild(pool);
