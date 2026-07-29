@@ -7412,3 +7412,21 @@ td:nth-child(3)[data-predraft-label]:empty::after{
     font-size: .68rem;
   }
 }
+
+
+/* =========================
+   MOBILE DRAFT OVERVIEW - VISUAL ROUND EMPTY SLOT
+   ========================= */
+@media (max-width: 768px){
+  .mobile-overview-slot.is-missing{
+    opacity: .38;
+    cursor: default;
+    filter: grayscale(.35);
+  }
+
+  .mobile-overview-slot.is-missing em{
+    background: rgba(255,255,255,.18);
+    color: rgba(255,255,255,.72);
+    border-color: rgba(255,255,255,.22);
+  }
+}

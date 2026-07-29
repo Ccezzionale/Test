@@ -860,50 +860,90 @@ function renderMobileDraftOverview(dati = []) {
 
   const totalPicks = dati.length;
   const pickedCount = dati.filter(row => String(row["Giocatore"] || "").trim()).length;
-  const picksPerRound = Math.max(1, Math.ceil(totalPicks / MOBILE_DRAFT_OVERVIEW_ROUNDS));
   const currentPick = Number(currentDraftState?.current_pick || 0);
   const isDraftPaused = currentDraftState?.is_open === false;
+
+  /*
+    La panoramica mobile usa la stessa struttura visuale del desktop:
+    - colonne fisse per squadra;
+    - 23 slot visuali;
+    - le pick acquisite via trade entrano nel round visuale corretto;
+    - le pick successive scalano senza rompere la lettura dei round.
+  */
+  const fixedColumns = buildDesktopFixedBoardColumns();
+
+  if (!fixedColumns.length) return;
 
   const roundsHtml = Array.from(
     { length: MOBILE_DRAFT_OVERVIEW_ROUNDS },
     (_, roundIndex) => {
       const roundNumber = roundIndex + 1;
-      const start = roundIndex * picksPerRound;
-      const roundRows = dati.slice(start, start + picksPerRound);
       const direction = roundNumber % 2 === 1 ? "→" : "←";
-      const hasCurrentPick = roundRows.some(
-        row => Number(row["Pick"]) === currentPick
-      );
 
-      const slotsHtml = roundRows.map(row => {
-        const pickNumber = Number(row["Pick"] || 0);
-        const teamName = String(row["Fanta Team"] || "");
-        const playerName = String(row["Giocatore"] || "").trim();
-        const isCompleted = Boolean(playerName);
-        const isCurrent = pickNumber === currentPick;
-        const isTraded = row["IsTradedPick"] === true;
+      const roundCells = fixedColumns.map(column => {
+        const cell = column.rounds?.[roundIndex] || null;
+        const pickNumber = Number(cell?.pick_number || 0);
+        const pickData = cell?.pickData || null;
+        const teamName = String(column.team?.name || "");
+        const playerName = String(pickData?.player_name || "").trim();
+
+        return {
+          roundNumber,
+          pickNumber,
+          pickData,
+          teamName,
+          playerName,
+          isCompleted: Boolean(playerName),
+          isCurrent: pickNumber > 0 && pickNumber === currentPick,
+          isTraded: cell?.isTradedPick === true
+        };
+      });
+
+      const hasCurrentPick = roundCells.some(cell => cell.isCurrent);
+
+      const slotsHtml = roundCells.map(cell => {
+        const {
+          pickNumber,
+          teamName,
+          playerName,
+          isCompleted,
+          isCurrent,
+          isTraded
+        } = cell;
+
+        const hasPick = pickNumber > 0;
+
         const stateClass = isCurrent
           ? "is-current"
           : isCompleted
             ? "is-completed"
             : "is-future";
 
-        const palette = isTraded ? getTradePaletteByPick(pickNumber) : null;
+        const palette = isTraded && hasPick
+          ? getTradePaletteByPick(pickNumber)
+          : null;
+
         const tradeStyle = palette
           ? `--overview-trade:${palette.solid}; --overview-trade-soft:${palette.soft};`
           : "";
 
-        const titleParts = [
-          `Pick #${pickNumber}`,
-          teamName,
-          playerName || (isCurrent ? "On the clock" : "In attesa")
-        ];
+        const titleParts = hasPick
+          ? [
+              `Pick #${pickNumber}`,
+              teamName,
+              playerName || (isCurrent ? "On the clock" : "In attesa")
+            ]
+          : [
+              `Round ${roundNumber}`,
+              teamName,
+              "Pick ceduta"
+            ];
 
         return `
           <button
             type="button"
-            class="mobile-overview-slot ${stateClass} ${isTraded ? "is-traded" : ""} ${isCurrent && isDraftPaused ? "is-paused" : ""}"
-            data-overview-pick="${pickNumber}"
+            class="mobile-overview-slot ${stateClass} ${isTraded ? "is-traded" : ""} ${isCurrent && isDraftPaused ? "is-paused" : ""} ${hasPick ? "" : "is-missing"}"
+            ${hasPick ? `data-overview-pick="${pickNumber}"` : "disabled"}
             style="${tradeStyle}"
             title="${escapeHtml(titleParts.join(" · "))}"
             aria-label="${escapeHtml(titleParts.join(" · "))}"
@@ -914,8 +954,8 @@ function renderMobileDraftOverview(dati = []) {
               onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
             >
             <span class="mobile-overview-fallback">${escapeHtml(getMobileOverviewInitials(teamName))}</span>
-            <em aria-hidden="true">#${pickNumber}</em>
-            ${isTraded ? `<i aria-hidden="true">↔</i>` : ""}
+            <em aria-hidden="true">${hasPick ? `#${pickNumber}` : "—"}</em>
+            ${isTraded && hasPick ? `<i aria-hidden="true">↔</i>` : ""}
           </button>
         `;
       }).join("");
