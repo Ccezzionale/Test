@@ -923,23 +923,13 @@ function ensureDesktopDraftRoomShell() {
   return shell;
 }
 
-function usaDraftDesktopPerViewport() {
-  const desktopReale = window.innerWidth >= 1101;
-  const sitoDesktopSuTouch =
-    window.innerWidth >= 769 &&
-    window.innerWidth <= 1100 &&
-    window.matchMedia("(hover: none) and (pointer: coarse)").matches;
-
-  return desktopReale || sitoDesktopSuTouch;
-}
-
 function placePlayerPoolForViewport() {
   const pool = document.querySelector(".lista-container");
   const desktopSlot = document.getElementById("desktop-player-pool-slot");
   const container = document.querySelector(".container");
   if (!pool || !desktopSlot || !container) return;
 
-  if (usaDraftDesktopPerViewport()) {
+  if (window.innerWidth >= 1101) {
     if (pool.parentElement !== desktopSlot) desktopSlot.appendChild(pool);
   } else {
     if (pool.parentElement !== container) container.appendChild(pool);
