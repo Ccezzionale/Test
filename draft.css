@@ -7314,23 +7314,27 @@ td:nth-child(3)[data-predraft-label]:empty::after{
   }
 
   .mobile-overview-slot em{
-    left: -5px;
-    top: -6px;
-    min-width: 19px;
-    height: 13px;
-    padding: 0 4px;
-    background: #ffd54a;
-    color: #001f3f;
-    border: 1px solid rgba(255,255,255,.62);
-    box-shadow: 0 3px 7px rgba(0,0,0,.20);
-    font-size: .42rem;
-    letter-spacing: .02em;
+    left: -4px;
+    top: -5px;
+    min-width: 17px;
+    height: 12px;
+    padding: 0 3px;
+    background: rgba(0, 31, 63, .94);
+    color: #ffffff;
+    border: 1px solid rgba(255,255,255,.60);
+    box-shadow: 0 2px 5px rgba(0,0,0,.20);
+    font-size: .38rem;
+    letter-spacing: -.01em;
+    white-space: nowrap;
   }
 
   .mobile-overview-slot.is-current em{
     background: #001f3f;
     color: #ffd54a;
-    border-color: rgba(255,213,74,.58);
+    border-color: rgba(255,213,74,.70);
+    box-shadow:
+      0 2px 6px rgba(0,0,0,.24),
+      0 0 7px rgba(255,213,74,.26);
   }
 
   .mobile-overview-slot i{

@@ -914,7 +914,7 @@ function renderMobileDraftOverview(dati = []) {
               onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
             >
             <span class="mobile-overview-fallback">${escapeHtml(getMobileOverviewInitials(teamName))}</span>
-            ${isCurrent ? `<em>${isDraftPaused ? "RFA" : "ON"}</em>` : ""}
+            <em aria-hidden="true">#${pickNumber}</em>
             ${isTraded ? `<i aria-hidden="true">↔</i>` : ""}
           </button>
         `;
