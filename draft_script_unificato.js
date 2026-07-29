@@ -809,9 +809,181 @@ if (prossimaIndex >= 0) {
     }
   }
 
+  renderMobileDraftOverview(dati);
   aggiornaDesktopDraftRoom(dati, prossima);
 }
 
+
+
+// ========== Mobile Draft Overview ==========
+const MOBILE_DRAFT_OVERVIEW_ROUNDS = 23;
+
+function getMobileOverviewInitials(teamName) {
+  return String(teamName || "?")
+    .trim()
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map(part => part.charAt(0).toUpperCase())
+    .join("") || "?";
+}
+
+function openDraftViewAtPick(pickNumber = null) {
+  if (window.innerWidth > 768) return;
+
+  setMobileDraftView("draft");
+
+  setTimeout(() => {
+    const draftScroll = document.querySelector("#draft-board-panel .table-scroll");
+    const rows = Array.from(document.querySelectorAll("#tabella-pick tbody tr"));
+
+    const targetRow = pickNumber
+      ? rows.find(row => Number(row.querySelector("td:first-child")?.textContent || 0) === Number(pickNumber))
+      : document.querySelector("#tabella-pick tbody tr.next-pick");
+
+    if (!draftScroll || !targetRow) return;
+
+    const rowTop = targetRow.offsetTop;
+    const containerHeight = draftScroll.clientHeight;
+    const rowHeight = targetRow.offsetHeight;
+
+    draftScroll.scrollTo({
+      top: Math.max(0, rowTop - containerHeight / 2 + rowHeight / 2),
+      behavior: "smooth"
+    });
+  }, 160);
+}
+
+function renderMobileDraftOverview(dati = []) {
+  const host = document.querySelector(".mobile-companion-actions");
+  if (!host || !Array.isArray(dati) || !dati.length) return;
+
+  const totalPicks = dati.length;
+  const pickedCount = dati.filter(row => String(row["Giocatore"] || "").trim()).length;
+  const picksPerRound = Math.max(1, Math.ceil(totalPicks / MOBILE_DRAFT_OVERVIEW_ROUNDS));
+  const currentPick = Number(currentDraftState?.current_pick || 0);
+  const isDraftPaused = currentDraftState?.is_open === false;
+
+  const roundsHtml = Array.from(
+    { length: MOBILE_DRAFT_OVERVIEW_ROUNDS },
+    (_, roundIndex) => {
+      const roundNumber = roundIndex + 1;
+      const start = roundIndex * picksPerRound;
+      const roundRows = dati.slice(start, start + picksPerRound);
+      const direction = roundNumber % 2 === 1 ? "→" : "←";
+      const hasCurrentPick = roundRows.some(
+        row => Number(row["Pick"]) === currentPick
+      );
+
+      const slotsHtml = roundRows.map(row => {
+        const pickNumber = Number(row["Pick"] || 0);
+        const teamName = String(row["Fanta Team"] || "");
+        const playerName = String(row["Giocatore"] || "").trim();
+        const isCompleted = Boolean(playerName);
+        const isCurrent = pickNumber === currentPick;
+        const isTraded = row["IsTradedPick"] === true;
+        const stateClass = isCurrent
+          ? "is-current"
+          : isCompleted
+            ? "is-completed"
+            : "is-future";
+
+        const palette = isTraded ? getTradePaletteByPick(pickNumber) : null;
+        const tradeStyle = palette
+          ? `--overview-trade:${palette.solid}; --overview-trade-soft:${palette.soft};`
+          : "";
+
+        const titleParts = [
+          `Pick #${pickNumber}`,
+          teamName,
+          playerName || (isCurrent ? "On the clock" : "In attesa")
+        ];
+
+        return `
+          <button
+            type="button"
+            class="mobile-overview-slot ${stateClass} ${isTraded ? "is-traded" : ""} ${isCurrent && isDraftPaused ? "is-paused" : ""}"
+            data-overview-pick="${pickNumber}"
+            style="${tradeStyle}"
+            title="${escapeHtml(titleParts.join(" · "))}"
+            aria-label="${escapeHtml(titleParts.join(" · "))}"
+          >
+            <img
+              src="${getDraftTeamLogoPath(teamName)}"
+              alt=""
+              onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
+            >
+            <span class="mobile-overview-fallback">${escapeHtml(getMobileOverviewInitials(teamName))}</span>
+            ${isCurrent ? `<em>${isDraftPaused ? "RFA" : "ON"}</em>` : ""}
+            ${isTraded ? `<i aria-hidden="true">↔</i>` : ""}
+          </button>
+        `;
+      }).join("");
+
+      return `
+        <div class="mobile-overview-round ${hasCurrentPick ? "is-current-round" : ""}">
+          <div class="mobile-overview-round-label">
+            <strong>R${roundNumber}</strong>
+            <span aria-hidden="true">${direction}</span>
+          </div>
+          <div class="mobile-overview-slots">
+            ${slotsHtml}
+          </div>
+        </div>
+      `;
+    }
+  ).join("");
+
+  host.classList.add("mobile-draft-overview-host");
+  host.innerHTML = `
+    <section class="mobile-draft-overview-card" aria-label="Panoramica completa del draft">
+      <header class="mobile-overview-header">
+        <div class="mobile-overview-heading">
+          <span class="mobile-overview-icon" aria-hidden="true">
+            <img src="img/badges/draft.webp" alt="">
+          </span>
+          <span>
+            <strong>Draft Overview</strong>
+            <small>Panoramica completa dei 23 round</small>
+          </span>
+        </div>
+        <span class="mobile-overview-progress">${pickedCount}/${totalPicks}</span>
+      </header>
+
+      <div class="mobile-overview-legend" aria-label="Legenda">
+        <span><i class="legend-completed"></i>Completato</span>
+        <span><i class="legend-current"></i>In corso</span>
+        <span><i class="legend-future"></i>Futuro</span>
+        <span><i class="legend-traded">↔</i>Scambiata</span>
+      </div>
+
+      <div class="mobile-overview-rounds">
+        ${roundsHtml}
+      </div>
+
+      <button type="button" class="mobile-overview-details" data-overview-open-draft="true">
+        <span>Vedi dettagli draft</span>
+        <strong aria-hidden="true">›</strong>
+      </button>
+    </section>
+  `;
+
+  if (host.dataset.overviewBound !== "1") {
+    host.addEventListener("click", event => {
+      const pickButton = event.target.closest("[data-overview-pick]");
+      if (pickButton) {
+        openDraftViewAtPick(Number(pickButton.dataset.overviewPick || 0));
+        return;
+      }
+
+      if (event.target.closest("[data-overview-open-draft]")) {
+        openDraftViewAtPick(currentDraftState?.current_pick || null);
+      }
+    });
+
+    host.dataset.overviewBound = "1";
+  }
+}
 
 // ========== Desktop Draft Room visuale ==========
 let desktopDraftRoomReady = false;
