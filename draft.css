@@ -1,3 +1,5 @@
+/* FIX: su dispositivi touch in modalità "Sito desktop" (viewport 769-1100px)
+   usa la Draft Room desktop senza modificare il mobile normale <=768px. */
 :root{
   --bg: #eef3f8;
   --bg-soft: #f7f9fc;
@@ -3375,7 +3377,8 @@ h1, h2, h3, h4, p{
   display: contents;
 }
 
-@media (min-width: 1101px){
+@media (min-width: 1101px),
+       (min-width: 769px) and (max-width: 1100px) and (hover: none) and (pointer: coarse) and (display-mode: browser){
   body.desktop-draft-v2 .hero{
     margin-bottom: 16px;
   }
@@ -4009,7 +4012,8 @@ h1, h2, h3, h4, p{
   }
 }
 
-@media (min-width: 1101px) and (max-width: 1450px){
+@media (min-width: 1101px) and (max-width: 1450px),
+       (min-width: 769px) and (max-width: 1100px) and (hover: none) and (pointer: coarse) and (display-mode: browser){
   #desktop-draft-room .desktop-draft-grid{
     grid-template-columns: 210px minmax(620px, 1fr) 360px;
     gap: 12px;
@@ -4045,7 +4049,8 @@ h1, h2, h3, h4, p{
    Board a tutta larghezza, ultime chiamate orizzontali,
    player pool sotto il tabellone.
    ========================================================= */
-@media (min-width: 1101px){
+@media (min-width: 1101px),
+       (min-width: 769px) and (max-width: 1100px) and (hover: none) and (pointer: coarse) and (display-mode: browser){
 
   body.desktop-draft-v2 .page-shell{
     max-width: 1920px;
@@ -4290,7 +4295,8 @@ h1, h2, h3, h4, p{
   }
 }
 
-@media (min-width: 1101px) and (max-width: 1500px){
+@media (min-width: 1101px) and (max-width: 1500px),
+       (min-width: 769px) and (max-width: 1100px) and (hover: none) and (pointer: coarse) and (display-mode: browser){
   .desktop-teams-track{
     grid-auto-columns: minmax(150px, 1fr) !important;
   }
@@ -4319,7 +4325,8 @@ h1, h2, h3, h4, p{
    2) align round rail with board rows
    3) make player pool more compact
    ========================================================= */
-@media (min-width: 1101px){
+@media (min-width: 1101px),
+       (min-width: 769px) and (max-width: 1100px) and (hover: none) and (pointer: coarse) and (display-mode: browser){
   body.desktop-draft-v2 .hero{
     display: none !important;
   }
@@ -4475,7 +4482,8 @@ h1, h2, h3, h4, p{
   }
 }
 
-@media (min-width: 1101px) and (max-width: 1500px){
+@media (min-width: 1101px) and (max-width: 1500px),
+       (min-width: 769px) and (max-width: 1100px) and (hover: none) and (pointer: coarse) and (display-mode: browser){
   .desktop-player-pool-slot .filters-grid{
     grid-template-columns: repeat(3, minmax(180px, 1fr)) !important;
   }
@@ -4493,7 +4501,8 @@ h1, h2, h3, h4, p{
 /* =========================================================
    DESKTOP CONCEPT A.4 - bigger, more visible badges
    ========================================================= */
-@media (min-width: 1101px){
+@media (min-width: 1101px),
+       (min-width: 769px) and (max-width: 1100px) and (hover: none) and (pointer: coarse) and (display-mode: browser){
   .desktop-pick-slot{
     grid-template-columns: minmax(0, 1fr) auto !important;
     gap: 2px 8px !important;
@@ -4543,7 +4552,8 @@ h1, h2, h3, h4, p{
    DESKTOP CONCEPT A.5 - visible badges without widening board
    Badges moved to floating tray inside each pick card
    ========================================================= */
-@media (min-width: 1101px){
+@media (min-width: 1101px),
+       (min-width: 769px) and (max-width: 1100px) and (hover: none) and (pointer: coarse) and (display-mode: browser){
   .desktop-pick-slot{
     position: relative !important;
     padding-right: 58px !important;
@@ -4626,7 +4636,8 @@ h1, h2, h3, h4, p{
    Theme: deep navy, electric blue, bright gold
    Layout unchanged.
    ========================================================= */
-@media (min-width: 1101px){
+@media (min-width: 1101px),
+       (min-width: 769px) and (max-width: 1100px) and (hover: none) and (pointer: coarse) and (display-mode: browser){
   body.desktop-draft-v2{
     background:
       radial-gradient(circle at top, rgba(18, 93, 255, .12), transparent 24%),
@@ -4809,7 +4820,8 @@ h1, h2, h3, h4, p{
 /* =========================================================
    DESKTOP: evita il flash della vecchia Draft Room
    ========================================================= */
-@media (min-width: 1101px){
+@media (min-width: 1101px),
+       (min-width: 769px) and (max-width: 1100px) and (hover: none) and (pointer: coarse) and (display-mode: browser){
   body:not(.desktop-draft-v2) .hero,
   body:not(.desktop-draft-v2) .container,
   body:not(.desktop-draft-v2) .summary-section{
@@ -4820,7 +4832,8 @@ h1, h2, h3, h4, p{
 /* =========================================================
    DESKTOP - LIVE BAR XL / BROADCAST MODE
    ========================================================= */
-@media (min-width: 1101px){
+@media (min-width: 1101px),
+       (min-width: 769px) and (max-width: 1100px) and (hover: none) and (pointer: coarse) and (display-mode: browser){
 
   .desktop-live-bar{
     padding: 30px 36px !important;
@@ -4891,7 +4904,8 @@ h1, h2, h3, h4, p{
 /* =========================================================
    DESKTOP - LOGHI "PROSSIMI IN ORDINE" PIÙ CHIARI
    ========================================================= */
-@media (min-width: 1101px){
+@media (min-width: 1101px),
+       (min-width: 769px) and (max-width: 1100px) and (hover: none) and (pointer: coarse) and (display-mode: browser){
 
   .desktop-queue-logo{
     position: relative !important;
@@ -4934,7 +4948,8 @@ h1, h2, h3, h4, p{
 /* =========================================================
    DESKTOP - LOGHI SQUADRE PIÙ GRANDI NELLA TESTATA BOARD
    ========================================================= */
-@media (min-width: 1101px){
+@media (min-width: 1101px),
+       (min-width: 769px) and (max-width: 1100px) and (hover: none) and (pointer: coarse) and (display-mode: browser){
 
   .desktop-team-column{
     grid-template-rows: 118px auto !important;
@@ -4962,7 +4977,8 @@ h1, h2, h3, h4, p{
 /* =========================================================
    DESKTOP - FIX ALLINEAMENTO ROUND DOPO LOGHI GRANDI
    ========================================================= */
-@media (min-width: 1101px){
+@media (min-width: 1101px),
+       (min-width: 769px) and (max-width: 1100px) and (hover: none) and (pointer: coarse) and (display-mode: browser){
 
   .desktop-round-rail{
     grid-template-rows: 118px repeat(var(--desktop-rounds, 12), 72px) !important;
@@ -5000,7 +5016,8 @@ h1, h2, h3, h4, p{
 /* =========================
    DESKTOP DRAFT BOARD - SOLO LOGHI SQUADRE
    ========================= */
-@media (min-width: 1101px){
+@media (min-width: 1101px),
+       (min-width: 769px) and (max-width: 1100px) and (hover: none) and (pointer: coarse) and (display-mode: browser){
 
   .desktop-team-head strong{
     display: none !important;
@@ -5022,7 +5039,8 @@ h1, h2, h3, h4, p{
 /* =========================
    DESKTOP DRAFT BOARD - HEADER LOGHI PIÙ GRANDI
    ========================= */
-@media (min-width: 1101px){
+@media (min-width: 1101px),
+       (min-width: 769px) and (max-width: 1100px) and (hover: none) and (pointer: coarse) and (display-mode: browser){
 
   .desktop-round-rail{
     grid-template-rows: 118px repeat(var(--desktop-rounds, 12), 54px) !important;
@@ -5055,7 +5073,8 @@ h1, h2, h3, h4, p{
 /* =========================
    DESKTOP DRAFT BOARD - LOGHI GRANDI + ROUND ALLINEATI
    ========================= */
-@media (min-width: 1101px){
+@media (min-width: 1101px),
+       (min-width: 769px) and (max-width: 1100px) and (hover: none) and (pointer: coarse) and (display-mode: browser){
 
   body.desktop-draft-v2{
     --desktop-team-head-h: 118px;
@@ -5114,7 +5133,8 @@ h1, h2, h3, h4, p{
 /* =========================
    DESKTOP DRAFT BOARD - FIX ALTEZZA PICK CARD
    ========================= */
-@media (min-width: 1101px){
+@media (min-width: 1101px),
+       (min-width: 769px) and (max-width: 1100px) and (hover: none) and (pointer: coarse) and (display-mode: browser){
 
   body.desktop-draft-v2{
     --desktop-team-head-h: 118px;
@@ -6028,7 +6048,8 @@ h1, h2, h3, h4, p{
    RESTORE LIVE BAR + LONG TEAM NAME SAFE FIX
    ========================================================= */
 
-@media (min-width: 1101px){
+@media (min-width: 1101px),
+       (min-width: 769px) and (max-width: 1100px) and (hover: none) and (pointer: coarse) and (display-mode: browser){
 
   .desktop-live-bar{
     display: grid !important;
@@ -6098,7 +6119,8 @@ h1, h2, h3, h4, p{
    LIVE BAR - FIX COLONNA CHIAMATE TAGLIATA
    ========================================================= */
 
-@media (min-width: 1101px){
+@media (min-width: 1101px),
+       (min-width: 769px) and (max-width: 1100px) and (hover: none) and (pointer: coarse) and (display-mode: browser){
 
   .desktop-live-bar{
     grid-template-columns:
@@ -6135,7 +6157,8 @@ h1, h2, h3, h4, p{
    DESKTOP PICK CARD - FIX NOMI TAGLIATI
    ========================================================= */
 
-@media (min-width: 1101px){
+@media (min-width: 1101px),
+       (min-width: 769px) and (max-width: 1100px) and (hover: none) and (pointer: coarse) and (display-mode: browser){
 
   .desktop-pick-slot{
     padding-top: 9px !important;
@@ -6159,7 +6182,8 @@ h1, h2, h3, h4, p{
    LIVE BAR - FIX TAGLIO NOME PRIMA DI PICK ATTUALE
    ========================================================= */
 
-@media (min-width: 1101px){
+@media (min-width: 1101px),
+       (min-width: 769px) and (max-width: 1100px) and (hover: none) and (pointer: coarse) and (display-mode: browser){
 
   .desktop-live-main{
     overflow: visible !important;
@@ -6194,7 +6218,8 @@ h1, h2, h3, h4, p{
    LIVE BAR FINAL RESET - STABLE DESKTOP VERSION
    ========================================================= */
 
-@media (min-width: 1101px){
+@media (min-width: 1101px),
+       (min-width: 769px) and (max-width: 1100px) and (hover: none) and (pointer: coarse) and (display-mode: browser){
 
   .desktop-live-bar{
     display: grid !important;
@@ -6343,7 +6368,8 @@ h1, h2, h3, h4, p{
    LIVE BAR - FINAL OVERRIDE DEFINITIVO
    ========================================================= */
 
-@media (min-width: 1101px){
+@media (min-width: 1101px),
+       (min-width: 769px) and (max-width: 1100px) and (hover: none) and (pointer: coarse) and (display-mode: browser){
 
   .desktop-live-bar{
     grid-template-columns:
@@ -6388,7 +6414,8 @@ h1, h2, h3, h4, p{
    DESKTOP DRAFT BOARD - FIX TESTO TAGLIATO NELLE PICK
    ========================================================= */
 
-@media (min-width: 1101px){
+@media (min-width: 1101px),
+       (min-width: 769px) and (max-width: 1100px) and (hover: none) and (pointer: coarse) and (display-mode: browser){
 
   .desktop-round-rail{
     grid-template-rows: 104px repeat(var(--desktop-rounds, 23), 80px) !important;
@@ -6435,7 +6462,8 @@ h1, h2, h3, h4, p{
    DESKTOP BOARD - SPAZIO TRA LOGHI E PRIME PICK
    ========================================================= */
 
-@media (min-width: 1101px){
+@media (min-width: 1101px),
+       (min-width: 769px) and (max-width: 1100px) and (hover: none) and (pointer: coarse) and (display-mode: browser){
 
   .desktop-team-slots{
     padding-top: 10px !important;
@@ -6620,7 +6648,8 @@ h1, h2, h3, h4, p{
    U21 / POR chips sotto la card logo
    ========================= */
 
-@media (min-width: 1101px){
+@media (min-width: 1101px),
+       (min-width: 769px) and (max-width: 1100px) and (hover: none) and (pointer: coarse) and (display-mode: browser){
 
   /* Card logo grande come prima */
   .desktop-team-head{
@@ -6698,7 +6727,8 @@ h1, h2, h3, h4, p{
    Nome visibile + U21/POR attaccati
    ========================= */
 
-@media (min-width: 1101px){
+@media (min-width: 1101px),
+       (min-width: 769px) and (max-width: 1100px) and (hover: none) and (pointer: coarse) and (display-mode: browser){
 
   .desktop-team-head{
     height: 174px !important;
@@ -6852,7 +6882,8 @@ h1, h2, h3, h4, p{
    ========================================================= */
 
 /* ---------- DESKTOP BOARD ---------- */
-@media (min-width: 1101px){
+@media (min-width: 1101px),
+       (min-width: 769px) and (max-width: 1100px) and (hover: none) and (pointer: coarse) and (display-mode: browser){
 
   .desktop-pick-slot.predraft-preview-slot{
     position: relative !important;
