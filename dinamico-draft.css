@@ -1390,3 +1390,444 @@ nav.site-nav .action-icon{opacity:1!important;filter:none!important;}
   }
 }
 
+
+
+/* =========================================================
+   MOBILE DRAFT DINAMICO - ROUND OVERVIEW + TRADE VIEW
+   Sostituisce esclusivamente su mobile la vecchia vista Squadre/Round.
+   ========================================================= */
+@media (max-width: 768px){
+
+  /* Il riepilogo originale resta disponibile sul desktop ma non si duplica
+     sotto la nuova scheda Trade mobile. */
+  .draft-tab-panel > .draft-trade-summary{
+    display:none !important;
+  }
+
+  .dynamic-mobile-view-tabs{
+    width:100%;
+    margin:0 auto 14px;
+    padding:5px;
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:5px;
+    border-radius:20px;
+    background:#ffffff;
+    border:1px solid rgba(0,31,63,.10);
+    box-shadow:
+      0 9px 22px rgba(0,31,63,.09),
+      inset 0 1px 0 rgba(255,255,255,.88);
+  }
+
+  .dynamic-mobile-view-tabs button{
+    appearance:none;
+    min-height:48px;
+    border:0;
+    border-radius:16px;
+    background:transparent;
+    color:#51627a;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    gap:7px;
+    font-family:inherit;
+    font-size:.92rem;
+    font-weight:950;
+    cursor:pointer;
+  }
+
+  .dynamic-mobile-view-tabs button.active{
+    background:
+      linear-gradient(180deg,#07457f 0%,#001f3f 100%);
+    color:#ffffff;
+    box-shadow:
+      0 8px 18px rgba(0,31,63,.22),
+      inset 0 1px 0 rgba(255,255,255,.15);
+  }
+
+  .dynamic-mobile-view-tabs button.active:first-child{
+    color:#ffd54a;
+  }
+
+  .dynamic-mobile-tab-count{
+    min-width:22px;
+    height:22px;
+    padding:0 6px;
+    border-radius:999px;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    background:#e8f1fc;
+    color:#001f3f;
+    font-style:normal;
+    font-size:.7rem;
+    font-weight:950;
+  }
+
+  .dynamic-mobile-view-tabs button.active .dynamic-mobile-tab-count{
+    background:#ffd54a;
+    color:#001f3f;
+  }
+
+  .dynamic-mobile-panel{
+    display:none;
+  }
+
+  .dynamic-mobile-panel.active{
+    display:block;
+  }
+
+  .dynamic-mobile-overview-card{
+    width:100%;
+    padding:14px 10px 12px;
+    border-radius:26px;
+    color:#ffffff;
+    background:
+      radial-gradient(circle at 92% 0%, rgba(255,213,74,.18), transparent 27%),
+      linear-gradient(180deg,#073867 0%,#001f3f 100%);
+    border:1px solid rgba(255,213,74,.20);
+    box-shadow:
+      0 16px 34px rgba(0,31,63,.25),
+      inset 0 1px 0 rgba(255,255,255,.09);
+    overflow:hidden;
+  }
+
+  .dynamic-mobile-overview-header{
+    display:grid;
+    grid-template-columns:42px minmax(0,1fr) auto;
+    align-items:center;
+    gap:10px;
+    padding:2px 4px 11px;
+  }
+
+  .dynamic-mobile-overview-icon{
+    width:42px;
+    height:42px;
+    border-radius:13px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:rgba(255,255,255,.10);
+    border:1px solid rgba(255,255,255,.13);
+  }
+
+  .dynamic-mobile-overview-icon img{
+    width:28px;
+    height:28px;
+    object-fit:contain;
+  }
+
+  .dynamic-mobile-overview-heading{
+    min-width:0;
+  }
+
+  .dynamic-mobile-overview-heading strong,
+  .dynamic-mobile-overview-heading small{
+    display:block;
+  }
+
+  .dynamic-mobile-overview-heading strong{
+    color:#ffffff;
+    font-size:1.18rem;
+    line-height:1.05;
+    font-weight:950;
+    letter-spacing:-.035em;
+  }
+
+  .dynamic-mobile-overview-heading small{
+    margin-top:4px;
+    color:rgba(255,255,255,.72);
+    font-size:.74rem;
+    font-weight:750;
+  }
+
+  .dynamic-mobile-overview-total{
+    min-width:36px;
+    height:30px;
+    padding:0 9px;
+    border-radius:999px;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    background:#ffd54a;
+    color:#001f3f;
+    font-size:.75rem;
+    font-weight:950;
+    box-shadow:0 5px 12px rgba(255,204,0,.22);
+  }
+
+  .dynamic-mobile-overview-legend{
+    margin:0 2px 8px;
+    padding:7px 8px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    flex-wrap:wrap;
+    gap:7px 11px;
+    border-radius:13px;
+    background:rgba(255,255,255,.07);
+    border:1px solid rgba(255,255,255,.08);
+  }
+
+  .dynamic-mobile-overview-legend > span{
+    display:inline-flex;
+    align-items:center;
+    gap:5px;
+    color:rgba(255,255,255,.82);
+    font-size:.63rem;
+    font-weight:850;
+  }
+
+  .dynamic-mobile-overview-legend i{
+    width:15px;
+    height:15px;
+    border-radius:999px;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    font-style:normal;
+    font-size:.54rem;
+    font-weight:950;
+  }
+
+  .dynamic-mobile-overview-legend i.normal{
+    background:#f7fbff;
+    border:1px solid #c9dcf3;
+  }
+
+  .dynamic-mobile-overview-legend i.trade{
+    background:#2f80ed;
+    color:#ffffff;
+  }
+
+  .dynamic-mobile-overview-legend i.bonus{
+    background:#ffd54a;
+    color:#001f3f;
+  }
+
+  .dynamic-mobile-overview-rounds{
+    display:flex;
+    flex-direction:column;
+    gap:3px;
+    padding:4px 2px;
+  }
+
+  .dynamic-mobile-overview-round{
+    display:grid;
+    grid-template-columns:34px minmax(0,1fr);
+    align-items:center;
+    gap:4px;
+    min-height:41px;
+    padding:3px 4px;
+    border-radius:12px;
+  }
+
+  .dynamic-mobile-overview-round:nth-child(even){
+    background:rgba(255,255,255,.025);
+  }
+
+  .dynamic-mobile-overview-round-label{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    gap:0;
+  }
+
+  .dynamic-mobile-overview-round-label strong{
+    color:#ffffff;
+    font-size:.72rem;
+    line-height:1;
+    font-weight:950;
+  }
+
+  .dynamic-mobile-overview-round-label span{
+    margin-top:2px;
+    color:rgba(255,255,255,.47);
+    font-size:.62rem;
+    line-height:1;
+    font-weight:950;
+  }
+
+  .dynamic-mobile-overview-slots{
+    min-width:0;
+    display:grid;
+    grid-template-columns:repeat(8,minmax(0,1fr));
+    gap:3px;
+  }
+
+  .dynamic-mobile-overview-slot{
+    position:relative;
+    min-width:0;
+    height:35px;
+    border-radius:9px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:
+      linear-gradient(180deg,#ffffff 0%,#edf5ff 100%);
+    border:1px solid rgba(255,255,255,.48);
+    box-shadow:
+      0 4px 9px rgba(0,0,0,.13),
+      inset 0 1px 0 rgba(255,255,255,.9);
+  }
+
+  .dynamic-mobile-overview-slot img{
+    width:26px;
+    height:26px;
+    object-fit:contain;
+    filter:drop-shadow(0 2px 3px rgba(0,31,63,.16));
+  }
+
+  .dynamic-mobile-overview-fallback{
+    display:none;
+    width:24px;
+    height:24px;
+    border-radius:999px;
+    align-items:center;
+    justify-content:center;
+    background:#dbe9fa;
+    color:#001f3f;
+    font-size:.48rem;
+    font-weight:950;
+  }
+
+  .dynamic-mobile-overview-slot em,
+  .dynamic-mobile-overview-slot i{
+    position:absolute;
+    z-index:2;
+    border-radius:999px;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    font-style:normal;
+    font-weight:950;
+  }
+
+  .dynamic-mobile-overview-slot em{
+    left:-3px;
+    top:-4px;
+    min-width:17px;
+    height:11px;
+    padding:0 3px;
+    background:rgba(0,31,63,.95);
+    color:#ffffff;
+    border:1px solid rgba(255,255,255,.58);
+    box-shadow:0 2px 5px rgba(0,0,0,.20);
+    font-size:.34rem;
+    letter-spacing:-.015em;
+    white-space:nowrap;
+  }
+
+  .dynamic-mobile-overview-slot i{
+    right:-3px;
+    bottom:-3px;
+    width:13px;
+    height:13px;
+    color:#ffffff;
+    border:1px solid rgba(255,255,255,.72);
+    box-shadow:0 2px 5px rgba(0,0,0,.20);
+    font-size:.48rem;
+  }
+
+  .dynamic-mobile-overview-slot i.trade{
+    background:#2f80ed;
+  }
+
+  .dynamic-mobile-overview-slot i.bonus{
+    background:#ffd54a;
+    color:#001f3f;
+  }
+
+  .dynamic-mobile-overview-slot.is-traded{
+    border:2px solid #2f80ed;
+    background:
+      linear-gradient(180deg,#ffffff 0%,#eaf4ff 100%);
+  }
+
+  .dynamic-mobile-overview-slot.is-bonus{
+    border:2px solid #ffd54a;
+    background:
+      linear-gradient(180deg,#fff9d8 0%,#ffe584 100%);
+    box-shadow:
+      0 5px 12px rgba(255,204,0,.20),
+      inset 0 1px 0 rgba(255,255,255,.90);
+  }
+
+  /* Scheda Trade integrata nella stessa navigazione mobile */
+  .dynamic-mobile-trades-slot{
+    min-height:120px;
+  }
+
+  .dynamic-mobile-trades-slot .draft-trades-panel{
+    margin:0;
+    border-radius:25px;
+    box-shadow:
+      0 15px 32px rgba(0,31,63,.14),
+      inset 0 1px 0 rgba(255,255,255,.88);
+  }
+
+  .dynamic-mobile-trades-slot .draft-trades-head{
+    cursor:default;
+    padding:17px 16px;
+  }
+
+  .dynamic-mobile-trades-slot .draft-trades-chevron{
+    display:none !important;
+  }
+
+  .dynamic-mobile-trades-slot .draft-trades-list{
+    display:grid !important;
+    grid-template-columns:1fr !important;
+    gap:11px;
+    padding:12px;
+  }
+
+  .dynamic-mobile-trades-slot .draft-trade-card{
+    padding:14px;
+    border-radius:19px;
+  }
+
+  .dynamic-mobile-trades-slot .draft-trade-body{
+    grid-template-columns:1fr;
+  }
+
+  .dynamic-mobile-trades-slot .draft-trades-loading,
+  .dynamic-mobile-trades-slot .draft-trades-empty{
+    margin:0;
+    border-radius:20px;
+  }
+}
+
+@media (max-width: 380px){
+  .dynamic-mobile-overview-card{
+    padding-left:7px;
+    padding-right:7px;
+  }
+
+  .dynamic-mobile-overview-round{
+    grid-template-columns:31px minmax(0,1fr);
+    gap:2px;
+    padding-left:2px;
+    padding-right:2px;
+  }
+
+  .dynamic-mobile-overview-slots{
+    gap:2px;
+  }
+
+  .dynamic-mobile-overview-slot{
+    height:32px;
+    border-radius:8px;
+  }
+
+  .dynamic-mobile-overview-slot img{
+    width:23px;
+    height:23px;
+  }
+
+  .dynamic-mobile-overview-slot em{
+    font-size:.31rem;
+    min-width:15px;
+  }
+}

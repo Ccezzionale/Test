@@ -844,6 +844,39 @@ function buildDraftPerSquadra(draftData, squadreOrdine) {
   };
 }
 
+function getDynamicMobileInitials(teamName) {
+  return String(teamName || "?")
+    .trim()
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map(part => part.charAt(0).toUpperCase())
+    .join("") || "?";
+}
+
+function getDynamicMobileTradeSlotId(containerId) {
+  if (containerId === "draft-trades-league") {
+    return "mobile-draft-trades-league";
+  }
+
+  if (containerId === "draft-trades-championship") {
+    return "mobile-draft-trades-championship";
+  }
+
+  return "";
+}
+
+function updateDynamicMobileTradeCount(containerId, value) {
+  const slotId = getDynamicMobileTradeSlotId(containerId);
+  const slot = slotId ? document.getElementById(slotId) : null;
+  const mobileRoot = slot?.closest(".mobile-draft-cards");
+  const countEl = mobileRoot?.querySelector(".dynamic-mobile-tab-count");
+
+  if (countEl) {
+    countEl.textContent = String(value ?? 0);
+  }
+}
+
 function generaMobileDraftCards(containerId, draftData, squadreOrdine) {
   const container = document.getElementById(containerId);
   if (!container) return;
@@ -864,6 +897,12 @@ function generaMobileDraftCards(containerId, draftData, squadreOrdine) {
     roundMap[r] = [];
   }
 
+  /*
+    Stessa logica visuale del desktop:
+    ogni pick viene collocata nel displayRound corretto e ordinata tramite
+    displayOrder, così gli scambi sostituiscono lo slot ceduto senza
+    accodarsi in fondo al round.
+  */
   squadre.forEach(squadra => {
     for (let r = 1; r <= maxRounds; r++) {
       const picksInRound = draftPerSquadra[squadra][r] || [];
@@ -879,206 +918,176 @@ function generaMobileDraftCards(containerId, draftData, squadreOrdine) {
   });
 
   Object.keys(roundMap).forEach(round => {
-    // Nella vista Round una pick ricevuta prende visivamente lo slot della
-    // pick ceduta: #31 ricevuta al posto della #11, non in fondo al Round 2.
     roundMap[round].sort((a, b) => {
       const aOrder = Number(a.displayOrder || a.pickNumber);
       const bOrder = Number(b.displayOrder || b.pickNumber);
-      return aOrder - bOrder;
+
+      if (aOrder !== bOrder) return aOrder - bOrder;
+      return Number(a.pickNumber || 0) - Number(b.pickNumber || 0);
     });
   });
 
-  let html = `
-    <div class="mobile-draft-view-toggle" aria-label="Vista draft mobile">
-      <button type="button" class="active" data-mobile-view="teams">👥 Squadre</button>
-      <button type="button" data-mobile-view="rounds">☰ Round</button>
-    </div>
+  const conferenceKey = containerId.includes("championship")
+    ? "championship"
+    : "league";
 
-    <div class="mobile-draft-view mobile-draft-view-teams active">
-      <div class="mobile-team-list">
-  `;
+  const tradeSlotId = `mobile-draft-trades-${conferenceKey}`;
 
-  squadre.forEach((squadra, index) => {
-    const picks = [];
+  const roundsHtml = Array.from({ length: maxRounds }, (_, index) => {
+    const roundNumber = index + 1;
+    const picks = roundMap[roundNumber] || [];
+    const direction = roundNumber % 2 === 1 ? "→" : "←";
 
-    for (let r = 1; r <= maxRounds; r++) {
-      const picksInRound = draftPerSquadra[squadra][r] || [];
-
-      picksInRound.forEach(pick => {
-        picks.push({
-          ...pick,
-          displayRound: r
-        });
-      });
-    }
-
-   const openClass = "";
-    const logoPath = `img/${squadra}.webp`;
-
-    html += `
-      <article class="mobile-team-card ${openClass}" data-mobile-team="${escapeDraftHtml(squadra)}">
-        <button type="button" class="mobile-team-header">
-          <span class="mobile-team-main">
-            <span class="mobile-team-logo">
-              <img src="${logoPath}" alt="${escapeDraftHtml(squadra)}" loading="lazy" onerror="this.style.display='none'">
-            </span>
-
-            <span class="mobile-team-text">
-              <strong>${escapeDraftHtml(squadra)}</strong>
-              <small>${picks.length} pick totali</small>
-            </span>
-          </span>
-
-          <span class="mobile-team-chevron">⌄</span>
-        </button>
-
-        <div class="mobile-team-body">
-          <div class="mobile-pick-list">
-    `;
-
-    picks.forEach(pick => {
-      const isTraded = !!pick.traded;
-      const isBonus = !!pick.bonus;
-      const originalTeam = pick.originalTeam || squadra;
-      const originalLogo = `img/${originalTeam}.png`;
-
-      const rowClass = [
-        isTraded ? "is-traded" : "",
-        isBonus ? "is-bonus" : ""
-      ].join(" ").trim();
-
-      html += `
-        <div class="mobile-pick-row ${rowClass}">
-          <span class="mobile-pick-code">R${pick.displayRound} · #${pick.pickNumber}</span>
-
-          <span class="mobile-pick-origin">
-            <img src="${originalLogo}" alt="${escapeDraftHtml(originalTeam)}" loading="lazy" onerror="this.style.display='none'">
-            <span>${isTraded ? `da ${escapeDraftHtml(shortTeamName(originalTeam))}` : escapeDraftHtml(shortTeamName(originalTeam))}</span>
-          </span>
-
-          <span class="mobile-pick-badges">
-            ${isTraded ? `<span class="mobile-pick-badge trade">↔ Trade</span>` : ""}
-            ${isBonus ? `<span class="mobile-pick-badge bonus">★ Bonus</span>` : ""}
-          </span>
-        </div>
-      `;
-    });
-
-    html += `
-          </div>
-        </div>
-      </article>
-    `;
-  });
-
-  html += `
-      </div>
-    </div>
-
-    <div class="mobile-draft-view mobile-draft-view-rounds">
-      <div class="mobile-round-list">
-  `;
-
-  for (let r = 1; r <= maxRounds; r++) {
-    const picks = roundMap[r] || [];
-    const openClass = "";
-
-    html += `
-      <article class="mobile-round-card ${openClass}">
-        <button type="button" class="mobile-round-header">
-          <span>
-            <strong>Round ${r}</strong>
-            <small>${picks.length} pick</small>
-          </span>
-          <span class="mobile-team-chevron">⌄</span>
-        </button>
-
-        <div class="mobile-round-body">
-          <div class="mobile-pick-list">
-    `;
-
-    picks.forEach(pick => {
+    const slotsHtml = picks.map(pick => {
       const ownerTeam = pick.ownerTeam || "";
       const originalTeam = pick.originalTeam || ownerTeam;
-      const ownerLogo = `img/${ownerTeam}.png`;
       const isTraded = !!pick.traded;
       const isBonus = !!pick.bonus;
 
-      const rowClass = [
+      const classes = [
+        "dynamic-mobile-overview-slot",
         isTraded ? "is-traded" : "",
         isBonus ? "is-bonus" : ""
-      ].join(" ").trim();
+      ].filter(Boolean).join(" ");
 
-      html += `
-        <div class="mobile-pick-row mobile-round-pick-row ${rowClass}">
-          <span class="mobile-pick-code">#${pick.pickNumber}</span>
+      const titleParts = [
+        `Pick #${pick.pickNumber}`,
+        ownerTeam,
+        `Round visuale ${pick.displayRound}`
+      ];
 
-          <span class="mobile-pick-origin">
-            <img src="${ownerLogo}" alt="${escapeDraftHtml(ownerTeam)}" loading="lazy" onerror="this.style.display='none'">
-            <span>${escapeDraftHtml(shortTeamName(ownerTeam))}</span>
+      if (isTraded) {
+        titleParts.push(`da ${originalTeam}`);
+      }
+
+      if (isBonus) {
+        titleParts.push("Pick bonus");
+      }
+
+      return `
+        <div
+          class="${classes}"
+          title="${escapeDraftHtml(titleParts.join(" · "))}"
+          aria-label="${escapeDraftHtml(titleParts.join(" · "))}"
+        >
+          <img
+            src="img/${escapeDraftHtml(ownerTeam)}.webp"
+            alt=""
+            loading="lazy"
+            onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
+          >
+          <span class="dynamic-mobile-overview-fallback">
+            ${escapeDraftHtml(getDynamicMobileInitials(ownerTeam))}
           </span>
 
-          <span class="mobile-pick-badges">
-            ${isTraded ? `<span class="mobile-pick-badge trade">↔ Trade · R${pick.round} ${escapeDraftHtml(shortTeamName(originalTeam))}</span>` : ""}
-            ${isBonus ? `<span class="mobile-pick-badge bonus">★ Bonus</span>` : ""}
-          </span>
+          <em aria-hidden="true">#${pick.pickNumber}</em>
+
+          ${
+            isBonus
+              ? `<i class="bonus" aria-hidden="true">★</i>`
+              : isTraded
+                ? `<i class="trade" aria-hidden="true">↔</i>`
+                : ""
+          }
         </div>
       `;
-    });
+    }).join("");
 
-    html += `
-          </div>
+    return `
+      <div class="dynamic-mobile-overview-round">
+        <div class="dynamic-mobile-overview-round-label">
+          <strong>R${roundNumber}</strong>
+          <span aria-hidden="true">${direction}</span>
         </div>
-      </article>
-    `;
-  }
 
-  html += `
+        <div class="dynamic-mobile-overview-slots">
+          ${slotsHtml}
+        </div>
+      </div>
+    `;
+  }).join("");
+
+  container.innerHTML = `
+    <div class="dynamic-mobile-view-tabs" aria-label="Vista Draft Dinamico mobile">
+      <button type="button" class="active" data-dynamic-mobile-view="rounds">
+        <span aria-hidden="true">▦</span>
+        Round
+      </button>
+
+      <button type="button" data-dynamic-mobile-view="trades">
+        <span aria-hidden="true">↔</span>
+        Trade
+        <em class="dynamic-mobile-tab-count">0</em>
+      </button>
+    </div>
+
+    <div class="dynamic-mobile-panel dynamic-mobile-panel-rounds active">
+      <section class="dynamic-mobile-overview-card" aria-label="Panoramica completa del Draft 2027">
+        <header class="dynamic-mobile-overview-header">
+          <span class="dynamic-mobile-overview-icon" aria-hidden="true">
+            <img src="img/badges/draft.webp" alt="">
+          </span>
+
+          <span class="dynamic-mobile-overview-heading">
+            <strong>Draft Overview</strong>
+            <small>Panoramica completa dei ${maxRounds} round</small>
+          </span>
+
+          <span class="dynamic-mobile-overview-total">
+            ${draftData.reduce((sum, round) => sum + (round.Picks?.length || 0), 0)}
+          </span>
+        </header>
+
+        <div class="dynamic-mobile-overview-legend" aria-label="Legenda">
+          <span><i class="normal"></i>Normale</span>
+          <span><i class="trade">↔</i>Trade</span>
+          <span><i class="bonus">★</i>Bonus</span>
+        </div>
+
+        <div class="dynamic-mobile-overview-rounds">
+          ${roundsHtml}
+        </div>
+      </section>
+    </div>
+
+    <div class="dynamic-mobile-panel dynamic-mobile-panel-trades">
+      <div id="${tradeSlotId}" class="dynamic-mobile-trades-slot">
+        <div class="draft-trades-loading">Caricamento trade draft...</div>
       </div>
     </div>
   `;
 
-  container.innerHTML = html;
+  if (container.dataset.dynamicMobileBound !== "1") {
+    container.addEventListener("click", event => {
+      const tabButton = event.target.closest("[data-dynamic-mobile-view]");
+      if (!tabButton) return;
 
-  container.querySelectorAll(".mobile-team-header").forEach(header => {
-    header.addEventListener("click", () => {
-      const card = header.closest(".mobile-team-card");
-      if (!card) return;
+      const nextView = tabButton.dataset.dynamicMobileView;
 
-      card.classList.toggle("is-open");
-    });
-  });
+      container
+        .querySelectorAll("[data-dynamic-mobile-view]")
+        .forEach(button => {
+          button.classList.toggle(
+            "active",
+            button.dataset.dynamicMobileView === nextView
+          );
+        });
 
-  container.querySelectorAll(".mobile-round-header").forEach(header => {
-    header.addEventListener("click", () => {
-      const card = header.closest(".mobile-round-card");
-      if (!card) return;
+      container
+        .querySelectorAll(".dynamic-mobile-panel")
+        .forEach(panel => panel.classList.remove("active"));
 
-      card.classList.toggle("is-open");
-    });
-  });
-
-  const toggleButtons = container.querySelectorAll(".mobile-draft-view-toggle button");
-  const views = container.querySelectorAll(".mobile-draft-view");
-
-  toggleButtons.forEach(button => {
-    button.addEventListener("click", () => {
-      const view = button.dataset.mobileView;
-
-      toggleButtons.forEach(btn => btn.classList.remove("active"));
-      views.forEach(viewEl => viewEl.classList.remove("active"));
-
-      button.classList.add("active");
-
-      const targetView = container.querySelector(
-        view === "rounds"
-          ? ".mobile-draft-view-rounds"
-          : ".mobile-draft-view-teams"
+      const targetPanel = container.querySelector(
+        nextView === "trades"
+          ? ".dynamic-mobile-panel-trades"
+          : ".dynamic-mobile-panel-rounds"
       );
 
-      if (targetView) targetView.classList.add("active");
+      targetPanel?.classList.add("active");
     });
-  });
+
+    container.dataset.dynamicMobileBound = "1";
+  }
 }
 
 async function loadDraftTradeSummary() {
@@ -1255,7 +1264,12 @@ function getDraftTradeTypeLabel(type) {
 }
 
 function renderDraftTradeError() {
-  ["draft-trades-league", "draft-trades-championship"].forEach(id => {
+  [
+    "draft-trades-league",
+    "draft-trades-championship",
+    "mobile-draft-trades-league",
+    "mobile-draft-trades-championship"
+  ].forEach(id => {
     const container = document.getElementById(id);
     if (!container) return;
 
@@ -1265,16 +1279,16 @@ function renderDraftTradeError() {
       </div>
     `;
   });
+
+  updateDynamicMobileTradeCount("draft-trades-league", "!");
+  updateDynamicMobileTradeCount("draft-trades-championship", "!");
 }
 
-function renderDraftTrades(trades, containerId, conferenceTitle) {
-  const container = document.getElementById(containerId);
-  if (!container) return;
-
+function buildDraftTradesMarkup(trades, conferenceTitle) {
   const safeConferenceTitle = escapeDraftHtml(conferenceTitle);
 
   if (!trades.length) {
-    container.innerHTML = `
+    return `
       <div class="draft-trades-panel">
         <div class="draft-trades-head">
           <div>
@@ -1289,16 +1303,15 @@ function renderDraftTrades(trades, containerId, conferenceTitle) {
         </div>
       </div>
     `;
-    return;
   }
 
-  container.innerHTML = `
+  return `
     <div class="draft-trades-panel">
       <button type="button" class="draft-trades-head draft-trades-toggle" aria-expanded="false">
         <div>
           <span class="draft-trades-kicker">Movimenti ufficiali</span>
           <h3>Trade Draft 2027</h3>
-          <p>${safeConferenceTitle}: solo trade concluse con almeno una pick futura 2027.</p>
+          <p>${safeConferenceTitle}: trade concluse con almeno una pick futura 2027.</p>
         </div>
 
         <span class="draft-trades-actions">
@@ -1312,14 +1325,51 @@ function renderDraftTrades(trades, containerId, conferenceTitle) {
       </div>
     </div>
   `;
+}
 
-  const toggle = container.querySelector(".draft-trades-toggle");
-  const panel = container.querySelector(".draft-trades-panel");
+function bindDraftTradesPanel(container, forceOpen = false) {
+  const toggle = container?.querySelector(".draft-trades-toggle");
+  const panel = container?.querySelector(".draft-trades-panel");
+
+  if (!panel) return;
+
+  if (forceOpen) {
+    panel.classList.add("is-open", "is-mobile-embedded");
+
+    if (toggle) {
+      toggle.setAttribute("aria-expanded", "true");
+      toggle.tabIndex = -1;
+    }
+
+    return;
+  }
 
   toggle?.addEventListener("click", () => {
     const isOpen = panel.classList.toggle("is-open");
     toggle.setAttribute("aria-expanded", String(isOpen));
   });
+}
+
+function renderDraftTrades(trades, containerId, conferenceTitle) {
+  const desktopContainer = document.getElementById(containerId);
+  const mobileSlotId = getDynamicMobileTradeSlotId(containerId);
+  const mobileContainer = mobileSlotId
+    ? document.getElementById(mobileSlotId)
+    : null;
+
+  const markup = buildDraftTradesMarkup(trades, conferenceTitle);
+
+  if (desktopContainer) {
+    desktopContainer.innerHTML = markup;
+    bindDraftTradesPanel(desktopContainer, false);
+  }
+
+  if (mobileContainer) {
+    mobileContainer.innerHTML = markup;
+    bindDraftTradesPanel(mobileContainer, true);
+  }
+
+  updateDynamicMobileTradeCount(containerId, trades.length);
 }
 
 function renderDraftTradeCard(trade) {
@@ -1422,12 +1472,16 @@ Promise.all([
   const mobileLeague = document.getElementById("mobile-draft-league");
   const mobileChampionship = document.getElementById("mobile-draft-championship");
   const tradesLeague = document.getElementById("draft-trades-league");
-const tradesChampionship = document.getElementById("draft-trades-championship");
+  const tradesChampionship = document.getElementById("draft-trades-championship");
+  const mobileTradesLeague = document.getElementById("mobile-draft-trades-league");
+  const mobileTradesChampionship = document.getElementById("mobile-draft-trades-championship");
 
   if (league) league.innerHTML = `<p class="draft-error">⚠️ Errore nel caricamento del draft futuro.</p>`;
   if (championship) championship.innerHTML = `<p class="draft-error">⚠️ Errore nel caricamento del draft futuro.</p>`;
   if (mobileLeague) mobileLeague.innerHTML = `<p class="draft-error">⚠️ Errore nel caricamento del draft futuro.</p>`;
   if (mobileChampionship) mobileChampionship.innerHTML = `<p class="draft-error">⚠️ Errore nel caricamento del draft futuro.</p>`;
   if (tradesLeague) tradesLeague.innerHTML = `<p class="draft-error">⚠️ Errore nel caricamento delle trade draft.</p>`;
-if (tradesChampionship) tradesChampionship.innerHTML = `<p class="draft-error">⚠️ Errore nel caricamento delle trade draft.</p>`;
+  if (tradesChampionship) tradesChampionship.innerHTML = `<p class="draft-error">⚠️ Errore nel caricamento delle trade draft.</p>`;
+  if (mobileTradesLeague) mobileTradesLeague.innerHTML = `<p class="draft-error">⚠️ Errore nel caricamento delle trade draft.</p>`;
+  if (mobileTradesChampionship) mobileTradesChampionship.innerHTML = `<p class="draft-error">⚠️ Errore nel caricamento delle trade draft.</p>`;
 });
