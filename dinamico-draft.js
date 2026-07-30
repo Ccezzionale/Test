@@ -933,13 +933,70 @@ function generaMobileDraftCards(containerId, draftData, squadreOrdine) {
 
   const tradeSlotId = `mobile-draft-trades-${conferenceKey}`;
 
+  /*
+    Ordine colonne immutabile:
+    prendiamo l'ordine reale del Round 1, che deriva dalla classifica.
+    Nei round pari NON invertiamo i loghi. È soltanto il senso di lettura
+    a cambiare, indicato dalla freccia.
+  */
+  const fixedTeamOrder = (draftData[0]?.Picks || [])
+    .slice()
+    .sort((a, b) => Number(a.pickNumber || 0) - Number(b.pickNumber || 0))
+    .map(pick => getCanonicalTeamName(pick.team, squadre))
+    .filter((team, index, list) =>
+      team && list.findIndex(item => teamKey(item) === teamKey(team)) === index
+    );
+
+  squadre.forEach(team => {
+    if (!fixedTeamOrder.some(item => teamKey(item) === teamKey(team))) {
+      fixedTeamOrder.push(team);
+    }
+  });
+
   const roundsHtml = Array.from({ length: maxRounds }, (_, index) => {
     const roundNumber = index + 1;
-    const picks = roundMap[roundNumber] || [];
     const direction = roundNumber % 2 === 1 ? "→" : "←";
 
-    const slotsHtml = picks.map(pick => {
-      const ownerTeam = pick.ownerTeam || "";
+    /*
+      Slot fissi come desktop:
+      per ogni round scorriamo l'ordine colonne delle squadre, non l'ordine
+      crescente delle pick. Così le pick scambiate restano nel loro slot
+      visuale corretto e i round non si "sminchiano".
+    */
+    const slotsHtml = fixedTeamOrder.map(squadra => {
+      const picksInRound = (draftPerSquadra[squadra]?.[roundNumber] || [])
+        .slice()
+        .sort((a, b) => {
+          const aOrder = Number(a.displayOrder || a.pickNumber || 0);
+          const bOrder = Number(b.displayOrder || b.pickNumber || 0);
+          if (aOrder !== bOrder) return aOrder - bOrder;
+          return Number(a.pickNumber || 0) - Number(b.pickNumber || 0);
+        });
+
+      const pick = picksInRound[0] || null;
+
+      if (!pick) {
+        return `
+          <div
+            class="dynamic-mobile-overview-slot is-missing"
+            title="${escapeDraftHtml(`Round ${roundNumber} · ${squadra} · Nessuna pick`) }"
+            aria-label="${escapeDraftHtml(`Round ${roundNumber} · ${squadra} · Nessuna pick`) }"
+          >
+            <img
+              src="img/${escapeDraftHtml(squadra)}.webp"
+              alt=""
+              loading="lazy"
+              onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
+            >
+            <span class="dynamic-mobile-overview-fallback">
+              ${escapeDraftHtml(getDynamicMobileInitials(squadra))}
+            </span>
+            <em aria-hidden="true">—</em>
+          </div>
+        `;
+      }
+
+      const ownerTeam = pick.ownerTeam || squadra;
       const originalTeam = pick.originalTeam || ownerTeam;
       const isTraded = !!pick.traded;
       const isBonus = !!pick.bonus;

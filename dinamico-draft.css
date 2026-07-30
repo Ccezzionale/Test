@@ -1754,6 +1754,21 @@ nav.site-nav .action-icon{opacity:1!important;filter:none!important;}
       inset 0 1px 0 rgba(255,255,255,.90);
   }
 
+  .dynamic-mobile-overview-slot.is-missing{
+    opacity:.34;
+    filter:grayscale(.35);
+    border-style:dashed;
+    background:
+      linear-gradient(180deg, rgba(255,255,255,.12) 0%, rgba(255,255,255,.08) 100%);
+  }
+
+  .dynamic-mobile-overview-slot.is-missing em{
+    background:rgba(255,255,255,.16);
+    color:rgba(255,255,255,.75);
+    border-color:rgba(255,255,255,.18);
+  }
+
+
   /* Scheda Trade integrata nella stessa navigazione mobile */
   .dynamic-mobile-trades-slot{
     min-height:120px;
