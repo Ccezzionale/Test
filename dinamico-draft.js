@@ -1,6 +1,114 @@
 import { supabase } from './supabase.js';
 const FUTURE_PICK_SEASON = 2027;
 
+const DYNAMIC_TRADE_BASE_PALETTES = [
+  { solid: "#E53935", soft: "#FDE2E1", text: "#7A1512" }, // rosso
+  { solid: "#1E88E5", soft: "#DDEEFF", text: "#0B4F8A" }, // blu
+  { solid: "#43A047", soft: "#E1F3E3", text: "#1E5F22" }, // verde
+  { solid: "#FB8C00", soft: "#FFE9CF", text: "#8A4B00" }, // arancione
+  { solid: "#8E24AA", soft: "#F2E0F8", text: "#541268" }, // viola
+  { solid: "#00897B", soft: "#DDF3F0", text: "#00584F" }, // turchese
+  { solid: "#D81B60", soft: "#FADDE8", text: "#7D1038" }, // fucsia
+  { solid: "#6D4C41", soft: "#EDE3DF", text: "#422820" }, // marrone
+  { solid: "#00ACC1", soft: "#DDF6F9", text: "#005E6A" }, // ciano
+  { solid: "#C0CA33", soft: "#F3F5D9", text: "#5D660B" }, // lime
+  { solid: "#3949AB", soft: "#E1E4FA", text: "#1F2B73" }, // indaco
+  { solid: "#F4511E", soft: "#FCE1D8", text: "#8C2707" }  // corallo
+];
+
+const dynamicTradePaletteById = new Map();
+let dynamicTradePaletteCursor = 0;
+
+function adjustDynamicTradeHex(hex, amount = 0) {
+  const clean = String(hex || "").replace("#", "");
+  const value = Number.parseInt(clean, 16);
+
+  if (!Number.isFinite(value)) return hex;
+
+  const clamp = channel => Math.max(0, Math.min(255, channel));
+  const r = clamp((value >> 16) + amount);
+  const g = clamp(((value >> 8) & 255) + amount);
+  const b = clamp((value & 255) + amount);
+
+  return `#${[r, g, b]
+    .map(channel => channel.toString(16).padStart(2, "0"))
+    .join("")}`;
+}
+
+function getDynamicTradePaletteByIndex(index) {
+  const safeIndex = Math.max(0, Number(index) || 0);
+  const base =
+    DYNAMIC_TRADE_BASE_PALETTES[
+      safeIndex % DYNAMIC_TRADE_BASE_PALETTES.length
+    ];
+
+  const cycle = Math.floor(
+    safeIndex / DYNAMIC_TRADE_BASE_PALETTES.length
+  );
+
+  if (cycle === 0) return base;
+
+  /*
+    Dopo i primi dodici colori fortemente distinti iniziano le sfumature:
+    prima più chiare, poi più scure, senza cambiare famiglia cromatica.
+  */
+  const shadeSteps = [18, -18, 30, -30, 10, -10];
+  const delta = shadeSteps[(cycle - 1) % shadeSteps.length];
+
+  return {
+    solid: adjustDynamicTradeHex(base.solid, delta),
+    soft: adjustDynamicTradeHex(base.soft, delta > 0 ? 4 : -8),
+    text: adjustDynamicTradeHex(base.text, delta > 0 ? -5 : 7)
+  };
+}
+
+function registerDynamicTradePalette(tradeKey) {
+  const key = String(tradeKey || "").trim();
+  if (!key) return null;
+
+  if (!dynamicTradePaletteById.has(key)) {
+    dynamicTradePaletteById.set(
+      key,
+      getDynamicTradePaletteByIndex(dynamicTradePaletteCursor++)
+    );
+  }
+
+  return dynamicTradePaletteById.get(key);
+}
+
+function getDynamicTradeKeyForPick(pick) {
+  const sourceTradeId = String(pick?.source_trade_id || "").trim();
+
+  if (sourceTradeId) {
+    return sourceTradeId;
+  }
+
+  /*
+    Fallback per vecchie righe inserite senza source_trade_id.
+    Le pick tra le stesse due squadre mantengono almeno lo stesso colore.
+  */
+  const teams = [
+    teamKey(pick?.originalTeam || ""),
+    teamKey(pick?.team || pick?.ownerTeam || "")
+  ]
+    .filter(Boolean)
+    .sort();
+
+  return teams.length
+    ? `fallback:${teams.join("|")}`
+    : `fallback:pick-${pick?.pickNumber || "unknown"}`;
+}
+
+function registerDynamicDraftTradePalettes(draftData = []) {
+  (draftData || []).forEach(round => {
+    (round?.Picks || []).forEach(pick => {
+      if (!pick?.traded) return;
+      registerDynamicTradePalette(getDynamicTradeKeyForPick(pick));
+    });
+  });
+}
+
+
 const conferencePerSquadra = {
   "Team Bartowski": "Conference League",
   "Desperados": "Conference League",
@@ -582,6 +690,7 @@ function applicaProprietariFuturePicks(draftBase, futurePicks, draftName) {
         round: roundNumber,
         displayRound,
         displayOrder: replacementSlot?.displayOrder || pickBase.pickNumber,
+        source_trade_id: futurePick?.source_trade_id || null,
         protection_note: futurePick?.protection_note || "",
         notes: futurePick?.notes || ""
       });
@@ -602,6 +711,7 @@ function applicaProprietariFuturePicks(draftBase, futurePicks, draftName) {
           round: roundNumber,
           displayRound: bonusDisplayRoundById.get(fp.id) || roundNumber,
           displayOrder: globalPickNumber,
+          source_trade_id: fp.source_trade_id || null,
           protection_note: fp.protection_note || "",
           notes: fp.notes || ""
         };
@@ -693,6 +803,7 @@ function generaTabellaVerticale(containerId, draftData, squadreOrdine) {
         round: p.round,
         displayRound,
         displayOrder: p.displayOrder,
+        source_trade_id: p.source_trade_id || null,
         protection_note: p.protection_note,
         notes: p.notes
       });
@@ -891,6 +1002,8 @@ function generaMobileDraftCards(containerId, draftData, squadreOrdine) {
     return;
   }
 
+  registerDynamicDraftTradePalettes(draftData);
+
   const roundMap = {};
 
   for (let r = 1; r <= maxRounds; r++) {
@@ -1001,6 +1114,26 @@ function generaMobileDraftCards(containerId, draftData, squadreOrdine) {
       const isTraded = !!pick.traded;
       const isBonus = !!pick.bonus;
 
+      const tradeKey = isTraded
+        ? getDynamicTradeKeyForPick({
+            ...pick,
+            team: ownerTeam,
+            ownerTeam
+          })
+        : "";
+
+      const tradePalette = isTraded
+        ? registerDynamicTradePalette(tradeKey)
+        : null;
+
+      const tradeStyle = tradePalette
+        ? [
+            `--dynamic-trade-color:${tradePalette.solid}`,
+            `--dynamic-trade-soft:${tradePalette.soft}`,
+            `--dynamic-trade-text:${tradePalette.text}`
+          ].join(";")
+        : "";
+
       const classes = [
         "dynamic-mobile-overview-slot",
         isTraded ? "is-traded" : "",
@@ -1024,6 +1157,8 @@ function generaMobileDraftCards(containerId, draftData, squadreOrdine) {
       return `
         <div
           class="${classes}"
+          style="${tradeStyle}"
+          data-dynamic-trade-key="${escapeDraftHtml(tradeKey)}"
           title="${escapeDraftHtml(titleParts.join(" · "))}"
           aria-label="${escapeDraftHtml(titleParts.join(" · "))}"
         >
@@ -1430,6 +1565,16 @@ function renderDraftTrades(trades, containerId, conferenceTitle) {
 }
 
 function renderDraftTradeCard(trade) {
+  const tradePalette = registerDynamicTradePalette(
+    trade?.proposal?.id || ""
+  ) || getDynamicTradePaletteByIndex(0);
+
+  const tradeStyle = [
+    `--dynamic-trade-color:${tradePalette.solid}`,
+    `--dynamic-trade-soft:${tradePalette.soft}`,
+    `--dynamic-trade-text:${tradePalette.text}`
+  ].join(";");
+
   const fromAssets = trade.assets.filter(asset => asset.side === "from");
   const toAssets = trade.assets.filter(asset => asset.side === "to");
 
@@ -1437,7 +1582,10 @@ function renderDraftTradeCard(trade) {
   const toName = trade.toTeam?.name || "Squadra";
 
   return `
-    <article class="draft-trade-card ${escapeDraftHtml(trade.type)}">
+    <article
+      class="draft-trade-card ${escapeDraftHtml(trade.type)} is-color-coded"
+      style="${tradeStyle}"
+    >
       <div class="draft-trade-top">
         <span class="draft-trade-dot"></span>
 
