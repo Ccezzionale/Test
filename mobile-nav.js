@@ -294,11 +294,11 @@ document.addEventListener("DOMContentLoaded", function () {
           </div>
 
           <div class="mobile-more-grid">
-            <a href="giornale.html">
+            <a href="dinamico-draft.html">
               <span>
                 <img src="icons/nav/gazzetta.webp" alt="">
               </span>
-              <strong>Gazzetta</strong>
+              <strong>Draft 27-28</strong>
             </a>
 
             <a href="medagliere.html">
