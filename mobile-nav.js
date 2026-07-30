@@ -296,7 +296,7 @@ document.addEventListener("DOMContentLoaded", function () {
           <div class="mobile-more-grid">
             <a href="dinamico-draft.html">
               <span>
-                <img src="icons/nav/gazzetta.webp" alt="">
+                <img src="icons/nav/draft-2026.webp" alt="">
               </span>
               <strong>Draft 27-28</strong>
             </a>
