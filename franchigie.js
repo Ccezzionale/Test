@@ -117,6 +117,27 @@ const EDITABLE_FIELDS = {
     property: "description",
     type: "textarea",
     maxLength: 1200
+  },
+  honours: {
+    label: "Palmarès",
+    property: "honours",
+    type: "honours",
+    adminOnly: true
+  },
+  records: {
+    label: "Record",
+    property: "records",
+    type: "textarea",
+    maxLength: 700,
+    adminOnly: true
+  },
+  seasons_in_league: {
+    label: "Stagioni in lega",
+    property: "seasons",
+    type: "number",
+    min: 0,
+    max: 100,
+    adminOnly: true
   }
 };
 
@@ -188,6 +209,28 @@ function stringifyProfileValue(value, fallback = "Da definire") {
   }
 
   return displayValue(value, fallback);
+}
+
+function normalizeHonours(value) {
+  const source = value && typeof value === "object" && !Array.isArray(value)
+    ? value
+    : {};
+
+  const toCount = (count) => {
+    const parsed = Number(count);
+    return Number.isInteger(parsed) && parsed >= 0 ? parsed : 0;
+  };
+
+  return {
+    oro: toCount(source.oro),
+    argento: toCount(source.argento),
+    bronzo: toCount(source.bronzo)
+  };
+}
+
+function formatHonours(value) {
+  const honours = normalizeHonours(value);
+  return `🥇 ${honours.oro} · 🥈 ${honours.argento} · 🥉 ${honours.bronzo}`;
 }
 
 async function verifyPageAccess() {
@@ -279,7 +322,10 @@ async function loadData() {
       motto: String(profile.motto ?? "").trim(),
       description: String(profile.description ?? "").trim(),
       stadium_name: String(profile.stadium_name ?? "").trim(),
-      rivalry: String(profile.rivalry ?? "").trim()
+      rivalry: String(profile.rivalry ?? "").trim(),
+      honours: normalizeHonours(profile.honours),
+      records: stringifyProfileValue(profile.records, ""),
+      seasons_in_league: profile.seasons_in_league ?? ""
     };
 
     return {
@@ -293,7 +339,9 @@ async function loadData() {
       city: displayValue(profileValues.city),
       foundedYear: displayValue(profileValues.founded_year),
       leagueEntryYear: displayValue(profileValues.league_entry_year),
-      seasons: yearsInLeague(profileValues.league_entry_year),
+      seasons: profileValues.seasons_in_league === ""
+        ? yearsInLeague(profileValues.league_entry_year)
+        : `${profileValues.seasons_in_league} stagione${Number(profileValues.seasons_in_league) === 1 ? "" : "i"}`,
       colors: displayValue(profileValues.colors),
       motto: displayValue(profileValues.motto),
       description: displayValue(profileValues.description, "Profilo della franchigia in preparazione."),
@@ -303,8 +351,8 @@ async function loadData() {
         findStadiumImage(team.name)
       ),
       rivalry: displayValue(profileValues.rivalry),
-      honours: stringifyProfileValue(profile.honours),
-      records: stringifyProfileValue(profile.records),
+      honours: formatHonours(profileValues.honours),
+      records: displayValue(profileValues.records),
       published: profile.is_published === true,
       profileValues
     };
@@ -349,8 +397,15 @@ function canEditFranchise(franchise) {
     String(currentAccess.teamId || "") === String(franchise.id || "");
 }
 
+function canEditField(franchise, fieldName) {
+  const config = EDITABLE_FIELDS[fieldName];
+  if (!config) return false;
+  if (config.adminOnly) return currentAccess.isAdmin;
+  return canEditFranchise(franchise);
+}
+
 function editableInfoMarkup(franchise, fieldName, label, value) {
-  if (!canEditFranchise(franchise)) {
+  if (!canEditField(franchise, fieldName)) {
     return `
       <div class="detail-info">
         <span>${escapeHTML(label)}</span>
@@ -415,7 +470,52 @@ function editableDescriptionMarkup(franchise) {
   `;
 }
 
+function editableListItemMarkup(franchise, fieldName, label, value) {
+  if (!canEditField(franchise, fieldName)) {
+    return `
+      <div>
+        <span>${escapeHTML(label)}</span>
+        <strong>${escapeHTML(value)}</strong>
+      </div>
+    `;
+  }
+
+  return `
+    <button
+      type="button"
+      class="detail-list-item-edit detail-edit-trigger"
+      data-edit-field="${escapeHTML(fieldName)}"
+      aria-label="Modifica ${escapeHTML(label)}"
+    >
+      <span>${escapeHTML(label)}</span>
+      <strong>${escapeHTML(value)}</strong>
+      <span class="detail-edit-pencil" aria-hidden="true">✎</span>
+    </button>
+  `;
+}
+
 function editorInputMarkup(fieldName, config, currentValue) {
+  if (config.type === "honours") {
+    const honours = normalizeHonours(currentValue);
+
+    return `
+      <div class="honours-editor-grid">
+        <label>
+          <span>🥇 Oro</span>
+          <input data-editor-input data-honour-key="oro" type="number" min="0" max="999" value="${escapeHTML(honours.oro)}" inputmode="numeric">
+        </label>
+        <label>
+          <span>🥈 Argento</span>
+          <input data-editor-input data-honour-key="argento" type="number" min="0" max="999" value="${escapeHTML(honours.argento)}" inputmode="numeric">
+        </label>
+        <label>
+          <span>🥉 Bronzo</span>
+          <input data-editor-input data-honour-key="bronzo" type="number" min="0" max="999" value="${escapeHTML(honours.bronzo)}" inputmode="numeric">
+        </label>
+      </div>
+    `;
+  }
+
   const common = `
     data-editor-input
     name="${escapeHTML(fieldName)}"
@@ -447,13 +547,24 @@ function validateEditableValue(fieldName, value) {
   const config = EDITABLE_FIELDS[fieldName];
   if (!config) return { valid: false, message: "Campo non valido." };
 
+  if (config.type === "honours") {
+    const honours = normalizeHonours(value);
+    const values = [honours.oro, honours.argento, honours.bronzo];
+
+    if (values.some((count) => !Number.isInteger(count) || count < 0 || count > 999)) {
+      return { valid: false, message: "Palmarès: inserisci valori validi tra 0 e 999." };
+    }
+
+    return { valid: true, value: honours };
+  }
+
   const cleanValue = String(value ?? "").trim();
 
   if (config.type === "number" && cleanValue !== "") {
     const numberValue = Number(cleanValue);
 
     if (!Number.isInteger(numberValue)) {
-      return { valid: false, message: `${config.label}: inserisci un anno valido.` };
+      return { valid: false, message: `${config.label}: inserisci un numero valido.` };
     }
 
     if (numberValue < config.min || numberValue > config.max) {
@@ -535,7 +646,7 @@ async function saveEditableField(franchise, fieldName, rawValue, editorRoot) {
 }
 
 function startInlineEditor(trigger, franchise, fieldName) {
-  if (!canEditFranchise(franchise) || activeInlineEditor) return;
+  if (!canEditField(franchise, fieldName) || activeInlineEditor) return;
 
   const config = EDITABLE_FIELDS[fieldName];
   if (!config) return;
@@ -556,7 +667,8 @@ function startInlineEditor(trigger, franchise, fieldName) {
 
   trigger.replaceWith(editor);
 
-  const input = editor.querySelector("[data-editor-input]");
+  const inputs = [...editor.querySelectorAll("[data-editor-input]")];
+  const input = inputs[0];
   const saveButton = editor.querySelector(".detail-editor-save");
   const cancelButton = editor.querySelector(".detail-editor-cancel");
 
@@ -565,28 +677,40 @@ function startInlineEditor(trigger, franchise, fieldName) {
     openFranchise(franchise.id);
   };
 
-  const save = () => saveEditableField(franchise, fieldName, input?.value ?? "", editor);
+  const getEditorValue = () => {
+    if (config.type === "honours") {
+      return Object.fromEntries(
+        inputs.map((element) => [element.dataset.honourKey, element.value])
+      );
+    }
+
+    return input?.value ?? "";
+  };
+
+  const save = () => saveEditableField(franchise, fieldName, getEditorValue(), editor);
 
   saveButton?.addEventListener("click", save);
   cancelButton?.addEventListener("click", cancel);
 
-  input?.addEventListener("keydown", (event) => {
-    event.stopPropagation();
+  inputs.forEach((element) => {
+    element.addEventListener("keydown", (event) => {
+      event.stopPropagation();
 
-    if (event.key === "Escape") {
-      event.preventDefault();
-      cancel();
-      return;
-    }
+      if (event.key === "Escape") {
+        event.preventDefault();
+        cancel();
+        return;
+      }
 
-    const saveShortcut = config.type === "textarea"
-      ? event.key === "Enter" && (event.ctrlKey || event.metaKey)
-      : event.key === "Enter";
+      const saveShortcut = config.type === "textarea"
+        ? event.key === "Enter" && (event.ctrlKey || event.metaKey)
+        : event.key === "Enter";
 
-    if (saveShortcut) {
-      event.preventDefault();
-      save();
-    }
+      if (saveShortcut) {
+        event.preventDefault();
+        save();
+      }
+    });
   });
 
   input?.focus();
@@ -758,9 +882,9 @@ function openFranchise(teamId) {
         ${editableDescriptionMarkup(franchise)}
 
         <section class="detail-panel detail-list">
-          <div><span>Palmarès</span><strong>${escapeHTML(franchise.honours)}</strong></div>
-          <div><span>Record</span><strong>${escapeHTML(franchise.records)}</strong></div>
-          <div><span>Stagioni in lega</span><strong>${escapeHTML(franchise.seasons)}</strong></div>
+          ${editableListItemMarkup(franchise, "honours", "Palmarès", franchise.honours)}
+          ${editableListItemMarkup(franchise, "records", "Record", franchise.records)}
+          ${editableListItemMarkup(franchise, "seasons_in_league", "Stagioni in lega", franchise.seasons)}
         </section>
       </div>
 

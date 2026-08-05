@@ -941,3 +941,62 @@ body.modal-open{overflow:hidden;}
     bottom:82px;
   }
 }
+
+
+/* Campi amministrativi: palmarès, record e stagioni in lega */
+.detail-list-item-edit{
+  position:relative;
+  width:100%;
+  padding:0 40px 11px 0;
+  border:0;
+  border-bottom:1px solid rgba(0,47,98,.08);
+  border-radius:0;
+  background:transparent;
+  color:inherit;
+  font:inherit;
+  text-align:left;
+  cursor:pointer;
+}
+
+.detail-list-item-edit:last-child{
+  padding-bottom:0;
+  border-bottom:0;
+}
+
+.detail-list-item-edit:hover,
+.detail-list-item-edit:focus-visible{
+  color:#005cae;
+  outline:none;
+}
+
+.detail-list-item-edit .detail-edit-pencil{
+  top:0;
+  right:0;
+}
+
+.honours-editor-grid{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:8px;
+}
+
+.honours-editor-grid label{
+  display:grid;
+  gap:6px;
+}
+
+.honours-editor-grid label > span{
+  color:#5f7187;
+  font-size:.68rem;
+  font-weight:900;
+}
+
+.honours-editor-grid input{
+  text-align:center;
+}
+
+@media(max-width:520px){
+  .honours-editor-grid{
+    grid-template-columns:1fr;
+  }
+}
