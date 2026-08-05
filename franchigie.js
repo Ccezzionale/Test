@@ -21,6 +21,32 @@ const TEAM_ASSETS = [
   { name: "Athletic Pongao", logo: "img/Athletic Pongao.webp", mascot: "img/maglie/pongao-mascotte.webp", coach: "Dario e Giorgio" }
 ];
 
+const STADIUM_ASSETS = {
+  wildboys78: "icons/nav/Wildboys.webp",
+  minnesodetimberland: "icons/nav/minnesode.webp",
+  athleticpongao: "icons/nav/pongao.webp",
+  riverfilo: "icons/nav/riverfilo.webp",
+  ibla: "icons/nav/ibla.webp",
+  pokermantra: "icons/nav/pokermantra.webp",
+
+  fcdisoneste: "icons/nav/disoneste.webp",
+  dcdisoneste: "icons/nav/disoneste.webp",
+
+  pandinicoccolosini: "icons/nav/pandini.webp",
+  desperados: "icons/nav/desperados.webp",
+  bayernchristiansen: "icons/nav/bayern.webp",
+  atleticoleon: "icons/nav/leon.webp",
+  minnesotasnakes: "icons/nav/snakes.webp",
+  eintrachtfranco126: "icons/nav/franco.webp",
+  fantaugusta: "icons/nav/fantaugusta.webp",
+  goldenknights: "icons/nav/Golden Knights.webp",
+  teambartowski: "icons/nav/Team Bartowski.webp"
+};
+
+function findStadiumImage(teamName) {
+  return STADIUM_ASSETS[normalize(teamName)] || "";
+}
+
 let allFranchises = [];
 
 function normalize(value) {
@@ -181,7 +207,10 @@ async function loadData() {
       motto: displayValue(profile.motto),
       description: displayValue(profile.description, "Profilo della franchigia in preparazione."),
       stadiumName: displayValue(profile.stadium_name, "Stadio da definire"),
-      stadiumImage: safeImageUrl(profile.stadium_image),
+      stadiumImage: safeImageUrl(
+  profile.stadium_image,
+  findStadiumImage(team.name)
+),
       rivalry: displayValue(profile.rivalry),
       honours: stringifyProfileValue(profile.honours),
       records: stringifyProfileValue(profile.records),
