@@ -65,19 +65,22 @@ body.franchigie-access-granted .franchigie-access-gate{display:none;}
 .franchigie-hero{
   position:relative;
   overflow:hidden;
-  min-height:250px;
-  padding:38px clamp(24px,5vw,64px);
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
+  padding:0;
+  min-height:0;
+  display:block;
   border-radius:30px;
-  color:#fff;
-  background:
-    radial-gradient(420px 240px at 95% 0%, rgba(246,200,76,.34), transparent 68%),
-    radial-gradient(380px 260px at 0% 100%, rgba(0,116,217,.28), transparent 70%),
-    linear-gradient(135deg,#041a34 0%,#003f7f 55%,#005cae 100%);
+  background:none;
   box-shadow:0 24px 58px rgba(0,43,91,.24);
 }
+
+.franchigie-hero img{
+  display:block;
+  width:100%;
+  height:auto;
+  border-radius:inherit;
+}
+
+
 
 .franchigie-hero::after{
   content:"";
@@ -88,6 +91,11 @@ body.franchigie-access-granted .franchigie-access-gate{display:none;}
   bottom:-150px;
   border-radius:50%;
   border:50px solid rgba(255,255,255,.07);
+}
+
+.franchigie-hero::after{
+  display:none;
+  content:none;
 }
 
 .work-badge{
@@ -703,7 +711,11 @@ body.modal-open{overflow:hidden;}
 
 @media(max-width:720px){
   .franchigie-page{width:min(100% - 20px,620px);margin-top:12px;padding-bottom:70px;}
-  .franchigie-hero{min-height:220px;padding:28px 22px;border-radius:24px;}
+  .franchigie-hero{
+  min-height:0;
+  padding:0;
+  border-radius:18px;
+}
   .hero-mark{display:none;}
   .franchigie-toolbar{grid-template-columns:1fr;border-radius:18px;}
   .franchigie-grid{grid-template-columns:1fr;gap:16px;}
