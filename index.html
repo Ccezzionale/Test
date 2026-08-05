@@ -254,10 +254,26 @@
 
 <ul class="navbar" id="mainMenu">
 
-  <!-- ROSE NORMALE: visibile ai non-admin -->
-  <li id="nav-rose-normal">
-    <a href="rose.html">Rose</a>
-  </li>
+<!-- ROSE NORMALE: visibile ai non-admin -->
+<li id="nav-rose-normal" class="dropdown">
+  <a href="#" class="toggle-submenu">
+    Rose <span class="caret">▾</span>
+  </a>
+
+  <ul class="submenu">
+    <li>
+      <a href="rose.html">
+        Rose Squadre
+      </a>
+    </li>
+
+    <li>
+      <a href="franchigie.html">
+        Franchigie
+      </a>
+    </li>
+  </ul>
+</li>
 
 <!-- ROSE ADMIN: visibile solo agli admin -->
 <li id="nav-rose-admin" class="dropdown" style="display:none;">
