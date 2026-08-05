@@ -236,12 +236,18 @@ function stadiumMarkup(franchise, detail = false) {
   const stadiumImage = safeImageUrl(franchise.stadiumImage);
   const logo = safeImageUrl(franchise.logo, "icon-192.png");
 
+  if (stadiumImage) {
+    return `
+      <img class="stadium-image" src="${escapeHTML(stadiumImage)}" alt="${escapeHTML(franchise.stadiumName)}">
+      ${detail ? "" : `<span class="stadium-state">Stadio ufficiale</span>`}
+    `;
+  }
+
   return `
-    ${stadiumImage ? `<img class="stadium-image" src="${escapeHTML(stadiumImage)}" alt="${escapeHTML(franchise.stadiumName)}">` : ""}
-    <div class="stadium-placeholder" ${stadiumImage ? "hidden" : ""}>
+    <div class="stadium-placeholder">
       <img class="stadium-watermark" src="${escapeHTML(logo)}" alt="">
     </div>
-    ${detail ? "" : `<span class="stadium-state">${stadiumImage ? "Stadio ufficiale" : "Stadio in preparazione"}</span>`}
+    ${detail ? "" : `<span class="stadium-state">Stadio in preparazione</span>`}
   `;
 }
 

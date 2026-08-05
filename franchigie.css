@@ -262,6 +262,12 @@ body.franchigie-access-granted .franchigie-access-gate{display:none;}
   display:block;
 }
 
+
+/* Sicurezza: un placeholder marcato hidden non deve mai sovrapporsi allo stadio. */
+.stadium-placeholder[hidden]{
+  display:none !important;
+}
+
 .stadium-placeholder{
   position:absolute;
   inset:0;
