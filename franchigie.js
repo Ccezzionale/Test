@@ -125,11 +125,10 @@ const EDITABLE_FIELDS = {
     adminOnly: true
   },
   records: {
-    label: "Record",
-    property: "records",
+    label: "Momento preferito nella lega",
+    property: "favoriteMoment",
     type: "textarea",
-    maxLength: 700,
-    adminOnly: true
+    maxLength: 700
   },
   seasons_in_league: {
     label: "Stagioni in lega",
@@ -352,7 +351,7 @@ async function loadData() {
       ),
       rivalry: displayValue(profileValues.rivalry),
       honours: formatHonours(profileValues.honours),
-      records: displayValue(profileValues.records),
+      favoriteMoment: displayValue(profileValues.records),
       published: profile.is_published === true,
       profileValues
     };
@@ -883,7 +882,7 @@ function openFranchise(teamId) {
 
         <section class="detail-panel detail-list">
           ${editableListItemMarkup(franchise, "honours", "Palmarès", franchise.honours)}
-          ${editableListItemMarkup(franchise, "records", "Record", franchise.records)}
+          ${editableListItemMarkup(franchise, "records", "Momento preferito nella lega", franchise.favoriteMoment)}
           ${editableListItemMarkup(franchise, "seasons_in_league", "Stagioni in lega", franchise.seasons)}
         </section>
       </div>
