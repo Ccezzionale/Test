@@ -3,11 +3,16 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Rose - Lega degli Eroi</title>
-  <link rel="stylesheet" href="navbar.css?v=99">
-  <link rel="stylesheet" href="rose.css?v=100">
+  <title>Franchigie - Lega degli Eroi</title>
+  <link rel="stylesheet" href="navbar.css?v=100">
+  <link rel="stylesheet" href="franchigie.css?v=1">
 </head>
-<body>
+<body class="franchigie-access-pending">
+  <div id="franchigie-access-gate" class="franchigie-access-gate" role="status" aria-live="polite">
+    <div class="access-loader"></div>
+    <strong>Verifica accesso alla pagina in lavorazione…</strong>
+  </div>
+
   <nav class="site-nav">
     <div class="nav-inner">
       <div class="nav-left">
@@ -57,12 +62,7 @@
             <li><a href="crashoutcup.html"><img src="icons/nav/crashout-cup.webp" class="menu-icon" alt="">Crash Out Cup</a></li>
             <li><a href="crashoutplayoff.html"><img src="icons/nav/crashout-playoff.webp" class="menu-icon" alt="">Crash Out Cup - Playoff</a></li>
             <li><a href="supercoppa.html"><img src="icons/nav/supercoppa.webp" class="menu-icon" alt="">Supercoppa</a></li>
-                                    <li>
-              <a href="allstar.html">
-                <img src="icons/nav/allstar.webp" class="menu-icon" alt="">
-                All-Star Game
-              </a>
-            </li>
+            <li><a href="allstar.html"><img src="icons/nav/allstar.webp" class="menu-icon" alt="">All-Star Game</a></li>
             <li><a href="statistiche.html"><img src="icons/nav/statistiche.webp" class="menu-icon" alt="">Statistiche</a></li>
           </ul>
         </li>
@@ -106,88 +106,57 @@
     </div>
   </nav>
 
-  <main class="rose-page">
-<section class="rose-hero rose-hero-banner" aria-label="Rose delle Squadre">
-  <img
-    src="icons/nav/rose_delle_squadre- banner.webp"
-    alt="Rose delle Squadre"
-    class="rose-banner-img"
-  >
-</section>
-
-    
-    <section class="rose-legend-card">
-      <div id="legenda">
-<span class="legend-item"><strong>In grassetto</strong> = FP eleggibili</span>
-
-<span class="legend-item">
-  <img src="img/badges/u21.webp" class="badge-img badge-img-pill" alt="">
-  Under 21
-</span>
-
-<span class="legend-item">
-  <img src="img/badges/u21-confermato.webp" class="badge-img badge-img-star" alt="">
-  U21 confermato
-</span>
-
-<span class="legend-item">
-  <img src="img/badges/u21-confermato-secondo-anno.webp" class="badge-img badge-img-star" alt="">
-  U21 confermato 2° anno
-</span>
-
-<span class="legend-item">
-  <img src="img/badges/fp.webp" class="badge-img badge-img-star" alt="">
-  FP
-</span>
-
-<span class="legend-item">
-  <img src="img/badges/fp-confermato.webp" class="badge-img badge-img-star" alt="">
-  FP confermato 2° anno
-</span>
-
-    <span class="legend-item">
-      <img src="img/badges/rfa.webp" class="badge-img badge-img-pill" alt="">
-      RFA pareggiato
-    </span>
-
-    <span class="legend-item">
-      <img src="img/badges/protetto-p6-lucchetto.webp" class="badge-img badge-img-protected" alt="">
-      Giocatore protetto mercato
-    </span>
-        
+  <main id="franchigie-app" class="franchigie-page" hidden>
+    <section class="franchigie-hero">
+      <div>
+        <span class="work-badge">Anteprima admin · pagina nascosta</span>
+        <p class="hero-kicker">Lega degli Eroi</p>
+        <h1>Le Franchigie</h1>
+        <p class="hero-copy">
+          Identità, stadi, allenatori e storia delle squadre della lega.
+        </p>
       </div>
+      <div class="hero-mark" aria-hidden="true">16</div>
     </section>
 
-    <section class="rose-filter-card">
-      <div id="filtri-rose">
-        <input id="filtro-nome" type="text" placeholder="Cerca giocatore..." />
+    <section id="franchigie-setup-warning" class="setup-warning" hidden>
+      <strong>La struttura visiva è pronta.</strong>
+      <span>La tabella <code>team_profiles</code> non risulta ancora disponibile: per ora vengono mostrati i dati base e i segnaposto.</span>
+    </section>
 
-        <select id="filtro-conference">
-          <option value="Tutte">Tutte le Conference</option>
+    <section class="franchigie-toolbar" aria-label="Filtri franchigie">
+      <label class="search-field">
+        <span>Cerca</span>
+        <input id="franchigie-search" type="search" placeholder="Squadra, città o allenatore…">
+      </label>
+
+      <label class="select-field">
+        <span>Conference</span>
+        <select id="franchigie-conference">
+          <option value="Tutte">Tutte</option>
           <option value="Conference League">Conference League</option>
           <option value="Conference Championship">Conference Championship</option>
         </select>
-
-        <select id="filtro-squadra">
-          <option value="Tutte">Tutte le squadre</option>
-          <option value="Real Mimmo">Real Mimmo</option>
-          <option value="Giody">Giody</option>
-          <option value="Desperados">Desperados</option>
-          <!-- aggiungi tutte le squadre -->
-        </select>
-
-        <button type="button" class="reset-rose-btn" onclick="resetFiltri()">
-  Reset filtri
-</button>
-      </div>
+      </label>
     </section>
 
-    <section class="rose-content-card">
-      <div id="contenitore-rose">Caricamento rose...</div>
+    <section>
+      <div id="franchigie-status" class="franchigie-status">Caricamento franchigie…</div>
+      <div id="franchigie-grid" class="franchigie-grid" aria-live="polite"></div>
     </section>
   </main>
-<script src="mobile-nav.js?v=2"></script>
-  <script type="module" src="rose.js?v=68"></script>
+
+  <div id="franchigia-modal" class="franchigia-modal" aria-hidden="true">
+    <div class="franchigia-modal-backdrop" data-close-modal></div>
+    <section class="franchigia-modal-card" role="dialog" aria-modal="true" aria-labelledby="modal-team-name">
+      <button type="button" class="modal-close" data-close-modal aria-label="Chiudi">×</button>
+      <div id="franchigia-modal-content"></div>
+    </section>
+  </div>
+
+  <script src="mobile-nav.js?v=2"></script>
   <script src="navbar.js?v=100"></script>
+  <script type="module" src="home_auth.js?v=1"></script>
+  <script type="module" src="franchigie.js?v=1"></script>
 </body>
 </html>

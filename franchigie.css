@@ -1,0 +1,726 @@
+:root{
+  --fr-navy:#00264d;
+  --fr-blue:#005cae;
+  --fr-gold:#f6c84c;
+  --fr-ink:#10213d;
+  --fr-muted:#64748b;
+  --fr-paper:#f4f7fb;
+  --fr-white:#ffffff;
+  --fr-border:rgba(0,47,98,.12);
+  --fr-shadow:0 18px 42px rgba(0,39,82,.14);
+}
+
+*{box-sizing:border-box;}
+
+body{
+  margin:0;
+  font-family:"Segoe UI",Tahoma,Geneva,Verdana,sans-serif;
+  color:var(--fr-ink);
+  background:
+    radial-gradient(900px 460px at 15% 0%, rgba(0,92,174,.16), transparent 65%),
+    linear-gradient(180deg,#eef4fb 0%,#f8fafc 58%,#edf3f9 100%);
+}
+
+.franchigie-access-pending > .site-nav,
+.franchigie-access-pending > .franchigie-page,
+.franchigie-access-pending > .mobile-bottom-nav{
+  visibility:hidden;
+}
+
+.franchigie-access-gate{
+  position:fixed;
+  inset:0;
+  z-index:99999;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:16px;
+  padding:24px;
+  color:#fff;
+  text-align:center;
+  background:
+    radial-gradient(420px 280px at 50% 35%, rgba(0,110,214,.42), transparent 70%),
+    linear-gradient(160deg,#04172d,#002f66 62%,#031020);
+}
+
+body.franchigie-access-granted .franchigie-access-gate{display:none;}
+
+.access-loader{
+  width:44px;
+  height:44px;
+  border-radius:50%;
+  border:4px solid rgba(255,255,255,.22);
+  border-top-color:#fff;
+  animation:fr-spin .8s linear infinite;
+}
+
+@keyframes fr-spin{to{transform:rotate(360deg);}}
+
+.franchigie-page{
+  width:min(1420px,calc(100% - 32px));
+  margin:24px auto 80px;
+}
+
+.franchigie-hero{
+  position:relative;
+  overflow:hidden;
+  min-height:250px;
+  padding:38px clamp(24px,5vw,64px);
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  border-radius:30px;
+  color:#fff;
+  background:
+    radial-gradient(420px 240px at 95% 0%, rgba(246,200,76,.34), transparent 68%),
+    radial-gradient(380px 260px at 0% 100%, rgba(0,116,217,.28), transparent 70%),
+    linear-gradient(135deg,#041a34 0%,#003f7f 55%,#005cae 100%);
+  box-shadow:0 24px 58px rgba(0,43,91,.24);
+}
+
+.franchigie-hero::after{
+  content:"";
+  position:absolute;
+  width:280px;
+  height:280px;
+  right:-100px;
+  bottom:-150px;
+  border-radius:50%;
+  border:50px solid rgba(255,255,255,.07);
+}
+
+.work-badge{
+  display:inline-flex;
+  align-items:center;
+  min-height:30px;
+  padding:7px 12px;
+  border-radius:999px;
+  background:rgba(246,200,76,.18);
+  border:1px solid rgba(246,200,76,.42);
+  color:#ffe698;
+  font-size:.72rem;
+  font-weight:900;
+  letter-spacing:.07em;
+  text-transform:uppercase;
+}
+
+.hero-kicker{
+  margin:24px 0 5px;
+  color:#ffe28a;
+  font-size:.78rem;
+  font-weight:950;
+  letter-spacing:.18em;
+  text-transform:uppercase;
+}
+
+.franchigie-hero h1{
+  margin:0;
+  font-size:clamp(2.5rem,6vw,5.4rem);
+  line-height:.9;
+  letter-spacing:-.06em;
+}
+
+.hero-copy{
+  max-width:640px;
+  margin:18px 0 0;
+  color:rgba(255,255,255,.82);
+  font-size:1.02rem;
+  line-height:1.5;
+  font-weight:650;
+}
+
+.hero-mark{
+  position:relative;
+  z-index:1;
+  margin-right:clamp(0px,4vw,48px);
+  color:rgba(255,255,255,.10);
+  font-size:clamp(7rem,18vw,15rem);
+  line-height:.7;
+  font-weight:1000;
+  letter-spacing:-.09em;
+}
+
+.setup-warning{
+  margin-top:18px;
+  padding:16px 18px;
+  display:flex;
+  flex-wrap:wrap;
+  gap:6px 12px;
+  border-radius:18px;
+  border:1px solid rgba(217,154,33,.28);
+  background:#fff8df;
+  color:#6f4d05;
+  box-shadow:0 10px 22px rgba(110,76,5,.08);
+}
+
+.setup-warning code{
+  padding:2px 6px;
+  border-radius:7px;
+  background:rgba(111,77,5,.09);
+}
+
+.franchigie-toolbar{
+  margin:22px 0 18px;
+  padding:16px;
+  display:grid;
+  grid-template-columns:minmax(240px,1fr) minmax(220px,320px);
+  gap:14px;
+  border:1px solid var(--fr-border);
+  border-radius:22px;
+  background:rgba(255,255,255,.86);
+  box-shadow:0 12px 28px rgba(0,47,98,.08);
+  backdrop-filter:blur(10px);
+}
+
+.search-field,
+.select-field{
+  display:grid;
+  gap:7px;
+}
+
+.search-field span,
+.select-field span{
+  color:#4d6079;
+  font-size:.72rem;
+  font-weight:900;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+}
+
+.search-field input,
+.select-field select{
+  width:100%;
+  min-height:48px;
+  padding:0 14px;
+  border:1px solid rgba(0,47,98,.16);
+  border-radius:14px;
+  background:#fff;
+  color:var(--fr-ink);
+  font:inherit;
+  outline:none;
+}
+
+.search-field input:focus,
+.select-field select:focus{
+  border-color:#1477d4;
+  box-shadow:0 0 0 4px rgba(20,119,212,.12);
+}
+
+.franchigie-status{
+  padding:24px;
+  text-align:center;
+  color:var(--fr-muted);
+  font-weight:800;
+}
+
+.franchigie-grid{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:22px;
+}
+
+.franchigia-card{
+  position:relative;
+  overflow:hidden;
+  min-width:0;
+  border:1px solid var(--fr-border);
+  border-radius:25px;
+  background:#fff;
+  box-shadow:var(--fr-shadow);
+  cursor:pointer;
+  transition:transform .2s ease,box-shadow .2s ease,border-color .2s ease;
+}
+
+.franchigia-card:hover{
+  transform:translateY(-4px);
+  border-color:rgba(0,92,174,.28);
+  box-shadow:0 24px 52px rgba(0,39,82,.20);
+}
+
+.franchigia-stadium{
+  position:relative;
+  height:190px;
+  overflow:hidden;
+  background:
+    radial-gradient(220px 120px at 50% 100%, rgba(62,174,91,.35), transparent 65%),
+    radial-gradient(260px 160px at 80% 0%, rgba(255,255,255,.19), transparent 62%),
+    linear-gradient(145deg,#082d55,#00569f 62%,#0b74c9);
+}
+
+.franchigia-card.championship .franchigia-stadium{
+  background:
+    radial-gradient(220px 120px at 50% 100%, rgba(62,174,91,.32), transparent 65%),
+    radial-gradient(260px 160px at 80% 0%, rgba(246,200,76,.28), transparent 62%),
+    linear-gradient(145deg,#21113f,#4b2680 62%,#7042a8);
+}
+
+.franchigia-stadium > img.stadium-image{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  display:block;
+}
+
+.stadium-placeholder{
+  position:absolute;
+  inset:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+.stadium-placeholder::before{
+  content:"";
+  position:absolute;
+  left:10%;
+  right:10%;
+  bottom:18px;
+  height:58px;
+  border-radius:50% 50% 15px 15px;
+  background:rgba(38,157,74,.48);
+  border:2px solid rgba(255,255,255,.22);
+  box-shadow:0 -18px 0 rgba(4,23,45,.35),0 -34px 0 rgba(255,255,255,.11);
+}
+
+.stadium-watermark{
+  position:relative;
+  z-index:1;
+  width:120px;
+  height:120px;
+  object-fit:contain;
+  opacity:.18;
+  filter:grayscale(.1) brightness(1.7);
+}
+
+.stadium-state{
+  position:absolute;
+  top:14px;
+  right:14px;
+  z-index:3;
+  padding:7px 10px;
+  border-radius:999px;
+  background:rgba(4,21,41,.72);
+  color:#fff;
+  font-size:.66rem;
+  font-weight:900;
+  letter-spacing:.06em;
+  text-transform:uppercase;
+  backdrop-filter:blur(8px);
+}
+
+.franchigia-body{
+  position:relative;
+  padding:58px 20px 20px;
+}
+
+.franchigia-identities{
+  position:absolute;
+  left:18px;
+  right:18px;
+  top:-47px;
+  display:flex;
+  align-items:flex-end;
+  justify-content:space-between;
+  pointer-events:none;
+}
+
+.franchigia-logo-shell{
+  width:92px;
+  height:92px;
+  padding:9px;
+  border-radius:24px;
+  background:#fff;
+  border:1px solid rgba(0,47,98,.10);
+  box-shadow:0 14px 26px rgba(0,34,71,.18);
+}
+
+.franchigia-logo-shell img{
+  width:100%;
+  height:100%;
+  object-fit:contain;
+}
+
+.franchigia-mascot{
+  width:88px;
+  height:108px;
+  object-fit:contain;
+  filter:drop-shadow(0 10px 12px rgba(0,0,0,.20));
+}
+
+.franchigia-body h2{
+  margin:0;
+  color:#071c34;
+  font-size:1.35rem;
+  line-height:1.05;
+  letter-spacing:-.035em;
+}
+
+.franchigia-conference{
+  display:inline-flex;
+  margin-top:9px;
+  padding:6px 9px;
+  border-radius:999px;
+  background:#eaf4ff;
+  color:#00529f;
+  font-size:.67rem;
+  font-weight:950;
+  letter-spacing:.05em;
+  text-transform:uppercase;
+}
+
+.championship .franchigia-conference{
+  background:#f1eaff;
+  color:#6335a0;
+}
+
+.franchigia-meta{
+  margin-top:16px;
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+}
+
+.meta-box{
+  min-width:0;
+  padding:11px 12px;
+  border-radius:14px;
+  background:#f6f9fc;
+  border:1px solid rgba(0,47,98,.07);
+}
+
+.meta-box span{
+  display:block;
+  color:#758398;
+  font-size:.64rem;
+  font-weight:900;
+  text-transform:uppercase;
+  letter-spacing:.06em;
+}
+
+.meta-box strong{
+  display:block;
+  margin-top:4px;
+  overflow:hidden;
+  color:#172b46;
+  font-size:.87rem;
+  white-space:nowrap;
+  text-overflow:ellipsis;
+}
+
+.franchigia-description{
+  min-height:45px;
+  margin:15px 0 0;
+  color:#66768a;
+  font-size:.86rem;
+  line-height:1.45;
+}
+
+.franchigia-open{
+  width:100%;
+  min-height:43px;
+  margin-top:17px;
+  border:0;
+  border-radius:13px;
+  background:linear-gradient(135deg,#003f7f,#0875d1);
+  color:#fff;
+  font:inherit;
+  font-size:.84rem;
+  font-weight:950;
+  cursor:pointer;
+}
+
+.franchigia-modal{
+  position:fixed;
+  inset:0;
+  z-index:3000;
+  display:none;
+}
+
+.franchigia-modal.is-open{display:block;}
+
+.franchigia-modal-backdrop{
+  position:absolute;
+  inset:0;
+  background:rgba(3,16,31,.68);
+  backdrop-filter:blur(8px);
+}
+
+.franchigia-modal-card{
+  position:relative;
+  z-index:1;
+  width:min(1080px,calc(100% - 28px));
+  max-height:calc(100vh - 34px);
+  margin:17px auto;
+  overflow:auto;
+  border-radius:28px;
+  background:#f6f9fc;
+  box-shadow:0 28px 80px rgba(0,0,0,.35);
+}
+
+.modal-close{
+  position:absolute;
+  top:14px;
+  right:14px;
+  z-index:10;
+  width:42px;
+  height:42px;
+  border:1px solid rgba(255,255,255,.28);
+  border-radius:14px;
+  background:rgba(5,23,43,.72);
+  color:#fff;
+  font-size:1.55rem;
+  line-height:1;
+  cursor:pointer;
+  backdrop-filter:blur(8px);
+}
+
+.detail-stadium{
+  position:relative;
+  min-height:330px;
+  background:
+    radial-gradient(460px 220px at 50% 100%, rgba(48,171,82,.37), transparent 65%),
+    linear-gradient(145deg,#062443,#0061ae);
+}
+
+.detail-stadium > img.stadium-image{
+  width:100%;
+  height:330px;
+  object-fit:cover;
+  display:block;
+}
+
+.detail-stadium .stadium-placeholder::before{
+  left:18%;
+  right:18%;
+  bottom:32px;
+  height:105px;
+  box-shadow:0 -32px 0 rgba(4,23,45,.35),0 -60px 0 rgba(255,255,255,.11);
+}
+
+.detail-stadium .stadium-watermark{
+  width:230px;
+  height:230px;
+}
+
+.detail-stadium-caption{
+  position:absolute;
+  left:24px;
+  bottom:22px;
+  z-index:3;
+  max-width:70%;
+  padding:13px 16px;
+  border-radius:17px;
+  color:#fff;
+  background:rgba(3,19,37,.73);
+  backdrop-filter:blur(10px);
+}
+
+.detail-stadium-caption span{
+  display:block;
+  color:#c7d9ee;
+  font-size:.68rem;
+  font-weight:900;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+}
+
+.detail-stadium-caption strong{
+  display:block;
+  margin-top:3px;
+  font-size:1.2rem;
+}
+
+.detail-content{padding:0 28px 32px;}
+
+.detail-identity{
+  position:relative;
+  margin-top:-50px;
+  display:grid;
+  grid-template-columns:118px minmax(0,1fr) 120px;
+  gap:20px;
+  align-items:end;
+}
+
+.detail-logo{
+  width:118px;
+  height:118px;
+  padding:10px;
+  border-radius:28px;
+  background:#fff;
+  box-shadow:0 16px 32px rgba(0,39,82,.20);
+}
+
+.detail-logo img{width:100%;height:100%;object-fit:contain;}
+
+.detail-name-box{
+  min-width:0;
+  padding:60px 0 8px;
+}
+
+.detail-name-box h2{
+  margin:0;
+  color:#061b33;
+  font-size:clamp(1.9rem,4vw,3.4rem);
+  line-height:.95;
+  letter-spacing:-.055em;
+}
+
+.detail-name-box p{
+  margin:10px 0 0;
+  color:#5f7289;
+  font-weight:800;
+}
+
+.detail-mascot{
+  width:120px;
+  height:150px;
+  object-fit:contain;
+  filter:drop-shadow(0 13px 15px rgba(0,0,0,.18));
+}
+
+.detail-info-grid{
+  margin-top:24px;
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:12px;
+}
+
+.detail-info{
+  padding:15px;
+  border-radius:17px;
+  background:#fff;
+  border:1px solid var(--fr-border);
+  box-shadow:0 8px 20px rgba(0,47,98,.06);
+}
+
+.detail-info span{
+  display:block;
+  color:#758398;
+  font-size:.66rem;
+  font-weight:900;
+  letter-spacing:.07em;
+  text-transform:uppercase;
+}
+
+.detail-info strong{
+  display:block;
+  margin-top:6px;
+  color:#142a45;
+  font-size:.95rem;
+}
+
+.detail-sections{
+  margin-top:22px;
+  display:grid;
+  grid-template-columns:1.45fr .85fr;
+  gap:16px;
+}
+
+.detail-panel{
+  padding:20px;
+  border-radius:20px;
+  background:#fff;
+  border:1px solid var(--fr-border);
+  box-shadow:0 9px 22px rgba(0,47,98,.06);
+}
+
+.detail-panel h3{
+  margin:0 0 10px;
+  color:#08213f;
+  font-size:.82rem;
+  letter-spacing:.10em;
+  text-transform:uppercase;
+}
+
+.detail-panel p{
+  margin:0;
+  color:#5f7187;
+  line-height:1.65;
+}
+
+.detail-list{
+  display:grid;
+  gap:12px;
+}
+
+.detail-list div{
+  padding-bottom:11px;
+  border-bottom:1px solid rgba(0,47,98,.08);
+}
+
+.detail-list div:last-child{padding-bottom:0;border-bottom:0;}
+
+.detail-list span{
+  display:block;
+  color:#78869a;
+  font-size:.65rem;
+  font-weight:900;
+  letter-spacing:.07em;
+  text-transform:uppercase;
+}
+
+.detail-list strong{
+  display:block;
+  margin-top:4px;
+  color:#142a45;
+}
+
+.detail-actions{
+  margin-top:18px;
+  display:flex;
+  justify-content:flex-end;
+}
+
+.detail-roster-link{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-height:46px;
+  padding:0 18px;
+  border-radius:14px;
+  background:linear-gradient(135deg,#003f7f,#0875d1);
+  color:#fff;
+  font-weight:950;
+  text-decoration:none;
+  box-shadow:0 12px 24px rgba(0,92,174,.20);
+}
+
+body.modal-open{overflow:hidden;}
+
+@media(max-width:1080px){
+  .franchigie-grid{grid-template-columns:repeat(2,minmax(0,1fr));}
+  .detail-info-grid{grid-template-columns:repeat(2,minmax(0,1fr));}
+}
+
+@media(max-width:720px){
+  .franchigie-page{width:min(100% - 20px,620px);margin-top:12px;padding-bottom:70px;}
+  .franchigie-hero{min-height:220px;padding:28px 22px;border-radius:24px;}
+  .hero-mark{display:none;}
+  .franchigie-toolbar{grid-template-columns:1fr;border-radius:18px;}
+  .franchigie-grid{grid-template-columns:1fr;gap:16px;}
+  .franchigia-stadium{height:180px;}
+  .franchigia-modal-card{width:calc(100% - 14px);max-height:calc(100vh - 14px);margin:7px auto;border-radius:22px;}
+  .detail-stadium,.detail-stadium > img.stadium-image{height:240px;min-height:240px;}
+  .detail-content{padding:0 16px 24px;}
+  .detail-identity{grid-template-columns:86px minmax(0,1fr) 78px;gap:11px;margin-top:-38px;}
+  .detail-logo{width:86px;height:86px;border-radius:22px;}
+  .detail-mascot{width:78px;height:104px;}
+  .detail-name-box{padding-top:46px;}
+  .detail-name-box h2{font-size:1.65rem;}
+  .detail-info-grid{grid-template-columns:1fr 1fr;}
+  .detail-sections{grid-template-columns:1fr;}
+  .detail-stadium-caption{left:14px;bottom:14px;max-width:75%;}
+}
+
+@media(max-width:430px){
+  .franchigia-identities{top:-42px;}
+  .franchigia-logo-shell{width:82px;height:82px;border-radius:21px;}
+  .franchigia-mascot{width:78px;height:98px;}
+  .franchigia-body{padding:52px 16px 17px;}
+  .detail-info-grid{grid-template-columns:1fr;}
+  .detail-identity{grid-template-columns:78px minmax(0,1fr);}
+  .detail-logo{width:78px;height:78px;}
+  .detail-mascot{display:none;}
+  .detail-name-box{padding-top:42px;}
+}

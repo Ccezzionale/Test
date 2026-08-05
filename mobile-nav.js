@@ -5,6 +5,113 @@ document.addEventListener("DOMContentLoaded", function () {
     return currentPage === page ? "active" : "";
   }
 
+  const ADMIN_EMAIL = "tringali0511@gmail.com";
+
+  function roseAdminMenuHTML() {
+    return `
+      <li id="nav-rose-normal">
+        <a href="rose.html">Rose</a>
+      </li>
+
+      <li id="nav-rose-admin" class="dropdown" style="display:none;">
+        <a href="#" class="toggle-submenu">
+          Rose <span class="caret">▾</span>
+        </a>
+
+        <ul class="submenu">
+          <li><a href="rose.html">Rose Squadre</a></li>
+          <li><a href="franchigie.html">Franchigie</a></li>
+          <li><a href="admin-rose.html">Admin Rose</a></li>
+          <li><a href="admin-gazzetta.html">Admin Gazzetta</a></li>
+        </ul>
+      </li>
+    `;
+  }
+
+  function ensureRoseNavigationStructure() {
+    const mainMenu = document.getElementById("mainMenu");
+    if (!mainMenu) return;
+
+    let normalItem = document.getElementById("nav-rose-normal");
+    let adminItem = document.getElementById("nav-rose-admin");
+
+    if (!normalItem && !adminItem) {
+      const firstRoseItem = [...mainMenu.children].find((item) => {
+        const directLink = item.querySelector(":scope > a");
+        return directLink && String(directLink.textContent || "").trim().toLowerCase().startsWith("rose");
+      });
+
+      if (firstRoseItem) {
+        firstRoseItem.insertAdjacentHTML("beforebegin", roseAdminMenuHTML());
+        firstRoseItem.remove();
+      } else {
+        mainMenu.insertAdjacentHTML("afterbegin", roseAdminMenuHTML());
+      }
+
+      normalItem = document.getElementById("nav-rose-normal");
+      adminItem = document.getElementById("nav-rose-admin");
+    }
+
+    if (adminItem) {
+      let submenu = adminItem.querySelector(".submenu");
+
+      if (!submenu) {
+        submenu = document.createElement("ul");
+        submenu.className = "submenu";
+        adminItem.appendChild(submenu);
+      }
+
+      if (!submenu.querySelector('a[href="rose.html"]')) {
+        submenu.insertAdjacentHTML("afterbegin", '<li><a href="rose.html">Rose Squadre</a></li>');
+      }
+
+      if (!submenu.querySelector('a[href="franchigie.html"]')) {
+        const roseLink = submenu.querySelector('a[href="rose.html"]');
+        const roseLi = roseLink?.closest("li");
+
+        if (roseLi) {
+          roseLi.insertAdjacentHTML("afterend", '<li><a href="franchigie.html">Franchigie</a></li>');
+        } else {
+          submenu.insertAdjacentHTML("afterbegin", '<li><a href="franchigie.html">Franchigie</a></li>');
+        }
+      }
+    }
+  }
+
+  async function applyRoseNavigationAccess() {
+    const normalItem = document.getElementById("nav-rose-normal");
+    const adminItem = document.getElementById("nav-rose-admin");
+
+    if (!normalItem || !adminItem) return;
+
+    normalItem.style.display = "";
+    adminItem.style.display = "none";
+
+    try {
+      const { supabase } = await import("./supabase.js");
+      const { data: userData, error: userError } = await supabase.auth.getUser();
+      const user = userData?.user;
+
+      if (userError || !user) return;
+
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("role, email")
+        .eq("id", user.id)
+        .maybeSingle();
+
+      const email = String(profile?.email || user.email || "").toLowerCase();
+      const isAdmin = profile?.role === "admin" || email === ADMIN_EMAIL;
+
+      if (isAdmin) {
+        normalItem.style.display = "none";
+        adminItem.style.display = "";
+      }
+    } catch (error) {
+      console.warn("Impossibile verificare il menu Franchigie:", error);
+    }
+  }
+
   function ensureMobileTopNav() {
     let siteNav = document.querySelector(".site-nav");
 
@@ -107,6 +214,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
           <ul class="submenu">
             <li><a href="rose.html">Rose Squadre</a></li>
+            <li><a href="franchigie.html">Franchigie</a></li>
             <li><a href="admin-rose.html">Admin Rose</a></li>
             <li><a href="admin-gazzetta.html">Admin Gazzetta</a></li>
           </ul>
@@ -394,6 +502,8 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   ensureMobileTopNav();
+  ensureRoseNavigationStructure();
+  applyRoseNavigationAccess();
   ensureMobileBottomNav();
   bindMobileMorePanel();
 });
