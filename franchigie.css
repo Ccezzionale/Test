@@ -732,3 +732,212 @@ body.modal-open{overflow:hidden;}
   .detail-mascot{display:none;}
   .detail-name-box{padding-top:42px;}
 }
+
+
+/* =========================================================
+   MODIFICA INLINE DEL PROFILO FRANCHIGIA
+   ========================================================= */
+
+.detail-edit-trigger{
+  position:relative;
+  width:100%;
+  color:inherit;
+  font:inherit;
+  text-align:left;
+  cursor:pointer;
+  appearance:none;
+}
+
+.detail-edit-trigger:hover,
+.detail-edit-trigger:focus-visible{
+  border-color:rgba(0,92,174,.36);
+  box-shadow:0 0 0 4px rgba(0,92,174,.09),0 10px 24px rgba(0,47,98,.08);
+  outline:none;
+}
+
+.detail-edit-pencil{
+  position:absolute;
+  top:12px;
+  right:12px;
+  display:grid;
+  place-items:center;
+  width:25px;
+  height:25px;
+  border-radius:9px;
+  color:#086bc1;
+  background:#eaf4ff;
+  font-size:.84rem;
+  font-weight:900;
+}
+
+.detail-inline-edit{
+  padding:1px 5px;
+  border:0;
+  border-radius:7px;
+  color:inherit;
+  background:transparent;
+  font:inherit;
+  font-weight:inherit;
+  cursor:pointer;
+}
+
+.detail-inline-edit:hover,
+.detail-inline-edit:focus-visible{
+  color:#005cae;
+  background:#eaf4ff;
+  outline:none;
+}
+
+.detail-inline-edit span{
+  margin-left:4px;
+  font-size:.78em;
+}
+
+.detail-edit-hint{
+  display:inline-flex;
+  margin-top:10px;
+  padding:5px 8px;
+  border-radius:999px;
+  color:#07599f;
+  background:#eaf4ff;
+  font-size:.68rem;
+  font-weight:900;
+  letter-spacing:.02em;
+}
+
+.detail-description-edit{
+  position:relative;
+  width:100%;
+  min-height:100%;
+  color:inherit;
+  font:inherit;
+  text-align:left;
+  cursor:pointer;
+  appearance:none;
+}
+
+.detail-description-edit p{
+  white-space:pre-wrap;
+}
+
+.detail-inline-editor{
+  min-width:0;
+  padding:13px;
+  display:grid;
+  gap:9px;
+  border-radius:17px;
+  background:#fff;
+  border:2px solid rgba(0,92,174,.32);
+  box-shadow:0 0 0 4px rgba(0,92,174,.08),0 12px 26px rgba(0,47,98,.10);
+}
+
+.detail-inline-editor.is-textarea{
+  min-height:100%;
+  align-content:start;
+}
+
+.detail-editor-label{
+  color:#65768d;
+  font-size:.67rem;
+  font-weight:950;
+  letter-spacing:.07em;
+  text-transform:uppercase;
+}
+
+.detail-inline-editor input,
+.detail-inline-editor textarea{
+  width:100%;
+  min-width:0;
+  padding:10px 11px;
+  border:1px solid rgba(0,47,98,.18);
+  border-radius:11px;
+  background:#f9fbfd;
+  color:#10213d;
+  font:inherit;
+  font-size:.92rem;
+  font-weight:750;
+  outline:none;
+  resize:vertical;
+}
+
+.detail-inline-editor input:focus,
+.detail-inline-editor textarea:focus{
+  border-color:#0875d1;
+  box-shadow:0 0 0 3px rgba(8,117,209,.12);
+}
+
+.detail-editor-actions{
+  display:flex;
+  flex-wrap:wrap;
+  gap:7px;
+}
+
+.detail-editor-actions button{
+  min-height:34px;
+  padding:0 11px;
+  border:0;
+  border-radius:9px;
+  font:inherit;
+  font-size:.76rem;
+  font-weight:950;
+  cursor:pointer;
+}
+
+.detail-editor-save{
+  color:#fff;
+  background:linear-gradient(135deg,#003f7f,#0875d1);
+}
+
+.detail-editor-cancel{
+  color:#44566e;
+  background:#edf2f7;
+}
+
+.detail-inline-editor.is-saving{
+  opacity:.68;
+  pointer-events:none;
+}
+
+.franchigie-toast{
+  position:fixed;
+  left:50%;
+  bottom:24px;
+  z-index:5000;
+  max-width:min(420px,calc(100% - 28px));
+  padding:12px 16px;
+  border-radius:14px;
+  color:#fff;
+  background:#0b6b43;
+  box-shadow:0 18px 42px rgba(0,0,0,.24);
+  font-size:.86rem;
+  font-weight:900;
+  text-align:center;
+  transform:translate(-50%,24px);
+  opacity:0;
+  pointer-events:none;
+  transition:opacity .2s ease,transform .2s ease;
+}
+
+.franchigie-toast.is-visible{
+  transform:translate(-50%,0);
+  opacity:1;
+}
+
+.franchigie-toast.is-error{
+  background:#a82929;
+}
+
+@media(max-width:720px){
+  .detail-edit-pencil{
+    top:10px;
+    right:10px;
+  }
+
+  .detail-inline-editor{
+    padding:12px;
+  }
+
+  .franchigie-toast{
+    bottom:82px;
+  }
+}

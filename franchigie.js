@@ -48,6 +48,77 @@ function findStadiumImage(teamName) {
 }
 
 let allFranchises = [];
+let currentAccess = {
+  user: null,
+  teamId: null,
+  isAdmin: false
+};
+let activeInlineEditor = null;
+
+const EDITABLE_FIELDS = {
+  coach_name: {
+    label: "Allenatore",
+    property: "coach",
+    type: "text",
+    maxLength: 80
+  },
+  assistant_coach: {
+    label: "Viceallenatore",
+    property: "assistantCoach",
+    type: "text",
+    maxLength: 80
+  },
+  city: {
+    label: "Città",
+    property: "city",
+    type: "text",
+    maxLength: 80
+  },
+  league_entry_year: {
+    label: "Ingresso nella lega",
+    property: "leagueEntryYear",
+    type: "number",
+    min: 2000,
+    max: 2100
+  },
+  rivalry: {
+    label: "Rivalità principale",
+    property: "rivalry",
+    type: "text",
+    maxLength: 120
+  },
+  founded_year: {
+    label: "Anno di fondazione",
+    property: "foundedYear",
+    type: "number",
+    min: 1900,
+    max: 2100
+  },
+  colors: {
+    label: "Colori sociali",
+    property: "colors",
+    type: "text",
+    maxLength: 120
+  },
+  motto: {
+    label: "Motto",
+    property: "motto",
+    type: "text",
+    maxLength: 180
+  },
+  stadium_name: {
+    label: "Stadio",
+    property: "stadiumName",
+    type: "text",
+    maxLength: 120
+  },
+  description: {
+    label: "La franchigia",
+    property: "description",
+    type: "textarea",
+    maxLength: 1200
+  }
+};
 
 function normalize(value) {
   return String(value || "")
@@ -119,7 +190,7 @@ function stringifyProfileValue(value, fallback = "Da definire") {
   return displayValue(value, fallback);
 }
 
-async function verifyAdminAccess() {
+async function verifyPageAccess() {
   const { data: userData, error: userError } = await supabase.auth.getUser();
   const user = userData?.user;
 
@@ -130,23 +201,30 @@ async function verifyAdminAccess() {
 
   const { data: profile, error: profileError } = await supabase
     .from("profiles")
-    .select("role, email")
+    .select("team_id, role, email")
     .eq("id", user.id)
     .maybeSingle();
 
   const email = String(profile?.email || user.email || "").toLowerCase();
   const isAdmin = profile?.role === "admin" || email === ADMIN_EMAIL;
+  const teamId = profile?.team_id || null;
 
   if (profileError) {
-    console.warn("Errore lettura profilo admin:", profileError);
+    console.warn("Errore lettura profilo utente:", profileError);
   }
 
-  if (!isAdmin) {
+  if (!isAdmin && !teamId) {
     window.location.replace("rose.html");
     return null;
   }
 
-  return user;
+  currentAccess = {
+    user,
+    teamId,
+    isAdmin
+  };
+
+  return currentAccess;
 }
 
 function unlockPage() {
@@ -191,30 +269,44 @@ async function loadData() {
     const asset = findAsset(team.name) || {};
     const profile = profileByTeam.get(String(team.id)) || {};
 
+    const profileValues = {
+      coach_name: String(profile.coach_name ?? asset.coach ?? "").trim(),
+      assistant_coach: String(profile.assistant_coach ?? "").trim(),
+      city: String(profile.city ?? "").trim(),
+      founded_year: profile.founded_year ?? "",
+      league_entry_year: profile.league_entry_year ?? "",
+      colors: String(profile.colors ?? "").trim(),
+      motto: String(profile.motto ?? "").trim(),
+      description: String(profile.description ?? "").trim(),
+      stadium_name: String(profile.stadium_name ?? "").trim(),
+      rivalry: String(profile.rivalry ?? "").trim()
+    };
+
     return {
       id: team.id,
       name: team.name,
       conference: team.conference || "Conference",
       logo: safeImageUrl(profile.logo_image, asset.logo || "icon-192.png"),
       mascot: safeImageUrl(profile.mascot_image, asset.mascot || "icon-192.png"),
-      coach: displayValue(profile.coach_name, asset.coach || "Allenatore da definire"),
-      assistantCoach: displayValue(profile.assistant_coach),
-      city: displayValue(profile.city),
-      foundedYear: displayValue(profile.founded_year),
-      leagueEntryYear: displayValue(profile.league_entry_year),
-      seasons: yearsInLeague(profile.league_entry_year),
-      colors: displayValue(profile.colors),
-      motto: displayValue(profile.motto),
-      description: displayValue(profile.description, "Profilo della franchigia in preparazione."),
-      stadiumName: displayValue(profile.stadium_name, "Stadio da definire"),
+      coach: displayValue(profileValues.coach_name, asset.coach || "Allenatore da definire"),
+      assistantCoach: displayValue(profileValues.assistant_coach),
+      city: displayValue(profileValues.city),
+      foundedYear: displayValue(profileValues.founded_year),
+      leagueEntryYear: displayValue(profileValues.league_entry_year),
+      seasons: yearsInLeague(profileValues.league_entry_year),
+      colors: displayValue(profileValues.colors),
+      motto: displayValue(profileValues.motto),
+      description: displayValue(profileValues.description, "Profilo della franchigia in preparazione."),
+      stadiumName: displayValue(profileValues.stadium_name, "Stadio da definire"),
       stadiumImage: safeImageUrl(
-  profile.stadium_image,
-  findStadiumImage(team.name)
-),
-      rivalry: displayValue(profile.rivalry),
+        profile.stadium_image,
+        findStadiumImage(team.name)
+      ),
+      rivalry: displayValue(profileValues.rivalry),
       honours: stringifyProfileValue(profile.honours),
       records: stringifyProfileValue(profile.records),
-      published: profile.is_published === true
+      published: profile.is_published === true,
+      profileValues
     };
   });
 
@@ -249,6 +341,278 @@ function stadiumMarkup(franchise, detail = false) {
     </div>
     ${detail ? "" : `<span class="stadium-state">Stadio in preparazione</span>`}
   `;
+}
+
+
+function canEditFranchise(franchise) {
+  return currentAccess.isAdmin ||
+    String(currentAccess.teamId || "") === String(franchise.id || "");
+}
+
+function editableInfoMarkup(franchise, fieldName, label, value) {
+  if (!canEditFranchise(franchise)) {
+    return `
+      <div class="detail-info">
+        <span>${escapeHTML(label)}</span>
+        <strong>${escapeHTML(value)}</strong>
+      </div>
+    `;
+  }
+
+  return `
+    <button
+      type="button"
+      class="detail-info detail-edit-trigger"
+      data-edit-field="${escapeHTML(fieldName)}"
+      aria-label="Modifica ${escapeHTML(label)}"
+    >
+      <span>${escapeHTML(label)}</span>
+      <strong>${escapeHTML(value)}</strong>
+      <span class="detail-edit-pencil" aria-hidden="true">✎</span>
+    </button>
+  `;
+}
+
+function editableCityMarkup(franchise) {
+  if (!canEditFranchise(franchise)) {
+    return escapeHTML(franchise.city);
+  }
+
+  return `
+    <button
+      type="button"
+      class="detail-inline-edit"
+      data-edit-field="city"
+      aria-label="Modifica città"
+    >
+      ${escapeHTML(franchise.city)}
+      <span aria-hidden="true">✎</span>
+    </button>
+  `;
+}
+
+function editableDescriptionMarkup(franchise) {
+  if (!canEditFranchise(franchise)) {
+    return `
+      <section class="detail-panel">
+        <h3>La franchigia</h3>
+        <p>${escapeHTML(franchise.description)}</p>
+      </section>
+    `;
+  }
+
+  return `
+    <button
+      type="button"
+      class="detail-panel detail-description-edit detail-edit-trigger"
+      data-edit-field="description"
+      aria-label="Modifica descrizione della franchigia"
+    >
+      <h3>La franchigia</h3>
+      <p>${escapeHTML(franchise.description)}</p>
+      <span class="detail-edit-pencil" aria-hidden="true">✎</span>
+    </button>
+  `;
+}
+
+function editorInputMarkup(fieldName, config, currentValue) {
+  const common = `
+    data-editor-input
+    name="${escapeHTML(fieldName)}"
+    maxlength="${escapeHTML(config.maxLength || "")}"
+    aria-label="${escapeHTML(config.label)}"
+  `;
+
+  if (config.type === "textarea") {
+    return `<textarea ${common} rows="5">${escapeHTML(currentValue)}</textarea>`;
+  }
+
+  if (config.type === "number") {
+    return `
+      <input
+        ${common}
+        type="number"
+        value="${escapeHTML(currentValue)}"
+        min="${escapeHTML(config.min)}"
+        max="${escapeHTML(config.max)}"
+        inputmode="numeric"
+      >
+    `;
+  }
+
+  return `<input ${common} type="text" value="${escapeHTML(currentValue)}">`;
+}
+
+function validateEditableValue(fieldName, value) {
+  const config = EDITABLE_FIELDS[fieldName];
+  if (!config) return { valid: false, message: "Campo non valido." };
+
+  const cleanValue = String(value ?? "").trim();
+
+  if (config.type === "number" && cleanValue !== "") {
+    const numberValue = Number(cleanValue);
+
+    if (!Number.isInteger(numberValue)) {
+      return { valid: false, message: `${config.label}: inserisci un anno valido.` };
+    }
+
+    if (numberValue < config.min || numberValue > config.max) {
+      return {
+        valid: false,
+        message: `${config.label}: usa un valore tra ${config.min} e ${config.max}.`
+      };
+    }
+
+    return { valid: true, value: numberValue };
+  }
+
+  if (config.maxLength && cleanValue.length > config.maxLength) {
+    return {
+      valid: false,
+      message: `${config.label}: massimo ${config.maxLength} caratteri.`
+    };
+  }
+
+  return { valid: true, value: cleanValue || null };
+}
+
+function showFranchiseToast(message, isError = false) {
+  let toast = document.getElementById("franchigie-toast");
+
+  if (!toast) {
+    toast = document.createElement("div");
+    toast.id = "franchigie-toast";
+    toast.className = "franchigie-toast";
+    toast.setAttribute("role", "status");
+    toast.setAttribute("aria-live", "polite");
+    document.body.appendChild(toast);
+  }
+
+  toast.textContent = message;
+  toast.classList.toggle("is-error", isError);
+  toast.classList.add("is-visible");
+
+  window.clearTimeout(showFranchiseToast.timeoutId);
+  showFranchiseToast.timeoutId = window.setTimeout(() => {
+    toast.classList.remove("is-visible");
+  }, 2800);
+}
+
+async function saveEditableField(franchise, fieldName, rawValue, editorRoot) {
+  const validation = validateEditableValue(fieldName, rawValue);
+
+  if (!validation.valid) {
+    showFranchiseToast(validation.message, true);
+    return;
+  }
+
+  editorRoot.classList.add("is-saving");
+  editorRoot.querySelectorAll("button, input, textarea").forEach((element) => {
+    element.disabled = true;
+  });
+
+  const { error } = await supabase.rpc("update_my_team_profile", {
+    p_team_id: franchise.id,
+    p_changes: {
+      [fieldName]: validation.value
+    }
+  });
+
+  if (error) {
+    console.error("Errore aggiornamento profilo franchigia:", error);
+    editorRoot.classList.remove("is-saving");
+    editorRoot.querySelectorAll("button, input, textarea").forEach((element) => {
+      element.disabled = false;
+    });
+    showFranchiseToast(error.message || "Modifica non salvata.", true);
+    return;
+  }
+
+  activeInlineEditor = null;
+  await loadData();
+  openFranchise(franchise.id);
+  showFranchiseToast("Profilo aggiornato.");
+}
+
+function startInlineEditor(trigger, franchise, fieldName) {
+  if (!canEditFranchise(franchise) || activeInlineEditor) return;
+
+  const config = EDITABLE_FIELDS[fieldName];
+  if (!config) return;
+
+  activeInlineEditor = trigger;
+
+  const currentValue = franchise.profileValues?.[fieldName] ?? "";
+  const editor = document.createElement("div");
+  editor.className = `detail-inline-editor ${config.type === "textarea" ? "is-textarea" : ""}`;
+  editor.innerHTML = `
+    <span class="detail-editor-label">${escapeHTML(config.label)}</span>
+    ${editorInputMarkup(fieldName, config, currentValue)}
+    <div class="detail-editor-actions">
+      <button type="button" class="detail-editor-save">Salva</button>
+      <button type="button" class="detail-editor-cancel">Annulla</button>
+    </div>
+  `;
+
+  trigger.replaceWith(editor);
+
+  const input = editor.querySelector("[data-editor-input]");
+  const saveButton = editor.querySelector(".detail-editor-save");
+  const cancelButton = editor.querySelector(".detail-editor-cancel");
+
+  const cancel = () => {
+    activeInlineEditor = null;
+    openFranchise(franchise.id);
+  };
+
+  const save = () => saveEditableField(franchise, fieldName, input?.value ?? "", editor);
+
+  saveButton?.addEventListener("click", save);
+  cancelButton?.addEventListener("click", cancel);
+
+  input?.addEventListener("keydown", (event) => {
+    event.stopPropagation();
+
+    if (event.key === "Escape") {
+      event.preventDefault();
+      cancel();
+      return;
+    }
+
+    const saveShortcut = config.type === "textarea"
+      ? event.key === "Enter" && (event.ctrlKey || event.metaKey)
+      : event.key === "Enter";
+
+    if (saveShortcut) {
+      event.preventDefault();
+      save();
+    }
+  });
+
+  input?.focus();
+
+  if (input instanceof HTMLInputElement && input.type !== "number") {
+    input.select();
+  }
+}
+
+function bindEditableFields(container, franchise) {
+  if (!canEditFranchise(franchise)) return;
+
+  container.querySelectorAll("[data-edit-field]").forEach((trigger) => {
+    const openEditor = (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+      startInlineEditor(trigger, franchise, trigger.dataset.editField);
+    };
+
+    trigger.addEventListener("click", openEditor);
+    trigger.addEventListener("keydown", (event) => {
+      if (event.key === "Enter" || event.key === " ") {
+        openEditor(event);
+      }
+    });
+  });
 }
 
 function renderFranchises(items) {
@@ -344,9 +708,13 @@ function openFranchise(teamId) {
   const franchise = allFranchises.find((item) => String(item.id) === String(teamId));
   if (!franchise) return;
 
+  activeInlineEditor = null;
+
   const modal = document.getElementById("franchigia-modal");
   const content = document.getElementById("franchigia-modal-content");
   if (!modal || !content) return;
+
+  const editable = canEditFranchise(franchise);
 
   content.innerHTML = `
     <div class="detail-stadium">
@@ -365,28 +733,29 @@ function openFranchise(teamId) {
 
         <div class="detail-name-box">
           <h2 id="modal-team-name">${escapeHTML(franchise.name)}</h2>
-          <p>${escapeHTML(franchise.conference)} · ${escapeHTML(franchise.city)}</p>
+          <p>
+            ${escapeHTML(franchise.conference)} ·
+            ${editableCityMarkup(franchise)}
+          </p>
+          ${editable ? `<span class="detail-edit-hint">✎ Tocca un campo per modificarlo</span>` : ""}
         </div>
 
         <img class="detail-mascot" src="${escapeHTML(franchise.mascot)}" alt="Mascotte ${escapeHTML(franchise.name)}">
       </div>
 
       <div class="detail-info-grid">
-        <div class="detail-info"><span>Allenatore</span><strong>${escapeHTML(franchise.coach)}</strong></div>
-        <div class="detail-info"><span>Viceallenatore</span><strong>${escapeHTML(franchise.assistantCoach)}</strong></div>
-        <div class="detail-info"><span>Ingresso nella lega</span><strong>${escapeHTML(franchise.leagueEntryYear)}</strong></div>
-        <div class="detail-info"><span>Rivalità principale</span><strong>${escapeHTML(franchise.rivalry)}</strong></div>
-        <div class="detail-info"><span>Anno di fondazione</span><strong>${escapeHTML(franchise.foundedYear)}</strong></div>
-        <div class="detail-info"><span>Colori sociali</span><strong>${escapeHTML(franchise.colors)}</strong></div>
-        <div class="detail-info"><span>Motto</span><strong>${escapeHTML(franchise.motto)}</strong></div>
-        <div class="detail-info"><span>Stadio</span><strong>${escapeHTML(franchise.stadiumName)}</strong></div>
+        ${editableInfoMarkup(franchise, "coach_name", "Allenatore", franchise.coach)}
+        ${editableInfoMarkup(franchise, "assistant_coach", "Viceallenatore", franchise.assistantCoach)}
+        ${editableInfoMarkup(franchise, "league_entry_year", "Ingresso nella lega", franchise.leagueEntryYear)}
+        ${editableInfoMarkup(franchise, "rivalry", "Rivalità principale", franchise.rivalry)}
+        ${editableInfoMarkup(franchise, "founded_year", "Anno di fondazione", franchise.foundedYear)}
+        ${editableInfoMarkup(franchise, "colors", "Colori sociali", franchise.colors)}
+        ${editableInfoMarkup(franchise, "motto", "Motto", franchise.motto)}
+        ${editableInfoMarkup(franchise, "stadium_name", "Stadio", franchise.stadiumName)}
       </div>
 
       <div class="detail-sections">
-        <section class="detail-panel">
-          <h3>La franchigia</h3>
-          <p>${escapeHTML(franchise.description)}</p>
-        </section>
+        ${editableDescriptionMarkup(franchise)}
 
         <section class="detail-panel detail-list">
           <div><span>Palmarès</span><strong>${escapeHTML(franchise.honours)}</strong></div>
@@ -404,13 +773,17 @@ function openFranchise(teamId) {
   modal.classList.add("is-open");
   modal.setAttribute("aria-hidden", "false");
   document.body.classList.add("modal-open");
+
   bindImageFallbacks(content);
+  bindEditableFields(content, franchise);
 
   const closeButton = modal.querySelector(".modal-close");
   closeButton?.focus();
 }
 
 function closeModal() {
+  if (activeInlineEditor) return;
+
   const modal = document.getElementById("franchigia-modal");
   if (!modal) return;
 
@@ -454,8 +827,8 @@ function bindControls() {
 }
 
 async function init() {
-  const user = await verifyAdminAccess();
-  if (!user) return;
+  const access = await verifyPageAccess();
+  if (!access) return;
 
   unlockPage();
   bindControls();
