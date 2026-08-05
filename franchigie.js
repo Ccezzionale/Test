@@ -375,7 +375,7 @@ function openFranchise(teamId) {
         <div class="detail-info"><span>Allenatore</span><strong>${escapeHTML(franchise.coach)}</strong></div>
         <div class="detail-info"><span>Viceallenatore</span><strong>${escapeHTML(franchise.assistantCoach)}</strong></div>
         <div class="detail-info"><span>Ingresso nella lega</span><strong>${escapeHTML(franchise.leagueEntryYear)}</strong></div>
-        <div class="detail-info"><span>Permanenza</span><strong>${escapeHTML(franchise.seasons)}</strong></div>
+        <div class="detail-info"><span>Rivalità principale</span><strong>${escapeHTML(franchise.rivalry)}</strong></div>
         <div class="detail-info"><span>Anno di fondazione</span><strong>${escapeHTML(franchise.foundedYear)}</strong></div>
         <div class="detail-info"><span>Colori sociali</span><strong>${escapeHTML(franchise.colors)}</strong></div>
         <div class="detail-info"><span>Motto</span><strong>${escapeHTML(franchise.motto)}</strong></div>
@@ -391,7 +391,7 @@ function openFranchise(teamId) {
         <section class="detail-panel detail-list">
           <div><span>Palmarès</span><strong>${escapeHTML(franchise.honours)}</strong></div>
           <div><span>Record</span><strong>${escapeHTML(franchise.records)}</strong></div>
-          <div><span>Rivalità principale</span><strong>${escapeHTML(franchise.rivalry)}</strong></div>
+          <div><span>Stagioni in lega</span><strong>${escapeHTML(franchise.seasons)}</strong></div>
         </section>
       </div>
 

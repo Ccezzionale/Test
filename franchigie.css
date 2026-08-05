@@ -240,7 +240,7 @@ body.franchigie-access-granted .franchigie-access-gate{display:none;}
 
 .franchigia-stadium{
   position:relative;
-  height:190px;
+  height:210px;
   overflow:hidden;
   background:
     radial-gradient(220px 120px at 50% 100%, rgba(62,174,91,.35), transparent 65%),
@@ -259,11 +259,12 @@ body.franchigie-access-granted .franchigie-access-gate{display:none;}
   width:100%;
   height:100%;
   object-fit:cover;
+  object-position:center 24%;
   display:block;
 }
 
 
-/* Sicurezza: un placeholder marcato hidden non deve mai sovrapporsi allo stadio. */
+/* Sicurezza: se un placeholder viene nascosto, non deve mai restare sopra allo stadio */
 .stadium-placeholder[hidden]{
   display:none !important;
 }
@@ -483,7 +484,7 @@ body.franchigie-access-granted .franchigie-access-gate{display:none;}
 
 .detail-stadium{
   position:relative;
-  min-height:330px;
+  min-height:380px;
   background:
     radial-gradient(460px 220px at 50% 100%, rgba(48,171,82,.37), transparent 65%),
     linear-gradient(145deg,#062443,#0061ae);
@@ -491,8 +492,9 @@ body.franchigie-access-granted .franchigie-access-gate{display:none;}
 
 .detail-stadium > img.stadium-image{
   width:100%;
-  height:330px;
+  height:380px;
   object-fit:cover;
+  object-position:center 24%;
   display:block;
 }
 
@@ -707,7 +709,7 @@ body.modal-open{overflow:hidden;}
   .franchigie-grid{grid-template-columns:1fr;gap:16px;}
   .franchigia-stadium{height:180px;}
   .franchigia-modal-card{width:calc(100% - 14px);max-height:calc(100vh - 14px);margin:7px auto;border-radius:22px;}
-  .detail-stadium,.detail-stadium > img.stadium-image{height:240px;min-height:240px;}
+  .detail-stadium,.detail-stadium > img.stadium-image{height:280px;min-height:280px;}
   .detail-content{padding:0 16px 24px;}
   .detail-identity{grid-template-columns:86px minmax(0,1fr) 78px;gap:11px;margin-top:-38px;}
   .detail-logo{width:86px;height:86px;border-radius:22px;}
