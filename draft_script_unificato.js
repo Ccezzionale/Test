@@ -3412,28 +3412,27 @@ function mappaIndiceAssolutoPerTeam() {
   const indexMap = {};
 
   /*
-    Se esiste draft_visual_order, usiamo quello.
-    Così le pick restano nello slot/round visuale corretto,
-    anche quando una pick alta tipo #77 è stata acquisita e deve stare al Round 5.
+    Ogni numero di pick è univoco all'interno del draft.
+    Per questo il round visuale deve essere cercato tramite la pick,
+    senza includere la squadra nella chiave.
   */
   if (Array.isArray(lastDraftVisualRows) && lastDraftVisualRows.length) {
     lastDraftVisualRows.forEach(row => {
       const pick = Number(row.pick_number);
       const visualRound = Number(row.visual_round);
-      const team = getTeamByIdDesktop(row.team_id);
-      const teamName = team?.name || "";
 
-      if (!teamName || !pick || !visualRound) return;
+      if (!pick || !visualRound) return;
 
-      indexMap[`${teamName}|${pick}`] = visualRound;
+      indexMap[pick] = visualRound;
     });
 
     return indexMap;
   }
 
   /*
-    Fallback vecchio: se per qualche motivo manca draft_visual_order,
-    usiamo ancora le pick dalla tabella, ma solo come piano B.
+    Fallback: ricostruiamo la posizione visuale delle pick
+    squadra per squadra, ma salviamo comunque il risultato
+    utilizzando soltanto il numero della pick.
   */
   const righe = document.querySelectorAll("#tabella-pick tbody tr");
   const picksPerTeam = {};
@@ -3445,18 +3444,22 @@ function mappaIndiceAssolutoPerTeam() {
 
     if (!team || isNaN(pick)) return;
 
-    if (!picksPerTeam[team]) picksPerTeam[team] = [];
+    if (!picksPerTeam[team]) {
+      picksPerTeam[team] = [];
+    }
+
     picksPerTeam[team].push(pick);
   });
 
   Object.keys(picksPerTeam).forEach(team => {
-    picksPerTeam[team].forEach((p, i) => {
-      indexMap[`${team}|${p}`] = i + 1;
+    picksPerTeam[team].forEach((pick, index) => {
+      indexMap[pick] = index + 1;
     });
   });
 
   return indexMap;
 }
+
 function aggiornaChiamatePerSquadra() {
   const righe = document.querySelectorAll("#tabella-pick tbody tr");
   const riepilogo = {};
