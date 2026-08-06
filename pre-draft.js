@@ -20,6 +20,7 @@ const TYPE_LABELS = {
   RFA: "Restricted Free Agent"
 };
 
+
 const TYPE_BADGES = {
   FP: "badge-fp",
   U21_KEEPER: "badge-u21-keeper",
