@@ -1120,10 +1120,18 @@ async function loadAdminSummary() {
       id,
       season,
       selection_type,
+      confirmation_year,
+      actual_paid_round,
       status,
       teams (
         name,
         conference
+      ),
+      players (
+        name,
+        role,
+        role_mantra,
+        serie_a_team
       )
     `)
     .eq("season", keeperSettings.season)
@@ -1148,6 +1156,10 @@ async function loadAdminSummary() {
           <th>Squadra</th>
           <th>Conference</th>
           <th>Tipo</th>
+          <th>Giocatore</th>
+          <th>Ruolo</th>
+          <th>Squadra Serie A</th>
+          <th>Round</th>
         </tr>
       </thead>
 
@@ -1155,11 +1167,35 @@ async function loadAdminSummary() {
         ${data.map(row => `
           <tr>
             <td>${escapeHtml(row.teams?.name || "-")}</td>
+
             <td>${escapeHtml(row.teams?.conference || "-")}</td>
+
             <td>
               ${escapeHtml(
                 TYPE_LABELS[row.selection_type] || row.selection_type
               )}
+            </td>
+
+            <td>
+              <strong>${escapeHtml(row.players?.name || "-")}</strong>
+            </td>
+
+            <td>
+              ${escapeHtml(
+                row.players?.role ||
+                row.players?.role_mantra ||
+                "-"
+              )}
+            </td>
+
+            <td>${escapeHtml(row.players?.serie_a_team || "-")}</td>
+
+            <td>
+              ${
+                row.actual_paid_round
+                  ? escapeHtml(row.actual_paid_round)
+                  : "-"
+              }
             </td>
           </tr>
         `).join("")}
