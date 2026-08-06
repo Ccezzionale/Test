@@ -14,6 +14,7 @@ let rosterFilters = {
   status: "all"
 };
 
+
 const TYPE_LABELS = {
   FP: "Franchise Player",
   U21_KEEPER: "Under 21 confermato",
