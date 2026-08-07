@@ -571,23 +571,28 @@ function applicaProprietariFuturePicks(draftBase, futurePicks, draftName) {
     const used = usedLostSlotsByTeamId.get(ownerId);
 
     // Prima prova: stesso source_trade_id, se presente
-    let slotIndex = -1;
+// Prima prova: abbina la pick alla stessa trade
+let slotIndex = -1;
 
-    if (fp.source_trade_id) {
-      slotIndex = slots.findIndex((slot, index) =>
-        !used.has(index) &&
-        slot.source_trade_id === fp.source_trade_id
-      );
-    }
+if (fp.source_trade_id) {
+  // Trade normale registrata: stesso source_trade_id
+  slotIndex = slots.findIndex((slot, index) =>
+    !used.has(index) &&
+    slot.source_trade_id === fp.source_trade_id
+  );
+} else {
+  // Vecchie trade/manuali senza source_trade_id:
+  // abbinale prima a uno slot anch'esso senza source_trade_id
+  slotIndex = slots.findIndex((slot, index) =>
+    !used.has(index) &&
+    !slot.source_trade_id
+  );
+}
 
-    // Fallback: primo slot libero
-    if (slotIndex === -1) {
-      slotIndex = slots.findIndex((slot, index) => !used.has(index));
-    }
-
-    if (slotIndex === -1) {
-      return { round: Number(fp.round), displayOrder: Number.MAX_SAFE_INTEGER };
-    }
+// Ultimo fallback soltanto se non abbiamo trovato nulla
+if (slotIndex === -1) {
+  slotIndex = slots.findIndex((slot, index) => !used.has(index));
+}
 
     used.add(slotIndex);
     return slots[slotIndex];
