@@ -409,11 +409,11 @@ document.addEventListener("DOMContentLoaded", function () {
               <strong>Draft 27-28</strong>
             </a>
 
-            <a href="medagliere.html">
+            <a href="albo.html">
               <span>
                 <img src="icons/nav/albo-oro.webp" alt="">
               </span>
-              <strong>Hall of Fame</strong>
+              <strong>Medagliere</strong>
             </a>
 
             <a href="statistiche.html">
