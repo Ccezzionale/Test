@@ -1057,19 +1057,7 @@ function generaMobileDraftCards(containerId, draftData, squadreOrdine) {
     Nei round pari NON invertiamo i loghi. È soltanto il senso di lettura
     a cambiare, indicato dalla freccia.
   */
-  const fixedTeamOrder = (draftData[0]?.Picks || [])
-    .slice()
-    .sort((a, b) => Number(a.pickNumber || 0) - Number(b.pickNumber || 0))
-    .map(pick => getCanonicalTeamName(pick.team, squadre))
-    .filter((team, index, list) =>
-      team && list.findIndex(item => teamKey(item) === teamKey(team)) === index
-    );
-
-  squadre.forEach(team => {
-    if (!fixedTeamOrder.some(item => teamKey(item) === teamKey(team))) {
-      fixedTeamOrder.push(team);
-    }
-  });
+const fixedTeamOrder = squadre.slice();
 
   const roundsHtml = Array.from({ length: maxRounds }, (_, index) => {
     const roundNumber = index + 1;
