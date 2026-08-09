@@ -3490,7 +3490,7 @@ const isTradedPick = r.dataset.tradedPick === "true";
     const isFpKeeper = playerInfo.is_fp_keeper === true;
     const fpKeeperYear = Number(playerInfo.fp_keeper_year || 1);
     const isRfaMatched = playerInfo.is_rfa_matched === true;
-    const nAssoluto = indexMap[`${team}|${pickNum}`] || 1;
+   const nAssoluto = indexMap[pickNum] || 1;
 
     if (!riepilogo[team]) riepilogo[team] = [];
 
