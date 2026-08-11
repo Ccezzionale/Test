@@ -2041,7 +2041,7 @@ function generaDraftByTeam(containerId, draftData, squadreOrdine, conferenceTitl
       .filter(pick => teamKey(pick.team || pick.ownerTeam || "") === teamKey(selectedTeam))
       .sort((a, b) => Number(a.pickNumber || 0) - Number(b.pickNumber || 0));
 
-    const cardsHtml = teamPicks.map(pick => {
+    const rowsHtml = teamPicks.map(pick => {
       const originalTeam = cleanTeamName(pick.originalTeam || selectedTeam);
       const isTraded = !!pick.traded;
       const isBonus = !!pick.bonus;
@@ -2076,9 +2076,14 @@ function generaDraftByTeam(containerId, draftData, squadreOrdine, conferenceTitl
       return `
         <article class="${classes}" style="${tradeStyle}">
           <span class="draft-team-pick-number">#${pickNumber}</span>
+
+          <span class="draft-team-pick-copy">
+            <strong>Pick #${pickNumber}</strong>
+            <small>${escapeDraftHtml(origin)}</small>
+          </span>
+
           <span class="draft-team-pick-round">R${displayRound}</span>
-          <strong>Pick #${pickNumber}</strong>
-          <small>${escapeDraftHtml(origin)}</small>
+
           ${
             isBonus
               ? `<span class="draft-team-pick-badge bonus">★ Bonus</span>`
@@ -2110,8 +2115,8 @@ function generaDraftByTeam(containerId, draftData, squadreOrdine, conferenceTitl
           <span class="draft-team-result-count">${teamPicks.length}</span>
         </header>
 
-        <div class="draft-team-picks-grid">
-          ${cardsHtml || `<p class="draft-error">Nessuna chiamata disponibile per questa squadra.</p>`}
+        <div class="draft-team-picks-list">
+          ${rowsHtml || `<p class="draft-error">Nessuna chiamata disponibile per questa squadra.</p>`}
         </div>
       </section>
     `;
