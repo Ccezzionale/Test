@@ -2695,3 +2695,154 @@ nav.site-nav .action-icon{opacity:1!important;filter:none!important;}
     min-width:15px;
   }
 }
+
+
+/* =========================================================
+   DRAFT BY PICK V31 - MINIMAL SPORTIVA (PALETTE CHIARA)
+   ========================================================= */
+.draft-pick-board-desktop-wrap{
+  background:
+    radial-gradient(circle at 100% 0%, rgba(255,213,74,.16), transparent 24%),
+    linear-gradient(180deg, #ffffff 0%, #f7f9fc 100%);
+  border:1px solid #d8e4f3;
+  box-shadow:0 18px 40px rgba(0,31,63,.10), inset 0 1px 0 rgba(255,255,255,.9);
+}
+
+.draft-pick-board-head{
+  border-bottom:1px solid #d8e4f3;
+}
+
+.draft-pick-board-grid-all{
+  gap:12px;
+  padding:18px;
+  background:linear-gradient(180deg, rgba(232,241,252,.42) 0%, rgba(255,255,255,0) 100%);
+}
+
+.draft-pick-board-desktop-cell{
+  position:relative;
+  min-height:126px;
+  padding:12px 10px;
+  border-radius:20px;
+  border:1px solid #cfdced;
+  background:linear-gradient(180deg,#ffffff 0%, #f6f9fd 100%);
+  box-shadow:0 8px 18px rgba(0,31,63,.08), inset 0 1px 0 rgba(255,255,255,.95);
+  transition:transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+}
+
+.draft-pick-board-desktop-cell.checker-a{
+  background:linear-gradient(180deg,#fbfdff 0%, #f4f8fd 100%);
+}
+
+.draft-pick-board-desktop-cell.checker-b{
+  background:linear-gradient(180deg,#fffdf8 0%, #f9f5ea 100%);
+}
+
+.draft-pick-board-desktop-cell:hover{
+  transform:translateY(-3px);
+  border-color:#9eb8d7;
+  box-shadow:0 16px 28px rgba(0,31,63,.14), inset 0 1px 0 rgba(255,255,255,.98);
+}
+
+.draft-pick-board-desktop-cell .draft-pick-board-number{
+  position:absolute;
+  top:10px;
+  left:10px;
+  min-width:48px;
+  min-height:31px;
+  padding:0 11px;
+  border-radius:999px;
+  background:linear-gradient(180deg,#07457f 0%, #001f3f 100%);
+  color:#ffd54a;
+  font-size:.93rem;
+  font-weight:950;
+  letter-spacing:-.02em;
+  box-shadow:0 7px 14px rgba(0,31,63,.18);
+}
+
+.draft-pick-board-desktop-cell .draft-pick-board-logo{
+  width:74px;
+  height:74px;
+  margin-top:18px;
+  background:transparent;
+  border:0;
+  box-shadow:none;
+}
+
+.draft-pick-board-desktop-cell .draft-pick-board-logo img{
+  width:56px;
+  height:56px;
+  filter:drop-shadow(0 6px 9px rgba(0,31,63,.18));
+}
+
+.draft-pick-board-desktop-cell .draft-pick-board-logo > span{
+  width:54px;
+  height:54px;
+  background:#dbe9fa;
+  color:#001f3f;
+  font-size:.9rem;
+}
+
+.draft-pick-board-desktop-cell .draft-pick-board-round,
+.draft-pick-board-desktop-cell > strong,
+.draft-pick-board-desktop-cell .draft-pick-board-status,
+.draft-pick-board-desktop-cell::after{display:none !important;}
+
+.draft-pick-board-desktop-cell.is-traded{
+  border:2px solid var(--dynamic-trade-color, #d56085);
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.94) 0%, var(--dynamic-trade-soft, #fdeff4) 100%);
+}
+
+.draft-pick-board-desktop-cell.is-bonus{
+  border:2px solid #f0c53f;
+  background:linear-gradient(180deg,#fffdf3 0%, #fff2c7 100%);
+}
+
+.draft-pick-board-desktop-cell.is-selected{
+  border-color:#001f3f;
+  box-shadow:0 18px 34px rgba(0,31,63,.17), 0 0 0 3px rgba(255,213,74,.38);
+}
+
+.draft-pick-board-detail{
+  margin:0 18px 18px;
+}
+
+.draft-pick-board-detail-copy{
+  background:linear-gradient(180deg,#ffffff 0%, #f8fbff 100%);
+  border:1px solid #d8e4f3;
+  box-shadow:0 8px 18px rgba(0,31,63,.08);
+}
+
+.draft-pick-board-detail-kicker{
+  color:#546a86;
+}
+
+.draft-pick-board-detail-team strong{
+  color:#001f3f;
+}
+
+.draft-pick-board-detail-team small{
+  color:#617891;
+}
+
+.draft-pick-board-legend{
+  margin:0 18px 18px;
+  padding-top:14px;
+  border-top:1px solid #dbe5f2;
+}
+
+@media (max-width: 1180px){
+  .draft-pick-board-grid-all{grid-template-columns:repeat(6,minmax(0,1fr));}
+}
+
+@media (max-width: 900px){
+  .draft-pick-board-grid-all{grid-template-columns:repeat(5,minmax(0,1fr));}
+}
+
+@media (max-width: 768px){
+  .draft-pick-mobile-card{
+    background:
+      radial-gradient(circle at 92% 0%, rgba(255,213,74,.18), transparent 27%),
+      linear-gradient(180deg,#073867 0%,#001f3f 100%);
+  }
+}
