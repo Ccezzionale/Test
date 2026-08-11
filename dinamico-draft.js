@@ -772,6 +772,8 @@ function generaTabellaVerticale(containerId, draftData, squadreOrdine) {
     return;
   }
 
+  registerDynamicDraftTradePalettes(draftData);
+
   const squadre = squadreOrdine && squadreOrdine.length
     ? squadreOrdine.map(s => cleanTeamName(s))
     : draftData[0].Picks.map(p => cleanTeamName(p.team));
@@ -844,8 +846,29 @@ function generaTabellaVerticale(containerId, draftData, squadreOrdine) {
           ? `Round visualizzato ${pick.displayRound}. Round originale ${pick.round}. Pick originale di ${pick.originalTeam}. ${pick.notes || ""} ${pick.protection_note || ""}`.trim()
           : `Round ${pick.displayRound}`;
 
+        const tradeKey = pick.traded
+          ? getDynamicTradeKeyForPick({
+              source_trade_id: pick.source_trade_id,
+              originalTeam: pick.originalTeam,
+              team: squadra,
+              ownerTeam: squadra
+            })
+          : "";
+
+        const tradePalette = pick.traded
+          ? registerDynamicTradePalette(tradeKey)
+          : null;
+
+        const tradeStyle = tradePalette
+          ? [
+              `--dynamic-trade-color:${tradePalette.solid}`,
+              `--dynamic-trade-soft:${tradePalette.soft}`,
+              `--dynamic-trade-text:${tradePalette.text}`
+            ].join(";")
+          : "";
+
         html += `
-          <div class="pick ${tradedClass} ${bonusClass}" title="${title}">
+          <div class="pick ${tradedClass} ${bonusClass}" style="${tradeStyle}" title="${title}">
             <span class="pick-bubble">${pick.pickNumber}</span>
             <strong>Pick #${pick.pickNumber}</strong>
             ${source}
@@ -1768,7 +1791,6 @@ function generaDraftByPick(containerId, draftData, conferenceTitle) {
 
     const classes = [
       "draft-pick-board-cell",
-      absoluteIndex % 2 === 0 ? "checker-a" : "checker-b",
       isTraded ? "is-traded" : "",
       isBonus ? "is-bonus" : "",
       absoluteIndex === 0 ? "is-selected" : ""
@@ -1803,64 +1825,87 @@ function generaDraftByPick(containerId, draftData, conferenceTitle) {
     `;
   }).join("");
 
-  const mobileCellsHtml = picks.map((pick, absoluteIndex) => {
-    const ownerTeam = cleanTeamName(pick.team || pick.ownerTeam || "Squadra");
-    const originalTeam = cleanTeamName(pick.originalTeam || ownerTeam);
-    const isTraded = !!pick.traded;
-    const isBonus = !!pick.bonus;
-    const round = Number(pick.round || 0);
-    const pickNumber = Number(pick.pickNumber || 0);
+  const mobileRowsHtml = Array.from(
+    { length: Math.ceil(picks.length / 8) },
+    (_, rowIndex) => {
+      const rowPicks = picks.slice(rowIndex * 8, rowIndex * 8 + 8);
 
-    const tradeKey = isTraded
-      ? getDynamicTradeKeyForPick({ ...pick, team: ownerTeam, ownerTeam })
-      : "";
-    const tradePalette = isTraded
-      ? registerDynamicTradePalette(tradeKey)
-      : null;
-    const tradeStyle = tradePalette
-      ? [
-          `--dynamic-trade-color:${tradePalette.solid}`,
-          `--dynamic-trade-soft:${tradePalette.soft}`,
-          `--dynamic-trade-text:${tradePalette.text}`
-        ].join(";")
-      : "";
+      const slotsHtml = rowPicks.map((pick, localIndex) => {
+        const absoluteIndex = rowIndex * 8 + localIndex;
+        const ownerTeam = cleanTeamName(pick.team || pick.ownerTeam || "Squadra");
+        const originalTeam = cleanTeamName(pick.originalTeam || ownerTeam);
+        const isTraded = !!pick.traded;
+        const isBonus = !!pick.bonus;
+        const round = Number(pick.round || 0);
+        const pickNumber = Number(pick.pickNumber || 0);
 
-    const classes = [
-      "draft-pick-board-cell",
-      "dynamic-mobile-overview-slot",
-      "dynamic-mobile-pick-slot",
-      isTraded ? "is-traded" : "",
-      isBonus ? "is-bonus" : "",
-      absoluteIndex === 0 ? "is-selected" : ""
-    ].filter(Boolean).join(" ");
+        const tradeKey = isTraded
+          ? getDynamicTradeKeyForPick({ ...pick, team: ownerTeam, ownerTeam })
+          : "";
+        const tradePalette = isTraded
+          ? registerDynamicTradePalette(tradeKey)
+          : null;
+        const tradeStyle = tradePalette
+          ? [
+              `--dynamic-trade-color:${tradePalette.solid}`,
+              `--dynamic-trade-soft:${tradePalette.soft}`,
+              `--dynamic-trade-text:${tradePalette.text}`
+            ].join(";")
+          : "";
 
-    const ariaText = isBonus
-      ? `Pick ${pickNumber}, ${ownerTeam}, round ${round}, bonus da ${originalTeam}`
-      : isTraded
-        ? `Pick ${pickNumber}, ${ownerTeam}, round ${round}, da ${originalTeam}`
-        : `Pick ${pickNumber}, ${ownerTeam}, round ${round}, originale`;
+        const classes = [
+          "draft-pick-board-cell",
+          "dynamic-mobile-overview-slot",
+          "dynamic-mobile-pick-slot",
+          isTraded ? "is-traded" : "",
+          isBonus ? "is-bonus" : "",
+          absoluteIndex === 0 ? "is-selected" : ""
+        ].filter(Boolean).join(" ");
 
-    return `
-      <button
-        type="button"
-        class="${classes}"
-        style="${tradeStyle}"
-        data-pick-index="${absoluteIndex}"
-        aria-label="${escapeDraftHtml(ariaText)}"
-      >
-        <img
-          src="img/${escapeDraftHtml(ownerTeam)}.webp"
-          alt=""
-          loading="lazy"
-          onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
-        >
-        <span class="dynamic-mobile-overview-fallback">
-          ${escapeDraftHtml(getDynamicMobileInitials(ownerTeam))}
-        </span>
-        <em aria-hidden="true">#${pickNumber}</em>
-      </button>
-    `;
-  }).join("");
+        const ariaText = isBonus
+          ? `Pick ${pickNumber}, ${ownerTeam}, round ${round}, bonus da ${originalTeam}`
+          : isTraded
+            ? `Pick ${pickNumber}, ${ownerTeam}, round ${round}, da ${originalTeam}`
+            : `Pick ${pickNumber}, ${ownerTeam}, round ${round}, originale`;
+
+        return `
+          <button
+            type="button"
+            class="${classes}"
+            style="${tradeStyle}"
+            data-pick-index="${absoluteIndex}"
+            aria-label="${escapeDraftHtml(ariaText)}"
+          >
+            <img
+              src="img/${escapeDraftHtml(ownerTeam)}.webp"
+              alt=""
+              loading="lazy"
+              onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
+            >
+            <span class="dynamic-mobile-overview-fallback">
+              ${escapeDraftHtml(getDynamicMobileInitials(ownerTeam))}
+            </span>
+            <em aria-hidden="true">#${pickNumber}</em>
+            ${
+              isBonus
+                ? `<i class="bonus" aria-hidden="true">★</i>`
+                : isTraded
+                  ? `<i class="trade" aria-hidden="true">↔</i>`
+                  : ""
+            }
+          </button>
+        `;
+      }).join("");
+
+      return `
+        <div class="dynamic-mobile-overview-round dynamic-mobile-pick-row">
+          <div class="dynamic-mobile-overview-slots">
+            ${slotsHtml}
+          </div>
+        </div>
+      `;
+    }
+  ).join("");
 
   container.innerHTML = `
     <section class="draft-pick-sequence-card draft-pick-board-card draft-pick-board-desktop-wrap" aria-label="Draft ${escapeDraftHtml(conferenceTitle)} ordinato per pick">
@@ -1907,8 +1952,8 @@ function generaDraftByPick(containerId, draftData, conferenceTitle) {
         <span><i class="bonus">★</i>Bonus</span>
       </div>
 
-      <div class="dynamic-mobile-pick-grid">
-        ${mobileCellsHtml}
+      <div class="dynamic-mobile-overview-rounds dynamic-mobile-pick-rows">
+        ${mobileRowsHtml}
       </div>
 
       <div class="draft-pick-board-detail draft-pick-board-detail-mobile" aria-live="polite"></div>
@@ -1917,11 +1962,6 @@ function generaDraftByPick(containerId, draftData, conferenceTitle) {
 
   bindDraftByPickBoard(container);
   renderDraftByPickDetail(container, 0);
-  const mobileDetail = container.querySelector('.draft-pick-board-detail-mobile');
-  const desktopDetail = container.querySelector('.draft-pick-board-desktop-wrap .draft-pick-board-detail');
-  if (mobileDetail && desktopDetail) {
-    mobileDetail.innerHTML = desktopDetail.innerHTML;
-  }
 }
 
 function setDraftOrderView(nextView) {

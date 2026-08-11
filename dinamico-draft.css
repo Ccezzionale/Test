@@ -3012,3 +3012,128 @@ nav.site-nav .action-icon{opacity:1!important;filter:none!important;}
 @media (min-width:769px) and (max-width:920px){
   .draft-pick-board-grid-all{grid-template-columns:repeat(5,minmax(0,1fr));}
 }
+
+
+/* =========================================================
+   V33 FIXES
+   ========================================================= */
+/* 1) Trade colors on desktop by-round use the same dynamic palette */
+.pick.pick-traded{
+  background:linear-gradient(135deg,var(--dynamic-trade-soft,#fff8d8) 0%, #eef7ff 100%);
+  border-color:var(--dynamic-trade-color,#ffcc00);
+  box-shadow:0 6px 15px color-mix(in srgb, var(--dynamic-trade-color,#ffcc00) 22%, transparent), inset 0 1px 0 rgba(255,255,255,.9);
+}
+.pick.pick-traded .pick-bubble{
+  background:linear-gradient(180deg, color-mix(in srgb, var(--dynamic-trade-color,#ffcc00) 74%, white) 0%, var(--dynamic-trade-color,#ffcc00) 100%);
+  color:var(--dynamic-trade-text,#3b2b00);
+  border-color:color-mix(in srgb, var(--dynamic-trade-color,#ffcc00) 78%, black 12%);
+}
+.pick.pick-traded .pick-source{
+  color:var(--dynamic-trade-text,#6a4a00);
+}
+
+/* 2) Desktop by-pick logo larger and centered better */
+.draft-pick-board-desktop-cell{
+  justify-content:center !important;
+  align-items:center !important;
+}
+.draft-pick-board-desktop-cell .draft-pick-board-logo{
+  margin-top:28px !important;
+  width:96px !important;
+  height:96px !important;
+}
+.draft-pick-board-desktop-cell .draft-pick-board-logo img{
+  width:72px !important;
+  height:72px !important;
+  object-fit:contain;
+}
+.draft-pick-board-desktop-cell .draft-pick-board-logo > span{
+  width:68px !important;
+  height:68px !important;
+}
+
+/* 3) Mobile by-pick same language as mobile by-round, without round labels */
+@media (max-width: 768px){
+  .dynamic-mobile-pick-rows{
+    gap:4px;
+  }
+
+  .dynamic-mobile-pick-row{
+    grid-template-columns:1fr !important;
+    min-height:auto;
+    padding:2px 4px;
+  }
+
+  .dynamic-mobile-pick-row .dynamic-mobile-overview-slots{
+    grid-template-columns:repeat(8,minmax(0,1fr));
+    gap:3px;
+  }
+
+  .draft-pick-mobile-card .dynamic-mobile-overview-round:nth-child(even){
+    background:rgba(255,255,255,.025);
+  }
+
+  .dynamic-mobile-pick-slot{
+    height:35px;
+  }
+
+  .dynamic-mobile-pick-slot img{
+    width:26px;
+    height:26px;
+    object-fit:contain;
+    filter:drop-shadow(0 2px 3px rgba(0,31,63,.16));
+  }
+
+  .dynamic-mobile-pick-slot .dynamic-mobile-overview-fallback{
+    width:24px;
+    height:24px;
+  }
+
+  .dynamic-mobile-pick-slot em,
+  .dynamic-mobile-pick-slot i{
+    position:absolute;
+    z-index:2;
+    border-radius:999px;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+  }
+
+  .dynamic-mobile-pick-slot em{
+    top:-5px;
+    left:-5px;
+    min-width:15px;
+    height:15px;
+    padding:0 4px;
+    background:#001f3f;
+    color:#ffffff;
+    border:1px solid rgba(255,255,255,.55);
+    box-shadow:0 2px 6px rgba(0,31,63,.18);
+    font-size:.34rem;
+    font-style:normal;
+    font-weight:950;
+    line-height:1;
+  }
+
+  .dynamic-mobile-pick-slot i{
+    right:-5px;
+    bottom:-5px;
+    width:15px;
+    height:15px;
+    color:#ffffff;
+    box-shadow:0 2px 6px rgba(0,31,63,.18);
+    font-size:.52rem;
+    font-style:normal;
+    font-weight:950;
+    line-height:1;
+  }
+
+  .dynamic-mobile-pick-slot i.trade{
+    background:var(--dynamic-trade-color,#e53935);
+  }
+
+  .dynamic-mobile-pick-slot i.bonus{
+    background:#ffd54a;
+    color:#001f3f;
+  }
+}
