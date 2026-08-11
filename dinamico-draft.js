@@ -1618,6 +1618,143 @@ function renderDraftTradeAssets(assets) {
     .join(`<span class="draft-trade-plus"> + </span>`);
 }
 
+
+function generaDraftByPick(containerId, draftData, conferenceTitle) {
+  const container = document.getElementById(containerId);
+  if (!container) return;
+
+  if (!draftData || !draftData.length) {
+    container.innerHTML = `<p class="draft-error">⚠️ Nessun dato disponibile</p>`;
+    return;
+  }
+
+  registerDynamicDraftTradePalettes(draftData);
+
+  const picks = draftData
+    .flatMap(round =>
+      (round.Picks || []).map(pick => ({
+        ...pick,
+        round: Number(pick.round || round.Round || 0)
+      }))
+    )
+    .sort((a, b) => Number(a.pickNumber || 0) - Number(b.pickNumber || 0));
+
+  const rowsHtml = picks.map(pick => {
+    const ownerTeam = cleanTeamName(pick.team || pick.ownerTeam || "Squadra");
+    const originalTeam = cleanTeamName(pick.originalTeam || ownerTeam);
+    const isTraded = !!pick.traded;
+    const isBonus = !!pick.bonus;
+
+    const tradeKey = isTraded
+      ? getDynamicTradeKeyForPick({
+          ...pick,
+          team: ownerTeam,
+          ownerTeam
+        })
+      : "";
+
+    const tradePalette = isTraded
+      ? registerDynamicTradePalette(tradeKey)
+      : null;
+
+    const tradeStyle = tradePalette
+      ? [
+          `--dynamic-trade-color:${tradePalette.solid}`,
+          `--dynamic-trade-soft:${tradePalette.soft}`,
+          `--dynamic-trade-text:${tradePalette.text}`
+        ].join(";")
+      : "";
+
+    const rowClasses = [
+      "draft-pick-sequence-row",
+      isTraded ? "is-traded" : "",
+      isBonus ? "is-bonus" : ""
+    ].filter(Boolean).join(" ");
+
+    const originText = isTraded
+      ? `da ${escapeDraftHtml(shortDesktopTeamName(originalTeam))}`
+      : "Pick originale";
+
+    return `
+      <div
+        class="${rowClasses}"
+        style="${tradeStyle}"
+        data-pick-number="${Number(pick.pickNumber || 0)}"
+      >
+        <span class="draft-pick-sequence-number">#${Number(pick.pickNumber || 0)}</span>
+
+        <img
+          src="img/${escapeDraftHtml(ownerTeam)}.webp"
+          alt="${escapeDraftHtml(ownerTeam)}"
+          class="draft-pick-sequence-logo"
+          loading="lazy"
+          onerror="this.style.visibility='hidden'"
+        >
+
+        <span class="draft-pick-sequence-team">
+          <strong>${escapeDraftHtml(ownerTeam)}</strong>
+          <small>Round ${Number(pick.round || 0)} · ${originText}</small>
+        </span>
+
+        <span class="draft-pick-sequence-meta">
+          <span class="draft-pick-sequence-badge">R${Number(pick.round || 0)}</span>
+          ${
+            isBonus
+              ? `<span class="draft-pick-sequence-badge bonus">★ Bonus</span>`
+              : isTraded
+                ? `<span class="draft-pick-sequence-badge trade">↔ Trade</span>`
+                : ""
+          }
+        </span>
+      </div>
+    `;
+  }).join("");
+
+  container.innerHTML = `
+    <section class="draft-pick-sequence-card" aria-label="Draft ${escapeDraftHtml(conferenceTitle)} ordinato per pick">
+      <header class="draft-pick-sequence-head">
+        <span>
+          <strong>Draft by Pick</strong>
+          <small>${escapeDraftHtml(conferenceTitle)} · ordine assoluto di chiamata</small>
+        </span>
+        <span class="draft-pick-sequence-count">${picks.length}</span>
+      </header>
+
+      <div class="draft-pick-sequence-list">
+        ${rowsHtml}
+      </div>
+    </section>
+  `;
+}
+
+function setDraftOrderView(nextView) {
+  const view = nextView === "pick" ? "pick" : "round";
+
+  document.querySelectorAll(".draft-order-tab").forEach(button => {
+    button.classList.toggle(
+      "active",
+      button.dataset.draftOrder === view
+    );
+  });
+
+  document.querySelectorAll(".draft-tab-panel").forEach(panel => {
+    panel.classList.toggle("is-by-pick", view === "pick");
+  });
+}
+
+function initDraftOrderTabs() {
+  const buttons = document.querySelectorAll(".draft-order-tab");
+  if (!buttons.length) return;
+
+  buttons.forEach(button => {
+    button.addEventListener("click", () => {
+      setDraftOrderView(button.dataset.draftOrder);
+    });
+  });
+
+  setDraftOrderView("round");
+}
+
 function initDraftTabs() {
   const tabs = document.querySelectorAll(".draft-tab");
   const panels = document.querySelectorAll(".draft-tab-panel");
@@ -1641,6 +1778,7 @@ function initDraftTabs() {
 }
 
 initDraftTabs();
+initDraftOrderTabs();
 
 // Fetch classifica totale + future picks
 Promise.all([
@@ -1660,6 +1798,18 @@ Promise.all([
 
   generaMobileDraftCards("mobile-draft-league", draft.league, draft.leagueTeams);
   generaMobileDraftCards("mobile-draft-championship", draft.championship, draft.champTeams);
+
+  generaDraftByPick(
+    "draft-pick-sequence-league",
+    draft.league,
+    "Conference League"
+  );
+  generaDraftByPick(
+    "draft-pick-sequence-championship",
+    draft.championship,
+    "Conference Championship"
+  );
+
   loadDraftTradeSummary();
 })
 .catch(err => {
@@ -1673,11 +1823,15 @@ Promise.all([
   const tradesChampionship = document.getElementById("draft-trades-championship");
   const mobileTradesLeague = document.getElementById("mobile-draft-trades-league");
   const mobileTradesChampionship = document.getElementById("mobile-draft-trades-championship");
+  const byPickLeague = document.getElementById("draft-pick-sequence-league");
+  const byPickChampionship = document.getElementById("draft-pick-sequence-championship");
 
   if (league) league.innerHTML = `<p class="draft-error">⚠️ Errore nel caricamento del draft futuro.</p>`;
   if (championship) championship.innerHTML = `<p class="draft-error">⚠️ Errore nel caricamento del draft futuro.</p>`;
   if (mobileLeague) mobileLeague.innerHTML = `<p class="draft-error">⚠️ Errore nel caricamento del draft futuro.</p>`;
   if (mobileChampionship) mobileChampionship.innerHTML = `<p class="draft-error">⚠️ Errore nel caricamento del draft futuro.</p>`;
+  if (byPickLeague) byPickLeague.innerHTML = `<p class="draft-error">⚠️ Errore nel caricamento del draft futuro.</p>`;
+  if (byPickChampionship) byPickChampionship.innerHTML = `<p class="draft-error">⚠️ Errore nel caricamento del draft futuro.</p>`;
   if (tradesLeague) tradesLeague.innerHTML = `<p class="draft-error">⚠️ Errore nel caricamento delle trade draft.</p>`;
   if (tradesChampionship) tradesChampionship.innerHTML = `<p class="draft-error">⚠️ Errore nel caricamento delle trade draft.</p>`;
   if (mobileTradesLeague) mobileTradesLeague.innerHTML = `<p class="draft-error">⚠️ Errore nel caricamento delle trade draft.</p>`;
