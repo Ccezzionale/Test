@@ -3137,3 +3137,29 @@ nav.site-nav .action-icon{opacity:1!important;filter:none!important;}
     color:#001f3f;
   }
 }
+
+
+/* =========================================================
+   V34 - mobile by-pick pick number visibility fix
+   ========================================================= */
+@media (max-width: 768px){
+  .draft-pick-mobile-card .dynamic-mobile-pick-slot{
+    overflow: visible;
+  }
+
+  .draft-pick-mobile-card .dynamic-mobile-pick-slot em{
+    left: -4px !important;
+    top: -5px !important;
+    min-width: 20px !important;
+    height: 14px !important;
+    padding: 0 4px !important;
+    background: #001f3f !important;
+    color: #ffffff !important;
+    border: 1px solid rgba(255,255,255,.78) !important;
+    box-shadow: 0 3px 8px rgba(0,31,63,.24) !important;
+    font-size: .43rem !important;
+    line-height: 1 !important;
+    letter-spacing: -.01em !important;
+    white-space: nowrap;
+  }
+}
