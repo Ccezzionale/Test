@@ -3163,3 +3163,407 @@ nav.site-nav .action-icon{opacity:1!important;filter:none!important;}
     white-space: nowrap;
   }
 }
+
+
+/* =========================================================
+   V35 - BY TEAM
+   ========================================================= */
+.draft-order-tabs{
+  width:min(690px,100%);
+  grid-template-columns:repeat(3,1fr);
+}
+
+.draft-team-view{
+  display:none;
+  padding:22px;
+}
+
+.draft-tab-panel.is-by-team .draft-team-view{
+  display:block;
+}
+
+.draft-tab-panel.is-by-team > .board-header,
+.draft-tab-panel.is-by-team > .draft-block,
+.draft-tab-panel.is-by-team > .mobile-draft-cards,
+.draft-tab-panel.is-by-team > .draft-trade-summary,
+.draft-tab-panel.is-by-team > .draft-pick-sequence{
+  display:none !important;
+}
+
+.draft-team-panel{
+  width:min(1280px,100%);
+  margin:0 auto;
+}
+
+.draft-team-selector-card{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) minmax(280px,390px);
+  align-items:end;
+  gap:24px;
+  padding:22px 24px;
+  border-radius:24px;
+  background:
+    radial-gradient(circle at 100% 0%,rgba(255,213,74,.18),transparent 28%),
+    linear-gradient(180deg,#ffffff 0%,#f7fbff 100%);
+  border:1px solid #d8e4f3;
+  box-shadow:0 14px 32px rgba(0,31,63,.10);
+}
+
+.draft-team-selector-copy span,
+.draft-team-selector-copy strong,
+.draft-team-selector-copy small{
+  display:block;
+}
+
+.draft-team-kicker{
+  margin-bottom:5px;
+  color:#0b5cad;
+  font-size:.72rem;
+  font-weight:950;
+  letter-spacing:.07em;
+  text-transform:uppercase;
+}
+
+.draft-team-selector-copy strong{
+  color:#001f3f;
+  font-size:1.45rem;
+  line-height:1.05;
+  font-weight:950;
+  letter-spacing:-.035em;
+}
+
+.draft-team-selector-copy small{
+  margin-top:6px;
+  color:#657489;
+  font-size:.88rem;
+  font-weight:750;
+}
+
+.draft-team-select-wrap{
+  display:block;
+}
+
+.draft-team-select-wrap > span{
+  display:block;
+  margin:0 0 7px 3px;
+  color:#52647c;
+  font-size:.72rem;
+  font-weight:950;
+  text-transform:uppercase;
+  letter-spacing:.06em;
+}
+
+.draft-team-select{
+  width:100%;
+  min-height:50px;
+  appearance:none;
+  border:1px solid #cbdced;
+  border-radius:16px;
+  padding:0 44px 0 15px;
+  background:
+    linear-gradient(45deg,transparent 50%,#001f3f 50%) calc(100% - 20px) 21px/6px 6px no-repeat,
+    linear-gradient(135deg,#001f3f 50%,transparent 50%) calc(100% - 14px) 21px/6px 6px no-repeat,
+    linear-gradient(180deg,#ffffff 0%,#f2f7fd 100%);
+  color:#001f3f;
+  font:inherit;
+  font-size:.92rem;
+  font-weight:900;
+  outline:none;
+  box-shadow:0 6px 14px rgba(0,31,63,.07);
+}
+
+.draft-team-select:focus{
+  border-color:#0b5cad;
+  box-shadow:0 0 0 3px rgba(11,92,173,.12),0 7px 15px rgba(0,31,63,.08);
+}
+
+.draft-team-result{
+  margin-top:16px;
+}
+
+.draft-team-empty{
+  min-height:180px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  padding:26px;
+  border-radius:24px;
+  border:1px dashed #c8d8eb;
+  background:rgba(255,255,255,.68);
+  color:#657489;
+}
+
+.draft-team-empty-icon{
+  width:42px;
+  height:42px;
+  margin-bottom:10px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border-radius:999px;
+  background:#eaf3fd;
+  color:#001f3f;
+  font-size:1.4rem;
+  font-weight:950;
+}
+
+.draft-team-empty strong{
+  color:#001f3f;
+  font-size:1rem;
+  font-weight:950;
+}
+
+.draft-team-empty small{
+  margin-top:4px;
+  font-size:.8rem;
+  font-weight:750;
+}
+
+.draft-team-result-card{
+  overflow:hidden;
+  border-radius:24px;
+  border:1px solid #d8e4f3;
+  background:linear-gradient(180deg,#ffffff 0%,#f8fbff 100%);
+  box-shadow:0 14px 32px rgba(0,31,63,.10);
+}
+
+.draft-team-result-head{
+  display:grid;
+  grid-template-columns:72px minmax(0,1fr) auto;
+  align-items:center;
+  gap:15px;
+  padding:18px 20px;
+  border-bottom:1px solid #dbe6f3;
+  background:radial-gradient(circle at 100% 0%,rgba(255,213,74,.17),transparent 30%);
+}
+
+.draft-team-result-logo{
+  width:66px;
+  height:66px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border-radius:18px;
+  background:#f5f9fe;
+  border:1px solid #d7e4f3;
+}
+
+.draft-team-result-logo img{
+  width:54px;
+  height:54px;
+  object-fit:contain;
+  filter:drop-shadow(0 5px 8px rgba(0,31,63,.16));
+}
+
+.draft-team-result-logo > span{
+  display:none;
+  width:50px;
+  height:50px;
+  align-items:center;
+  justify-content:center;
+  border-radius:999px;
+  background:#dceafa;
+  color:#001f3f;
+  font-size:.85rem;
+  font-weight:950;
+}
+
+.draft-team-result-title strong,
+.draft-team-result-title small{display:block;}
+
+.draft-team-result-title strong{
+  color:#001f3f;
+  font-size:1.5rem;
+  font-weight:950;
+  letter-spacing:-.035em;
+}
+
+.draft-team-result-title small{
+  margin-top:3px;
+  color:#657489;
+  font-size:.82rem;
+  font-weight:800;
+}
+
+.draft-team-result-count{
+  min-width:46px;
+  height:38px;
+  padding:0 12px;
+  border-radius:999px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  background:linear-gradient(180deg,#07457f 0%,#001f3f 100%);
+  color:#ffd54a;
+  font-size:.86rem;
+  font-weight:950;
+  box-shadow:0 7px 15px rgba(0,31,63,.17);
+}
+
+.draft-team-picks-grid{
+  display:grid;
+  grid-template-columns:repeat(6,minmax(0,1fr));
+  gap:10px;
+  padding:16px;
+}
+
+.draft-team-pick{
+  position:relative;
+  min-height:112px;
+  padding:45px 12px 12px;
+  border-radius:18px;
+  border:1px solid #d5e2f1;
+  background:linear-gradient(180deg,#ffffff 0%,#f5f9fe 100%);
+  box-shadow:0 7px 15px rgba(0,31,63,.07);
+}
+
+.draft-team-pick-number{
+  position:absolute;
+  top:10px;
+  left:10px;
+  min-width:43px;
+  height:28px;
+  padding:0 9px;
+  border-radius:999px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:linear-gradient(180deg,#07457f 0%,#001f3f 100%);
+  color:#ffd54a;
+  font-size:.78rem;
+  font-weight:950;
+}
+
+.draft-team-pick-round{
+  position:absolute;
+  top:12px;
+  right:11px;
+  color:#52647c;
+  font-size:.72rem;
+  font-weight:950;
+}
+
+.draft-team-pick > strong{
+  display:block;
+  color:#001f3f;
+  font-size:1rem;
+  font-weight:950;
+}
+
+.draft-team-pick > small{
+  display:block;
+  min-height:18px;
+  margin-top:4px;
+  color:#657489;
+  font-size:.72rem;
+  font-weight:800;
+}
+
+.draft-team-pick-badge{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-height:25px;
+  margin-top:9px;
+  padding:0 8px;
+  border-radius:999px;
+  font-size:.66rem;
+  font-weight:950;
+}
+
+.draft-team-pick-badge.original{
+  background:#edf4fc;
+  color:#52647c;
+  border:1px solid #d6e3f2;
+}
+
+.draft-team-pick.is-traded{
+  border:2px solid var(--dynamic-trade-color,#2f80ed);
+  background:linear-gradient(180deg,#ffffff 0%,var(--dynamic-trade-soft,#eaf4ff) 100%);
+}
+
+.draft-team-pick.is-traded .draft-team-pick-number,
+.draft-team-pick-badge.trade{
+  background:var(--dynamic-trade-color,#2f80ed);
+  color:#ffffff;
+}
+
+.draft-team-pick-badge.trade{
+  border:1px solid var(--dynamic-trade-color,#2f80ed);
+}
+
+.draft-team-pick.is-bonus{
+  border:2px solid #e6bd2f;
+  background:linear-gradient(180deg,#fffdf2 0%,#fff2c1 100%);
+}
+
+.draft-team-pick.is-bonus .draft-team-pick-number,
+.draft-team-pick-badge.bonus{
+  background:#ffd54a;
+  color:#001f3f;
+}
+
+.draft-team-pick-badge.bonus{
+  border:1px solid #dfb721;
+}
+
+@media (max-width:1100px){
+  .draft-team-picks-grid{grid-template-columns:repeat(4,minmax(0,1fr));}
+}
+
+@media (max-width:768px){
+  .draft-order-tabs{
+    width:100%;
+    grid-template-columns:repeat(3,1fr);
+  }
+
+  .draft-order-tab{
+    padding:10px 6px;
+    font-size:.78rem;
+  }
+
+  .draft-team-view{padding:0;}
+
+  .draft-team-selector-card{
+    grid-template-columns:1fr;
+    gap:15px;
+    padding:16px;
+    border-radius:22px;
+  }
+
+  .draft-team-selector-copy strong{font-size:1.2rem;}
+
+  .draft-team-result-head{
+    grid-template-columns:56px minmax(0,1fr) auto;
+    gap:10px;
+    padding:14px;
+  }
+
+  .draft-team-result-logo{
+    width:52px;
+    height:52px;
+    border-radius:15px;
+  }
+
+  .draft-team-result-logo img{
+    width:43px;
+    height:43px;
+  }
+
+  .draft-team-result-title strong{font-size:1.08rem;}
+  .draft-team-result-title small{font-size:.7rem;}
+
+  .draft-team-picks-grid{
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:8px;
+    padding:10px;
+  }
+
+  .draft-team-pick{
+    min-height:100px;
+    padding:42px 10px 10px;
+    border-radius:15px;
+  }
+}

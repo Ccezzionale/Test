@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, minimum-scale=0.5, maximum-scale=3.0">
   <link rel="stylesheet" href="navbar.css">
-  <link rel="stylesheet" href="dinamico-draft.css?v=34" />
+  <link rel="stylesheet" href="dinamico-draft.css?v=35" />
   <title>Draft Dinamico</title>
 </head>
 <body>
@@ -136,6 +136,9 @@
     <button class="draft-order-tab" type="button" data-draft-order="pick">
       By Pick
     </button>
+    <button class="draft-order-tab" type="button" data-draft-order="team">
+      By Team
+    </button>
   </div>
 
  <section id="league-panel" class="draft-board-panel draft-section draft-tab-panel active">
@@ -148,6 +151,7 @@
       </div>
 
 <div id="draft-pick-sequence-league" class="draft-pick-sequence"></div>
+<div id="draft-team-view-league" class="draft-team-view"></div>
 
 <div class="draft-block">
   <div class="rounds-col" id="rounds-league"></div>
@@ -170,6 +174,7 @@
       </div>
 
 <div id="draft-pick-sequence-championship" class="draft-pick-sequence"></div>
+<div id="draft-team-view-championship" class="draft-team-view"></div>
 
 <div class="draft-block">
   <div class="rounds-col" id="rounds-championship"></div>
@@ -183,7 +188,7 @@
     </section>
   </main>
 <script src="mobile-nav.js"></script>
-  <script type="module" src="dinamico-draft.js?v=34"></script>
+  <script type="module" src="dinamico-draft.js?v=35"></script>
   <script src="navbar.js"></script>
 </body>
 </html>

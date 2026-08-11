@@ -1964,8 +1964,164 @@ function generaDraftByPick(containerId, draftData, conferenceTitle) {
   renderDraftByPickDetail(container, 0);
 }
 
+
+function generaDraftByTeam(containerId, draftData, squadreOrdine, conferenceTitle) {
+  const container = document.getElementById(containerId);
+  if (!container) return;
+
+  if (!draftData || !draftData.length) {
+    container.innerHTML = `<p class="draft-error">⚠️ Nessun dato disponibile</p>`;
+    return;
+  }
+
+  registerDynamicDraftTradePalettes(draftData);
+
+  const teams = (squadreOrdine || [])
+    .map(team => cleanTeamName(team))
+    .filter(Boolean);
+
+  const picks = draftData.flatMap(round =>
+    (round.Picks || []).map(pick => ({
+      ...pick,
+      round: Number(pick.round || round.Round || 0),
+      displayRound: Number(pick.displayRound || pick.round || round.Round || 0)
+    }))
+  );
+
+  const optionsHtml = teams.map(team => `
+    <option value="${escapeDraftHtml(team)}">${escapeDraftHtml(team)}</option>
+  `).join("");
+
+  container.innerHTML = `
+    <section class="draft-team-panel" aria-label="Draft ${escapeDraftHtml(conferenceTitle)} per squadra">
+      <div class="draft-team-selector-card">
+        <div class="draft-team-selector-copy">
+          <span class="draft-team-kicker">Vista per squadra</span>
+          <strong>Scegli una franchigia</strong>
+          <small>Visualizza tutte le chiamate possedute nel Draft 2027-28.</small>
+        </div>
+
+        <label class="draft-team-select-wrap">
+          <span>Squadra</span>
+          <select class="draft-team-select" aria-label="Scegli squadra">
+            <option value="">Seleziona una squadra...</option>
+            ${optionsHtml}
+          </select>
+        </label>
+      </div>
+
+      <div class="draft-team-result">
+        <div class="draft-team-empty">
+          <span class="draft-team-empty-icon">⌄</span>
+          <strong>Nessuna squadra selezionata</strong>
+          <small>Scegli una squadra dal menu per vedere tutte le sue chiamate.</small>
+        </div>
+      </div>
+    </section>
+  `;
+
+  const select = container.querySelector(".draft-team-select");
+  const result = container.querySelector(".draft-team-result");
+
+  select?.addEventListener("change", () => {
+    const selectedTeam = cleanTeamName(select.value);
+
+    if (!selectedTeam) {
+      result.innerHTML = `
+        <div class="draft-team-empty">
+          <span class="draft-team-empty-icon">⌄</span>
+          <strong>Nessuna squadra selezionata</strong>
+          <small>Scegli una squadra dal menu per vedere tutte le sue chiamate.</small>
+        </div>
+      `;
+      return;
+    }
+
+    const teamPicks = picks
+      .filter(pick => teamKey(pick.team || pick.ownerTeam || "") === teamKey(selectedTeam))
+      .sort((a, b) => Number(a.pickNumber || 0) - Number(b.pickNumber || 0));
+
+    const cardsHtml = teamPicks.map(pick => {
+      const originalTeam = cleanTeamName(pick.originalTeam || selectedTeam);
+      const isTraded = !!pick.traded;
+      const isBonus = !!pick.bonus;
+      const pickNumber = Number(pick.pickNumber || 0);
+      const round = Number(pick.round || 0);
+      const displayRound = Number(pick.displayRound || round || 0);
+
+      const tradeKey = isTraded
+        ? getDynamicTradeKeyForPick({ ...pick, team: selectedTeam, ownerTeam: selectedTeam })
+        : "";
+      const tradePalette = isTraded
+        ? registerDynamicTradePalette(tradeKey)
+        : null;
+      const tradeStyle = tradePalette
+        ? [
+            `--dynamic-trade-color:${tradePalette.solid}`,
+            `--dynamic-trade-soft:${tradePalette.soft}`,
+            `--dynamic-trade-text:${tradePalette.text}`
+          ].join(";")
+        : "";
+
+      const classes = [
+        "draft-team-pick",
+        isTraded ? "is-traded" : "",
+        isBonus ? "is-bonus" : ""
+      ].filter(Boolean).join(" ");
+
+      let origin = "Pick originale";
+      if (isBonus) origin = `Bonus da ${shortDesktopTeamName(originalTeam)}`;
+      else if (isTraded) origin = `da ${shortDesktopTeamName(originalTeam)}`;
+
+      return `
+        <article class="${classes}" style="${tradeStyle}">
+          <span class="draft-team-pick-number">#${pickNumber}</span>
+          <span class="draft-team-pick-round">R${displayRound}</span>
+          <strong>Pick #${pickNumber}</strong>
+          <small>${escapeDraftHtml(origin)}</small>
+          ${
+            isBonus
+              ? `<span class="draft-team-pick-badge bonus">★ Bonus</span>`
+              : isTraded
+                ? `<span class="draft-team-pick-badge trade">↔ Trade</span>`
+                : `<span class="draft-team-pick-badge original">Originale</span>`
+          }
+        </article>
+      `;
+    }).join("");
+
+    result.innerHTML = `
+      <section class="draft-team-result-card">
+        <header class="draft-team-result-head">
+          <span class="draft-team-result-logo">
+            <img
+              src="img/${escapeDraftHtml(selectedTeam)}.webp"
+              alt="${escapeDraftHtml(selectedTeam)}"
+              onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
+            >
+            <span>${escapeDraftHtml(getDynamicMobileInitials(selectedTeam))}</span>
+          </span>
+
+          <span class="draft-team-result-title">
+            <strong>${escapeDraftHtml(selectedTeam)}</strong>
+            <small>${teamPicks.length} chiamate totali · ordine per numero di pick</small>
+          </span>
+
+          <span class="draft-team-result-count">${teamPicks.length}</span>
+        </header>
+
+        <div class="draft-team-picks-grid">
+          ${cardsHtml || `<p class="draft-error">Nessuna chiamata disponibile per questa squadra.</p>`}
+        </div>
+      </section>
+    `;
+  });
+}
+
 function setDraftOrderView(nextView) {
-  const view = nextView === "pick" ? "pick" : "round";
+  const view = ["round", "pick", "team"].includes(nextView)
+    ? nextView
+    : "round";
 
   document.querySelectorAll(".draft-order-tab").forEach(button => {
     button.classList.toggle(
@@ -1976,6 +2132,7 @@ function setDraftOrderView(nextView) {
 
   document.querySelectorAll(".draft-tab-panel").forEach(panel => {
     panel.classList.toggle("is-by-pick", view === "pick");
+    panel.classList.toggle("is-by-team", view === "team");
   });
 }
 
@@ -2047,6 +2204,19 @@ Promise.all([
     "Conference Championship"
   );
 
+  generaDraftByTeam(
+    "draft-team-view-league",
+    draft.league,
+    draft.leagueTeams,
+    "Conference League"
+  );
+  generaDraftByTeam(
+    "draft-team-view-championship",
+    draft.championship,
+    draft.champTeams,
+    "Conference Championship"
+  );
+
   loadDraftTradeSummary();
 })
 .catch(err => {
@@ -2062,6 +2232,8 @@ Promise.all([
   const mobileTradesChampionship = document.getElementById("mobile-draft-trades-championship");
   const byPickLeague = document.getElementById("draft-pick-sequence-league");
   const byPickChampionship = document.getElementById("draft-pick-sequence-championship");
+  const byTeamLeague = document.getElementById("draft-team-view-league");
+  const byTeamChampionship = document.getElementById("draft-team-view-championship");
 
   if (league) league.innerHTML = `<p class="draft-error">⚠️ Errore nel caricamento del draft futuro.</p>`;
   if (championship) championship.innerHTML = `<p class="draft-error">⚠️ Errore nel caricamento del draft futuro.</p>`;
@@ -2069,6 +2241,8 @@ Promise.all([
   if (mobileChampionship) mobileChampionship.innerHTML = `<p class="draft-error">⚠️ Errore nel caricamento del draft futuro.</p>`;
   if (byPickLeague) byPickLeague.innerHTML = `<p class="draft-error">⚠️ Errore nel caricamento del draft futuro.</p>`;
   if (byPickChampionship) byPickChampionship.innerHTML = `<p class="draft-error">⚠️ Errore nel caricamento del draft futuro.</p>`;
+  if (byTeamLeague) byTeamLeague.innerHTML = `<p class="draft-error">⚠️ Errore nel caricamento del draft futuro.</p>`;
+  if (byTeamChampionship) byTeamChampionship.innerHTML = `<p class="draft-error">⚠️ Errore nel caricamento del draft futuro.</p>`;
   if (tradesLeague) tradesLeague.innerHTML = `<p class="draft-error">⚠️ Errore nel caricamento delle trade draft.</p>`;
   if (tradesChampionship) tradesChampionship.innerHTML = `<p class="draft-error">⚠️ Errore nel caricamento delle trade draft.</p>`;
   if (mobileTradesLeague) mobileTradesLeague.innerHTML = `<p class="draft-error">⚠️ Errore nel caricamento delle trade draft.</p>`;
