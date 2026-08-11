@@ -2559,3 +2559,139 @@ nav.site-nav .action-icon{opacity:1!important;filter:none!important;}
   }
 }
 
+
+
+/* =========================================================
+   DRAFT BY PICK V30 - BOARD FULL PAGE + MOBILE SOLO LOGHI
+   ========================================================= */
+.draft-pick-board-desktop-wrap{display:block;}
+.draft-pick-board-mobile-wrap{display:none;}
+
+.draft-pick-board-grid-all{
+  display:grid;
+  grid-template-columns:repeat(8,minmax(0,1fr));
+  gap:10px;
+  padding:18px;
+}
+
+.draft-pick-board-desktop-cell{
+  min-height:112px;
+  padding:12px 10px;
+  justify-content:flex-start;
+}
+
+.draft-pick-board-desktop-cell .draft-pick-board-number{
+  position:absolute;
+  top:9px;
+  left:9px;
+  min-width:42px;
+  min-height:28px;
+  padding:0 10px;
+  border-radius:999px;
+  font-size:.84rem;
+}
+
+.draft-pick-board-desktop-cell .draft-pick-board-logo{
+  width:62px;
+  height:62px;
+  margin-top:16px;
+}
+
+.draft-pick-board-desktop-cell .draft-pick-board-logo img{
+  width:46px;
+  height:46px;
+}
+
+.draft-pick-board-desktop-cell .draft-pick-board-logo > span{
+  width:46px;
+  height:46px;
+  font-size:.85rem;
+}
+
+.draft-pick-board-desktop-cell .draft-pick-board-round,
+.draft-pick-board-desktop-cell > strong,
+.draft-pick-board-desktop-cell .draft-pick-board-status,
+.draft-pick-board-desktop-cell::after{display:none !important;}
+
+.draft-pick-board-desktop-cell.is-traded{
+  border:2px solid var(--dynamic-trade-color, #d56085);
+  background:linear-gradient(180deg,#ffffff 0%, var(--dynamic-trade-soft, #fdf0f4) 100%);
+}
+
+.draft-pick-board-desktop-cell.is-bonus{
+  border:2px solid #ffd54a;
+  background:linear-gradient(180deg,#fffbe8 0%,#fff1ba 100%);
+}
+
+.draft-pick-board-desktop-cell.is-selected{
+  transform:translateY(-3px);
+  box-shadow:0 16px 28px rgba(0,31,63,.18), 0 0 0 3px rgba(255,213,74,.34);
+}
+
+@media (max-width: 1180px){
+  .draft-pick-board-grid-all{grid-template-columns:repeat(6,minmax(0,1fr));}
+}
+
+@media (max-width: 900px){
+  .draft-pick-board-grid-all{grid-template-columns:repeat(5,minmax(0,1fr));}
+}
+
+@media (max-width: 768px){
+  .draft-pick-board-desktop-wrap{display:none;}
+  .draft-pick-board-mobile-wrap{display:block;}
+
+  .draft-pick-sequence{padding:0;}
+
+  .draft-pick-mobile-card{
+    margin-top:0;
+    padding:14px 10px 12px;
+  }
+
+  .dynamic-mobile-pick-grid{
+    display:grid;
+    grid-template-columns:repeat(4, minmax(0,1fr));
+    gap:6px;
+    padding:4px 2px 0;
+  }
+
+  .dynamic-mobile-pick-slot{
+    appearance:none;
+    border-width:1px;
+    cursor:pointer;
+  }
+
+  .dynamic-mobile-pick-slot.is-selected{
+    transform:translateY(-1px);
+    box-shadow:0 8px 16px rgba(0,31,63,.20), 0 0 0 2px rgba(255,213,74,.40);
+  }
+
+  .draft-pick-board-detail-mobile{
+    margin-top:12px;
+  }
+}
+
+@media (max-width: 420px){
+  .dynamic-mobile-pick-grid{
+    grid-template-columns:repeat(4, minmax(0,1fr));
+    gap:5px;
+  }
+
+  .dynamic-mobile-pick-slot{
+    height:34px;
+  }
+
+  .dynamic-mobile-pick-slot img{
+    width:22px;
+    height:22px;
+  }
+
+  .dynamic-mobile-pick-slot .dynamic-mobile-overview-fallback{
+    width:22px;
+    height:22px;
+  }
+
+  .dynamic-mobile-pick-slot em{
+    font-size:.32rem;
+    min-width:15px;
+  }
+}

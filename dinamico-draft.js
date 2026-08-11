@@ -1510,6 +1510,10 @@ function buildDraftTradesMarkup(trades, conferenceTitle) {
       </div>
     </div>
   `;
+
+  details.forEach(detail => {
+    detail.innerHTML = detailMarkup;
+  });
 }
 
 function bindDraftTradesPanel(container, forceOpen = false) {
@@ -1624,9 +1628,9 @@ const DRAFT_BY_PICK_PAGE_SIZE = 24;
 function renderDraftByPickDetail(container, pickIndex) {
   const picks = container?.__draftByPickPicks || [];
   const pick = picks[Number(pickIndex)];
-  const detail = container?.querySelector(".draft-pick-board-detail");
+  const details = [...(container?.querySelectorAll(".draft-pick-board-detail") || [])];
 
-  if (!pick || !detail) return;
+  if (!pick || !details.length) return;
 
   const ownerTeam = cleanTeamName(pick.team || pick.ownerTeam || "Squadra");
   const originalTeam = cleanTeamName(pick.originalTeam || ownerTeam);
@@ -1656,7 +1660,7 @@ function renderDraftByPickDetail(container, pickIndex) {
     originText = `Pick ricevuta da ${shortDesktopTeamName(originalTeam)}`;
   }
 
-  detail.innerHTML = `
+  const detailMarkup = `
     <div class="draft-pick-board-detail-copy" style="${tradeStyle}">
       <span class="draft-pick-board-detail-kicker">Pick #${pickNumber} · Round ${round}</span>
 
@@ -1688,6 +1692,10 @@ function renderDraftByPickDetail(container, pickIndex) {
       </div>
     </div>
   `;
+
+  details.forEach(detail => {
+    detail.innerHTML = detailMarkup;
+  });
 }
 
 function selectDraftByPickCell(container, cell) {
@@ -1701,60 +1709,10 @@ function selectDraftByPickCell(container, cell) {
   renderDraftByPickDetail(container, cell.dataset.pickIndex);
 }
 
-function setDraftByPickPage(container, nextPage) {
-  if (!container) return;
-
-  const pages = [...container.querySelectorAll(".draft-pick-board-page")];
-  if (!pages.length) return;
-
-  const safePage = Math.max(0, Math.min(pages.length - 1, Number(nextPage) || 0));
-
-  pages.forEach(page => {
-    page.classList.toggle(
-      "active",
-      Number(page.dataset.pageIndex) === safePage
-    );
-  });
-
-  container
-    .querySelectorAll("[data-draft-pick-page]")
-    .forEach(button => {
-      const active = Number(button.dataset.draftPickPage) === safePage;
-      button.classList.toggle("active", active);
-      button.setAttribute("aria-selected", String(active));
-    });
-
-  const activePage = pages.find(
-    page => Number(page.dataset.pageIndex) === safePage
-  );
-  const firstCell = activePage?.querySelector(".draft-pick-board-cell");
-
-  if (firstCell) {
-    selectDraftByPickCell(container, firstCell);
-  }
-
-  const pager = container.querySelector(".draft-pick-board-pager");
-  const activePagerButton = pager?.querySelector(
-    `[data-draft-pick-page="${safePage}"]`
-  );
-
-  activePagerButton?.scrollIntoView({
-    behavior: "smooth",
-    block: "nearest",
-    inline: "center"
-  });
-}
-
 function bindDraftByPickBoard(container) {
   if (!container || container.dataset.draftPickBoardBound === "1") return;
 
   container.addEventListener("click", event => {
-    const pageButton = event.target.closest("[data-draft-pick-page]");
-    if (pageButton && container.contains(pageButton)) {
-      setDraftByPickPage(container, pageButton.dataset.draftPickPage);
-      return;
-    }
-
     const pickCell = event.target.closest(".draft-pick-board-cell");
     if (pickCell && container.contains(pickCell)) {
       selectDraftByPickCell(container, pickCell);
@@ -1786,115 +1744,126 @@ function generaDraftByPick(containerId, draftData, conferenceTitle) {
 
   container.__draftByPickPicks = picks;
 
-  const pageCount = Math.max(1, Math.ceil(picks.length / DRAFT_BY_PICK_PAGE_SIZE));
+  const desktopCellsHtml = picks.map((pick, absoluteIndex) => {
+    const ownerTeam = cleanTeamName(pick.team || pick.ownerTeam || "Squadra");
+    const originalTeam = cleanTeamName(pick.originalTeam || ownerTeam);
+    const isTraded = !!pick.traded;
+    const isBonus = !!pick.bonus;
+    const round = Number(pick.round || 0);
+    const pickNumber = Number(pick.pickNumber || 0);
 
-  const pagerHtml = Array.from({ length: pageCount }, (_, pageIndex) => {
-    const from = pageIndex * DRAFT_BY_PICK_PAGE_SIZE + 1;
-    const to = Math.min((pageIndex + 1) * DRAFT_BY_PICK_PAGE_SIZE, picks.length);
+    const tradeKey = isTraded
+      ? getDynamicTradeKeyForPick({ ...pick, team: ownerTeam, ownerTeam })
+      : "";
+    const tradePalette = isTraded
+      ? registerDynamicTradePalette(tradeKey)
+      : null;
+    const tradeStyle = tradePalette
+      ? [
+          `--dynamic-trade-color:${tradePalette.solid}`,
+          `--dynamic-trade-soft:${tradePalette.soft}`,
+          `--dynamic-trade-text:${tradePalette.text}`
+        ].join(";")
+      : "";
+
+    const classes = [
+      "draft-pick-board-cell",
+      absoluteIndex % 2 === 0 ? "checker-a" : "checker-b",
+      isTraded ? "is-traded" : "",
+      isBonus ? "is-bonus" : "",
+      absoluteIndex === 0 ? "is-selected" : ""
+    ].filter(Boolean).join(" ");
+
+    const ariaText = isBonus
+      ? `Pick ${pickNumber}, ${ownerTeam}, round ${round}, bonus da ${originalTeam}`
+      : isTraded
+        ? `Pick ${pickNumber}, ${ownerTeam}, round ${round}, da ${originalTeam}`
+        : `Pick ${pickNumber}, ${ownerTeam}, round ${round}, originale`;
 
     return `
       <button
         type="button"
-        class="draft-pick-board-page-button ${pageIndex === 0 ? "active" : ""}"
-        data-draft-pick-page="${pageIndex}"
-        role="tab"
-        aria-selected="${pageIndex === 0 ? "true" : "false"}"
+        class="${classes} draft-pick-board-desktop-cell"
+        style="${tradeStyle}"
+        data-pick-index="${absoluteIndex}"
+        aria-label="${escapeDraftHtml(ariaText)}"
       >
-        ${from}–${to}
+        <span class="draft-pick-board-number">#${pickNumber}</span>
+
+        <span class="draft-pick-board-logo">
+          <img
+            src="img/${escapeDraftHtml(ownerTeam)}.webp"
+            alt=""
+            loading="lazy"
+            onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
+          >
+          <span>${escapeDraftHtml(getDynamicMobileInitials(ownerTeam))}</span>
+        </span>
       </button>
     `;
   }).join("");
 
-  const pagesHtml = Array.from({ length: pageCount }, (_, pageIndex) => {
-    const startIndex = pageIndex * DRAFT_BY_PICK_PAGE_SIZE;
-    const pagePicks = picks.slice(startIndex, startIndex + DRAFT_BY_PICK_PAGE_SIZE);
+  const mobileCellsHtml = picks.map((pick, absoluteIndex) => {
+    const ownerTeam = cleanTeamName(pick.team || pick.ownerTeam || "Squadra");
+    const originalTeam = cleanTeamName(pick.originalTeam || ownerTeam);
+    const isTraded = !!pick.traded;
+    const isBonus = !!pick.bonus;
+    const round = Number(pick.round || 0);
+    const pickNumber = Number(pick.pickNumber || 0);
 
-    const cellsHtml = pagePicks.map((pick, localIndex) => {
-      const absoluteIndex = startIndex + localIndex;
-      const ownerTeam = cleanTeamName(pick.team || pick.ownerTeam || "Squadra");
-      const originalTeam = cleanTeamName(pick.originalTeam || ownerTeam);
-      const isTraded = !!pick.traded;
-      const isBonus = !!pick.bonus;
-      const round = Number(pick.round || 0);
-      const pickNumber = Number(pick.pickNumber || 0);
+    const tradeKey = isTraded
+      ? getDynamicTradeKeyForPick({ ...pick, team: ownerTeam, ownerTeam })
+      : "";
+    const tradePalette = isTraded
+      ? registerDynamicTradePalette(tradeKey)
+      : null;
+    const tradeStyle = tradePalette
+      ? [
+          `--dynamic-trade-color:${tradePalette.solid}`,
+          `--dynamic-trade-soft:${tradePalette.soft}`,
+          `--dynamic-trade-text:${tradePalette.text}`
+        ].join(";")
+      : "";
 
-      const tradeKey = isTraded
-        ? getDynamicTradeKeyForPick({ ...pick, team: ownerTeam, ownerTeam })
-        : "";
-      const tradePalette = isTraded
-        ? registerDynamicTradePalette(tradeKey)
-        : null;
-      const tradeStyle = tradePalette
-        ? [
-            `--dynamic-trade-color:${tradePalette.solid}`,
-            `--dynamic-trade-soft:${tradePalette.soft}`,
-            `--dynamic-trade-text:${tradePalette.text}`
-          ].join(";")
-        : "";
+    const classes = [
+      "draft-pick-board-cell",
+      "dynamic-mobile-overview-slot",
+      "dynamic-mobile-pick-slot",
+      isTraded ? "is-traded" : "",
+      isBonus ? "is-bonus" : "",
+      absoluteIndex === 0 ? "is-selected" : ""
+    ].filter(Boolean).join(" ");
 
-      const classes = [
-        "draft-pick-board-cell",
-        absoluteIndex % 2 === 0 ? "checker-a" : "checker-b",
-        isTraded ? "is-traded" : "",
-        isBonus ? "is-bonus" : "",
-        absoluteIndex === 0 ? "is-selected" : ""
-      ].filter(Boolean).join(" ");
-
-      let statusIcon = "";
-      if (isBonus) {
-        statusIcon = `<span class="draft-pick-board-status bonus" aria-label="Bonus">★</span>`;
-      } else if (isTraded) {
-        statusIcon = `<span class="draft-pick-board-status trade" aria-label="Trade">↔</span>`;
-      }
-
-      const ariaText = isBonus
-        ? `Pick ${pickNumber}, ${ownerTeam}, round ${round}, bonus da ${originalTeam}`
-        : isTraded
-          ? `Pick ${pickNumber}, ${ownerTeam}, round ${round}, da ${originalTeam}`
-          : `Pick ${pickNumber}, ${ownerTeam}, round ${round}, originale`;
-
-      return `
-        <button
-          type="button"
-          class="${classes}"
-          style="${tradeStyle}"
-          data-pick-index="${absoluteIndex}"
-          aria-label="${escapeDraftHtml(ariaText)}"
-        >
-          <span class="draft-pick-board-number">#${pickNumber}</span>
-          <span class="draft-pick-board-round">R${round}</span>
-
-          <span class="draft-pick-board-logo">
-            <img
-              src="img/${escapeDraftHtml(ownerTeam)}.webp"
-              alt=""
-              loading="lazy"
-              onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
-            >
-            <span>${escapeDraftHtml(getDynamicMobileInitials(ownerTeam))}</span>
-          </span>
-
-          <strong>${escapeDraftHtml(shortDesktopTeamName(ownerTeam))}</strong>
-          ${statusIcon}
-        </button>
-      `;
-    }).join("");
+    const ariaText = isBonus
+      ? `Pick ${pickNumber}, ${ownerTeam}, round ${round}, bonus da ${originalTeam}`
+      : isTraded
+        ? `Pick ${pickNumber}, ${ownerTeam}, round ${round}, da ${originalTeam}`
+        : `Pick ${pickNumber}, ${ownerTeam}, round ${round}, originale`;
 
     return `
-      <div
-        class="draft-pick-board-page ${pageIndex === 0 ? "active" : ""}"
-        data-page-index="${pageIndex}"
-        role="tabpanel"
+      <button
+        type="button"
+        class="${classes}"
+        style="${tradeStyle}"
+        data-pick-index="${absoluteIndex}"
+        aria-label="${escapeDraftHtml(ariaText)}"
       >
-        <div class="draft-pick-board-grid">
-          ${cellsHtml}
-        </div>
-      </div>
+        <img
+          src="img/${escapeDraftHtml(ownerTeam)}.webp"
+          alt=""
+          loading="lazy"
+          onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
+        >
+        <span class="dynamic-mobile-overview-fallback">
+          ${escapeDraftHtml(getDynamicMobileInitials(ownerTeam))}
+        </span>
+        <em aria-hidden="true">#${pickNumber}</em>
+      </button>
     `;
   }).join("");
 
   container.innerHTML = `
-    <section class="draft-pick-sequence-card draft-pick-board-card" aria-label="Draft ${escapeDraftHtml(conferenceTitle)} ordinato per pick">
+    <section class="draft-pick-sequence-card draft-pick-board-card draft-pick-board-desktop-wrap" aria-label="Draft ${escapeDraftHtml(conferenceTitle)} ordinato per pick">
       <header class="draft-pick-sequence-head draft-pick-board-head">
         <span>
           <strong>Draft Board</strong>
@@ -1903,15 +1872,8 @@ function generaDraftByPick(containerId, draftData, conferenceTitle) {
         <span class="draft-pick-sequence-count">${picks.length}</span>
       </header>
 
-      <div class="draft-pick-board-toolbar">
-        <span class="draft-pick-board-toolbar-label">Blocchi da ${DRAFT_BY_PICK_PAGE_SIZE} pick</span>
-        <div class="draft-pick-board-pager" role="tablist" aria-label="Seleziona blocco di pick">
-          ${pagerHtml}
-        </div>
-      </div>
-
-      <div class="draft-pick-board-pages">
-        ${pagesHtml}
+      <div class="draft-pick-board-grid draft-pick-board-grid-all">
+        ${desktopCellsHtml}
       </div>
 
       <div class="draft-pick-board-detail" aria-live="polite"></div>
@@ -1922,10 +1884,44 @@ function generaDraftByPick(containerId, draftData, conferenceTitle) {
         <span><i class="bonus">★</i>Bonus</span>
       </div>
     </section>
+
+    <section class="dynamic-mobile-overview-card draft-pick-mobile-card draft-pick-board-mobile-wrap" aria-label="Draft ${escapeDraftHtml(conferenceTitle)} ordinato per pick mobile">
+      <header class="dynamic-mobile-overview-header">
+        <span class="dynamic-mobile-overview-icon" aria-hidden="true">
+          <img src="img/badges/draft.webp" alt="">
+        </span>
+
+        <span class="dynamic-mobile-overview-heading">
+          <strong>Draft Board</strong>
+          <small>${escapeDraftHtml(conferenceTitle)} · solo pick e loghi</small>
+        </span>
+
+        <span class="dynamic-mobile-overview-total">
+          ${picks.length}
+        </span>
+      </header>
+
+      <div class="dynamic-mobile-overview-legend" aria-label="Legenda">
+        <span><i class="normal"></i>Originale</span>
+        <span><i class="trade">↔</i>Trade</span>
+        <span><i class="bonus">★</i>Bonus</span>
+      </div>
+
+      <div class="dynamic-mobile-pick-grid">
+        ${mobileCellsHtml}
+      </div>
+
+      <div class="draft-pick-board-detail draft-pick-board-detail-mobile" aria-live="polite"></div>
+    </section>
   `;
 
   bindDraftByPickBoard(container);
   renderDraftByPickDetail(container, 0);
+  const mobileDetail = container.querySelector('.draft-pick-board-detail-mobile');
+  const desktopDetail = container.querySelector('.draft-pick-board-desktop-wrap .draft-pick-board-detail');
+  if (mobileDetail && desktopDetail) {
+    mobileDetail.innerHTML = desktopDetail.innerHTML;
+  }
 }
 
 function setDraftOrderView(nextView) {
