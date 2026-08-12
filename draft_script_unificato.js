@@ -37,30 +37,31 @@ let lastAcceptedTradeAssets = [];
 const tradeColorByPickNumber = new Map();
 
 const TRADE_PALETTES = [
-  { solid: "#E53935", soft: "#FAD4D3", text: "#7A1512" }, // rosso
-  { solid: "#1E88E5", soft: "#D9ECFF", text: "#0B4F8A" }, // blu
-  { solid: "#43A047", soft: "#DDF3DF", text: "#1E5F22" }, // verde
-  { solid: "#FB8C00", soft: "#FFE8CC", text: "#8A4B00" }, // arancione
-  { solid: "#8E24AA", soft: "#F1DDFC", text: "#541268" }, // viola
-  { solid: "#00897B", soft: "#D8F4F1", text: "#00584F" }, // teal
-  { solid: "#F4511E", soft: "#FFE1D6", text: "#8C2707" }, // vermiglio
-  { solid: "#3949AB", soft: "#DDE2FF", text: "#1F2B73" }, // indaco
-  { solid: "#C0CA33", soft: "#F4F7D0", text: "#5D660B" }, // lime
-  { solid: "#6D4C41", soft: "#EADFD9", text: "#422820" }, // marrone
-  { solid: "#00ACC1", soft: "#D8F6FA", text: "#005E6A" }, // cyan
-  { solid: "#D81B60", soft: "#FAD7E6", text: "#7D1038" }, // fucsia
-  { solid: "#5E35B1", soft: "#E8E0F7", text: "#341D6B" }, // viola scuro
-  { solid: "#039BE5", soft: "#D9F1FC", text: "#075B82" }, // azzurro
-  { solid: "#7CB342", soft: "#E8F2D8", text: "#3D6515" }, // verde oliva
-  { solid: "#FDD835", soft: "#FFF7C6", text: "#725F00" }, // giallo
-  { solid: "#8D6E63", soft: "#EEE4E0", text: "#4E382F" }, // taupe
-  { solid: "#546E7A", soft: "#E1E7EA", text: "#2D3E46" }, // blu-grigio
-  { solid: "#EC407A", soft: "#FBDDE7", text: "#84213F" }, // rosa
-  { solid: "#26A69A", soft: "#DCF3F1", text: "#0B5D56" }, // acqua
-  { solid: "#FF7043", soft: "#FFE4DB", text: "#923719" }, // corallo
-  { solid: "#7E57C2", soft: "#EAE2F6", text: "#472A78" }, // lavanda
-  { solid: "#66BB6A", soft: "#E2F3E3", text: "#2B692F" }, // verde chiaro
-  { solid: "#AB47BC", soft: "#F0DFF3", text: "#61286A" }  // orchidea
+  { solid:"#E6194B", soft:"#FFDCE5", text:"#8C0F2D" }, // rosso
+  { solid:"#3CB44B", soft:"#DCF5DF", text:"#176622" }, // verde
+  { solid:"#4363D8", soft:"#E0E5FA", text:"#203789" }, // blu
+  { solid:"#F58231", soft:"#FFE4D1", text:"#914313" }, // arancio
+  { solid:"#911EB4", soft:"#EEDDF5", text:"#59116F" }, // viola
+  { solid:"#42D4F4", soft:"#DDF8FD", text:"#087287" }, // azzurro
+  { solid:"#F032E6", soft:"#FBDCF8", text:"#8A1782" }, // magenta
+  { solid:"#BFEF45", soft:"#F1FAD8", text:"#567300" }, // lime
+  { solid:"#FABED4", soft:"#FDEBF1", text:"#8A4560" }, // rosa
+  { solid:"#469990", soft:"#DCF0ED", text:"#205E58" }, // petrolio
+  { solid:"#DCBEFF", soft:"#F3EBFF", text:"#62428A" }, // lavanda
+  { solid:"#9A6324", soft:"#EFE3D4", text:"#563510" }, // marrone
+
+  { solid:"#800000", soft:"#F1DADA", text:"#4A0000" }, // bordeaux
+  { solid:"#AAFFC3", soft:"#EAFFF0", text:"#2F7042" }, // menta
+  { solid:"#808000", soft:"#EEEECE", text:"#484800" }, // oliva
+  { solid:"#FFD700", soft:"#FFF6C4", text:"#806A00" }, // oro
+  { solid:"#000075", soft:"#DADAEE", text:"#000045" }, // navy
+  { solid:"#A9A9A9", soft:"#EEEEEE", text:"#505050" }, // grigio
+  { solid:"#FF4500", soft:"#FFE0D5", text:"#962800" }, // orange red
+  { solid:"#00A86B", soft:"#D6F1E7", text:"#005E3C" }, // jade
+  { solid:"#6A5ACD", soft:"#E6E3F6", text:"#382D84" }, // slate blue
+  { solid:"#FF69B4", soft:"#FFE0F0", text:"#983068" }, // hot pink
+  { solid:"#008B8B", soft:"#D4EEEE", text:"#004D4D" }, // dark cyan
+  { solid:"#CD853F", soft:"#F3E3D2", text:"#74461E" }  // peru
 ];
 
 function adjustHexColor(hex, amount = 0) {
