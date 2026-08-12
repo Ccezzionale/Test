@@ -37,18 +37,32 @@ let lastAcceptedTradeAssets = [];
 const tradeColorByPickNumber = new Map();
 
 const TRADE_PALETTES = [
+const TRADE_PALETTES = [
   { solid: "#E53935", soft: "#FAD4D3", text: "#7A1512" }, // rosso
   { solid: "#1E88E5", soft: "#D9ECFF", text: "#0B4F8A" }, // blu
   { solid: "#43A047", soft: "#DDF3DF", text: "#1E5F22" }, // verde
   { solid: "#FB8C00", soft: "#FFE8CC", text: "#8A4B00" }, // arancione
   { solid: "#8E24AA", soft: "#F1DDFC", text: "#541268" }, // viola
   { solid: "#00897B", soft: "#D8F4F1", text: "#00584F" }, // teal
-  { solid: "#F4511E", soft: "#FFE1D6", text: "#8C2707" }, // arancio rosso
+  { solid: "#F4511E", soft: "#FFE1D6", text: "#8C2707" }, // vermiglio
   { solid: "#3949AB", soft: "#DDE2FF", text: "#1F2B73" }, // indaco
   { solid: "#C0CA33", soft: "#F4F7D0", text: "#5D660B" }, // lime
   { solid: "#6D4C41", soft: "#EADFD9", text: "#422820" }, // marrone
   { solid: "#00ACC1", soft: "#D8F6FA", text: "#005E6A" }, // cyan
-  { solid: "#D81B60", soft: "#FAD7E6", text: "#7D1038" }  // fucsia
+  { solid: "#D81B60", soft: "#FAD7E6", text: "#7D1038" }, // fucsia
+
+  { solid: "#5E35B1", soft: "#E8E0F7", text: "#341D6B" }, // viola scuro
+  { solid: "#039BE5", soft: "#D9F1FC", text: "#075B82" }, // azzurro
+  { solid: "#7CB342", soft: "#E8F2D8", text: "#3D6515" }, // verde oliva
+  { solid: "#FDD835", soft: "#FFF7C6", text: "#725F00" }, // giallo
+  { solid: "#8D6E63", soft: "#EEE4E0", text: "#4E382F" }, // taupe
+  { solid: "#546E7A", soft: "#E1E7EA", text: "#2D3E46" }, // blu-grigio
+  { solid: "#EC407A", soft: "#FBDDE7", text: "#84213F" }, // rosa
+  { solid: "#26A69A", soft: "#DCF3F1", text: "#0B5D56" }, // acqua
+  { solid: "#FF7043", soft: "#FFE4DB", text: "#923719" }, // corallo
+  { solid: "#7E57C2", soft: "#EAE2F6", text: "#472A78" }, // lavanda
+  { solid: "#66BB6A", soft: "#E2F3E3", text: "#2B692F" }, // verde chiaro
+  { solid: "#AB47BC", soft: "#F0DFF3", text: "#61286A" }  // orchidea
 ];
 
 function adjustHexColor(hex, amount = 0) {
