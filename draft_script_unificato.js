@@ -37,7 +37,6 @@ let lastAcceptedTradeAssets = [];
 const tradeColorByPickNumber = new Map();
 
 const TRADE_PALETTES = [
-const TRADE_PALETTES = [
   { solid: "#E53935", soft: "#FAD4D3", text: "#7A1512" }, // rosso
   { solid: "#1E88E5", soft: "#D9ECFF", text: "#0B4F8A" }, // blu
   { solid: "#43A047", soft: "#DDF3DF", text: "#1E5F22" }, // verde
