@@ -3463,7 +3463,6 @@ function mappaIndiceAssolutoPerTeam() {
 function aggiornaChiamatePerSquadra() {
   const righe = document.querySelectorAll("#tabella-pick tbody tr");
   const riepilogo = {};
-  const indexMap = mappaIndiceAssolutoPerTeam();
 
   righe.forEach(r => {
     const celle = r.querySelectorAll("td");
@@ -3490,12 +3489,10 @@ const isTradedPick = r.dataset.tradedPick === "true";
     const isFpKeeper = playerInfo.is_fp_keeper === true;
     const fpKeeperYear = Number(playerInfo.fp_keeper_year || 1);
     const isRfaMatched = playerInfo.is_rfa_matched === true;
-   const nAssoluto = indexMap[pickNum] || 1;
 
     if (!riepilogo[team]) riepilogo[team] = [];
 
     riepilogo[team].push({
-      n: nAssoluto,
       nome,
       ruolo,
       isU21,
@@ -3524,7 +3521,9 @@ const openTeams = new Set(
 container.innerHTML = "";
 
   Object.entries(riepilogo).forEach(([team, picks], index) => {
-    picks.sort((a, b) => a.n - b.n);
+    // Riepilogo BY PICK: ordine reale delle pick possedute/effettuate dalla squadra.
+    // Il numero mostrato a sinistra è sempre progressivo 1..N e NON il visual round.
+    picks.sort((a, b) => Number(a.pickNum || 0) - Number(b.pickNum || 0));
 
     const u21Count = picks.filter(p => p.isU21).length;
 const goalkeeperCount = picks.filter(p => isGoalkeeperRole(p.ruolo)).length;
@@ -3576,7 +3575,7 @@ rulesStatus.innerHTML = `
   </span>
 `;
 
-    picks.forEach(p => {
+    picks.forEach((p, pickIndex) => {
      const riga = document.createElement("div");
 riga.className = "team-player-row";
 
@@ -3606,7 +3605,7 @@ const tradeBadgeHtml = p.isTradedPick
 
 riga.innerHTML = `
   <span class="team-player-left">
-    <span class="team-player-number">${p.n}</span>
+    <span class="team-player-number">${pickIndex + 1}</span>
     <span class="team-player-pick">Pick #${p.pickNum}</span>
   </span>
 
