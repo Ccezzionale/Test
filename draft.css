@@ -7430,3 +7430,15 @@ td:nth-child(3)[data-predraft-label]:empty::after{
     border-color: rgba(255,255,255,.22);
   }
 }
+
+/* =========================================================
+   DESKTOP - RIPRISTINO RIEPILOGO PICK PER SQUADRA
+   SOLO VISIBILITA': nessuna modifica alla logica del draft.
+   La sezione e il rendering esistono gia' in HTML/JS.
+   ========================================================= */
+@media (min-width: 1101px){
+  body.desktop-draft-v2 .summary-section{
+    display: block !important;
+    margin-top: 28px !important;
+  }
+}
