@@ -49,7 +49,6 @@ const TRADE_PALETTES = [
   { solid: "#6D4C41", soft: "#EADFD9", text: "#422820" }, // marrone
   { solid: "#00ACC1", soft: "#D8F6FA", text: "#005E6A" }, // cyan
   { solid: "#D81B60", soft: "#FAD7E6", text: "#7D1038" }, // fucsia
-
   { solid: "#5E35B1", soft: "#E8E0F7", text: "#341D6B" }, // viola scuro
   { solid: "#039BE5", soft: "#D9F1FC", text: "#075B82" }, // azzurro
   { solid: "#7CB342", soft: "#E8F2D8", text: "#3D6515" }, // verde oliva
