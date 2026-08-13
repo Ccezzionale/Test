@@ -99,6 +99,74 @@ function getDynamicTradeKeyForPick(pick) {
     : `fallback:pick-${pick?.pickNumber || "unknown"}`;
 }
 
+function getDynamicDesktopTradeType(originalTeam, ownerTeam) {
+  const originalConference = getConferenceForTeam(originalTeam);
+  const ownerConference = getConferenceForTeam(ownerTeam);
+
+  if (
+    originalConference &&
+    ownerConference &&
+    originalConference !== ownerConference
+  ) {
+    return "interconference";
+  }
+
+  if (ownerConference === "Conference League") {
+    return "league";
+  }
+
+  if (ownerConference === "Conference Championship") {
+    return "championship";
+  }
+
+  return "unknown";
+}
+
+function bindDynamicDesktopTradeClicks(container) {
+  if (!container || container.dataset.desktopTradeBound === "1") return;
+
+  container.addEventListener("click", event => {
+    // Desktop soltanto
+    if (window.innerWidth < 769) return;
+
+    const clickedPick = event.target.closest(
+      ".pick.pick-traded[data-dynamic-trade-key]"
+    );
+
+    if (!clickedPick || !container.contains(clickedPick)) return;
+
+    const tradeKey = clickedPick.dataset.dynamicTradeKey;
+
+    const sameTradePicks = Array.from(
+      container.querySelectorAll(
+        ".pick.pick-traded[data-dynamic-trade-key]"
+      )
+    ).filter(pick =>
+      pick.dataset.dynamicTradeKey === tradeKey
+    );
+
+    const alreadyActive = sameTradePicks.some(pick =>
+      pick.classList.contains("trade-focus")
+    );
+
+    // Spegne eventuale trade precedentemente selezionata
+    document
+      .querySelectorAll(".draft-container .pick.trade-focus")
+      .forEach(pick => {
+        pick.classList.remove("trade-focus");
+      });
+
+    // Se non era già attiva, accende tutte le pick di questa trade
+    if (!alreadyActive) {
+      sameTradePicks.forEach(pick => {
+        pick.classList.add("trade-focus");
+      });
+    }
+  });
+
+  container.dataset.desktopTradeBound = "1";
+}
+
 function registerDynamicDraftTradePalettes(draftData = []) {
   (draftData || []).forEach(round => {
     (round?.Picks || []).forEach(pick => {
@@ -846,29 +914,36 @@ function generaTabellaVerticale(containerId, draftData, squadreOrdine) {
           ? `Round visualizzato ${pick.displayRound}. Round originale ${pick.round}. Pick originale di ${pick.originalTeam}. ${pick.notes || ""} ${pick.protection_note || ""}`.trim()
           : `Round ${pick.displayRound}`;
 
-        const tradeKey = pick.traded
-          ? getDynamicTradeKeyForPick({
-              source_trade_id: pick.source_trade_id,
-              originalTeam: pick.originalTeam,
-              team: squadra,
-              ownerTeam: squadra
-            })
-          : "";
+const tradeKey = pick.traded
+  ? getDynamicTradeKeyForPick({
+      source_trade_id: pick.source_trade_id,
+      originalTeam: pick.originalTeam,
+      team: squadra,
+      ownerTeam: squadra
+    })
+  : "";
 
-        const tradePalette = pick.traded
-          ? registerDynamicTradePalette(tradeKey)
-          : null;
+const tradeType = pick.traded
+  ? getDynamicDesktopTradeType(
+      pick.originalTeam,
+      squadra
+    )
+  : "";
 
-        const tradeStyle = tradePalette
-          ? [
-              `--dynamic-trade-color:${tradePalette.solid}`,
-              `--dynamic-trade-soft:${tradePalette.soft}`,
-              `--dynamic-trade-text:${tradePalette.text}`
-            ].join(";")
-          : "";
+const tradeTypeClass = tradeType
+  ? `trade-${tradeType}`
+  : "";
 
-        html += `
-          <div class="pick ${tradedClass} ${bonusClass}" style="${tradeStyle}" title="${title}">
+const tradeKeyAttribute = tradeKey
+  ? `data-dynamic-trade-key="${escapeDraftHtml(tradeKey)}"`
+  : "";
+
+ html += `
+  <div
+    class="pick ${tradedClass} ${bonusClass} ${tradeTypeClass}"
+    ${tradeKeyAttribute}
+    title="${escapeDraftHtml(title)}"
+  >
             <span class="pick-bubble">${pick.pickNumber}</span>
             <strong>Pick #${pick.pickNumber}</strong>
             ${source}
@@ -881,6 +956,7 @@ function generaTabellaVerticale(containerId, draftData, squadreOrdine) {
 
   html += '</div>';
   container.innerHTML = html;
+  bindDynamicDesktopTradeClicks(container);
 }
 
 
