@@ -7978,3 +7978,71 @@ td:nth-child(3)[data-predraft-label]:empty::after{
     grid-template-columns:repeat(4,minmax(0,1fr)) !important;
   }
 }
+
+/* =========================================================
+   TRADE INTERATTIVE
+   Le pick sono normali e si illuminano solo al click
+   ========================================================= */
+
+@media (min-width: 1101px){
+
+  /* Fa capire che una trade è cliccabile */
+  .desktop-pick-slot.is-traded[data-trade-key]{
+    cursor: pointer !important;
+  }
+
+  /* Iconcina trade sempre gialla */
+  .desktop-pick-trade{
+    width: 18px !important;
+    height: 18px !important;
+
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+
+    border-radius: 999px !important;
+
+    background:
+      linear-gradient(180deg, #ffe36a 0%, #ffcc00 100%) !important;
+
+    border: 1px solid #d8aa00 !important;
+    color: #001f3f !important;
+
+    font-size: .68rem !important;
+    font-weight: 950 !important;
+
+    box-shadow:
+      0 2px 5px rgba(255, 204, 0, .25) !important;
+  }
+
+  /* Tutte le caselle appartenenti alla trade selezionata */
+  .desktop-pick-slot.trade-focus{
+    position: relative !important;
+    z-index: 20 !important;
+
+    transform:
+      translateY(-2px)
+      scale(1.035) !important;
+
+    border-color: #ffbf00 !important;
+
+    box-shadow:
+      0 0 0 2px #ffffff,
+      0 0 0 5px #ffcc00,
+      0 10px 26px rgba(255, 190, 0, .38) !important;
+
+    transition:
+      transform .18s ease,
+      border-color .18s ease,
+      box-shadow .18s ease !important;
+  }
+
+  /* Numero pick evidenziato */
+  .desktop-pick-slot.trade-focus .desktop-pick-number{
+    background:
+      linear-gradient(180deg, #ffe36a 0%, #ffcc00 100%) !important;
+
+    border-color: #d8aa00 !important;
+    color: #001f3f !important;
+  }
+}
