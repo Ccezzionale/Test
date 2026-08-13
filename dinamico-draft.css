@@ -3746,3 +3746,131 @@ nav.site-nav .action-icon{opacity:1!important;filter:none!important;}
     font-size:.63rem;
   }
 }
+
+/* =========================================================
+   DESKTOP DRAFT DINAMICO - TRADE PER CONFERENCE + CLICK
+   SOLO BY ROUND DESKTOP
+   ========================================================= */
+@media (min-width: 769px){
+
+  /* Tutte le pick scambiate sono cliccabili */
+  .draft-container .pick.pick-traded{
+    cursor: pointer !important;
+
+    background:
+      linear-gradient(
+        135deg,
+        #ffffff 0%,
+        var(--desktop-trade-soft, #eef4fb) 100%
+      ) !important;
+
+    border-color:
+      var(--desktop-trade-color, #94a3b8) !important;
+
+    box-shadow:
+      0 5px 13px rgba(0,31,63,.07),
+      inset 0 1px 0 rgba(255,255,255,.92) !important;
+
+    transition:
+      transform .18s ease,
+      box-shadow .18s ease,
+      border-color .18s ease !important;
+  }
+
+
+  /* =================================
+     CONFERENCE LEAGUE = ROSSO
+     ================================= */
+  .draft-container .pick.pick-traded.trade-league{
+    --desktop-trade-color: #E53935;
+    --desktop-trade-soft: #FDE2E1;
+    --desktop-trade-text: #7A1512;
+  }
+
+
+  /* =================================
+     CONFERENCE CHAMPIONSHIP = BLU
+     ================================= */
+  .draft-container .pick.pick-traded.trade-championship{
+    --desktop-trade-color: #1E88E5;
+    --desktop-trade-soft: #DDEEFF;
+    --desktop-trade-text: #0B4F8A;
+  }
+
+
+  /* =================================
+     INTER-CONFERENCE = VIOLA
+     ================================= */
+  .draft-container .pick.pick-traded.trade-interconference{
+    --desktop-trade-color: #8E24AA;
+    --desktop-trade-soft: #F2E0F8;
+    --desktop-trade-text: #541268;
+  }
+
+
+  /* Numero della pick */
+  .draft-container .pick.pick-traded .pick-bubble{
+    background:
+      linear-gradient(
+        180deg,
+        color-mix(
+          in srgb,
+          var(--desktop-trade-color) 72%,
+          white
+        ) 0%,
+        var(--desktop-trade-color) 100%
+      ) !important;
+
+    color: #ffffff !important;
+
+    border-color:
+      var(--desktop-trade-color) !important;
+  }
+
+
+  /* "da Pandini", "da Bayern", ecc */
+  .draft-container .pick.pick-traded .pick-source{
+    color:
+      var(--desktop-trade-text) !important;
+  }
+
+
+  /* =================================
+     TRADE SELEZIONATA
+     ================================= */
+  .draft-container .pick.pick-traded.trade-focus{
+    position: relative !important;
+    z-index: 20 !important;
+
+    transform:
+      translateY(-2px)
+      scale(1.035) !important;
+
+    border-color:
+      var(--desktop-trade-color) !important;
+
+    box-shadow:
+      0 0 0 2px #ffffff,
+      0 0 0 5px var(--desktop-trade-color),
+      0 10px 26px
+        color-mix(
+          in srgb,
+          var(--desktop-trade-color) 38%,
+          transparent
+        ) !important;
+  }
+
+
+  .draft-container
+  .pick.pick-traded.trade-focus
+  .pick-bubble{
+    box-shadow:
+      0 0 0 3px rgba(255,255,255,.85),
+      0 4px 10px
+        color-mix(
+          in srgb,
+          var(--desktop-trade-color) 45%,
+          transparent
+        ) !important;
+  }
+}
