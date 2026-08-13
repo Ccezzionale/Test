@@ -3874,3 +3874,108 @@ nav.site-nav .action-icon{opacity:1!important;filter:none!important;}
         ) !important;
   }
 }
+
+/* =========================================================
+   DESKTOP DRAFT DINAMICO - TRADE COLORI FINALI
+   Rosso League / Blu Championship / Viola Interconference
+   Oro = trade selezionata
+   SOLO DESKTOP BY ROUND
+   ========================================================= */
+@media (min-width: 769px){
+
+  /* ===============================
+     CONFERENCE LEAGUE
+     =============================== */
+  .draft-container .pick.pick-traded.trade-league{
+    --desktop-trade-color: #E53935;
+    --desktop-trade-soft: #FDE7E6;
+    --desktop-trade-text: #8B1714;
+  }
+
+  /* ===============================
+     CONFERENCE CHAMPIONSHIP
+     Blu più forte del blu normale
+     =============================== */
+  .draft-container .pick.pick-traded.trade-championship{
+    --desktop-trade-color: #0066E6;
+    --desktop-trade-soft: #E2EFFF;
+    --desktop-trade-text: #003D8F;
+  }
+
+  /* ===============================
+     INTER-CONFERENCE
+     =============================== */
+  .draft-container .pick.pick-traded.trade-interconference{
+    --desktop-trade-color: #8E24AA;
+    --desktop-trade-soft: #F3E5F7;
+    --desktop-trade-text: #551267;
+  }
+
+
+  /* ===============================
+     ASPETTO NORMALE DELLA TRADE
+     =============================== */
+  .draft-container .pick.pick-traded{
+    background:
+      linear-gradient(
+        135deg,
+        #ffffff 0%,
+        var(--desktop-trade-soft) 100%
+      ) !important;
+
+    border: 1.5px solid
+      var(--desktop-trade-color) !important;
+
+    box-shadow:
+      0 5px 12px rgba(0,31,63,.06),
+      inset 0 1px 0 rgba(255,255,255,.90) !important;
+  }
+
+  .draft-container .pick.pick-traded .pick-bubble{
+    background:
+      var(--desktop-trade-color) !important;
+
+    border-color:
+      var(--desktop-trade-color) !important;
+
+    color: #ffffff !important;
+  }
+
+  .draft-container .pick.pick-traded .pick-source{
+    color:
+      var(--desktop-trade-text) !important;
+  }
+
+
+  /* ===============================
+     TRADE CLICCATA
+     L'ORO significa "questa è selezionata"
+     =============================== */
+  .draft-container .pick.pick-traded.trade-focus{
+    position: relative !important;
+    z-index: 30 !important;
+
+    transform:
+      translateY(-2px)
+      scale(1.035) !important;
+
+    /* resta il bordo del colore della conference */
+    border-color:
+      var(--desktop-trade-color) !important;
+
+    /* ma l'anello esterno diventa ORO */
+    box-shadow:
+      0 0 0 2px #ffffff,
+      0 0 0 6px #ffcc00,
+      0 12px 26px rgba(255, 204, 0, .38) !important;
+  }
+
+  /* Piccolo rinforzo anche sul pallino */
+  .draft-container
+  .pick.pick-traded.trade-focus
+  .pick-bubble{
+    box-shadow:
+      0 0 0 2px #ffffff,
+      0 0 0 4px #ffcc00 !important;
+  }
+}
