@@ -35,6 +35,7 @@ let lastDraftTeams = [];
 let lastDraftVisualRows = [];
 let lastAcceptedTradeAssets = [];
 const tradeColorByPickNumber = new Map();
+const tradeKeyByPickNumber = new Map();
 
 const TRADE_PALETTES = [
   { solid:"#E6194B", soft:"#FFDCE5", text:"#8C0F2D" }, // rosso
@@ -99,22 +100,25 @@ function rebuildTradeColorMap(
   orderRows = []
 ) {
   tradeColorByPickNumber.clear();
+tradeKeyByPickNumber.clear();
 
   const tradeKeys = [];
   const tradeKeySet = new Set();
   const pickToTradeKey = new Map();
 
-  const registerTradeKey = (pickNumber, tradeKey) => {
-    if (!pickNumber || !tradeKey) return;
+const registerTradeKey = (pickNumber, tradeKey) => {
+  if (!pickNumber || !tradeKey) return;
 
-    const normalizedKey = String(tradeKey);
-    pickToTradeKey.set(Number(pickNumber), normalizedKey);
+  const normalizedKey = String(tradeKey);
 
-    if (!tradeKeySet.has(normalizedKey)) {
-      tradeKeySet.add(normalizedKey);
-      tradeKeys.push(normalizedKey);
-    }
-  };
+  pickToTradeKey.set(Number(pickNumber), normalizedKey);
+  tradeKeyByPickNumber.set(Number(pickNumber), normalizedKey);
+
+  if (!tradeKeySet.has(normalizedKey)) {
+    tradeKeySet.add(normalizedKey);
+    tradeKeys.push(normalizedKey);
+  }
+};
 
   // Scambi storici salvati in draft_order tramite trade_group
   (orderRows || []).forEach(row => {
@@ -164,22 +168,23 @@ function getTradePaletteByPick(pickNumber) {
   );
 }
 
+function getTradeKeyByPick(pickNumber) {
+  return tradeKeyByPickNumber.get(Number(pickNumber)) || "";
+}
+
 function renderTradeBadgeHtml(
   pickNumber,
   className = "desktop-pick-trade"
 ) {
-  const palette = getTradePaletteByPick(pickNumber);
-
   return `
     <span
       class="${className}"
       style="
-        --trade-color: ${palette.solid};
-        background-color: ${palette.solid} !important;
-        border-color: ${palette.solid} !important;
-        color: #ffffff !important;
+        background-color: #ffcc00 !important;
+        border-color: #d8aa00 !important;
+        color: #001f3f !important;
       "
-      title="Pick acquisita via trade"
+      title="Clicca per vedere le pick coinvolte nella trade"
     >
       ↔
     </span>
@@ -187,33 +192,8 @@ function renderTradeBadgeHtml(
 }
 
 function ensureTradeColorStyles() {
-  if (document.getElementById("trade-color-styles")) return;
-
-  const style = document.createElement("style");
-  style.id = "trade-color-styles";
-  style.textContent = `
-    .desktop-pick-slot.is-traded[data-trade-colored="true"] {
-      background-color: var(--trade-bg) !important;
-      border-color: var(--trade-color) !important;
-      box-shadow:
-        inset 7px 0 0 var(--trade-color),
-        0 0 0 1px var(--trade-color) !important;
-    }
-
-    .desktop-pick-slot.is-traded[data-trade-colored="true"]
-    .desktop-pick-number {
-      background-color: var(--trade-color) !important;
-      border-color: var(--trade-color) !important;
-      color: #ffffff !important;
-    }
-
-    .desktop-pick-slot.is-traded[data-trade-colored="true"] strong,
-    .desktop-pick-slot.is-traded[data-trade-colored="true"] small {
-      color: var(--trade-text) !important;
-    }
-  `;
-
-  document.head.appendChild(style);
+  // Le trade non vengono più colorate permanentemente.
+  // L'evidenziazione avviene solo quando vengono cliccate.
 }
 
 function normalize(nome) { return nome.trim().toLowerCase(); }
@@ -1593,29 +1573,20 @@ const teamColumns = fixedColumns.map(column => {
       const currentClass = isCurrent ? "is-current" : "";
       const tradedClass = cell.isTradedPick ? "is-traded" : "";
 
-      const tradePalette = cell.isTradedPick
-        ? getTradePaletteByPick(pickNum)
-        : null;
+const tradeKey = cell.isTradedPick
+  ? getTradeKeyByPick(pickNum)
+  : "";
 
-      const tradeStyle = tradePalette
-        ? `
-          --trade-color: ${tradePalette.solid};
-          --trade-bg: ${tradePalette.soft};
-          --trade-text: ${tradePalette.text};
-        `
-        : "";
+const tradeKeyAttribute = tradeKey
+  ? `data-trade-key="${escapeHtml(tradeKey)}"`
+  : "";
 
-      const tradeDataAttribute = tradePalette
-        ? `data-trade-colored="true"`
-        : "";
-
-      return `
-        <div
-          class="desktop-pick-slot ${filledClass} ${currentClass} ${tradedClass}"
-          ${tradeDataAttribute}
-          style="${tradeStyle}"
-          title="${pickNum ? `Pick #${escapeHtml(pickNum)}` : `Round ${cell.round}`}"
-        >
+return `
+  <div
+    class="desktop-pick-slot ${filledClass} ${currentClass} ${tradedClass}"
+    ${tradeKeyAttribute}
+    title="${pickNum ? `Pick #${escapeHtml(pickNum)}` : `Round ${cell.round}`}"
+  >
           <div class="desktop-pick-topline">
             <span class="desktop-pick-number">
               ${pickNum ? escapeHtml(pickNum) : "—"}
@@ -1671,6 +1642,46 @@ const teamColumns = fixedColumns.map(column => {
     </div>
     <div class="desktop-teams-track">${teamColumns}</div>
   `;
+  if (boardEl.dataset.tradeClickBound !== "1") {
+
+  boardEl.addEventListener("click", event => {
+
+    const clickedSlot = event.target.closest(
+      ".desktop-pick-slot.is-traded[data-trade-key]"
+    );
+
+    if (!clickedSlot) return;
+
+    const tradeKey = clickedSlot.dataset.tradeKey;
+
+    const sameTradeSlots = Array.from(
+      boardEl.querySelectorAll(
+        `.desktop-pick-slot.is-traded[data-trade-key="${CSS.escape(tradeKey)}"]`
+      )
+    );
+
+    const isAlreadyActive = sameTradeSlots.some(slot =>
+      slot.classList.contains("trade-focus")
+    );
+
+    // Spegne sempre qualsiasi trade precedentemente evidenziata
+    boardEl
+      .querySelectorAll(".desktop-pick-slot.trade-focus")
+      .forEach(slot => {
+        slot.classList.remove("trade-focus");
+      });
+
+    // Se quella cliccata non era già attiva, accende tutte le sue caselle
+    if (!isAlreadyActive) {
+      sameTradeSlots.forEach(slot => {
+        slot.classList.add("trade-focus");
+      });
+    }
+
+  });
+
+  boardEl.dataset.tradeClickBound = "1";
+}
 }
 
 
