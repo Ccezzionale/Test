@@ -26,6 +26,96 @@
     gap:12px;
     margin:14px 0 18px;
   }
+
+  .image-upload-box{
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+    min-width:0;
+  }
+
+  .image-upload-actions{
+    display:flex;
+    align-items:center;
+    flex-wrap:wrap;
+    gap:10px;
+  }
+
+  .image-file-input{
+    position:absolute;
+    width:1px;
+    height:1px;
+    padding:0;
+    margin:-1px;
+    overflow:hidden;
+    clip:rect(0, 0, 0, 0);
+    white-space:nowrap;
+    border:0;
+  }
+
+  .image-upload-btn{
+    appearance:none;
+    border:1px solid rgba(255, 255, 255, .22);
+    border-radius:10px;
+    padding:10px 14px;
+    background:#17345d;
+    color:#fff;
+    font:inherit;
+    font-weight:700;
+    cursor:pointer;
+  }
+
+  .image-upload-btn:hover{
+    background:#214778;
+  }
+
+  .image-upload-btn:disabled{
+    opacity:.65;
+    cursor:wait;
+  }
+
+  .image-upload-status{
+    min-height:1.25em;
+    font-size:.88rem;
+    color:#b8c7df;
+  }
+
+  .image-upload-status.ok{
+    color:#79d99a;
+  }
+
+  .image-upload-status.error{
+    color:#ff9d9d;
+  }
+
+  .image-upload-preview{
+    display:block;
+    width:100%;
+    max-height:260px;
+    object-fit:cover;
+    border-radius:12px;
+    border:1px solid rgba(255, 255, 255, .14);
+    background:#07172a;
+  }
+
+  .image-upload-preview[hidden]{
+    display:none;
+  }
+
+  .image-url-fallback{
+    margin:0;
+  }
+
+  .image-url-fallback span{
+    font-size:.82rem;
+    opacity:.78;
+  }
+
+  .upload-help{
+    margin:0;
+    font-size:.8rem;
+    color:#91a4bf;
+  }
 </style>
 </head>
 <body>
@@ -308,10 +398,20 @@
           <div class="section-divider">Hero</div>
 
           <div class="form-row">
-            <label>
-              <span>URL immagine principale</span>
-              <input id="heroImageUrl" type="text" placeholder="img/gazzetta/gw37-hero.webp oppure link Google Drive" />
-            </label>
+            <div class="image-upload-box">
+              <span>Immagine principale</span>
+              <div class="image-upload-actions">
+                <input id="heroImageFile" class="image-file-input" type="file" accept="image/jpeg,image/png,image/webp" />
+                <button id="heroImageButton" type="button" class="image-upload-btn">📷 Carica immagine</button>
+                <span id="heroImageStatus" class="image-upload-status" aria-live="polite"></span>
+              </div>
+              <p class="upload-help">Scegli una foto dal PC o dal telefono (JPG, PNG o WebP, massimo 10 MB).</p>
+              <img id="heroImagePreview" class="image-upload-preview" alt="Anteprima immagine principale" hidden />
+              <label class="image-url-fallback">
+                <span>Oppure inserisci un URL</span>
+                <input id="heroImageUrl" type="text" placeholder="https://… oppure img/gazzetta/…" />
+              </label>
+            </div>
 
             <label>
               <span>Alt immagine principale</span>
@@ -445,10 +545,20 @@
               <input id="nextSubtitle" type="text" placeholder="Solo uno regnerà" />
             </label>
 
-            <label>
+            <div class="image-upload-box">
               <span>Immagine teaser</span>
-              <input id="nextImageUrl" type="text" placeholder="img/gazzetta/next-on.webp oppure link Google Drive" />
-            </label>
+              <div class="image-upload-actions">
+                <input id="nextImageFile" class="image-file-input" type="file" accept="image/jpeg,image/png,image/webp" />
+                <button id="nextImageButton" type="button" class="image-upload-btn">📷 Carica immagine</button>
+                <span id="nextImageStatus" class="image-upload-status" aria-live="polite"></span>
+              </div>
+              <p class="upload-help">Scegli una foto dal PC o dal telefono (JPG, PNG o WebP, massimo 10 MB).</p>
+              <img id="nextImagePreview" class="image-upload-preview" alt="Anteprima immagine teaser" hidden />
+              <label class="image-url-fallback">
+                <span>Oppure inserisci un URL</span>
+                <input id="nextImageUrl" type="text" placeholder="https://… oppure img/gazzetta/…" />
+              </label>
+            </div>
           </div>
 
           <label>
@@ -503,7 +613,6 @@
 <script type="module" src="home_auth.js"></script>
 <script src="navbar.js"></script>
 <script type="module" src="admin-nav.js?v=1"></script>
-<script type="module" src="admin-gazzetta.js?v=22"></script>
+<script type="module" src="admin-gazzetta.js?v=23"></script>
 </body>
 </html>
-
