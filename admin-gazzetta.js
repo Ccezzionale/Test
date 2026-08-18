@@ -1,7 +1,19 @@
+admin-gazzetta.js
+
+
 import { supabase as sb } from "./supabase.js";
 
 let editions = [];
 let activeGw = null;
+
+const GAZZETTA_IMAGES_BUCKET = "gazzetta-images";
+const MAX_IMAGE_SIZE = 10 * 1024 * 1024;
+const ALLOWED_IMAGE_TYPES = {
+  "image/jpeg": "jpg",
+  "image/png": "png",
+  "image/webp": "webp"
+};
+const busyUploads = new Set();
 
 const squadreBase = [
   { nome: "Atlético Leon", logo: "img/Atlético Leon.webp" },
@@ -115,6 +127,25 @@ const fields = {
   next_cta_url: "nextCtaUrl"
 };
 
+const imageUploads = {
+  hero: {
+    fileInputId: "heroImageFile",
+    buttonId: "heroImageButton",
+    statusId: "heroImageStatus",
+    previewId: "heroImagePreview",
+    urlFieldId: "heroImageUrl",
+    folder: "hero"
+  },
+  next: {
+    fileInputId: "nextImageFile",
+    buttonId: "nextImageButton",
+    statusId: "nextImageStatus",
+    previewId: "nextImagePreview",
+    urlFieldId: "nextImageUrl",
+    folder: "teaser"
+  }
+};
+
 function setGate(message, type = ""){
   const gate = $("adminGate");
   if (!gate) return;
@@ -127,6 +158,116 @@ function setSaveStatus(message, type = ""){
   if (!el) return;
   el.textContent = message || "";
   el.className = type || "";
+}
+
+function setUploadStatus(kind, message, type = ""){
+  const config = imageUploads[kind];
+  const el = config ? $(config.statusId) : null;
+  if (!el) return;
+  el.textContent = message || "";
+  el.className = `image-upload-status ${type}`.trim();
+}
+
+function setUploadBusy(kind, isBusy){
+  const config = imageUploads[kind];
+  const button = config ? $(config.buttonId) : null;
+
+  if (isBusy) busyUploads.add(kind);
+  else busyUploads.delete(kind);
+
+  if (button) {
+    button.disabled = isBusy;
+    button.textContent = isBusy ? "Caricamento…" : "📷 Carica immagine";
+  }
+
+  const saveButton = $("btnSave");
+  if (saveButton) saveButton.disabled = busyUploads.size > 0;
+}
+
+function updateImagePreview(kind){
+  const config = imageUploads[kind];
+  const preview = config ? $(config.previewId) : null;
+  const urlField = config ? $(config.urlFieldId) : null;
+  if (!preview || !urlField) return;
+
+  const url = String(urlField.value || "").trim();
+  if (!url) {
+    preview.hidden = true;
+    preview.removeAttribute("src");
+    return;
+  }
+
+  preview.onload = () => {
+    preview.hidden = false;
+  };
+  preview.onerror = () => {
+    preview.hidden = true;
+  };
+  preview.hidden = false;
+  preview.src = url;
+}
+
+function buildImagePath(folder, extension){
+  const dateFolder = new Date().toISOString().slice(0, 10);
+  const uniqueId = globalThis.crypto?.randomUUID?.()
+    || `${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
+  return `${folder}/${dateFolder}/${uniqueId}.${extension}`;
+}
+
+async function uploadSelectedImage(kind, file){
+  const config = imageUploads[kind];
+  if (!config || !file) return;
+
+  const extension = ALLOWED_IMAGE_TYPES[file.type];
+  if (!extension) {
+    setUploadStatus(kind, "Formato non supportato: usa JPG, PNG o WebP.", "error");
+    return;
+  }
+
+  if (file.size > MAX_IMAGE_SIZE) {
+    setUploadStatus(kind, "Immagine troppo grande: il limite è 10 MB.", "error");
+    return;
+  }
+
+  try {
+    setUploadBusy(kind, true);
+    setUploadStatus(kind, "Caricamento in corso…");
+    await requireAdmin();
+
+    const imagePath = buildImagePath(config.folder, extension);
+    const { data, error } = await sb.storage
+      .from(GAZZETTA_IMAGES_BUCKET)
+      .upload(imagePath, file, {
+        cacheControl: "3600",
+        contentType: file.type,
+        upsert: false
+      });
+
+    if (error) throw error;
+
+    const { data: publicUrlData } = sb.storage
+      .from(GAZZETTA_IMAGES_BUCKET)
+      .getPublicUrl(data.path);
+
+    const publicUrl = publicUrlData?.publicUrl;
+    if (!publicUrl) throw new Error("URL pubblico dell'immagine non disponibile.");
+
+    const urlField = $(config.urlFieldId);
+    if (urlField) urlField.value = publicUrl;
+    updateImagePreview(kind);
+    setUploadStatus(kind, "Immagine caricata ✅ Ora salva l’edizione.", "ok");
+  } catch (error) {
+    console.error(error);
+    const detail = String(error?.message || "");
+    const permissionHint = /row-level security|policy|unauthorized|forbidden/i.test(detail)
+      ? " Configura prima bucket e permessi in Supabase."
+      : "";
+    setUploadStatus(kind, `Caricamento non riuscito.${permissionHint}`, "error");
+  } finally {
+    setUploadBusy(kind, false);
+    const fileInput = $(config.fileInputId);
+    if (fileInput) fileInput.value = "";
+  }
 }
 
 function escapeHtml(value){
@@ -196,6 +337,11 @@ function fillForm(row = null){
   setValue("next_time", row?.next_time || "");
   setValue("next_cta_label", row?.next_cta_label || "");
   setValue("next_cta_url", row?.next_cta_url || "");
+
+  Object.keys(imageUploads).forEach(kind => {
+    setUploadStatus(kind, "");
+    updateImagePreview(kind);
+  });
 }
 
 function getNextInternalGw(){
@@ -358,6 +504,19 @@ function wireEvents(){
   });
 
   $("btnSave")?.addEventListener("click", saveEdition);
+
+  Object.entries(imageUploads).forEach(([kind, config]) => {
+    const fileInput = $(config.fileInputId);
+    const button = $(config.buttonId);
+    const urlField = $(config.urlFieldId);
+
+    button?.addEventListener("click", () => fileInput?.click());
+    fileInput?.addEventListener("change", () => {
+      const file = fileInput.files?.[0];
+      if (file) uploadSelectedImage(kind, file);
+    });
+    urlField?.addEventListener("change", () => updateImagePreview(kind));
+  });
 }
 
 document.addEventListener("DOMContentLoaded", async () => {
