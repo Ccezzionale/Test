@@ -1,6 +1,3 @@
-admin-gazzetta.js
-
-
 import { supabase as sb } from "./supabase.js";
 
 let editions = [];
