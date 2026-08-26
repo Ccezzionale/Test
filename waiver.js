@@ -1620,7 +1620,43 @@ async function renderPublicCompensatoryOrder() {
 
   const groupContent = groupBlock.querySelector(".public-waiver-group-content");
 
-  data.forEach(call => {
+const groups = {};
+
+data.forEach(call => {
+  const groupName = getCompensatoryGroupForTeamId(call.team_id);
+
+  if (!groups[groupName]) {
+    groups[groupName] = [];
+  }
+
+  groups[groupName].push(call);
+});
+
+const groupOrder = isConferencePhase()
+  ? ["Conference League", "Conference Championship"]
+  : ["Totale"];
+
+groupOrder.forEach(groupName => {
+  const calls = groups[groupName];
+
+  if (!calls || calls.length === 0) return;
+
+  calls.sort((a, b) => (a.priority_order || 999) - (b.priority_order || 999));
+
+  const subGroup = document.createElement("div");
+  subGroup.className = "public-compensatory-subgroup";
+
+  subGroup.innerHTML = `
+    <h4 class="public-compensatory-subtitle">
+      ${
+        groupName === "Totale"
+          ? "Compensative"
+          : groupName
+      }
+    </h4>
+  `;
+
+  calls.forEach(call => {
     const team = teamMap[call.team_id];
 
     let statusClass = "waiting";
@@ -1657,8 +1693,11 @@ async function renderPublicCompensatoryOrder() {
       </div>
     `;
 
-    groupContent.appendChild(rowDiv);
+    subGroup.appendChild(rowDiv);
   });
+
+  groupContent.appendChild(subGroup);
+});
 
   publicWaiverOrderEl.appendChild(groupBlock);
 }
