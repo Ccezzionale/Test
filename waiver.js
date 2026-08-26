@@ -440,16 +440,9 @@ async function syncRecallSlotsFromLostCalls(sourceSlot) {
 }
 
 function populateFreeAgentsFilters() {
-  if (!roleFilter || !serieATeamFilter) return;
+  if (!serieATeamFilter) return;
 
-  const currentRole = roleFilter.value;
   const currentTeam = serieATeamFilter.value;
-
-  const roles = [...new Set(
-    freeAgents
-      .map(player => player.role)
-      .filter(Boolean)
-  )].sort((a, b) => a.localeCompare(b));
 
   const serieATeams = [...new Set(
     freeAgents
@@ -457,17 +450,13 @@ function populateFreeAgentsFilters() {
       .filter(Boolean)
   )].sort((a, b) => a.localeCompare(b));
 
-  roleFilter.innerHTML = `
-    <option value="">Tutti i ruoli</option>
-    ${roles.map(role => `<option value="${role}">${role}</option>`).join("")}
-  `;
-
   serieATeamFilter.innerHTML = `
     <option value="">Tutte le squadre</option>
-    ${serieATeams.map(team => `<option value="${team}">${team}</option>`).join("")}
+    ${serieATeams
+      .map(team => `<option value="${team}">${team}</option>`)
+      .join("")}
   `;
 
-  roleFilter.value = currentRole;
   serieATeamFilter.value = currentTeam;
 }
 
@@ -2893,7 +2882,14 @@ function renderFreeAgents() {
     const blob = `${name} ${role} ${serieATeam} ${quotation}`;
 
     const matchSearch = !query || blob.includes(query);
-    const matchRole = !selectedRole || role === selectedRole;
+    const roleParts = role
+  .split(";")
+  .map(r => r.trim())
+  .filter(Boolean);
+
+const matchRole =
+  !selectedRole ||
+  roleParts.includes(selectedRole);
     const matchSerieATeam = !selectedSerieATeam || serieATeam === selectedSerieATeam;
 
     let matchU21 = true;
