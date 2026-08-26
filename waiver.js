@@ -201,6 +201,16 @@ function getPriorityGroupForTeam(team) {
   return "Totale";
 }
 
+function getCompensatoryGroupForTeamId(teamId) {
+  if (!isConferencePhase()) {
+    return "Totale";
+  }
+
+  const team = teamMap[teamId];
+
+  return team?.conference || "Senza Conference";
+}
+
 function getGeneratedSlots() {
   if (isPlayoffPhase()) {
     return ["1", "1S", "2", "2S"];
@@ -2494,7 +2504,46 @@ async function loadAllCompensatoryCalls() {
 
   allCompensatoryCallsEl.innerHTML = "";
 
-  data.forEach(call => {
+
+const groups = {};
+
+data.forEach(call => {
+  const groupName = getCompensatoryGroupForTeamId(call.team_id);
+
+  if (!groups[groupName]) {
+    groups[groupName] = [];
+  }
+
+  groups[groupName].push(call);
+});
+
+const groupOrder = isConferencePhase()
+  ? ["Conference League", "Conference Championship"]
+  : ["Totale"];
+
+groupOrder.forEach(groupName => {
+  const calls = groups[groupName];
+
+  if (!calls || calls.length === 0) return;
+
+  calls.sort((a, b) =>
+    (a.priority_order || 999) - (b.priority_order || 999)
+  );
+
+  const groupDiv = document.createElement("div");
+  groupDiv.className = "admin-calls-group";
+
+  groupDiv.innerHTML = `
+    <h4>
+      ${
+        groupName === "Totale"
+          ? "Compensative"
+          : `${groupName} - Compensative`
+      }
+    </h4>
+  `;
+
+  calls.forEach(call => {
     const team = teamMap[call.team_id];
 
     const submitted =
@@ -2538,18 +2587,20 @@ async function loadAllCompensatoryCalls() {
       </button>
     `;
 
-    allCompensatoryCallsEl.appendChild(div);
+    groupDiv.appendChild(div);
   });
 
-  document
-    .querySelectorAll(".delete-compensatory-btn")
-    .forEach(button => {
-      button.addEventListener("click", () => {
-        deleteAdminCompensatoryCall(button.dataset.callId);
-      });
-    });
-}
+  allCompensatoryCallsEl.appendChild(groupDiv);
+});
 
+document
+  .querySelectorAll(".delete-compensatory-btn")
+  .forEach(button => {
+    button.addEventListener("click", () => {
+      deleteAdminCompensatoryCall(button.dataset.callId);
+    });
+  });
+}
 /* ===============================
    SVINCOLATI
 ================================ */
@@ -3127,19 +3178,25 @@ async function calculateCompensatoryResults() {
     return;
   }
 
-  const callsByPlayer = {};
+const callsByPlayer = {};
 
-  calls.forEach(call => {
-    const playerKey = call.player_in_id
-      ? String(call.player_in_id)
-      : normalizePlayerName(call.player_in);
+calls.forEach(call => {
+  const playerIdKey = call.player_in_id
+    ? String(call.player_in_id)
+    : normalizePlayerName(call.player_in);
 
-    if (!callsByPlayer[playerKey]) {
-      callsByPlayer[playerKey] = [];
-    }
+  const compensatoryGroup = getCompensatoryGroupForTeamId(call.team_id);
 
-    callsByPlayer[playerKey].push(call);
-  });
+  const playerKey = isConferencePhase()
+    ? `${compensatoryGroup}__${playerIdKey}`
+    : playerIdKey;
+
+  if (!callsByPlayer[playerKey]) {
+    callsByPlayer[playerKey] = [];
+  }
+
+  callsByPlayer[playerKey].push(call);
+});
 
   for (const playerKey in callsByPlayer) {
     const entries = callsByPlayer[playerKey];
