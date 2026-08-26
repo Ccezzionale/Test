@@ -2339,66 +2339,156 @@ async function resetDynamicCall(orderId) {
 async function loadAllCalls() {
   if (!currentSettings || !allCallsEl) return;
 
+  /*
+    PRIVACY ADMIN:
+    NON carichiamo player_in, player_out o relativi ID.
+    L'admin deve sapere solo se una chiamata è stata ricevuta.
+  */
   const { data: calls, error } = await supabase
     .from("waiver_calls")
-    .select("*")
+    .select(`
+      id,
+      waiver_order_id,
+      team_id,
+      owner_team_id,
+      original_team_id,
+      priority_number,
+      conference,
+      slot,
+      status,
+      updated_at
+    `)
     .eq("week", currentSettings.active_week)
-    .eq("phase", currentSettings.active_phase)
-    .order("slot", { ascending: true })
-    .order("priority_number", { ascending: true });
+    .eq("phase", currentSettings.active_phase);
 
   if (error) {
-    console.error("Errore caricamento chiamate admin:", error);
+    console.error("Errore caricamento ricevute chiamate admin:", error);
+    allCallsEl.innerHTML =
+      "<p>Errore nel caricamento dello stato delle chiamate.</p>";
     return;
   }
+
+  const callsByOrderId = {};
+
+  (calls || []).forEach(call => {
+    if (call.waiver_order_id) {
+      callsByOrderId[String(call.waiver_order_id)] = call;
+    }
+  });
 
   allCallsEl.innerHTML = "";
 
-  if (!calls || calls.length === 0) {
-    allCallsEl.innerHTML = "<p>Nessuna chiamata ancora.</p>";
+  if (!waiverOrderRows || waiverOrderRows.length === 0) {
+    allCallsEl.innerHTML = "<p>Nessun ordine waiver disponibile.</p>";
     return;
   }
 
-  calls.forEach(call => {
-    const owner = teamMap[call.owner_team_id] || teamMap[call.team_id];
-    const original = teamMap[call.original_team_id];
+  const groups = groupRowsByConferenceAndSlot(waiverOrderRows);
+  const sortedKeys = sortGroupKeys(Object.keys(groups));
 
-    const div = document.createElement("div");
+  sortedKeys.forEach(key => {
+    const group = groups[key];
 
-    div.innerHTML = `
-      <strong>${owner?.name || call.owner_team_id || call.team_id}</strong>
-      → ${call.player_in}
-      <span>(slot ${normalizeSlot(call.slot)}, #${call.priority_number || "-"})</span>
-      ${
-        original && String(original.id) !== String(owner?.id)
-          ? `<span>via ${original.name}</span>`
-          : ""
-      }
-      <strong>${call.status || "pending"}</strong>
+    const groupDiv = document.createElement("div");
+    groupDiv.className = "admin-calls-group";
+
+    groupDiv.innerHTML = `
+      <h4>${group.conference} - Slot ${group.slot}</h4>
     `;
 
-    allCallsEl.appendChild(div);
+    group.rows
+      .slice()
+      .sort((a, b) => a.priority_number - b.priority_number)
+      .forEach(orderRow => {
+        const call = callsByOrderId[String(orderRow.id)];
+
+        const originalTeam = teamMap[orderRow.original_team_id];
+        const ownerTeam = orderRow.owner_team_id
+          ? teamMap[orderRow.owner_team_id]
+          : null;
+
+        const ownerName =
+          ownerTeam?.name ||
+          originalTeam?.name ||
+          "Squadra sconosciuta";
+
+        const isVia =
+          ownerTeam &&
+          originalTeam &&
+          String(ownerTeam.id) !== String(originalTeam.id);
+
+        const div = document.createElement("div");
+        div.className = "admin-call-receipt";
+
+        div.innerHTML = `
+          <strong>#${orderRow.priority_number} ${ownerName}</strong>
+
+          ${
+            isVia
+              ? `<span>via ${originalTeam.name}</span>`
+              : ""
+          }
+
+          <span>
+            ${
+              call
+                ? "✅ Chiamata ricevuta"
+                : "⏳ Nessuna chiamata ricevuta"
+            }
+          </span>
+
+          ${
+            call?.updated_at
+              ? `<small>Ultimo salvataggio: ${formatWaiverDateTime(call.updated_at)}</small>`
+              : ""
+          }
+        `;
+
+        groupDiv.appendChild(div);
+      });
+
+    allCallsEl.appendChild(groupDiv);
   });
 }
 
 async function loadAllCompensatoryCalls() {
   if (!currentSettings || !allCompensatoryCallsEl) return;
 
+  /*
+    PRIVACY ADMIN COMPENSATIVE:
+    niente player_in / player_out.
+    Lo status "submitted" ci basta per sapere
+    se la squadra ha inviato la chiamata.
+  */
   const { data, error } = await supabase
     .from("waiver_compensatory_calls")
-    .select("*")
+    .select(`
+      id,
+      team_id,
+      priority_order,
+      status,
+      updated_at
+    `)
     .eq("week", currentSettings.active_week)
     .eq("phase", currentSettings.active_phase)
     .order("priority_order", { ascending: true });
 
   if (error) {
-    console.error("Errore caricamento compensative admin:", error);
-    allCompensatoryCallsEl.innerHTML = "<p>Errore nel caricamento compensative.</p>";
+    console.error(
+      "Errore caricamento compensative admin:",
+      error
+    );
+
+    allCompensatoryCallsEl.innerHTML =
+      "<p>Errore nel caricamento compensative.</p>";
+
     return;
   }
 
   if (!data || data.length === 0) {
-    allCompensatoryCallsEl.innerHTML = "<p>Nessuna chiamata compensativa.</p>";
+    allCompensatoryCallsEl.innerHTML =
+      "<p>Nessuna chiamata compensativa.</p>";
+
     return;
   }
 
@@ -2407,16 +2497,36 @@ async function loadAllCompensatoryCalls() {
   data.forEach(call => {
     const team = teamMap[call.team_id];
 
+    const submitted =
+      call.status === "submitted" ||
+      call.status === "won" ||
+      call.status === "lost";
+
     const div = document.createElement("div");
     div.className = "admin-compensatory-row";
 
     div.innerHTML = `
       <div class="admin-compensatory-main">
-        <strong>C${call.priority_order || "-"} ${team?.name || "Squadra sconosciuta"}</strong>
+
+        <strong>
+          C${call.priority_order || "-"}
+          ${team?.name || "Squadra sconosciuta"}
+        </strong>
+
         <span>
-          ${call.player_in ? `→ ${call.player_in}` : "nessun giocatore selezionato"}
+          ${
+            submitted
+              ? "✅ Chiamata ricevuta"
+              : "⏳ Nessuna chiamata ricevuta"
+          }
         </span>
-        <small>Stato: ${call.status || "pending"}</small>
+
+        ${
+          submitted && call.updated_at
+            ? `<small>Ultimo salvataggio: ${formatWaiverDateTime(call.updated_at)}</small>`
+            : ""
+        }
+
       </div>
 
       <button
@@ -2431,11 +2541,13 @@ async function loadAllCompensatoryCalls() {
     allCompensatoryCallsEl.appendChild(div);
   });
 
-  document.querySelectorAll(".delete-compensatory-btn").forEach(button => {
-    button.addEventListener("click", () => {
-      deleteAdminCompensatoryCall(button.dataset.callId);
+  document
+    .querySelectorAll(".delete-compensatory-btn")
+    .forEach(button => {
+      button.addEventListener("click", () => {
+        deleteAdminCompensatoryCall(button.dataset.callId);
+      });
     });
-  });
 }
 
 /* ===============================
