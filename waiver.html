@@ -411,13 +411,23 @@
             </div>
           </div>
 
-          <div class="admin-calls-block">
-            <h3>Chiamate ricevute</h3>
-            <div id="allCalls" class="all-calls"></div>
-          </div>
+<div class="admin-calls-block">
+  <h3>Chiamate ricevute</h3>
+
+  <div id="allCalls" class="all-calls"></div>
+
+  <div class="admin-compensatory-overview">
+    <h3>Chiamate compensative</h3>
+
+    <div id="allCompensatoryCalls" class="all-calls">
+      <p>Caricamento compensative...</p>
+    </div>
+  </div>
+</div>
+
 
 <div class="admin-calls-block admin-compensatory-manager">
-  <h3>Chiamate compensative</h3>
+  <h3>Gestione compensative</h3>
 
   <p class="card-subtitle">
     Aggiungi o rimuovi manualmente chiamate extra per la settimana/fase attiva.
@@ -425,20 +435,27 @@
 
   <div class="admin-compensatory-form">
     <label for="adminCompTeamSelect">Squadra</label>
+
     <select id="adminCompTeamSelect" class="waiver-owner-select">
       <option value="">Seleziona squadra</option>
     </select>
 
     <label for="adminCompPriorityInput">Priorità</label>
-    <input type="number" id="adminCompPriorityInput" min="1" placeholder="Es. 1" />
 
-    <button id="addCompensatoryBtn" type="button" class="primary-btn small-btn">
+    <input
+      type="number"
+      id="adminCompPriorityInput"
+      min="1"
+      placeholder="Es. 1"
+    />
+
+    <button
+      id="addCompensatoryBtn"
+      type="button"
+      class="primary-btn small-btn"
+    >
       Aggiungi compensativa
     </button>
-  </div>
-
-  <div id="allCompensatoryCalls" class="all-calls">
-    <p>Caricamento compensative...</p>
   </div>
 </div>
         </div>
