@@ -70,6 +70,13 @@ const settingsMessageEl = document.getElementById("settingsMessage");
 const teamLogoEl = document.getElementById("teamLogo");
 const heroPriorityEl = document.getElementById("heroPriority");
 
+const adminViewAsSelect = document.getElementById("adminViewAsSelect");
+const adminViewAsBtn = document.getElementById("adminViewAsBtn");
+const adminViewAsResetBtn = document.getElementById("adminViewAsResetBtn");
+const adminViewAsBanner = document.getElementById("adminViewAsBanner");
+const adminViewAsBannerTeam = document.getElementById("adminViewAsBannerTeam");
+const adminViewAsBannerResetBtn = document.getElementById("adminViewAsBannerResetBtn");
+
 /* ===============================
    STATO APP
 ================================ */
@@ -78,6 +85,9 @@ let currentTeam = null;
 let currentSettings = null;
 let currentUserEmail = null;
 let currentUserIsAdmin = false;
+let currentRealTeam = null;
+
+const WAIVER_VIEW_AS_STORAGE_KEY = "waiver_admin_view_as_team_id";
 
 let teamsCache = [];
 let teamMap = {};
@@ -592,6 +602,7 @@ function setAdminMessage(text, isError = false) {
 }
 
 function setActiveCallCard(orderId) {
+  if (isAdminViewingAsTeam()) return;
   activeWaiverOrderId = orderId;
   activeCompensatoryCallId = null;
 
@@ -608,6 +619,7 @@ function setActiveCallCard(orderId) {
 }
 
 function setActiveCompensatoryCallCard(callId) {
+  if (isAdminViewingAsTeam()) return;
   activeCompensatoryCallId = callId;
   activeWaiverOrderId = null;
 
@@ -989,6 +1001,186 @@ async function sortWaiverGroupsByStandings(groups) {
       return a.name.localeCompare(b.name);
     });
   });
+}
+
+
+function isAdminViewingAsTeam() {
+  return Boolean(
+    currentUserIsAdmin &&
+    currentRealTeam &&
+    currentTeam &&
+    String(currentRealTeam.id) !== String(currentTeam.id)
+  );
+}
+
+function renderCurrentTeamIdentity() {
+  if (!currentTeam) return;
+
+  if (teamNameEl) {
+    teamNameEl.textContent = currentTeam.name || "Squadra";
+  }
+
+  if (teamConferenceEl) {
+    teamConferenceEl.textContent = currentTeam.conference || "Non assegnata";
+  }
+
+  if (teamLogoEl) {
+    teamLogoEl.style.display = "";
+    teamLogoEl.src = getTeamLogoPath(currentTeam.name);
+    teamLogoEl.alt = `Logo ${currentTeam.name}`;
+
+    teamLogoEl.onerror = () => {
+      teamLogoEl.style.display = "none";
+    };
+  }
+}
+
+function populateAdminViewAsSelect() {
+  if (!adminViewAsSelect || !currentUserIsAdmin) return;
+
+  const selectedValue = isAdminViewingAsTeam()
+    ? String(currentTeam.id)
+    : "";
+
+  adminViewAsSelect.innerHTML = `
+    <option value="">Seleziona squadra</option>
+    ${
+      (teamsCache || [])
+        .slice()
+        .sort((a, b) => String(a.name || "").localeCompare(String(b.name || "")))
+        .map(team => `
+          <option value="${team.id}">
+            ${team.name}${String(team.id) === String(currentRealTeam?.id) ? " (la mia)" : ""}
+          </option>
+        `)
+        .join("")
+    }
+  `;
+
+  adminViewAsSelect.value = selectedValue;
+}
+
+function updateAdminViewAsUI() {
+  const active = isAdminViewingAsTeam();
+
+  document.body.classList.toggle("waiver-view-as-mode", active);
+
+  if (adminViewAsBanner) {
+    adminViewAsBanner.style.display = active ? "flex" : "none";
+  }
+
+  if (adminViewAsBannerTeam) {
+    adminViewAsBannerTeam.textContent = active
+      ? currentTeam?.name || "Squadra"
+      : "-";
+  }
+
+  const adminMobileTab = document.querySelector(".admin-mobile-tab");
+
+  if (active) {
+    if (adminPanel) adminPanel.style.display = "none";
+    if (adminMobileTab) adminMobileTab.style.display = "none";
+
+    const currentAdminTab = document.querySelector(
+      '.waiver-mobile-tab[data-waiver-mobile-tab="admin"].active'
+    );
+
+    if (currentAdminTab) {
+      document
+        .querySelector('.waiver-mobile-tab[data-waiver-mobile-tab="calls"]')
+        ?.click();
+    }
+  } else if (currentUserIsAdmin) {
+    if (adminPanel) adminPanel.style.display = "block";
+    if (adminMobileTab) adminMobileTab.style.display = "";
+  }
+
+  populateAdminViewAsSelect();
+}
+
+function blockTeamWriteWhileViewingAs() {
+  if (!isAdminViewingAsTeam()) return false;
+
+  setMessage(
+    `Modalità test: stai visualizzando come ${currentTeam?.name || "un'altra squadra"}. Le modifiche sono disabilitate.`,
+    true
+  );
+
+  return true;
+}
+
+async function refreshTeamScopedWaiverView() {
+  activeWaiverOrderId = null;
+  activeCompensatoryCallId = null;
+
+  myOrderRows = [];
+  mySavedCalls = [];
+  myCompensatoryCalls = [];
+  myOwnedPlayers = [];
+  myReplacementCandidates = [];
+  freeAgents = [];
+
+  renderCurrentTeamIdentity();
+  updateAdminViewAsUI();
+
+  await loadMyOwnedPlayers();
+  await loadMyReplacementCandidates();
+  await loadMyWaiverCalls();
+  await loadMyCompensatoryCalls();
+  await loadFreeAgents();
+
+  updateAdminViewAsUI();
+}
+
+async function enterAdminViewAsTeam(teamId) {
+  if (!currentUserIsAdmin) return;
+
+  const targetTeam = teamMap[teamId];
+
+  if (!targetTeam) {
+    setAdminMessage("Squadra da visualizzare non trovata.", true);
+    return;
+  }
+
+  if (String(targetTeam.id) === String(currentRealTeam?.id)) {
+    await exitAdminViewAsTeam();
+    return;
+  }
+
+  currentTeam = targetTeam;
+  sessionStorage.setItem(WAIVER_VIEW_AS_STORAGE_KEY, String(targetTeam.id));
+
+  await refreshTeamScopedWaiverView();
+}
+
+async function exitAdminViewAsTeam() {
+  if (!currentUserIsAdmin || !currentRealTeam) return;
+
+  currentTeam = currentRealTeam;
+  sessionStorage.removeItem(WAIVER_VIEW_AS_STORAGE_KEY);
+
+  await refreshTeamScopedWaiverView();
+
+  setAdminMessage("Modalità test terminata. Sei tornato alla tua squadra.");
+}
+
+function restoreAdminViewAsTeamFromSession() {
+  if (!currentUserIsAdmin) return;
+
+  const savedTeamId = sessionStorage.getItem(WAIVER_VIEW_AS_STORAGE_KEY);
+
+  if (!savedTeamId) return;
+
+  const targetTeam = teamMap[savedTeamId];
+
+  if (
+    targetTeam &&
+    String(targetTeam.id) !== String(currentRealTeam?.id)
+  ) {
+    currentTeam = targetTeam;
+  } else {
+    sessionStorage.removeItem(WAIVER_VIEW_AS_STORAGE_KEY);
+  }
 }
 
 /* ===============================
@@ -1889,7 +2081,8 @@ slotBlock.innerHTML = `
     group.rows.forEach(orderRow => {
       const originalTeam = teamMap[orderRow.original_team_id];
       const savedCall = getCallByOrderId(orderRow.id);
-      const slotOpen = isSlotOpen(orderRow.slot);
+      const slotActuallyOpen = isSlotOpen(orderRow.slot);
+      const slotOpen = slotActuallyOpen && !isAdminViewingAsTeam();
 
       const isVia = String(orderRow.original_team_id) !== String(orderRow.owner_team_id);
 
@@ -1963,11 +2156,15 @@ slotBlock.innerHTML = `
 
         <p class="call-message">
           ${
-            savedCall
-              ? `✅ Chiamata salvata il ${formatWaiverDateTime(savedCall.updated_at)}`
-              : slotOpen
-                ? "Nessuna chiamata salvata."
-                : `Slot ${normalizeSlot(orderRow.slot)} chiuso o non disponibile.`
+            isAdminViewingAsTeam()
+              ? savedCall
+                ? `👁️ Modalità test · chiamata salvata il ${formatWaiverDateTime(savedCall.updated_at)}`
+                : "👁️ Modalità test · nessuna chiamata salvata."
+              : savedCall
+                ? `✅ Chiamata salvata il ${formatWaiverDateTime(savedCall.updated_at)}`
+                : slotOpen
+                  ? "Nessuna chiamata salvata."
+                  : `Slot ${normalizeSlot(orderRow.slot)} chiuso o non disponibile.`
           }
         </p>
       `;
@@ -2060,7 +2257,8 @@ function renderMyCompensatoryCalls() {
   myCompensatoryCalls.forEach(call => {
     const isEditable =
       (call.status === "pending" || call.status === "submitted") &&
-      isCompensatoryOpen();
+      isCompensatoryOpen() &&
+      !isAdminViewingAsTeam();
 
     const requiresPlayerOut = call.requires_player_out === true;
     const reasonLabel = getCompensatoryReasonLabel(call);
@@ -2184,6 +2382,7 @@ function renderMyCompensatoryCalls() {
 }
 
 async function saveCompensatoryCall(callId) {
+  if (blockTeamWriteWhileViewingAs()) return;
   if (!currentTeam || !currentSettings) return;
 
   const call = myCompensatoryCalls.find(
@@ -2259,6 +2458,7 @@ async function saveCompensatoryCall(callId) {
 }
 
 async function resetCompensatoryCall(callId) {
+  if (blockTeamWriteWhileViewingAs()) return;
   const confirmed = confirm("Vuoi cancellare questa chiamata compensativa?");
   if (!confirmed) return;
 
@@ -2291,6 +2491,7 @@ async function resetCompensatoryCall(callId) {
 }
 
 function fillActiveCallWithPlayer(player) {
+  if (blockTeamWriteWhileViewingAs()) return;
      if (activeCompensatoryCallId) {
     const input = document.querySelector(
       `.compensatory-player-in[data-call-id="${activeCompensatoryCallId}"]`
@@ -2356,6 +2557,7 @@ function fillActiveCallWithPlayer(player) {
 }
 
 async function saveDynamicCall(orderId) {
+  if (blockTeamWriteWhileViewingAs()) return;
   if (!currentTeam || !currentSettings) return;
 
   const orderRow = myOrderRows.find(row => String(row.id) === String(orderId));
@@ -2458,6 +2660,7 @@ status: "pending",
 }
 
 async function resetDynamicCall(orderId) {
+  if (blockTeamWriteWhileViewingAs()) return;
   const playerInEl = document.querySelector(`.dynamic-player-in[data-order-id="${orderId}"]`);
   const playerOutEl = document.querySelector(`.dynamic-player-out[data-order-id="${orderId}"]`);
 
@@ -3250,6 +3453,8 @@ sortedFiltered.forEach(player => {
     `;
 
     tr.addEventListener("click", () => {
+      if (isAdminViewingAsTeam()) return;
+
       fillActiveCallWithPlayer({
         ...player,
         rowElement: tr
@@ -4074,51 +4279,49 @@ async function initWaiverRoom() {
   const team = await getMyTeam();
   const settings = await getWaiverSettings();
 
+  currentRealTeam = team;
   currentTeam = team;
   currentSettings = settings;
 
-  if (team) {
-    teamNameEl.textContent = team.name;
-    teamConferenceEl.textContent = team.conference || "Non assegnata";
+  if (settings) {
+    if (activePhaseEl) activePhaseEl.textContent = settings.active_phase || "Non impostata";
+    if (activeWeekEl) activeWeekEl.textContent = settings.active_week || "-";
   }
 
-   if (team && teamLogoEl) {
-  teamLogoEl.src = getTeamLogoPath(team.name);
-  teamLogoEl.alt = `Logo ${team.name}`;
-
-  teamLogoEl.onerror = () => {
-    teamLogoEl.style.display = "none";
-  };
-}
-
-if (settings) {
-  if (activePhaseEl) activePhaseEl.textContent = settings.active_phase || "Non impostata";
-  if (activeWeekEl) activeWeekEl.textContent = settings.active_week || "-";
-}
-   syncSettingsPanel();
+  syncSettingsPanel();
 
   await loadTeams();
-   populateAdminCompensatoryTeamSelect();
+
+  if (currentUserIsAdmin) {
+    restoreAdminViewAsTeamFromSession();
+  }
+
+  renderCurrentTeamIdentity();
+  populateAdminCompensatoryTeamSelect();
+  populateAdminViewAsSelect();
+
   await loadWaiverOrder();
-   await renderPublicWaiverOrder();
+  await renderPublicWaiverOrder();
 
-if (currentUserIsAdmin) {
-  if (adminPanel) adminPanel.style.display = "block";
+  if (currentUserIsAdmin && !isAdminViewingAsTeam()) {
+    if (adminPanel) adminPanel.style.display = "block";
 
-  const adminMobileTab = document.querySelector(".admin-mobile-tab");
-  if (adminMobileTab) adminMobileTab.style.display = "";
+    const adminMobileTab = document.querySelector(".admin-mobile-tab");
+    if (adminMobileTab) adminMobileTab.style.display = "";
 
-  renderWaiverOrderAdmin();
-  await loadAllCalls();
-  await loadAllCompensatoryCalls();
+    renderWaiverOrderAdmin();
+    await loadAllCalls();
+    await loadAllCompensatoryCalls();
+  }
+
+  await loadMyOwnedPlayers();
+  await loadMyReplacementCandidates();
+  await loadMyWaiverCalls();
+  await loadMyCompensatoryCalls();
+  await loadFreeAgents();
+
+  updateAdminViewAsUI();
 }
-
-await loadMyOwnedPlayers();
-await loadMyReplacementCandidates();
-await loadMyWaiverCalls();
-await loadMyCompensatoryCalls();
-await loadFreeAgents();
-   }
 
 function setupMobileWaiverTabs() {
   const tabButtons = document.querySelectorAll("[data-waiver-mobile-tab]");
@@ -4151,6 +4354,25 @@ function setupMobileWaiverTabs() {
 /* ===============================
    EVENT LISTENERS
 ================================ */
+
+adminViewAsBtn?.addEventListener("click", async () => {
+  const teamId = adminViewAsSelect?.value || "";
+
+  if (!teamId) {
+    setAdminMessage("Seleziona prima una squadra da visualizzare.", true);
+    return;
+  }
+
+  await enterAdminViewAsTeam(teamId);
+});
+
+adminViewAsResetBtn?.addEventListener("click", async () => {
+  await exitAdminViewAsTeam();
+});
+
+adminViewAsBannerResetBtn?.addEventListener("click", async () => {
+  await exitAdminViewAsTeam();
+});
 
 generateWaiverOrderBtn?.addEventListener("click", () => {
   generateWaiverOrder();

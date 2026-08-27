@@ -3951,3 +3951,87 @@ button:disabled {
     width: 100%;
   }
 }
+
+
+/* =========================================================
+   ADMIN - VISUALIZZA COME SQUADRA
+   ========================================================= */
+
+.admin-view-as-panel {
+  border-color: rgba(37, 99, 235, 0.20);
+  background: linear-gradient(180deg, #f8fbff 0%, #eef6ff 100%);
+}
+
+.admin-view-as-controls {
+  display: grid;
+  grid-template-columns: minmax(220px, 1fr) auto auto;
+  gap: 10px;
+  align-items: center;
+  margin-top: 12px;
+}
+
+.admin-view-as-banner {
+  width: 100%;
+  margin: 0 0 16px;
+  padding: 12px 14px;
+  border-radius: 16px;
+  border: 1px solid rgba(245, 158, 11, 0.30);
+  background: linear-gradient(180deg, #fffbeb, #fff7d6);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  box-shadow: 0 10px 24px rgba(0, 31, 63, 0.08);
+}
+
+.admin-view-as-banner-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.admin-view-as-banner-copy strong {
+  color: #7a5300;
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.admin-view-as-banner-copy span {
+  color: #334155;
+  font-weight: 750;
+  line-height: 1.35;
+}
+
+.admin-view-as-banner-copy b {
+  color: #001f3f;
+}
+
+body.waiver-view-as-mode .my-waiver-card button,
+body.waiver-view-as-mode .my-waiver-card input,
+body.waiver-view-as-mode .my-waiver-card select,
+body.waiver-view-as-mode .my-compensatory-card button,
+body.waiver-view-as-mode .my-compensatory-card input,
+body.waiver-view-as-mode .my-compensatory-card select {
+  cursor: not-allowed;
+}
+
+body.waiver-view-as-mode .free-agents-table-wrap tbody tr {
+  cursor: default !important;
+}
+
+@media (max-width: 760px) {
+  .admin-view-as-controls {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-view-as-banner {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .admin-view-as-banner .secondary-btn {
+    width: 100%;
+  }
+}

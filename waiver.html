@@ -7,7 +7,7 @@
   <title>Waiver Room</title>
 
   <link rel="stylesheet" href="navbar.css" />
-  <link rel="stylesheet" href="waiver.css?v=12" />
+  <link rel="stylesheet" href="waiver.css?v=13" />
 </head>
 
 <body>
@@ -155,6 +155,26 @@
 </div>
 </section>
 
+
+<div id="adminViewAsBanner" class="admin-view-as-banner" style="display:none;">
+  <div class="admin-view-as-banner-copy">
+    <strong>Modalità test</strong>
+    <span>
+      Stai visualizzando la Waiver Room come
+      <b id="adminViewAsBannerTeam">-</b>.
+      Tutte le azioni della squadra sono disabilitate.
+    </span>
+  </div>
+
+  <button
+    id="adminViewAsBannerResetBtn"
+    type="button"
+    class="secondary-btn small-btn"
+  >
+    Torna alla mia squadra
+  </button>
+</div>
+
 <nav class="waiver-mobile-tabs" aria-label="Sezioni Waiver Room">
   <button type="button" class="waiver-mobile-tab active" data-waiver-mobile-tab="calls">
     Chiama
@@ -280,6 +300,40 @@
     <section class="waiver-admin-section">
       <article class="waiver-card admin-card" id="adminPanel" data-waiver-mobile-panel="admin" style="display:none;">
         <h2>Admin Waiver Room</h2>
+
+
+<div class="admin-settings-panel admin-view-as-panel">
+  <h3>Visualizza come squadra</h3>
+
+  <p class="card-subtitle">
+    Modalità test in sola lettura. Vedrai chiamate, compensative, rosa e svincolati
+    esattamente per la squadra selezionata. Il pannello Admin viene nascosto finché
+    non torni alla tua squadra.
+  </p>
+
+  <div class="admin-view-as-controls">
+    <select id="adminViewAsSelect" class="waiver-owner-select">
+      <option value="">Seleziona squadra</option>
+    </select>
+
+    <button
+      id="adminViewAsBtn"
+      type="button"
+      class="primary-btn small-btn"
+    >
+      Visualizza come
+    </button>
+
+    <button
+      id="adminViewAsResetBtn"
+      type="button"
+      class="secondary-btn small-btn"
+    >
+      Torna alla mia squadra
+    </button>
+  </div>
+</div>
+
 
         <div class="admin-settings-panel">
           <h3>Impostazioni Waiver</h3>
@@ -486,7 +540,7 @@
 
   </main>
 <script src="mobile-nav.js"></script>
-  <script type="module" src="waiver.js?v=21"></script>
+  <script type="module" src="waiver.js?v=22"></script>
   <script type="module" src="home_auth.js"></script>
   <script src="navbar.js"></script>
 </body>
