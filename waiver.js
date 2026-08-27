@@ -57,6 +57,9 @@ const compensatoryCloseInput = document.getElementById("compensatoryCloseInput")
 
 const adminCompTeamSelect = document.getElementById("adminCompTeamSelect");
 const adminCompPriorityInput = document.getElementById("adminCompPriorityInput");
+const adminCompModeSelect = document.getElementById("adminCompModeSelect");
+const adminCompReasonSelect = document.getElementById("adminCompReasonSelect");
+const adminCompReasonNoteInput = document.getElementById("adminCompReasonNoteInput");
 const addCompensatoryBtn = document.getElementById("addCompensatoryBtn");
 
 const setStandardFridayBtn = document.getElementById("setStandardFridayBtn");
@@ -82,6 +85,7 @@ let myOrderRows = [];
 let mySavedCalls = [];
 let freeAgents = [];
 let myOwnedPlayers = [];
+let myReplacementCandidates = [];
 let freeAgentsSortKey = "name";
 let freeAgentsSortDirection = "asc";
 
@@ -209,6 +213,27 @@ function getCompensatoryGroupForTeamId(teamId) {
   const team = teamMap[teamId];
 
   return team?.conference || "Senza Conference";
+}
+
+function getCompensatoryReasonLabel(call) {
+  const reasonType = String(call?.reason_type || "trade").toLowerCase();
+  const note = String(call?.reason_note || "").trim();
+
+  if (reasonType === "serie_a_exit") {
+    return note || "giocatore uscito dalla Serie A";
+  }
+
+  if (reasonType === "other") {
+    return note || "compensativa speciale";
+  }
+
+  return note || "trade sbilanciata";
+}
+
+function getCompensatoryModeLabel(call) {
+  return call?.requires_player_out
+    ? "sostituzione 1→1"
+    : "solo ingresso";
 }
 
 function getGeneratedSlots() {
@@ -1677,7 +1702,7 @@ groupOrder.forEach(groupName => {
 
       <div class="public-waiver-main">
         <strong>${team?.name || "Squadra sconosciuta"}</strong>
-        <span class="public-waiver-via">da trade sbilanciata</span>
+        <span class="public-waiver-via">${getCompensatoryReasonLabel(call)} · ${getCompensatoryModeLabel(call)}</span>
         <span class="public-waiver-result">${resultText}</span>
       </div>
     `;
@@ -1780,6 +1805,41 @@ function buildPlayerOutOptions(savedPlayerOutId = null, savedPlayerOutName = "")
 
   // Paracadute: se esiste una vecchia chiamata salvata solo come testo,
   // la mostriamo comunque.
+  if (savedPlayerOutName && !savedPlayerOutId) {
+    options.push(`
+      <option value="" selected>
+        ${savedPlayerOutName}
+      </option>
+    `);
+  }
+
+  return options.join("");
+}
+
+function buildCompensatoryPlayerOutOptions(savedPlayerOutId = null, savedPlayerOutName = "") {
+  const options = [
+    `<option value="">Seleziona giocatore da sostituire</option>`
+  ];
+
+  myReplacementCandidates.forEach(player => {
+    const selected =
+      String(player.id) === String(savedPlayerOutId)
+        ? "selected"
+        : "";
+
+    const statusBadge = player.status && player.status !== "active"
+      ? "  🚪 fuori Serie A / inattivo"
+      : "";
+
+    const label = `${getOwnedPlayerOptionLabel(player)}${statusBadge}`;
+
+    options.push(`
+      <option value="${player.id}" ${selected}>
+        ${label}
+      </option>
+    `);
+  });
+
   if (savedPlayerOutName && !savedPlayerOutId) {
     options.push(`
       <option value="" selected>
@@ -1971,14 +2031,16 @@ async function loadMyCompensatoryCalls() {
 
 function renderMyCompensatoryCalls() {
   if (!myCompensatoryCallsEl) return;
-   const mobileExtraBadge = document.getElementById("mobileExtraBadge");
 
-if (mobileExtraBadge) {
-  mobileExtraBadge.style.display =
-    myCompensatoryCalls && myCompensatoryCalls.length > 0
-      ? "inline-flex"
-      : "none";
-}
+  const mobileExtraBadge = document.getElementById("mobileExtraBadge");
+
+  if (mobileExtraBadge) {
+    mobileExtraBadge.style.display =
+      myCompensatoryCalls && myCompensatoryCalls.length > 0
+        ? "inline-flex"
+        : "none";
+  }
+
   if (!myCompensatoryCalls || myCompensatoryCalls.length === 0) {
     myCompensatoryCallsEl.innerHTML = "<p>Nessuna chiamata compensativa disponibile.</p>";
     return;
@@ -1988,8 +2050,12 @@ if (mobileExtraBadge) {
 
   myCompensatoryCalls.forEach(call => {
     const isEditable =
-  (call.status === "pending" || call.status === "submitted") &&
-  isCompensatoryOpen();
+      (call.status === "pending" || call.status === "submitted") &&
+      isCompensatoryOpen();
+
+    const requiresPlayerOut = call.requires_player_out === true;
+    const reasonLabel = getCompensatoryReasonLabel(call);
+    const modeLabel = getCompensatoryModeLabel(call);
 
     const card = document.createElement("div");
     card.className = "dynamic-call-card compensatory-call-card";
@@ -2004,7 +2070,8 @@ if (mobileExtraBadge) {
         <div class="dynamic-call-title">
           <strong>Chiamata compensativa #${call.priority_order || "-"}</strong>
           <span>${call.phase || ""} - Week ${call.week || ""}</span>
-          <span class="via-badge">da trade sbilanciata</span>
+          <span class="via-badge">${reasonLabel}</span>
+          <span class="via-badge">${modeLabel}</span>
         </div>
 
         <span class="order-position-pill">C${call.priority_order || "-"}</span>
@@ -2020,6 +2087,17 @@ if (mobileExtraBadge) {
         value="${call.player_in || ""}"
         ${isEditable ? "" : "disabled"}
       />
+
+      ${requiresPlayerOut ? `
+        <label>Giocatore da sostituire</label>
+        <select
+          class="compensatory-player-out"
+          data-call-id="${call.id}"
+          ${isEditable ? "" : "disabled"}
+        >
+          ${buildCompensatoryPlayerOutOptions(call.player_out_id, call.player_out || "")}
+        </select>
+      ` : ""}
 
       <div class="call-actions">
         <button
@@ -2053,10 +2131,10 @@ if (mobileExtraBadge) {
       <p class="call-message">
         ${
           call.player_in
-            ? `✅ Compensativa salvata: ${call.player_in}`
+            ? `✅ Compensativa salvata: ${call.player_in}${requiresPlayerOut && call.player_out ? ` · sostituisce ${call.player_out}` : ""}`
             : isCompensatoryOpen()
-  ? "Nessuna compensativa salvata."
-  : "Compensative chiuse o non disponibili."
+              ? "Nessuna compensativa salvata."
+              : "Compensative chiuse o non disponibili."
         }
         <br>
         Stato: <strong>${call.status || "pending"}</strong>
@@ -2066,7 +2144,7 @@ if (mobileExtraBadge) {
     card.addEventListener("click", event => {
       const tag = event.target.tagName.toLowerCase();
 
-      if (["input", "button"].includes(tag)) return;
+      if (["input", "button", "select", "option"].includes(tag)) return;
       if (!isEditable) return;
 
       setActiveCompensatoryCallCard(call.id);
@@ -2099,14 +2177,48 @@ if (mobileExtraBadge) {
 async function saveCompensatoryCall(callId) {
   if (!currentTeam || !currentSettings) return;
 
-  const playerInEl = document.querySelector(`.compensatory-player-in[data-call-id="${callId}"]`);
+  const call = myCompensatoryCalls.find(
+    item => String(item.id) === String(callId)
+  );
+
+  if (!call) {
+    setMessage("Compensativa non trovata.", true);
+    return;
+  }
+
+  const playerInEl = document.querySelector(
+    `.compensatory-player-in[data-call-id="${callId}"]`
+  );
 
   const playerIn = playerInEl?.value.trim() || "";
-  const playerInId = playerInEl?.dataset.playerId || null;
+  const playerInId = playerInEl?.dataset.playerId || call.player_in_id || null;
 
   if (!playerIn || !playerInId) {
     setMessage("Seleziona il giocatore da prendere con la compensativa.", true);
     return;
+  }
+
+  let playerOut = null;
+  let playerOutId = null;
+
+  if (call.requires_player_out === true) {
+    const playerOutEl = document.querySelector(
+      `.compensatory-player-out[data-call-id="${callId}"]`
+    );
+
+    playerOutId = playerOutEl?.value || null;
+    const selectedOption = playerOutEl?.selectedOptions?.[0];
+    playerOut = selectedOption && playerOutId
+      ? selectedOption.textContent.trim()
+      : "";
+
+    if (!playerOut || !playerOutId) {
+      setMessage(
+        "Questa compensativa richiede anche il giocatore da sostituire.",
+        true
+      );
+      return;
+    }
   }
 
   const { error } = await supabase
@@ -2114,6 +2226,8 @@ async function saveCompensatoryCall(callId) {
     .update({
       player_in: playerIn,
       player_in_id: playerInId,
+      player_out: playerOut,
+      player_out_id: playerOutId,
       status: "submitted",
       updated_at: new Date().toISOString()
     })
@@ -2495,8 +2609,7 @@ async function loadAllCompensatoryCalls() {
   /*
     PRIVACY ADMIN COMPENSATIVE:
     niente player_in / player_out.
-    Lo status "submitted" ci basta per sapere
-    se la squadra ha inviato la chiamata.
+    L'admin vede stato, tipo e motivo, ma non il giocatore chiamato.
   */
   const { data, error } = await supabase
     .from("waiver_compensatory_calls")
@@ -2504,6 +2617,9 @@ async function loadAllCompensatoryCalls() {
       id,
       team_id,
       priority_order,
+      requires_player_out,
+      reason_type,
+      reason_note,
       status,
       updated_at
     `)
@@ -2512,123 +2628,271 @@ async function loadAllCompensatoryCalls() {
     .order("priority_order", { ascending: true });
 
   if (error) {
-    console.error(
-      "Errore caricamento compensative admin:",
-      error
-    );
-
+    console.error("Errore caricamento compensative admin:", error);
     allCompensatoryCallsEl.innerHTML =
       "<p>Errore nel caricamento compensative.</p>";
-
     return;
   }
 
   if (!data || data.length === 0) {
     allCompensatoryCallsEl.innerHTML =
       "<p>Nessuna chiamata compensativa.</p>";
-
     return;
   }
 
   allCompensatoryCallsEl.innerHTML = "";
 
+  const groups = {};
 
-const groups = {};
+  data.forEach(call => {
+    const groupName = getCompensatoryGroupForTeamId(call.team_id);
 
-data.forEach(call => {
-  const groupName = getCompensatoryGroupForTeamId(call.team_id);
+    if (!groups[groupName]) {
+      groups[groupName] = [];
+    }
 
-  if (!groups[groupName]) {
-    groups[groupName] = [];
-  }
+    groups[groupName].push(call);
+  });
 
-  groups[groupName].push(call);
-});
+  const groupOrder = isConferencePhase()
+    ? ["Conference League", "Conference Championship"]
+    : ["Totale"];
 
-const groupOrder = isConferencePhase()
-  ? ["Conference League", "Conference Championship"]
-  : ["Totale"];
+  groupOrder.forEach(groupName => {
+    const calls = groups[groupName];
 
-groupOrder.forEach(groupName => {
-  const calls = groups[groupName];
+    if (!calls || calls.length === 0) return;
 
-  if (!calls || calls.length === 0) return;
+    calls.sort((a, b) =>
+      (a.priority_order || 999) - (b.priority_order || 999)
+    );
 
-  calls.sort((a, b) =>
-    (a.priority_order || 999) - (b.priority_order || 999)
-  );
+    const groupDiv = document.createElement("div");
+    groupDiv.className = "admin-calls-group";
 
-  const groupDiv = document.createElement("div");
-  groupDiv.className = "admin-calls-group";
-
-  groupDiv.innerHTML = `
-    <h4>
-      ${
-        groupName === "Totale"
-          ? "Compensative"
-          : `${groupName} - Compensative`
-      }
-    </h4>
-  `;
-
-  calls.forEach(call => {
-    const team = teamMap[call.team_id];
-
-    const submitted =
-      call.status === "submitted" ||
-      call.status === "won" ||
-      call.status === "lost";
-
-    const div = document.createElement("div");
-    div.className = "admin-compensatory-row";
-
-    div.innerHTML = `
-      <div class="admin-compensatory-main">
-
-        <strong>
-          C${call.priority_order || "-"}
-          ${team?.name || "Squadra sconosciuta"}
-        </strong>
-
-        <span>
-          ${
-            submitted
-              ? "✅ Chiamata ricevuta"
-              : "⏳ Nessuna chiamata ricevuta"
-          }
-        </span>
-
+    groupDiv.innerHTML = `
+      <h4>
         ${
-          submitted && call.updated_at
-            ? `<small>Ultimo salvataggio: ${formatWaiverDateTime(call.updated_at)}</small>`
-            : ""
+          groupName === "Totale"
+            ? "Compensative"
+            : `${groupName} - Compensative`
         }
-
-      </div>
-
-      <button
-        type="button"
-        class="secondary-btn small-btn delete-compensatory-btn"
-        data-call-id="${call.id}"
-      >
-        Elimina
-      </button>
+      </h4>
     `;
 
-    groupDiv.appendChild(div);
-  });
+    calls.forEach(call => {
+      const team = teamMap[call.team_id];
 
-  allCompensatoryCallsEl.appendChild(groupDiv);
-});
+      const submitted =
+        call.status === "submitted" ||
+        call.status === "won" ||
+        call.status === "lost";
 
-document
-  .querySelectorAll(".delete-compensatory-btn")
-  .forEach(button => {
-    button.addEventListener("click", () => {
-      deleteAdminCompensatoryCall(button.dataset.callId);
+      const teamOptions = teamsCache
+        .map(item => `
+          <option value="${item.id}" ${String(item.id) === String(call.team_id) ? "selected" : ""}>
+            ${item.name}
+          </option>
+        `)
+        .join("");
+
+      const div = document.createElement("div");
+      div.className = "admin-compensatory-row";
+
+      div.innerHTML = `
+        <div class="admin-compensatory-main">
+          <strong>
+            C${call.priority_order || "-"}
+            ${team?.name || "Squadra sconosciuta"}
+          </strong>
+
+          <span>${getCompensatoryModeLabel(call)} · ${getCompensatoryReasonLabel(call)}</span>
+
+          <span>
+            ${submitted ? "✅ Chiamata ricevuta" : "⏳ Nessuna chiamata ricevuta"}
+          </span>
+
+          ${
+            submitted && call.updated_at
+              ? `<small>Ultimo salvataggio: ${formatWaiverDateTime(call.updated_at)}</small>`
+              : ""
+          }
+
+          <div class="admin-compensatory-edit-grid">
+            <label>
+              Squadra
+              <select class="waiver-owner-select admin-comp-team-edit" data-call-id="${call.id}">
+                ${teamOptions}
+              </select>
+            </label>
+
+            <label>
+              Priorità
+              <input
+                type="number"
+                min="1"
+                class="admin-comp-priority-edit"
+                data-call-id="${call.id}"
+                value="${call.priority_order || 1}"
+              />
+            </label>
+
+            <label>
+              Modalità
+              <select class="waiver-owner-select admin-comp-mode-edit" data-call-id="${call.id}">
+                <option value="extra" ${call.requires_player_out ? "" : "selected"}>Solo ingresso</option>
+                <option value="replace" ${call.requires_player_out ? "selected" : ""}>Sostituzione 1→1</option>
+              </select>
+            </label>
+
+            <label>
+              Motivo
+              <select class="waiver-owner-select admin-comp-reason-edit" data-call-id="${call.id}">
+                <option value="trade" ${(call.reason_type || "trade") === "trade" ? "selected" : ""}>Trade sbilanciata</option>
+                <option value="serie_a_exit" ${call.reason_type === "serie_a_exit" ? "selected" : ""}>Giocatore uscito dalla Serie A</option>
+                <option value="other" ${call.reason_type === "other" ? "selected" : ""}>Altro</option>
+              </select>
+            </label>
+
+            <label>
+              Nota / descrizione
+              <input
+                type="text"
+                class="admin-comp-note-edit"
+                data-call-id="${call.id}"
+                value="${String(call.reason_note || "").replace(/"/g, "&quot;")}"
+                placeholder="Opzionale"
+              />
+            </label>
+          </div>
+        </div>
+
+        <div class="admin-compensatory-actions">
+          <button
+            type="button"
+            class="primary-btn small-btn save-admin-compensatory-btn"
+            data-call-id="${call.id}"
+          >
+            Salva modifiche
+          </button>
+
+          <button
+            type="button"
+            class="secondary-btn small-btn delete-compensatory-btn"
+            data-call-id="${call.id}"
+          >
+            Elimina
+          </button>
+        </div>
+      `;
+
+      groupDiv.appendChild(div);
     });
+
+    allCompensatoryCallsEl.appendChild(groupDiv);
   });
+
+  document
+    .querySelectorAll(".save-admin-compensatory-btn")
+    .forEach(button => {
+      button.addEventListener("click", () => {
+        updateAdminCompensatoryCall(button.dataset.callId);
+      });
+    });
+
+  document
+    .querySelectorAll(".delete-compensatory-btn")
+    .forEach(button => {
+      button.addEventListener("click", () => {
+        deleteAdminCompensatoryCall(button.dataset.callId);
+      });
+    });
 }
+
+async function updateAdminCompensatoryCall(callId) {
+  const teamId = document.querySelector(
+    `.admin-comp-team-edit[data-call-id="${callId}"]`
+  )?.value || "";
+
+  const priority = Number(document.querySelector(
+    `.admin-comp-priority-edit[data-call-id="${callId}"]`
+  )?.value || 0);
+
+  const mode = document.querySelector(
+    `.admin-comp-mode-edit[data-call-id="${callId}"]`
+  )?.value || "extra";
+
+  const reasonType = document.querySelector(
+    `.admin-comp-reason-edit[data-call-id="${callId}"]`
+  )?.value || "trade";
+
+  const reasonNote = document.querySelector(
+    `.admin-comp-note-edit[data-call-id="${callId}"]`
+  )?.value?.trim() || null;
+
+  if (!teamId || !priority || priority < 1) {
+    setAdminMessage("Controlla squadra e priorità della compensativa.", true);
+    return;
+  }
+
+  const requiresPlayerOut = mode === "replace";
+
+  const { data: existingCall, error: existingCallError } = await supabase
+    .from("waiver_compensatory_calls")
+    .select("team_id, requires_player_out, status")
+    .eq("id", callId)
+    .maybeSingle();
+
+  if (existingCallError || !existingCall) {
+    console.error("Errore lettura compensativa prima della modifica:", existingCallError);
+    setAdminMessage("Impossibile leggere la compensativa da modificare.", true);
+    return;
+  }
+
+  const structureChanged =
+    String(existingCall.team_id) !== String(teamId) ||
+    existingCall.requires_player_out === true !== requiresPlayerOut;
+
+  const { error } = await supabase
+    .from("waiver_compensatory_calls")
+    .update({
+      team_id: teamId,
+      priority_order: priority,
+      requires_player_out: requiresPlayerOut,
+      reason_type: reasonType,
+      reason_note: reasonNote,
+      ...(structureChanged
+        ? {
+            player_in: null,
+            player_in_id: null,
+            player_out: null,
+            player_out_id: null,
+            status: "pending"
+          }
+        : requiresPlayerOut
+          ? {}
+          : {
+              player_out: null,
+              player_out_id: null
+            }),
+      updated_at: new Date().toISOString()
+    })
+    .eq("id", callId);
+
+  if (error) {
+    console.error("Errore modifica compensativa admin:", error);
+    setAdminMessage("Errore modifica compensativa: " + error.message, true);
+    return;
+  }
+
+  setAdminMessage("Compensativa aggiornata correttamente.");
+
+  await loadMyReplacementCandidates();
+  await loadMyCompensatoryCalls();
+  await loadAllCompensatoryCalls();
+  await renderPublicWaiverOrder();
+}
+
 /* ===============================
    SVINCOLATI
 ================================ */
@@ -2659,6 +2923,7 @@ is_u21_slot: !!p.is_u21_slot,
 is_u21_keeper: !!p.is_u21_keeper,
 is_fp: !!p.is_fp,
     pool: p.pool,
+    status: p.status || "",
     unavailable_until_week: p.unavailable_until_week,
     unavailable_until_phase: p.unavailable_until_phase,
     unavailable_reason: p.unavailable_reason
@@ -2720,6 +2985,48 @@ const selectFields = `
   }
 
   myOwnedPlayers = (data || []).map(mapPlayerRow);
+}
+
+async function loadMyReplacementCandidates() {
+  if (!currentTeam || !currentSettings) return;
+
+  const selectFields = `
+    id,
+    external_id,
+    name,
+    role,
+    role_mantra,
+    serie_a_team,
+    quotation,
+    is_u21,
+    is_u21_slot,
+    is_u21_keeper,
+    is_fp,
+    owner_team_id,
+    status,
+    pool
+  `;
+
+  let query = supabase
+    .from("players")
+    .select(selectFields)
+    .eq("owner_team_id", currentTeam.id);
+
+  // Qui NON filtro status=active: il giocatore da sostituire può essere
+  // proprio quello appena uscito dalla Serie A e quindi già inattivo.
+  if (!isUnifiedWaiverPhase()) {
+    query = query.eq("pool", getPoolForTeamConference(currentTeam));
+  }
+
+  const { data, error } = await query.order("name", { ascending: true });
+
+  if (error) {
+    console.error("Errore caricamento candidati sostituzione:", error);
+    myReplacementCandidates = [];
+    return;
+  }
+
+  myReplacementCandidates = (data || []).map(mapPlayerRow);
 }
 
 async function loadFreeAgents() {
@@ -3167,16 +3474,40 @@ async function applyWinningCompensatoryCall(call) {
   }
 
   const nowIso = new Date().toISOString();
+  const requiresPlayerOut = call.requires_player_out === true;
+
+  // Per le sostituzioni controlliamo PRIMA che il giocatore in uscita
+  // appartenga ancora alla squadra. Può essere anche inattivo/fuori Serie A.
+  if (requiresPlayerOut) {
+    if (!call.player_out_id) {
+      throw new Error("Compensativa di sostituzione senza giocatore in uscita.");
+    }
+
+    const { data: outgoingCheck, error: outgoingCheckError } = await supabase
+      .from("players")
+      .select("id, name, owner_team_id")
+      .eq("id", call.player_out_id)
+      .eq("owner_team_id", winningTeamId)
+      .maybeSingle();
+
+    if (outgoingCheckError) {
+      throw outgoingCheckError;
+    }
+
+    if (!outgoingCheck) {
+      throw new Error("Il giocatore da sostituire non appartiene più alla squadra.");
+    }
+  }
 
   const { data: incomingPlayer, error: incomingError } = await supabase
     .from("players")
-.update({
-  owner_team_id: winningTeamId,
-  unavailable_until_week: null,
-  unavailable_until_phase: null,
-  unavailable_reason: null,
-  updated_at: nowIso
-})
+    .update({
+      owner_team_id: winningTeamId,
+      unavailable_until_week: null,
+      unavailable_until_phase: null,
+      unavailable_reason: null,
+      updated_at: nowIso
+    })
     .eq("id", call.player_in_id)
     .is("owner_team_id", null)
     .select("id, name")
@@ -3188,6 +3519,35 @@ async function applyWinningCompensatoryCall(call) {
 
   if (!incomingPlayer) {
     throw new Error("Il giocatore richiesto non è più disponibile.");
+  }
+
+  if (!requiresPlayerOut) return;
+
+  const { data: outgoingPlayer, error: outgoingError } = await supabase
+    .from("players")
+    .update({
+      owner_team_id: null,
+      updated_at: nowIso
+    })
+    .eq("id", call.player_out_id)
+    .eq("owner_team_id", winningTeamId)
+    .select("id, name")
+    .maybeSingle();
+
+  if (outgoingError || !outgoingPlayer) {
+    // Rollback prudenziale: se l'uscita fallisce, restituiamo il nuovo giocatore
+    // agli svincolati per non lasciare la rosa con un uomo in più.
+    await supabase
+      .from("players")
+      .update({
+        owner_team_id: null,
+        updated_at: new Date().toISOString()
+      })
+      .eq("id", call.player_in_id)
+      .eq("owner_team_id", winningTeamId);
+
+    if (outgoingError) throw outgoingError;
+    throw new Error("Impossibile completare la sostituzione del giocatore in uscita.");
   }
 }
 
@@ -3267,6 +3627,7 @@ calls.forEach(call => {
   alert("Chiamate compensative calcolate.");
 
   await loadMyOwnedPlayers();
+  await loadMyReplacementCandidates();
   await loadFreeAgents();
   await loadMyCompensatoryCalls();
 
@@ -3591,6 +3952,7 @@ if (activeWeekEl) activeWeekEl.textContent = currentSettings.active_week || "-";
   }
 
 await loadMyOwnedPlayers();
+await loadMyReplacementCandidates();
 await loadMyWaiverCalls();
 await loadFreeAgents();
 await loadMyCompensatoryCalls();
@@ -3609,6 +3971,9 @@ async function addManualCompensatoryCall() {
 
   const teamId = adminCompTeamSelect?.value || "";
   const priority = Number(adminCompPriorityInput?.value || 0);
+  const mode = adminCompModeSelect?.value || "extra";
+  const reasonType = adminCompReasonSelect?.value || "trade";
+  const reasonNote = adminCompReasonNoteInput?.value?.trim() || null;
 
   if (!teamId) {
     setAdminMessage("Seleziona una squadra per la compensativa.", true);
@@ -3627,6 +3992,9 @@ async function addManualCompensatoryCall() {
       week: currentSettings.active_week,
       phase: currentSettings.active_phase,
       priority_order: priority,
+      requires_player_out: mode === "replace",
+      reason_type: reasonType,
+      reason_note: reasonNote,
       status: "pending",
       player_in: null,
       player_in_id: null,
@@ -3644,7 +4012,9 @@ async function addManualCompensatoryCall() {
   setAdminMessage("Compensativa aggiunta correttamente.");
 
   if (adminCompPriorityInput) adminCompPriorityInput.value = "";
+  if (adminCompReasonNoteInput) adminCompReasonNoteInput.value = "";
 
+  await loadMyReplacementCandidates();
   await loadMyCompensatoryCalls();
   await loadAllCompensatoryCalls();
   await renderPublicWaiverOrder();
@@ -3735,6 +4105,7 @@ if (currentUserEmail === "tringali0511@gmail.com") {
 }
 
 await loadMyOwnedPlayers();
+await loadMyReplacementCandidates();
 await loadMyWaiverCalls();
 await loadMyCompensatoryCalls();
 await loadFreeAgents();

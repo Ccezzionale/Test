@@ -3889,3 +3889,66 @@ button:disabled {
     text-align: center !important;
   }
 }
+
+
+/* =========================================================
+   COMPENSATIVE V2 - ADMIN + GRUPPI PUBBLICI
+   ========================================================= */
+
+.admin-compensatory-edit-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.admin-compensatory-edit-grid label {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  margin: 0;
+  font-size: 0.78rem;
+  font-weight: 800;
+}
+
+.admin-compensatory-edit-grid input,
+.admin-compensatory-edit-grid select {
+  width: 100%;
+}
+
+.admin-compensatory-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.public-compensatory-subgroup {
+  display: grid;
+  gap: 8px;
+}
+
+.public-compensatory-subgroup + .public-compensatory-subgroup {
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px solid rgba(0, 31, 63, 0.10);
+}
+
+.public-compensatory-subtitle {
+  margin: 0 0 2px;
+  color: #002b55;
+  font-size: 0.86rem;
+  font-weight: 900;
+}
+
+@media (max-width: 700px) {
+  .admin-compensatory-actions {
+    justify-content: stretch;
+  }
+
+  .admin-compensatory-actions .primary-btn,
+  .admin-compensatory-actions .secondary-btn {
+    width: 100%;
+  }
+}

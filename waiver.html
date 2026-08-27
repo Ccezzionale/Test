@@ -7,7 +7,7 @@
   <title>Waiver Room</title>
 
   <link rel="stylesheet" href="navbar.css" />
-  <link rel="stylesheet" href="waiver.css?v=11" />
+  <link rel="stylesheet" href="waiver.css?v=12" />
 </head>
 
 <body>
@@ -201,7 +201,7 @@
             <div>
               <h2>Chiamate compensative</h2>
               <p class="card-subtitle">
-                Qui trovi le chiamate extra ottenute tramite trade sbilanciate. Sono giocate dopo gli slot standard.
+                Qui trovi le chiamate compensative ottenute da trade sbilanciate, sostituzioni o altri casi speciali. Sono giocate dopo gli slot standard.
               </p>
             </div>
           </div>
@@ -438,18 +438,36 @@
 
   <div class="admin-compensatory-form">
     <label for="adminCompTeamSelect">Squadra</label>
-
     <select id="adminCompTeamSelect" class="waiver-owner-select">
       <option value="">Seleziona squadra</option>
     </select>
 
     <label for="adminCompPriorityInput">Priorità</label>
-
     <input
       type="number"
       id="adminCompPriorityInput"
       min="1"
       placeholder="Es. 1"
+    />
+
+    <label for="adminCompModeSelect">Modalità</label>
+    <select id="adminCompModeSelect" class="waiver-owner-select">
+      <option value="extra">Solo ingresso</option>
+      <option value="replace">Sostituzione 1→1</option>
+    </select>
+
+    <label for="adminCompReasonSelect">Motivo</label>
+    <select id="adminCompReasonSelect" class="waiver-owner-select">
+      <option value="trade">Trade sbilanciata</option>
+      <option value="serie_a_exit">Giocatore uscito dalla Serie A</option>
+      <option value="other">Altro</option>
+    </select>
+
+    <label for="adminCompReasonNoteInput">Nota / descrizione</label>
+    <input
+      type="text"
+      id="adminCompReasonNoteInput"
+      placeholder="Opzionale, es. sostituzione Lautaro"
     />
 
     <button
@@ -468,7 +486,7 @@
 
   </main>
 <script src="mobile-nav.js"></script>
-  <script type="module" src="waiver.js?v=19"></script>
+  <script type="module" src="waiver.js?v=20"></script>
   <script type="module" src="home_auth.js"></script>
   <script src="navbar.js"></script>
 </body>
