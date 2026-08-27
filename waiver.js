@@ -77,6 +77,7 @@ const heroPriorityEl = document.getElementById("heroPriority");
 let currentTeam = null;
 let currentSettings = null;
 let currentUserEmail = null;
+let currentUserIsAdmin = false;
 
 let teamsCache = [];
 let teamMap = {};
@@ -1007,15 +1008,20 @@ async function getMyTeam() {
 
   const { data: profile, error: profileError } = await supabase
     .from("profiles")
-    .select("team_id")
-    .eq("email", currentUserEmail)
-    .single();
+    .select("id, email, team_id, role")
+    .eq("id", authData.user.id)
+    .maybeSingle();
 
   if (profileError || !profile) {
     console.error("Profilo non trovato:", profileError);
     teamNameEl.textContent = "Profilo non trovato";
+    currentUserIsAdmin = false;
     return null;
   }
+
+  currentUserIsAdmin = ["admin", "commissioner"].includes(
+    String(profile.role || "").toLowerCase()
+  );
 
   const { data: team, error: teamError } = await supabase
     .from("teams")
@@ -1590,12 +1596,13 @@ async function renderPublicWaiverOrder() {
 async function renderPublicCompensatoryOrder() {
   if (!publicWaiverOrderEl || !currentSettings) return;
 
-  const { data, error } = await supabase
-    .from("waiver_compensatory_calls")
-    .select("*")
-    .eq("week", currentSettings.active_week)
-    .eq("phase", currentSettings.active_phase)
-    .order("priority_order", { ascending: true });
+  const { data, error } = await supabase.rpc(
+    "get_public_waiver_compensatory_calls",
+    {
+      p_week: Number(currentSettings.active_week),
+      p_phase: currentSettings.active_phase
+    }
+  );
 
   if (error) {
     console.error("Errore caricamento compensative pubbliche:", error);
@@ -1604,7 +1611,9 @@ async function renderPublicCompensatoryOrder() {
 
   if (!data || data.length === 0) return;
 
-  const isPublic = areCompensatoryResultsPublic();
+  // La visibilità dei risultati arriva dal server, non dall'orologio del telefono.
+  // Così nessuno può anticipare la pubblicazione cambiando l'ora del dispositivo.
+  const isPublic = data.some(call => call.is_revealed === true);
   const publishAt = getCompensatoryPublishAt();
 
   const groupBlock = document.createElement("div");
@@ -2244,7 +2253,7 @@ async function saveCompensatoryCall(callId) {
 
   await loadMyCompensatoryCalls();
 
-  if (currentUserEmail === "tringali0511@gmail.com") {
+  if (currentUserIsAdmin) {
     await loadAllCompensatoryCalls();
   }
 }
@@ -2276,7 +2285,7 @@ async function resetCompensatoryCall(callId) {
 
   await loadMyCompensatoryCalls();
 
-  if (currentUserEmail === "tringali0511@gmail.com") {
+  if (currentUserIsAdmin) {
     await loadAllCompensatoryCalls();
   }
 }
@@ -3455,7 +3464,7 @@ await loadFreeAgents();
 await loadAllCalls();
 await loadMyWaiverCalls();
 
-if (currentUserEmail === "tringali0511@gmail.com") {
+if (currentUserIsAdmin) {
   renderWaiverOrderAdmin();
 }
 
@@ -3631,7 +3640,7 @@ calls.forEach(call => {
   await loadFreeAgents();
   await loadMyCompensatoryCalls();
 
-  if (currentUserEmail === "tringali0511@gmail.com") {
+  if (currentUserIsAdmin) {
     await loadAllCompensatoryCalls();
   }
 }
@@ -3680,7 +3689,7 @@ async function saveActivePhase() {
 
   await loadWaiverOrder();
 
-  if (currentUserEmail === "tringali0511@gmail.com") {
+  if (currentUserIsAdmin) {
     renderWaiverOrderAdmin();
     await loadAllCalls();
   }
@@ -3946,7 +3955,7 @@ if (activeWeekEl) activeWeekEl.textContent = currentSettings.active_week || "-";
 
   await loadWaiverOrder();
 
-  if (currentUserEmail === "tringali0511@gmail.com") {
+  if (currentUserIsAdmin) {
     renderWaiverOrderAdmin();
     await loadAllCalls();
   }
@@ -3957,7 +3966,7 @@ await loadMyWaiverCalls();
 await loadFreeAgents();
 await loadMyCompensatoryCalls();
 
-if (currentUserEmail === "tringali0511@gmail.com") {
+if (currentUserIsAdmin) {
   await loadAllCompensatoryCalls();
 }
 
@@ -4093,7 +4102,7 @@ if (settings) {
   await loadWaiverOrder();
    await renderPublicWaiverOrder();
 
-if (currentUserEmail === "tringali0511@gmail.com") {
+if (currentUserIsAdmin) {
   if (adminPanel) adminPanel.style.display = "block";
 
   const adminMobileTab = document.querySelector(".admin-mobile-tab");
