@@ -4605,7 +4605,7 @@ async function parseFantacalcioListoneFile(file) {
 
       return {
         external_id:
-          externalId === null ? null : Math.trunc(externalId),
+          externalId === null ? null : String(Math.trunc(externalId)),
         role: String(row[indexByHeader["R"]] ?? "").trim(),
         role_mantra: String(row[indexByHeader["RM"]] ?? "").trim(),
         name: String(row[indexByHeader["NOME"]] ?? "").trim(),
