@@ -3482,19 +3482,41 @@ async function applyWinningWaiverCall(call) {
 
   const nowIso = new Date().toISOString();
 
+  // Leggiamo prima il giocatore in uscita.
+  // Se occupa lo slot U21 normale, lo slot deve passare al nuovo U21.
+  const { data: outgoingBefore, error: outgoingBeforeError } = await supabase
+    .from("players")
+    .select("id, name, is_u21_slot, is_u21_keeper")
+    .eq("id", call.player_out_id)
+    .eq("owner_team_id", winningTeamId)
+    .maybeSingle();
+
+  if (outgoingBeforeError) {
+    throw outgoingBeforeError;
+  }
+
+  if (!outgoingBefore) {
+    throw new Error("Il giocatore da svincolare non appartiene più alla squadra vincitrice.");
+  }
+
+  const transferU21Slot =
+    outgoingBefore.is_u21_slot === true &&
+    outgoingBefore.is_u21_keeper !== true;
+
   // 1. assegna il giocatore preso alla squadra vincitrice
   const { data: incomingPlayer, error: incomingError } = await supabase
     .from("players")
-.update({
-  owner_team_id: winningTeamId,
-  unavailable_until_week: null,
-  unavailable_until_phase: null,
-  unavailable_reason: null,
-  updated_at: nowIso
-})
+    .update({
+      owner_team_id: winningTeamId,
+      unavailable_until_week: null,
+      unavailable_until_phase: null,
+      unavailable_reason: null,
+      ...(transferU21Slot ? { is_u21_slot: true } : {}),
+      updated_at: nowIso
+    })
     .eq("id", call.player_in_id)
     .is("owner_team_id", null)
-    .select("id, name")
+    .select("id, name, is_u21_slot")
     .maybeSingle();
 
   if (incomingError) {
@@ -3505,7 +3527,8 @@ async function applyWinningWaiverCall(call) {
     throw new Error("Il giocatore richiesto non è più disponibile.");
   }
 
-  // 2. svincola il giocatore in uscita, solo se appartiene davvero alla squadra vincitrice
+  // 2. svincola il giocatore in uscita e lo blocca fino al waiver successivo.
+  // Se era lo slot U21 normale, togliamo il flag perché è passato al nuovo giocatore.
   const { data: outgoingPlayer, error: outgoingError } = await supabase
     .from("players")
     .update({
@@ -3513,19 +3536,27 @@ async function applyWinningWaiverCall(call) {
       unavailable_until_week: Number(currentSettings.active_week),
       unavailable_until_phase: currentSettings.active_phase,
       unavailable_reason: "waiver_cut",
+      ...(transferU21Slot ? { is_u21_slot: false } : {}),
       updated_at: nowIso
     })
     .eq("id", call.player_out_id)
     .eq("owner_team_id", winningTeamId)
-    .select("id, name")
+    .select("id, name, is_u21_slot")
     .maybeSingle();
 
-  if (outgoingError) {
-    throw outgoingError;
-  }
+  if (outgoingError || !outgoingPlayer) {
+    await supabase
+      .from("players")
+      .update({
+        owner_team_id: null,
+        ...(transferU21Slot ? { is_u21_slot: false } : {}),
+        updated_at: new Date().toISOString()
+      })
+      .eq("id", call.player_in_id)
+      .eq("owner_team_id", winningTeamId);
 
-  if (!outgoingPlayer) {
-    throw new Error("Il giocatore da svincolare non appartiene più alla squadra vincitrice.");
+    if (outgoingError) throw outgoingError;
+    throw new Error("Impossibile completare lo svincolo del giocatore in uscita.");
   }
 }
 
