@@ -4132,3 +4132,263 @@ body.waiver-view-as-mode .free-agents-table-wrap tbody tr {
     margin-bottom: 10px;
   }
 }
+
+
+/* =========================================================
+   ADMIN WAIVER - COMPACT MODE
+   Solo grafica: nessuna logica modificata
+   ========================================================= */
+
+.waiver-admin-section {
+  margin-top: 16px;
+  margin-bottom: 22px;
+}
+
+.waiver-admin-section .admin-card {
+  padding: 16px;
+  border-radius: 20px;
+}
+
+.waiver-admin-section .admin-card > h2 {
+  margin-bottom: 12px;
+  font-size: 1.08rem;
+}
+
+.waiver-admin-section .admin-settings-panel {
+  padding: 11px;
+  margin-bottom: 12px;
+  border-radius: 14px;
+}
+
+.waiver-admin-section .admin-settings-panel h3 {
+  margin-bottom: 8px;
+  font-size: .92rem;
+}
+
+.waiver-admin-section .admin-settings-grid {
+  gap: 8px;
+  margin-bottom: 9px;
+}
+
+.waiver-admin-section .slot-settings-grid {
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.waiver-admin-section .slot-settings-card {
+  padding: 9px 10px;
+  border-radius: 12px;
+}
+
+.waiver-admin-section .slot-settings-card h4 {
+  margin-bottom: 5px;
+  font-size: .84rem;
+}
+
+.waiver-admin-section .admin-field label,
+.waiver-admin-section .slot-settings-card label {
+  margin: 5px 0 4px;
+  font-size: .72rem;
+}
+
+.waiver-admin-section .admin-field input,
+.waiver-admin-section .slot-settings-card input,
+.waiver-admin-section .admin-field select,
+.waiver-admin-section .slot-settings-card select {
+  min-height: 35px;
+  padding: 6px 8px;
+  border-radius: 9px;
+  font-size: .82rem;
+}
+
+.waiver-admin-section .admin-actions,
+.waiver-admin-section .admin-main-actions {
+  gap: 6px;
+  margin-top: 9px;
+}
+
+.waiver-admin-section .primary-btn,
+.waiver-admin-section .secondary-btn,
+.waiver-admin-section .small-btn {
+  min-height: 34px;
+  padding: 7px 10px;
+  border-radius: 10px;
+  font-size: .76rem;
+}
+
+.waiver-admin-section .priority-message {
+  margin-top: 8px;
+  font-size: .8rem;
+}
+
+.waiver-admin-section .admin-bottom-grid {
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.waiver-admin-section .priority-header h3,
+.waiver-admin-section .admin-calls-block h3,
+.waiver-admin-section .admin-compensatory-manager h3 {
+  margin-bottom: 5px;
+  font-size: .92rem;
+}
+
+.waiver-admin-section .priority-header p,
+.waiver-admin-section .admin-compensatory-manager .card-subtitle {
+  margin-bottom: 8px;
+  font-size: .78rem;
+  line-height: 1.3;
+}
+
+.waiver-admin-section .waiver-order-admin {
+  gap: 9px;
+}
+
+.waiver-admin-section .waiver-admin-group {
+  padding: 9px;
+  border-radius: 13px;
+}
+
+.waiver-admin-section .waiver-admin-group h4 {
+  margin-bottom: 7px;
+  font-size: .84rem;
+}
+
+.waiver-admin-section .waiver-admin-row {
+  grid-template-columns: 42px 1fr 1fr;
+  gap: 7px;
+  padding: 7px 8px;
+  margin-bottom: 5px;
+  border-radius: 10px;
+  font-size: .82rem;
+}
+
+.waiver-admin-section .waiver-admin-original span {
+  font-size: .7rem;
+}
+
+.waiver-admin-section .waiver-owner-select {
+  min-height: 34px;
+  padding: 6px 8px;
+  border-radius: 9px;
+  font-size: .8rem;
+}
+
+.waiver-admin-section .all-calls {
+  gap: 7px;
+}
+
+.waiver-admin-section #allCalls > div,
+.waiver-admin-section #allCompensatoryCalls > div {
+  padding: 8px 9px;
+  border-radius: 10px;
+  font-size: .8rem;
+}
+
+.waiver-admin-section .admin-compensatory-overview {
+  margin-top: 12px;
+}
+
+.waiver-admin-section .admin-compensatory-manager {
+  gap: 8px;
+}
+
+.waiver-admin-section .admin-compensatory-form {
+  gap: 5px;
+  padding: 9px;
+  margin-bottom: 8px;
+  border-radius: 12px;
+}
+
+.waiver-admin-section .admin-compensatory-form label {
+  margin: 2px 0 1px;
+  font-size: .72rem;
+}
+
+.waiver-admin-section .admin-compensatory-form input,
+.waiver-admin-section .admin-compensatory-form select {
+  min-height: 34px;
+  padding: 6px 8px;
+  border-radius: 9px;
+  font-size: .8rem;
+}
+
+.waiver-admin-section .admin-compensatory-row {
+  gap: 7px;
+  padding: 8px;
+  border-radius: 10px;
+}
+
+.waiver-admin-section .admin-compensatory-main {
+  gap: 2px;
+}
+
+.waiver-admin-section .admin-compensatory-main strong {
+  font-size: .82rem;
+}
+
+.waiver-admin-section .admin-compensatory-main span,
+.waiver-admin-section .admin-compensatory-main small {
+  font-size: .72rem;
+}
+
+.waiver-admin-section .admin-compensatory-edit-grid {
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.waiver-admin-section .admin-compensatory-edit-grid label {
+  gap: 3px;
+  font-size: .7rem;
+}
+
+.waiver-admin-section .admin-compensatory-actions {
+  gap: 5px;
+}
+
+@media (min-width: 1180px) {
+  .waiver-admin-section .slot-settings-grid {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+
+  .waiver-admin-section .admin-bottom-grid {
+    grid-template-columns: minmax(0, 1.55fr) minmax(300px, .65fr);
+    gap: 12px;
+  }
+
+  .waiver-admin-section .admin-settings-grid {
+    grid-template-columns: minmax(190px, 1fr) 110px;
+    max-width: 420px;
+  }
+}
+
+@media (min-width: 761px) and (max-width: 1179px) {
+  .waiver-admin-section .slot-settings-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 760px) {
+  .waiver-admin-section .admin-card {
+    padding: 12px;
+  }
+
+  .waiver-admin-section .slot-settings-card {
+    padding: 8px;
+  }
+
+  .waiver-admin-section .admin-main-actions {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .waiver-admin-section .admin-main-actions .primary-btn,
+  .waiver-admin-section .admin-main-actions .secondary-btn {
+    width: 100%;
+  }
+
+  .waiver-admin-section .waiver-admin-row {
+    grid-template-columns: 36px 1fr;
+  }
+}
