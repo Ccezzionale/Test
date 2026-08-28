@@ -107,6 +107,151 @@ let draggedAdminGroupKey = null;
 let myCompensatoryCalls = [];
 let activeCompensatoryCallId = null;
 
+let playerSelectionOrigin = null;
+
+function isMobileWaiverView() {
+  return window.matchMedia("(max-width: 768px)").matches;
+}
+
+function activateWaiverMobileTab(tabName) {
+  const tabButtons = document.querySelectorAll("[data-waiver-mobile-tab]");
+  const panels = document.querySelectorAll("[data-waiver-mobile-panel]");
+
+  if (!tabButtons.length || !panels.length) return;
+
+  tabButtons.forEach(button => {
+    const isActive = button.dataset.waiverMobileTab === tabName;
+    button.classList.toggle("active", isActive);
+    button.setAttribute("aria-selected", String(isActive));
+  });
+
+  panels.forEach(panel => {
+    const isActive = panel.dataset.waiverMobilePanel === tabName;
+    panel.classList.toggle("mobile-panel-active", isActive);
+  });
+}
+
+function scrollWaiverElementIntoView(element, block = "start") {
+  if (!element) return;
+
+  requestAnimationFrame(() => {
+    element.scrollIntoView({
+      behavior: "smooth",
+      block
+    });
+  });
+}
+
+function setPlayerSelectionContext(text = "") {
+  const contextEl = document.getElementById("playerSelectionContext");
+  if (!contextEl) return;
+
+  if (!text) {
+    contextEl.hidden = true;
+    contextEl.textContent = "";
+    return;
+  }
+
+  contextEl.hidden = false;
+  contextEl.textContent = text;
+}
+
+function clearPlayerSelectionState() {
+  activeWaiverOrderId = null;
+  activeCompensatoryCallId = null;
+  playerSelectionOrigin = null;
+
+  document
+    .querySelectorAll(".dynamic-call-card.active-call-target")
+    .forEach(card => card.classList.remove("active-call-target"));
+
+  setPlayerSelectionContext("");
+}
+
+function beginWaiverPlayerSelection(orderId) {
+  const orderRow = myOrderRows.find(
+    row => String(row.id) === String(orderId)
+  );
+
+  if (!orderRow || !isSlotOpen(orderRow.slot)) {
+    setMessage("Questa chiamata non è disponibile in questo momento.", true);
+    return;
+  }
+
+  setActiveCallCard(orderId);
+
+  playerSelectionOrigin = {
+    type: "waiver",
+    id: String(orderId)
+  };
+
+  setPlayerSelectionContext(
+    `🎯 Stai scegliendo il giocatore da acquistare per Chiamata #${orderRow.priority_number} · Slot ${normalizeSlot(orderRow.slot)}`
+  );
+
+  if (isMobileWaiverView()) {
+    activateWaiverMobileTab("calls");
+  }
+
+  scrollWaiverElementIntoView(
+    document.querySelector(".free-agents-card"),
+    "start"
+  );
+}
+
+function beginCompensatoryPlayerSelection(callId) {
+  const call = myCompensatoryCalls.find(
+    item => String(item.id) === String(callId)
+  );
+
+  if (!call) {
+    setMessage("Compensativa non trovata.", true);
+    return;
+  }
+
+  setActiveCompensatoryCallCard(callId);
+
+  playerSelectionOrigin = {
+    type: "compensatory",
+    id: String(callId)
+  };
+
+  setPlayerSelectionContext(
+    `🎯 Stai scegliendo il giocatore da acquistare per Compensativa #${call.priority_order || "-"}`
+  );
+
+  if (isMobileWaiverView()) {
+    activateWaiverMobileTab("calls");
+  }
+
+  scrollWaiverElementIntoView(
+    document.querySelector(".free-agents-card"),
+    "start"
+  );
+}
+
+function finishPlayerSelection(origin) {
+  if (!origin) return;
+
+  const targetSelector =
+    origin.type === "compensatory"
+      ? `.compensatory-call-card[data-call-id="${origin.id}"]`
+      : `.dynamic-call-card[data-order-id="${origin.id}"]`;
+
+  if (isMobileWaiverView()) {
+    activateWaiverMobileTab(
+      origin.type === "compensatory" ? "extra" : "calls"
+    );
+  }
+
+  clearPlayerSelectionState();
+
+  scrollWaiverElementIntoView(
+    document.querySelector(targetSelector),
+    "center"
+  );
+}
+
 /* ===============================
    HELPERS
 ================================ */
@@ -2107,25 +2252,36 @@ slotBlock.innerHTML = `
           <span class="order-position-pill">#${orderRow.priority_number}</span>
         </div>
 
-        <label>Giocatore chiamato</label>
+        <label class="player-choice-label">Giocatore da acquistare</label>
         <input
           type="text"
-          class="dynamic-player-in"
+          class="dynamic-player-in ${savedCall?.player_in ? "has-player-selection" : ""}"
           data-order-id="${orderRow.id}"
           readonly
-          placeholder="Seleziona questo box e clicca uno svincolato"
+          placeholder="Nessun giocatore selezionato"
           value="${savedCall?.player_in || ""}"
           ${slotOpen ? "" : "disabled"}
         />
 
-  <label>Giocatore da svincolare</label>
-<select
-  class="dynamic-player-out"
-  data-order-id="${orderRow.id}"
-  ${slotOpen ? "" : "disabled"}
->
-  ${buildPlayerOutOptions(savedCall?.player_out_id, savedCall?.player_out || "")}
-</select>
+        <div class="player-choice-actions">
+          <button
+            type="button"
+            class="secondary-btn choose-player-btn select-dynamic-call-btn"
+            data-order-id="${orderRow.id}"
+            ${slotOpen ? "" : "disabled"}
+          >
+            ${savedCall?.player_in ? "✏️ Cambia giocatore" : "🔍 Scegli giocatore"}
+          </button>
+        </div>
+
+        <label>Giocatore da svincolare</label>
+        <select
+          class="dynamic-player-out"
+          data-order-id="${orderRow.id}"
+          ${slotOpen ? "" : "disabled"}
+        >
+          ${buildPlayerOutOptions(savedCall?.player_out_id, savedCall?.player_out || "")}
+        </select>
 
         <div class="call-actions">
           <button
@@ -2145,15 +2301,6 @@ slotBlock.innerHTML = `
           >
             Cancella chiamata
           </button>
-
-          <button
-            type="button"
-            class="secondary-btn select-dynamic-call-btn"
-            data-order-id="${orderRow.id}"
-            ${slotOpen ? "" : "disabled"}
-          >
-            Seleziona box
-          </button>
         </div>
 
         <p class="call-message">
@@ -2171,16 +2318,6 @@ slotBlock.innerHTML = `
         </p>
       `;
 
-      card.addEventListener("click", event => {
-        const tag = event.target.tagName.toLowerCase();
-
-        if (["input", "button"].includes(tag)) return;
-
-        if (!slotOpen) return;
-
-        setActiveCallCard(orderRow.id);
-      });
-
      const slotContent = slotBlock.querySelector(".waiver-slot-content");
 slotContent.appendChild(card);
     });
@@ -2190,8 +2327,7 @@ slotContent.appendChild(card);
 
   document.querySelectorAll(".select-dynamic-call-btn").forEach(button => {
     button.addEventListener("click", () => {
-      setActiveCallCard(button.dataset.orderId);
-      setMessage("Box selezionato. Ora clicca uno svincolato dalla lista.");
+      beginWaiverPlayerSelection(button.dataset.orderId);
     });
   });
 
@@ -2206,14 +2342,6 @@ slotContent.appendChild(card);
       resetDynamicCall(button.dataset.orderId);
     });
   });
-
-  if (!activeWaiverOrderId) {
-    const firstOpen = myOrderRows.find(row => isSlotOpen(row.slot));
-
-    if (firstOpen) {
-      setActiveCallCard(firstOpen.id);
-    }
-  }
 }
 
 async function loadMyCompensatoryCalls() {
@@ -2286,19 +2414,36 @@ function renderMyCompensatoryCalls() {
         <span class="order-position-pill">C${call.priority_order || "-"}</span>
       </div>
 
-      <label>Giocatore chiamato</label>
+      <label class="player-choice-label">
+        ${requiresPlayerOut ? `<span class="call-step-number">1</span>` : ""}
+        Giocatore da acquistare
+      </label>
       <input
         type="text"
-        class="compensatory-player-in"
+        class="compensatory-player-in ${call.player_in ? "has-player-selection" : ""}"
         data-call-id="${call.id}"
         readonly
-        placeholder="Seleziona questo box e clicca uno svincolato"
+        placeholder="Nessun giocatore selezionato"
         value="${call.player_in || ""}"
         ${isEditable ? "" : "disabled"}
       />
 
+      <div class="player-choice-actions">
+        <button
+          type="button"
+          class="secondary-btn choose-player-btn select-compensatory-call-btn"
+          data-call-id="${call.id}"
+          ${isEditable ? "" : "disabled"}
+        >
+          ${call.player_in ? "✏️ Cambia giocatore" : "🔍 Scegli giocatore"}
+        </button>
+      </div>
+
       ${requiresPlayerOut ? `
-        <label>Giocatore da sostituire</label>
+        <label class="player-choice-label">
+          <span class="call-step-number">2</span>
+          Giocatore da svincolare
+        </label>
         <select
           class="compensatory-player-out"
           data-call-id="${call.id}"
@@ -2326,15 +2471,6 @@ function renderMyCompensatoryCalls() {
         >
           Cancella compensativa
         </button>
-
-        <button
-          type="button"
-          class="secondary-btn select-compensatory-call-btn"
-          data-call-id="${call.id}"
-          ${isEditable ? "" : "disabled"}
-        >
-          Seleziona box
-        </button>
       </div>
 
       <p class="call-message">
@@ -2350,23 +2486,12 @@ function renderMyCompensatoryCalls() {
       </p>
     `;
 
-    card.addEventListener("click", event => {
-      const tag = event.target.tagName.toLowerCase();
-
-      if (["input", "button", "select", "option"].includes(tag)) return;
-      if (!isEditable) return;
-
-      setActiveCompensatoryCallCard(call.id);
-      setMessage("Box compensativa selezionato. Ora clicca uno svincolato dalla lista.");
-    });
-
     myCompensatoryCallsEl.appendChild(card);
   });
 
   document.querySelectorAll(".select-compensatory-call-btn").forEach(button => {
     button.addEventListener("click", () => {
-      setActiveCompensatoryCallCard(button.dataset.callId);
-      setMessage("Box compensativa selezionato. Ora clicca uno svincolato dalla lista.");
+      beginCompensatoryPlayerSelection(button.dataset.callId);
     });
   });
 
@@ -2494,15 +2619,31 @@ async function resetCompensatoryCall(callId) {
 
 function fillActiveCallWithPlayer(player) {
   if (blockTeamWriteWhileViewingAs()) return;
-     if (activeCompensatoryCallId) {
+
+  const origin = playerSelectionOrigin
+    ? { ...playerSelectionOrigin }
+    : null;
+
+  if (activeCompensatoryCallId) {
+    const callId = String(activeCompensatoryCallId);
+
     const input = document.querySelector(
-      `.compensatory-player-in[data-call-id="${activeCompensatoryCallId}"]`
+      `.compensatory-player-in[data-call-id="${callId}"]`
     );
 
     if (!input) return;
 
     input.value = player.role ? `${player.name} (${player.role})` : player.name;
     input.dataset.playerId = player.id || "";
+    input.classList.add("has-player-selection");
+
+    const chooseButton = document.querySelector(
+      `.select-compensatory-call-btn[data-call-id="${callId}"]`
+    );
+
+    if (chooseButton) {
+      chooseButton.textContent = "✏️ Cambia giocatore";
+    }
 
     document
       .querySelectorAll("#freeAgentsTable tbody tr.selected-player")
@@ -2512,24 +2653,24 @@ function fillActiveCallWithPlayer(player) {
       player.rowElement.classList.add("selected-player");
     }
 
-    setMessage(`Giocatore selezionato per compensativa: ${input.value}`);
+    setMessage(`Giocatore da acquistare selezionato: ${input.value}`);
+    finishPlayerSelection(origin || { type: "compensatory", id: callId });
     return;
   }
+
   if (!activeWaiverOrderId) {
-    const firstOpen = myOrderRows.find(row => isSlotOpen(row.slot));
-
-    if (!firstOpen) {
-      alert("Nessuna chiamata disponibile in questo momento.");
-      return;
-    }
-
-    setActiveCallCard(firstOpen.id);
+    alert('Prima premi "Scegli giocatore" nella chiamata che vuoi compilare.');
+    return;
   }
 
-  const orderRow = myOrderRows.find(row => String(row.id) === String(activeWaiverOrderId));
+  const orderId = String(activeWaiverOrderId);
+
+  const orderRow = myOrderRows.find(
+    row => String(row.id) === orderId
+  );
 
   if (!orderRow) {
-    alert("Seleziona prima un box chiamata.");
+    alert("Chiamata non trovata.");
     return;
   }
 
@@ -2539,13 +2680,22 @@ function fillActiveCallWithPlayer(player) {
   }
 
   const input = document.querySelector(
-    `.dynamic-player-in[data-order-id="${activeWaiverOrderId}"]`
+    `.dynamic-player-in[data-order-id="${orderId}"]`
   );
 
   if (!input) return;
 
   input.value = player.role ? `${player.name} (${player.role})` : player.name;
-   input.dataset.playerId = player.id || "";
+  input.dataset.playerId = player.id || "";
+  input.classList.add("has-player-selection");
+
+  const chooseButton = document.querySelector(
+    `.select-dynamic-call-btn[data-order-id="${orderId}"]`
+  );
+
+  if (chooseButton) {
+    chooseButton.textContent = "✏️ Cambia giocatore";
+  }
 
   document
     .querySelectorAll("#freeAgentsTable tbody tr.selected-player")
@@ -2555,7 +2705,8 @@ function fillActiveCallWithPlayer(player) {
     player.rowElement.classList.add("selected-player");
   }
 
-  setMessage(`Giocatore selezionato: ${input.value}`);
+  setMessage(`Giocatore da acquistare selezionato: ${input.value}`);
+  finishPlayerSelection(origin || { type: "waiver", id: orderId });
 }
 
 async function saveDynamicCall(orderId) {
@@ -2666,7 +2817,20 @@ async function resetDynamicCall(orderId) {
   const playerInEl = document.querySelector(`.dynamic-player-in[data-order-id="${orderId}"]`);
   const playerOutEl = document.querySelector(`.dynamic-player-out[data-order-id="${orderId}"]`);
 
-  if (playerInEl) playerInEl.value = "";
+  if (playerInEl) {
+    playerInEl.value = "";
+    delete playerInEl.dataset.playerId;
+    playerInEl.classList.remove("has-player-selection");
+  }
+
+  const chooseButton = document.querySelector(
+    `.select-dynamic-call-btn[data-order-id="${orderId}"]`
+  );
+
+  if (chooseButton) {
+    chooseButton.textContent = "🔍 Scegli giocatore";
+  }
+
   if (playerOutEl) playerOutEl.value = "";
 
   const existingCall = mySavedCalls.find(
@@ -4366,30 +4530,16 @@ async function initWaiverRoom() {
 
 function setupMobileWaiverTabs() {
   const tabButtons = document.querySelectorAll("[data-waiver-mobile-tab]");
-  const panels = document.querySelectorAll("[data-waiver-mobile-panel]");
 
-  if (!tabButtons.length || !panels.length) return;
-
-  function activateMobileTab(tabName) {
-    tabButtons.forEach(button => {
-      const isActive = button.dataset.waiverMobileTab === tabName;
-      button.classList.toggle("active", isActive);
-      button.setAttribute("aria-selected", String(isActive));
-    });
-
-    panels.forEach(panel => {
-      const isActive = panel.dataset.waiverMobilePanel === tabName;
-      panel.classList.toggle("mobile-panel-active", isActive);
-    });
-  }
+  if (!tabButtons.length) return;
 
   tabButtons.forEach(button => {
     button.addEventListener("click", () => {
-      activateMobileTab(button.dataset.waiverMobileTab);
+      activateWaiverMobileTab(button.dataset.waiverMobileTab);
     });
   });
 
-  activateMobileTab("calls");
+  activateWaiverMobileTab("calls");
 }
 
 /* ===============================

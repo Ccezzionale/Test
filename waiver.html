@@ -7,7 +7,7 @@
   <title>Waiver Room</title>
 
   <link rel="stylesheet" href="navbar.css" />
-  <link rel="stylesheet" href="waiver.css?v=13" />
+  <link rel="stylesheet" href="waiver.css?v=14" />
 </head>
 
 <body>
@@ -204,7 +204,7 @@
             <div>
               <h2>Le mie chiamate</h2>
               <p class="card-subtitle">
-                Ogni box corrisponde a una chiamata disponibile. Se una squadra ha comprato una chiamata, la vedrà qui.
+                Premi <strong>Scegli giocatore</strong> nella chiamata che vuoi compilare. Dopo la scelta tornerai qui automaticamente.
               </p>
             </div>
           </div>
@@ -221,7 +221,7 @@
             <div>
               <h2>Chiamate compensative</h2>
               <p class="card-subtitle">
-                Qui trovi le chiamate compensative ottenute da trade sbilanciate, sostituzioni o altri casi speciali. Sono giocate dopo gli slot standard.
+                Premi <strong>Scegli giocatore</strong>. Su mobile verrai portato agli svincolati e tornerai qui automaticamente dopo la scelta.
               </p>
             </div>
           </div>
@@ -236,6 +236,14 @@
             <h2>Svincolati</h2>
             <span class="table-hint">Scroll verticale</span>
           </div>
+
+          <div
+            id="playerSelectionContext"
+            class="player-selection-context"
+            role="status"
+            aria-live="polite"
+            hidden
+          ></div>
 
           <div class="free-agents-filters">
   <input type="text" id="searchInput" placeholder="Cerca giocatore..." />
@@ -506,7 +514,7 @@
 
   </main>
 <script src="mobile-nav.js"></script>
-  <script type="module" src="waiver.js?v=22"></script>
+  <script type="module" src="waiver.js?v=23"></script>
   <script type="module" src="home_auth.js"></script>
   <script src="navbar.js"></script>
 </body>
