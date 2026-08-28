@@ -67,6 +67,11 @@ const setPlayoffFridayBtn = document.getElementById("setPlayoffFridayBtn");
 const saveWaiverSettingsBtn = document.getElementById("saveWaiverSettingsBtn");
 const settingsMessageEl = document.getElementById("settingsMessage");
 
+const fantacalcioFileInput = document.getElementById("fantacalcioFileInput");
+const applyFantacalcioListoneBtn = document.getElementById("applyFantacalcioListoneBtn");
+const fantacalcioListoneMessage = document.getElementById("fantacalcioListoneMessage");
+const fantacalcioListonePreview = document.getElementById("fantacalcioListonePreview");
+
 const teamLogoEl = document.getElementById("teamLogo");
 const heroPriorityEl = document.getElementById("heroPriority");
 
@@ -108,6 +113,9 @@ let myCompensatoryCalls = [];
 let activeCompensatoryCallId = null;
 
 let playerSelectionOrigin = null;
+
+let pendingFantacalcioRows = [];
+let pendingFantacalcioFileName = "";
 
 function isMobileWaiverView() {
   return window.matchMedia("(max-width: 768px)").matches;
@@ -4476,6 +4484,436 @@ async function deleteAdminCompensatoryCall(callId) {
   await renderPublicWaiverOrder();
 }
 
+
+/* ===============================
+   ADMIN - IMPORT LISTONE FANTACALCIO
+================================ */
+
+function escapeListoneHtml(value) {
+  return String(value ?? "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
+
+function setFantacalcioListoneMessage(message, type = "neutral") {
+  if (!fantacalcioListoneMessage) return;
+
+  fantacalcioListoneMessage.textContent = message;
+  fantacalcioListoneMessage.classList.remove(
+    "is-loading",
+    "is-success",
+    "is-error"
+  );
+
+  if (type === "loading") {
+    fantacalcioListoneMessage.classList.add("is-loading");
+  } else if (type === "success") {
+    fantacalcioListoneMessage.classList.add("is-success");
+  } else if (type === "error") {
+    fantacalcioListoneMessage.classList.add("is-error");
+  }
+}
+
+function resetFantacalcioPreview() {
+  pendingFantacalcioRows = [];
+  pendingFantacalcioFileName = "";
+
+  if (fantacalcioListonePreview) {
+    fantacalcioListonePreview.innerHTML = "";
+    fantacalcioListonePreview.style.display = "none";
+  }
+
+  if (applyFantacalcioListoneBtn) {
+    applyFantacalcioListoneBtn.style.display = "none";
+    applyFantacalcioListoneBtn.disabled = false;
+  }
+}
+
+function normalizeFantacalcioHeader(value) {
+  return String(value ?? "")
+    .trim()
+    .toUpperCase()
+    .replace(/\s+/g, " ");
+}
+
+function numberFromFantacalcioCell(value) {
+  if (typeof value === "number" && Number.isFinite(value)) {
+    return value;
+  }
+
+  const normalized = String(value ?? "")
+    .trim()
+    .replace(/\./g, "")
+    .replace(",", ".");
+
+  if (!normalized) return null;
+
+  const parsed = Number(normalized);
+  return Number.isFinite(parsed) ? parsed : null;
+}
+
+async function parseFantacalcioListoneFile(file) {
+  if (!window.XLSX) {
+    throw new Error("Lettore Excel non disponibile. Ricarica la pagina e riprova.");
+  }
+
+  const buffer = await file.arrayBuffer();
+  const workbook = window.XLSX.read(buffer, { type: "array" });
+
+  if (!workbook.SheetNames?.length) {
+    throw new Error("Il file non contiene fogli leggibili.");
+  }
+
+  const tuttiSheetName =
+    workbook.SheetNames.find(
+      name => String(name).trim().toLowerCase() === "tutti"
+    ) || workbook.SheetNames[0];
+
+  const sheet = workbook.Sheets[tuttiSheetName];
+  const matrix = window.XLSX.utils.sheet_to_json(sheet, {
+    header: 1,
+    defval: null,
+    raw: true
+  });
+
+  const requiredHeaders = ["ID", "R", "RM", "NOME", "SQUADRA", "QT.A"];
+
+  const headerRowIndex = matrix.findIndex(row => {
+    const normalized = (row || []).map(normalizeFantacalcioHeader);
+    return requiredHeaders.every(header => normalized.includes(header));
+  });
+
+  if (headerRowIndex === -1) {
+    throw new Error(
+      'Non trovo le colonne Id, R, RM, Nome, Squadra e Qt.A. Usa il listone Fantacalcio originale.'
+    );
+  }
+
+  const headerRow = matrix[headerRowIndex].map(normalizeFantacalcioHeader);
+  const indexByHeader = Object.fromEntries(
+    headerRow.map((header, index) => [header, index])
+  );
+
+  const rows = matrix
+    .slice(headerRowIndex + 1)
+    .map(row => {
+      const externalId = numberFromFantacalcioCell(row[indexByHeader["ID"]]);
+      const quotation = numberFromFantacalcioCell(row[indexByHeader["QT.A"]]);
+
+      return {
+        external_id:
+          externalId === null ? null : Math.trunc(externalId),
+        role: String(row[indexByHeader["R"]] ?? "").trim(),
+        role_mantra: String(row[indexByHeader["RM"]] ?? "").trim(),
+        name: String(row[indexByHeader["NOME"]] ?? "").trim(),
+        serie_a_team: String(row[indexByHeader["SQUADRA"]] ?? "").trim(),
+        quotation
+      };
+    })
+    .filter(row => row.external_id !== null && row.name);
+
+  if (rows.length < 100) {
+    throw new Error(
+      `Ho letto solo ${rows.length} giocatori. Il file sembra incompleto o non è il listone corretto.`
+    );
+  }
+
+  const duplicatedIds = [];
+  const seenIds = new Set();
+
+  rows.forEach(row => {
+    const key = String(row.external_id);
+
+    if (seenIds.has(key)) {
+      duplicatedIds.push(key);
+    }
+
+    seenIds.add(key);
+  });
+
+  if (duplicatedIds.length) {
+    throw new Error(
+      `Nel foglio ${tuttiSheetName} ci sono Id duplicati (${[
+        ...new Set(duplicatedIds)
+      ].slice(0, 5).join(", ")}). Import annullato.`
+    );
+  }
+
+  const invalidQuotation = rows.find(row => row.quotation === null);
+
+  if (invalidQuotation) {
+    throw new Error(
+      `Quotazione non valida per ${invalidQuotation.name}. Import annullato.`
+    );
+  }
+
+  return {
+    sheetName: tuttiSheetName,
+    rows
+  };
+}
+
+function renderFantacalcioPlayersList(title, players, emptyText) {
+  const safePlayers = Array.isArray(players) ? players : [];
+
+  return `
+    <details class="admin-listone-details" ${safePlayers.length ? "" : "disabled"}>
+      <summary>
+        ${escapeListoneHtml(title)}
+        <strong>${safePlayers.length}</strong>
+      </summary>
+      ${
+        safePlayers.length
+          ? `
+            <div class="admin-listone-detail-list">
+              ${safePlayers
+                .map(
+                  player => `
+                    <div class="admin-listone-detail-row">
+                      <strong>${escapeListoneHtml(player.name || "-")}</strong>
+                      <span>${escapeListoneHtml(player.serie_a_team || "-")}</span>
+                      ${
+                        player.quotation !== undefined
+                          ? `<b>Q ${escapeListoneHtml(player.quotation)}</b>`
+                          : ""
+                      }
+                    </div>
+                  `
+                )
+                .join("")}
+            </div>
+          `
+          : `<p class="admin-listone-empty">${escapeListoneHtml(emptyText)}</p>`
+      }
+    </details>
+  `;
+}
+
+function renderFantacalcioQuotationChanges(changes) {
+  const safeChanges = Array.isArray(changes) ? changes : [];
+
+  return `
+    <details class="admin-listone-details" ${safeChanges.length ? "" : "disabled"}>
+      <summary>
+        Quotazioni cambiate
+        <strong>${safeChanges.length}</strong>
+      </summary>
+      ${
+        safeChanges.length
+          ? `
+            <div class="admin-listone-detail-list">
+              ${safeChanges
+                .map(
+                  player => `
+                    <div class="admin-listone-detail-row">
+                      <strong>${escapeListoneHtml(player.name || "-")}</strong>
+                      <span>${escapeListoneHtml(player.serie_a_team || "-")}</span>
+                      <b>${escapeListoneHtml(player.old_quotation)} → ${escapeListoneHtml(player.new_quotation)}</b>
+                    </div>
+                  `
+                )
+                .join("")}
+            </div>
+          `
+          : `<p class="admin-listone-empty">Nessuna quotazione modificata.</p>`
+      }
+    </details>
+  `;
+}
+
+function renderFantacalcioPreview(preview, fileName, sheetName) {
+  if (!fantacalcioListonePreview) return;
+
+  const total = Number(preview?.file_players || 0);
+  const newPlayers = Number(preview?.new_players_count || 0);
+  const removedPlayers = Number(preview?.removed_players_count || 0);
+  const changedPlayers = Number(preview?.changed_players_count || 0);
+  const quotationChanges = Number(preview?.quotation_changes_count || 0);
+  const reactivatedPlayers = Number(preview?.reactivated_players_count || 0);
+  const unchangedPlayers = Number(preview?.unchanged_players_count || 0);
+
+  fantacalcioListonePreview.innerHTML = `
+    <div class="admin-listone-file-summary">
+      <strong>${escapeListoneHtml(fileName)}</strong>
+      <span>Foglio: ${escapeListoneHtml(sheetName)}</span>
+    </div>
+
+    <div class="admin-listone-stats">
+      <div><span>Nel file</span><strong>${total}</strong></div>
+      <div><span>Quotazioni</span><strong>${quotationChanges}</strong></div>
+      <div><span>Nuovi</span><strong>${newPlayers}</strong></div>
+      <div><span>Da disattivare</span><strong>${removedPlayers}</strong></div>
+      <div><span>Altri cambi</span><strong>${changedPlayers}</strong></div>
+      <div><span>Riattivati</span><strong>${reactivatedPlayers}</strong></div>
+      <div><span>Invariati</span><strong>${unchangedPlayers}</strong></div>
+    </div>
+
+    <div class="admin-listone-warning">
+      Verranno aggiornati solo dati Fantacalcio: nome, ruolo, ruolo Mantra,
+      squadra, quotazione e stato attivo/inattivo. Rose, U21, slot U21,
+      keeper e blocchi waiver/trade non vengono toccati.
+    </div>
+
+    <div class="admin-listone-details-grid">
+      ${renderFantacalcioPlayersList(
+        "Nuovi giocatori",
+        preview?.new_players,
+        "Nessun nuovo giocatore."
+      )}
+
+      ${renderFantacalcioPlayersList(
+        "Non più nel listone",
+        preview?.removed_players,
+        "Nessun giocatore da disattivare."
+      )}
+
+      ${renderFantacalcioQuotationChanges(preview?.quotation_changes)}
+    </div>
+  `;
+
+  fantacalcioListonePreview.style.display = "block";
+
+  if (applyFantacalcioListoneBtn) {
+    applyFantacalcioListoneBtn.style.display = "";
+    applyFantacalcioListoneBtn.disabled = false;
+  }
+}
+
+async function previewFantacalcioListoneFile(file) {
+  if (!currentUserIsAdmin || isAdminViewingAsTeam()) {
+    throw new Error("Questa funzione è disponibile solo all'admin reale.");
+  }
+
+  resetFantacalcioPreview();
+  setFantacalcioListoneMessage("Sto leggendo e confrontando il listone...", "loading");
+
+  const parsed = await parseFantacalcioListoneFile(file);
+
+  const { data, error } = await supabase.rpc(
+    "preview_fantacalcio_listone",
+    {
+      p_rows: parsed.rows
+    }
+  );
+
+  if (error) {
+    throw error;
+  }
+
+  pendingFantacalcioRows = parsed.rows;
+  pendingFantacalcioFileName = file.name;
+
+  renderFantacalcioPreview(data || {}, file.name, parsed.sheetName);
+
+  setFantacalcioListoneMessage(
+    "Anteprima pronta. Controlla i numeri e poi conferma l'aggiornamento.",
+    "success"
+  );
+}
+
+async function applyFantacalcioListone() {
+  if (!currentUserIsAdmin || isAdminViewingAsTeam()) {
+    setFantacalcioListoneMessage(
+      "Questa funzione è disponibile solo all'admin reale.",
+      "error"
+    );
+    return;
+  }
+
+  if (!pendingFantacalcioRows.length) {
+    setFantacalcioListoneMessage(
+      "Seleziona prima un listone e attendi l'anteprima.",
+      "error"
+    );
+    return;
+  }
+
+  const confirmed = window.confirm(
+    `Confermi l'aggiornamento con "${pendingFantacalcioFileName}"?\n\n` +
+    "Rose, U21, slot U21, keeper e blocchi waiver/trade NON verranno modificati."
+  );
+
+  if (!confirmed) return;
+
+  if (applyFantacalcioListoneBtn) {
+    applyFantacalcioListoneBtn.disabled = true;
+    applyFantacalcioListoneBtn.textContent = "Aggiornamento...";
+  }
+
+  if (fantacalcioFileInput) {
+    fantacalcioFileInput.disabled = true;
+  }
+
+  setFantacalcioListoneMessage(
+    "Aggiornamento Supabase in corso. Non chiudere questa pagina...",
+    "loading"
+  );
+
+  try {
+    const { data, error } = await supabase.rpc(
+      "apply_fantacalcio_listone",
+      {
+        p_rows: pendingFantacalcioRows,
+        p_file_name: pendingFantacalcioFileName || null
+      }
+    );
+
+    if (error) {
+      throw error;
+    }
+
+    const result = data || {};
+
+    setFantacalcioListoneMessage(
+      `Aggiornamento completato: ${Number(result.file_players || 0)} giocatori nel listone, ` +
+      `${Number(result.new_players_count || 0)} nuovi, ` +
+      `${Number(result.removed_players_count || 0)} disattivati, ` +
+      `${Number(result.quotation_changes_count || 0)} quotazioni cambiate.`,
+      "success"
+    );
+
+    if (applyFantacalcioListoneBtn) {
+      applyFantacalcioListoneBtn.style.display = "none";
+    }
+
+    if (fantacalcioFileInput) {
+      fantacalcioFileInput.value = "";
+    }
+
+    pendingFantacalcioRows = [];
+    pendingFantacalcioFileName = "";
+
+    await loadMyOwnedPlayers();
+    await loadMyReplacementCandidates();
+    await loadFreeAgents();
+
+  } catch (error) {
+    console.error("Errore aggiornamento listone Fantacalcio:", error);
+
+    setFantacalcioListoneMessage(
+      error?.message || "Errore durante l'aggiornamento del listone.",
+      "error"
+    );
+
+    if (applyFantacalcioListoneBtn) {
+      applyFantacalcioListoneBtn.disabled = false;
+      applyFantacalcioListoneBtn.style.display = "";
+    }
+  } finally {
+    if (applyFantacalcioListoneBtn) {
+      applyFantacalcioListoneBtn.textContent = "Conferma aggiornamento";
+    }
+
+    if (fantacalcioFileInput) {
+      fantacalcioFileInput.disabled = false;
+    }
+  }
+}
+
+
 /* ===============================
    INIT
 ================================ */
@@ -4595,6 +5033,32 @@ calculateCompensatoryBtn?.addEventListener("click", () => {
 
 addCompensatoryBtn?.addEventListener("click", () => {
   addManualCompensatoryCall();
+});
+
+
+fantacalcioFileInput?.addEventListener("change", async () => {
+  const file = fantacalcioFileInput.files?.[0];
+
+  if (!file) {
+    resetFantacalcioPreview();
+    setFantacalcioListoneMessage("Nessun file selezionato.");
+    return;
+  }
+
+  try {
+    await previewFantacalcioListoneFile(file);
+  } catch (error) {
+    console.error("Errore anteprima listone Fantacalcio:", error);
+    resetFantacalcioPreview();
+    setFantacalcioListoneMessage(
+      error?.message || "Impossibile leggere il listone.",
+      "error"
+    );
+  }
+});
+
+applyFantacalcioListoneBtn?.addEventListener("click", () => {
+  applyFantacalcioListone();
 });
 
 [searchInput, roleFilter, serieATeamFilter, u21Filter].forEach(el => {

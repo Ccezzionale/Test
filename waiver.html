@@ -7,7 +7,7 @@
   <title>Waiver Room</title>
 
   <link rel="stylesheet" href="navbar.css" />
-  <link rel="stylesheet" href="waiver.css?v=15" />
+  <link rel="stylesheet" href="waiver.css?v=16" />
 </head>
 
 <body>
@@ -394,6 +394,49 @@
           <p id="settingsMessage" class="priority-message"></p>
         </div>
 
+
+        <div class="admin-listone-panel">
+          <div class="admin-listone-heading">
+            <div>
+              <h3>📊 Aggiornamento listone Fantacalcio</h3>
+              <p>
+                Carica il file Excel o CSV completo. Prima di modificare Supabase vedrai
+                sempre un'anteprima con nuovi giocatori, rimossi e quotazioni cambiate.
+              </p>
+            </div>
+            <span class="admin-listone-safe-badge">U21 e rose protetti</span>
+          </div>
+
+          <div class="admin-listone-upload-row">
+            <label class="admin-listone-file-label" for="fantacalcioFileInput">
+              <span>📂 Scegli listone</span>
+              <small>.xlsx, .xls o .csv</small>
+            </label>
+
+            <input
+              id="fantacalcioFileInput"
+              class="admin-listone-file-input"
+              type="file"
+              accept=".xlsx,.xls,.csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel,text/csv"
+            />
+
+            <button
+              id="applyFantacalcioListoneBtn"
+              type="button"
+              class="primary-btn small-btn"
+              style="display:none;"
+            >
+              Conferma aggiornamento
+            </button>
+          </div>
+
+          <div id="fantacalcioListoneMessage" class="admin-listone-message">
+            Nessun file selezionato.
+          </div>
+
+          <div id="fantacalcioListonePreview" class="admin-listone-preview" style="display:none;"></div>
+        </div>
+
         <div class="admin-actions admin-main-actions">
           <button id="generateWaiverOrderBtn" type="button" class="primary-btn small-btn">
             Genera ordine waiver
@@ -514,7 +557,8 @@
 
   </main>
 <script src="mobile-nav.js"></script>
-  <script type="module" src="waiver.js?v=23"></script>
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  <script type="module" src="waiver.js?v=24"></script>
   <script type="module" src="home_auth.js"></script>
   <script src="navbar.js"></script>
 </body>

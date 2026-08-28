@@ -4392,3 +4392,327 @@ body.waiver-view-as-mode .free-agents-table-wrap tbody tr {
     grid-template-columns: 36px 1fr;
   }
 }
+
+
+/* =========================================================
+   ADMIN - IMPORT LISTONE FANTACALCIO
+   ========================================================= */
+
+.admin-listone-panel {
+  margin: 12px 0;
+  padding: 11px;
+  border: 1px solid rgba(37, 99, 235, 0.16);
+  border-radius: 14px;
+  background: linear-gradient(180deg, #f8fbff 0%, #eef6ff 100%);
+}
+
+.admin-listone-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 9px;
+}
+
+.admin-listone-heading h3 {
+  margin: 0 0 4px;
+  color: #001f3f;
+  font-size: .92rem;
+}
+
+.admin-listone-heading p {
+  margin: 0;
+  color: #52637a;
+  font-size: .76rem;
+  line-height: 1.35;
+}
+
+.admin-listone-safe-badge {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  min-height: 28px;
+  padding: 5px 9px;
+  border-radius: 999px;
+  background: #ecfdf5;
+  border: 1px solid #bbf7d0;
+  color: #166534;
+  font-size: .68rem;
+  font-weight: 900;
+  white-space: nowrap;
+}
+
+.admin-listone-upload-row {
+  display: grid;
+  grid-template-columns: minmax(220px, 1fr) auto;
+  gap: 8px;
+  align-items: center;
+}
+
+.admin-listone-file-input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.admin-listone-file-label {
+  margin: 0 !important;
+  min-height: 42px;
+  padding: 8px 11px;
+  border-radius: 11px;
+  border: 1px dashed rgba(0, 63, 127, 0.28);
+  background: #ffffff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  transition: border-color .15s ease, background .15s ease;
+}
+
+.admin-listone-file-label:hover {
+  background: #f5f9ff;
+  border-color: rgba(0, 63, 127, 0.48);
+}
+
+.admin-listone-file-label span {
+  color: #003f7f;
+  font-size: .82rem;
+  font-weight: 900;
+}
+
+.admin-listone-file-label small {
+  color: #64748b;
+  font-size: .68rem;
+  font-weight: 800;
+}
+
+.admin-listone-message {
+  margin-top: 8px;
+  padding: 8px 10px;
+  border-radius: 10px;
+  background: #ffffff;
+  border: 1px solid rgba(0, 31, 63, 0.08);
+  color: #52637a;
+  font-size: .76rem;
+  font-weight: 800;
+}
+
+.admin-listone-message.is-loading {
+  background: #fffbeb;
+  border-color: #fde68a;
+  color: #854d0e;
+}
+
+.admin-listone-message.is-success {
+  background: #f0fdf4;
+  border-color: #bbf7d0;
+  color: #166534;
+}
+
+.admin-listone-message.is-error {
+  background: #fef2f2;
+  border-color: #fecaca;
+  color: #991b1b;
+}
+
+.admin-listone-preview {
+  margin-top: 9px;
+}
+
+.admin-listone-file-summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 8px;
+  padding: 7px 9px;
+  border-radius: 10px;
+  background: rgba(0, 63, 127, 0.06);
+}
+
+.admin-listone-file-summary strong {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: #001f3f;
+  font-size: .78rem;
+}
+
+.admin-listone-file-summary span {
+  flex-shrink: 0;
+  color: #64748b;
+  font-size: .68rem;
+  font-weight: 800;
+}
+
+.admin-listone-stats {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 6px;
+}
+
+.admin-listone-stats > div {
+  padding: 8px 6px;
+  border-radius: 10px;
+  background: #ffffff;
+  border: 1px solid rgba(0, 31, 63, 0.08);
+  text-align: center;
+}
+
+.admin-listone-stats span {
+  display: block;
+  margin-bottom: 3px;
+  color: #64748b;
+  font-size: .62rem;
+  font-weight: 850;
+  line-height: 1.1;
+}
+
+.admin-listone-stats strong {
+  display: block;
+  color: #001f3f;
+  font-size: .94rem;
+  font-weight: 950;
+}
+
+.admin-listone-warning {
+  margin-top: 8px;
+  padding: 8px 10px;
+  border-radius: 10px;
+  background: #fffdf3;
+  border: 1px solid rgba(255, 204, 0, 0.28);
+  color: #725300;
+  font-size: .7rem;
+  line-height: 1.35;
+  font-weight: 800;
+}
+
+.admin-listone-details-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 7px;
+  margin-top: 8px;
+}
+
+.admin-listone-details {
+  border: 1px solid rgba(0, 31, 63, 0.09);
+  border-radius: 10px;
+  background: #fff;
+  overflow: hidden;
+}
+
+.admin-listone-details summary {
+  cursor: pointer;
+  list-style: none;
+  padding: 8px 9px;
+  color: #001f3f;
+  font-size: .72rem;
+  font-weight: 900;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.admin-listone-details summary::-webkit-details-marker {
+  display: none;
+}
+
+.admin-listone-details summary strong {
+  min-width: 24px;
+  height: 22px;
+  padding: 0 6px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background: rgba(0, 63, 127, 0.08);
+  color: #003f7f;
+  font-size: .68rem;
+}
+
+.admin-listone-detail-list {
+  max-height: 190px;
+  overflow: auto;
+  border-top: 1px solid rgba(0, 31, 63, 0.07);
+}
+
+.admin-listone-detail-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(70px, .8fr) auto;
+  gap: 6px;
+  align-items: center;
+  padding: 6px 8px;
+  border-bottom: 1px solid rgba(0, 31, 63, 0.06);
+  font-size: .68rem;
+}
+
+.admin-listone-detail-row strong {
+  min-width: 0;
+  color: #0f172a;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.admin-listone-detail-row span {
+  color: #64748b;
+}
+
+.admin-listone-detail-row b {
+  color: #003f7f;
+  white-space: nowrap;
+}
+
+.admin-listone-empty {
+  margin: 0;
+  padding: 8px 9px;
+  border-top: 1px solid rgba(0, 31, 63, 0.07);
+  color: #64748b;
+  font-size: .68rem;
+}
+
+@media (max-width: 1100px) {
+  .admin-listone-stats {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .admin-listone-details-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 760px) {
+  .admin-listone-heading {
+    flex-direction: column;
+  }
+
+  .admin-listone-upload-row {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-listone-upload-row .primary-btn {
+    width: 100%;
+  }
+
+  .admin-listone-stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .admin-listone-file-summary {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .admin-listone-detail-row {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+
+  .admin-listone-detail-row span {
+    display: none;
+  }
+}
