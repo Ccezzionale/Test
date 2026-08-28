@@ -1886,7 +1886,9 @@ groupOrder.forEach(groupName => {
       resultText = "Nessuna chiamata registrata.";
     } else if (call.status === "won") {
       statusClass = "won";
-      resultText = `🟢 Prende ${call.player_in}`;
+      resultText = call.requires_player_out && call.player_out
+        ? `🟢 Prende ${call.player_in}<br>🔻 Svincola ${call.player_out}`
+        : `🟢 Prende ${call.player_in}`;
     } else if (call.status === "lost") {
       statusClass = "lost";
       resultText = `🔴 Perde ${call.player_in}`;
@@ -3145,8 +3147,10 @@ is_fp: !!p.is_fp,
 function isPlayerBlockedThisWaiverWeek(player) {
   if (!currentSettings) return false;
 
+  const blockedReasons = ["trade_cut", "waiver_cut"];
+
   return (
-    player.unavailable_reason === "trade_cut" &&
+    blockedReasons.includes(String(player.unavailable_reason || "")) &&
     Number(player.unavailable_until_week) === Number(currentSettings.active_week) &&
     String(player.unavailable_until_phase || "") === String(currentSettings.active_phase || "")
   );
@@ -3506,6 +3510,9 @@ async function applyWinningWaiverCall(call) {
     .from("players")
     .update({
       owner_team_id: null,
+      unavailable_until_week: Number(currentSettings.active_week),
+      unavailable_until_phase: currentSettings.active_phase,
+      unavailable_reason: "waiver_cut",
       updated_at: nowIso
     })
     .eq("id", call.player_out_id)
@@ -3741,6 +3748,9 @@ async function applyWinningCompensatoryCall(call) {
     .from("players")
     .update({
       owner_team_id: null,
+      unavailable_until_week: Number(currentSettings.active_week),
+      unavailable_until_phase: currentSettings.active_phase,
+      unavailable_reason: "waiver_cut",
       updated_at: nowIso
     })
     .eq("id", call.player_out_id)
