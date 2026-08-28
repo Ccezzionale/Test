@@ -1742,7 +1742,7 @@ async function renderPublicWaiverOrder() {
           resultText = "Nessuna chiamata registrata.";
         } else if (call.status === "won") {
           statusClass = "won";
-          resultText = `🟢 Prende ${call.player_in || "-"}`;
+          resultText = `🟢 Prende ${call.player_in || "-"}<br>🔻 Svincola ${call.player_out || "-"}`;
         } else if (call.status === "lost") {
           statusClass = "lost";
           resultText = `🔴 Perde ${call.player_in || "-"}`;
