@@ -157,39 +157,116 @@ function computePower(clean){
   const byTeam = groupBy(clean, 'TeamKey');
   const teams = Array.from(byTeam.keys()).filter(Boolean);
   const labelByKey = new Map();
-for (const r of clean){
-  if (r.TeamKey && r.Team && !labelByKey.has(r.TeamKey)) labelByKey.set(r.TeamKey, r.Team);
-}
 
-  const maxGW = Math.max(...clean.map(r => r.GW||0));
-  const prevGW = Number.isFinite(maxGW) ? maxGW - 1 : null;
-
-  const w = (maxGW < 5) ? { forma:0.2, media:0.7, cons:0.1 } : { forma:0.5, media:0.3, cons:0.2 };
-
-  function scoreAt(upToGW){
-    const items=[];
-    for(const team of teams){
-      const series = byTeam.get(team).filter(r=>r.GW && r.GW<=upToGW).sort((a,b)=>a.GW-b.GW);
-      const pts = series.map(s=>s.PointsFor);
-      const last5 = lastN(pts,5);
-      items.push({ team, media:mean(pts), forma:mean(last5), cons:1/(1+stdDev(last5)) });
+  for (const r of clean){
+    if (r.TeamKey && r.Team && !labelByKey.has(r.TeamKey)) {
+      labelByKey.set(r.TeamKey, r.Team);
     }
-    const nF=normalize(items.map(x=>x.forma)), nM=normalize(items.map(x=>x.media)), nC=normalize(items.map(x=>x.cons));
-    return items.map((x,i)=>({ team:x.team, forma:nF[i], media:nM[i], cons:nC[i], score:w.forma*nF[i]+w.media*nM[i]+w.cons*nC[i] }))
-                .sort((a,b)=>b.score-a.score);
   }
 
-  const now=scoreAt(maxGW), prev=prevGW>=1?scoreAt(prevGW):[];
-  const prevPos=new Map(); prev.forEach((it,idx)=>prevPos.set(it.team,idx+1));
- const ranked = now.map((it,idx)=>({
-  rank: idx+1,
-  teamKey: it.team,
-  team: (labelByKey.get(it.team) || it.team), // nome originale
-  score: it.score, forma: it.forma, media: it.media, cons: it.cons,
-  delta: (prevPos.get(it.team)||idx+1)-(idx+1)
-}));
+  const maxGW = Math.max(...clean.map(r => r.GW || 0));
+  const prevGW = Number.isFinite(maxGW) ? maxGW - 1 : null;
 
-  return { ranked, maxGW };
+  function weightsForGW(gw){
+    if (gw <= 2) return { forma:0.80, media:0.20, momentum:0.00, cons:0.00 };
+    if (gw <= 4) return { forma:0.70, media:0.20, momentum:0.10, cons:0.00 };
+    return { forma:0.65, media:0.20, momentum:0.10, cons:0.05 };
+  }
+
+  function weightedRecent(points){
+    const recent = lastN(points, 5);
+    if (!recent.length) return 0;
+    const weights = recent.map((_, i) => i + 1); // più recente = peso maggiore
+    const totalWeight = weights.reduce((a,b) => a + b, 0);
+    return recent.reduce((sum, value, i) => sum + value * weights[i], 0) / totalWeight;
+  }
+
+  function momentumRaw(points){
+    const n = points.length;
+    if (n < 3) return 0;
+
+    // Prime giornate: confronto semplice tra parte recente e parte iniziale.
+    if (n === 3) return mean(points.slice(-2)) - points[0];
+    if (n === 4) return mean(points.slice(-2)) - mean(points.slice(0, 2));
+
+    // Da 5 gare in poi: ultime 3 contro le 2/3 immediatamente precedenti.
+    const recent = points.slice(-3);
+    const previous = points.slice(Math.max(0, n - 6), n - 3);
+    return mean(recent) - mean(previous);
+  }
+
+  function reliabilityRaw(points){
+    const recent = lastN(points, 5);
+    if (!recent.length) return 0;
+    // Premia la continuità solo se accompagnata da punteggi buoni:
+    // essere costantemente scarsi non deve diventare un vantaggio.
+    return weightedRecent(points) - (1.2 * stdDev(recent));
+  }
+
+  function scoreAt(upToGW){
+    const w = weightsForGW(upToGW);
+    const items=[];
+
+    for(const team of teams){
+      const series = byTeam.get(team)
+        .filter(r => r.GW && r.GW <= upToGW)
+        .sort((a,b) => a.GW - b.GW);
+
+      const pts = series.map(s => s.PointsFor);
+      if (!pts.length) continue;
+
+      items.push({
+        team,
+        games: pts.length,
+        recentRaw: weightedRecent(pts),
+        seasonRaw: mean(pts),
+        momentumRaw: momentumRaw(pts),
+        consRaw: reliabilityRaw(pts)
+      });
+    }
+
+    const nF = normalize(items.map(x => x.recentRaw));
+    const nM = normalize(items.map(x => x.seasonRaw));
+    const nMo = normalize(items.map(x => x.momentumRaw));
+    const nC = normalize(items.map(x => x.consRaw));
+
+    return items.map((x,i) => ({
+      team:x.team,
+      games:x.games,
+      forma:nF[i],
+      media:nM[i],
+      momentum:nMo[i],
+      momentumRaw:x.momentumRaw,
+      cons:nC[i],
+      score:
+        w.forma * nF[i] +
+        w.media * nM[i] +
+        w.momentum * nMo[i] +
+        w.cons * nC[i]
+    })).sort((a,b) => b.score - a.score);
+  }
+
+  const now = scoreAt(maxGW);
+  const prev = prevGW >= 1 ? scoreAt(prevGW) : [];
+  const prevPos = new Map();
+  prev.forEach((it,idx) => prevPos.set(it.team, idx + 1));
+
+  const ranked = now.map((it,idx) => ({
+    rank: idx + 1,
+    totalTeams: now.length,
+    teamKey: it.team,
+    team: (labelByKey.get(it.team) || it.team),
+    games: it.games,
+    score: it.score,
+    forma: it.forma,
+    media: it.media,
+    momentum: it.momentum,
+    momentumRaw: it.momentumRaw,
+    cons: it.cons,
+    delta: (prevPos.get(it.team) || idx + 1) - (idx + 1)
+  }));
+
+  return { ranked, maxGW, weights: weightsForGW(maxGW) };
 }
 
 
@@ -244,14 +321,45 @@ function teamMascotImg(team, extraClass = ""){
         this.onerror=null; this.src='${placeholder}';
       }">`;
 }
+function formatMomentum(value){
+  const n = Number(value) || 0;
+  const rounded = Math.round(n * 10) / 10;
+  return `${rounded > 0 ? "+" : ""}${rounded.toFixed(1)}`;
+}
+
 function rankingState(r){
-  if (r.rank === 1) return { label:"MINACCIA MASSIMA", cls:"danger" };
-  if (r.rank <= 3) return { label:"CONTENDER", cls:"gold" };
-  if (r.delta > 0) return { label:"IN RISALITA", cls:"up" };
-  if (r.delta < 0) return { label:"IN CALO", cls:"down" };
-  if (r.cons < 20) return { label:"VOLATILE", cls:"danger" };
-  if (r.forma >= 70) return { label:"ON FIRE", cls:"gold" };
-  return { label:"SOLIDA", cls:"neutral" };
+  const total = r.totalTeams || 16;
+  const bottom3 = r.rank >= Math.max(1, total - 2);
+
+  // Nelle primissime giornate non fingiamo di avere certezze statistiche.
+  if (r.games <= 1) {
+    if (r.rank === 1) return { label:"PARTENZA LANCIATA", cls:"gold" };
+    if (r.rank <= 3) return { label:"OTTIMO AVVIO", cls:"gold" };
+    if (bottom3) return { label:"PARTENZA DIFFICILE", cls:"down" };
+    return { label:"IN VALUTAZIONE", cls:"neutral" };
+  }
+
+  if (r.games === 2) {
+    if (r.forma >= 75) return { label:"OTTIMO AVVIO", cls:"gold" };
+    if (r.forma <= 25) return { label:"PARTENZA DIFFICILE", cls:"down" };
+    return { label:"IN VALUTAZIONE", cls:"neutral" };
+  }
+
+  // Da qui in poi conta soprattutto ciò che sta succedendo adesso.
+  if (r.forma <= 20 && r.momentum <= 40) return { label:"CRISI", cls:"danger" };
+  if (r.forma <= 30) return { label:"IN DIFFICOLTÀ", cls:"danger" };
+  if (r.momentum <= 20 && r.forma < 60) return { label:"IN CALO", cls:"down" };
+
+  if (r.forma >= 85 && r.momentum >= 55) return { label:"ON FIRE", cls:"gold" };
+  if (r.rank === 1 && r.forma >= 65) return { label:"TEAM TO BEAT", cls:"gold" };
+  if (r.rank <= 3 && r.forma >= 60) return { label:"CONTENDER", cls:"gold" };
+  if (r.momentum >= 75) return { label:"IN RISALITA", cls:"up" };
+
+  if (r.cons <= 20) return { label:"ALTALENANTE", cls:"danger" };
+  if (r.forma >= 55 && r.cons >= 40) return { label:"SOLIDA", cls:"neutral" };
+  if (r.momentum <= 35) return { label:"IN CALO", cls:"down" };
+
+  return { label:"IN VALUTAZIONE", cls:"neutral" };
 }
 
 function renderPR(res){
@@ -286,8 +394,8 @@ function renderPR(res){
               <strong>${r.media.toFixed(0)}</strong>
             </div>
             <div>
-              <span>Continuità</span>
-              <strong>${r.cons.toFixed(0)}</strong>
+              <span>Momentum</span>
+              <strong>${formatMomentum(r.momentumRaw)}</strong>
             </div>
           </div>
         </article>
@@ -309,7 +417,7 @@ function renderPR(res){
           <td class="${cls}">${arrow} ${r.delta===0 ? '' : Math.abs(r.delta)}</td>
           <td class="mono stat-cell">${r.forma.toFixed(0)}</td>
           <td class="mono stat-cell">${r.media.toFixed(0)}</td>
-          <td class="mono stat-cell">${r.cons.toFixed(0)}</td>
+          <td class="mono stat-cell">${formatMomentum(r.momentumRaw)}</td>
           <td><span class="state-badge ${state.cls}">${state.label}</span></td>
         </tr>
       `;
@@ -324,13 +432,7 @@ function renderPR(res){
 
 
 function mobileState(r){
-  if (r.rank === 1) return "Team to beat";
-  if (r.rank <= 3) return "Contender";
-  if (r.delta > 0) return "In risalita";
-  if (r.delta < 0) return "In calo";
-  if (r.forma >= 70) return "On fire";
-  if (r.cons < 20) return "Volatile";
-  return "Solida";
+  return rankingState(r).label;
 }
 
 function renderPRMobile(res){
@@ -371,7 +473,7 @@ const mascotTag = (team, cls = "") => {
       <div class="mobile-pr-header">
         <span class="mobile-pr-kicker">Power Ranking</span>
         <h2>Il verdetto</h2>
-        <p>Forma, media e continuità: qui non si guarda solo la classifica.</p>
+        <p>Forma recente, media e momentum: qui conta soprattutto come stai andando adesso.</p>
       </div>
 
       <article class="mobile-pr-king">
@@ -385,7 +487,7 @@ const mascotTag = (team, cls = "") => {
         <div class="mobile-stat-grid">
           <div><span>Forma</span><strong>${champion.forma.toFixed(0)}</strong></div>
           <div><span>Media</span><strong>${champion.media.toFixed(0)}</strong></div>
-          <div><span>Continuità</span><strong>${champion.cons.toFixed(0)}</strong></div>
+          <div><span>Momentum</span><strong>${formatMomentum(champion.momentumRaw)}</strong></div>
         </div>
       </article>
 
