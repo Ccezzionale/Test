@@ -143,9 +143,83 @@
         <div id="classifica-mobile"></div>
       </div>
     </section>
+
+    <section id="results-admin-panel" class="results-admin-panel" hidden>
+      <details class="results-admin-details">
+        <summary>⚙️ Gestione risultati <span>solo Admin</span></summary>
+
+        <div id="results-admin-body" class="results-admin-body" hidden>
+          <div class="results-admin-heading">
+            <div>
+              <span class="results-admin-kicker">Aggiornamento automatico</span>
+              <h2>Classifiche & Statistiche</h2>
+              <p>Carica i file calendario scaricati da Fantacalcio. Le giornate non ancora disputate (0-0) vengono ignorate.</p>
+            </div>
+          </div>
+
+          <div class="results-phase-card">
+            <div class="results-phase-head">
+              <div>
+                <span>FASE 1</span>
+                <h3>Conference</h3>
+              </div>
+              <p>Durante le Conference carica entrambi i file e poi aggiorna.</p>
+            </div>
+
+            <div class="results-upload-grid">
+              <label class="results-upload-box" for="file-conf-a">
+                <strong>Conference League</strong>
+                <span>Conf A</span>
+                <input id="file-conf-a" type="file" accept=".xlsx,.xls" />
+                <small id="status-conf-a" class="results-file-status">Nessun file selezionato.</small>
+              </label>
+
+              <label class="results-upload-box" for="file-conf-b">
+                <strong>Conference Championship</strong>
+                <span>Conf B</span>
+                <input id="file-conf-b" type="file" accept=".xlsx,.xls" />
+                <small id="status-conf-b" class="results-file-status">Nessun file selezionato.</small>
+              </label>
+            </div>
+
+            <button id="import-conference-btn" type="button" class="results-import-btn">
+              Aggiorna Conference
+            </button>
+          </div>
+
+          <div class="results-phase-separator"><span>poi, quando parte il Round Robin</span></div>
+
+          <div class="results-phase-card round-robin">
+            <div class="results-phase-head">
+              <div>
+                <span>FASE 2</span>
+                <h3>Round Robin</h3>
+              </div>
+              <p>Da qui in poi carichi solo il file unico con tutte le squadre.</p>
+            </div>
+
+            <label class="results-upload-box single" for="file-round-robin">
+              <strong>Round Robin</strong>
+              <span>Unificata</span>
+              <input id="file-round-robin" type="file" accept=".xlsx,.xls" />
+              <small id="status-round-robin" class="results-file-status">Nessun file selezionato.</small>
+            </label>
+
+            <button id="import-roundrobin-btn" type="button" class="results-import-btn secondary">
+              Aggiorna Round Robin
+            </button>
+          </div>
+
+          <div id="results-admin-summary" class="results-admin-summary">
+            Nessun aggiornamento in corso.
+          </div>
+        </div>
+      </details>
+    </section>
+
   </main>
 
-  <script src="classifiche-auto.js"></script>
+  <script type="module" src="classifiche-auto.js"></script>
   <script>
     document.addEventListener("DOMContentLoaded", () => {
       const table = document.getElementById("tabella-classifica");
@@ -336,6 +410,7 @@ return {
       refreshDashboard();
     });
   </script>
+  <script type="module" src="classifica-admin.js"></script>
   <script src="mobile-nav.js"></script>
    <script src="navbar.js"></script>
 

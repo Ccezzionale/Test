@@ -1,3 +1,5 @@
+import { loadResultsRows } from './results-source.js';
+
 /* =========================================
    CLASSIFICHE AUTO - LEGA DEGLI EROI
    Fonte unica: Risultati PR – Master
@@ -545,7 +547,7 @@ function gestisciSwitcher() {
 
 async function initClassifiche() {
   try {
-    const rawRows = await fetchCSV(CLASSIFICHE_CSV_URL);
+    const rawRows = await loadResultsRows();
 allRows = removeDuplicateRows(rawRows);
 
     gestisciSwitcher();

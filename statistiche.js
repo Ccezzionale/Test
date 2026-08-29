@@ -1,3 +1,5 @@
+import { loadResultsRows } from './results-source.js';
+
 /********** CONFIG **********/
 const DEFAULT_CSV_URL =
   "https://docs.google.com/spreadsheets/d/e/2PACX-1vSG3HrTJsfZGhgfJJx8l63QYhooGsyiydLf1OTt2JldOPx5nSZyJz00IplWA5YHGwjymNL9EXIVX5XA/pub?gid=1118969717&single=true&output=csv";
@@ -107,7 +109,7 @@ function sanitizeRows(rows, phaseFilter){
   const filtered = rows
     .filter(r => !phaseFilter || r.Phase === phaseFilter)
     .map(r => {
-      const GW = +r.GW || null;
+      const GW = +(r.GW_Stagionale || r.GW) || null;
 
       const Team = (r.Team || '').trim();
       const Opponent = (r.Opponent || '').trim();
@@ -1090,24 +1092,29 @@ function buildRaceFromClean(clean){
 
 /********** BOOT (auto-load) **********/
 (async function(){
-  const url = DEFAULT_CSV_URL;
-  const data = await fetchCSV(url);
-  const clean = sanitizeRows(data.rows, PHASE_FILTER);
+  try {
+    const rows = await loadResultsRows();
+    const clean = sanitizeRows(rows, PHASE_FILTER);
 
-  // Power Ranking
-  const pr = computePower(clean);
-  renderPR(pr);
-  renderPRMobile(pr);
+    // Power Ranking
+    const pr = computePower(clean);
+    renderPR(pr);
+    renderPRMobile(pr);
 
-  // Sezioni principali
-  const hall = computeHall(clean);
-  renderHall(hall);
+    // Sezioni principali
+    const hall = computeHall(clean);
+    renderHall(hall);
 
-  const luck = computeLuck(clean);
-  renderLuckBox(luck);
+    const luck = computeLuck(clean);
+    renderLuckBox(luck);
 
-  const topScores = computeTopScores(clean, 5);
-  renderTopScores(topScores);
+    const topScores = computeTopScores(clean, 5);
+    renderTopScores(topScores);
+  } catch (error) {
+    console.error('Errore caricamento statistiche:', error);
+    const metaTop = document.getElementById('meta-top');
+    if (metaTop) metaTop.textContent = 'Errore nel caricamento dei risultati';
+  }
 })();
 
 function setupMobileStatsTabs(){
