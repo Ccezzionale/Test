@@ -10,6 +10,17 @@ const SEASON = 2027;
 const TOTAL_PLAYERS = 46;
 const PLAYERS_PER_TEAM = 23;
 const AUTO_PICK_COUNT = 10;
+const ALLSTAR_TIME_ZONE = "Europe/Brussels";
+const DAY_MS = 24 * 60 * 60 * 1000;
+const WEEK_MS = 7 * DAY_MS;
+
+const VOTE_SLOT_CONFIG = [
+  { inputId: "vote10", slot: "first", points: 10 },
+  { inputId: "vote5", slot: "second", points: 5 },
+  { inputId: "vote3", slot: "third", points: 3 },
+  { inputId: "vote2", slot: "fourth", points: 2 },
+  { inputId: "vote1", slot: "fifth", points: 1 }
+];
 
 const CONFERENCE_LEAGUE = "Conference League";
 const CONFERENCE_CHAMPIONSHIP = "Conference Championship";
@@ -37,7 +48,6 @@ const els = {
   leagueVoteLeaderInfo: document.getElementById("leagueVoteLeaderInfo"),
   champVoteLeaderInfo: document.getElementById("champVoteLeaderInfo"),
   voterConference: document.getElementById("voterConference"),
-  voteSearchInput: document.getElementById("voteSearchInput"),
   voteForm: document.getElementById("voteForm"),
   vote10: document.getElementById("vote10"),
   vote5: document.getElementById("vote5"),
@@ -45,6 +55,8 @@ const els = {
   vote2: document.getElementById("vote2"),
   vote1: document.getElementById("vote1"),
   voteFeedback: document.getElementById("voteFeedback"),
+  voteCountdownLabel: document.getElementById("voteCountdownLabel"),
+  voteCountdownValue: document.getElementById("voteCountdownValue"),
 
   leagueWeekStarName: document.getElementById("leagueWeekStarName"),
   leagueWeekStarDetails: document.getElementById("leagueWeekStarDetails"),
@@ -112,7 +124,8 @@ async function init() {
     await loadAllData();
     setupUserControls();
     populateFilters();
-    populateVoteSelects();
+    setupVotePickers();
+    hydrateVotePickersFromSavedVotes();
     renderAll();
     subscribeRealtime();
     startAutoWeekTicker();
@@ -128,7 +141,6 @@ function bindEvents() {
   });
 
   els.voteForm?.addEventListener("submit", handleVoteSubmit);
-  els.voteSearchInput?.addEventListener("input", populateVoteSelects);
   els.demoVotesBtn?.addEventListener("click", () => alert("I voti demo sono stati disattivati: ora la pagina usa Supabase."));
   els.resetVotesBtn?.addEventListener("click", resetVotes);
   els.adminResetVotesBtn?.addEventListener("click", resetVotes);
@@ -468,7 +480,7 @@ async function startAllStarVoting() {
     return;
   }
 
-  const ok = confirm("Vuoi iniziare le votazioni All Star? Da questo momento la Week 1 parte e le settimane avanzeranno automaticamente ogni 7 giorni.");
+  const ok = confirm("Vuoi iniziare le votazioni All Star? La Week 1 parte adesso e terminerà domenica alle 23:59. Da lunedì inizierà automaticamente la Week 2, poi ogni lunedì una nuova week.");
   if (!ok) return;
 
   const now = new Date().toISOString();
@@ -501,33 +513,164 @@ function populateFilters() {
   }
 }
 
-function populateVoteSelects() {
-  const search = normalizeTextKey(els.voteSearchInput?.value || "");
+function setupVotePickers() {
+  document.querySelectorAll("[data-vote-input]").forEach((input) => {
+    const targetId = input.dataset.voteInput;
+    if (!targetId) return;
 
-  [els.vote10, els.vote5, els.vote3, els.vote2, els.vote1].forEach((select) => {
-    if (!select) return;
+    input.addEventListener("input", () => {
+      const hidden = document.getElementById(targetId);
+      const picker = input.closest(".vote-player-picker");
 
-    const previousValue = select.value;
-    const filteredPlayers = players
-      .slice()
-      .sort((a, b) => a.name.localeCompare(b.name))
-      .filter((p) => {
-        if (!search) return true;
-        if (p.id === previousValue) return true;
+      if (hidden?.value) {
+        hidden.value = "";
+        picker?.classList.remove("is-selected");
+      }
 
-        const haystack = normalizeTextKey(`${p.name} ${p.role} ${p.serieATeam} ${p.originTeam}`);
-        return haystack.includes(search);
-      });
+      renderVotePickerResults(targetId, input.value);
+    });
 
-    const options = filteredPlayers
-      .map((p) => `<option value="${escapeAttr(p.id)}">${escapeHtml(p.name)} · ${escapeHtml(p.role)} · ${escapeHtml(p.serieATeam)} · ${escapeHtml(p.originTeam)}</option>`)
-      .join("");
-
-    select.innerHTML = `<option value="">Seleziona giocatore</option>${options}`;
-    if (previousValue && filteredPlayers.some((p) => p.id === previousValue)) {
-      select.value = previousValue;
-    }
+    input.addEventListener("focus", () => {
+      renderVotePickerResults(targetId, input.value);
+    });
   });
+
+  document.querySelectorAll("[data-vote-clear]").forEach((button) => {
+    button.addEventListener("click", () => clearVotePicker(button.dataset.voteClear, true));
+  });
+
+  document.addEventListener("click", (event) => {
+    if (event.target.closest(".vote-player-picker")) return;
+    closeAllVotePickerResults();
+  });
+}
+
+function renderVotePickerResults(targetId, rawQuery) {
+  const resultsEl = document.querySelector(`[data-vote-results="${targetId}"]`);
+  const metaEl = document.querySelector(`[data-vote-meta="${targetId}"]`);
+  if (!resultsEl) return;
+
+  const query = normalizeTextKey(rawQuery || "");
+  if (query.length < 2) {
+    resultsEl.innerHTML = "";
+    resultsEl.classList.remove("open");
+    if (metaEl && !document.getElementById(targetId)?.value) {
+      metaEl.textContent = "Scrivi almeno 2 lettere: nome, ruolo o squadra Serie A.";
+    }
+    return;
+  }
+
+  const alreadySelected = new Set(
+    VOTE_SLOT_CONFIG
+      .filter((config) => config.inputId !== targetId)
+      .map((config) => document.getElementById(config.inputId)?.value)
+      .filter(Boolean)
+  );
+
+  const matches = players
+    .filter((player) => {
+      if (alreadySelected.has(player.id)) return false;
+      const haystack = normalizeTextKey(`${player.name} ${player.role} ${player.roleMantra} ${player.serieATeam}`);
+      return haystack.includes(query);
+    })
+    .sort((a, b) => {
+      const aName = normalizeTextKey(a.name);
+      const bName = normalizeTextKey(b.name);
+      const aStarts = aName.startsWith(query) ? 0 : 1;
+      const bStarts = bName.startsWith(query) ? 0 : 1;
+      return aStarts - bStarts || a.name.localeCompare(b.name);
+    })
+    .slice(0, 8);
+
+  if (!matches.length) {
+    resultsEl.innerHTML = `<div class="vote-player-no-results">Nessun giocatore trovato.</div>`;
+    resultsEl.classList.add("open");
+    return;
+  }
+
+  resultsEl.innerHTML = matches.map((player) => `
+    <button type="button" class="vote-player-result" data-vote-result-target="${escapeAttr(targetId)}" data-player-id="${escapeAttr(player.id)}">
+      <span>
+        <strong>${escapeHtml(player.name)}</strong>
+        <small>${escapeHtml(player.role)} · ${escapeHtml(player.serieATeam)}</small>
+      </span>
+      <em>Q. ${escapeHtml(player.quotation ?? "-")}</em>
+    </button>
+  `).join("");
+  resultsEl.classList.add("open");
+
+  resultsEl.querySelectorAll("[data-player-id]").forEach((button) => {
+    button.addEventListener("click", () => {
+      selectVotePlayer(targetId, button.dataset.playerId, true);
+    });
+  });
+}
+
+function selectVotePlayer(targetId, playerId, focusNext = false) {
+  const hidden = document.getElementById(targetId);
+  const input = document.querySelector(`[data-vote-input="${targetId}"]`);
+  const metaEl = document.querySelector(`[data-vote-meta="${targetId}"]`);
+  const resultsEl = document.querySelector(`[data-vote-results="${targetId}"]`);
+  const picker = input?.closest(".vote-player-picker");
+  const player = players.find((item) => item.id === playerId);
+
+  if (!hidden || !input || !player) return;
+
+  hidden.value = player.id;
+  input.value = player.name;
+  picker?.classList.add("is-selected");
+  if (metaEl) metaEl.textContent = `${player.role} · ${player.serieATeam} · Q. ${player.quotation ?? "-"}`;
+  if (resultsEl) {
+    resultsEl.innerHTML = "";
+    resultsEl.classList.remove("open");
+  }
+
+  if (focusNext) {
+    const index = VOTE_SLOT_CONFIG.findIndex((config) => config.inputId === targetId);
+    const next = VOTE_SLOT_CONFIG[index + 1];
+    if (next) {
+      const nextInput = document.querySelector(`[data-vote-input="${next.inputId}"]`);
+      window.setTimeout(() => nextInput?.focus(), 80);
+    }
+  }
+}
+
+function clearVotePicker(targetId, focusInput = false) {
+  const hidden = document.getElementById(targetId);
+  const input = document.querySelector(`[data-vote-input="${targetId}"]`);
+  const metaEl = document.querySelector(`[data-vote-meta="${targetId}"]`);
+  const resultsEl = document.querySelector(`[data-vote-results="${targetId}"]`);
+  const picker = input?.closest(".vote-player-picker");
+
+  if (hidden) hidden.value = "";
+  if (input) input.value = "";
+  picker?.classList.remove("is-selected");
+  if (metaEl) metaEl.textContent = "Scrivi almeno 2 lettere: nome, ruolo o squadra Serie A.";
+  if (resultsEl) {
+    resultsEl.innerHTML = "";
+    resultsEl.classList.remove("open");
+  }
+  if (focusInput) input?.focus();
+}
+
+function closeAllVotePickerResults() {
+  document.querySelectorAll("[data-vote-results]").forEach((resultsEl) => {
+    resultsEl.innerHTML = "";
+    resultsEl.classList.remove("open");
+  });
+}
+
+function hydrateVotePickersFromSavedVotes() {
+  VOTE_SLOT_CONFIG.forEach((config) => clearVotePicker(config.inputId));
+  if (!currentTeam?.id) return;
+
+  const slotToInput = new Map(VOTE_SLOT_CONFIG.map((config) => [config.slot, config.inputId]));
+  votes
+    .filter((vote) => vote.week === state.activeWeek && vote.voterTeamId === currentTeam.id)
+    .forEach((vote) => {
+      const inputId = slotToInput.get(vote.slot);
+      if (inputId && vote.playerId) selectVotePlayer(inputId, vote.playerId, false);
+    });
 }
 
 async function handleVoteSubmit(event) {
@@ -543,13 +686,11 @@ async function handleVoteSubmit(event) {
     return;
   }
 
-  const selected = [
-    { playerId: els.vote10.value, points: 10, slot: "first" },
-    { playerId: els.vote5.value, points: 5, slot: "second" },
-    { playerId: els.vote3.value, points: 3, slot: "third" },
-    { playerId: els.vote2.value, points: 2, slot: "fourth" },
-    { playerId: els.vote1.value, points: 1, slot: "fifth" }
-  ];
+  const selected = VOTE_SLOT_CONFIG.map((config) => ({
+    playerId: document.getElementById(config.inputId)?.value || "",
+    points: config.points,
+    slot: config.slot
+  }));
 
   if (selected.some((v) => !v.playerId)) {
     showVoteFeedback("Seleziona tutti e cinque i giocatori.", true);
@@ -577,12 +718,18 @@ async function handleVoteSubmit(event) {
     .upsert(rows, { onConflict: "season,week,voter_team_id,slot" });
 
   if (error) {
-    console.error("Errore salvataggio voti:", error);
-    showVoteFeedback("Errore salvataggio voti. Controlla RLS/permessi.", true);
+    console.error("Errore salvataggio voti:", {
+      code: error.code,
+      message: error.message,
+      details: error.details,
+      hint: error.hint
+    });
+    showVoteFeedback("Non riesco a salvare il voto. Controlla la configurazione SQL della tabella All Star.", true);
     return;
   }
 
   await loadVotes();
+  hydrateVotePickersFromSavedVotes();
   showVoteFeedback(`Voti salvati per ${currentTeam.name}.`);
   renderVotesArea();
 }
@@ -679,6 +826,7 @@ function renderVotesArea() {
 
   setText(els.activeWeekInfo, `Week ${state.activeWeek}`);
   setText(els.voteWeekPill, `Week ${state.activeWeek}`);
+  updateVoteCountdown();
   setText(els.leagueVoteLeaderInfo, leagueLeader ? `${leagueLeader.player.name} (${leagueLeader.total} pt)` : "-");
   setText(els.champVoteLeaderInfo, champLeader ? `${champLeader.player.name} (${champLeader.total} pt)` : "-");
 
@@ -1323,14 +1471,19 @@ async function refreshAndRender() {
 }
 
 function startAutoWeekTicker() {
-  // If the page stays open over the weekly boundary, update the active week without requiring a refresh.
+  // Week = lunedì 00:00 -> domenica 23:59:59 (orario Europe/Brussels).
+  // Il countdown si aggiorna ogni secondo; il cambio week viene controllato ogni 15s.
+  updateVoteCountdown();
+  setInterval(updateVoteCountdown, 1000);
+
   setInterval(() => {
     const nextWeek = getComputedActiveWeek(state);
     if (nextWeek !== state.activeWeek) {
       state.activeWeek = nextWeek;
+      hydrateVotePickersFromSavedVotes();
       renderAll();
     }
-  }, 60 * 1000);
+  }, 15 * 1000);
 }
 
 function subscribeRealtime() {
@@ -1360,16 +1513,135 @@ function getComputedActiveWeek(stateLike = state) {
   const startedAt = stateLike?.votingStartedAt;
   if (!startedAt) return Math.max(1, Number(stateLike?.activeWeek || 1));
 
-  const startMs = Date.parse(startedAt);
-  if (!Number.isFinite(startMs)) return Math.max(1, Number(stateLike?.activeWeek || 1));
+  const startDate = new Date(startedAt);
+  if (Number.isNaN(startDate.getTime())) return Math.max(1, Number(stateLike?.activeWeek || 1));
 
-  const endSource = stateLike?.votingClosedAt || new Date().toISOString();
-  const endMs = Date.parse(endSource);
-  if (!Number.isFinite(endMs)) return Math.max(1, Number(stateLike?.activeWeek || 1));
+  const effectiveDate = stateLike?.votingClosedAt ? new Date(stateLike.votingClosedAt) : new Date();
+  if (Number.isNaN(effectiveDate.getTime())) return Math.max(1, Number(stateLike?.activeWeek || 1));
 
-  const diffMs = Math.max(0, endMs - startMs);
-  const weekMs = 7 * 24 * 60 * 60 * 1000;
-  return Math.floor(diffMs / weekMs) + 1;
+  // Conta le settimane di calendario, non blocchi di 7 giorni dall'istante di avvio.
+  // Quindi se la Week 1 viene attivata di sabato, il lunedì successivo parte già la Week 2.
+  const startMonday = getBrusselsMondaySerial(startDate);
+  const currentMonday = getBrusselsMondaySerial(effectiveDate);
+  return Math.max(1, Math.floor((currentMonday - startMonday) / WEEK_MS) + 1);
+}
+
+function getBrusselsDateParts(date) {
+  const formatter = new Intl.DateTimeFormat("en-GB", {
+    timeZone: ALLSTAR_TIME_ZONE,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    weekday: "short",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    hourCycle: "h23"
+  });
+
+  const parts = Object.fromEntries(
+    formatter.formatToParts(date)
+      .filter((part) => part.type !== "literal")
+      .map((part) => [part.type, part.value])
+  );
+
+  return {
+    year: Number(parts.year),
+    month: Number(parts.month),
+    day: Number(parts.day),
+    weekday: parts.weekday,
+    hour: Number(parts.hour),
+    minute: Number(parts.minute),
+    second: Number(parts.second)
+  };
+}
+
+function getBrusselsMondaySerial(date) {
+  const parts = getBrusselsDateParts(date);
+  const weekdayIndex = {
+    Mon: 0,
+    Tue: 1,
+    Wed: 2,
+    Thu: 3,
+    Fri: 4,
+    Sat: 5,
+    Sun: 6
+  }[parts.weekday] ?? 0;
+
+  const localDateSerial = Date.UTC(parts.year, parts.month - 1, parts.day);
+  return localDateSerial - weekdayIndex * DAY_MS;
+}
+
+function getTimeZoneOffsetMs(date) {
+  const parts = getBrusselsDateParts(date);
+  const asIfUtc = Date.UTC(
+    parts.year,
+    parts.month - 1,
+    parts.day,
+    parts.hour,
+    parts.minute,
+    parts.second
+  );
+  const roundedDateMs = Math.floor(date.getTime() / 1000) * 1000;
+  return asIfUtc - roundedDateMs;
+}
+
+function brusselsLocalDateTimeToDate(year, month, day, hour = 0, minute = 0, second = 0) {
+  const localAsUtc = Date.UTC(year, month - 1, day, hour, minute, second);
+  let candidate = new Date(localAsUtc);
+  let offset = getTimeZoneOffsetMs(candidate);
+  candidate = new Date(localAsUtc - offset);
+
+  const refinedOffset = getTimeZoneOffsetMs(candidate);
+  if (refinedOffset !== offset) candidate = new Date(localAsUtc - refinedOffset);
+  return candidate;
+}
+
+function getCurrentWeekDeadline(now = new Date()) {
+  const mondaySerial = getBrusselsMondaySerial(now);
+  const nextMondaySerial = mondaySerial + WEEK_MS;
+  const nextMonday = new Date(nextMondaySerial);
+
+  return brusselsLocalDateTimeToDate(
+    nextMonday.getUTCFullYear(),
+    nextMonday.getUTCMonth() + 1,
+    nextMonday.getUTCDate(),
+    0,
+    0,
+    0
+  );
+}
+
+function updateVoteCountdown() {
+  if (!els.voteCountdownValue) return;
+
+  if (!state.votingStartedAt) {
+    setText(els.voteCountdownLabel, "Votazioni non iniziate");
+    setText(els.voteCountdownValue, "--");
+    return;
+  }
+
+  if (state.votingClosedAt || !state.votingOpen) {
+    setText(els.voteCountdownLabel, "Votazioni chiuse");
+    setText(els.voteCountdownValue, "--");
+    return;
+  }
+
+  const now = new Date();
+  const deadline = getCurrentWeekDeadline(now);
+  const remaining = Math.max(0, deadline.getTime() - now.getTime());
+
+  const totalSeconds = Math.floor(remaining / 1000);
+  const days = Math.floor(totalSeconds / 86400);
+  const hours = Math.floor((totalSeconds % 86400) / 3600);
+  const minutes = Math.floor((totalSeconds % 3600) / 60);
+  const seconds = totalSeconds % 60;
+
+  setText(els.voteCountdownLabel, `Week ${state.activeWeek} · chiude domenica 23:59`);
+  setText(
+    els.voteCountdownValue,
+    `${String(days).padStart(2, "0")}g ${String(hours).padStart(2, "0")}h ${String(minutes).padStart(2, "0")}m ${String(seconds).padStart(2, "0")}s`
+  );
 }
 
 function canVoteNow() {

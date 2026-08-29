@@ -21,9 +21,9 @@
   <meta name="apple-mobile-web-app-title" content="Lega Eroi">
 
   <link rel="stylesheet" href="navbar.css" />
-  <link rel="stylesheet" href="allstar.css?v=session-players-20260720-2" />
+  <link rel="stylesheet" href="allstar.css?v=week-picker-20260829-1" />
 
-  <script type="module" src="allstar.js?v=session-players-20260720-2" defer></script>
+  <script type="module" src="allstar.js?v=week-picker-20260829-1" defer></script>
 </head>
 <body>
   <nav class="site-nav">
@@ -348,71 +348,96 @@
             </select>
           </label>
 
-          <label class="vote-search-field">
-            <span>Cerca giocatore</span>
-            <input id="voteSearchInput" type="search" placeholder="Scrivi nome, ruolo, squadra Serie A o team..." autocomplete="off" />
-          </label>
-
-          <label class="vote-slot vote-slot-gold">
+          <div class="vote-slot vote-slot-gold">
             <span class="vote-medal">10</span>
-            <div>
+            <div class="vote-slot-copy">
               <strong>Prima scelta</strong>
               <small>Il giocatore simbolo della settimana</small>
             </div>
-            <select id="vote10" required>
-              <option value="">Seleziona giocatore</option>
-            </select>
-          </label>
+            <div class="vote-player-picker" data-vote-picker="vote10">
+              <div class="vote-player-searchbox">
+                <input class="vote-player-input" data-vote-input="vote10" type="search" placeholder="Cerca giocatore..." autocomplete="off" />
+                <button class="vote-player-clear" data-vote-clear="vote10" type="button" aria-label="Cancella giocatore">×</button>
+              </div>
+              <input id="vote10" type="hidden" value="" />
+              <div class="vote-player-meta" data-vote-meta="vote10">Scrivi almeno 2 lettere: nome, ruolo o squadra Serie A.</div>
+              <div class="vote-player-results" data-vote-results="vote10"></div>
+            </div>
+          </div>
 
-          <label class="vote-slot vote-slot-silver">
+          <div class="vote-slot vote-slot-silver">
             <span class="vote-medal">5</span>
-            <div>
+            <div class="vote-slot-copy">
               <strong>Seconda scelta</strong>
               <small>La stella che merita punti pesanti</small>
             </div>
-            <select id="vote5" required>
-              <option value="">Seleziona giocatore</option>
-            </select>
-          </label>
+            <div class="vote-player-picker" data-vote-picker="vote5">
+              <div class="vote-player-searchbox">
+                <input class="vote-player-input" data-vote-input="vote5" type="search" placeholder="Cerca giocatore..." autocomplete="off" />
+                <button class="vote-player-clear" data-vote-clear="vote5" type="button" aria-label="Cancella giocatore">×</button>
+              </div>
+              <input id="vote5" type="hidden" value="" />
+              <div class="vote-player-meta" data-vote-meta="vote5">Scrivi almeno 2 lettere: nome, ruolo o squadra Serie A.</div>
+              <div class="vote-player-results" data-vote-results="vote5"></div>
+            </div>
+          </div>
 
-          <label class="vote-slot vote-slot-bronze">
+          <div class="vote-slot vote-slot-bronze">
             <span class="vote-medal">3</span>
-            <div>
+            <div class="vote-slot-copy">
               <strong>Terza scelta</strong>
               <small>Una delle stelle della settimana</small>
             </div>
-            <select id="vote3" required>
-              <option value="">Seleziona giocatore</option>
-            </select>
-          </label>
+            <div class="vote-player-picker" data-vote-picker="vote3">
+              <div class="vote-player-searchbox">
+                <input class="vote-player-input" data-vote-input="vote3" type="search" placeholder="Cerca giocatore..." autocomplete="off" />
+                <button class="vote-player-clear" data-vote-clear="vote3" type="button" aria-label="Cancella giocatore">×</button>
+              </div>
+              <input id="vote3" type="hidden" value="" />
+              <div class="vote-player-meta" data-vote-meta="vote3">Scrivi almeno 2 lettere: nome, ruolo o squadra Serie A.</div>
+              <div class="vote-player-results" data-vote-results="vote3"></div>
+            </div>
+          </div>
 
-          <label class="vote-slot vote-slot-fourth">
+          <div class="vote-slot vote-slot-fourth">
             <span class="vote-medal">2</span>
-            <div>
+            <div class="vote-slot-copy">
               <strong>Quarta scelta</strong>
               <small>Un giocatore da premiare</small>
             </div>
-            <select id="vote2" required>
-              <option value="">Seleziona giocatore</option>
-            </select>
-          </label>
+            <div class="vote-player-picker" data-vote-picker="vote2">
+              <div class="vote-player-searchbox">
+                <input class="vote-player-input" data-vote-input="vote2" type="search" placeholder="Cerca giocatore..." autocomplete="off" />
+                <button class="vote-player-clear" data-vote-clear="vote2" type="button" aria-label="Cancella giocatore">×</button>
+              </div>
+              <input id="vote2" type="hidden" value="" />
+              <div class="vote-player-meta" data-vote-meta="vote2">Scrivi almeno 2 lettere: nome, ruolo o squadra Serie A.</div>
+              <div class="vote-player-results" data-vote-results="vote2"></div>
+            </div>
+          </div>
 
-          <label class="vote-slot vote-slot-fifth">
+          <div class="vote-slot vote-slot-fifth">
             <span class="vote-medal">1</span>
-            <div>
+            <div class="vote-slot-copy">
               <strong>Quinta scelta</strong>
               <small>L'ultimo punto della tua Top 5</small>
             </div>
-            <select id="vote1" required>
-              <option value="">Seleziona giocatore</option>
-            </select>
-          </label>
+            <div class="vote-player-picker" data-vote-picker="vote1">
+              <div class="vote-player-searchbox">
+                <input class="vote-player-input" data-vote-input="vote1" type="search" placeholder="Cerca giocatore..." autocomplete="off" />
+                <button class="vote-player-clear" data-vote-clear="vote1" type="button" aria-label="Cancella giocatore">×</button>
+              </div>
+              <input id="vote1" type="hidden" value="" />
+              <div class="vote-player-meta" data-vote-meta="vote1">Scrivi almeno 2 lettere: nome, ruolo o squadra Serie A.</div>
+              <div class="vote-player-results" data-vote-results="vote1"></div>
+            </div>
+          </div>
 
           <div class="broadcast-vote-footer">
             <button type="submit" class="primary-call-btn vote-submit-btn">Invia il tuo voto</button>
             <div class="vote-countdown">
-              <small>Chiusura votazioni tra</small>
-              <strong>02g 14h 37m</strong>
+              <small id="voteCountdownLabel">Week 1 · chiude domenica 23:59</small>
+              <strong id="voteCountdownValue">--</strong>
             </div>
           </div>
 
@@ -664,7 +689,7 @@
   <script>
     if ("serviceWorker" in navigator) {
       window.addEventListener("load", function () {
-        navigator.serviceWorker.register("./sw.js?v=session-players-20260720-2", { updateViaCache: "none" })
+        navigator.serviceWorker.register("./sw.js?v=week-picker-20260829-1", { updateViaCache: "none" })
           .then(function (registration) {
             registration.update();
             console.log("SW registrato e aggiornato");
