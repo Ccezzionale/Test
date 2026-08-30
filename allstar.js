@@ -1248,12 +1248,6 @@ function renderMobileLiveSummary(forcedTab = null) {
       text = "Votazioni chiuse";
       chip = "CHIUSA";
     }
-  } else if (activeTab === "rankings") {
-    kicker = "CORSA ALLE STELLE";
-    const leagueName = leagueLeader?.player?.name || "-";
-    const champName = champLeader?.player?.name || "-";
-    text = `League: ${leagueName} · Championship: ${champName}`;
-    chip = "LIVE";
   } else if (activeTab === "draft") {
     const currentConference = getCurrentConference();
     kicker = `DRAFT · PICK ${state.currentPick}`;

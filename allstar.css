@@ -4856,7 +4856,7 @@ body {
     width: min(calc(100% - 16px), 430px) !important;
     margin: 0 !important;
     padding: 6px !important;
-    grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
+    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
     gap: 3px !important;
     border-radius: 18px !important;
     background: rgba(8, 14, 24, .96) !important;
@@ -5330,10 +5330,11 @@ body {
 
 
 /* =========================================================
-   MOBILE UX V6
-   - All Star navigation returns to the top, separate from app bottom nav
-   - Admin remains a fifth All Star tab for admin/commissioner
-   - Live Top 5 switches between the two Conferences
+   MOBILE UX V7
+   - Classifica rimossa solo dalla navigazione mobile
+   - All Star navigation resta in alto, separata dalla bottom nav dell'app
+   - Admin resta visibile come quarta tab agli admin/commissioner
+   - Live Top 5 resta separata per Conference
    ========================================================= */
 @media (max-width: 768px) {
   /* The app already has its own bottom navbar. Keep All Star navigation inside the page. */
@@ -5349,13 +5350,13 @@ body {
     max-width: none !important;
     margin: 8px 0 10px !important;
     padding: 5px !important;
-    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
     gap: 4px !important;
     border-radius: 16px !important;
   }
 
   .mobile-allstar-tabs.has-admin {
-    grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
+    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
   }
 
   .mobile-allstar-tabs .mobile-tab-btn {
