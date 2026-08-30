@@ -5327,3 +5327,100 @@ body {
   .mobile-live-summary { margin-inline: 0; }
   .broadcast-draft-strip .draft-rules-card small { font-size: 10px !important; }
 }
+
+
+/* =========================================================
+   MOBILE UX V6
+   - All Star navigation returns to the top, separate from app bottom nav
+   - Admin remains a fifth All Star tab for admin/commissioner
+   - Live Top 5 switches between the two Conferences
+   ========================================================= */
+@media (max-width: 768px) {
+  /* The app already has its own bottom navbar. Keep All Star navigation inside the page. */
+  .mobile-allstar-tabs {
+    position: sticky !important;
+    left: auto !important;
+    right: auto !important;
+    top: 8px !important;
+    bottom: auto !important;
+    transform: none !important;
+    z-index: 120 !important;
+    width: 100% !important;
+    max-width: none !important;
+    margin: 8px 0 10px !important;
+    padding: 5px !important;
+    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+    gap: 4px !important;
+    border-radius: 16px !important;
+  }
+
+  .mobile-allstar-tabs.has-admin {
+    grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
+  }
+
+  .mobile-allstar-tabs .mobile-tab-btn {
+    min-height: 45px !important;
+    padding: 5px 2px !important;
+    font-size: 14px !important;
+  }
+
+  .mobile-allstar-tabs .mobile-tab-btn b {
+    font-size: 8px !important;
+  }
+
+  .mobile-live-conference-switch {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+    margin: 0 0 9px;
+    padding: 4px;
+    border-radius: 12px;
+    background: rgba(255,255,255,.035);
+    border: 1px solid rgba(255,255,255,.055);
+  }
+
+  .mobile-live-conf-btn {
+    appearance: none;
+    min-width: 0;
+    min-height: 35px;
+    padding: 7px 6px;
+    border: 1px solid transparent;
+    border-radius: 9px;
+    background: transparent;
+    color: #8f9db2;
+    font: inherit;
+    font-size: 9px;
+    line-height: 1;
+    font-weight: 950;
+    text-transform: uppercase;
+    letter-spacing: .025em;
+    cursor: pointer;
+  }
+
+  .mobile-live-conf-btn.championship.is-active {
+    color: #fff;
+    border-color: rgba(47,128,255,.40);
+    background: linear-gradient(135deg, rgba(47,128,255,.25), rgba(47,128,255,.10));
+    box-shadow: inset 0 0 0 1px rgba(47,128,255,.08);
+  }
+
+  .mobile-live-conf-btn.league.is-active {
+    color: #fff;
+    border-color: rgba(255,49,88,.40);
+    background: linear-gradient(135deg, rgba(255,49,88,.24), rgba(255,49,88,.09));
+    box-shadow: inset 0 0 0 1px rgba(255,49,88,.08);
+  }
+
+  /* Make the live board read as a ranking, not another giant card. */
+  .mobile-vote-live-board.is-mobile-active {
+    padding: 11px !important;
+  }
+
+  .mobile-live-board-head {
+    padding-bottom: 8px !important;
+  }
+
+  .mobile-live-top5-row {
+    min-height: 40px !important;
+  }
+}

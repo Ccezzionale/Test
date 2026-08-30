@@ -37,6 +37,7 @@ let teamsById = new Map();
 let state = defaultState();
 let picks = [];
 let votes = [];
+let mobileLiveConference = CONFERENCE_LEAGUE;
 
 const els = {
   hamburger: document.getElementById("hamburger"),
@@ -118,6 +119,7 @@ const els = {
   mobileLiveText: document.getElementById("mobileLiveText"),
   mobileLiveChip: document.getElementById("mobileLiveChip"),
   mobileLiveTop5: document.getElementById("mobileLiveTop5"),
+  mobileLiveTop5Title: document.getElementById("mobileLiveTop5Title"),
   mobileLiveTop5Week: document.getElementById("mobileLiveTop5Week"),
   mobilePrevPick: document.getElementById("mobilePrevPick"),
   mobilePrevPlayer: document.getElementById("mobilePrevPlayer"),
@@ -158,6 +160,14 @@ function bindEvents() {
 
   els.voteForm?.addEventListener("submit", handleVoteSubmit);
   els.toggleAutoPicksBtn?.addEventListener("click", toggleMobileAutoPicks);
+  document.querySelectorAll("[data-live-conference]").forEach((button) => {
+    button.addEventListener("click", () => {
+      const conference = button.dataset.liveConference;
+      if (!isValidConference(conference)) return;
+      mobileLiveConference = conference;
+      renderMobileVoteTop5();
+    });
+  });
   els.demoVotesBtn?.addEventListener("click", () => alert("I voti demo sono stati disattivati: ora la pagina usa Supabase."));
   els.resetVotesBtn?.addEventListener("click", resetVotes);
   els.adminResetVotesBtn?.addEventListener("click", resetVotes);
@@ -482,6 +492,14 @@ function setupUserControls() {
 
   const adminMobileTab = document.querySelector('[data-allstar-tab="admin"]');
   if (adminMobileTab) adminMobileTab.style.display = isAdmin ? "" : "none";
+
+  const mobileTabs = document.querySelector(".mobile-allstar-tabs");
+  mobileTabs?.classList.toggle("has-admin", isAdmin);
+
+  // Il live apre di default sulla Conference dell'utente, ma resta sempre commutabile.
+  if (isValidConference(currentTeam?.conference)) {
+    mobileLiveConference = currentTeam.conference;
+  }
 
   if (els.demoVotesBtn) {
     els.demoVotesBtn.style.display = isAdmin ? "" : "none";
@@ -860,12 +878,23 @@ function renderVotesArea() {
 function renderMobileVoteTop5() {
   if (!els.mobileLiveTop5) return;
 
+  const conference = isValidConference(mobileLiveConference)
+    ? mobileLiveConference
+    : CONFERENCE_LEAGUE;
+
   setText(els.mobileLiveTop5Week, `Week ${state.activeWeek}`);
+  setText(els.mobileLiveTop5Title, `Top 5 ${conference.replace("Conference ", "")}`);
+
+  document.querySelectorAll("[data-live-conference]").forEach((button) => {
+    const active = button.dataset.liveConference === conference;
+    button.classList.toggle("is-active", active);
+    button.setAttribute("aria-selected", String(active));
+  });
 
   const totals = new Map();
 
   votes
-    .filter((vote) => vote.week === state.activeWeek)
+    .filter((vote) => vote.week === state.activeWeek && vote.voterConference === conference)
     .forEach((vote) => {
       const player = vote.player || players.find((p) => p.id === vote.playerId);
       if (!player) return;
@@ -892,7 +921,7 @@ function renderMobileVoteTop5() {
     els.mobileLiveTop5.innerHTML = `
       <div class="mobile-live-top5-empty">
         <strong>Nessun voto ancora</strong>
-        <small>La Top 5 si aggiorna in tempo reale appena arrivano le prime schede.</small>
+        <small>La Top 5 ${escapeHtml(conference)} si aggiorna appena arrivano le prime schede della Week ${state.activeWeek}.</small>
       </div>
     `;
     return;

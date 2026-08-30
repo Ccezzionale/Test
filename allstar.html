@@ -21,9 +21,9 @@
   <meta name="apple-mobile-web-app-title" content="Lega Eroi">
 
   <link rel="stylesheet" href="navbar.css" />
-  <link rel="stylesheet" href="allstar.css?v=mobile-live-top5-20260830-1" />
+  <link rel="stylesheet" href="allstar.css?v=mobile-live-conference-v6-20260830-1" />
 
-  <script type="module" src="allstar.js?v=mobile-live-top5-20260830-1" defer></script>
+  <script type="module" src="allstar.js?v=mobile-live-conference-v6-20260830-1" defer></script>
 </head>
 <body>
   <nav class="site-nav">
@@ -332,16 +332,26 @@
       </article>
     </section>
 
-    <!-- MOBILE TOP 5 LIVE: riepilogo immediato dei giocatori più votati nella week -->
-    <section class="mobile-vote-live-board" data-mobile-section="vote" aria-label="Top 5 live votazioni">
+    <!-- MOBILE LIVE PER CONFERENCE: una card, switch Championship / League -->
+    <section class="mobile-vote-live-board" data-mobile-section="vote" aria-label="Classifica live votazioni per Conference">
       <div class="mobile-live-board-head">
         <div>
-          <small>🔥 LIVE · TUTTE LE CONFERENCE</small>
-          <strong>Top 5 più votati adesso</strong>
+          <small>🔥 LIVE VOTAZIONI</small>
+          <strong id="mobileLiveTop5Title">Top 5 Conference League</strong>
         </div>
         <span id="mobileLiveTop5Week">Week 1</span>
       </div>
-      <div id="mobileLiveTop5" class="mobile-live-top5-list"></div>
+
+      <div class="mobile-live-conference-switch" role="tablist" aria-label="Scegli Conference live">
+        <button type="button" class="mobile-live-conf-btn championship" data-live-conference="Conference Championship" role="tab" aria-selected="false">
+          Championship
+        </button>
+        <button type="button" class="mobile-live-conf-btn league is-active" data-live-conference="Conference League" role="tab" aria-selected="true">
+          League
+        </button>
+      </div>
+
+      <div id="mobileLiveTop5" class="mobile-live-top5-list" aria-live="polite"></div>
     </section>
 
     <!-- MAIN BROADCAST GRID: RANKING / VOTE / RANKING -->
