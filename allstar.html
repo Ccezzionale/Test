@@ -21,9 +21,9 @@
   <meta name="apple-mobile-web-app-title" content="Lega Eroi">
 
   <link rel="stylesheet" href="navbar.css" />
-  <link rel="stylesheet" href="allstar.css?v=week-picker-20260829-1" />
+  <link rel="stylesheet" href="allstar.css?v=mobile-live-top5-20260830-1" />
 
-  <script type="module" src="allstar.js?v=week-picker-20260829-1" defer></script>
+  <script type="module" src="allstar.js?v=mobile-live-top5-20260830-1" defer></script>
 </head>
 <body>
   <nav class="site-nav">
@@ -330,6 +330,18 @@
           <small id="leagueVoteLeaderInfo">-</small>
         </div>
       </article>
+    </section>
+
+    <!-- MOBILE TOP 5 LIVE: riepilogo immediato dei giocatori più votati nella week -->
+    <section class="mobile-vote-live-board" data-mobile-section="vote" aria-label="Top 5 live votazioni">
+      <div class="mobile-live-board-head">
+        <div>
+          <small>🔥 LIVE · TUTTE LE CONFERENCE</small>
+          <strong>Top 5 più votati adesso</strong>
+        </div>
+        <span id="mobileLiveTop5Week">Week 1</span>
+      </div>
+      <div id="mobileLiveTop5" class="mobile-live-top5-list"></div>
     </section>
 
     <!-- MAIN BROADCAST GRID: RANKING / VOTE / RANKING -->

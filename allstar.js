@@ -117,6 +117,8 @@ const els = {
   mobileLiveKicker: document.getElementById("mobileLiveKicker"),
   mobileLiveText: document.getElementById("mobileLiveText"),
   mobileLiveChip: document.getElementById("mobileLiveChip"),
+  mobileLiveTop5: document.getElementById("mobileLiveTop5"),
+  mobileLiveTop5Week: document.getElementById("mobileLiveTop5Week"),
   mobilePrevPick: document.getElementById("mobilePrevPick"),
   mobilePrevPlayer: document.getElementById("mobilePrevPlayer"),
   mobileNowPick: document.getElementById("mobileNowPick"),
@@ -849,9 +851,63 @@ function renderVotesArea() {
   setText(els.champVoteLeaderInfo, champLeader ? `${champLeader.player.name} (${champLeader.total} pt)` : "-");
 
   renderWeekStars();
+  renderMobileVoteTop5();
   renderConferenceRanking(els.leagueVoteRankingList, leagueTotals, CONFERENCE_LEAGUE);
   renderConferenceRanking(els.champVoteRankingList, champTotals, CONFERENCE_CHAMPIONSHIP);
   renderAutoPickPreview(leagueTotals, champTotals);
+}
+
+function renderMobileVoteTop5() {
+  if (!els.mobileLiveTop5) return;
+
+  setText(els.mobileLiveTop5Week, `Week ${state.activeWeek}`);
+
+  const totals = new Map();
+
+  votes
+    .filter((vote) => vote.week === state.activeWeek)
+    .forEach((vote) => {
+      const player = vote.player || players.find((p) => p.id === vote.playerId);
+      if (!player) return;
+
+      const canonicalId = getCanonicalPlayerId(vote.playerId) || vote.playerId;
+      if (!totals.has(canonicalId)) {
+        totals.set(canonicalId, {
+          player,
+          points: 0,
+          calls: 0
+        });
+      }
+
+      const entry = totals.get(canonicalId);
+      entry.points += Number(vote.points || 0);
+      entry.calls += 1;
+    });
+
+  const top = [...totals.values()]
+    .sort((a, b) => b.points - a.points || b.calls - a.calls || a.player.name.localeCompare(b.player.name))
+    .slice(0, 5);
+
+  if (!top.length) {
+    els.mobileLiveTop5.innerHTML = `
+      <div class="mobile-live-top5-empty">
+        <strong>Nessun voto ancora</strong>
+        <small>La Top 5 si aggiorna in tempo reale appena arrivano le prime schede.</small>
+      </div>
+    `;
+    return;
+  }
+
+  els.mobileLiveTop5.innerHTML = top.map((entry, index) => `
+    <div class="mobile-live-top5-row">
+      <span class="mobile-live-top5-pos">${index + 1}</span>
+      <span class="mobile-live-top5-player">
+        <strong>${escapeHtml(entry.player.name)}</strong>
+        <small>${escapeHtml(entry.player.role)} · ${escapeHtml(entry.player.serieATeam)} · ${entry.calls} ${entry.calls === 1 ? "chiamata" : "chiamate"}</small>
+      </span>
+      <span class="mobile-live-top5-points">${entry.points} pt</span>
+    </div>
+  `).join("");
 }
 
 function renderWeekStars() {
