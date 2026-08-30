@@ -110,7 +110,21 @@ const els = {
   adminChevron: document.getElementById("adminChevron"),
   toggleDraftBtn: document.getElementById("toggleDraftBtn"),
   undoPickBtn: document.getElementById("undoPickBtn"),
-  resetDraftBtn: document.getElementById("resetDraftBtn")
+  resetDraftBtn: document.getElementById("resetDraftBtn"),
+
+  // Mobile UX
+  mobileLiveSummary: document.getElementById("mobileLiveSummary"),
+  mobileLiveKicker: document.getElementById("mobileLiveKicker"),
+  mobileLiveText: document.getElementById("mobileLiveText"),
+  mobileLiveChip: document.getElementById("mobileLiveChip"),
+  mobilePrevPick: document.getElementById("mobilePrevPick"),
+  mobilePrevPlayer: document.getElementById("mobilePrevPlayer"),
+  mobileNowPick: document.getElementById("mobileNowPick"),
+  mobileNowConference: document.getElementById("mobileNowConference"),
+  mobileNextPick: document.getElementById("mobileNextPick"),
+  mobileNextConference: document.getElementById("mobileNextConference"),
+  mobileAutoPicksCard: document.getElementById("mobileAutoPicksCard"),
+  toggleAutoPicksBtn: document.getElementById("toggleAutoPicksBtn")
 };
 
 init();
@@ -141,6 +155,7 @@ function bindEvents() {
   });
 
   els.voteForm?.addEventListener("submit", handleVoteSubmit);
+  els.toggleAutoPicksBtn?.addEventListener("click", toggleMobileAutoPicks);
   els.demoVotesBtn?.addEventListener("click", () => alert("I voti demo sono stati disattivati: ora la pagina usa Supabase."));
   els.resetVotesBtn?.addEventListener("click", resetVotes);
   els.adminResetVotesBtn?.addEventListener("click", resetVotes);
@@ -462,6 +477,9 @@ function setupUserControls() {
   if (els.adminPanel) {
     els.adminPanel.style.display = isAdmin ? "" : "none";
   }
+
+  const adminMobileTab = document.querySelector('[data-allstar-tab="admin"]');
+  if (adminMobileTab) adminMobileTab.style.display = isAdmin ? "" : "none";
 
   if (els.demoVotesBtn) {
     els.demoVotesBtn.style.display = isAdmin ? "" : "none";
@@ -1085,6 +1103,98 @@ function renderAll() {
   renderLastPicks();
   renderPool();
   renderModalPlayers();
+  renderMobileDraftFlow();
+  renderMobileLiveSummary();
+}
+
+function getConferenceForPickNumber(pickNumber) {
+  if (!state.firstConference || !Number.isFinite(Number(pickNumber))) return null;
+  const first = state.firstConference;
+  const second = getOppositeConference(first);
+  return Number(pickNumber) % 2 === 1 ? first : second;
+}
+
+function renderMobileDraftFlow() {
+  const currentPick = Number(state.currentPick || AUTO_PICK_COUNT + 1);
+  const completed = picks.length >= TOTAL_PLAYERS;
+  const previous = picks
+    .filter((pick) => pick.pickNumber < currentPick)
+    .slice()
+    .sort((a, b) => b.pickNumber - a.pickNumber)[0] || null;
+
+  if (completed) {
+    setText(els.mobilePrevPick, previous ? `Pick ${previous.pickNumber}` : "Ultima pick");
+    setText(els.mobilePrevPlayer, previous?.player?.name || "-");
+    setText(els.mobileNowPick, "Draft completato");
+    setText(els.mobileNowConference, `${picks.length} / ${TOTAL_PLAYERS}`);
+    setText(els.mobileNextPick, "Fine");
+    setText(els.mobileNextConference, "Rose complete");
+    return;
+  }
+
+  setText(els.mobilePrevPick, previous ? `Pick ${previous.pickNumber}` : "Nessuna pick");
+  setText(els.mobilePrevPlayer, previous?.player?.name || "-");
+  setText(els.mobileNowPick, `Pick ${currentPick}`);
+  setText(els.mobileNowConference, getConferenceForPickNumber(currentPick) || "Da decidere");
+  setText(els.mobileNextPick, `Pick ${Math.min(currentPick + 1, TOTAL_PLAYERS)}`);
+  setText(els.mobileNextConference, currentPick >= TOTAL_PLAYERS ? "Fine draft" : (getConferenceForPickNumber(currentPick + 1) || "In attesa"));
+}
+
+function renderMobileLiveSummary(forcedTab = null) {
+  if (!els.mobileLiveSummary) return;
+
+  const activeTab = forcedTab || document.querySelector(".mobile-tab-btn.is-active")?.dataset.allstarTab || "vote";
+  const leagueLeader = getVoteTotalsByConference(CONFERENCE_LEAGUE)[0];
+  const champLeader = getVoteTotalsByConference(CONFERENCE_CHAMPIONSHIP)[0];
+  const myVoteCount = currentTeam?.id
+    ? new Set(votes.filter((vote) => vote.week === state.activeWeek && vote.voterTeamId === currentTeam.id).map((vote) => vote.slot)).size
+    : 0;
+
+  let kicker = "ALL STAR LIVE";
+  let text = "Tutto pronto";
+  let chip = "LIVE";
+
+  if (activeTab === "vote") {
+    kicker = `WEEK ${state.activeWeek} · VOTAZIONE`;
+    if (state.votingOpen) {
+      text = currentTeam?.id ? `Hai votato ${myVoteCount}/5 giocatori` : "Votazioni aperte";
+      chip = myVoteCount >= 5 ? "FATTO" : "APERTA";
+    } else {
+      text = "Votazioni chiuse";
+      chip = "CHIUSA";
+    }
+  } else if (activeTab === "rankings") {
+    kicker = "CORSA ALLE STELLE";
+    const leagueName = leagueLeader?.player?.name || "-";
+    const champName = champLeader?.player?.name || "-";
+    text = `League: ${leagueName} · Championship: ${champName}`;
+    chip = "LIVE";
+  } else if (activeTab === "draft") {
+    const currentConference = getCurrentConference();
+    kicker = `DRAFT · PICK ${state.currentPick}`;
+    text = currentConference ? `Ora sceglie ${currentConference}` : "In attesa della Conference vincitrice";
+    chip = `${picks.length}/${TOTAL_PLAYERS}`;
+  } else if (activeTab === "pool") {
+    kicker = "PLAYER POOL";
+    text = `${getAvailablePlayers().length} giocatori disponibili`;
+    chip = "POOL";
+  } else if (activeTab === "admin") {
+    kicker = "AREA ADMIN";
+    text = state.isOpen ? "Draft aperto" : (state.votingOpen ? "Votazioni aperte" : "Controlli All Star");
+    chip = "ADMIN";
+  }
+
+  setText(els.mobileLiveKicker, kicker);
+  setText(els.mobileLiveText, text);
+  setText(els.mobileLiveChip, chip);
+  els.mobileLiveSummary.dataset.activeTab = activeTab;
+}
+
+function toggleMobileAutoPicks() {
+  if (!els.mobileAutoPicksCard || !els.toggleAutoPicksBtn) return;
+  const expanded = els.mobileAutoPicksCard.classList.toggle("is-expanded");
+  els.toggleAutoPicksBtn.textContent = expanded ? "Riduci" : "Tutte";
+  els.toggleAutoPicksBtn.setAttribute("aria-expanded", String(expanded));
 }
 
 function renderHeader() {
@@ -1725,6 +1835,8 @@ function initMobileAllStarTabs() {
     sections.forEach((section) => {
       section.classList.toggle("is-mobile-active", section.dataset.mobileSection === tabName);
     });
+
+    renderMobileLiveSummary(tabName);
   }
 
   function syncMode() {
@@ -1739,8 +1851,8 @@ function initMobileAllStarTabs() {
   tabButtons.forEach((btn) => {
     btn.addEventListener("click", () => {
       activateTab(btn.dataset.allstarTab);
-      const tabs = document.querySelector(".mobile-allstar-tabs");
-      if (tabs) tabs.scrollIntoView({ behavior: "smooth", block: "start" });
+      const summary = document.querySelector(".mobile-live-summary");
+      if (summary) summary.scrollIntoView({ behavior: "smooth", block: "start" });
     });
   });
 

@@ -280,16 +280,26 @@
 
     <!-- MOBILE TABS -->
     <nav class="mobile-allstar-tabs" aria-label="Navigazione All Star Game">
-      <button type="button" class="mobile-tab-btn is-active" data-allstar-tab="vote">Vota</button>
-      <button type="button" class="mobile-tab-btn" data-allstar-tab="rankings">Classifiche</button>
-      <button type="button" class="mobile-tab-btn" data-allstar-tab="draft">Draft</button>
-      <button type="button" class="mobile-tab-btn" data-allstar-tab="pool">Pool</button>
-      <button type="button" class="mobile-tab-btn" data-allstar-tab="admin">Admin</button>
+      <button type="button" class="mobile-tab-btn is-active" data-allstar-tab="vote"><span aria-hidden="true">⭐</span><b>Vota</b></button>
+      <button type="button" class="mobile-tab-btn" data-allstar-tab="rankings"><span aria-hidden="true">🏆</span><b>Classifica</b></button>
+      <button type="button" class="mobile-tab-btn" data-allstar-tab="draft"><span aria-hidden="true">🎯</span><b>Draft</b></button>
+      <button type="button" class="mobile-tab-btn" data-allstar-tab="pool"><span aria-hidden="true">👥</span><b>Pool</b></button>
+      <button type="button" class="mobile-tab-btn" data-allstar-tab="admin"><span aria-hidden="true">⚙️</span><b>Admin</b></button>
     </nav>
+
+    <!-- MOBILE LIVE SUMMARY: sempre visibile, cambia con la tab -->
+    <section class="mobile-live-summary" id="mobileLiveSummary" aria-live="polite">
+      <span class="mobile-live-dot"></span>
+      <div>
+        <small id="mobileLiveKicker">WEEK 1</small>
+        <strong id="mobileLiveText">Votazione All Star</strong>
+      </div>
+      <span class="mobile-live-chip" id="mobileLiveChip">LIVE</span>
+    </section>
 
     <!-- INFO STRIP -->
     <section class="draft-info-strip broadcast-info-strip" data-mobile-section="vote">
-      <article class="info-card">
+      <article class="info-card vote-rules-card">
         <span class="info-icon">🗳️</span>
         <div>
           <strong>Votazione settimanale</strong>
@@ -297,7 +307,7 @@
         </div>
       </article>
 
-      <article class="info-card">
+      <article class="info-card vote-week-card">
         <span class="info-icon">📅</span>
         <div>
           <strong>Settimana attiva</strong>
@@ -305,7 +315,7 @@
         </div>
       </article>
 
-      <article class="info-card">
+      <article class="info-card vote-leader-card leader-champ-card">
         <span class="info-icon blue-glow">●</span>
         <div>
           <strong>Leader Championship</strong>
@@ -313,7 +323,7 @@
         </div>
       </article>
 
-      <article class="info-card">
+      <article class="info-card vote-leader-card leader-league-card">
         <span class="info-icon red-glow">●</span>
         <div>
           <strong>Leader League</strong>
@@ -465,11 +475,14 @@
         </div>
       </div>
 
-      <article class="auto-pick-card wide-auto-pick">
-        <h4>Prime pick provvisorie</h4>
-        <p class="ranking-subtitle">
-          Pick dispari 1/3/5/7/9 e pick pari 2/4/6/8/10 assegnate alle due Conference in base all’ordine del draft.
-        </p>
+      <article class="auto-pick-card wide-auto-pick mobile-auto-picks-card" id="mobileAutoPicksCard">
+        <div class="mobile-card-title-row">
+          <div>
+            <h4>Prime pick provvisorie</h4>
+            <p class="ranking-subtitle">Le prime 10 chiamate generate dai voti live.</p>
+          </div>
+          <button type="button" class="mobile-expand-btn" id="toggleAutoPicksBtn" aria-expanded="false">Tutte</button>
+        </div>
         <div id="autoPickPreview" class="auto-pick-list auto-pick-grid"></div>
       </article>
     </section>
@@ -502,7 +515,7 @@
 
     <!-- DRAFT BROADCAST -->
     <section class="draft-info-strip draft-strip-secondary broadcast-draft-strip" data-mobile-section="draft">
-      <article class="info-card">
+      <article class="info-card draft-rules-card">
         <span class="info-icon">🔁</span>
         <div>
           <strong>Ordine draft: dinamico</strong>
@@ -510,7 +523,7 @@
         </div>
       </article>
 
-      <article class="info-card">
+      <article class="info-card draft-metric-card">
         <span class="info-icon">🎯</span>
         <div>
           <strong>Pick attuale</strong>
@@ -518,7 +531,7 @@
         </div>
       </article>
 
-      <article class="info-card">
+      <article class="info-card draft-metric-card">
         <span class="info-icon">👥</span>
         <div>
           <strong>Ora sceglie</strong>
@@ -526,11 +539,11 @@
         </div>
       </article>
 
-      <article class="info-card">
+      <article class="info-card draft-metric-card">
         <span class="info-icon">⭐</span>
         <div>
           <strong>Giocatori selezionati</strong>
-          <small id="selectedCountInfo">0 / 44</small>
+          <small id="selectedCountInfo">0 / 46</small>
         </div>
       </article>
     </section>
@@ -540,6 +553,24 @@
         <span class="clock-kicker">Draft finale - On the clock</span>
         <strong id="currentPickBig">11</strong>
         <p id="currentConferenceBig">Conference League</p>
+
+        <div class="mobile-draft-flow" aria-label="Sequenza draft">
+          <div class="mobile-draft-step">
+            <small>ULTIMA</small>
+            <strong id="mobilePrevPick">Pick 10</strong>
+            <span id="mobilePrevPlayer">-</span>
+          </div>
+          <div class="mobile-draft-step is-current">
+            <small>ORA</small>
+            <strong id="mobileNowPick">Pick 11</strong>
+            <span id="mobileNowConference">Da decidere</span>
+          </div>
+          <div class="mobile-draft-step">
+            <small>DOPO</small>
+            <strong id="mobileNextPick">Pick 12</strong>
+            <span id="mobileNextConference">In attesa</span>
+          </div>
+        </div>
 
         <button id="openPickModalBtn" class="primary-call-btn">
           Effettua chiamata
@@ -557,7 +588,7 @@
           <div>
             <h3>Conference Championship</h3>
             <p>All Stars</p>
-            <span id="championshipCount">0 / 22 giocatori selezionati</span>
+            <span id="championshipCount">0 / 23 giocatori selezionati</span>
           </div>
         </header>
         <div class="role-list" id="championshipRoster"></div>
@@ -569,7 +600,7 @@
           <div>
             <h3>Conference<br>League</h3>
             <p>All Stars</p>
-            <span id="leagueCount">0 / 22 giocatori selezionati</span>
+            <span id="leagueCount">0 / 23 giocatori selezionati</span>
           </div>
         </header>
         <div class="role-list" id="leagueRoster"></div>
