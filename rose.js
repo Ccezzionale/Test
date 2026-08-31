@@ -1,6 +1,29 @@
 import { supabase } from './supabase.js';
 
 const rose = {};
+let fpEligibilityByPlayerId = new Map();
+
+function escapeAttribute(value) {
+  return String(value ?? "")
+    .replaceAll("&", "&amp;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;");
+}
+
+async function caricaEleggibilitaFp() {
+  const { data, error } = await supabase.rpc("get_fp_eligibility");
+
+  if (error) {
+    console.warn("Eleggibilità FP non disponibile:", error);
+    fpEligibilityByPlayerId = new Map();
+    return;
+  }
+
+  fpEligibilityByPlayerId = new Map(
+    (data || []).map(row => [String(row.player_id), row])
+  );
+}
 
 function slug(s) {
   return String(s || "")
@@ -157,11 +180,14 @@ async function caricaRose() {
 
     if (playersError) throw playersError;
 
+    await caricaEleggibilitaFp();
+
     players.forEach(p => {
       const team = teamsMap[p.owner_team_id];
       if (!team) return;
 
       const nomeSquadra = team.name;
+      const fpEligibility = fpEligibilityByPlayerId.get(String(p.id));
 
       if (!rose[nomeSquadra]) {
         rose[nomeSquadra] = {
@@ -181,6 +207,11 @@ async function caricaRose() {
         fp: !!p.is_fp,
         fpKeeper: !!p.is_fp_keeper,
         fpKeeperYear: p.fp_keeper_year,
+        fpEligible: fpEligibility?.eligible === true,
+        fpEligibilityReason: fpEligibility?.reason || "",
+        fpPersonalCallNumber: fpEligibility?.personal_call_number ?? null,
+        fpAcquisitionType: fpEligibility?.acquisition_type || null,
+        fpEffectiveQuotation: fpEligibility?.effective_quotation ?? null,
 
            u21: !!p.is_u21,
         u21Slot: !!p.is_u21_slot,
@@ -303,6 +334,7 @@ function getTeamStats(giocatori = []) {
   return {
     totale: giocatori.length,
     fp: giocatori.filter(g => g.fp || g.fpKeeper).length,
+    fpEleggibili: giocatori.filter(g => g.fpEligible).length,
     u21: giocatori.filter(g => g.u21Slot).length,
     rfa: giocatori.filter(g => g.rfaMatched).length,
     protetti: giocatori.filter(g => g.top6Protected).length
@@ -380,6 +412,7 @@ function mostraRose() {
     meta.innerHTML = `
       <span>${stats.totale} giocatori</span>
       <span>${stats.fp} FP</span>
+      <span>${stats.fpEleggibili} FP eleggibili</span>
       <span>${stats.u21} U21</span>
       <span>${stats.rfa} RFA</span>
       <span>${stats.protetti} protetti</span>
@@ -433,11 +466,15 @@ function mostraRose() {
             ? g.nome.replace(new RegExp(`(${nomeCercato})`, "i"), '<span class="evidenziato">$1</span>')
             : g.nome;
 
+          const nomeRenderizzato = g.fpEligible
+            ? `<strong class="fp-eligible-next" title="${escapeAttribute(g.fpEligibilityReason || "Eleggibile FP per la prossima stagione")}">${evidenziato}</strong>`
+            : evidenziato;
+
           return `
             <tr>
               <td>${g.ruolo}</td>
               <td class="nome">
-                ${g.fpKeeper || g.fp ? `<strong>${evidenziato}</strong>` : evidenziato}
+                ${nomeRenderizzato}
                 ${renderPlayerBadges(g)}
               </td>
               <td>${g.squadra}</td>
