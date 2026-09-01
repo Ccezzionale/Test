@@ -1113,3 +1113,163 @@ tbody tr:last-child {
     border-radius: 20px;
   }
 }
+
+/* =========================================================
+   INJURY RESERVE
+   ========================================================= */
+.legend-ir-badge {
+  display: inline-grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 9px;
+  background: linear-gradient(135deg, #003f73, #0074d9);
+  color: #fff;
+  font-size: .72rem;
+  font-weight: 950;
+  box-shadow: 0 5px 12px rgba(0, 63, 115, .18);
+}
+
+.team-roster-meta span.has-ir {
+  background: #fff7d6;
+  color: #735200;
+}
+
+.team-ir-slot {
+  width: calc(100% - 28px);
+  margin: 0 auto 12px;
+  padding: 12px;
+  display: grid;
+  grid-template-columns: 48px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+  box-sizing: border-box;
+  border: 1px solid rgba(0, 90, 156, .22);
+  border-left: 5px solid #0074d9;
+  border-radius: 16px;
+  background:
+    radial-gradient(circle at 100% 0%, rgba(0, 116, 217, .12), transparent 36%),
+    linear-gradient(180deg, #f8fcff, #eef6ff);
+  box-shadow: 0 8px 20px rgba(0, 31, 63, .07);
+}
+
+.team-ir-slot.is-closed {
+  border-color: #d6dee7;
+  border-left-color: #8795a5;
+  background: linear-gradient(180deg, #fafbfc, #f1f4f7);
+}
+
+.team-ir-icon {
+  width: 46px;
+  height: 46px;
+  display: grid;
+  place-items: center;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #00284d, #0074d9);
+  color: #fff;
+  font-size: .9rem;
+  font-weight: 950;
+  letter-spacing: .05em;
+  box-shadow: 0 7px 16px rgba(0, 40, 77, .18);
+}
+
+.is-closed .team-ir-icon {
+  background: linear-gradient(135deg, #536273, #8795a5);
+}
+
+.team-ir-copy {
+  min-width: 0;
+}
+
+.team-ir-kicker,
+.team-ir-copy small,
+.team-ir-copy strong {
+  display: block;
+}
+
+.team-ir-kicker {
+  margin-bottom: 2px;
+  color: #0067b8;
+  font-size: .66rem;
+  font-weight: 950;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.team-ir-copy strong {
+  overflow: hidden;
+  color: #00284d;
+  font-size: 1rem;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.team-ir-copy small {
+  margin-top: 3px;
+  color: #617387;
+  font-size: .76rem;
+  font-weight: 750;
+}
+
+.team-ir-copy a {
+  display: inline-block;
+  margin-top: 5px;
+  color: #005a9c;
+  font-size: .72rem;
+  font-weight: 900;
+  text-decoration: none;
+}
+
+.team-ir-progress {
+  height: 5px;
+  margin-top: 7px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: #d5e3f0;
+}
+
+.team-ir-progress span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #0074d9, #ffcc00, #e65400);
+}
+
+.team-ir-phase {
+  padding: 7px 9px;
+  border-radius: 999px;
+  font-size: .68rem;
+  font-weight: 950;
+  white-space: nowrap;
+}
+
+.team-ir-phase.protected { background: #dceeff; color: #005a9c; }
+.team-ir-phase.flexible { background: #fff1b7; color: #765300; }
+.team-ir-phase.final { background: #ffe6d5; color: #a03c00; }
+.team-ir-phase.closed { background: #e4e8ed; color: #596775; }
+
+@media (max-width: 600px) {
+  .team-ir-slot {
+    width: calc(100% - 18px);
+    grid-template-columns: 42px minmax(0, 1fr);
+    gap: 9px;
+    padding: 10px;
+    border-radius: 14px;
+  }
+
+  .team-ir-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+  }
+
+  .team-ir-phase {
+    grid-column: 1 / -1;
+    justify-self: start;
+    margin-left: 51px;
+  }
+
+  .team-roster-meta span {
+    font-size: .66rem;
+  }
+}

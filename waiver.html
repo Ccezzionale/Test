@@ -7,7 +7,7 @@
   <title>Waiver Room</title>
 
   <link rel="stylesheet" href="navbar.css" />
-  <link rel="stylesheet" href="waiver.css?v=16" />
+  <link rel="stylesheet" href="waiver.css?v=17" />
 </head>
 
 <body>
@@ -285,6 +285,33 @@
       </div>
 
       <div class="waiver-right-column">
+
+        <article class="waiver-card ir-monitor-card" data-waiver-mobile-panel="order">
+          <div class="card-title-row">
+            <div>
+              <h2>Injury Reserve</h2>
+              <p class="card-subtitle">
+                Slot IR attivi, fase temporale e scadenza delle due Conference.
+              </p>
+            </div>
+            <span class="ir-monitor-pill">IR Live</span>
+          </div>
+
+          <div id="injuryReserveList" class="ir-monitor-list">
+            <p>Caricamento Injury Reserve...</p>
+          </div>
+
+          <details class="ir-rules-summary">
+            <summary>Come funziona la Injury Reserve</summary>
+            <ul>
+              <li>Una sola attivazione per squadra e per stagione, con prognosi certificata di almeno 3 mesi.</li>
+              <li>Giorni 1–60: giocatore protetto; il taglio anticipato consuma comunque lo slot.</li>
+              <li>Giorni 61–90: reintegro con taglio di un altro giocatore, taglio definitivo oppure attesa.</li>
+              <li>Giorni 91–104: reintegro o taglio obbligatorio; dal giorno 105 scatta il taglio automatico.</li>
+              <li>La compensativa è “solo ingresso” e viene inserita in coda alle chiamate regolari.</li>
+            </ul>
+          </details>
+        </article>
         
 <article class="waiver-card public-waiver-card" data-waiver-mobile-panel="order">
           <div class="card-title-row">
@@ -531,6 +558,7 @@
     <select id="adminCompReasonSelect" class="waiver-owner-select">
       <option value="trade">Trade sbilanciata</option>
       <option value="serie_a_exit">Giocatore uscito dalla Serie A</option>
+      <option value="injury_reserve">Injury Reserve</option>
       <option value="other">Altro</option>
     </select>
 
@@ -558,7 +586,7 @@
   </main>
 <script src="mobile-nav.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
-  <script type="module" src="waiver.js?v=25"></script>
+  <script type="module" src="waiver.js?v=26"></script>
   <script type="module" src="home_auth.js"></script>
   <script src="navbar.js"></script>
 </body>

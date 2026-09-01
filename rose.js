@@ -2,6 +2,7 @@ import { supabase } from './supabase.js';
 
 const rose = {};
 let fpEligibilityByPlayerId = new Map();
+let injuryReserveByTeamId = new Map();
 
 function escapeAttribute(value) {
   return String(value ?? "")
@@ -9,6 +10,76 @@ function escapeAttribute(value) {
     .replaceAll('"', "&quot;")
     .replaceAll("<", "&lt;")
     .replaceAll(">", "&gt;");
+}
+
+function currentSeasonKey() {
+  const now = new Date();
+  const year = now.getFullYear();
+  return now.getMonth() >= 6
+    ? `${year}-${String(year + 1).slice(-2)}`
+    : `${year - 1}-${String(year).slice(-2)}`;
+}
+
+function formatIrDate(value) {
+  if (!value) return "-";
+  return new Intl.DateTimeFormat("it-IT", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric"
+  }).format(new Date(`${String(value).slice(0, 10)}T00:00:00`));
+}
+
+function getIrDay(record) {
+  if (!record?.activated_on) return 0;
+  const start = new Date(`${record.activated_on}T00:00:00`);
+  const now = new Date();
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  return Math.max(1, Math.floor((today - start) / 86400000) + 1);
+}
+
+function getIrPhase(record) {
+  if (!record || record.status !== "active") {
+    const labels = {
+      reinstated: "Reintegrato",
+      cut: "Tagliato",
+      auto_cut: "Taglio automatico"
+    };
+    return { label: labels[record?.status] || "Conclusa", className: "closed" };
+  }
+
+  const day = getIrDay(record);
+  if (day <= 60) return { label: "Protetto", className: "protected" };
+  if (day <= 90) return { label: "Scelta disponibile", className: "flexible" };
+  return { label: "Decisione obbligatoria", className: "final" };
+}
+
+function renderInjuryReserveSlot(record) {
+  if (!record) return "";
+
+  const phase = getIrPhase(record);
+  const day = getIrDay(record);
+  const progress = Math.min(100, Math.max(2, (day / 104) * 100));
+  const safeUrl = /^https?:\/\//i.test(record.medical_source_url || "")
+    ? escapeAttribute(record.medical_source_url)
+    : "";
+
+  return `
+    <section class="team-ir-slot ${record.status === "active" ? "is-active" : "is-closed"}">
+      <div class="team-ir-icon" aria-hidden="true">IR</div>
+      <div class="team-ir-copy">
+        <span class="team-ir-kicker">Injury Reserve · ${escapeAttribute(record.season_key)}</span>
+        <strong class="ir-player-name">${escapeAttribute(record.player_name)}</strong>
+        <small>
+          ${record.status === "active"
+            ? `Giorno ${day} di 104 · scadenza ${formatIrDate(record.expires_on)}`
+            : `${phase.label} · ${formatIrDate(record.resolved_at)}`}
+        </small>
+        ${record.status === "active" ? `<div class="team-ir-progress"><span style="width:${progress}%"></span></div>` : ""}
+        ${safeUrl ? `<a href="${safeUrl}" target="_blank" rel="noopener noreferrer">Fonte medica</a>` : ""}
+      </div>
+      <span class="team-ir-phase ${phase.className}">${phase.label}</span>
+    </section>
+  `;
 }
 
 async function caricaEleggibilitaFp() {
@@ -146,9 +217,35 @@ async function caricaRose() {
         logo: trovaLogo(team.name),
         maglia: trovaMaglia(team.name),
         conference: team.conference || "N/A",
+        injuryReserve: null,
         giocatori: []
       };
     });
+
+    const { data: injuryReserveRows, error: injuryReserveError } = await supabase
+      .from("injury_reserve")
+      .select("*")
+      .eq("season_key", currentSeasonKey())
+      .order("activated_on", { ascending: false });
+
+    if (injuryReserveError) throw injuryReserveError;
+
+    injuryReserveByTeamId = new Map(
+      (injuryReserveRows || []).map(row => [String(row.team_id), row])
+    );
+
+    injuryReserveByTeamId.forEach((record, teamId) => {
+      const team = teamsMap[teamId];
+      if (team && rose[team.name]) {
+        rose[team.name].injuryReserve = record;
+      }
+    });
+
+    const activeIrPlayerIds = new Set(
+      (injuryReserveRows || [])
+        .filter(row => row.status === "active")
+        .map(row => String(row.player_id))
+    );
 
     const { data: players, error: playersError } = await supabase
       .from("players")
@@ -194,11 +291,13 @@ async function caricaRose() {
           logo: trovaLogo(nomeSquadra),
           maglia: trovaMaglia(nomeSquadra),
           conference: team.conference || "N/A",
+          injuryReserve: injuryReserveByTeamId.get(String(team.id)) || null,
           giocatori: []
         };
       }
 
-      rose[nomeSquadra].giocatori.push({
+      const playerData = {
+        id: p.id,
         nome: p.name || "",
         ruolo: p.role || p.role_mantra || "",
         squadra: p.serie_a_team || "",
@@ -222,7 +321,17 @@ async function caricaRose() {
   p.owner_team_id === p.top6_protected_team_id,
           
         rfaMatched: !!p.is_rfa_matched
-      });
+      };
+
+      if (activeIrPlayerIds.has(String(p.id))) {
+        rose[nomeSquadra].injuryReserve = {
+          ...rose[nomeSquadra].injuryReserve,
+          player: playerData
+        };
+        return;
+      }
+
+      rose[nomeSquadra].giocatori.push(playerData);
     });
 
 Object.values(rose).forEach(teamData => {
@@ -374,6 +483,7 @@ function mostraRose() {
 
   for (const [nome, data] of Object.entries(rose)) {
     const stats = getTeamStats(data.giocatori);
+    const irRecord = data.injuryReserve;
 
     const div = document.createElement("div");
     div.className = "box-rosa giocatore";
@@ -416,6 +526,7 @@ function mostraRose() {
       <span>${stats.u21} U21</span>
       <span>${stats.rfa} RFA</span>
       <span>${stats.protetti} protetti</span>
+      <span class="${irRecord ? "has-ir" : ""}">${irRecord ? (irRecord.status === "active" ? "IR attiva" : "IR usata") : "IR 0/1"}</span>
     `;
 
     const toggleBtn = document.createElement("button");
@@ -447,6 +558,10 @@ function mostraRose() {
 
     const rosterBody = document.createElement("div");
     rosterBody.className = "roster-body";
+
+    if (irRecord) {
+      rosterBody.insertAdjacentHTML("beforeend", renderInjuryReserveSlot(irRecord));
+    }
 
     const table = document.createElement("table");
 
@@ -532,7 +647,7 @@ function filtraGiocatori() {
   mostraRose();
 
   document.querySelectorAll(".giocatore").forEach(card => {
-    const nomiGiocatori = [...card.querySelectorAll(".nome")]
+    const nomiGiocatori = [...card.querySelectorAll(".nome, .ir-player-name")]
       .map(e => e.textContent.toLowerCase());
 
     const conf = card.getAttribute("data-conference");

@@ -441,3 +441,289 @@ body {
     padding: 5px 8px;
   }
 }
+
+.player-row.is-ir-player {
+  border-color: #77b8ee;
+  background: linear-gradient(90deg, #edf7ff, #ffffff);
+  box-shadow: inset 4px 0 0 #0074d9;
+}
+
+.player-row.is-ir-player .badge-count {
+  background: linear-gradient(135deg, #003f73, #0074d9);
+  color: #fff;
+}
+
+/* =========================================================
+   INJURY RESERVE
+   ========================================================= */
+.ir-admin-panel {
+  margin-top: 18px;
+  padding: 16px;
+  border: 1px solid rgba(0, 90, 156, .20);
+  border-radius: 20px;
+  background:
+    radial-gradient(circle at 100% 0%, rgba(0, 116, 217, .12), transparent 34%),
+    linear-gradient(180deg, #f8fcff, #eef6ff);
+}
+
+.ir-admin-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.ir-admin-kicker {
+  display: inline-block;
+  margin-bottom: 4px;
+  color: #0067b8;
+  font-size: .7rem;
+  font-weight: 950;
+  letter-spacing: .11em;
+  text-transform: uppercase;
+}
+
+.ir-admin-slot-pill {
+  flex: 0 0 auto;
+  padding: 6px 9px;
+  border: 1px solid #cbdbea;
+  border-radius: 999px;
+  background: #fff;
+  color: #52677d;
+  font-size: .72rem;
+  font-weight: 900;
+}
+
+.ir-admin-slot-pill.available {
+  border-color: #a7dfbd;
+  background: #ecfdf3;
+  color: #126334;
+}
+
+.ir-admin-slot-pill.used {
+  border-color: #ffd19d;
+  background: #fff7e8;
+  color: #8a4a00;
+}
+
+.ir-admin-status {
+  margin-top: 12px;
+  padding: 13px;
+  border: 1px solid #d8e5f2;
+  border-radius: 15px;
+  background: rgba(255,255,255,.82);
+  color: #40556d;
+  font-size: .88rem;
+  line-height: 1.45;
+}
+
+.ir-admin-status-card {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 10px 14px;
+  align-items: center;
+}
+
+.ir-admin-status-card strong {
+  display: block;
+  color: #00284d;
+  font-size: 1rem;
+}
+
+.ir-admin-status-card span,
+.ir-admin-status-card small {
+  display: block;
+  margin-top: 3px;
+  color: #617387;
+  font-weight: 700;
+}
+
+.ir-phase-badge {
+  padding: 7px 10px;
+  border-radius: 999px;
+  font-size: .72rem;
+  font-weight: 950;
+  white-space: nowrap;
+}
+
+.ir-phase-protected { background: #e8f3ff; color: #005a9c; }
+.ir-phase-flexible { background: #fff5cc; color: #765300; }
+.ir-phase-final { background: #fff0e2; color: #a03c00; }
+.ir-phase-closed { background: #eef1f4; color: #596775; }
+
+.ir-progress {
+  grid-column: 1 / -1;
+  height: 7px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: #dce7f2;
+}
+
+.ir-progress > span {
+  height: 100%;
+  margin: 0;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #0074d9, #ffcc00, #e65400);
+}
+
+.ir-admin-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 9px;
+  margin-top: 12px;
+}
+
+.ir-primary-btn,
+.ir-secondary-btn,
+.ir-danger-btn,
+.ir-dialog-cancel {
+  min-height: 42px;
+  padding: 0 15px;
+  border-radius: 12px;
+  cursor: pointer;
+  font-weight: 950;
+}
+
+.ir-primary-btn {
+  border: 0;
+  background: linear-gradient(135deg, #00284d, #0067b8);
+  color: #fff;
+  box-shadow: 0 8px 18px rgba(0, 40, 77, .16);
+}
+
+.ir-secondary-btn,
+.ir-dialog-cancel {
+  border: 1px solid #c9d9e8;
+  background: #fff;
+  color: #17324f;
+}
+
+.ir-danger-btn {
+  border: 1px solid #ffc5c5;
+  background: #fff0f0;
+  color: #9b1c1c;
+}
+
+.ir-primary-btn:disabled {
+  opacity: .48;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.ir-dialog {
+  width: min(520px, calc(100vw - 28px));
+  padding: 0;
+  border: 0;
+  border-radius: 22px;
+  background: #fff;
+  color: #172335;
+  box-shadow: 0 28px 80px rgba(0, 31, 63, .28);
+}
+
+.ir-dialog::backdrop {
+  background: rgba(0, 20, 40, .58);
+  backdrop-filter: blur(3px);
+}
+
+.ir-dialog form {
+  display: grid;
+  gap: 14px;
+  padding: 20px;
+}
+
+.ir-dialog form > label {
+  display: grid;
+  gap: 6px;
+  color: #2a4059;
+  font-size: .86rem;
+  font-weight: 850;
+}
+
+.ir-dialog-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.ir-dialog-head h2 {
+  margin: 0;
+  color: #00284d;
+}
+
+.ir-dialog-close {
+  width: 34px;
+  height: 34px;
+  border: 0;
+  border-radius: 50%;
+  background: #eef4fa;
+  color: #18324c;
+  cursor: pointer;
+  font-size: 1.35rem;
+}
+
+.ir-dialog-player {
+  margin: 0;
+  padding: 11px 12px;
+  border-left: 4px solid #ffcc00;
+  border-radius: 10px;
+  background: #fff9df;
+  color: #27364a;
+  font-weight: 900;
+}
+
+.ir-textarea {
+  resize: vertical;
+  min-height: 86px;
+}
+
+.ir-confirm-row {
+  grid-template-columns: 20px 1fr !important;
+  align-items: start;
+  padding: 11px;
+  border-radius: 13px;
+  background: #fff7e8;
+  color: #6f4700 !important;
+}
+
+.ir-confirm-row input {
+  width: 18px;
+  height: 18px;
+  margin: 1px 0 0;
+  accent-color: #005a9c;
+}
+
+.ir-dialog-warning {
+  margin: 0;
+  padding: 11px 12px;
+  border-radius: 12px;
+  background: #fff0f0;
+  color: #8e1e1e;
+  font-size: .84rem;
+  font-weight: 800;
+}
+
+.ir-dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 9px;
+}
+
+@media (max-width: 650px) {
+  .ir-admin-heading,
+  .ir-admin-status-card {
+    grid-template-columns: 1fr;
+    flex-direction: column;
+  }
+
+  .ir-admin-actions,
+  .ir-dialog-actions {
+    flex-direction: column-reverse;
+  }
+
+  .ir-admin-actions button,
+  .ir-dialog-actions button {
+    width: 100%;
+  }
+}

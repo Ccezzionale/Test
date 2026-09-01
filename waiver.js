@@ -18,6 +18,7 @@ const calculateCompensatoryBtn = document.getElementById("calculateCompensatoryB
 
 const allCallsEl = document.getElementById("allCalls");
 const publicWaiverOrderEl = document.getElementById("publicWaiverOrder");
+const injuryReserveListEl = document.getElementById("injuryReserveList");
 
 const adminPanel = document.getElementById("adminPanel");
 const generateWaiverOrderBtn = document.getElementById("generateWaiverOrderBtn");
@@ -111,6 +112,8 @@ let draggedAdminGroupKey = null;
 
 let myCompensatoryCalls = [];
 let activeCompensatoryCallId = null;
+let activeInjuryReserveRows = [];
+let currentTeamIrPlayerIds = new Set();
 
 let playerSelectionOrigin = null;
 
@@ -387,11 +390,110 @@ function getCompensatoryReasonLabel(call) {
     return note || "giocatore uscito dalla Serie A";
   }
 
+  if (reasonType === "injury_reserve") {
+    return note || "Injury Reserve";
+  }
+
   if (reasonType === "other") {
     return note || "compensativa speciale";
   }
 
   return note || "trade sbilanciata";
+}
+
+function escapeWaiverHtml(value) {
+  return String(value ?? "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
+
+function localWaiverDateValue() {
+  const now = new Date();
+  const local = new Date(now.getTime() - now.getTimezoneOffset() * 60000);
+  return local.toISOString().slice(0, 10);
+}
+
+function getIrDay(record) {
+  const start = new Date(`${record.activated_on}T00:00:00`);
+  const today = new Date(`${localWaiverDateValue()}T00:00:00`);
+  return Math.max(1, Math.floor((today - start) / 86400000) + 1);
+}
+
+function getIrPhase(record) {
+  const day = getIrDay(record);
+  if (day <= 60) return { label: "Protetto", className: "protected" };
+  if (day <= 90) return { label: "Scelta disponibile", className: "flexible" };
+  return { label: "Decisione obbligatoria", className: "final" };
+}
+
+function formatIrDate(value) {
+  if (!value) return "-";
+  return new Intl.DateTimeFormat("it-IT", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric"
+  }).format(new Date(`${String(value).slice(0, 10)}T00:00:00`));
+}
+
+function renderInjuryReserveMonitor() {
+  if (!injuryReserveListEl) return;
+
+  if (!activeInjuryReserveRows.length) {
+    injuryReserveListEl.innerHTML = `
+      <div class="ir-monitor-empty">
+        <strong>Nessuna IR attiva</strong>
+        <span>Gli slot attivati compariranno qui.</span>
+      </div>
+    `;
+    return;
+  }
+
+  injuryReserveListEl.innerHTML = activeInjuryReserveRows.map(record => {
+    const team = teamMap[record.team_id];
+    const phase = getIrPhase(record);
+    const day = getIrDay(record);
+    const progress = Math.min(100, Math.max(2, (day / 104) * 100));
+
+    return `
+      <article class="ir-monitor-row">
+        <div class="ir-monitor-icon">IR</div>
+        <div class="ir-monitor-main">
+          <strong>${escapeWaiverHtml(record.player_name)}</strong>
+          <span>${escapeWaiverHtml(team?.name || "Squadra sconosciuta")}</span>
+          <small>Giorno ${day} di 104 · scadenza ${formatIrDate(record.expires_on)}</small>
+          <div class="ir-monitor-progress"><span style="width:${progress}%"></span></div>
+        </div>
+        <span class="ir-monitor-phase ${phase.className}">${phase.label}</span>
+      </article>
+    `;
+  }).join("");
+}
+
+async function loadInjuryReserveMonitor() {
+  if (!injuryReserveListEl) return;
+
+  const { data, error } = await supabase
+    .from("injury_reserve")
+    .select("id, team_id, player_id, player_name, activated_on, expires_on, status, compensatory_status")
+    .eq("status", "active")
+    .order("expires_on", { ascending: true });
+
+  if (error) {
+    console.error("Errore caricamento Injury Reserve:", error);
+    injuryReserveListEl.innerHTML = "<p>Errore nel caricamento delle Injury Reserve.</p>";
+    return;
+  }
+
+  activeInjuryReserveRows = data || [];
+  currentTeamIrPlayerIds = new Set(
+    activeInjuryReserveRows
+      .filter(record => String(record.team_id) === String(currentTeam?.id))
+      .map(record => String(record.player_id))
+  );
+  renderInjuryReserveMonitor();
 }
 
 function getCompensatoryModeLabel(call) {
@@ -1276,6 +1378,7 @@ async function refreshTeamScopedWaiverView() {
   renderCurrentTeamIdentity();
   updateAdminViewAsUI();
 
+  await loadInjuryReserveMonitor();
   await loadMyOwnedPlayers();
   await loadMyReplacementCandidates();
   await loadMyWaiverCalls();
@@ -1954,11 +2057,15 @@ async function renderPublicCompensatoryOrder() {
     return;
   }
 
-  if (!data || data.length === 0) return;
+  const visibleCompensatoryCalls = (data || []).filter(
+    call => call.status !== "cancelled"
+  );
+
+  if (visibleCompensatoryCalls.length === 0) return;
 
   // La visibilità dei risultati arriva dal server, non dall'orologio del telefono.
   // Così nessuno può anticipare la pubblicazione cambiando l'ora del dispositivo.
-  const isPublic = data.some(call => call.is_revealed === true);
+  const isPublic = visibleCompensatoryCalls.some(call => call.is_revealed === true);
   const publishAt = getCompensatoryPublishAt();
 
   const groupBlock = document.createElement("div");
@@ -1990,7 +2097,7 @@ async function renderPublicCompensatoryOrder() {
 
 const groups = {};
 
-data.forEach(call => {
+visibleCompensatoryCalls.forEach(call => {
   const groupName = getCompensatoryGroupForTeamId(call.team_id);
 
   if (!groups[groupName]) {
@@ -2361,6 +2468,7 @@ async function loadMyCompensatoryCalls() {
     .eq("week", currentSettings.active_week)
     .eq("phase", currentSettings.active_phase)
     .eq("team_id", currentTeam.id)
+    .neq("status", "cancelled")
     .order("priority_order", { ascending: true });
 
   if (error) {
@@ -3006,6 +3114,7 @@ async function loadAllCompensatoryCalls() {
       requires_player_out,
       reason_type,
       reason_note,
+      injury_reserve_id,
       status,
       updated_at
     `)
@@ -3030,7 +3139,7 @@ async function loadAllCompensatoryCalls() {
 
   const groups = {};
 
-  data.forEach(call => {
+  data.filter(call => call.status !== "cancelled").forEach(call => {
     const groupName = getCompensatoryGroupForTeamId(call.team_id);
 
     if (!groups[groupName]) {
@@ -3068,6 +3177,7 @@ async function loadAllCompensatoryCalls() {
 
     calls.forEach(call => {
       const team = teamMap[call.team_id];
+      const isSystemIrCall = Boolean(call.injury_reserve_id);
 
       const submitted =
         call.status === "submitted" ||
@@ -3107,7 +3217,7 @@ async function loadAllCompensatoryCalls() {
           <div class="admin-compensatory-edit-grid">
             <label>
               Squadra
-              <select class="waiver-owner-select admin-comp-team-edit" data-call-id="${call.id}">
+              <select class="waiver-owner-select admin-comp-team-edit" data-call-id="${call.id}" ${isSystemIrCall ? "disabled" : ""}>
                 ${teamOptions}
               </select>
             </label>
@@ -3120,12 +3230,13 @@ async function loadAllCompensatoryCalls() {
                 class="admin-comp-priority-edit"
                 data-call-id="${call.id}"
                 value="${call.priority_order || 1}"
+                ${isSystemIrCall ? "disabled" : ""}
               />
             </label>
 
             <label>
               Modalità
-              <select class="waiver-owner-select admin-comp-mode-edit" data-call-id="${call.id}">
+              <select class="waiver-owner-select admin-comp-mode-edit" data-call-id="${call.id}" ${isSystemIrCall ? "disabled" : ""}>
                 <option value="extra" ${call.requires_player_out ? "" : "selected"}>Solo ingresso</option>
                 <option value="replace" ${call.requires_player_out ? "selected" : ""}>Sostituzione 1→1</option>
               </select>
@@ -3133,9 +3244,10 @@ async function loadAllCompensatoryCalls() {
 
             <label>
               Motivo
-              <select class="waiver-owner-select admin-comp-reason-edit" data-call-id="${call.id}">
+              <select class="waiver-owner-select admin-comp-reason-edit" data-call-id="${call.id}" ${isSystemIrCall ? "disabled" : ""}>
                 <option value="trade" ${(call.reason_type || "trade") === "trade" ? "selected" : ""}>Trade sbilanciata</option>
                 <option value="serie_a_exit" ${call.reason_type === "serie_a_exit" ? "selected" : ""}>Giocatore uscito dalla Serie A</option>
+                <option value="injury_reserve" ${call.reason_type === "injury_reserve" ? "selected" : ""}>Injury Reserve</option>
                 <option value="other" ${call.reason_type === "other" ? "selected" : ""}>Altro</option>
               </select>
             </label>
@@ -3148,6 +3260,7 @@ async function loadAllCompensatoryCalls() {
                 data-call-id="${call.id}"
                 value="${String(call.reason_note || "").replace(/"/g, "&quot;")}"
                 placeholder="Opzionale"
+                ${isSystemIrCall ? "disabled" : ""}
               />
             </label>
           </div>
@@ -3158,14 +3271,16 @@ async function loadAllCompensatoryCalls() {
             type="button"
             class="primary-btn small-btn save-admin-compensatory-btn"
             data-call-id="${call.id}"
+            ${isSystemIrCall ? "disabled" : ""}
           >
-            Salva modifiche
+            ${isSystemIrCall ? "Gestita da IR" : "Salva modifiche"}
           </button>
 
           <button
             type="button"
             class="secondary-btn small-btn delete-compensatory-btn"
             data-call-id="${call.id}"
+            ${isSystemIrCall ? "disabled" : ""}
           >
             Elimina
           </button>
@@ -3319,7 +3434,13 @@ is_fp: !!p.is_fp,
 function isPlayerBlockedThisWaiverWeek(player) {
   if (!currentSettings) return false;
 
-  const blockedReasons = ["trade_cut", "waiver_cut"];
+  const blockedReasons = [
+    "trade_cut",
+    "waiver_cut",
+    "ir_cut",
+    "ir_reintegration_cut",
+    "ir_auto_cut"
+  ];
 
   return (
     blockedReasons.includes(String(player.unavailable_reason || "")) &&
@@ -3372,7 +3493,9 @@ const selectFields = `
     return;
   }
 
-  myOwnedPlayers = (data || []).map(mapPlayerRow);
+  myOwnedPlayers = (data || [])
+    .filter(player => !currentTeamIrPlayerIds.has(String(player.id)))
+    .map(mapPlayerRow);
 }
 
 async function loadMyReplacementCandidates() {
@@ -3414,7 +3537,9 @@ async function loadMyReplacementCandidates() {
     return;
   }
 
-  myReplacementCandidates = (data || []).map(mapPlayerRow);
+  myReplacementCandidates = (data || [])
+    .filter(player => !currentTeamIrPlayerIds.has(String(player.id)))
+    .map(mapPlayerRow);
 }
 
 async function loadFreeAgents() {
@@ -4053,6 +4178,7 @@ calls.forEach(call => {
 
   alert("Chiamate compensative calcolate.");
 
+  await loadInjuryReserveMonitor();
   await loadMyOwnedPlayers();
   await loadMyReplacementCandidates();
   await loadFreeAgents();
@@ -4363,6 +4489,13 @@ compensatory_close_at: fromDateTimeLocalValue(compensatoryCloseInput?.value)
 
   currentSettings = data;
 
+  if (currentUserIsAdmin) {
+    const { error: irSyncError } = await supabase.rpc('admin_sync_ir_compensatory_calls');
+    if (irSyncError) {
+      console.error('Errore sincronizzazione compensative IR:', irSyncError);
+    }
+  }
+
 if (activePhaseEl) activePhaseEl.textContent = currentSettings.active_phase || "Non impostata";
 if (activeWeekEl) activeWeekEl.textContent = currentSettings.active_week || "-";
 
@@ -4378,6 +4511,7 @@ if (activeWeekEl) activeWeekEl.textContent = currentSettings.active_week || "-";
     await loadAllCalls();
   }
 
+await loadInjuryReserveMonitor();
 await loadMyOwnedPlayers();
 await loadMyReplacementCandidates();
 await loadMyWaiverCalls();
@@ -4936,8 +5070,17 @@ async function initWaiverRoom() {
   await loadTeams();
 
   if (currentUserIsAdmin) {
+    const { error: irSyncError } = await supabase.rpc('admin_sync_ir_compensatory_calls');
+    if (irSyncError) {
+      console.error('Errore sincronizzazione compensative IR:', irSyncError);
+    }
+  }
+
+  if (currentUserIsAdmin) {
     restoreAdminViewAsTeamFromSession();
   }
+
+  await loadInjuryReserveMonitor();
 
   renderCurrentTeamIdentity();
   populateAdminCompensatoryTeamSelect();
