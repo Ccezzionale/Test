@@ -4178,7 +4178,8 @@ nav.site-nav .toggle-submenu .app-alert-badge {
   }
 
   .featured-card {
-    width: 86%;
+    width: auto;
+    height: 170px;
     overflow: visible;
     border: 0;
     border-radius: 0;
@@ -4191,7 +4192,9 @@ nav.site-nav .toggle-submenu .app-alert-badge {
   }
 
   .featured-card img {
-    height: auto;
+    width: auto;
+    max-width: none;
+    height: 170px;
     object-fit: contain;
     object-position: center;
     border-radius: 20px;
@@ -4392,6 +4395,11 @@ nav.site-nav .toggle-submenu .app-alert-badge {
   .next-match-team img {
     width: 54px;
     height: 54px;
+  }
+
+  .featured-card,
+  .featured-card img {
+    height: 155px;
   }
 
   #league-now-title {
