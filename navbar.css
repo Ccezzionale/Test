@@ -3868,14 +3868,14 @@ nav.site-nav .toggle-submenu .app-alert-badge {
   .next-match-card {
     position: relative;
     overflow: hidden;
-    padding: 16px 15px 13px;
-    border: 1px solid rgba(237, 190, 68, .76);
-    border-radius: 24px;
-    color: #fff;
+    padding: 13px 14px 11px;
+    border: 1px solid rgba(26, 104, 190, .2);
+    border-radius: 21px;
+    color: #062b5d;
     background:
-      radial-gradient(220px 150px at 50% 42%, rgba(25, 126, 234, .25), transparent 68%),
-      linear-gradient(150deg, #072b65 0%, #041b41 56%, #061631 100%);
-    box-shadow: 0 15px 30px rgba(5, 35, 78, .22);
+      radial-gradient(210px 130px at 50% 44%, rgba(73, 160, 245, .15), transparent 70%),
+      linear-gradient(145deg, #ffffff 0%, #f3f8fe 55%, #e7f1fc 100%);
+    box-shadow: 0 11px 24px rgba(19, 73, 132, .14);
   }
 
   .next-match-card::after {
@@ -3883,7 +3883,7 @@ nav.site-nav .toggle-submenu .app-alert-badge {
     position: absolute;
     inset: 0;
     pointer-events: none;
-    background: linear-gradient(120deg, transparent 22%, rgba(255, 255, 255, .045) 50%, transparent 78%);
+    background: linear-gradient(120deg, transparent 22%, rgba(255, 255, 255, .5) 50%, transparent 78%);
   }
 
   .next-match-heading,
@@ -3895,10 +3895,11 @@ nav.site-nav .toggle-submenu .app-alert-badge {
 
   .next-match-heading {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     align-items: center;
-    gap: 5px;
-    color: #f4c950;
+    justify-content: space-between;
+    gap: 10px;
+    color: #07366f;
     text-transform: uppercase;
   }
 
@@ -3910,12 +3911,13 @@ nav.site-nav .toggle-submenu .app-alert-badge {
 
   .next-match-heading strong {
     padding: 5px 12px;
-    border: 1px solid rgba(82, 170, 255, .56);
+    border: 1px solid rgba(5, 75, 153, .2);
     border-radius: 9px;
     color: #fff;
-    background: rgba(2, 31, 73, .55);
+    background: linear-gradient(135deg, #0c5fb1, #063a79);
     font-size: .75rem;
     letter-spacing: .08em;
+    box-shadow: 0 5px 12px rgba(6, 58, 121, .18);
   }
 
   .next-match-versus {
@@ -3923,7 +3925,7 @@ nav.site-nav .toggle-submenu .app-alert-badge {
     grid-template-columns: minmax(0, 1fr) 48px minmax(0, 1fr);
     align-items: center;
     gap: 7px;
-    margin-top: 13px;
+    margin-top: 9px;
   }
 
   .next-match-team {
@@ -3933,17 +3935,17 @@ nav.site-nav .toggle-submenu .app-alert-badge {
 
   .next-match-team img {
     display: block;
-    width: 68px;
-    height: 68px;
-    margin: 0 auto 7px;
+    width: 59px;
+    height: 59px;
+    margin: 0 auto 5px;
     object-fit: contain;
-    filter: drop-shadow(0 8px 9px rgba(0, 0, 0, .32));
+    filter: drop-shadow(0 7px 8px rgba(7, 42, 83, .22));
   }
 
   .next-match-team strong {
     display: -webkit-box;
     overflow: hidden;
-    color: #fff;
+    color: #062b5d;
     font-size: .74rem;
     font-weight: 1000;
     line-height: 1.12;
@@ -3953,22 +3955,34 @@ nav.site-nav .toggle-submenu .app-alert-badge {
   }
 
   .next-match-vs {
-    color: #f4c950;
+    color: #d89b00;
     font-family: Georgia, serif;
     font-size: 1.72rem;
     font-weight: 1000;
     text-align: center;
-    text-shadow: 0 4px 10px rgba(244, 201, 80, .25);
+    text-shadow: 0 4px 10px rgba(216, 155, 0, .18);
   }
 
   .next-match-footer {
-    margin-top: 13px;
-    padding-top: 10px;
-    border-top: 1px solid rgba(255, 255, 255, .12);
-    color: rgba(255, 255, 255, .78);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin-top: 9px;
+    padding-top: 8px;
+    border-top: 1px solid rgba(8, 62, 123, .12);
+    color: rgba(6, 43, 93, .68);
     font-size: .69rem;
     font-weight: 850;
-    text-align: center;
+    text-align: left;
+  }
+
+  .next-match-footer strong {
+    flex: 0 0 auto;
+    color: #b77800;
+    font-size: .72rem;
+    font-weight: 1000;
+    text-align: right;
   }
 
   .dashboard-status-grid {
@@ -4354,8 +4368,16 @@ nav.site-nav .toggle-submenu .app-alert-badge {
   }
 
   .next-match-team img {
-    width: 60px;
-    height: 60px;
+    width: 54px;
+    height: 54px;
+  }
+
+  #league-now-title {
+    font-size: .82rem;
+  }
+
+  .home-app-heading > .heading-auto-label {
+    font-size: .54rem !important;
   }
 
   .home-app-v2 .quick-card {
@@ -4368,4 +4390,3 @@ nav.site-nav .toggle-submenu .app-alert-badge {
     height: 49px !important;
   }
 }
-

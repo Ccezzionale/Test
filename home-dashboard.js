@@ -326,6 +326,7 @@ function renderNextMatch(context, rows) {
   const homeName = document.getElementById("dashboard-next-home-name");
   const awayName = document.getElementById("dashboard-next-away-name");
   const metaEl = document.getElementById("dashboard-next-meta");
+  const rankingEl = document.getElementById("dashboard-next-ranking");
   if (!fixture) {
     if (gwEl) gwEl.textContent = "CALENDARIO";
     if (homeName) homeName.textContent = context.team.name;
@@ -333,6 +334,7 @@ function renderNextMatch(context, rows) {
     if (homeLogo) homeLogo.src = findTeamLogo(context.team.name);
     if (awayLogo) awayLogo.src = "icon-192.png";
     if (metaEl) metaEl.textContent = `${conferenceLabel(competitionCode)} · Prossimo turno da definire`;
+    if (rankingEl) rankingEl.textContent = "";
     return;
   }
   if (gwEl) gwEl.textContent = `GIORNATA ${nextGw}`;
@@ -340,7 +342,14 @@ function renderNextMatch(context, rows) {
   if (awayName) awayName.textContent = fixture.away;
   if (homeLogo) { homeLogo.src = findTeamLogo(fixture.home); homeLogo.alt = fixture.home; }
   if (awayLogo) { awayLogo.src = findTeamLogo(fixture.away); awayLogo.alt = fixture.away; }
-  if (metaEl) metaEl.textContent = `${conferenceLabel(competitionCode)} · Giornata ${nextGw}`;
+  if (metaEl) metaEl.textContent = conferenceLabel(competitionCode);
+  if (rankingEl) {
+    const standings = buildStandings(completedRowsFor(rows, competitionCode));
+    const positionMap = new Map(standings.map((row, index) => [normalizeTeamName(row.squadra), index + 1]));
+    const homePosition = positionMap.get(normalizeTeamName(fixture.home));
+    const awayPosition = positionMap.get(normalizeTeamName(fixture.away));
+    rankingEl.textContent = homePosition && awayPosition ? `${homePosition}° vs ${awayPosition}°` : "";
+  }
 }
 
 function matchupScore(fixture, standings) {
