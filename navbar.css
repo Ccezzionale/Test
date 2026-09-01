@@ -4179,43 +4179,23 @@ nav.site-nav .toggle-submenu .app-alert-badge {
 
   .featured-card {
     width: 86%;
-    aspect-ratio: 16 / 7.3;
-    background: #061c42;
+    overflow: visible;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+  }
+
+  .featured-track {
+    align-items: flex-start;
   }
 
   .featured-card img {
+    height: auto;
     object-fit: contain;
     object-position: center;
-  }
-
-  .gazzetta-feature-card {
-    position: relative;
-    isolation: isolate;
-  }
-
-  .gazzetta-feature-card::before {
-    content: "";
-    position: absolute;
-    z-index: 0;
-    inset: -14px;
-    background: url("icons/nav/giornale.webp") center / cover no-repeat;
-    filter: blur(12px) saturate(1.16);
-    opacity: .72;
-    transform: scale(1.08);
-  }
-
-  .gazzetta-feature-card::after {
-    content: "";
-    position: absolute;
-    z-index: 1;
-    inset: 0;
-    pointer-events: none;
-    background: linear-gradient(90deg, rgba(3, 20, 48, .4), transparent 25%, transparent 75%, rgba(3, 20, 48, .4));
-  }
-
-  .gazzetta-feature-card img {
-    position: relative;
-    z-index: 2;
+    border-radius: 20px;
+    box-shadow: 0 10px 22px rgba(14, 52, 96, .12);
   }
 
   .matchup-track {
