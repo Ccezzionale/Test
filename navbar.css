@@ -4180,6 +4180,12 @@ nav.site-nav .toggle-submenu .app-alert-badge {
   .featured-card {
     width: 86%;
     aspect-ratio: 16 / 7.3;
+    background: #061c42;
+  }
+
+  .featured-card img {
+    object-fit: contain;
+    object-position: center;
   }
 
   .matchup-track {
@@ -4188,12 +4194,12 @@ nav.site-nav .toggle-submenu .app-alert-badge {
 
   .league-matchup-card {
     display: flex;
-    width: 86%;
-    min-height: 174px;
-    flex: 0 0 86%;
+    width: 78%;
+    min-height: 136px;
+    flex: 0 0 78%;
     flex-direction: column;
     justify-content: space-between;
-    padding: 13px;
+    padding: 10px 11px;
     border: 1px solid rgba(237, 190, 68, .7);
     border-radius: 20px;
     color: #fff;
@@ -4208,7 +4214,7 @@ nav.site-nav .toggle-submenu .app-alert-badge {
   .league-matchup-label {
     overflow: hidden;
     color: #f3ca56;
-    font-size: .64rem;
+    font-size: .58rem;
     font-weight: 1000;
     letter-spacing: .07em;
     text-overflow: ellipsis;
@@ -4229,9 +4235,9 @@ nav.site-nav .toggle-submenu .app-alert-badge {
 
   .league-matchup-versus img {
     display: block;
-    width: 54px;
-    height: 54px;
-    margin: 0 auto 5px;
+    width: 44px;
+    height: 44px;
+    margin: 0 auto 3px;
     object-fit: contain;
   }
 
@@ -4239,7 +4245,7 @@ nav.site-nav .toggle-submenu .app-alert-badge {
     display: block;
     overflow: hidden;
     color: #fff;
-    font-size: .67rem;
+    font-size: .63rem;
     line-height: 1.08;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -4248,13 +4254,13 @@ nav.site-nav .toggle-submenu .app-alert-badge {
   .league-matchup-versus > span {
     color: #f3ca56;
     font-family: Georgia, serif;
-    font-size: 1.25rem;
+    font-size: 1.08rem;
     font-weight: 1000;
   }
 
   .league-matchup-card small {
     color: rgba(255, 255, 255, .7);
-    font-size: .62rem;
+    font-size: .58rem;
     font-weight: 800;
   }
 
@@ -4380,10 +4386,6 @@ nav.site-nav .toggle-submenu .app-alert-badge {
 
   #league-now-title {
     font-size: .82rem;
-  }
-
-  .home-app-heading > .heading-auto-label {
-    font-size: .54rem !important;
   }
 
   .home-app-v2 .quick-card {
