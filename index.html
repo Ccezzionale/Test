@@ -473,138 +473,170 @@
 
 <main class="home-wrap home-dashboard">
 
-  <section class="mobile-app-hero" aria-label="Dashboard squadra">
+  <section class="mobile-app-hero home-app-v2" aria-label="Dashboard squadra">
+    <section class="app-identity-card" aria-label="La tua squadra">
+      <img id="dashboard-team-bg-logo" class="app-identity-watermark" src="icon-192.png" alt="">
+      <img id="dashboard-team-shirt" class="app-identity-mascot" src="img/maglie/default-shirt.png" alt="Mascotte squadra">
+      <div class="app-identity-copy">
+        <span class="app-identity-kicker">La tua squadra</span>
+        <h1 id="dashboard-team-name">Lega degli Eroi</h1>
+        <p><span id="dashboard-team-coach">Coach</span> · <span id="dashboard-team-position">Classifica in caricamento</span></p>
+        <small id="dashboard-team-conference">Conference League</small>
+      </div>
+      <img id="dashboard-team-logo" class="app-identity-logo" src="icon-192.png" alt="Logo squadra">
+      <span class="app-role-chip" id="dashboard-user-role">Coach</span>
+    </section>
 
-    <div class="team-card">
-      <img id="dashboard-team-bg-logo" class="team-bg-logo" src="icon-192.png" alt="">
-      <div class="team-card-visual">
-        <div class="team-shirt-wrap">
-          <img id="dashboard-team-shirt" src="img/maglie/default-shirt.png" alt="Maglia squadra">
+    <section class="next-match-card" id="dashboard-next-match" aria-label="Prossima giornata">
+      <div class="next-match-heading">
+        <span>Prossima giornata</span>
+        <strong id="dashboard-next-gw">GIORNATA –</strong>
+      </div>
+      <div class="next-match-versus">
+        <div class="next-match-team">
+          <img id="dashboard-next-home-logo" src="icon-192.png" alt="">
+          <strong id="dashboard-next-home-name">La tua squadra</strong>
         </div>
-
-        <div class="team-side-info">
-          <div class="team-mini-logo">
-            <img id="dashboard-team-logo" src="icon-192.png" alt="Logo squadra">
-          </div>
-
-          <div class="team-copy">
-            <span class="team-kicker">La tua squadra</span>
-            <h1 id="dashboard-team-name">Lega degli Eroi</h1>
-            <p id="dashboard-team-coach">Marco Rossi</p>
-            <p id="dashboard-team-conference">Conference League</p>
-          </div>
+        <div class="next-match-vs">VS</div>
+        <div class="next-match-team">
+          <img id="dashboard-next-away-logo" src="icon-192.png" alt="">
+          <strong id="dashboard-next-away-name">Avversario</strong>
         </div>
       </div>
+      <div class="next-match-footer">
+        <span id="dashboard-next-meta">Calendario in aggiornamento</span>
+      </div>
+    </section>
 
-      <div class="team-status-row">
-        <span class="status-pill status-live">Stagione 2026/27</span>
-        <span class="status-pill" id="dashboard-user-role">Admin</span>
+    <div class="dashboard-status-grid">
+      <a class="dashboard-status-card waiver-status-card" href="waiver.html">
+        <span class="dashboard-status-title">Waiver</span>
+        <strong id="dashboard-waiver-countdown">–</strong>
+        <small id="dashboard-waiver-note">Caricamento…</small>
+      </a>
+      <div class="dashboard-status-card form-status-card">
+        <span class="dashboard-status-title">La tua forma</span>
+        <div class="dashboard-form-dots" id="dashboard-form-dots" aria-label="Ultimi risultati">
+          <span class="form-dot neutral">–</span>
+          <span class="form-dot neutral">–</span>
+          <span class="form-dot neutral">–</span>
+          <span class="form-dot neutral">–</span>
+        </div>
+        <small id="dashboard-form-note">Ultime giornate</small>
       </div>
     </div>
 
-<section class="quick-actions" aria-label="Azioni rapide">
-
-  <a href="pre-draft.html" class="quick-card quick-predraft">
-    <span class="quick-icon">
-      <img src="icons/nav/pre-draft.webp" alt="">
-    </span>
-    <span class="quick-title">Pre-Draft</span>
-    <span class="quick-sub">Keeper</span>
-  </a>
-
-<a id="quick-draft-link" href="draft_conference.html" class="quick-card quick-draft">
-  <span class="quick-icon">
-    <img src="icons/nav/draft-2026.webp" alt="">
-  </span>
-  <span class="quick-title">Draft</span>
-  <span id="quick-draft-sub" class="quick-sub">Board</span>
-</a>
-
-  <a href="trade-room.html" class="quick-card quick-trade">
-    <span class="quick-icon">
-      <img src="icons/nav/trade-room.webp" alt="">
-    </span>
-    <span class="quick-title">Trade</span>
-    <span class="quick-sub">Room</span>
-  </a>
-
-  <a href="waiver.html" class="quick-card quick-waiver">
-    <span class="quick-icon">
-      <img src="icons/nav/waiver-room.webp" alt="">
-    </span>
-    <span class="quick-title">Waiver</span>
-    <span class="quick-sub">Room</span>
-  </a>
-
-</section>
-
-<div class="section-heading universe-heading">
-  <span>Universo della Lega</span>
-</div>
-
-<a href="giornale.html" class="gazzetta-preview-card gazzetta-banner-card" aria-label="La Gazzetta degli Eroi">
-  <img src="icons/nav/giornale.webp" alt="La Gazzetta degli Eroi">
-</a>
-
-    <div class="competitions-primary-grid competitions-square-grid">
-
-  <a href="franchigie.html" class="competition-primary-card competition-square-banner">
-    <img src="icons/nav/franchigiebanner.webp" alt="Franchigie">
-  </a>
-
-  <a href="medagliere.html" class="competition-primary-card competition-square-banner">
-    <img src="icons/nav/albodorobanner.webp" alt="Albo d'Oro">
-  </a>
-
-</div>
-    
-<section class="home-section competitions-home-section">
-  <div class="section-heading">
-    <span>Competizioni</span>
-  </div>
-
-<a href="allstar.html" class="competition-spotlight competition-spotlight-banner" aria-label="All-Star Game">
-  <img src="icons/nav/allstar-banner.webp" alt="All-Star Game">
-</a>
-
-<div class="competitions-primary-grid competitions-square-grid">
-
-  <a href="classifica.html" class="competition-primary-card competition-square-banner">
-    <img src="icons/nav/classifiche2.webp" alt="Classifiche">
-  </a>
-
-  <a href="playoff.html" class="competition-primary-card competition-square-banner">
-    <img src="icons/nav/playoff2.webp" alt="Playoff">
-  </a>
-
-</div>
-
-  <div class="competitions-special-title">
-    <span>Coppe & Eventi</span>
-  </div>
-
-<div class="competitions-special-grid competitions-banner-grid">
-
-  <a href="crashoutcup.html" class="competition-special-card competition-mini-banner">
-    <img src="icons/nav/coclassifica.webp" alt="Crash Out Cup Classifiche" loading="lazy">
-  </a>
-
-  <a href="crashoutplayoff.html" class="competition-special-card competition-mini-banner">
-    <img src="icons/nav/cocfasefinale.webp" alt="Crash Out Cup Fase Finale" loading="lazy">
-  </a>
-
-  <a href="arena.html" class="competition-special-card competition-mini-banner">
-    <img src="icons/nav/higlander2.webp" alt="Highlander Arena" loading="lazy">
-  </a>
-
-  <a href="supercoppa.html" class="competition-special-card competition-mini-banner">
-    <img src="icons/nav/supercoppa2.webp" alt="Supercoppa" loading="lazy">
-  </a>
-
-</div>
-</section>
-
+    <section class="quick-actions" aria-label="Azioni rapide">
+      <a href="pre-draft.html" class="quick-card quick-predraft">
+        <span class="quick-icon"><img src="icons/nav/pre-draft.webp" alt=""></span>
+        <span class="quick-title">Pre-Draft</span>
+        <span class="quick-sub">Keeper</span>
+      </a>
+      <a id="quick-draft-link" href="draft_conference.html" class="quick-card quick-draft">
+        <span class="quick-icon"><img src="icons/nav/draft-2026.webp" alt=""></span>
+        <span class="quick-title">Draft</span>
+        <span id="quick-draft-sub" class="quick-sub">Board</span>
+      </a>
+      <a href="trade-room.html" class="quick-card quick-trade">
+        <span class="quick-icon"><img src="icons/nav/trade-room.webp" alt=""></span>
+        <span class="quick-title">Trade</span>
+        <span class="quick-sub">Room</span>
+      </a>
+      <a href="waiver.html" class="quick-card quick-waiver">
+        <span class="quick-icon"><img src="icons/nav/waiver-room.webp" alt=""></span>
+        <span class="quick-title">Waiver</span>
+        <span class="quick-sub">Room</span>
+      </a>
     </section>
+
+    <section class="home-app-section" aria-labelledby="featured-title">
+      <div class="home-app-heading">
+        <h2 id="featured-title">In evidenza</h2>
+        <span>Scorri</span>
+      </div>
+      <div class="home-horizontal-track featured-track">
+        <a href="giornale.html" class="home-image-card featured-card">
+          <img src="icons/nav/giornale.webp" alt="La Gazzetta degli Eroi">
+        </a>
+        <a href="allstar.html" class="home-image-card featured-card">
+          <img src="icons/nav/allstar-banner.webp" alt="All-Star Game">
+        </a>
+      </div>
+    </section>
+
+    <section class="home-app-section" aria-labelledby="league-now-title">
+      <div class="home-app-heading">
+        <h2 id="league-now-title">La Lega adesso</h2>
+        <span>Aggiornamento live</span>
+      </div>
+      <div class="home-horizontal-track matchup-track" id="dashboard-matchups">
+        <article class="league-matchup-card loading-card">Calcolo matchup…</article>
+      </div>
+      <div class="league-live-grid">
+        <a href="trade-room.html" class="league-mini-card trade-mini-card">
+          <span>Ultima trade</span>
+          <strong id="dashboard-latest-trade">Caricamento…</strong>
+          <small id="dashboard-latest-trade-note">Movimento ufficiale</small>
+        </a>
+        <div class="league-mini-card record-mini-card">
+          <span>Record</span>
+          <strong id="dashboard-record-value">–</strong>
+          <small id="dashboard-record-team">Dati in aggiornamento</small>
+        </div>
+      </div>
+    </section>
+
+    <section class="home-app-section" aria-labelledby="competitions-title">
+      <div class="home-app-heading">
+        <h2 id="competitions-title">Competizioni</h2>
+        <a href="classifica.html">Vedi tutto</a>
+      </div>
+      <div class="home-horizontal-track competition-track">
+        <a href="classifica.html" class="home-image-card competition-app-card">
+          <img src="icons/nav/classifiche2.webp" alt="Classifiche">
+        </a>
+        <a href="playoff.html" class="home-image-card competition-app-card">
+          <img src="icons/nav/playoff2.webp" alt="Playoff">
+        </a>
+        <a href="allstar.html" class="home-image-card competition-app-card">
+          <img src="icons/nav/allstar-banner.webp" alt="All-Star Game">
+        </a>
+      </div>
+    </section>
+
+    <section class="home-app-section" aria-labelledby="cups-title">
+      <div class="home-app-heading">
+        <h2 id="cups-title">Coppe &amp; Eventi</h2>
+        <span>Scorri</span>
+      </div>
+      <div class="home-horizontal-track cup-track">
+        <a href="crashoutcup.html" class="home-image-card cup-app-card">
+          <img src="icons/nav/coclassifica.webp" alt="Crash Out Cup Classifiche" loading="lazy">
+        </a>
+        <a href="crashoutplayoff.html" class="home-image-card cup-app-card">
+          <img src="icons/nav/cocfasefinale.webp" alt="Crash Out Cup Fase Finale" loading="lazy">
+        </a>
+        <a href="arena.html" class="home-image-card cup-app-card">
+          <img src="icons/nav/higlander2.webp" alt="Highlander Arena" loading="lazy">
+        </a>
+        <a href="supercoppa.html" class="home-image-card cup-app-card">
+          <img src="icons/nav/supercoppa2.webp" alt="Supercoppa" loading="lazy">
+        </a>
+      </div>
+    </section>
+
+    <section class="home-app-section explore-section" aria-labelledby="explore-title">
+      <div class="home-app-heading"><h2 id="explore-title">Esplora</h2></div>
+      <div class="explore-grid">
+        <a href="franchigie.html" class="home-image-card explore-card">
+          <img src="icons/nav/franchigiebanner.webp" alt="Franchigie">
+        </a>
+        <a href="medagliere.html" class="home-image-card explore-card">
+          <img src="icons/nav/albodorobanner.webp" alt="Albo d'Oro">
+        </a>
+      </div>
+    </section>
+  </section>
 
     <section class="desktop-gazzetta-section">
       <iframe
