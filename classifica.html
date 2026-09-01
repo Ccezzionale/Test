@@ -356,19 +356,20 @@ return {
 
       function buildMobileRanking() {
         const rows = Array.from(table.querySelectorAll("tbody tr"));
-        const teamsFromFourth = rows.slice(3).map(rowToData);
+        const mobileTeams = rows.map(rowToData);
 
-        mobileList.innerHTML = teamsFromFourth.map((data) => `
-<article class="mobile-standing-card rank-${data.rank} ${data.isTop4 ? "mobile-top4" : ""} ${data.isBottom4 ? "mobile-bottom4" : ""}" tabindex="0" role="button" aria-label="Apri dettagli ${data.team}">
+        mobileList.innerHTML = mobileTeams.map((data) => `
+<article class="mobile-standing-card rank-${data.rank} ${data.isTop4 ? "mobile-top4" : ""} ${data.isBottom4 ? "mobile-bottom4" : ""}" tabindex="0" role="button" aria-expanded="false" aria-label="Apri dettagli ${data.team}">
             <div class="mobile-rank">${data.position}</div>
             <div class="mobile-logo-wrap">
               ${data.logo ? `<img src="${data.logo}" alt="${data.team}">` : ""}
             </div>
             <div class="mobile-main">
               <h3>${data.team}</h3>
-              <p><strong>${data.pt}</strong> PT</p>
               <span>${data.mp} MP</span>
             </div>
+            <div class="mobile-points"><strong>${data.pt}</strong><span>PT</span></div>
+            <span class="mobile-chevron" aria-hidden="true">⌄</span>
             ${detailGrid(data)}
           </article>
         `).join("");
@@ -376,11 +377,16 @@ return {
 
       function bindExpandableCards() {
         document.querySelectorAll(".podio-card, .mobile-standing-card").forEach((card) => {
-          card.addEventListener("click", () => card.classList.toggle("is-open"));
+          const toggleCard = () => {
+            const isOpen = card.classList.toggle("is-open");
+            card.setAttribute("aria-expanded", String(isOpen));
+          };
+
+          card.addEventListener("click", toggleCard);
           card.addEventListener("keydown", (event) => {
             if (event.key === "Enter" || event.key === " ") {
               event.preventDefault();
-              card.classList.toggle("is-open");
+              toggleCard();
             }
           });
         });

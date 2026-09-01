@@ -1745,3 +1745,241 @@ th {
   .results-phase-head p { margin-top: 8px; }
   .results-admin-details > summary { padding: 16px; }
 }
+
+/* =========================================================
+   CLASSIFICA MOBILE COMPATTA - VARIANTE C
+   ========================================================= */
+@media (max-width: 768px) {
+  /* Su mobile il podio diventa una classifica unica e compatta. */
+  .podio-classifica,
+  .podio-classifica.is-visible {
+    display: none !important;
+  }
+
+  #classifica-mobile {
+    width: 100%;
+    max-width: 520px;
+    margin: 0 auto;
+    padding: 0;
+    display: grid;
+    gap: 8px;
+  }
+
+  .mobile-standing-card {
+    position: relative;
+    width: 100%;
+    min-height: 72px;
+    display: grid;
+    grid-template-columns: 30px 46px minmax(0, 1fr) auto 18px;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 10px 10px 12px;
+    overflow: hidden;
+    border: 1px solid #dfe8f4;
+    border-left: 5px solid var(--gold);
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.98);
+    color: var(--ink);
+    box-shadow: 0 5px 15px rgba(6, 19, 38, 0.09);
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    transition: transform 0.16s ease, box-shadow 0.16s ease, border-color 0.16s ease;
+  }
+
+  .mobile-standing-card:active {
+    transform: scale(0.99);
+  }
+
+  .mobile-standing-card:focus-visible {
+    outline: 3px solid rgba(15, 81, 146, 0.24);
+    outline-offset: 2px;
+  }
+
+  .mobile-standing-card.rank-1 {
+    border-color: rgba(243, 195, 78, 0.82);
+    border-left-color: var(--gold);
+    background: linear-gradient(90deg, #fffaf0 0%, #ffffff 70%);
+    box-shadow: 0 7px 18px rgba(180, 122, 0, 0.13);
+  }
+
+  .mobile-standing-card.mobile-bottom4 {
+    border-left-color: var(--red);
+  }
+
+  .mobile-rank {
+    color: #cc8b00;
+    font-size: 1rem;
+    line-height: 1;
+    font-weight: 950;
+    text-align: center;
+  }
+
+  .mobile-bottom4 .mobile-rank {
+    color: var(--red);
+  }
+
+  .mobile-logo-wrap {
+    width: 44px;
+    height: 44px;
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+    border: 1px solid #e0e8f2;
+    border-radius: 50%;
+    background: #fff;
+    box-shadow: 0 4px 10px rgba(6, 19, 38, 0.10);
+  }
+
+  .mobile-logo-wrap img,
+  #classifica-mobile .mobile-logo-wrap img {
+    width: 38px !important;
+    height: 38px !important;
+    max-width: 38px !important;
+    max-height: 38px !important;
+    object-fit: contain !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+  }
+
+  .mobile-main {
+    min-width: 0;
+  }
+
+  .mobile-main h3 {
+    margin: 0 0 4px;
+    overflow: hidden;
+    color: var(--blue-950);
+    font-size: 0.96rem;
+    line-height: 1.08;
+    font-weight: 900;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+
+  .mobile-main > span {
+    display: block;
+    color: var(--muted);
+    font-size: 0.78rem;
+    line-height: 1;
+    font-weight: 800;
+  }
+
+  .mobile-points {
+    min-width: 53px;
+    height: 34px;
+    padding: 0 10px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    border-radius: 11px;
+    background: linear-gradient(135deg, var(--blue-900), #0d5cc0);
+    color: #fff;
+    box-shadow: 0 5px 12px rgba(11, 61, 115, 0.18);
+    white-space: nowrap;
+  }
+
+  .mobile-points strong {
+    font-size: 0.95rem;
+    line-height: 1;
+    font-weight: 950;
+  }
+
+  .mobile-points span {
+    font-size: 0.69rem;
+    line-height: 1;
+    font-weight: 900;
+  }
+
+  .mobile-chevron {
+    display: inline-block;
+    color: var(--blue-900);
+    font-size: 1.25rem;
+    line-height: 1;
+    font-weight: 950;
+    text-align: center;
+    transform-origin: center;
+    transition: transform 0.18s ease;
+  }
+
+  .mobile-standing-card.is-open .mobile-chevron {
+    transform: rotate(180deg);
+  }
+
+  .mobile-standing-card .ranking-details {
+    grid-column: 1 / -1;
+    display: none;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    gap: 0;
+    margin: 2px -10px -10px -12px;
+    padding: 12px 10px;
+    border-top: 1px solid rgba(255, 255, 255, 0.12);
+    background: linear-gradient(135deg, var(--blue-950), var(--blue-800));
+  }
+
+  .mobile-standing-card.is-open .ranking-details {
+    display: grid;
+  }
+
+  .mobile-standing-card .ranking-details span {
+    min-width: 0;
+    padding: 0 3px;
+    border: 0;
+    border-left: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: 0;
+    background: transparent;
+    color: #fff;
+    font-size: 0.82rem;
+    font-weight: 900;
+    text-align: center;
+    box-shadow: none;
+  }
+
+  .mobile-standing-card .ranking-details span:first-child {
+    border-left: 0;
+  }
+
+  .mobile-standing-card .ranking-details b {
+    display: block;
+    margin: 0 0 5px;
+    color: rgba(255, 255, 255, 0.64);
+    font-size: 0.66rem;
+    line-height: 1;
+    font-weight: 900;
+  }
+}
+
+@media (max-width: 360px) {
+  .mobile-standing-card {
+    grid-template-columns: 27px 42px minmax(0, 1fr) auto 16px;
+    gap: 6px;
+    padding-left: 9px;
+    padding-right: 8px;
+  }
+
+  .mobile-logo-wrap {
+    width: 40px;
+    height: 40px;
+  }
+
+  .mobile-logo-wrap img,
+  #classifica-mobile .mobile-logo-wrap img {
+    width: 35px !important;
+    height: 35px !important;
+    max-width: 35px !important;
+    max-height: 35px !important;
+  }
+
+  .mobile-main h3 {
+    font-size: 0.88rem;
+  }
+
+  .mobile-points {
+    min-width: 49px;
+    padding: 0 8px;
+  }
+}
