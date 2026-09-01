@@ -4333,8 +4333,14 @@ nav.site-nav .toggle-submenu .app-alert-badge {
   }
 
   .cup-app-card {
-    width: 72%;
-    aspect-ratio: 1.55 / 1;
+    width: 82%;
+    aspect-ratio: 16 / 9;
+    background: #061c42;
+  }
+
+  .cup-app-card img {
+    object-fit: contain;
+    object-position: center;
   }
 
   .explore-grid {
