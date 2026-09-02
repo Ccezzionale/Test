@@ -3335,7 +3335,6 @@ async function loadAllCompensatoryCalls() {
                 class="admin-comp-priority-edit"
                 data-call-id="${call.id}"
                 value="${call.priority_order || 1}"
-                ${isSystemIrCall ? "disabled" : ""}
               />
             </label>
 
@@ -3384,9 +3383,8 @@ async function loadAllCompensatoryCalls() {
             type="button"
             class="primary-btn small-btn save-admin-compensatory-btn"
             data-call-id="${call.id}"
-            ${isSystemIrCall ? "disabled" : ""}
           >
-            ${isSystemIrCall ? "Gestita da IR" : "Salva modifiche"}
+            ${isSystemIrCall ? "Salva priorità IR" : "Salva modifiche"}
           </button>
 
           <button
@@ -3458,13 +3456,38 @@ async function updateAdminCompensatoryCall(callId) {
 
   const { data: existingCall, error: existingCallError } = await supabase
     .from("waiver_compensatory_calls")
-    .select("team_id, priority_tier, requires_player_out, status")
+    .select("team_id, priority_tier, requires_player_out, injury_reserve_id, status")
     .eq("id", callId)
     .maybeSingle();
 
   if (existingCallError || !existingCall) {
     console.error("Errore lettura compensativa prima della modifica:", existingCallError);
     setAdminMessage("Impossibile leggere la compensativa da modificare.", true);
+    return;
+  }
+
+  if (existingCall.injury_reserve_id) {
+    const { error: irPriorityError } = await supabase
+      .from("waiver_compensatory_calls")
+      .update({
+        priority_order: priority,
+        updated_at: new Date().toISOString()
+      })
+      .eq("id", callId);
+
+    if (irPriorityError) {
+      console.error("Errore modifica priorità compensativa IR:", irPriorityError);
+      setAdminMessage(
+        "Errore modifica priorità IR: " + irPriorityError.message,
+        true
+      );
+      return;
+    }
+
+    setAdminMessage("Priorità della compensativa IR aggiornata correttamente.");
+    await loadMyCompensatoryCalls();
+    await loadAllCompensatoryCalls();
+    await renderPublicWaiverOrder();
     return;
   }
 
