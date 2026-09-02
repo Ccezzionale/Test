@@ -3559,7 +3559,7 @@ function mapPlayerRow(p) {
     id: p.id,
     external_id: p.external_id,
     name: p.name || "",
-    role: p.role || p.role_mantra || "",
+    role: p.role_mantra || p.role || "",
     serieATeam: p.serie_a_team || "",
     quotation: p.quotation ?? "",
 is_u21: !!p.is_u21,
