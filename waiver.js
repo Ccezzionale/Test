@@ -139,9 +139,22 @@ let playerSelectionOrigin = null;
 let pendingFantacalcioRows = [];
 let pendingFantacalcioFileName = "";
 
-const WAIVER_TRADE_FUTURE_WEEKS = 6;
+const WAIVER_TRADE_DEFAULT_FUTURE_WEEKS = 6;
+const WAIVER_TRADE_CONFERENCE_LAST_WEEK = 15;
 let waiverTradeAssets = [];
 let waiverCallTrades = [];
+
+function getWaiverTradeFutureWeeks() {
+  if (isConferencePhase()) {
+    return Math.max(
+      WAIVER_TRADE_CONFERENCE_LAST_WEEK -
+        Number(currentSettings?.active_week || 1),
+      0
+    );
+  }
+
+  return WAIVER_TRADE_DEFAULT_FUTURE_WEEKS;
+}
 
 function isMobileWaiverView() {
   return window.matchMedia("(max-width: 768px)").matches;
@@ -3876,7 +3889,7 @@ function mapPlayerRow(p) {
     id: p.id,
     external_id: p.external_id,
     name: p.name || "",
-    role: p.role_mantra || p.role || "",
+    role: p.role || p.role_mantra || "",
     serieATeam: p.serie_a_team || "",
     quotation: p.quotation ?? "",
 is_u21: !!p.is_u21,
@@ -6067,7 +6080,7 @@ async function loadWaiverCallTrades() {
   const [assetsResult, tradesResult] = await Promise.all([
     supabase.rpc("get_waiver_call_trade_assets", {
       p_view_team_id: viewTeamId,
-      p_weeks_ahead: WAIVER_TRADE_FUTURE_WEEKS
+      p_weeks_ahead: getWaiverTradeFutureWeeks()
     }),
     supabase.rpc("get_my_waiver_call_trades", {
       p_view_team_id: viewTeamId
