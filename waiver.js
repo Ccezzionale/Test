@@ -548,6 +548,102 @@ function sortCompensatoryCalls(a, b) {
   );
 }
 
+function getCompensatoryPositionLabel(callOrPriority, tierValue = null) {
+  const call = typeof callOrPriority === "object" ? callOrPriority : null;
+  const tier = normalizeCompensatoryTier(call || tierValue);
+  const priority = call
+    ? Number(call.priority_order) || "-"
+    : Number(callOrPriority) || "-";
+
+  return `${tier === "high" ? "P" : "C"}${priority}`;
+}
+
+function isCompensatoryOrderEditable(calls = []) {
+  if (isAdminViewingAsTeam() || calls.length < 2) return false;
+  if (!calls.every(call => String(call.status || "pending") === "pending")) {
+    return false;
+  }
+
+  const { closeAt } = getCompensatoryTimesForTier(calls[0]);
+  return !closeAt || new Date() < new Date(closeAt);
+}
+
+function buildCompensatoryOrderManager(tier, calls = []) {
+  if (calls.length < 2) return null;
+
+  const sortedCalls = calls.slice().sort(sortCompensatoryCalls);
+  const positions = sortedCalls
+    .map(call => Number(call.priority_order))
+    .filter(Number.isFinite)
+    .sort((a, b) => a - b);
+  const canEdit = isCompensatoryOrderEditable(sortedCalls);
+  const hasSubmittedCall = sortedCalls.some(
+    call => String(call.status || "pending") !== "pending"
+  );
+
+  const manager = document.createElement("section");
+  manager.className = `my-compensatory-order-manager compensatory-tier-${tier}`;
+  manager.dataset.tier = tier;
+  manager.innerHTML = `
+    <div class="my-compensatory-order-head">
+      <div>
+        <strong>Scegli come usare le tue priorità</strong>
+        <span>Assegna ogni diritto a una delle tue posizioni ${tier === "high" ? "prioritarie" : "compensative"}.</span>
+      </div>
+      <span class="my-compensatory-order-count">${sortedCalls.length} diritti</span>
+    </div>
+
+    <div class="my-compensatory-order-list">
+      ${sortedCalls.map(call => `
+        <div class="my-compensatory-order-row">
+          <div class="my-compensatory-order-reason">
+            <strong>${escapeWaiverHtml(getCompensatoryReasonLabel(call))}</strong>
+            <span>Attualmente ${getCompensatoryPositionLabel(call)}</span>
+          </div>
+          <label>
+            Posizione
+            <select
+              class="my-compensatory-order-select"
+              data-tier="${tier}"
+              data-call-id="${call.id}"
+              data-selected-priority="${call.priority_order}"
+              ${canEdit ? "" : "disabled"}
+            >
+              ${positions.map(priority => `
+                <option value="${priority}" ${Number(call.priority_order) === priority ? "selected" : ""}>
+                  ${getCompensatoryPositionLabel(priority, tier)}
+                </option>
+              `).join("")}
+            </select>
+          </label>
+        </div>
+      `).join("")}
+    </div>
+
+    <div class="my-compensatory-order-actions">
+      <small>
+        ${
+          canEdit
+            ? "Puoi cambiare soltanto l’ordine delle tue chiamate: le altre squadre non vengono spostate."
+            : hasSubmittedCall
+              ? "Ordine bloccato perché almeno una chiamata è già stata inviata."
+              : "Ordine non modificabile dopo la chiusura della finestra."
+        }
+      </small>
+      <button
+        type="button"
+        class="primary-btn save-compensatory-order-btn"
+        data-tier="${tier}"
+        ${canEdit ? "" : "disabled"}
+      >
+        Salva ordine
+      </button>
+    </div>
+  `;
+
+  return manager;
+}
+
 function getGeneratedSlots() {
   if (isPlayoffPhase()) {
     return ["1", "1S", "2", "2S"];
@@ -2586,6 +2682,15 @@ function renderMyCompensatoryCalls() {
 
   myCompensatoryCallsEl.innerHTML = "";
 
+  const callsByTier = {
+    high: myCompensatoryCalls.filter(
+      call => normalizeCompensatoryTier(call.priority_tier) === "high"
+    ),
+    normal: myCompensatoryCalls.filter(
+      call => normalizeCompensatoryTier(call.priority_tier) === "normal"
+    )
+  };
+
   let renderedTier = null;
 
   myCompensatoryCalls.forEach(call => {
@@ -2600,6 +2705,15 @@ function renderMyCompensatoryCalls() {
         <span>${tier === "high" ? "Prima del waiver · finestra prioritarie" : "Dopo il waiver · finestra compensative"}</span>
       `;
       myCompensatoryCallsEl.appendChild(tierHeader);
+
+      const orderManager = buildCompensatoryOrderManager(
+        tier,
+        callsByTier[tier]
+      );
+      if (orderManager) {
+        myCompensatoryCallsEl.appendChild(orderManager);
+      }
+
       renderedTier = tier;
     }
 
@@ -2727,6 +2841,90 @@ function renderMyCompensatoryCalls() {
       resetCompensatoryCall(button.dataset.callId);
     });
   });
+
+  document.querySelectorAll(".save-compensatory-order-btn").forEach(button => {
+    button.addEventListener("click", () => {
+      saveMyCompensatoryOrder(button.dataset.tier);
+    });
+  });
+
+  document.querySelectorAll(".my-compensatory-order-select").forEach(select => {
+    select.addEventListener("change", () => {
+      const previousPriority = String(select.dataset.selectedPriority || "");
+      const selectedPriority = String(select.value || "");
+      const tier = select.dataset.tier;
+      const sibling = Array.from(document.querySelectorAll(
+        `.my-compensatory-order-select[data-tier="${tier}"]`
+      )).find(item => item !== select && String(item.value) === selectedPriority);
+
+      if (sibling && previousPriority) {
+        sibling.value = previousPriority;
+        sibling.dataset.selectedPriority = previousPriority;
+      }
+
+      select.dataset.selectedPriority = selectedPriority;
+    });
+  });
+}
+
+async function saveMyCompensatoryOrder(tierValue) {
+  if (blockTeamWriteWhileViewingAs()) return;
+
+  const tier = normalizeCompensatoryTier(tierValue);
+  const calls = myCompensatoryCalls.filter(
+    call => normalizeCompensatoryTier(call.priority_tier) === tier
+  );
+
+  if (!isCompensatoryOrderEditable(calls)) {
+    setMessage("L’ordine di queste compensative non è modificabile.", true);
+    return;
+  }
+
+  const selects = Array.from(document.querySelectorAll(
+    `.my-compensatory-order-select[data-tier="${tier}"]`
+  ));
+  const assignments = selects.map(select => ({
+    call_id: select.dataset.callId,
+    priority_order: Number(select.value)
+  }));
+  const selectedPriorities = assignments.map(item => item.priority_order);
+  const availablePriorities = calls
+    .map(call => Number(call.priority_order))
+    .sort((a, b) => a - b);
+
+  if (
+    assignments.length !== calls.length ||
+    new Set(selectedPriorities).size !== selectedPriorities.length ||
+    selectedPriorities.slice().sort((a, b) => a - b).join(",") !==
+      availablePriorities.join(",")
+  ) {
+    setMessage("Ogni posizione può essere assegnata a un solo diritto.", true);
+    return;
+  }
+
+  const saveButton = document.querySelector(
+    `.save-compensatory-order-btn[data-tier="${tier}"]`
+  );
+  if (saveButton) saveButton.disabled = true;
+
+  const { error } = await supabase.rpc("reorder_my_compensatory_calls", {
+    p_assignments: assignments
+  });
+
+  if (error) {
+    console.error("Errore modifica ordine compensative:", error);
+    setMessage("Errore modifica ordine: " + error.message, true);
+    if (saveButton) saveButton.disabled = false;
+    return;
+  }
+
+  setMessage("Ordine delle compensative aggiornato correttamente.");
+  await loadMyCompensatoryCalls();
+  await renderPublicWaiverOrder();
+
+  if (currentUserIsAdmin) {
+    await loadAllCompensatoryCalls();
+  }
 }
 
 async function saveCompensatoryCall(callId) {
