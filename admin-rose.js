@@ -37,6 +37,7 @@ const els = {
   irSlotPill: $('ir-admin-slot-pill'),
   irStatus: $('ir-admin-status'),
   activateIrBtn: $('activate-ir-btn'),
+  revokeIrBtn: $('revoke-ir-btn'),
   reinstateIrBtn: $('reinstate-ir-btn'),
   cutIrBtn: $('cut-ir-btn'),
   activateIrDialog: $('ir-activate-dialog'),
@@ -131,6 +132,7 @@ function getIrDay(record) {
 function getIrPhase(record) {
   if (!record || record.status !== 'active') {
     const labels = {
+      offered: 'In attesa della squadra',
       reinstated: 'Reintegrato',
       cut: 'Tagliato',
       auto_cut: 'Taglio automatico'
@@ -154,7 +156,7 @@ function getCurrentSeasonIrForTeam(teamId) {
 
 function getActiveIrByPlayerId(playerId) {
   return injuryReserveRows.find(row =>
-    row.status === 'active' && String(row.player_id) === String(playerId)
+    ['offered', 'active'].includes(row.status) && String(row.player_id) === String(playerId)
   ) || null;
 }
 
@@ -166,6 +168,7 @@ function renderIrPanel() {
   const activePlayerIr = selectedPlayer ? getActiveIrByPlayerId(selectedPlayer.id) : null;
 
   els.activateIrBtn.disabled = true;
+  els.revokeIrBtn.hidden = true;
   els.reinstateIrBtn.hidden = true;
   els.cutIrBtn.hidden = true;
   els.irSlotPill.className = 'ir-admin-slot-pill';
@@ -183,9 +186,28 @@ function renderIrPanel() {
     els.irSlotPill.classList.add('available');
     els.irStatus.innerHTML = `
       <strong>Slot disponibile per ${escapeHtml(teamNameById(ownerTeamId))}</strong><br>
-      Puoi inserire <strong>${escapeHtml(selectedPlayer.name)}</strong> in Injury Reserve dopo aver verificato la prognosi minima di 3 mesi.
+      Puoi concedere l’Injury Reserve per <strong>${escapeHtml(selectedPlayer.name)}</strong> dopo aver verificato la prognosi minima di 3 mesi.
+      Lo slot verrà consumato soltanto se la squadra salverà la relativa chiamata nel waiver.
     `;
     els.activateIrBtn.disabled = false;
+    return;
+  }
+
+  if (record.status === 'offered') {
+    els.irSlotPill.textContent = '0/1 da confermare';
+    els.irSlotPill.classList.add('available');
+    els.irStatus.innerHTML = `
+      <div class="ir-admin-status-card">
+        <div>
+          <strong>${escapeHtml(record.player_name)}</strong>
+          <span>${escapeHtml(teamNameById(record.team_id))} · stagione ${escapeHtml(record.season_key)}</span>
+          <small>Disponibilità concessa il ${formatDate(record.offered_on || record.created_at)}</small>
+          <small>Lo slot non è ancora consumato e il conteggio dei 104 giorni non è iniziato.</small>
+        </div>
+        <span class="ir-phase-badge ir-phase-flexible">In attesa della squadra</span>
+      </div>
+    `;
+    els.revokeIrBtn.hidden = false;
     return;
   }
 
@@ -224,7 +246,7 @@ async function loadInjuryReserve() {
   const { data, error } = await supabase
     .from('injury_reserve')
     .select('*')
-    .order('activated_on', { ascending: false });
+    .order('created_at', { ascending: false });
 
   if (error) throw error;
   injuryReserveRows = data || [];
@@ -451,8 +473,14 @@ async function removeSelectedPlayer() {
     return;
   }
 
-  if (getActiveIrByPlayerId(selectedPlayer.id)) {
-    showToast('Questo giocatore è in IR: usa “Taglia definitivamente”.', 'warn');
+  const blockingIr = getActiveIrByPlayerId(selectedPlayer.id);
+  if (blockingIr) {
+    showToast(
+      blockingIr.status === 'offered'
+        ? 'Prima revoca la disponibilità IR concessa a questo giocatore.'
+        : 'Questo giocatore è in IR: usa “Taglia definitivamente”.',
+      'warn'
+    );
     return;
   }
 
@@ -552,10 +580,36 @@ async function activateInjuryReserve(event) {
   }
 
   closeIrDialog(els.activateIrDialog);
-  showToast('Injury Reserve attivata. Diritto alla compensativa registrato.', 'ok');
+  showToast('Injury Reserve concessa. Sarà attivata solo se la squadra salverà la chiamata.', 'ok');
   await loadPlayers();
   await loadInjuryReserve();
   const fresh = players.find(player => player.id === selectedPlayer?.id);
+  if (fresh) selectPlayer(fresh);
+}
+
+async function revokeInjuryReserveOffer() {
+  const record = getCurrentSeasonIrForTeam(selectedPlayer?.owner_team_id);
+  if (!record || record.status !== 'offered') return;
+
+  const confirmed = window.confirm(
+    `Revocare la disponibilità Injury Reserve concessa per ${record.player_name}? Lo slot tornerà completamente libero.`
+  );
+  if (!confirmed) return;
+
+  const { error } = await supabase.rpc('admin_revoke_injury_reserve_offer', {
+    p_ir_id: record.id
+  });
+
+  if (error) {
+    console.error(error);
+    showToast(`Errore revoca IR: ${error.message}`, 'error');
+    return;
+  }
+
+  showToast(`Disponibilità IR revocata per ${record.player_name}.`, 'ok');
+  await loadPlayers();
+  await loadInjuryReserve();
+  const fresh = players.find(player => player.id === record.player_id);
   if (fresh) selectPlayer(fresh);
 }
 
@@ -670,6 +724,7 @@ window.addEventListener('DOMContentLoaded', async () => {
   els.search?.addEventListener('input', renderPlayers);
   els.activateIrBtn?.addEventListener('click', openActivateIrDialog);
   els.activateIrForm?.addEventListener('submit', activateInjuryReserve);
+  els.revokeIrBtn?.addEventListener('click', revokeInjuryReserveOffer);
   els.reinstateIrBtn?.addEventListener('click', openReinstateIrDialog);
   els.reinstateIrForm?.addEventListener('submit', reinstateInjuryReserve);
   els.cutIrBtn?.addEventListener('click', cutInjuryReserve);

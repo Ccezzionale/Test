@@ -181,7 +181,7 @@
               <div>
                 <span class="ir-admin-kicker">Injury Reserve</span>
                 <h3>Slot IR della squadra</h3>
-                <p>Una sola attivazione per stagione. Le scadenze vengono calcolate automaticamente.</p>
+                <p>Una sola IR utilizzabile per stagione. L’admin la concede, ma lo slot si attiva solo quando la squadra salva la chiamata nel waiver.</p>
               </div>
               <span id="ir-admin-slot-pill" class="ir-admin-slot-pill">Seleziona un giocatore</span>
             </div>
@@ -192,7 +192,10 @@
 
             <div class="ir-admin-actions">
               <button id="activate-ir-btn" type="button" class="ir-primary-btn" disabled>
-                Attiva Injury Reserve
+                Concedi Injury Reserve
+              </button>
+              <button id="revoke-ir-btn" type="button" class="ir-secondary-btn" hidden>
+                Revoca disponibilità
               </button>
               <button id="reinstate-ir-btn" type="button" class="ir-secondary-btn" hidden>
                 Reintegra giocatore
@@ -215,8 +218,8 @@
       <form id="ir-activate-form" method="dialog">
         <div class="ir-dialog-head">
           <div>
-            <span class="ir-admin-kicker">Nuova attivazione</span>
-            <h2>Attiva Injury Reserve</h2>
+            <span class="ir-admin-kicker">Nuova disponibilità</span>
+            <h2>Concedi Injury Reserve</h2>
           </div>
           <button type="button" class="ir-dialog-close" data-close-dialog="ir-activate-dialog" aria-label="Chiudi">×</button>
         </div>
@@ -224,7 +227,7 @@
         <p id="ir-activate-player" class="ir-dialog-player">Nessun giocatore selezionato</p>
 
         <label>
-          Data di attivazione
+          Data di concessione
           <input id="ir-activated-on" class="admin-input" type="date" required>
         </label>
 
@@ -240,12 +243,12 @@
 
         <label class="ir-confirm-row">
           <input id="ir-prognosis-confirm" type="checkbox" required>
-          <span>Confermo che la prognosi certificata è di almeno 3 mesi e che lo slot sarà consumato per tutta la stagione.</span>
+          <span>Confermo che la prognosi certificata è di almeno 3 mesi. Lo slot sarà consumato soltanto se la squadra salverà la chiamata IR nel waiver.</span>
         </label>
 
         <div class="ir-dialog-actions">
           <button type="button" class="ir-dialog-cancel" data-close-dialog="ir-activate-dialog">Annulla</button>
-          <button id="confirm-activate-ir-btn" type="submit" class="ir-primary-btn">Conferma attivazione</button>
+          <button id="confirm-activate-ir-btn" type="submit" class="ir-primary-btn">Conferma disponibilità</button>
         </div>
       </form>
     </dialog>
@@ -282,7 +285,7 @@
   </main>
   
 <script src="mobile-nav.js"></script>
-  <script type="module" src="admin-rose.js?v=3"></script>
+  <script type="module" src="admin-rose.js?v=4"></script>
   <script src="navbar.js?v=100"></script>
 </body>
 </html>

@@ -2590,6 +2590,7 @@ function renderMyCompensatoryCalls() {
 
   myCompensatoryCalls.forEach(call => {
     const tier = normalizeCompensatoryTier(call.priority_tier);
+    const isInjuryReserveCall = Boolean(call.injury_reserve_id);
 
     if (tier !== renderedTier) {
       const tierHeader = document.createElement("div");
@@ -2678,7 +2679,7 @@ function renderMyCompensatoryCalls() {
           data-call-id="${call.id}"
           ${isEditable ? "" : "disabled"}
         >
-          Salva compensativa
+          ${isInjuryReserveCall ? "Attiva IR e salva chiamata" : "Salva compensativa"}
         </button>
 
         <button
@@ -2687,16 +2688,18 @@ function renderMyCompensatoryCalls() {
           data-call-id="${call.id}"
           ${isEditable ? "" : "disabled"}
         >
-          Cancella compensativa
+          ${isInjuryReserveCall && call.status === "submitted" ? "Annulla attivazione IR" : "Cancella compensativa"}
         </button>
       </div>
 
       <p class="call-message">
         ${
           call.player_in
-            ? `✅ Compensativa salvata: ${call.player_in}${requiresPlayerOut && call.player_out ? ` · sostituisce ${call.player_out}` : ""}`
+            ? `${isInjuryReserveCall ? "✅ Injury Reserve attivata" : "✅ Compensativa salvata"}: ${call.player_in}${requiresPlayerOut && call.player_out ? ` · sostituisce ${call.player_out}` : ""}`
             : isCompensatoryOpen(call)
-              ? "Nessuna compensativa salvata."
+              ? isInjuryReserveCall
+                ? "Lo slot IR non è ancora consumato. Si attiverà soltanto quando salvi questa chiamata."
+                : "Nessuna compensativa salvata."
               : "Compensative chiuse o non disponibili."
         }
         <br>
@@ -2793,9 +2796,22 @@ async function saveCompensatoryCall(callId) {
     return;
   }
 
-  setMessage("Chiamata compensativa salvata correttamente.");
+  setMessage(
+    call.injury_reserve_id
+      ? "Injury Reserve attivata e chiamata salvata correttamente."
+      : "Chiamata compensativa salvata correttamente."
+  );
 
   await loadMyCompensatoryCalls();
+
+  if (call.injury_reserve_id) {
+    await loadInjuryReserveMonitor();
+    await Promise.all([
+      loadMyOwnedPlayers(),
+      loadMyReplacementCandidates(),
+      loadFreeAgents()
+    ]);
+  }
 
   if (currentUserIsAdmin) {
     await loadAllCompensatoryCalls();
@@ -2804,7 +2820,14 @@ async function saveCompensatoryCall(callId) {
 
 async function resetCompensatoryCall(callId) {
   if (blockTeamWriteWhileViewingAs()) return;
-  const confirmed = confirm("Vuoi cancellare questa chiamata compensativa?");
+  const call = myCompensatoryCalls.find(
+    item => String(item.id) === String(callId)
+  );
+  const confirmed = confirm(
+    call?.injury_reserve_id
+      ? "Vuoi annullare la chiamata IR? Lo slot tornerà disponibile e il conteggio dei giorni verrà azzerato."
+      : "Vuoi cancellare questa chiamata compensativa?"
+  );
   if (!confirmed) return;
 
   const { error } = await supabase
@@ -2826,9 +2849,22 @@ async function resetCompensatoryCall(callId) {
     return;
   }
 
-  setMessage("Compensativa cancellata.");
+  setMessage(
+    call?.injury_reserve_id
+      ? "Chiamata IR annullata. Lo slot non risulta utilizzato."
+      : "Compensativa cancellata."
+  );
 
   await loadMyCompensatoryCalls();
+
+  if (call?.injury_reserve_id) {
+    await loadInjuryReserveMonitor();
+    await Promise.all([
+      loadMyOwnedPlayers(),
+      loadMyReplacementCandidates(),
+      loadFreeAgents()
+    ]);
+  }
 
   if (currentUserIsAdmin) {
     await loadAllCompensatoryCalls();
@@ -3559,7 +3595,7 @@ function mapPlayerRow(p) {
     id: p.id,
     external_id: p.external_id,
     name: p.name || "",
-    role: p.role_mantra || p.role || "",
+    role: p.role || p.role_mantra || "",
     serieATeam: p.serie_a_team || "",
     quotation: p.quotation ?? "",
 is_u21: !!p.is_u21,
