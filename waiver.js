@@ -43,6 +43,9 @@ const u21Filter = document.getElementById("u21Filter");
 const activePhaseSelect = document.getElementById("activePhaseSelect");
 const activeWeekInput = document.getElementById("activeWeekInput");
 
+const highCompensatoryOpenInput = document.getElementById("highCompensatoryOpenInput");
+const highCompensatoryCloseInput = document.getElementById("highCompensatoryCloseInput");
+
 const slot1OpenInput = document.getElementById("slot1OpenInput");
 const slot1CloseInput = document.getElementById("slot1CloseInput");
 
@@ -819,7 +822,16 @@ function getCompensatoryTimesForTier(value) {
   );
 
   if (tier === "high") {
-    return getSlotTimes("1");
+    return {
+      openAt:
+        currentSettings?.high_compensatory_open_at ||
+        currentSettings?.slot1_open_at ||
+        null,
+      closeAt:
+        currentSettings?.high_compensatory_close_at ||
+        currentSettings?.slot1_close_at ||
+        null
+    };
   }
 
   return getCompensatoryTimes();
@@ -840,7 +852,11 @@ function getCompensatoryPublishAt(value = "normal") {
   if (normalizeCompensatoryTier(
     typeof value === "object" ? value?.priority_tier : value
   ) === "high") {
-    return currentSettings.slot1_close_at || null;
+    return (
+      currentSettings.high_compensatory_close_at ||
+      currentSettings.slot1_close_at ||
+      null
+    );
   }
 
   return (
@@ -2580,7 +2596,7 @@ function renderMyCompensatoryCalls() {
       tierHeader.className = `my-compensatory-tier-header compensatory-tier-${tier}`;
       tierHeader.innerHTML = `
         <strong>${getCompensatoryTierLabel(tier)}</strong>
-        <span>${tier === "high" ? "Prima del waiver · finestra Slot 1" : "Dopo il waiver · finestra compensative"}</span>
+        <span>${tier === "high" ? "Prima del waiver · finestra prioritarie" : "Dopo il waiver · finestra compensative"}</span>
       `;
       myCompensatoryCallsEl.appendChild(tierHeader);
       renderedTier = tier;
@@ -4522,6 +4538,18 @@ function syncSettingsPanel() {
     activeWeekInput.value = currentSettings.active_week || "";
   }
 
+  if (highCompensatoryOpenInput) {
+    highCompensatoryOpenInput.value = toDateTimeLocalValue(
+      currentSettings.high_compensatory_open_at || currentSettings.slot1_open_at
+    );
+  }
+
+  if (highCompensatoryCloseInput) {
+    highCompensatoryCloseInput.value = toDateTimeLocalValue(
+      currentSettings.high_compensatory_close_at || currentSettings.slot1_close_at
+    );
+  }
+
   if (slot1OpenInput) {
     slot1OpenInput.value = toDateTimeLocalValue(currentSettings.slot1_open_at);
   }
@@ -4606,6 +4634,9 @@ function fillStandardFridaySettings() {
 
   if (activePhaseSelect) activePhaseSelect.value = "round_robin";
 
+  setInputDateTime(highCompensatoryOpenInput, slot1Open);
+  setInputDateTime(highCompensatoryCloseInput, slot1Close);
+
   setInputDateTime(slot1OpenInput, slot1Open);
   setInputDateTime(slot1CloseInput, slot1Close);
 
@@ -4618,7 +4649,7 @@ function fillStandardFridaySettings() {
   if (slot2SCloseInput) slot2SCloseInput.value = "";
 
   setSettingsMessage(
-    "Venerdì standard impostato: Slot 1 da martedì 00:00 a venerdì 15:00; Slot 2 da venerdì 15:01 a venerdì 16:00. Ricordati di salvare."
+    "Venerdì standard impostato: prioritarie e Slot 1 da martedì 00:00 a venerdì 15:00; Slot 2 da venerdì 15:01 a venerdì 16:00. Ricordati di salvare."
   );
 }
 
@@ -4656,6 +4687,9 @@ function fillPlayoffFridaySettings() {
 
   if (activePhaseSelect) activePhaseSelect.value = "playoff";
 
+  setInputDateTime(highCompensatoryOpenInput, slot1Open);
+  setInputDateTime(highCompensatoryCloseInput, slot1Close);
+
   setInputDateTime(slot1OpenInput, slot1Open);
   setInputDateTime(slot1CloseInput, slot1Close);
 
@@ -4669,7 +4703,7 @@ function fillPlayoffFridaySettings() {
   setInputDateTime(slot2SCloseInput, slot2SClose);
 
   setSettingsMessage(
-    "Venerdì playoff impostato: Slot 1 da martedì 00:00 a venerdì 15:00; Slot 1S 15:01-15:30; Slot 2 15:31-16:00; Slot 2S 16:01-16:30. Ricordati di salvare."
+    "Venerdì playoff impostato: prioritarie e Slot 1 da martedì 00:00 a venerdì 15:00; Slot 1S 15:01-15:30; Slot 2 15:31-16:00; Slot 2S 16:01-16:30. Ricordati di salvare."
   );
 }
 
@@ -4683,9 +4717,51 @@ async function saveWaiverSettings() {
     return;
   }
 
+  const highCompensatoryOpenAt = fromDateTimeLocalValue(
+    highCompensatoryOpenInput?.value
+  );
+  const highCompensatoryCloseAt = fromDateTimeLocalValue(
+    highCompensatoryCloseInput?.value
+  );
+  const slot1CloseAt = fromDateTimeLocalValue(slot1CloseInput?.value);
+
+  if (Boolean(highCompensatoryOpenAt) !== Boolean(highCompensatoryCloseAt)) {
+    setSettingsMessage(
+      "Per le compensative prioritarie inserisci sia apertura sia chiusura.",
+      true
+    );
+    return;
+  }
+
+  if (
+    highCompensatoryOpenAt &&
+    new Date(highCompensatoryOpenAt) >= new Date(highCompensatoryCloseAt)
+  ) {
+    setSettingsMessage(
+      "La chiusura delle compensative prioritarie deve essere successiva all'apertura.",
+      true
+    );
+    return;
+  }
+
+  if (
+    highCompensatoryCloseAt &&
+    slot1CloseAt &&
+    new Date(highCompensatoryCloseAt) > new Date(slot1CloseAt)
+  ) {
+    setSettingsMessage(
+      "Le compensative prioritarie devono chiudere prima dello Slot 1 o nello stesso momento.",
+      true
+    );
+    return;
+  }
+
   const payload = {
     active_phase: activePhaseSelect?.value || currentSettings.active_phase,
     active_week: activeWeek,
+
+    high_compensatory_open_at: highCompensatoryOpenAt,
+    high_compensatory_close_at: highCompensatoryCloseAt,
 
     slot1_open_at: fromDateTimeLocalValue(slot1OpenInput?.value),
     slot1_close_at: fromDateTimeLocalValue(slot1CloseInput?.value),

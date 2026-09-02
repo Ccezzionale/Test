@@ -4349,7 +4349,7 @@ body.waiver-view-as-mode .free-agents-table-wrap tbody tr {
 
 @media (min-width: 1180px) {
   .waiver-admin-section .slot-settings-grid {
-    grid-template-columns: repeat(5, minmax(0, 1fr));
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 
   .waiver-admin-section .admin-bottom-grid {
@@ -4467,13 +4467,24 @@ body.waiver-view-as-mode .free-agents-table-wrap tbody tr {
   background: linear-gradient(135deg, #7f1d1d, #dc2626) !important;
 }
 
-.compensatory-settings-card small {
+.compensatory-settings-card small,
+.high-compensatory-settings-card small {
   display: block;
   margin-top: 8px;
   color: #64748b;
   font-size: .7rem;
   font-weight: 750;
   line-height: 1.3;
+}
+
+.high-compensatory-settings-card {
+  border-color: rgba(220, 38, 38, .28);
+  background: linear-gradient(135deg, #fff1f2, #fff7ed);
+  box-shadow: inset 4px 0 0 #dc2626;
+}
+
+.high-compensatory-settings-card h4 {
+  color: #991b1b;
 }
 
 @media (min-width: 761px) and (max-width: 1179px) {
