@@ -1,4 +1,5 @@
 import { supabase } from "./supabase.js";
+import { loadResultsRows } from "./results-source.js";
 
 /* ===============================
    ELEMENTI BASE
@@ -973,9 +974,6 @@ function updateHeroPriority() {
    CLASSIFICHE PER ORDINE WAIVER
 ================================ */
 
-const STATS_MASTER_CSV_URL =
-  "https://docs.google.com/spreadsheets/d/e/2PACX-1vSG3HrTJsfZGhgfJJx8l63QYhooGsyiydLf1OTt2JldOPx5nSZyJz00IplWA5YHGwjymNL9EXIVX5XA/pub?gid=1118969717&single=true&output=csv";
-
 const GOAL_BASE = 66;
 const GOAL_STEP = 6;
 
@@ -1056,16 +1054,8 @@ function parseCSV(text) {
 }
 
 async function fetchStatsRows() {
-  const res = await fetch(STATS_MASTER_CSV_URL + "&nocache=" + Date.now(), {
-    cache: "no-store"
-  });
-
-  if (!res.ok) {
-    throw new Error("Errore caricamento statistiche: " + res.status);
-  }
-
-  const text = await res.text();
-  return removeDuplicateStatsRows(parseCSV(text));
+  const rows = await loadResultsRows();
+  return removeDuplicateStatsRows(rows);
 }
 
 function removeDuplicateStatsRows(rows) {
@@ -1246,6 +1236,19 @@ async function sortWaiverGroupsByStandings(groups) {
 
   Object.keys(groups).forEach(groupKey => {
     const priorityList = priorityMap[groupKey] || [];
+    const missingTeams = groups[groupKey]
+      .filter(team => getTeamPriorityIndex(team.name, priorityList) === 999)
+      .map(team => team.name);
+
+    if (priorityList.length === 0 || missingTeams.length > 0) {
+      const details = missingTeams.length
+        ? ` Squadre non trovate: ${missingTeams.join(", ")}.`
+        : "";
+
+      throw new Error(
+        `Classifica ${groupKey} incompleta: trovate ${priorityList.length} squadre su ${groups[groupKey].length}.${details}`
+      );
+    }
 
     groups[groupKey].sort((a, b) => {
       const rankA = getTeamPriorityIndex(a.name, priorityList);
@@ -1612,13 +1615,10 @@ try {
 } catch (err) {
   console.error("Errore ordinamento waiver da classifiche:", err);
   setAdminMessage(
-    "Errore nel caricamento classifiche. Uso ordine alfabetico di emergenza.",
+    "Impossibile generare l'ordine dalla classifica: " + err.message,
     true
   );
-
-  Object.keys(groups).forEach(groupKey => {
-    groups[groupKey].sort((a, b) => a.name.localeCompare(b.name));
-  });
+  return;
 }
 
   const rows = [];
