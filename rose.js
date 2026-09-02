@@ -299,7 +299,7 @@ async function caricaRose() {
       const playerData = {
         id: p.id,
         nome: p.name || "",
-        ruolo: p.role || p.role_mantra || "",
+        ruolo: p.role_mantra || p.role || "",
         squadra: p.serie_a_team || "",
         quotazione: p.quotation ?? "",
 
