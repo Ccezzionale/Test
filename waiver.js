@@ -15,6 +15,7 @@ const callMessageEl = document.getElementById("callMessage");
 
 const myCompensatoryCallsEl = document.getElementById("myCompensatoryCalls");
 const allCompensatoryCallsEl = document.getElementById("allCompensatoryCalls");
+const calculateHighCompensatoryBtn = document.getElementById("calculateHighCompensatoryBtn");
 const calculateCompensatoryBtn = document.getElementById("calculateCompensatoryBtn");
 
 const allCallsEl = document.getElementById("allCalls");
@@ -58,6 +59,7 @@ const compensatoryOpenInput = document.getElementById("compensatoryOpenInput");
 const compensatoryCloseInput = document.getElementById("compensatoryCloseInput");
 
 const adminCompTeamSelect = document.getElementById("adminCompTeamSelect");
+const adminCompTierSelect = document.getElementById("adminCompTierSelect");
 const adminCompPriorityInput = document.getElementById("adminCompPriorityInput");
 const adminCompModeSelect = document.getElementById("adminCompModeSelect");
 const adminCompReasonSelect = document.getElementById("adminCompReasonSelect");
@@ -503,6 +505,46 @@ function getCompensatoryModeLabel(call) {
     : "solo ingresso";
 }
 
+function normalizeCompensatoryTier(value) {
+  return String(value || "normal").toLowerCase() === "high"
+    ? "high"
+    : "normal";
+}
+
+function getCompensatoryTierLabel(value) {
+  const tier = typeof value === "object"
+    ? normalizeCompensatoryTier(value?.priority_tier)
+    : normalizeCompensatoryTier(value);
+
+  return tier === "high"
+    ? "Compensativa prioritaria"
+    : "Compensativa normale";
+}
+
+function getCompensatoryTierShortLabel(value) {
+  return normalizeCompensatoryTier(
+    typeof value === "object" ? value?.priority_tier : value
+  ) === "high"
+    ? "Prioritaria"
+    : "Normale";
+}
+
+function getCompensatoryTierSortValue(value) {
+  return normalizeCompensatoryTier(
+    typeof value === "object" ? value?.priority_tier : value
+  ) === "high"
+    ? 0
+    : 1;
+}
+
+function sortCompensatoryCalls(a, b) {
+  return (
+    getCompensatoryTierSortValue(a) - getCompensatoryTierSortValue(b) ||
+    (Number(a?.priority_order) || 999) - (Number(b?.priority_order) || 999) ||
+    String(a?.id || "").localeCompare(String(b?.id || ""))
+  );
+}
+
 function getGeneratedSlots() {
   if (isPlayoffPhase()) {
     return ["1", "1S", "2", "2S"];
@@ -531,7 +573,7 @@ async function activateRecallSlotForLosers(currentSlot, loserEntries = []) {
 
   if (!currentSettings || !loserEntries.length) {
     console.warn("Stop richiamo: mancano settings o loserEntries vuoto.");
-    return;
+    return 0;
   }
 
   const recallSlot = getRecallSlotAfterLoss(currentSlot);
@@ -541,9 +583,10 @@ async function activateRecallSlotForLosers(currentSlot, loserEntries = []) {
     recallSlot
   });
 
-  if (!recallSlot) return;
+  if (!recallSlot) return 0;
 
   const losersByTeam = new Map();
+  let activated = 0;
 
   loserEntries.forEach(entry => {
     const call = entry.call;
@@ -635,10 +678,19 @@ async function activateRecallSlotForLosers(currentSlot, loserEntries = []) {
 
     if (updateError) {
       console.error("Errore assegnazione richiamo waiver:", updateError);
+      continue;
+    }
+
+    if (
+      updatedRecall &&
+      String(updatedRecall.owner_team_id) === String(loser.teamId)
+    ) {
+      activated++;
     }
   }
 
   console.log("=== RICHIAMO AUTOMATICO END ===");
+  return activated;
 }
 
 async function syncRecallSlotsFromLostCalls(sourceSlot) {
@@ -761,8 +813,20 @@ function getCompensatoryTimes() {
   };
 }
 
-function isCompensatoryOpen() {
-  const { openAt, closeAt } = getCompensatoryTimes();
+function getCompensatoryTimesForTier(value) {
+  const tier = normalizeCompensatoryTier(
+    typeof value === "object" ? value?.priority_tier : value
+  );
+
+  if (tier === "high") {
+    return getSlotTimes("1");
+  }
+
+  return getCompensatoryTimes();
+}
+
+function isCompensatoryOpen(value = "normal") {
+  const { openAt, closeAt } = getCompensatoryTimesForTier(value);
   const now = new Date();
 
   if (!openAt || !closeAt) return true;
@@ -770,8 +834,14 @@ function isCompensatoryOpen() {
   return now >= new Date(openAt) && now < new Date(closeAt);
 }
 
-function getCompensatoryPublishAt() {
+function getCompensatoryPublishAt(value = "normal") {
   if (!currentSettings) return null;
+
+  if (normalizeCompensatoryTier(
+    typeof value === "object" ? value?.priority_tier : value
+  ) === "high") {
+    return currentSettings.slot1_close_at || null;
+  }
 
   return (
     currentSettings.compensatory_close_at ||
@@ -781,8 +851,8 @@ function getCompensatoryPublishAt() {
   );
 }
 
-function areCompensatoryResultsPublic() {
-  const publishAt = getCompensatoryPublishAt();
+function areCompensatoryResultsPublic(value = "normal") {
+  const publishAt = getCompensatoryPublishAt(value);
 
   if (!publishAt) return false;
 
@@ -2062,121 +2132,121 @@ async function renderPublicCompensatoryOrder() {
   );
 
   if (visibleCompensatoryCalls.length === 0) return;
+  const groupOrder = isConferencePhase()
+    ? ["Conference League", "Conference Championship"]
+    : ["Totale"];
 
-  // La visibilità dei risultati arriva dal server, non dall'orologio del telefono.
-  // Così nessuno può anticipare la pubblicazione cambiando l'ora del dispositivo.
-  const isPublic = visibleCompensatoryCalls.some(call => call.is_revealed === true);
-  const publishAt = getCompensatoryPublishAt();
+  for (const tier of ["high", "normal"]) {
+    const tierCalls = visibleCompensatoryCalls
+      .filter(call => normalizeCompensatoryTier(call.priority_tier) === tier)
+      .sort(sortCompensatoryCalls);
 
-  const groupBlock = document.createElement("div");
-  groupBlock.className = "public-waiver-group public-compensatory-group";
+    if (tierCalls.length === 0) continue;
 
-  groupBlock.innerHTML = `
-    <button
-      type="button"
-      class="public-waiver-group-title public-waiver-toggle"
-      aria-expanded="true"
-    >
-      <h3>Chiamate compensative</h3>
+    const publishAt = getCompensatoryPublishAt(tier);
+    const tierIsPublic = tierCalls.some(call => call.is_revealed === true);
+    const tierTitle = tier === "high"
+      ? "Compensative prioritarie"
+      : "Compensative normali";
 
-      <span>
-        ${
-          isPublic
-            ? "Risultati visibili"
-            : publishAt
-              ? `Risultati visibili ${formatWaiverDateTime(publishAt)}`
-              : "Risultati non ancora programmati"
-        }
-      </span>
-    </button>
-
-    <div class="public-waiver-group-content"></div>
-  `;
-
-  const groupContent = groupBlock.querySelector(".public-waiver-group-content");
-
-const groups = {};
-
-visibleCompensatoryCalls.forEach(call => {
-  const groupName = getCompensatoryGroupForTeamId(call.team_id);
-
-  if (!groups[groupName]) {
-    groups[groupName] = [];
-  }
-
-  groups[groupName].push(call);
-});
-
-const groupOrder = isConferencePhase()
-  ? ["Conference League", "Conference Championship"]
-  : ["Totale"];
-
-groupOrder.forEach(groupName => {
-  const calls = groups[groupName];
-
-  if (!calls || calls.length === 0) return;
-
-  calls.sort((a, b) => (a.priority_order || 999) - (b.priority_order || 999));
-
-  const subGroup = document.createElement("div");
-  subGroup.className = "public-compensatory-subgroup";
-
-  subGroup.innerHTML = `
-    <h4 class="public-compensatory-subtitle">
-      ${
-        groupName === "Totale"
-          ? "Compensative"
-          : groupName
-      }
-    </h4>
-  `;
-
-  calls.forEach(call => {
-    const team = teamMap[call.team_id];
-
-    let statusClass = "waiting";
-    let resultText = "";
-
-    if (!isPublic) {
-      resultText = publishAt
-        ? `Le compensative saranno visibili ${formatWaiverDateTime(publishAt)}`
-        : "Le compensative saranno visibili dopo la chiusura.";
-    } else if (!call.player_in) {
-      statusClass = "empty";
-      resultText = "Nessuna chiamata registrata.";
-    } else if (call.status === "won") {
-      statusClass = "won";
-      resultText = call.requires_player_out && call.player_out
-        ? `🟢 Prende ${call.player_in}<br>🔻 Svincola ${call.player_out}`
-        : `🟢 Prende ${call.player_in}`;
-    } else if (call.status === "lost") {
-      statusClass = "lost";
-      resultText = `🔴 Perde ${call.player_in}`;
-    } else {
-      statusClass = "pending";
-      resultText = `⏳ Chiama ${call.player_in}`;
-    }
-
-    const rowDiv = document.createElement("div");
-    rowDiv.className = `public-waiver-row public-compensatory-row ${statusClass}`;
-
-    rowDiv.innerHTML = `
-      <div class="public-waiver-rank">C${call.priority_order || "-"}</div>
-
-      <div class="public-waiver-main">
-        <strong>${team?.name || "Squadra sconosciuta"}</strong>
-        <span class="public-waiver-via">${getCompensatoryReasonLabel(call)} · ${getCompensatoryModeLabel(call)}</span>
-        <span class="public-waiver-result">${resultText}</span>
-      </div>
+    const groupBlock = document.createElement("div");
+    groupBlock.className = `public-waiver-group public-compensatory-group compensatory-tier-${tier}`;
+    groupBlock.innerHTML = `
+      <button
+        type="button"
+        class="public-waiver-group-title public-waiver-toggle"
+        aria-expanded="true"
+      >
+        <h3>${tierTitle}</h3>
+        <span>
+          ${
+            tierIsPublic
+              ? "Risultati visibili"
+              : publishAt
+                ? `Risultati visibili ${formatWaiverDateTime(publishAt)}`
+                : "Risultati non ancora programmati"
+          }
+        </span>
+      </button>
+      <div class="public-waiver-group-content"></div>
     `;
 
-    subGroup.appendChild(rowDiv);
-  });
+    const groupContent = groupBlock.querySelector(".public-waiver-group-content");
 
-  groupContent.appendChild(subGroup);
-});
+    groupOrder.forEach(groupName => {
+      const calls = tierCalls.filter(
+        call => getCompensatoryGroupForTeamId(call.team_id) === groupName
+      );
 
-  publicWaiverOrderEl.appendChild(groupBlock);
+      if (calls.length === 0) return;
+
+      const subGroup = document.createElement("div");
+      subGroup.className = `public-compensatory-subgroup compensatory-tier-${tier}`;
+      subGroup.innerHTML = `
+        <h4 class="public-compensatory-subtitle">
+          ${groupName === "Totale" ? tierTitle : groupName}
+          <span class="compensatory-tier-badge ${tier}">${getCompensatoryTierShortLabel(tier)}</span>
+        </h4>
+      `;
+
+      calls.forEach(call => {
+        const team = teamMap[call.team_id];
+        const callIsPublic = call.is_revealed === true;
+        let statusClass = "waiting";
+        let resultText = "";
+
+        if (!callIsPublic) {
+          resultText = publishAt
+            ? `La chiamata sarà visibile ${formatWaiverDateTime(publishAt)}`
+            : "La chiamata sarà visibile dopo la chiusura.";
+        } else if (!call.player_in) {
+          statusClass = "empty";
+          resultText = "Nessuna chiamata registrata.";
+        } else if (call.status === "won") {
+          statusClass = "won";
+          resultText = call.requires_player_out && call.player_out
+            ? `🟢 Prende ${call.player_in}<br>🔻 Svincola ${call.player_out}`
+            : `🟢 Prende ${call.player_in}`;
+        } else if (call.status === "lost") {
+          statusClass = "lost";
+          resultText = `🔴 Perde ${call.player_in}`;
+        } else {
+          statusClass = "pending";
+          resultText = `⏳ Chiama ${call.player_in}`;
+        }
+
+        const rowDiv = document.createElement("div");
+        rowDiv.className = `public-waiver-row public-compensatory-row compensatory-tier-${tier} ${statusClass}`;
+        rowDiv.innerHTML = `
+          <div class="public-waiver-rank">${tier === "high" ? "P" : "C"}${call.priority_order || "-"}</div>
+          <div class="public-waiver-main">
+            <strong>${team?.name || "Squadra sconosciuta"}</strong>
+            <span class="public-waiver-via">${getCompensatoryReasonLabel(call)} · ${getCompensatoryModeLabel(call)}</span>
+            <span class="public-waiver-result">${resultText}</span>
+          </div>
+        `;
+
+        subGroup.appendChild(rowDiv);
+      });
+
+      groupContent.appendChild(subGroup);
+    });
+
+    const toggleBtn = groupBlock.querySelector(".public-waiver-toggle");
+    toggleBtn?.addEventListener("click", () => {
+      const isClosed = groupBlock.classList.toggle("public-slot-closed");
+      toggleBtn.setAttribute("aria-expanded", String(!isClosed));
+    });
+
+    if (tier === "high") {
+      publicWaiverOrderEl.insertBefore(
+        groupBlock,
+        publicWaiverOrderEl.firstElementChild
+      );
+    } else {
+      publicWaiverOrderEl.appendChild(groupBlock);
+    }
+  }
 }
 /* ===============================
    LE MIE CHIAMATE DINAMICHE
@@ -2477,7 +2547,7 @@ async function loadMyCompensatoryCalls() {
     return;
   }
 
-  myCompensatoryCalls = data || [];
+  myCompensatoryCalls = (data || []).slice().sort(sortCompensatoryCalls);
   renderMyCompensatoryCalls();
 }
 
@@ -2500,10 +2570,25 @@ function renderMyCompensatoryCalls() {
 
   myCompensatoryCallsEl.innerHTML = "";
 
+  let renderedTier = null;
+
   myCompensatoryCalls.forEach(call => {
+    const tier = normalizeCompensatoryTier(call.priority_tier);
+
+    if (tier !== renderedTier) {
+      const tierHeader = document.createElement("div");
+      tierHeader.className = `my-compensatory-tier-header compensatory-tier-${tier}`;
+      tierHeader.innerHTML = `
+        <strong>${getCompensatoryTierLabel(tier)}</strong>
+        <span>${tier === "high" ? "Prima del waiver · finestra Slot 1" : "Dopo il waiver · finestra compensative"}</span>
+      `;
+      myCompensatoryCallsEl.appendChild(tierHeader);
+      renderedTier = tier;
+    }
+
     const isEditable =
       (call.status === "pending" || call.status === "submitted") &&
-      isCompensatoryOpen() &&
+      isCompensatoryOpen(call) &&
       !isAdminViewingAsTeam();
 
     const requiresPlayerOut = call.requires_player_out === true;
@@ -2511,7 +2596,7 @@ function renderMyCompensatoryCalls() {
     const modeLabel = getCompensatoryModeLabel(call);
 
     const card = document.createElement("div");
-    card.className = "dynamic-call-card compensatory-call-card";
+    card.className = `dynamic-call-card compensatory-call-card compensatory-tier-${tier}`;
     card.dataset.callId = call.id;
 
     if (String(activeCompensatoryCallId) === String(call.id)) {
@@ -2521,13 +2606,14 @@ function renderMyCompensatoryCalls() {
     card.innerHTML = `
       <div class="dynamic-call-header">
         <div class="dynamic-call-title">
-          <strong>Chiamata compensativa #${call.priority_order || "-"}</strong>
+          <strong>${getCompensatoryTierLabel(call)} #${call.priority_order || "-"}</strong>
           <span>${call.phase || ""} - Week ${call.week || ""}</span>
+          <span class="compensatory-tier-badge ${tier}">${getCompensatoryTierShortLabel(call)}</span>
           <span class="via-badge">${reasonLabel}</span>
           <span class="via-badge">${modeLabel}</span>
         </div>
 
-        <span class="order-position-pill">C${call.priority_order || "-"}</span>
+        <span class="order-position-pill">${tier === "high" ? "P" : "C"}${call.priority_order || "-"}</span>
       </div>
 
       <label class="player-choice-label">
@@ -2593,7 +2679,7 @@ function renderMyCompensatoryCalls() {
         ${
           call.player_in
             ? `✅ Compensativa salvata: ${call.player_in}${requiresPlayerOut && call.player_out ? ` · sostituisce ${call.player_out}` : ""}`
-            : isCompensatoryOpen()
+            : isCompensatoryOpen(call)
               ? "Nessuna compensativa salvata."
               : "Compensative chiuse o non disponibili."
         }
@@ -3110,6 +3196,7 @@ async function loadAllCompensatoryCalls() {
     .select(`
       id,
       team_id,
+      priority_tier,
       priority_order,
       requires_player_out,
       reason_type,
@@ -3141,26 +3228,27 @@ async function loadAllCompensatoryCalls() {
 
   data.filter(call => call.status !== "cancelled").forEach(call => {
     const groupName = getCompensatoryGroupForTeamId(call.team_id);
+    const tier = normalizeCompensatoryTier(call.priority_tier);
+    const key = `${groupName}__${tier}`;
 
-    if (!groups[groupName]) {
-      groups[groupName] = [];
+    if (!groups[key]) {
+      groups[key] = [];
     }
 
-    groups[groupName].push(call);
+    groups[key].push(call);
   });
 
   const groupOrder = isConferencePhase()
     ? ["Conference League", "Conference Championship"]
     : ["Totale"];
 
-  groupOrder.forEach(groupName => {
-    const calls = groups[groupName];
+  ["high", "normal"].forEach(tier => {
+    groupOrder.forEach(groupName => {
+    const calls = groups[`${groupName}__${tier}`];
 
     if (!calls || calls.length === 0) return;
 
-    calls.sort((a, b) =>
-      (a.priority_order || 999) - (b.priority_order || 999)
-    );
+    calls.sort(sortCompensatoryCalls);
 
     const groupDiv = document.createElement("div");
     groupDiv.className = "admin-calls-group";
@@ -3169,9 +3257,10 @@ async function loadAllCompensatoryCalls() {
       <h4>
         ${
           groupName === "Totale"
-            ? "Compensative"
-            : `${groupName} - Compensative`
+            ? getCompensatoryTierLabel(tier)
+            : `${groupName} - ${getCompensatoryTierLabel(tier)}`
         }
+        <span class="compensatory-tier-badge ${tier}">${getCompensatoryTierShortLabel(tier)}</span>
       </h4>
     `;
 
@@ -3193,16 +3282,16 @@ async function loadAllCompensatoryCalls() {
         .join("");
 
       const div = document.createElement("div");
-      div.className = "admin-compensatory-row";
+      div.className = `admin-compensatory-row compensatory-tier-${tier}`;
 
       div.innerHTML = `
         <div class="admin-compensatory-main">
           <strong>
-            C${call.priority_order || "-"}
+            ${tier === "high" ? "P" : "C"}${call.priority_order || "-"}
             ${team?.name || "Squadra sconosciuta"}
           </strong>
 
-          <span>${getCompensatoryModeLabel(call)} · ${getCompensatoryReasonLabel(call)}</span>
+          <span>${getCompensatoryTierShortLabel(call)} · ${getCompensatoryModeLabel(call)} · ${getCompensatoryReasonLabel(call)}</span>
 
           <span>
             ${submitted ? "✅ Chiamata ricevuta" : "⏳ Nessuna chiamata ricevuta"}
@@ -3232,6 +3321,14 @@ async function loadAllCompensatoryCalls() {
                 value="${call.priority_order || 1}"
                 ${isSystemIrCall ? "disabled" : ""}
               />
+            </label>
+
+            <label>
+              Tipo
+              <select class="waiver-owner-select admin-comp-tier-edit" data-call-id="${call.id}" ${isSystemIrCall ? "disabled" : ""}>
+                <option value="high" ${tier === "high" ? "selected" : ""}>Prioritaria</option>
+                <option value="normal" ${tier === "normal" ? "selected" : ""}>Normale</option>
+              </select>
             </label>
 
             <label>
@@ -3292,6 +3389,7 @@ async function loadAllCompensatoryCalls() {
 
     allCompensatoryCallsEl.appendChild(groupDiv);
   });
+  });
 
   document
     .querySelectorAll(".save-admin-compensatory-btn")
@@ -3319,6 +3417,10 @@ async function updateAdminCompensatoryCall(callId) {
     `.admin-comp-priority-edit[data-call-id="${callId}"]`
   )?.value || 0);
 
+  const priorityTier = normalizeCompensatoryTier(document.querySelector(
+    `.admin-comp-tier-edit[data-call-id="${callId}"]`
+  )?.value || "normal");
+
   const mode = document.querySelector(
     `.admin-comp-mode-edit[data-call-id="${callId}"]`
   )?.value || "extra";
@@ -3340,7 +3442,7 @@ async function updateAdminCompensatoryCall(callId) {
 
   const { data: existingCall, error: existingCallError } = await supabase
     .from("waiver_compensatory_calls")
-    .select("team_id, requires_player_out, status")
+    .select("team_id, priority_tier, requires_player_out, status")
     .eq("id", callId)
     .maybeSingle();
 
@@ -3352,12 +3454,14 @@ async function updateAdminCompensatoryCall(callId) {
 
   const structureChanged =
     String(existingCall.team_id) !== String(teamId) ||
+    normalizeCompensatoryTier(existingCall.priority_tier) !== priorityTier ||
     existingCall.requires_player_out === true !== requiresPlayerOut;
 
   const { error } = await supabase
     .from("waiver_compensatory_calls")
     .update({
       team_id: teamId,
+      priority_tier: priorityTier,
       priority_order: priority,
       requires_player_out: requiresPlayerOut,
       reason_type: reasonType,
@@ -3861,8 +3965,75 @@ async function applyWinningWaiverCall(call) {
    CALCOLO RISULTATI
 ================================ */
 
+async function hasSubmittedHighCompensatoryCalls() {
+  if (!currentSettings) return false;
+
+  const { count, error } = await supabase
+    .from("waiver_compensatory_calls")
+    .select("id", { count: "exact", head: true })
+    .eq("week", currentSettings.active_week)
+    .eq("phase", currentSettings.active_phase)
+    .eq("priority_tier", "high")
+    .eq("status", "submitted");
+
+  if (error) throw error;
+  return Number(count || 0) > 0;
+}
+
+async function hasPendingRegularWaiverCalls() {
+  if (!currentSettings) return false;
+
+  const { count, error } = await supabase
+    .from("waiver_calls")
+    .select("id", { count: "exact", head: true })
+    .eq("week", currentSettings.active_week)
+    .eq("phase", currentSettings.active_phase)
+    .eq("status", "pending");
+
+  if (error) throw error;
+  return Number(count || 0) > 0;
+}
+
+async function hasCalculatedRegularWaiverCalls() {
+  if (!currentSettings) return false;
+
+  const { count, error } = await supabase
+    .from("waiver_calls")
+    .select("id", { count: "exact", head: true })
+    .eq("week", currentSettings.active_week)
+    .eq("phase", currentSettings.active_phase)
+    .in("status", ["won", "lost"]);
+
+  if (error) throw error;
+  return Number(count || 0) > 0;
+}
+
+async function isPlayerCurrentlyAvailable(playerId) {
+  if (!playerId) return false;
+
+  const { data, error } = await supabase
+    .from("players")
+    .select("id, owner_team_id")
+    .eq("id", playerId)
+    .maybeSingle();
+
+  if (error) throw error;
+  return Boolean(data) && !data.owner_team_id;
+}
+
 async function calculateResultsForSlot(slot) {
   if (!currentSettings) return;
+
+  try {
+    if (await hasSubmittedHighCompensatoryCalls()) {
+      alert("Calcola prima le compensative prioritarie: vengono prima di tutte le chiamate waiver.");
+      return;
+    }
+  } catch (error) {
+    console.error("Errore controllo compensative prioritarie:", error);
+    alert("Impossibile verificare le compensative prioritarie.");
+    return;
+  }
 
   const normalizedSlot = normalizeSlot(slot);
    console.log("=== CALCOLO SLOT START ===", {
@@ -3877,7 +4048,8 @@ async function calculateResultsForSlot(slot) {
     .select("*")
     .eq("week", currentSettings.active_week)
     .eq("phase", currentSettings.active_phase)
-    .eq("slot", normalizedSlot);
+    .eq("slot", normalizedSlot)
+    .eq("status", "pending");
    console.log("Chiamate trovate per slot:", calls);
 
   if (callsError) {
@@ -3954,6 +4126,21 @@ const loserEntriesForRecall = [];
 });
 
     try {
+  const playerIsAvailable = await isPlayerCurrentlyAvailable(winner.call.player_in_id);
+
+  if (!playerIsAvailable) {
+    for (const unavailableEntry of entries) {
+      await supabase
+        .from("waiver_calls")
+        .update({ status: "lost" })
+        .eq("id", unavailableEntry.call.id);
+
+      loserEntriesForRecall.push(unavailableEntry);
+    }
+
+    continue;
+  }
+
   await applyWinningWaiverCall(winner.call);
 
   await supabase
@@ -3983,7 +4170,7 @@ const activatedFromLiveCalc = await activateRecallSlotForLosers(
 
 const activatedFromLostCalls = await syncRecallSlotsFromLostCalls(normalizedSlot);
 
-const totalActivated = activatedFromLiveCalc + activatedFromLostCalls;
+const totalActivated = Math.max(activatedFromLiveCalc, activatedFromLostCalls);
 
 if (totalActivated > 0) {
   setAdminMessage(
@@ -4103,14 +4290,39 @@ async function applyWinningCompensatoryCall(call) {
   }
 }
 
-async function calculateCompensatoryResults() {
+async function calculateCompensatoryResults(priorityTier = "normal") {
   if (!currentSettings) return;
+
+  const tier = normalizeCompensatoryTier(priorityTier);
+  const tierLabel = getCompensatoryTierLabel(tier).toLowerCase();
+
+  try {
+    if (tier === "high" && await hasCalculatedRegularWaiverCalls()) {
+      alert("Il waiver è già stato calcolato: le compensative prioritarie devono essere risolte prima.");
+      return;
+    }
+
+    if (tier === "normal" && await hasSubmittedHighCompensatoryCalls()) {
+      alert("Calcola prima le compensative prioritarie.");
+      return;
+    }
+
+    if (tier === "normal" && await hasPendingRegularWaiverCalls()) {
+      alert("Calcola prima tutte le chiamate waiver: le compensative normali vengono per ultime.");
+      return;
+    }
+  } catch (guardError) {
+    console.error("Errore controllo ordine di calcolo:", guardError);
+    alert("Impossibile verificare l'ordine di calcolo.");
+    return;
+  }
 
   const { data: calls, error } = await supabase
     .from("waiver_compensatory_calls")
     .select("*")
     .eq("week", currentSettings.active_week)
     .eq("phase", currentSettings.active_phase)
+    .eq("priority_tier", tier)
     .eq("status", "submitted")
     .order("priority_order", { ascending: true });
 
@@ -4121,7 +4333,7 @@ async function calculateCompensatoryResults() {
   }
 
   if (!calls || calls.length === 0) {
-    alert("Nessuna chiamata compensativa da calcolare.");
+    alert(`Nessuna ${tierLabel} da calcolare.`);
     return;
   }
 
@@ -4156,6 +4368,19 @@ calls.forEach(call => {
     const losers = entries.slice(1);
 
     try {
+      const playerIsAvailable = await isPlayerCurrentlyAvailable(winner.player_in_id);
+
+      if (!playerIsAvailable) {
+        for (const unavailableCall of entries) {
+          await supabase
+            .from("waiver_compensatory_calls")
+            .update({ status: "lost" })
+            .eq("id", unavailableCall.id);
+        }
+
+        continue;
+      }
+
       await applyWinningCompensatoryCall(winner);
 
       await supabase
@@ -4176,7 +4401,11 @@ calls.forEach(call => {
     }
   }
 
-  alert("Chiamate compensative calcolate.");
+  alert(
+    tier === "high"
+      ? "Compensative prioritarie calcolate."
+      : "Compensative normali calcolate."
+  );
 
   await loadInjuryReserveMonitor();
   await loadMyOwnedPlayers();
@@ -4187,6 +4416,8 @@ calls.forEach(call => {
   if (currentUserIsAdmin) {
     await loadAllCompensatoryCalls();
   }
+
+  await renderPublicWaiverOrder();
 }
 
 function setPhaseMessage(text, isError = false) {
@@ -4531,6 +4762,7 @@ async function addManualCompensatoryCall() {
   if (!currentSettings) return;
 
   const teamId = adminCompTeamSelect?.value || "";
+  const priorityTier = normalizeCompensatoryTier(adminCompTierSelect?.value || "normal");
   const priority = Number(adminCompPriorityInput?.value || 0);
   const mode = adminCompModeSelect?.value || "extra";
   const reasonType = adminCompReasonSelect?.value || "trade";
@@ -4552,6 +4784,7 @@ async function addManualCompensatoryCall() {
       team_id: teamId,
       week: currentSettings.active_week,
       phase: currentSettings.active_phase,
+      priority_tier: priorityTier,
       priority_order: priority,
       requires_player_out: mode === "replace",
       reason_type: reasonType,
@@ -5170,8 +5403,12 @@ calculateSlot2SBtn?.addEventListener("click", () => {
   calculateResultsForSlot("2S");
 });
 
+calculateHighCompensatoryBtn?.addEventListener("click", () => {
+  calculateCompensatoryResults("high");
+});
+
 calculateCompensatoryBtn?.addEventListener("click", () => {
-  calculateCompensatoryResults();
+  calculateCompensatoryResults("normal");
 });
 
 addCompensatoryBtn?.addEventListener("click", () => {

@@ -7,7 +7,7 @@
   <title>Waiver Room</title>
 
   <link rel="stylesheet" href="navbar.css" />
-  <link rel="stylesheet" href="waiver.css?v=17" />
+  <link rel="stylesheet" href="waiver.css?v=18" />
 </head>
 
 <body>
@@ -221,7 +221,7 @@
             <div>
               <h2>Chiamate compensative</h2>
               <p class="card-subtitle">
-                Premi <strong>Scegli giocatore</strong>. Su mobile verrai portato agli svincolati e tornerai qui automaticamente dopo la scelta.
+                Le <strong>prioritarie</strong> vengono risolte prima del waiver; le <strong>normali</strong> dopo. Premi <strong>Scegli giocatore</strong> per compilare la chiamata.
               </p>
             </div>
           </div>
@@ -394,13 +394,15 @@
 
 
             <div class="slot-settings-card compensatory-settings-card">
-  <h4>Compensative</h4>
+  <h4>Compensative normali</h4>
 
   <label for="compensatoryOpenInput">Apertura</label>
   <input type="datetime-local" id="compensatoryOpenInput" />
 
   <label for="compensatoryCloseInput">Chiusura</label>
   <input type="datetime-local" id="compensatoryCloseInput" />
+
+  <small>Le prioritarie usano apertura e chiusura dello Slot 1.</small>
 </div>
           </div>
 
@@ -473,24 +475,28 @@
             Salva ordine waiver
           </button>
 
+          <button id="calculateHighCompensatoryBtn" type="button" class="primary-btn small-btn high-compensatory-action">
+            1. Calcola compensative prioritarie
+          </button>
+
           <button id="calculateSlot1Btn" type="button" class="primary-btn small-btn">
-            Calcola slot 1
+            2. Waiver · slot 1
           </button>
 
           <button id="calculateSlot1SBtn" type="button" class="primary-btn small-btn">
-            Calcola slot 1S
+            2. Waiver · slot 1S
           </button>
 
           <button id="calculateSlot2Btn" type="button" class="primary-btn small-btn">
-            Calcola slot 2
+            2. Waiver · slot 2
           </button>
 
           <button id="calculateSlot2SBtn" type="button" class="primary-btn small-btn">
-            Calcola slot 2S
+            2. Waiver · slot 2S
           </button>
 
           <button id="calculateCompensatoryBtn" type="button" class="primary-btn small-btn">
-            Calcola compensative
+            3. Calcola compensative normali
           </button>
         </div>
 
@@ -518,7 +524,7 @@
   <div id="allCalls" class="all-calls"></div>
 
   <div class="admin-compensatory-overview">
-    <h3>Chiamate compensative</h3>
+    <h3>Compensative prioritarie e normali</h3>
 
     <div id="allCompensatoryCalls" class="all-calls">
       <p>Caricamento compensative...</p>
@@ -531,13 +537,20 @@
   <h3>Gestione compensative</h3>
 
   <p class="card-subtitle">
-    Aggiungi, modifica o rimuovi manualmente le compensative per la settimana/fase attiva.
+    Ordine di risoluzione: <strong>prioritarie → waiver → normali</strong>. La priorità numerica riparte da 1 dentro ciascun tipo.
+    Per le prioritarie assegna i numeri in base al giro di draft e, a parità, alla classifica inversa.
   </p>
 
   <div class="admin-compensatory-form">
     <label for="adminCompTeamSelect">Squadra</label>
     <select id="adminCompTeamSelect" class="waiver-owner-select">
       <option value="">Seleziona squadra</option>
+    </select>
+
+    <label for="adminCompTierSelect">Tipo di compensativa</label>
+    <select id="adminCompTierSelect" class="waiver-owner-select">
+      <option value="normal" selected>Normale (dopo il waiver)</option>
+      <option value="high">Prioritaria (prima del waiver)</option>
     </select>
 
     <label for="adminCompPriorityInput">Priorità</label>
@@ -586,7 +599,7 @@
   </main>
 <script src="mobile-nav.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
-  <script type="module" src="waiver.js?v=26"></script>
+  <script type="module" src="waiver.js?v=27"></script>
   <script type="module" src="home_auth.js"></script>
   <script src="navbar.js"></script>
 </body>

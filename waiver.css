@@ -4363,6 +4363,119 @@ body.waiver-view-as-mode .free-agents-table-wrap tbody tr {
   }
 }
 
+/* =========================================================
+   COMPENSATIVE PRIORITARIE
+   ========================================================= */
+
+.compensatory-tier-badge {
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  padding: 3px 8px;
+  border-radius: 999px;
+  font-size: .68rem;
+  font-weight: 900;
+  line-height: 1;
+  letter-spacing: .05em;
+  text-transform: uppercase;
+}
+
+.public-compensatory-group .public-waiver-group-title h3::after {
+  display: none;
+  content: none;
+}
+
+.compensatory-tier-badge.high {
+  color: #7f1d1d;
+  background: #fee2e2;
+  border: 1px solid #fecaca;
+}
+
+.compensatory-tier-badge.normal {
+  color: #745600;
+  background: #fff7cc;
+  border: 1px solid #f4dd78;
+}
+
+.my-compensatory-tier-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 6px 12px;
+  margin: 14px 0 8px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  font-weight: 900;
+}
+
+.my-compensatory-tier-header:first-child {
+  margin-top: 0;
+}
+
+.my-compensatory-tier-header span {
+  font-size: .75rem;
+  font-weight: 800;
+}
+
+.my-compensatory-tier-header.compensatory-tier-high {
+  color: #7f1d1d;
+  background: linear-gradient(135deg, #fff1f2, #fff7ed);
+  border: 1px solid #fecaca;
+}
+
+.my-compensatory-tier-header.compensatory-tier-normal {
+  color: #6b5100;
+  background: linear-gradient(135deg, #fffdf0, #fff);
+  border: 1px solid #f4dd78;
+}
+
+.compensatory-call-card.compensatory-tier-high,
+.admin-compensatory-row.compensatory-tier-high,
+.public-compensatory-row.compensatory-tier-high {
+  border-left: 5px solid #dc2626;
+}
+
+.compensatory-call-card.compensatory-tier-normal,
+.admin-compensatory-row.compensatory-tier-normal,
+.public-compensatory-row.compensatory-tier-normal {
+  border-left: 5px solid #d2a900;
+}
+
+.public-compensatory-row.compensatory-tier-high .public-waiver-rank {
+  color: #fff;
+  background: linear-gradient(135deg, #7f1d1d, #dc2626);
+}
+
+.public-compensatory-timing {
+  margin: -2px 0 4px;
+  color: #64748b;
+  font-size: .72rem;
+  font-weight: 750;
+}
+
+.public-compensatory-subgroup.compensatory-tier-high {
+  padding: 10px;
+  border: 1px solid #fecaca;
+  border-radius: 12px;
+  background: rgba(255, 241, 242, .55);
+}
+
+.high-compensatory-action {
+  color: #fff !important;
+  border-color: #991b1b !important;
+  background: linear-gradient(135deg, #7f1d1d, #dc2626) !important;
+}
+
+.compensatory-settings-card small {
+  display: block;
+  margin-top: 8px;
+  color: #64748b;
+  font-size: .7rem;
+  font-weight: 750;
+  line-height: 1.3;
+}
+
 @media (min-width: 761px) and (max-width: 1179px) {
   .waiver-admin-section .slot-settings-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
