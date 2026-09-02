@@ -7,7 +7,7 @@
   <title>Waiver Room</title>
 
   <link rel="stylesheet" href="navbar.css" />
-  <link rel="stylesheet" href="waiver.css?v=20" />
+  <link rel="stylesheet" href="waiver.css?v=21" />
 </head>
 
 <body>
@@ -184,6 +184,11 @@
     Ordine
   </button>
 
+  <button type="button" class="waiver-mobile-tab" data-waiver-mobile-tab="trades">
+    Scambi
+    <span id="mobileTradesBadge" class="mobile-tab-badge" style="display:none;">!</span>
+  </button>
+
   <button type="button" class="waiver-mobile-tab" data-waiver-mobile-tab="extra">
     Extra
     <span id="mobileExtraBadge" class="mobile-tab-badge" style="display:none;">!</span>
@@ -214,6 +219,97 @@
           </div>
 
           <p id="callMessage" class="call-message"></p>
+        </article>
+
+        <article class="waiver-card waiver-trades-card" data-waiver-mobile-panel="trades">
+          <div class="card-title-row">
+            <div>
+              <p class="waiver-trades-eyebrow">Mercato chiamate</p>
+              <h2>Scambi settimanali</h2>
+              <p class="card-subtitle">
+                Ogni diritto comprende <strong>Slot 1 + eventuale Slot 2</strong>. Puoi trattare la settimana attiva e le prossime sei.
+              </p>
+            </div>
+            <span class="waiver-trades-pill">Solo waiver</span>
+          </div>
+
+          <div class="waiver-trade-rules">
+            <span>✓ Compensative e Injury Reserve escluse</span>
+            <span>✓ Una scelta già salvata viene cancellata all’accettazione</span>
+          </div>
+
+          <div class="waiver-trade-builder">
+            <label for="waiverTradePartnerSelect">Squadra con cui trattare</label>
+            <select id="waiverTradePartnerSelect" class="waiver-owner-select">
+              <option value="">Seleziona squadra</option>
+            </select>
+
+            <div class="waiver-trade-assets-grid">
+              <section class="waiver-trade-assets-column">
+                <div class="waiver-trade-assets-heading">
+                  <strong>Tu cedi</strong>
+                  <span>Le chiamate che possiedi</span>
+                </div>
+                <div id="waiverTradeOfferAssets" class="waiver-trade-asset-list">
+                  <p>Caricamento chiamate...</p>
+                </div>
+              </section>
+
+              <section class="waiver-trade-assets-column">
+                <div class="waiver-trade-assets-heading">
+                  <strong>Tu ricevi</strong>
+                  <span>Le chiamate dell’altra squadra</span>
+                </div>
+                <div id="waiverTradeRequestAssets" class="waiver-trade-asset-list">
+                  <p>Seleziona prima una squadra.</p>
+                </div>
+              </section>
+            </div>
+
+            <label for="waiverTradeNoteInput">Nota proposta <span class="waiver-trade-optional">opzionale</span></label>
+            <textarea
+              id="waiverTradeNoteInput"
+              class="waiver-trade-note"
+              rows="2"
+              maxlength="500"
+              placeholder="Es. tua chiamata settimana 8 per la mia settimana 10"
+            ></textarea>
+
+            <button id="waiverTradeSubmitBtn" type="button" class="primary-btn waiver-trade-submit-btn">
+              Invia proposta
+            </button>
+
+            <p id="waiverTradeMessage" class="call-message" aria-live="polite"></p>
+          </div>
+
+          <div class="waiver-trade-inbox-grid">
+            <section>
+              <div class="waiver-trade-section-title">
+                <h3>Ricevute</h3>
+                <span id="waiverTradeReceivedCount">0</span>
+              </div>
+              <div id="waiverTradeReceived" class="waiver-trade-proposal-list">
+                <p>Nessuna proposta ricevuta.</p>
+              </div>
+            </section>
+
+            <section>
+              <div class="waiver-trade-section-title">
+                <h3>Inviate</h3>
+                <span id="waiverTradeSentCount">0</span>
+              </div>
+              <div id="waiverTradeSent" class="waiver-trade-proposal-list">
+                <p>Nessuna proposta inviata.</p>
+              </div>
+            </section>
+          </div>
+
+          <details class="waiver-trade-history">
+            <summary>Storico proposte concluse</summary>
+            <div id="waiverTradeHistory" class="waiver-trade-proposal-list">
+              <p>Nessuna proposta conclusa.</p>
+            </div>
+          </details>
         </article>
 
         <article class="waiver-card my-compensatory-card" data-waiver-mobile-panel="extra">
@@ -608,7 +704,7 @@
   </main>
 <script src="mobile-nav.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
-  <script type="module" src="waiver.js?v=31"></script>
+  <script type="module" src="waiver.js?v=32"></script>
   <script type="module" src="home_auth.js"></script>
   <script src="navbar.js"></script>
 </body>

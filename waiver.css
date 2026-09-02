@@ -5139,3 +5139,419 @@ body.waiver-view-as-mode .free-agents-table-wrap tbody tr {
     justify-self: start;
   }
 }
+
+/* =========================================================
+   SCAMBI CHIAMATE SETTIMANALI
+   ========================================================= */
+
+.waiver-trades-card {
+  position: relative;
+  overflow: hidden;
+  border-color: rgba(0, 90, 156, 0.18);
+  background:
+    radial-gradient(480px 180px at 100% 0%, rgba(255, 204, 0, 0.13), transparent 65%),
+    rgba(255, 255, 255, 0.98);
+}
+
+.waiver-trades-eyebrow {
+  margin: 0 0 4px;
+  color: #b17b00;
+  font-size: 0.7rem;
+  font-weight: 950;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.waiver-trades-card .card-title-row h2 {
+  margin-bottom: 0;
+}
+
+.waiver-trades-pill {
+  flex: 0 0 auto;
+  padding: 7px 10px;
+  border-radius: 999px;
+  background: #001f3f;
+  color: #ffdf6c;
+  font-size: 0.68rem;
+  font-weight: 950;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.waiver-trade-rules {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin: 0 0 14px;
+}
+
+.waiver-trade-rules span {
+  padding: 6px 9px;
+  border: 1px solid rgba(0, 90, 156, 0.13);
+  border-radius: 999px;
+  background: #f3f8ff;
+  color: #31506f;
+  font-size: 0.73rem;
+  font-weight: 800;
+}
+
+.waiver-trade-builder {
+  padding: 14px;
+  border: 1px solid rgba(0, 63, 127, 0.12);
+  border-radius: 18px;
+  background: linear-gradient(180deg, #f8fbff, #f3f7fc);
+}
+
+.waiver-trade-builder > label:first-child {
+  margin-top: 0;
+}
+
+.waiver-trade-builder select,
+.waiver-trade-note {
+  width: 100%;
+}
+
+.waiver-trade-note {
+  min-height: 64px;
+  resize: vertical;
+  padding: 10px 12px;
+  border: 1px solid #cbd5e1;
+  border-radius: 12px;
+  background: #fff;
+  color: #172033;
+  font: inherit;
+  font-size: 0.86rem;
+  outline: none;
+}
+
+.waiver-trade-note:focus {
+  border-color: #0074d9;
+  box-shadow: 0 0 0 3px rgba(0, 116, 217, 0.10);
+}
+
+.waiver-trade-optional {
+  color: #94a3b8;
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+.waiver-trade-assets-grid,
+.waiver-trade-inbox-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.waiver-trade-assets-grid {
+  margin-top: 13px;
+}
+
+.waiver-trade-assets-column {
+  min-width: 0;
+  padding: 11px;
+  border: 1px solid rgba(0, 31, 63, 0.09);
+  border-radius: 15px;
+  background: #fff;
+}
+
+.waiver-trade-assets-heading {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-bottom: 9px;
+}
+
+.waiver-trade-assets-heading strong {
+  color: #001f3f;
+  font-size: 0.88rem;
+}
+
+.waiver-trade-assets-heading span {
+  color: #7b8ba1;
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+.waiver-trade-asset-list {
+  display: grid;
+  gap: 7px;
+  max-height: 270px;
+  overflow-y: auto;
+  padding-right: 3px;
+}
+
+.waiver-trade-asset-list > p,
+.waiver-trade-proposal-list > p {
+  margin: 0;
+  color: #7b8ba1;
+  font-size: 0.8rem;
+  line-height: 1.4;
+}
+
+.waiver-trade-week-label {
+  margin: 5px 0 0;
+  color: #64748b;
+  font-size: 0.65rem;
+  font-weight: 950;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+
+.waiver-trade-asset {
+  display: grid;
+  grid-template-columns: 19px minmax(0, 1fr);
+  gap: 8px;
+  align-items: start;
+  margin: 0;
+  padding: 9px;
+  border: 1px solid rgba(0, 90, 156, 0.12);
+  border-radius: 12px;
+  background: #f8fbff;
+  cursor: pointer;
+}
+
+.waiver-trade-asset:hover {
+  border-color: rgba(0, 116, 217, 0.34);
+  background: #f1f7ff;
+}
+
+.waiver-trade-asset input {
+  width: 17px;
+  height: 17px;
+  margin: 2px 0 0;
+  accent-color: #0074d9;
+}
+
+.waiver-trade-asset-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.waiver-trade-asset-copy strong {
+  color: #15324f;
+  font-size: 0.78rem;
+  line-height: 1.3;
+}
+
+.waiver-trade-asset-copy small {
+  color: #728398;
+  font-size: 0.68rem;
+  line-height: 1.3;
+}
+
+.waiver-trade-saved-warning {
+  color: #b45309 !important;
+  font-weight: 850;
+}
+
+.waiver-trade-submit-btn {
+  width: 100%;
+  margin-top: 13px;
+}
+
+.waiver-trade-inbox-grid {
+  margin-top: 16px;
+}
+
+.waiver-trade-inbox-grid > section {
+  min-width: 0;
+}
+
+.waiver-trade-section-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.waiver-trade-section-title h3 {
+  margin: 0;
+  color: #001f3f;
+  font-size: 0.92rem;
+}
+
+.waiver-trade-section-title span {
+  min-width: 24px;
+  padding: 3px 7px;
+  border-radius: 999px;
+  background: #e8f2ff;
+  color: #005a9c;
+  text-align: center;
+  font-size: 0.69rem;
+  font-weight: 950;
+}
+
+.waiver-trade-proposal-list {
+  display: grid;
+  gap: 9px;
+}
+
+.waiver-trade-proposal {
+  padding: 11px;
+  border: 1px solid rgba(0, 31, 63, 0.10);
+  border-radius: 14px;
+  background: #fff;
+}
+
+.waiver-trade-proposal.pending.received {
+  border-color: rgba(217, 154, 0, 0.38);
+  box-shadow: inset 3px 0 0 #e1aa00;
+}
+
+.waiver-trade-proposal-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.waiver-trade-proposal-head strong {
+  color: #102f4d;
+  font-size: 0.81rem;
+  line-height: 1.3;
+}
+
+.waiver-trade-status {
+  flex: 0 0 auto;
+  padding: 4px 7px;
+  border-radius: 999px;
+  background: #eef2f7;
+  color: #52647a;
+  font-size: 0.62rem;
+  font-weight: 950;
+  text-transform: uppercase;
+}
+
+.waiver-trade-status.pending {
+  background: #fff5cc;
+  color: #896100;
+}
+
+.waiver-trade-status.accepted {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.waiver-trade-status.rejected,
+.waiver-trade-status.cancelled,
+.waiver-trade-status.expired {
+  background: #f1f5f9;
+  color: #64748b;
+}
+
+.waiver-trade-exchange {
+  display: grid;
+  gap: 6px;
+  margin-top: 9px;
+}
+
+.waiver-trade-exchange-row {
+  padding: 7px 8px;
+  border-radius: 10px;
+  background: #f5f8fc;
+  color: #40546a;
+  font-size: 0.72rem;
+  line-height: 1.4;
+}
+
+.waiver-trade-exchange-row b {
+  color: #003f7f;
+}
+
+.waiver-trade-proposal-note {
+  margin: 8px 0 0;
+  color: #64748b;
+  font-size: 0.71rem;
+  font-style: italic;
+  line-height: 1.4;
+}
+
+.waiver-trade-proposal-date {
+  display: block;
+  margin-top: 7px;
+  color: #94a3b8;
+  font-size: 0.65rem;
+  font-weight: 700;
+}
+
+.waiver-trade-proposal-actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 7px;
+  margin-top: 9px;
+}
+
+.waiver-trade-proposal-actions.single {
+  grid-template-columns: 1fr;
+}
+
+.waiver-trade-proposal-actions button {
+  min-height: 36px;
+  padding: 8px 10px;
+  font-size: 0.72rem;
+}
+
+.waiver-trade-history {
+  margin-top: 14px;
+  border-top: 1px solid rgba(0, 31, 63, 0.09);
+}
+
+.waiver-trade-history summary {
+  padding-top: 12px;
+  color: #005a9c;
+  cursor: pointer;
+  font-size: 0.8rem;
+  font-weight: 900;
+}
+
+.waiver-trade-history .waiver-trade-proposal-list {
+  margin-top: 10px;
+}
+
+body.waiver-view-as-mode .waiver-trades-card button,
+body.waiver-view-as-mode .waiver-trades-card input,
+body.waiver-view-as-mode .waiver-trades-card select,
+body.waiver-view-as-mode .waiver-trades-card textarea {
+  cursor: not-allowed;
+}
+
+@media (max-width: 768px) {
+  .waiver-mobile-tabs {
+    grid-template-columns: repeat(var(--waiver-mobile-tab-count, 4), minmax(0, 1fr));
+  }
+
+  .waiver-mobile-tab {
+    padding-inline: 4px;
+    font-size: 0.7rem;
+  }
+
+  .waiver-trades-card.mobile-panel-active {
+    margin-bottom: 14px;
+  }
+
+  .waiver-trades-card .card-title-row,
+  .waiver-trade-assets-grid,
+  .waiver-trade-inbox-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .waiver-trades-card .card-title-row {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .waiver-trades-pill {
+    display: none;
+  }
+
+  .waiver-trade-asset-list {
+    max-height: 235px;
+  }
+
+  .waiver-trade-submit-btn {
+    min-height: 46px;
+  }
+}
