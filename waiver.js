@@ -6072,6 +6072,54 @@ function renderWaiverCallTradeProposals() {
   bindWaiverTradeProposalActions();
 }
 
+async function sendWaiverTradeTargetedNotification(
+  proposalId,
+  eventType = "proposal"
+) {
+  if (!proposalId) return;
+
+  try {
+    const { error } = await supabase.functions.invoke(
+      "send-trade-notification",
+      {
+        body: {
+          proposal_id: proposalId,
+          trade_type: "waiver_call",
+          event_type: eventType
+        }
+      }
+    );
+
+    if (error) {
+      console.warn("Notifica privata trade Waiver non inviata:", error);
+    }
+  } catch (error) {
+    console.warn("Errore notifica privata trade Waiver:", error);
+  }
+}
+
+async function sendWaiverTradeOfficialBroadcast(proposalId) {
+  if (!proposalId) return;
+
+  try {
+    const { error } = await supabase.functions.invoke(
+      "broadcast-trade-notification",
+      {
+        body: {
+          proposal_id: proposalId,
+          trade_type: "waiver_call"
+        }
+      }
+    );
+
+    if (error) {
+      console.warn("Broadcast trade Waiver non inviato:", error);
+    }
+  } catch (error) {
+    console.warn("Errore broadcast trade Waiver:", error);
+  }
+}
+
 async function loadWaiverCallTrades() {
   if (!currentTeam || !currentSettings || !waiverTradeOfferAssetsEl) return;
 
@@ -6156,7 +6204,7 @@ async function createWaiverCallTradeProposal() {
   if (waiverTradeSubmitBtn) waiverTradeSubmitBtn.disabled = true;
   setWaiverTradeMessage("Invio proposta in corso...");
 
-  const { error } = await supabase.rpc(
+  const { data, error } = await supabase.rpc(
     "create_waiver_call_trade_proposal",
     {
       p_to_team_id: partnerTeamId,
@@ -6172,6 +6220,11 @@ async function createWaiverCallTradeProposal() {
     if (waiverTradeSubmitBtn) waiverTradeSubmitBtn.disabled = false;
     return;
   }
+
+  await sendWaiverTradeTargetedNotification(
+    data?.proposal_id,
+    "proposal"
+  );
 
   if (waiverTradeNoteInput) waiverTradeNoteInput.value = "";
   waiverTradePartnerSelect.value = "";
@@ -6222,6 +6275,8 @@ async function respondToWaiverCallTrade(proposalId, accept) {
   }
 
   if (accept) {
+    await sendWaiverTradeOfficialBroadcast(proposalId);
+
     const deletedCalls = Number(data?.deleted_saved_calls || 0);
     setWaiverTradeMessage(
       deletedCalls > 0
@@ -6230,6 +6285,7 @@ async function respondToWaiverCallTrade(proposalId, accept) {
     );
     await refreshWaiverAfterCallTrade();
   } else {
+    await sendWaiverTradeTargetedNotification(proposalId, "rejected");
     setWaiverTradeMessage("Proposta rifiutata.");
     await loadWaiverCallTrades();
   }

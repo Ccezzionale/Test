@@ -1340,7 +1340,7 @@ const assets = assetsToInsert.map(asset => {
 
     createdProposalId = null;
 
-    await sendTradeNotification(toTeamId);
+    await sendTradeNotification(proposal.id, "proposal");
 
     if (tradeWarningMessage) {
       showMessage(
@@ -2259,18 +2259,28 @@ async function rejectTrade(proposalId) {
   const ok = confirm("Vuoi rifiutare questa proposta?");
   if (!ok) return;
 
-  const { error } = await supabase
+  const { data: rejectedProposal, error } = await supabase
     .from("trade_proposals")
     .update({ status: "rejected" })
     .eq("id", proposalId)
     .eq("to_team", currentTeamId)
-    .eq("status", "pending");
+    .eq("status", "pending")
+    .select("id")
+    .maybeSingle();
 
   if (error) {
     console.error(error);
     alert("Errore durante il rifiuto della proposta.");
     return;
   }
+
+  if (!rejectedProposal) {
+    alert("Questa proposta non è più disponibile.");
+    await refreshAll();
+    return;
+  }
+
+  await sendTradeNotification(proposalId, "rejected");
 
   await refreshAll();
 }
@@ -2553,9 +2563,12 @@ function formatDateTime(value) {
   });
 }
 
-async function sendTradeNotification(toTeamId) {
+async function sendTradeNotification(proposalId, eventType = "proposal") {
   try {
-    console.log("📣 Invio notifica trade a team:", toTeamId);
+    console.log("📣 Invio notifica privata trade:", {
+      proposalId,
+      eventType
+    });
 
     const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
 
@@ -2574,8 +2587,9 @@ async function sendTradeNotification(toTeamId) {
           "apikey": supabaseKey
         },
         body: JSON.stringify({
-          to_team: toTeamId,
-          from_team_name: currentTeamName
+          proposal_id: proposalId,
+          trade_type: "standard",
+          event_type: eventType
         })
       }
     );
@@ -2619,7 +2633,8 @@ async function sendOfficialTradeBroadcast(proposalId) {
           "apikey": supabaseKey
         },
         body: JSON.stringify({
-          proposal_id: proposalId
+          proposal_id: proposalId,
+          trade_type: "standard"
         })
       }
     );
