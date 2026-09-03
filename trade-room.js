@@ -2,7 +2,7 @@ import { supabase, supabaseUrl, supabaseKey } from './supabase.js';
 
 /* ===============================
    TRADE ROOM - LEGA DEGLI EROI
-   Versione 2: scambio pick + giocatori già chiamati
+   Versione 3: scambio pick + giocatori + chiamate waiver settimanali
    Struttura Supabase:
    - draft_order: draft_name, pick_number, team_id
    - draft_picks: id, draft_name, pick_number, team_id, player_name
@@ -10,6 +10,7 @@ import { supabase, supabaseUrl, supabaseKey } from './supabase.js';
    - profiles: email, team_id
    - trade_proposals: from_team, to_team, status, message, draft_name
    - trade_assets: proposal_id, side, asset_type, asset_id, asset_label
+     asset_type waiver_call usa asset_id fase:settimana:squadra_originale
    
 ================================ */
 
@@ -60,6 +61,7 @@ let allPickedPlayers = [];
 let allTeams = [];
 let usedPickNumbers = new Set();
 let allFuturePicks = [];
+let allWaiverCallAssets = [];
 
 let pendingAcceptProposalId = null;
 let requiredCutsCount = 0;
@@ -78,6 +80,12 @@ const sendTradeBtn = document.getElementById("sendTradeBtn");
 const tradeMessage = document.getElementById("tradeMessage");
 const myPicksSummary = document.getElementById("myPicksSummary");
 const theirPicksSummary = document.getElementById("theirPicksSummary");
+const myWaiverCallsPanel = document.getElementById("myWaiverCallsPanel");
+const theirWaiverCallsPanel = document.getElementById("theirWaiverCallsPanel");
+const myWaiverCallsBox = document.getElementById("myWaiverCallsBox");
+const theirWaiverCallsBox = document.getElementById("theirWaiverCallsBox");
+const myWaiverCallsSummary = document.getElementById("myWaiverCallsSummary");
+const theirWaiverCallsSummary = document.getElementById("theirWaiverCallsSummary");
 const activeDraftLabel = document.getElementById("activeDraftLabel");
 const tradeAdminPanel = document.getElementById("tradeAdminPanel");
 const adminTradePhase = document.getElementById("adminTradePhase");
@@ -172,7 +180,9 @@ if (
   e.target.classList.contains("my-player-checkbox") ||
   e.target.classList.contains("their-player-checkbox") ||
   e.target.classList.contains("my-future-pick-checkbox") ||
-  e.target.classList.contains("their-future-pick-checkbox")
+  e.target.classList.contains("their-future-pick-checkbox") ||
+  e.target.classList.contains("my-waiver-call-checkbox") ||
+  e.target.classList.contains("their-waiver-call-checkbox")
 ) {
   updateAssetSummaries();
 }
@@ -318,7 +328,8 @@ async function loadAssetsForTrade() {
   await Promise.all([
     loadPicks(),
     loadPickedPlayers(),
-    loadFuturePicks()
+    loadFuturePicks(),
+    loadWaiverCallAssets()
   ]);
 }
 
@@ -549,6 +560,26 @@ async function loadFuturePicks() {
   allFuturePicks = data || [];
 }
 
+async function loadWaiverCallAssets() {
+  if (isDraftPhase()) {
+    allWaiverCallAssets = [];
+    return;
+  }
+
+  const { data, error } = await supabase.rpc("get_waiver_call_trade_assets", {
+    p_view_team_id: currentTeamId,
+    p_weeks_ahead: 14
+  });
+
+  if (error) {
+    console.error("Errore caricamento chiamate settimanali:", error);
+    allWaiverCallAssets = [];
+    return;
+  }
+
+  allWaiverCallAssets = Array.isArray(data) ? data : [];
+}
+
 /* ========= RENDER FORM ========= */
 function canTradeWithTeam(team) {
   if (team[CONFIG.TEAM_ID_COL] === currentTeamId) return false;
@@ -598,6 +629,11 @@ function showFuturePickAssets() {
 
 function showPlayerAssets() {
   return true;
+}
+
+function showWaiverCallAssets() {
+  return currentTradePhase === "conference_market" ||
+    currentTradePhase === "round_robin_market";
 }
 
 function getTradePhaseLabel() {
@@ -683,6 +719,8 @@ if (showFuturePickAssets()) {
 
 myPicksBox.innerHTML = myAssetGroups.join("");
 
+  renderMyWaiverCallAssets();
+
   updateAssetSummaries();
 }
 
@@ -691,6 +729,7 @@ function renderTheirAssets() {
 
   if (!selectedTeamId) {
     theirPicksBox.innerHTML = "Seleziona prima una squadra...";
+    renderTheirWaiverCallAssets();
     updateAssetSummaries();
     return;
   }
@@ -755,7 +794,141 @@ if (showFuturePickAssets()) {
 
 theirPicksBox.innerHTML = theirAssetGroups.join("");
 
+  renderTheirWaiverCallAssets();
+
   updateAssetSummaries();
+}
+
+function getWaiverCallAssetKey(asset) {
+  return String(
+    asset?.key ||
+      `${asset?.phase || ""}:${asset?.week || ""}:${asset?.original_team_id || ""}`
+  );
+}
+
+function formatWaiverCallLabel(asset) {
+  const originalTeam = asset?.original_team_name || "squadra originale";
+  return `Chiamata sett. ${Number(asset?.week)} · di ${originalTeam} · Slot 1 + Slot 2`;
+}
+
+function formatWaiverCallMeta(asset) {
+  if (Number.isFinite(Number(asset?.priority_number))) {
+    return `Priorità attuale #${Number(asset.priority_number)}`;
+  }
+
+  return "Priorità calcolata quando verrà generato il waiver";
+}
+
+function renderWaiverCallAssetList(container, assets, inputClass) {
+  if (!container) return;
+
+  const selectedKeys = new Set(
+    getCheckedValues(`.${inputClass}`)
+  );
+
+  const tradableAssets = (assets || [])
+    .filter(asset => asset.tradable)
+    .sort((a, b) => {
+      const weekDiff = Number(a.week) - Number(b.week);
+      if (weekDiff !== 0) return weekDiff;
+      return String(a.original_team_name || "").localeCompare(
+        String(b.original_team_name || ""),
+        "it"
+      );
+    });
+
+  if (!tradableAssets.length) {
+    container.innerHTML = '<p class="weekly-call-empty">Nessuna chiamata negoziabile.</p>';
+    return;
+  }
+
+  let lastWeek = null;
+
+  container.innerHTML = tradableAssets.map(asset => {
+    const week = Number(asset.week);
+    const key = getWaiverCallAssetKey(asset);
+    const weekHeading = week !== lastWeek
+      ? `<div class="weekly-call-week-label">Settimana ${week}</div>`
+      : "";
+
+    lastWeek = week;
+
+    return `
+      ${weekHeading}
+      <label class="weekly-call-choice">
+        <input
+          type="checkbox"
+          class="${inputClass}"
+          value="${escapeHtml(key)}"
+          ${selectedKeys.has(key) ? "checked" : ""}
+        />
+        <span class="weekly-call-copy">
+          <strong>Chiamata di ${escapeHtml(asset.original_team_name || "squadra originale")}</strong>
+          <small>${escapeHtml(formatWaiverCallMeta(asset))}</small>
+          ${
+            asset.has_saved_call
+              ? '<small class="weekly-call-saved-warning">Scelta già salvata: sarà cancellata solo se la trade viene accettata</small>'
+              : ""
+          }
+        </span>
+      </label>
+    `;
+  }).join("");
+}
+
+function renderMyWaiverCallAssets() {
+  if (!myWaiverCallsPanel || !myWaiverCallsBox) return;
+
+  const visible = showWaiverCallAssets();
+  myWaiverCallsPanel.hidden = !visible;
+
+  if (!visible) {
+    myWaiverCallsPanel.open = false;
+    myWaiverCallsBox.innerHTML = "";
+    return;
+  }
+
+  const myCalls = allWaiverCallAssets.filter(
+    asset => String(asset.owner_team_id) === String(currentTeamId)
+  );
+
+  renderWaiverCallAssetList(
+    myWaiverCallsBox,
+    myCalls,
+    "my-waiver-call-checkbox"
+  );
+}
+
+function renderTheirWaiverCallAssets() {
+  if (!theirWaiverCallsPanel || !theirWaiverCallsBox) return;
+
+  const visible = showWaiverCallAssets();
+  theirWaiverCallsPanel.hidden = !visible;
+
+  if (!visible) {
+    theirWaiverCallsPanel.open = false;
+    theirWaiverCallsBox.innerHTML = "";
+    return;
+  }
+
+  const selectedTeamId = toTeamSelect?.value || "";
+
+  if (!selectedTeamId) {
+    theirWaiverCallsPanel.open = false;
+    theirWaiverCallsBox.innerHTML =
+      '<p class="weekly-call-empty">Seleziona prima una squadra.</p>';
+    return;
+  }
+
+  const theirCalls = allWaiverCallAssets.filter(
+    asset => String(asset.owner_team_id) === String(selectedTeamId)
+  );
+
+  renderWaiverCallAssetList(
+    theirWaiverCallsBox,
+    theirCalls,
+    "their-waiver-call-checkbox"
+  );
 }
 
 function renderAssetGroup({ title, emptyText, items, inputClass, getValue, getLabel, getBadgeHtml }) {
@@ -982,6 +1155,8 @@ async function sendTradeProposal() {
   const theirSelectedPlayerIds = getCheckedValues(".their-player-checkbox");
   const mySelectedFuturePickIds = getCheckedValues(".my-future-pick-checkbox");
   const theirSelectedFuturePickIds = getCheckedValues(".their-future-pick-checkbox");
+  const mySelectedWaiverCallKeys = getCheckedValues(".my-waiver-call-checkbox");
+  const theirSelectedWaiverCallKeys = getCheckedValues(".their-waiver-call-checkbox");
 
   const myDraftSlotCount =
     mySelectedPickNumbers.length +
@@ -994,12 +1169,14 @@ async function sendTradeProposal() {
   const myAssetCount =
     mySelectedPickNumbers.length +
     mySelectedPlayerIds.length +
-    mySelectedFuturePickIds.length;
+    mySelectedFuturePickIds.length +
+    mySelectedWaiverCallKeys.length;
 
   const theirAssetCount =
     theirSelectedPickNumbers.length +
     theirSelectedPlayerIds.length +
-    theirSelectedFuturePickIds.length;
+    theirSelectedFuturePickIds.length +
+    theirSelectedWaiverCallKeys.length;
 
   const myPlayersOut = mySelectedPlayerIds.length;
   const myPlayersIn = theirSelectedPlayerIds.length;
@@ -1043,6 +1220,26 @@ if (mySelectedFuturePickIds.length !== theirSelectedFuturePickIds.length) {
   );
   return;
 }
+
+  const selectedWaiverCallKeys = new Set([
+    ...mySelectedWaiverCallKeys,
+    ...theirSelectedWaiverCallKeys
+  ]);
+
+  const hasSavedWaiverSelection = allWaiverCallAssets.some(
+    asset =>
+      selectedWaiverCallKeys.has(getWaiverCallAssetKey(asset)) &&
+      asset.has_saved_call
+  );
+
+  if (hasSavedWaiverSelection) {
+    const confirmed = confirm(
+      "Una o più chiamate selezionate hanno già una giocata salvata. " +
+      "La giocata sarà cancellata solo se la trade verrà accettata. Continuare?"
+    );
+
+    if (!confirmed) return;
+  }
    
   if (!isDraftPhase()) {
     const warnings = [];
@@ -1078,6 +1275,7 @@ if (mySelectedFuturePickIds.length !== theirSelectedFuturePickIds.length) {
 
   sendTradeBtn.disabled = true;
   sendTradeBtn.textContent = "Invio in corso...";
+  let createdProposalId = null;
 
   try {
     await loadAssetsForTrade();
@@ -1090,7 +1288,9 @@ if (mySelectedFuturePickIds.length !== theirSelectedFuturePickIds.length) {
       mySelectedPlayerIds,
       theirSelectedPlayerIds,
       mySelectedFuturePickIds,
-      theirSelectedFuturePickIds
+      theirSelectedFuturePickIds,
+      mySelectedWaiverCallKeys,
+      theirSelectedWaiverCallKeys
     });
 
     const fromAssets = assetsToInsert.filter(asset => asset.side === "from");
@@ -1115,6 +1315,7 @@ if (mySelectedFuturePickIds.length !== theirSelectedFuturePickIds.length) {
       .single();
 
     if (proposalError) throw proposalError;
+    createdProposalId = proposal.id;
 
 const sideCounters = {
   from: 0,
@@ -1137,6 +1338,8 @@ const assets = assetsToInsert.map(asset => {
 
     if (assetsError) throw assetsError;
 
+    createdProposalId = null;
+
     await sendTradeNotification(toTeamId);
 
     if (tradeWarningMessage) {
@@ -1155,7 +1358,21 @@ const assets = assetsToInsert.map(asset => {
 
   } catch (err) {
     console.error(err);
-    showMessage("Errore durante l’invio della proposta.", "error");
+
+    if (createdProposalId) {
+      const { error: cleanupError } = await supabase
+        .from("trade_proposals")
+        .update({ status: "cancelled" })
+        .eq("id", createdProposalId)
+        .eq("from_team", currentTeamId)
+        .eq("status", "pending");
+
+      if (cleanupError) {
+        console.error("Errore pulizia proposta incompleta:", cleanupError);
+      }
+    }
+
+    showMessage(err?.message || "Errore durante l’invio della proposta.", "error");
   } finally {
     sendTradeBtn.disabled = false;
     sendTradeBtn.textContent = "Invia proposta";
@@ -1170,7 +1387,9 @@ function buildTradeAssets({
   mySelectedPlayerIds,
   theirSelectedPlayerIds,
   mySelectedFuturePickIds,
-  theirSelectedFuturePickIds
+  theirSelectedFuturePickIds,
+  mySelectedWaiverCallKeys,
+  theirSelectedWaiverCallKeys
 }) {
   const assets = [];
 
@@ -1225,6 +1444,24 @@ function buildTradeAssets({
     }
   });
 
+  mySelectedWaiverCallKeys.forEach(callKey => {
+    const call = allWaiverCallAssets.find(asset =>
+      getWaiverCallAssetKey(asset) === String(callKey) &&
+      String(asset.owner_team_id) === String(currentTeamId) &&
+      asset.tradable
+    );
+
+    if (call) {
+      assets.push({
+        proposal_id: proposalId,
+        side: "from",
+        asset_type: "waiver_call",
+        asset_id: getWaiverCallAssetKey(call),
+        asset_label: formatWaiverCallLabel(call)
+      });
+    }
+  });
+
   theirSelectedPickNumbers.forEach(pickNumber => {
     const pick = allPicks.find(p =>
       String(p[CONFIG.PICK_NUMBER_COL]) === String(pickNumber) &&
@@ -1272,6 +1509,24 @@ function buildTradeAssets({
         asset_type: "future_pick",
         asset_id: String(pick.id),
         asset_label: formatFuturePickLabel(pick)
+      });
+    }
+  });
+
+  theirSelectedWaiverCallKeys.forEach(callKey => {
+    const call = allWaiverCallAssets.find(asset =>
+      getWaiverCallAssetKey(asset) === String(callKey) &&
+      String(asset.owner_team_id) === String(toTeamId) &&
+      asset.tradable
+    );
+
+    if (call) {
+      assets.push({
+        proposal_id: proposalId,
+        side: "to",
+        asset_type: "waiver_call",
+        asset_id: getWaiverCallAssetKey(call),
+        asset_label: formatWaiverCallLabel(call)
       });
     }
   });
@@ -1627,6 +1882,16 @@ async function acceptTrade(proposalId) {
     ).length;
 
     const receiverPlayerBalance = fromPlayerCount - toPlayerCount;
+    const waiverCallAssetIds = new Set(
+      (assets || [])
+        .filter(asset => asset.asset_type === "waiver_call")
+        .map(asset => String(asset.asset_id))
+    );
+    const hasSavedWaiverSelection = allWaiverCallAssets.some(
+      call =>
+        waiverCallAssetIds.has(getWaiverCallAssetKey(call)) &&
+        call.has_saved_call
+    );
 
     let confirmMessage = "Confermi di voler accettare questa trade?";
 
@@ -1634,6 +1899,11 @@ async function acceptTrade(proposalId) {
       confirmMessage =
         `Questa trade ti farà ricevere ${receiverPlayerBalance} giocatore/i netto/i. ` +
         `Dopo l'accettazione dovrai svincolare ${receiverPlayerBalance} giocatore/i per completarla. Confermi?`;
+    }
+
+    if (hasSavedWaiverSelection) {
+      confirmMessage +=
+        " Una o più chiamate hanno già una giocata salvata: sarà cancellata quando la trade verrà completata.";
     }
 
     const ok = confirm(confirmMessage);
@@ -1651,7 +1921,7 @@ async function acceptTrade(proposalId) {
       }
  } else {
   await sendOfficialTradeBroadcast(proposalId);
-  alert("Trade accettata. Pick e giocatori sono stati aggiornati.");
+  alert("Trade accettata. Tutti gli asset sono stati aggiornati.");
 }
 
     await refreshAll();
@@ -1921,6 +2191,23 @@ function assetBelongsToTeam(asset, teamId) {
     return Boolean(player && player[CONFIG.PICKS_OWNER_COL] === teamId);
   }
 
+  if (asset.asset_type === "future_pick") {
+    const pick = allFuturePicks.find(p => String(p.id) === String(asset.asset_id));
+    return Boolean(pick && String(pick.owner_team_id) === String(teamId));
+  }
+
+  if (asset.asset_type === "waiver_call") {
+    const call = allWaiverCallAssets.find(
+      item => getWaiverCallAssetKey(item) === String(asset.asset_id)
+    );
+
+    return Boolean(
+      call &&
+      call.tradable &&
+      String(call.owner_team_id) === String(teamId)
+    );
+  }
+
   return false;
 }
 
@@ -1982,13 +2269,29 @@ function updateAssetSummaries() {
   const theirPlayerCount = getCheckedValues(".their-player-checkbox").length;
   const myFuturePickCount = getCheckedValues(".my-future-pick-checkbox").length;
   const theirFuturePickCount = getCheckedValues(".their-future-pick-checkbox").length;
+  const myWaiverCallCount = getCheckedValues(".my-waiver-call-checkbox").length;
+  const theirWaiverCallCount = getCheckedValues(".their-waiver-call-checkbox").length;
 
-  const myCount = myPickCount + myPlayerCount + myFuturePickCount;
-  const theirCount = theirPickCount + theirPlayerCount + theirFuturePickCount;
+  const myCount = myPickCount + myPlayerCount + myFuturePickCount + myWaiverCallCount;
+  const theirCount = theirPickCount + theirPlayerCount + theirFuturePickCount + theirWaiverCallCount;
+
+  const myBreakdown = [
+    myPickCount ? `${myPickCount} pick` : "",
+    myPlayerCount ? `${myPlayerCount} giocator${myPlayerCount > 1 ? "i" : "e"}` : "",
+    myFuturePickCount ? `${myFuturePickCount} futur${myFuturePickCount > 1 ? "e" : "a"}` : "",
+    myWaiverCallCount ? `${myWaiverCallCount} chiamat${myWaiverCallCount > 1 ? "e" : "a"}` : ""
+  ].filter(Boolean).join(", ");
+
+  const theirBreakdown = [
+    theirPickCount ? `${theirPickCount} pick` : "",
+    theirPlayerCount ? `${theirPlayerCount} giocator${theirPlayerCount > 1 ? "i" : "e"}` : "",
+    theirFuturePickCount ? `${theirFuturePickCount} futur${theirFuturePickCount > 1 ? "e" : "a"}` : "",
+    theirWaiverCallCount ? `${theirWaiverCallCount} chiamat${theirWaiverCallCount > 1 ? "e" : "a"}` : ""
+  ].filter(Boolean).join(", ");
 
   if (myPicksSummary) {
     myPicksSummary.textContent = myCount
-      ? `${myCount} asset selezionat${myCount > 1 ? "i" : "o"} (${myPickCount} pick, ${myPlayerCount} giocatori, ${myFuturePickCount} future)`
+      ? `${myCount} asset selezionat${myCount > 1 ? "i" : "o"}${myBreakdown ? ` (${myBreakdown})` : ""}`
       : "Seleziona i tuoi asset";
   }
 
@@ -1997,10 +2300,22 @@ function updateAssetSummaries() {
     const selectedTeamName = selectedTeamId ? getTeamName(selectedTeamId) : "";
 
     theirPicksSummary.textContent = theirCount
-      ? `${theirCount} asset selezionat${theirCount > 1 ? "i" : "o"} (${theirPickCount} pick, ${theirPlayerCount} giocatori, ${theirFuturePickCount} future)`
+      ? `${theirCount} asset selezionat${theirCount > 1 ? "i" : "o"}${theirBreakdown ? ` (${theirBreakdown})` : ""}`
       : selectedTeamId
         ? `Asset disponibili di ${selectedTeamName}`
         : "Seleziona prima una squadra";
+  }
+
+  if (myWaiverCallsSummary) {
+    myWaiverCallsSummary.textContent = myWaiverCallCount
+      ? `${myWaiverCallCount} selezionat${myWaiverCallCount > 1 ? "e" : "a"}`
+      : "Nessuna";
+  }
+
+  if (theirWaiverCallsSummary) {
+    theirWaiverCallsSummary.textContent = theirWaiverCallCount
+      ? `${theirWaiverCallCount} selezionat${theirWaiverCallCount > 1 ? "e" : "a"}`
+      : "Nessuna";
   }
 }
 
