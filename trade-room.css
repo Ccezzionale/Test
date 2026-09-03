@@ -429,7 +429,9 @@ button:disabled{
 }
 
 .cut-player-choice {
-  display: block;
+  display: flex;
+  align-items: center;
+  gap: 9px;
   padding: 10px 12px;
   margin: 8px 0;
   border: 1px solid #ddd;
@@ -438,7 +440,31 @@ button:disabled{
 }
 
 .cut-player-choice input {
-  margin-right: 8px;
+  margin: 0;
+  flex: 0 0 auto;
+}
+
+.cut-player-copy{
+  min-width:0;
+  display:flex;
+  align-items:center;
+  gap:8px;
+  flex-wrap:wrap;
+}
+
+.cut-player-incoming-badge{
+  display:inline-flex;
+  align-items:center;
+  padding:4px 8px;
+  border-radius:999px;
+  color:#075985;
+  background:#e0f2fe;
+  border:1px solid #7dd3fc;
+  font-size:.68rem;
+  font-weight:1000;
+  line-height:1;
+  text-transform:uppercase;
+  letter-spacing:.04em;
 }
 
 .trade-modal-actions {

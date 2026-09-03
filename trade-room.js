@@ -1941,21 +1941,48 @@ function openCutPlayersModal(proposalId, cutsCount, tradeAssets, proposal) {
       ? "from"
       : "to";
 
+  const myIncomingSide = myOutgoingSide === "from" ? "to" : "from";
+
   const outgoingPlayerIds = new Set(
     tradeAssets
       .filter(asset => asset.side === myOutgoingSide && asset.asset_type === "player")
       .map(asset => String(asset.asset_id))
   );
 
-const cuttablePlayers = allPickedPlayers.filter(player => {
-  const isMine = player[CONFIG.PICKS_OWNER_COL] === currentTeamId;
-  const isOutgoing = outgoingPlayerIds.has(String(player[CONFIG.PICKS_ID_COL]));
+  const incomingPlayerIds = new Set(
+    tradeAssets
+      .filter(asset => asset.side === myIncomingSide && asset.asset_type === "player")
+      .map(asset => String(asset.asset_id))
+  );
 
-  const isNormalU21 =
-    player.is_u21_slot === true;
+const cuttablePlayers = allPickedPlayers
+  .filter(player => {
+    const playerId = String(player[CONFIG.PICKS_ID_COL]);
+    const isMine = player[CONFIG.PICKS_OWNER_COL] === currentTeamId;
+    const isIncoming = incomingPlayerIds.has(playerId);
+    const isOutgoing = outgoingPlayerIds.has(playerId);
 
-  return isMine && !isOutgoing && !isNormalU21;
-});
+    const isNormalU21 = player.is_u21_slot === true;
+
+    return (isMine || isIncoming) && !isOutgoing && !isNormalU21;
+  })
+  .map(player => ({
+    ...player,
+    is_incoming_trade_player: incomingPlayerIds.has(
+      String(player[CONFIG.PICKS_ID_COL])
+    )
+  }))
+  .sort((a, b) => {
+    const incomingDiff =
+      Number(b.is_incoming_trade_player) - Number(a.is_incoming_trade_player);
+
+    if (incomingDiff !== 0) return incomingDiff;
+
+    return String(a.player_name || a.name || "").localeCompare(
+      String(b.player_name || b.name || ""),
+      "it"
+    );
+  });
 
   if (!cuttablePlayers.length) {
     alert("Non ci sono giocatori disponibili da svincolare. Gli Under 21 slot non possono essere svincolati.");
@@ -1964,7 +1991,8 @@ const cuttablePlayers = allPickedPlayers.filter(player => {
 
   cutPlayersModalText.textContent =
     `Hai una trade in attesa di svincolo. ` +
-    `Devi selezionare ${cutsCount} giocatore/i da svincolare per completarla.`;
+    `Devi selezionare ${cutsCount} giocatore/i da svincolare per completarla. ` +
+    `Puoi scegliere anche uno dei giocatori in arrivo.`;
 
   cutPlayersList.innerHTML = cuttablePlayers.map(player => `
     <label class="cut-player-choice">
@@ -1973,7 +2001,14 @@ const cuttablePlayers = allPickedPlayers.filter(player => {
         class="cut-player-checkbox"
         value="${escapeHtml(player.player_id)}"
       />
-      ${formatTradeAssetLabelHtml(formatPlayerLabel(player))}
+      <span class="cut-player-copy">
+        ${formatTradeAssetLabelHtml(formatPlayerLabel(player))}
+        ${
+          player.is_incoming_trade_player
+            ? '<span class="cut-player-incoming-badge">In arrivo</span>'
+            : ""
+        }
+      </span>
     </label>
   `).join("");
 
