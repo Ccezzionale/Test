@@ -2082,6 +2082,7 @@ function countSelectedNormalU21Players(selectedPlayerIds) {
 
 async function confirmTradeWithCuts() {
   const selectedCutPlayerIds = getCheckedValues(".cut-player-checkbox");
+  const completedProposalId = pendingAcceptProposalId;
 
   if (selectedCutPlayerIds.length !== requiredCutsCount) {
     cutPlayersModalMessage.textContent =
@@ -2101,7 +2102,7 @@ async function confirmTradeWithCuts() {
 
   try {
     const { data, error } = await supabase.rpc("cut_trade_players", {
-      p_proposal_id: pendingAcceptProposalId,
+      p_proposal_id: completedProposalId,
       p_player_ids: selectedCutPlayerIds
     });
 
@@ -2110,7 +2111,7 @@ async function confirmTradeWithCuts() {
     closeCutPlayersModal();
 
 if (data?.trade_completed) {
-  await sendOfficialTradeBroadcast(pendingAcceptProposalId);
+  await sendOfficialTradeBroadcast(completedProposalId);
   alert(`Svincoli completati. Trade conclusa.`);
 } else {
   alert(`Svincoli registrati.`);
