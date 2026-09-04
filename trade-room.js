@@ -660,14 +660,123 @@ function renderTeamSelect() {
     });
 }
 
+function sortTradePlayersByRole(a, b) {
+  const aRole = a.role || a.role_mantra || "";
+  const bRole = b.role || b.role_mantra || "";
+
+  const aRank = getTradeMainRoleRank(aRole);
+  const bRank = getTradeMainRoleRank(bRole);
+
+  if (aRank !== bRank) {
+    return aRank - bRank;
+  }
+
+  const aDetail = getTradeRoleDetailRank(aRole);
+  const bDetail = getTradeRoleDetailRank(bRole);
+
+  if (aDetail !== bDetail) {
+    return aDetail - bDetail;
+  }
+
+  const aName = a.player_name || a.name || "";
+  const bName = b.player_name || b.name || "";
+
+  return aName.localeCompare(bName, "it", {
+    sensitivity: "base"
+  });
+}
+
+function getTradeMainRoleRank(roleValue) {
+  const rawRole = String(roleValue || "").toUpperCase().trim();
+
+  const roles = rawRole
+    .split(/[;,/|\s]+/)
+    .map(role => role.trim())
+    .filter(Boolean);
+
+  // Portieri
+  if (
+    roles.includes("P") ||
+    roles.includes("POR") ||
+    roles.includes("PORTIERE") ||
+    roles.includes("PORTIERI")
+  ) {
+    return 1;
+  }
+
+  // Difensori
+  if (
+    roles.some(role =>
+      ["D", "DD", "DC", "DS", "B", "E"].includes(role)
+    )
+  ) {
+    return 2;
+  }
+
+  // Centrocampisti
+  if (
+    roles.some(role =>
+      ["C", "M", "T", "W"].includes(role)
+    )
+  ) {
+    return 3;
+  }
+
+  // Attaccanti
+  if (
+    roles.some(role =>
+      ["A", "PC"].includes(role)
+    )
+  ) {
+    return 4;
+  }
+
+  return 99;
+}
+
+function getTradeRoleDetailRank(roleValue) {
+  const rawRole = String(roleValue || "").toUpperCase().trim();
+
+  const roles = rawRole
+    .split(/[;,/|\s]+/)
+    .map(role => role.trim())
+    .filter(Boolean);
+
+  const order = [
+    "P",
+    "POR",
+    "DC",
+    "DD",
+    "DS",
+    "B",
+    "E",
+    "M",
+    "C",
+    "T",
+    "W",
+    "A",
+    "PC"
+  ];
+
+  for (const role of order) {
+    if (roles.includes(role)) {
+      return order.indexOf(role) + 1;
+    }
+  }
+
+  return 999;
+}
+
 function renderMyAssets() {
   const myPicks = allPicks.filter(
     pick => pick[CONFIG.PICK_OWNER_COL] === currentTeamId
   );
 
-  const myPlayers = allPickedPlayers.filter(
+const myPlayers = allPickedPlayers
+  .filter(
     player => player[CONFIG.PICKS_OWNER_COL] === currentTeamId
-  );
+  )
+  .sort(sortTradePlayersByRole);
 
    const myFuturePicks = allFuturePicks.filter(
   pick => pick.owner_team_id === currentTeamId
@@ -740,9 +849,11 @@ function renderTheirAssets() {
     pick => pick[CONFIG.PICK_OWNER_COL] === selectedTeamId
   );
 
-  const theirPlayers = allPickedPlayers.filter(
+const theirPlayers = allPickedPlayers
+  .filter(
     player => player[CONFIG.PICKS_OWNER_COL] === selectedTeamId
-  );
+  )
+  .sort(sortTradePlayersByRole);
    
 const theirFuturePicks = allFuturePicks.filter(
   pick => pick.owner_team_id === selectedTeamId
