@@ -131,6 +131,7 @@ let draggedAdminGroupKey = null;
 
 let myCompensatoryCalls = [];
 let activeCompensatoryCallId = null;
+let activeCompensatoryChoiceRound = 1;
 let activeInjuryReserveRows = [];
 let currentTeamIrPlayerIds = new Set();
 
@@ -220,6 +221,7 @@ function setPlayerSelectionContext(text = "") {
 function clearPlayerSelectionState() {
   activeWaiverOrderId = null;
   activeCompensatoryCallId = null;
+  activeCompensatoryChoiceRound = 1;
   playerSelectionOrigin = null;
 
   document
@@ -260,7 +262,7 @@ function beginWaiverPlayerSelection(orderId) {
   );
 }
 
-function beginCompensatoryPlayerSelection(callId) {
+function beginCompensatoryPlayerSelection(callId, choiceRound = 1) {
   const call = myCompensatoryCalls.find(
     item => String(item.id) === String(callId)
   );
@@ -270,15 +272,19 @@ function beginCompensatoryPlayerSelection(callId) {
     return;
   }
 
+  const normalizedRound = Number(choiceRound) === 2 ? 2 : 1;
+
   setActiveCompensatoryCallCard(callId);
+  activeCompensatoryChoiceRound = normalizedRound;
 
   playerSelectionOrigin = {
     type: "compensatory",
-    id: String(callId)
+    id: String(callId),
+    choiceRound: normalizedRound
   };
 
   setPlayerSelectionContext(
-    `🎯 Stai scegliendo il giocatore da acquistare per Compensativa #${call.priority_order || "-"}`
+    `🎯 Stai scegliendo la ${normalizedRound}ª scelta per Compensativa #${call.priority_order || "-"}`
   );
 
   if (isMobileWaiverView()) {
@@ -550,6 +556,18 @@ function getCompensatoryModeLabel(call) {
   return call?.requires_player_out
     ? "sostituzione 1→1"
     : "solo ingresso";
+}
+
+function getCompensatoryStatusLabel(status) {
+  const normalizedStatus = String(status || "pending").toLowerCase();
+
+  if (normalizedStatus === "submitted") return "salvata";
+  if (normalizedStatus === "second_round") return "secondo giro in elaborazione";
+  if (normalizedStatus === "won") return "assegnata";
+  if (normalizedStatus === "lost") return "non assegnata";
+  if (normalizedStatus === "manual_required") return "da risolvere manualmente";
+  if (normalizedStatus === "cancelled") return "annullata";
+  return "da compilare";
 }
 
 function normalizeCompensatoryTier(value) {
@@ -1096,6 +1114,7 @@ function setActiveCallCard(orderId) {
   if (isAdminViewingAsTeam()) return;
   activeWaiverOrderId = orderId;
   activeCompensatoryCallId = null;
+  activeCompensatoryChoiceRound = 1;
 
   document.querySelectorAll(".dynamic-call-card").forEach(card => {
     card.classList.toggle(
@@ -1606,6 +1625,7 @@ function blockTeamWriteWhileViewingAs() {
 async function refreshTeamScopedWaiverView() {
   activeWaiverOrderId = null;
   activeCompensatoryCallId = null;
+  activeCompensatoryChoiceRound = 1;
 
   myOrderRows = [];
   mySavedCalls = [];
@@ -2400,6 +2420,11 @@ async function renderPublicCompensatoryOrder() {
       calls.forEach(call => {
         const team = teamMap[call.team_id];
         const callIsPublic = call.is_revealed === true;
+        const awardedPlayer =
+          call.awarded_player ||
+          (Number(call.winning_round) === 2
+            ? call.player_in_second
+            : call.player_in);
         let statusClass = "waiting";
         let resultText = "";
 
@@ -2412,15 +2437,25 @@ async function renderPublicCompensatoryOrder() {
           resultText = "Nessuna chiamata registrata.";
         } else if (call.status === "won") {
           statusClass = "won";
+          const winningRoundText = Number(call.winning_round) === 2
+            ? " · 2ª scelta"
+            : Number(call.winning_round) === 1
+              ? " · 1ª scelta"
+              : "";
           resultText = call.requires_player_out && call.player_out
-            ? `🟢 Prende ${call.player_in}<br>🔻 Svincola ${call.player_out}`
-            : `🟢 Prende ${call.player_in}`;
+            ? `🟢 Prende ${awardedPlayer || "-"}${winningRoundText}<br>🔻 Svincola ${call.player_out}`
+            : `🟢 Prende ${awardedPlayer || "-"}${winningRoundText}`;
+        } else if (call.status === "manual_required") {
+          statusClass = "lost";
+          resultText = "⚠️ Prime due scelte non disponibili · gestione manuale";
         } else if (call.status === "lost") {
           statusClass = "lost";
           resultText = `🔴 Perde ${call.player_in}`;
         } else {
           statusClass = "pending";
-          resultText = `⏳ Chiama ${call.player_in}`;
+          resultText = call.player_in_second
+            ? `⏳ 1ª ${call.player_in} · 2ª ${call.player_in_second}`
+            : `⏳ Chiama ${call.player_in}`;
         }
 
         const rowDiv = document.createElement("div");
@@ -2844,13 +2879,14 @@ function renderMyCompensatoryCalls() {
       </div>
 
       <label class="player-choice-label">
-        ${requiresPlayerOut ? `<span class="call-step-number">1</span>` : ""}
-        Giocatore da acquistare
+        <span class="call-step-number">1</span>
+        Prima scelta
       </label>
       <input
         type="text"
         class="compensatory-player-in ${call.player_in ? "has-player-selection" : ""}"
         data-call-id="${call.id}"
+        data-player-id="${call.player_in_id || ""}"
         readonly
         placeholder="Nessun giocatore selezionato"
         value="${call.player_in || ""}"
@@ -2862,15 +2898,43 @@ function renderMyCompensatoryCalls() {
           type="button"
           class="secondary-btn choose-player-btn select-compensatory-call-btn"
           data-call-id="${call.id}"
+          data-choice-round="1"
           ${isEditable ? "" : "disabled"}
         >
-          ${call.player_in ? "✏️ Cambia giocatore" : "🔍 Scegli giocatore"}
+          ${call.player_in ? "✏️ Cambia prima scelta" : "🔍 Scegli prima scelta"}
+        </button>
+      </div>
+
+      <label class="player-choice-label">
+        <span class="call-step-number">2</span>
+        Seconda scelta (usata soltanto se la prima non è disponibile)
+      </label>
+      <input
+        type="text"
+        class="compensatory-player-in-second ${call.player_in_second ? "has-player-selection" : ""}"
+        data-call-id="${call.id}"
+        data-player-id="${call.player_in_second_id || ""}"
+        readonly
+        placeholder="Nessun giocatore selezionato"
+        value="${call.player_in_second || ""}"
+        ${isEditable ? "" : "disabled"}
+      />
+
+      <div class="player-choice-actions">
+        <button
+          type="button"
+          class="secondary-btn choose-player-btn select-compensatory-call-btn"
+          data-call-id="${call.id}"
+          data-choice-round="2"
+          ${isEditable ? "" : "disabled"}
+        >
+          ${call.player_in_second ? "✏️ Cambia seconda scelta" : "🔍 Scegli seconda scelta"}
         </button>
       </div>
 
       ${requiresPlayerOut ? `
         <label class="player-choice-label">
-          <span class="call-step-number">2</span>
+          <span class="call-step-number">3</span>
           Giocatore da svincolare
         </label>
         <select
@@ -2904,8 +2968,8 @@ function renderMyCompensatoryCalls() {
 
       <p class="call-message">
         ${
-          call.player_in
-            ? `${isInjuryReserveCall ? "✅ Injury Reserve attivata" : "✅ Compensativa salvata"}: ${call.player_in}${requiresPlayerOut && call.player_out ? ` · sostituisce ${call.player_out}` : ""}`
+          call.player_in && call.player_in_second
+            ? `${isInjuryReserveCall ? "✅ Injury Reserve attivata" : "✅ Compensativa salvata"}: 1ª ${call.player_in} · 2ª ${call.player_in_second}${requiresPlayerOut && call.player_out ? ` · sostituisce ${call.player_out}` : ""}`
             : isCompensatoryOpen(call)
               ? isInjuryReserveCall
                 ? "Lo slot IR non è ancora consumato. Si attiverà soltanto quando salvi questa chiamata."
@@ -2913,7 +2977,9 @@ function renderMyCompensatoryCalls() {
               : "Compensative chiuse o non disponibili."
         }
         <br>
-        Stato: <strong>${call.status || "pending"}</strong>
+        Stato: <strong>${getCompensatoryStatusLabel(call.status)}</strong>
+        ${call.status === "won" && call.winning_round ? `<br>Assegnata con la ${Number(call.winning_round) === 2 ? "seconda" : "prima"} scelta: <strong>${call.awarded_player || (Number(call.winning_round) === 2 ? call.player_in_second : call.player_in) || "-"}</strong>` : ""}
+        ${call.status === "manual_required" ? "<br>⚠️ Entrambe le scelte non sono andate a buon fine: contatta l’admin." : ""}
       </p>
     `;
 
@@ -2922,7 +2988,10 @@ function renderMyCompensatoryCalls() {
 
   document.querySelectorAll(".select-compensatory-call-btn").forEach(button => {
     button.addEventListener("click", () => {
-      beginCompensatoryPlayerSelection(button.dataset.callId);
+      beginCompensatoryPlayerSelection(
+        button.dataset.callId,
+        Number(button.dataset.choiceRound || 1)
+      );
     });
   });
 
@@ -3043,8 +3112,29 @@ async function saveCompensatoryCall(callId) {
   const playerIn = playerInEl?.value.trim() || "";
   const playerInId = playerInEl?.dataset.playerId || call.player_in_id || null;
 
+  const playerInSecondEl = document.querySelector(
+    `.compensatory-player-in-second[data-call-id="${callId}"]`
+  );
+
+  const playerInSecond = playerInSecondEl?.value.trim() || "";
+  const playerInSecondId =
+    playerInSecondEl?.dataset.playerId || call.player_in_second_id || null;
+
   if (!playerIn || !playerInId) {
-    setMessage("Seleziona il giocatore da prendere con la compensativa.", true);
+    setMessage("Seleziona la prima scelta della compensativa.", true);
+    return;
+  }
+
+  if (!playerInSecond || !playerInSecondId) {
+    setMessage("Seleziona anche la seconda scelta della compensativa.", true);
+    return;
+  }
+
+  if (
+    String(playerInId) === String(playerInSecondId) ||
+    normalizePlayerName(playerIn) === normalizePlayerName(playerInSecond)
+  ) {
+    setMessage("Prima e seconda scelta devono essere due giocatori diversi.", true);
     return;
   }
 
@@ -3076,8 +3166,13 @@ async function saveCompensatoryCall(callId) {
     .update({
       player_in: playerIn,
       player_in_id: playerInId,
+      player_in_second: playerInSecond,
+      player_in_second_id: playerInSecondId,
       player_out: playerOut,
       player_out_id: playerOutId,
+      awarded_player: null,
+      awarded_player_id: null,
+      winning_round: null,
       status: "submitted",
       updated_at: new Date().toISOString()
     })
@@ -3129,8 +3224,13 @@ async function resetCompensatoryCall(callId) {
     .update({
       player_in: null,
       player_in_id: null,
+      player_in_second: null,
+      player_in_second_id: null,
       player_out: null,
       player_out_id: null,
+      awarded_player: null,
+      awarded_player_id: null,
+      winning_round: null,
       status: "pending",
       updated_at: new Date().toISOString()
     })
@@ -3174,23 +3274,47 @@ function fillActiveCallWithPlayer(player) {
 
   if (activeCompensatoryCallId) {
     const callId = String(activeCompensatoryCallId);
+    const choiceRound = Number(activeCompensatoryChoiceRound) === 2 ? 2 : 1;
+    const inputClass = choiceRound === 2
+      ? "compensatory-player-in-second"
+      : "compensatory-player-in";
+    const otherInputClass = choiceRound === 2
+      ? "compensatory-player-in"
+      : "compensatory-player-in-second";
 
     const input = document.querySelector(
-      `.compensatory-player-in[data-call-id="${callId}"]`
+      `.${inputClass}[data-call-id="${callId}"]`
     );
 
     if (!input) return;
+
+    const otherInput = document.querySelector(
+      `.${otherInputClass}[data-call-id="${callId}"]`
+    );
+
+    if (
+      otherInput &&
+      (
+        String(otherInput.dataset.playerId || "") === String(player.id || "") ||
+        normalizePlayerName(otherInput.value) === normalizePlayerName(player.name)
+      )
+    ) {
+      setMessage("Prima e seconda scelta devono essere due giocatori diversi.", true);
+      return;
+    }
 
     input.value = player.role ? `${player.name} (${player.role})` : player.name;
     input.dataset.playerId = player.id || "";
     input.classList.add("has-player-selection");
 
     const chooseButton = document.querySelector(
-      `.select-compensatory-call-btn[data-call-id="${callId}"]`
+      `.select-compensatory-call-btn[data-call-id="${callId}"][data-choice-round="${choiceRound}"]`
     );
 
     if (chooseButton) {
-      chooseButton.textContent = "✏️ Cambia giocatore";
+      chooseButton.textContent = choiceRound === 2
+        ? "✏️ Cambia seconda scelta"
+        : "✏️ Cambia prima scelta";
     }
 
     document
@@ -3201,8 +3325,12 @@ function fillActiveCallWithPlayer(player) {
       player.rowElement.classList.add("selected-player");
     }
 
-    setMessage(`Giocatore da acquistare selezionato: ${input.value}`);
-    finishPlayerSelection(origin || { type: "compensatory", id: callId });
+    setMessage(`${choiceRound}ª scelta selezionata: ${input.value}`);
+    finishPlayerSelection(origin || {
+      type: "compensatory",
+      id: callId,
+      choiceRound
+    });
     return;
   }
 
@@ -3616,8 +3744,10 @@ async function loadAllCompensatoryCalls() {
 
       const submitted =
         call.status === "submitted" ||
+        call.status === "second_round" ||
         call.status === "won" ||
-        call.status === "lost";
+        call.status === "lost" ||
+        call.status === "manual_required";
 
       const teamOptions = teamsCache
         .map(item => `
@@ -3640,7 +3770,13 @@ async function loadAllCompensatoryCalls() {
           <span>${getCompensatoryTierShortLabel(call)} · ${getCompensatoryModeLabel(call)} · ${getCompensatoryReasonLabel(call)}</span>
 
           <span>
-            ${submitted ? "✅ Chiamata ricevuta" : "⏳ Nessuna chiamata ricevuta"}
+            ${
+              call.status === "manual_required"
+                ? "⚠️ Da risolvere manualmente: fallite entrambe le scelte"
+                : submitted
+                  ? "✅ Chiamata ricevuta"
+                  : "⏳ Nessuna chiamata ricevuta"
+            }
           </span>
 
           ${
@@ -3839,8 +3975,13 @@ async function updateAdminCompensatoryCall(callId) {
         ? {
             player_in: null,
             player_in_id: null,
+            player_in_second: null,
+            player_in_second_id: null,
             player_out: null,
             player_out_id: null,
+            awarded_player: null,
+            awarded_player_id: null,
+            winning_round: null,
             status: "pending"
           }
         : requiresPlayerOut
@@ -4343,7 +4484,7 @@ async function hasSubmittedHighCompensatoryCalls() {
     .eq("week", currentSettings.active_week)
     .eq("phase", currentSettings.active_phase)
     .eq("priority_tier", "high")
-    .eq("status", "submitted");
+    .in("status", ["submitted", "second_round"]);
 
   if (error) throw error;
   return Number(count || 0) > 0;
@@ -4663,7 +4804,6 @@ async function calculateCompensatoryResults(priorityTier = "normal") {
   if (!currentSettings) return;
 
   const tier = normalizeCompensatoryTier(priorityTier);
-  const tierLabel = getCompensatoryTierLabel(tier).toLowerCase();
 
   try {
     if (tier === "high" && await hasCalculatedRegularWaiverCalls()) {
@@ -4686,95 +4826,34 @@ async function calculateCompensatoryResults(priorityTier = "normal") {
     return;
   }
 
-  const { data: calls, error } = await supabase
+  const { data: processed, error } = await supabase.rpc(
+    "admin_process_waiver_compensatory_tier",
+    {
+      p_week: Number(currentSettings.active_week),
+      p_phase: currentSettings.active_phase,
+      p_priority_tier: tier
+    }
+  );
+
+  if (error) {
+    console.error("Errore calcolo compensative:", error);
+    alert("Errore calcolo compensative: " + error.message);
+    return;
+  }
+
+  const { count: manualCount, error: manualCountError } = await supabase
     .from("waiver_compensatory_calls")
-    .select("*")
+    .select("id", { count: "exact", head: true })
     .eq("week", currentSettings.active_week)
     .eq("phase", currentSettings.active_phase)
     .eq("priority_tier", tier)
-    .eq("status", "submitted")
-    .order("priority_order", { ascending: true });
+    .eq("status", "manual_required");
 
-  if (error) {
-    console.error("Errore caricamento compensative:", error);
-    alert("Errore caricamento compensative.");
-    return;
+  if (manualCountError) {
+    console.error("Errore conteggio compensative manuali:", manualCountError);
   }
 
-  if (!calls || calls.length === 0) {
-    alert(`Nessuna ${tierLabel} da calcolare.`);
-    return;
-  }
-
-const callsByPlayer = {};
-
-calls.forEach(call => {
-  const playerIdKey = call.player_in_id
-    ? String(call.player_in_id)
-    : normalizePlayerName(call.player_in);
-
-  const compensatoryGroup = getCompensatoryGroupForTeamId(call.team_id);
-
-  const playerKey = isConferencePhase()
-    ? `${compensatoryGroup}__${playerIdKey}`
-    : playerIdKey;
-
-  if (!callsByPlayer[playerKey]) {
-    callsByPlayer[playerKey] = [];
-  }
-
-  callsByPlayer[playerKey].push(call);
-});
-
-  for (const playerKey in callsByPlayer) {
-    const entries = callsByPlayer[playerKey];
-
-    entries.sort((a, b) => {
-      return (a.priority_order || 999) - (b.priority_order || 999);
-    });
-
-    const winner = entries[0];
-    const losers = entries.slice(1);
-
-    try {
-      const playerIsAvailable = await isPlayerCurrentlyAvailable(winner.player_in_id);
-
-      if (!playerIsAvailable) {
-        for (const unavailableCall of entries) {
-          await supabase
-            .from("waiver_compensatory_calls")
-            .update({ status: "lost" })
-            .eq("id", unavailableCall.id);
-        }
-
-        continue;
-      }
-
-      await applyWinningCompensatoryCall(winner);
-
-      await supabase
-        .from("waiver_compensatory_calls")
-        .update({ status: "won" })
-        .eq("id", winner.id);
-
-      for (const loser of losers) {
-        await supabase
-          .from("waiver_compensatory_calls")
-          .update({ status: "lost" })
-          .eq("id", loser.id);
-      }
-    } catch (err) {
-      console.error("Errore aggiornamento rosa compensativa:", err);
-      alert(`Errore aggiornamento rosa compensativa: ${err.message || err}`);
-      return;
-    }
-  }
-
-  alert(
-    tier === "high"
-      ? "Compensative prioritarie calcolate."
-      : "Compensative normali calcolate."
-  );
+  alert(`${getCompensatoryTierLabel(tier)} calcolate in due giri. Elaborate: ${Number(processed) || 0}.${manualCount ? ` Da risolvere manualmente: ${manualCount}.` : ""}`);
 
   await loadInjuryReserveMonitor();
   await loadMyOwnedPlayers();
