@@ -7,7 +7,7 @@
   <title>Waiver Room</title>
 
   <link rel="stylesheet" href="navbar.css" />
-  <link rel="stylesheet" href="waiver.css?v=21" />
+  <link rel="stylesheet" href="waiver.css?v=comp-slots-20260904" />
 </head>
 
 <body>
@@ -317,12 +317,14 @@
             <div>
               <h2>Chiamate compensative</h2>
               <p class="card-subtitle">
-                Le <strong>prioritarie</strong> vengono risolte prima del waiver; le <strong>normali</strong> dopo. Premi <strong>Scegli giocatore</strong> per compilare la chiamata.
+                Le <strong>prioritarie</strong> vengono risolte prima del waiver; le <strong>normali</strong> dopo. Compila lo <strong>Slot 1</strong>. Solo in caso di perdita si attiva lo <strong>Slot 2</strong>, con orari propri e un nuovo giocatore da scegliere.
               </p>
             </div>
           </div>
 
-          <div id="myCompensatoryCalls" class="my-waiver-calls">
+          <button type="button" id="refreshCompensatorySlotsBtn" class="secondary-btn small-btn">↻ Aggiorna slot</button>
+            <small class="compensatory-refresh-note">Aggiornamento automatico ogni 30 secondi.</small>
+            <div id="myCompensatoryCalls" class="my-waiver-calls">
             <p>Caricamento chiamate compensative...</p>
           </div>
         </article>
@@ -453,16 +455,25 @@
 
 <div class="slot-settings-grid">
   <div class="slot-settings-card high-compensatory-settings-card">
-    <h4>Compensative prioritarie</h4>
+    <h4>Prioritarie · Slot 1</h4>
     <label for="highCompensatoryOpenInput">Apertura</label>
     <input type="datetime-local" id="highCompensatoryOpenInput" />
 
     <label for="highCompensatoryCloseInput">Chiusura</label>
     <input type="datetime-local" id="highCompensatoryCloseInput" />
 
-    <small>Devono chiudere prima dello Slot 1 o nello stesso momento.</small>
+    <small>Le chiamate perse passano alle prioritarie Slot 2.</small>
   </div>
 
+
+  <div class="slot-settings-card high-compensatory-settings-card compensatory-recall-settings">
+    <h4>Prioritarie · Slot 2</h4>
+    <label for="highCompensatorySlot2OpenInput">Apertura richiamo</label>
+    <input type="datetime-local" id="highCompensatorySlot2OpenInput" />
+    <label for="highCompensatorySlot2CloseInput">Chiusura richiamo</label>
+    <input type="datetime-local" id="highCompensatorySlot2CloseInput" />
+    <small>Solo chi perde lo Slot 1. Deve terminare entro la chiusura dello Slot 1 waiver.</small>
+  </div>
   <div class="slot-settings-card">
     <h4>Slot 1</h4>
     <label for="slot1OpenInput">Apertura</label>
@@ -501,13 +512,21 @@
 
 
             <div class="slot-settings-card compensatory-settings-card">
-  <h4>Compensative normali</h4>
+  <h4>Normali · Slot 1</h4>
 
   <label for="compensatoryOpenInput">Apertura</label>
   <input type="datetime-local" id="compensatoryOpenInput" />
 
   <label for="compensatoryCloseInput">Chiusura</label>
   <input type="datetime-local" id="compensatoryCloseInput" />
+</div>
+<div class="slot-settings-card compensatory-settings-card compensatory-recall-settings">
+  <h4>Normali · Slot 2</h4>
+  <label for="compensatorySlot2OpenInput">Apertura richiamo</label>
+  <input type="datetime-local" id="compensatorySlot2OpenInput" />
+  <label for="compensatorySlot2CloseInput">Chiusura richiamo</label>
+  <input type="datetime-local" id="compensatorySlot2CloseInput" />
+  <small>Solo per le chiamate perse nello Slot 1 compensative. Dopo questo slot, gestione manuale.</small>
 </div>
           </div>
 
@@ -581,9 +600,12 @@
           </button>
 
           <button id="calculateHighCompensatoryBtn" type="button" class="primary-btn small-btn high-compensatory-action">
-            1. Calcola compensative prioritarie
+            1. Prioritarie · Slot 1
           </button>
 
+          <button id="calculateHighCompensatorySlot2Btn" type="button" class="primary-btn small-btn high-compensatory-action">
+            1. Prioritarie · Slot 2
+          </button>
           <button id="calculateSlot1Btn" type="button" class="primary-btn small-btn">
             2. Waiver · slot 1
           </button>
@@ -601,7 +623,10 @@
           </button>
 
           <button id="calculateCompensatoryBtn" type="button" class="primary-btn small-btn">
-            3. Calcola compensative normali
+            3. Normali · Slot 1
+          </button>
+          <button id="calculateCompensatorySlot2Btn" type="button" class="primary-btn small-btn">
+            3. Normali · Slot 2
           </button>
         </div>
 
@@ -704,7 +729,7 @@
   </main>
 <script src="mobile-nav.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
-  <script type="module" src="waiver.js?v=33"></script>
+  <script type="module" src="waiver.js?v=comp-slots-20260904"></script>
   <script type="module" src="home_auth.js"></script>
   <script src="navbar.js"></script>
 </body>

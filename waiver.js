@@ -60,6 +60,10 @@ const slot2SCloseInput = document.getElementById("slot2SCloseInput");
 
 const compensatoryOpenInput = document.getElementById("compensatoryOpenInput");
 const compensatoryCloseInput = document.getElementById("compensatoryCloseInput");
+const compensatorySlot2OpenInput = document.getElementById("compensatorySlot2OpenInput");
+const compensatorySlot2CloseInput = document.getElementById("compensatorySlot2CloseInput");
+const highCompensatorySlot2OpenInput = document.getElementById("highCompensatorySlot2OpenInput");
+const highCompensatorySlot2CloseInput = document.getElementById("highCompensatorySlot2CloseInput");
 
 const adminCompTeamSelect = document.getElementById("adminCompTeamSelect");
 const adminCompTierSelect = document.getElementById("adminCompTierSelect");
@@ -274,7 +278,11 @@ function beginCompensatoryPlayerSelection(callId, choiceRound = 1) {
 
   const normalizedRound = Number(choiceRound) === 2 ? 2 : 1;
 
-  setActiveCompensatoryCallCard(callId);
+  if (!canEditCompensatorySlot(call, normalizedRound)) {
+    setMessage("Questo slot non è aperto o non è disponibile per la chiamata.", true);
+    return;
+  }
+  setActiveCompensatoryCallCard(callId, normalizedRound);
   activeCompensatoryChoiceRound = normalizedRound;
 
   playerSelectionOrigin = {
@@ -302,7 +310,7 @@ function finishPlayerSelection(origin) {
 
   const targetSelector =
     origin.type === "compensatory"
-      ? `.compensatory-call-card[data-call-id="${origin.id}"]`
+      ? `.compensatory-call-card[data-call-id="${origin.id}"][data-comp-slot="${origin.choiceRound || 1}"]`
       : `.dynamic-call-card[data-order-id="${origin.id}"]`;
 
   if (isMobileWaiverView()) {
@@ -562,7 +570,8 @@ function getCompensatoryStatusLabel(status) {
   const normalizedStatus = String(status || "pending").toLowerCase();
 
   if (normalizedStatus === "submitted") return "salvata";
-  if (normalizedStatus === "second_round") return "secondo giro in elaborazione";
+  if (normalizedStatus === "second_round") return "richiamo disponibile: da compilare";
+  if (normalizedStatus === "second_submitted") return "richiamo salvato";
   if (normalizedStatus === "won") return "assegnata";
   if (normalizedStatus === "lost") return "non assegnata";
   if (normalizedStatus === "manual_required") return "da risolvere manualmente";
@@ -571,7 +580,8 @@ function getCompensatoryStatusLabel(status) {
 }
 
 function normalizeCompensatoryTier(value) {
-  return String(value || "normal").toLowerCase() === "high"
+  const tier = typeof value === "object" ? value?.priority_tier : value;
+  return String(tier || "normal").toLowerCase() === "high"
     ? "high"
     : "normal";
 }
@@ -983,55 +993,42 @@ function getCompensatoryTimes() {
   };
 }
 
-function getCompensatoryTimesForTier(value) {
-  const tier = normalizeCompensatoryTier(
-    typeof value === "object" ? value?.priority_tier : value
-  );
-
-  if (tier === "high") {
-    return {
-      openAt:
-        currentSettings?.high_compensatory_open_at ||
-        currentSettings?.slot1_open_at ||
-        null,
-      closeAt:
-        currentSettings?.high_compensatory_close_at ||
-        currentSettings?.slot1_close_at ||
-        null
-    };
+function getCompensatoryTimesForTier(value, slot = 1) {
+  const tier = normalizeCompensatoryTier(typeof value === "object" ? value?.priority_tier : value);
+  if (Number(slot) === 2) {
+    const prefix = tier === "high" ? "high_compensatory_slot2" : "compensatory_slot2";
+    return { openAt: currentSettings?.[prefix + "_open_at"] || null,
+      closeAt: currentSettings?.[prefix + "_close_at"] || null };
   }
-
+  if (tier === "high") return {
+    openAt: currentSettings?.high_compensatory_open_at || currentSettings?.slot1_open_at || null,
+    closeAt: currentSettings?.high_compensatory_close_at || currentSettings?.slot1_close_at || null
+  };
   return getCompensatoryTimes();
 }
-
-function isCompensatoryOpen(value = "normal") {
-  const { openAt, closeAt } = getCompensatoryTimesForTier(value);
-  const now = new Date();
-
-  if (!openAt || !closeAt) return true;
-
-  return now >= new Date(openAt) && now < new Date(closeAt);
+function isCompensatoryOpen(value = "normal", slot = 1) {
+  const { openAt, closeAt } = getCompensatoryTimesForTier(value, slot);
+  if (!openAt || !closeAt) return false;
+  return Date.now() >= new Date(openAt).getTime() && Date.now() < new Date(closeAt).getTime();
 }
-
-function getCompensatoryPublishAt(value = "normal") {
-  if (!currentSettings) return null;
-
-  if (normalizeCompensatoryTier(
-    typeof value === "object" ? value?.priority_tier : value
-  ) === "high") {
-    return (
-      currentSettings.high_compensatory_close_at ||
-      currentSettings.slot1_close_at ||
-      null
-    );
-  }
-
-  return (
-    currentSettings.compensatory_close_at ||
-    currentSettings.slot2s_close_at ||
-    currentSettings.slot2_close_at ||
-    currentSettings.slot1_close_at
-  );
+function getCompensatoryPublishAt(value = "normal", slot = 1) {
+  return getCompensatoryTimesForTier(value, slot).closeAt;
+}
+function hasCompensatoryRecall(call) {
+  return call.first_round_status === "lost" ||
+    ["second_round", "second_submitted", "manual_required"].includes(call.status) ||
+    Number(call.winning_round) === 2;
+}
+function canEditCompensatorySlot(call, slot) {
+  if (isAdminViewingAsTeam() || !isCompensatoryOpen(call, slot)) return false;
+  return Number(slot) === 2
+    ? ["second_round", "second_submitted"].includes(call.status)
+    : ["pending", "submitted"].includes(call.status || "pending");
+}
+function compensatorySlotWindowLabel(tier, slot) {
+  const { openAt, closeAt } = getCompensatoryTimesForTier(tier, slot);
+  if (!openAt || !closeAt) return "Orari da impostare dall’admin";
+  return "Apre " + formatWaiverDateTime(openAt) + " · chiude " + formatWaiverDateTime(closeAt);
 }
 
 function areCompensatoryResultsPublic(value = "normal") {
@@ -1128,20 +1125,13 @@ function setActiveCallCard(orderId) {
   });
 }
 
-function setActiveCompensatoryCallCard(callId) {
+function setActiveCompensatoryCallCard(callId, slot = 1) {
   if (isAdminViewingAsTeam()) return;
   activeCompensatoryCallId = callId;
   activeWaiverOrderId = null;
-
-  document.querySelectorAll(".compensatory-call-card").forEach(card => {
-    card.classList.toggle(
-      "active-call-target",
-      card.dataset.callId === String(callId)
-    );
-  });
-
   document.querySelectorAll(".dynamic-call-card").forEach(card => {
-    card.classList.remove("active-call-target");
+    card.classList.toggle("active-call-target",
+      card.dataset.callId === String(callId) && card.dataset.compSlot === String(slot));
   });
 }
 
@@ -2341,156 +2331,77 @@ async function renderPublicWaiverOrder() {
 
 async function renderPublicCompensatoryOrder() {
   if (!publicWaiverOrderEl || !currentSettings) return;
-
-  const { data, error } = await supabase.rpc(
-    "get_public_waiver_compensatory_calls",
-    {
-      p_week: Number(currentSettings.active_week),
-      p_phase: currentSettings.active_phase
-    }
-  );
-
-  if (error) {
-    console.error("Errore caricamento compensative pubbliche:", error);
-    return;
-  }
-
-  const visibleCompensatoryCalls = (data || []).filter(
-    call => call.status !== "cancelled"
-  );
-
-  if (visibleCompensatoryCalls.length === 0) return;
-  const groupOrder = isConferencePhase()
-    ? ["Conference League", "Conference Championship"]
-    : ["Totale"];
-
+  const { data, error } = await supabase.rpc("get_public_waiver_compensatory_calls", {
+    p_week: Number(currentSettings.active_week), p_phase: currentSettings.active_phase
+  });
+  if (error) { console.error("Errore compensative pubbliche:", error); return; }
+  const allCalls = (data || []).filter(c => c.status !== "cancelled");
+  const highSections = [];
+  const groups = isConferencePhase() ? ["Conference League", "Conference Championship"] : ["Totale"];
   for (const tier of ["high", "normal"]) {
-    const tierCalls = visibleCompensatoryCalls
-      .filter(call => normalizeCompensatoryTier(call.priority_tier) === tier)
-      .sort(sortCompensatoryCalls);
-
-    if (tierCalls.length === 0) continue;
-
-    const publishAt = getCompensatoryPublishAt(tier);
-    const tierIsPublic = tierCalls.some(call => call.is_revealed === true);
-    const tierTitle = tier === "high"
-      ? "Compensative prioritarie"
-      : "Compensative normali";
-
-    const groupBlock = document.createElement("div");
-    groupBlock.className = `public-waiver-group public-compensatory-group compensatory-tier-${tier}`;
-    groupBlock.innerHTML = `
-      <button
-        type="button"
-        class="public-waiver-group-title public-waiver-toggle"
-        aria-expanded="true"
-      >
-        <h3>${tierTitle}</h3>
-        <span>
-          ${
-            tierIsPublic
-              ? "Risultati visibili"
-              : publishAt
-                ? `Risultati visibili ${formatWaiverDateTime(publishAt)}`
-                : "Risultati non ancora programmati"
+    for (const slot of [1, 2]) {
+      const calls = allCalls.filter(c => normalizeCompensatoryTier(c.priority_tier) === tier &&
+        (slot === 1 || c.is_recalled === true)).sort(sortCompensatoryCalls);
+      if (!calls.length) continue;
+      const block = document.createElement("div");
+      block.className = "public-waiver-group public-compensatory-group compensatory-tier-" + tier;
+      const title = (tier === "high" ? "Compensative prioritarie" : "Compensative normali") +
+        " · Slot " + slot + (slot === 2 ? " · richiami" : "");
+      block.innerHTML = '<button type="button" class="public-waiver-group-title public-waiver-toggle" aria-expanded="true">' +
+        '<h3>' + title + '</h3><span>' + escapeWaiverHtml(compensatorySlotWindowLabel(tier, slot)) +
+        '</span></button><div class="public-waiver-group-content"></div>';
+      const content = block.querySelector(".public-waiver-group-content");
+      for (const group of groups) {
+        const groupedCalls = calls.filter(c => getCompensatoryGroupForTeamId(c.team_id) === group);
+        if (!groupedCalls.length) continue;
+        const section = document.createElement("div");
+        section.className = "public-compensatory-subgroup";
+        section.innerHTML = '<h4 class="public-compensatory-subtitle">' + escapeWaiverHtml(group) + '</h4>';
+        for (const call of groupedCalls) {
+          const revealed = slot === 1 ? call.is_revealed === true : call.is_second_revealed === true;
+          const status = slot === 1 ? (call.slot1_status || call.status) : call.slot2_status;
+          const player = slot === 1 ? call.player_in : call.player_in_second;
+          let result = "", state = "waiting";
+          if (!revealed) {
+            const publishAt = getCompensatoryPublishAt(tier, slot);
+            result = publishAt ? "Chiamata visibile " + formatWaiverDateTime(publishAt) : "Orari da impostare dall’admin";
+          } else if (status === "won") {
+            state = "won";
+            result = "🟢 Prende " + escapeWaiverHtml(call.awarded_player || player || "-");
+            if (call.requires_player_out && call.player_out) result += "<br>🔻 Svincola " + escapeWaiverHtml(call.player_out);
+          } else if (slot === 1 && status === "lost") {
+            state = "lost";
+            result = "🔴 Perde " + escapeWaiverHtml(player || "-") +
+              (call.is_recalled ? " · passa allo Slot 2" : " · risultato precedente");
+          } else if (status === "manual_required") {
+            state = "lost";
+            result = "⚠️ Da risolvere manualmente" + (player ? " · " + escapeWaiverHtml(player) : " · richiamo non inviato");
+          } else if (!player) {
+            state = "empty"; result = "Nessuna chiamata registrata.";
+          } else {
+            state = "pending"; result = "⏳ Chiama " + escapeWaiverHtml(player);
           }
-        </span>
-      </button>
-      <div class="public-waiver-group-content"></div>
-    `;
-
-    const groupContent = groupBlock.querySelector(".public-waiver-group-content");
-
-    groupOrder.forEach(groupName => {
-      const calls = tierCalls.filter(
-        call => getCompensatoryGroupForTeamId(call.team_id) === groupName
-      );
-
-      if (calls.length === 0) return;
-
-      const subGroup = document.createElement("div");
-      subGroup.className = `public-compensatory-subgroup compensatory-tier-${tier}`;
-      subGroup.innerHTML = `
-        <h4 class="public-compensatory-subtitle">
-          ${groupName === "Totale" ? tierTitle : groupName}
-          <span class="compensatory-tier-badge ${tier}">${getCompensatoryTierShortLabel(tier)}</span>
-        </h4>
-      `;
-
-      calls.forEach(call => {
-        const team = teamMap[call.team_id];
-        const callIsPublic = call.is_revealed === true;
-        const awardedPlayer =
-          call.awarded_player ||
-          (Number(call.winning_round) === 2
-            ? call.player_in_second
-            : call.player_in);
-        let statusClass = "waiting";
-        let resultText = "";
-
-        if (!callIsPublic) {
-          resultText = publishAt
-            ? `La chiamata sarà visibile ${formatWaiverDateTime(publishAt)}`
-            : "La chiamata sarà visibile dopo la chiusura.";
-        } else if (!call.player_in) {
-          statusClass = "empty";
-          resultText = "Nessuna chiamata registrata.";
-        } else if (call.status === "won") {
-          statusClass = "won";
-          const winningRoundText = Number(call.winning_round) === 2
-            ? " · 2ª scelta"
-            : Number(call.winning_round) === 1
-              ? " · 1ª scelta"
-              : "";
-          resultText = call.requires_player_out && call.player_out
-            ? `🟢 Prende ${awardedPlayer || "-"}${winningRoundText}<br>🔻 Svincola ${call.player_out}`
-            : `🟢 Prende ${awardedPlayer || "-"}${winningRoundText}`;
-        } else if (call.status === "manual_required") {
-          statusClass = "lost";
-          resultText = "⚠️ Prime due scelte non disponibili · gestione manuale";
-        } else if (call.status === "lost") {
-          statusClass = "lost";
-          resultText = `🔴 Perde ${call.player_in}`;
-        } else {
-          statusClass = "pending";
-          resultText = call.player_in_second
-            ? `⏳ 1ª ${call.player_in} · 2ª ${call.player_in_second}`
-            : `⏳ Chiama ${call.player_in}`;
+          const row = document.createElement("div");
+          row.className = "public-waiver-row public-compensatory-row compensatory-tier-" + tier + " " + state;
+          row.innerHTML = '<div class="public-waiver-rank">' + getCompensatoryPositionLabel(call) +
+            '</div><div class="public-waiver-main"><strong>' +
+            escapeWaiverHtml(teamMap[call.team_id]?.name || "Squadra sconosciuta") +
+            '</strong><span class="public-waiver-via">' + escapeWaiverHtml(getCompensatoryReasonLabel(call)) +
+            ' · ' + getCompensatoryModeLabel(call) + '</span><span class="public-waiver-result">' + result + '</span></div>';
+          section.appendChild(row);
         }
-
-        const rowDiv = document.createElement("div");
-        rowDiv.className = `public-waiver-row public-compensatory-row compensatory-tier-${tier} ${statusClass}`;
-        rowDiv.innerHTML = `
-          <div class="public-waiver-rank">${tier === "high" ? "P" : "C"}${call.priority_order || "-"}</div>
-          <div class="public-waiver-main">
-            <strong>${team?.name || "Squadra sconosciuta"}</strong>
-            <span class="public-waiver-via">${getCompensatoryReasonLabel(call)} · ${getCompensatoryModeLabel(call)}</span>
-            <span class="public-waiver-result">${resultText}</span>
-          </div>
-        `;
-
-        subGroup.appendChild(rowDiv);
+        content.appendChild(section);
+      }
+      block.querySelector(".public-waiver-toggle").addEventListener("click", event => {
+        const closed = block.classList.toggle("public-slot-closed");
+        event.currentTarget.setAttribute("aria-expanded", String(!closed));
       });
-
-      groupContent.appendChild(subGroup);
-    });
-
-    const toggleBtn = groupBlock.querySelector(".public-waiver-toggle");
-    toggleBtn?.addEventListener("click", () => {
-      const isClosed = groupBlock.classList.toggle("public-slot-closed");
-      toggleBtn.setAttribute("aria-expanded", String(!isClosed));
-    });
-
-    if (tier === "high") {
-      publicWaiverOrderEl.insertBefore(
-        groupBlock,
-        publicWaiverOrderEl.firstElementChild
-      );
-    } else {
-      publicWaiverOrderEl.appendChild(groupBlock);
+      if (tier === "high") highSections.push(block); else publicWaiverOrderEl.appendChild(block);
     }
   }
+  for (const block of highSections.reverse()) publicWaiverOrderEl.prepend(block);
 }
+
 /* ===============================
    LE MIE CHIAMATE DINAMICHE
 ================================ */
@@ -2772,6 +2683,69 @@ slotContent.appendChild(card);
   });
 }
 
+let compensatoryRefreshBusy = false;
+let compensatorySnapshot = "";
+async function refreshCompensatorySlots(force = false) {
+  if (compensatoryRefreshBusy || !currentTeam || !currentSettings) return;
+  if (document.visibilityState === "hidden" && !force) return;
+  compensatoryRefreshBusy = true;
+  try {
+    const { data: settings, error: settingsError } = await supabase
+      .from("waiver_settings").select("*").order("id", { ascending: false }).limit(1).maybeSingle();
+    if (settingsError || !settings) throw settingsError || new Error("Impostazioni non trovate");
+    if (settings.active_week !== currentSettings.active_week || settings.active_phase !== currentSettings.active_phase) {
+      setMessage("La settimana o la fase sono cambiate: ricarica la pagina per continuare.");
+      return;
+    }
+    const { data, error } = await supabase.from("waiver_compensatory_calls").select("*")
+      .eq("week", settings.active_week).eq("phase", settings.active_phase)
+      .eq("team_id", currentTeam.id).neq("status", "cancelled").order("priority_order", { ascending: true });
+    if (error) throw error;
+    const drafts = Array.from(document.querySelectorAll('.compensatory-call-card[data-dirty="true"]')).map(card => {
+      const input = card.querySelector(".compensatory-player-in, .compensatory-player-in-second");
+      return { id: card.dataset.callId, slot: Number(card.dataset.compSlot), value: input?.value || "",
+        playerId: input?.dataset.playerId || "", out: card.querySelector(".compensatory-player-out")?.value || "" };
+    });
+    currentSettings = settings;
+    const snapshot = JSON.stringify([currentTeam.id, data, settings,
+      ["high", "normal"].map(tier => [isCompensatoryOpen(tier, 1), isCompensatoryOpen(tier, 2)])]);
+    if (!force && snapshot === compensatorySnapshot) return;
+    compensatorySnapshot = snapshot;
+    myCompensatoryCalls = (data || []).slice().sort(sortCompensatoryCalls);
+    await loadInjuryReserveMonitor();
+    await loadMyOwnedPlayers();
+    await loadMyReplacementCandidates();
+    renderMyCompensatoryCalls();
+    for (const draft of drafts) {
+      const call = myCompensatoryCalls.find(c => String(c.id) === draft.id);
+      if (!call || !canEditCompensatorySlot(call, draft.slot)) continue;
+      const card = document.querySelector('.compensatory-call-card[data-call-id="' + draft.id +
+        '"][data-comp-slot="' + draft.slot + '"]');
+      const input = card?.querySelector(".compensatory-player-in, .compensatory-player-in-second");
+      if (input) {
+        input.value = draft.value; input.dataset.playerId = draft.playerId;
+        input.classList.toggle("has-player-selection", Boolean(draft.playerId));
+        card.dataset.dirty = "true";
+      }
+      const out = card?.querySelector(".compensatory-player-out");
+      if (out) out.value = draft.out;
+    }
+    if (activeCompensatoryCallId) {
+      const active = myCompensatoryCalls.find(c => String(c.id) === String(activeCompensatoryCallId));
+      if (!active || !canEditCompensatorySlot(active, activeCompensatoryChoiceRound)) clearPlayerSelectionState();
+      else setActiveCompensatoryCallCard(active.id, activeCompensatoryChoiceRound);
+    }
+    await loadFreeAgents();
+    if (currentUserIsAdmin) await loadAllCompensatoryCalls();
+    await renderPublicWaiverOrder();
+  } catch (error) {
+    console.error("Aggiornamento slot compensative:", error);
+    if (force) setMessage("Aggiornamento non riuscito: " + (error?.message || error), true);
+  } finally {
+    compensatoryRefreshBusy = false;
+  }
+}
+
 async function loadMyCompensatoryCalls() {
   if (!currentTeam || !currentSettings || !myCompensatoryCallsEl) return;
 
@@ -2794,219 +2768,97 @@ async function loadMyCompensatoryCalls() {
   renderMyCompensatoryCalls();
 }
 
+function renderCompensatorySlotCard(call, slot) {
+  const tier = normalizeCompensatoryTier(call.priority_tier);
+  const disabled = canEditCompensatorySlot(call, slot) ? "" : "disabled";
+  const second = slot === 2;
+  const player = second ? call.player_in_second : call.player_in;
+  const playerId = second ? call.player_in_second_id : call.player_in_id;
+  const inputClass = second ? "compensatory-player-in-second" : "compensatory-player-in";
+  const displayStatus = !second && hasCompensatoryRecall(call) ? "lost" : call.status;
+  const wonHere = call.status === "won" && Number(call.winning_round || 1) === slot;
+  const result = wonHere
+    ? "🟢 Assegnato: " + escapeWaiverHtml(call.awarded_player || player || "-")
+    : !second && hasCompensatoryRecall(call)
+      ? "Slot 1 perso: compila il richiamo nello Slot 2."
+      : second && call.status === "manual_required"
+        ? "⚠️ Nessuna assegnazione nello Slot 2: contatta l’admin."
+        : getCompensatoryStatusLabel(displayStatus);
+  const attrs = ' data-call-id="' + call.id + '" data-choice-round="' + slot + '" ' + disabled;
+  const saveLabel = !second && call.injury_reserve_id && call.status === "pending"
+    ? "Attiva IR e salva Slot 1" : "Salva Slot " + slot;
+  const outHtml = !call.requires_player_out ? "" :
+    '<label class="player-choice-label">Giocatore da svincolare (solo se vinci)</label>' +
+    '<select class="compensatory-player-out"' + attrs + '>' +
+    buildCompensatoryPlayerOutOptions(call.player_out_id, call.player_out || "") + '</select>';
+  return '<div class="dynamic-call-card compensatory-call-card compensatory-tier-' + tier +
+    '" data-call-id="' + call.id + '" data-comp-slot="' + slot + '">' +
+    '<div class="dynamic-call-header"><div class="dynamic-call-title"><strong>' +
+    getCompensatoryPositionLabel(call) + ' · Slot ' + slot + (second ? ' · richiamo' : '') +
+    '</strong><span>' + escapeWaiverHtml(getCompensatoryReasonLabel(call)) + ' · ' +
+    getCompensatoryModeLabel(call) + '</span></div><span class="order-position-pill">' +
+    getCompensatoryPositionLabel(call) + '</span></div>' +
+    '<label class="player-choice-label">' + (second ? 'Nuovo giocatore per il richiamo' : 'Giocatore da acquistare') +
+    '</label><input type="text" class="' + inputClass + (player ? ' has-player-selection' : '') +
+    '" data-call-id="' + call.id + '" data-player-id="' + (playerId || '') +
+    '" readonly value="' + escapeWaiverHtml(player || '') + '" placeholder="Nessun giocatore selezionato" ' +
+    disabled + '><div class="player-choice-actions">' +
+    '<button type="button" class="secondary-btn choose-player-btn select-compensatory-call-btn"' + attrs + '>' +
+    (player ? '✏️ Cambia giocatore' : '🔍 Scegli giocatore') + '</button></div>' + outHtml +
+    '<div class="call-actions"><button type="button" class="primary-btn save-compensatory-call-btn"' +
+    attrs + '>' + saveLabel + '</button><button type="button" class="secondary-btn reset-compensatory-call-btn"' +
+    attrs + '>' + (second ? 'Cancella richiamo' : 'Cancella chiamata') + '</button></div>' +
+    '<p class="call-message">' + result + '</p>' +
+    (second ? '<small>Stessa priorità originale. Se anche questo slot fallisce, interviene l’admin.</small>' : '') + '</div>';
+}
+
 function renderMyCompensatoryCalls() {
   if (!myCompensatoryCallsEl) return;
-
-  const mobileExtraBadge = document.getElementById("mobileExtraBadge");
-
-  if (mobileExtraBadge) {
-    mobileExtraBadge.style.display =
-      myCompensatoryCalls && myCompensatoryCalls.length > 0
-        ? "inline-flex"
-        : "none";
-  }
-
-  if (!myCompensatoryCalls || myCompensatoryCalls.length === 0) {
+  const badge = document.getElementById("mobileExtraBadge");
+  if (badge) badge.style.display = myCompensatoryCalls.length ? "inline-flex" : "none";
+  myCompensatoryCallsEl.innerHTML = "";
+  if (!myCompensatoryCalls.length) {
     myCompensatoryCallsEl.innerHTML = "<p>Nessuna chiamata compensativa disponibile.</p>";
     return;
   }
-
-  myCompensatoryCallsEl.innerHTML = "";
-
-  const callsByTier = {
-    high: myCompensatoryCalls.filter(
-      call => normalizeCompensatoryTier(call.priority_tier) === "high"
-    ),
-    normal: myCompensatoryCalls.filter(
-      call => normalizeCompensatoryTier(call.priority_tier) === "normal"
-    )
-  };
-
-  let renderedTier = null;
-
-  myCompensatoryCalls.forEach(call => {
-    const tier = normalizeCompensatoryTier(call.priority_tier);
-    const isInjuryReserveCall = Boolean(call.injury_reserve_id);
-
-    if (tier !== renderedTier) {
-      const tierHeader = document.createElement("div");
-      tierHeader.className = `my-compensatory-tier-header compensatory-tier-${tier}`;
-      tierHeader.innerHTML = `
-        <strong>${getCompensatoryTierLabel(tier)}</strong>
-        <span>${tier === "high" ? "Prima del waiver · finestra prioritarie" : "Dopo il waiver · finestra compensative"}</span>
-      `;
-      myCompensatoryCallsEl.appendChild(tierHeader);
-
-      const orderManager = buildCompensatoryOrderManager(
-        tier,
-        callsByTier[tier]
-      );
-      if (orderManager) {
-        myCompensatoryCallsEl.appendChild(orderManager);
-      }
-
-      renderedTier = tier;
+  for (const tier of ["high", "normal"]) {
+    const calls = myCompensatoryCalls.filter(c => normalizeCompensatoryTier(c.priority_tier) === tier);
+    if (!calls.length) continue;
+    const header = document.createElement("div");
+    header.className = "my-compensatory-tier-header compensatory-tier-" + tier;
+    header.innerHTML = "<strong>" + getCompensatoryTierLabel(tier) + "</strong><span>" +
+      (tier === "high" ? "Prima del waiver" : "Dopo il waiver") + "</span>";
+    myCompensatoryCallsEl.appendChild(header);
+    const orderManager = buildCompensatoryOrderManager(tier, calls);
+    if (orderManager) myCompensatoryCallsEl.appendChild(orderManager);
+    for (const slot of [1, 2]) {
+      const slotCalls = slot === 1 ? calls : calls.filter(hasCompensatoryRecall);
+      const section = document.createElement("section");
+      section.className = "compensatory-slot-section compensatory-slot-" + slot;
+      section.innerHTML = '<div class="compensatory-slot-heading"><strong>Slot ' + slot +
+        (slot === 2 ? " · richiami" : "") + '</strong><span>' +
+        escapeWaiverHtml(compensatorySlotWindowLabel(tier, slot)) + "</span></div>";
+      section.innerHTML += slotCalls.length
+        ? slotCalls.map(call => renderCompensatorySlotCard(call, slot)).join("")
+        : '<p class="compensatory-slot-empty">Qui compariranno soltanto le chiamate perse nello Slot 1.</p>';
+      myCompensatoryCallsEl.appendChild(section);
     }
-
-    const isEditable =
-      (call.status === "pending" || call.status === "submitted") &&
-      isCompensatoryOpen(call) &&
-      !isAdminViewingAsTeam();
-
-    const requiresPlayerOut = call.requires_player_out === true;
-    const reasonLabel = getCompensatoryReasonLabel(call);
-    const modeLabel = getCompensatoryModeLabel(call);
-
-    const card = document.createElement("div");
-    card.className = `dynamic-call-card compensatory-call-card compensatory-tier-${tier}`;
-    card.dataset.callId = call.id;
-
-    if (String(activeCompensatoryCallId) === String(call.id)) {
-      card.classList.add("active-call-target");
-    }
-
-    card.innerHTML = `
-      <div class="dynamic-call-header">
-        <div class="dynamic-call-title">
-          <strong>${getCompensatoryTierLabel(call)} #${call.priority_order || "-"}</strong>
-          <span>${call.phase || ""} - Week ${call.week || ""}</span>
-          <span class="compensatory-tier-badge ${tier}">${getCompensatoryTierShortLabel(call)}</span>
-          <span class="via-badge">${reasonLabel}</span>
-          <span class="via-badge">${modeLabel}</span>
-        </div>
-
-        <span class="order-position-pill">${tier === "high" ? "P" : "C"}${call.priority_order || "-"}</span>
-      </div>
-
-      <label class="player-choice-label">
-        <span class="call-step-number">1</span>
-        Prima scelta
-      </label>
-      <input
-        type="text"
-        class="compensatory-player-in ${call.player_in ? "has-player-selection" : ""}"
-        data-call-id="${call.id}"
-        data-player-id="${call.player_in_id || ""}"
-        readonly
-        placeholder="Nessun giocatore selezionato"
-        value="${call.player_in || ""}"
-        ${isEditable ? "" : "disabled"}
-      />
-
-      <div class="player-choice-actions">
-        <button
-          type="button"
-          class="secondary-btn choose-player-btn select-compensatory-call-btn"
-          data-call-id="${call.id}"
-          data-choice-round="1"
-          ${isEditable ? "" : "disabled"}
-        >
-          ${call.player_in ? "✏️ Cambia prima scelta" : "🔍 Scegli prima scelta"}
-        </button>
-      </div>
-
-      <label class="player-choice-label">
-        <span class="call-step-number">2</span>
-        Seconda scelta (usata soltanto se la prima non è disponibile)
-      </label>
-      <input
-        type="text"
-        class="compensatory-player-in-second ${call.player_in_second ? "has-player-selection" : ""}"
-        data-call-id="${call.id}"
-        data-player-id="${call.player_in_second_id || ""}"
-        readonly
-        placeholder="Nessun giocatore selezionato"
-        value="${call.player_in_second || ""}"
-        ${isEditable ? "" : "disabled"}
-      />
-
-      <div class="player-choice-actions">
-        <button
-          type="button"
-          class="secondary-btn choose-player-btn select-compensatory-call-btn"
-          data-call-id="${call.id}"
-          data-choice-round="2"
-          ${isEditable ? "" : "disabled"}
-        >
-          ${call.player_in_second ? "✏️ Cambia seconda scelta" : "🔍 Scegli seconda scelta"}
-        </button>
-      </div>
-
-      ${requiresPlayerOut ? `
-        <label class="player-choice-label">
-          <span class="call-step-number">3</span>
-          Giocatore da svincolare
-        </label>
-        <select
-          class="compensatory-player-out"
-          data-call-id="${call.id}"
-          ${isEditable ? "" : "disabled"}
-        >
-          ${buildCompensatoryPlayerOutOptions(call.player_out_id, call.player_out || "")}
-        </select>
-      ` : ""}
-
-      <div class="call-actions">
-        <button
-          type="button"
-          class="primary-btn save-compensatory-call-btn"
-          data-call-id="${call.id}"
-          ${isEditable ? "" : "disabled"}
-        >
-          ${isInjuryReserveCall ? "Attiva IR e salva chiamata" : "Salva compensativa"}
-        </button>
-
-        <button
-          type="button"
-          class="secondary-btn reset-compensatory-call-btn"
-          data-call-id="${call.id}"
-          ${isEditable ? "" : "disabled"}
-        >
-          ${isInjuryReserveCall && call.status === "submitted" ? "Annulla attivazione IR" : "Cancella compensativa"}
-        </button>
-      </div>
-
-      <p class="call-message">
-        ${
-          call.player_in && call.player_in_second
-            ? `${isInjuryReserveCall ? "✅ Injury Reserve attivata" : "✅ Compensativa salvata"}: 1ª ${call.player_in} · 2ª ${call.player_in_second}${requiresPlayerOut && call.player_out ? ` · sostituisce ${call.player_out}` : ""}`
-            : isCompensatoryOpen(call)
-              ? isInjuryReserveCall
-                ? "Lo slot IR non è ancora consumato. Si attiverà soltanto quando salvi questa chiamata."
-                : "Nessuna compensativa salvata."
-              : "Compensative chiuse o non disponibili."
-        }
-        <br>
-        Stato: <strong>${getCompensatoryStatusLabel(call.status)}</strong>
-        ${call.status === "won" && call.winning_round ? `<br>Assegnata con la ${Number(call.winning_round) === 2 ? "seconda" : "prima"} scelta: <strong>${call.awarded_player || (Number(call.winning_round) === 2 ? call.player_in_second : call.player_in) || "-"}</strong>` : ""}
-        ${call.status === "manual_required" ? "<br>⚠️ Entrambe le scelte non sono andate a buon fine: contatta l’admin." : ""}
-      </p>
-    `;
-
-    myCompensatoryCallsEl.appendChild(card);
-  });
-
+  }
   document.querySelectorAll(".select-compensatory-call-btn").forEach(button => {
-    button.addEventListener("click", () => {
-      beginCompensatoryPlayerSelection(
-        button.dataset.callId,
-        Number(button.dataset.choiceRound || 1)
-      );
-    });
+    button.addEventListener("click", () => beginCompensatoryPlayerSelection(
+      button.dataset.callId, Number(button.dataset.choiceRound)));
   });
-
   document.querySelectorAll(".save-compensatory-call-btn").forEach(button => {
-    button.addEventListener("click", () => {
-      saveCompensatoryCall(button.dataset.callId);
-    });
+    button.addEventListener("click", () => saveCompensatoryCall(
+      button.dataset.callId, Number(button.dataset.choiceRound)));
   });
-
   document.querySelectorAll(".reset-compensatory-call-btn").forEach(button => {
-    button.addEventListener("click", () => {
-      resetCompensatoryCall(button.dataset.callId);
-    });
+    button.addEventListener("click", () => resetCompensatoryCall(
+      button.dataset.callId, Number(button.dataset.choiceRound)));
   });
-
+  document.querySelectorAll(".compensatory-player-out").forEach(select => {
+    select.addEventListener("change", () => { select.closest(".compensatory-call-card").dataset.dirty = "true"; });
+  });
   document.querySelectorAll(".save-compensatory-order-btn").forEach(button => {
     button.addEventListener("click", () => {
       saveMyCompensatoryOrder(button.dataset.tier);
@@ -3092,177 +2944,58 @@ async function saveMyCompensatoryOrder(tierValue) {
   }
 }
 
-async function saveCompensatoryCall(callId) {
+async function saveCompensatoryCall(callId, slot = 1) {
   if (blockTeamWriteWhileViewingAs()) return;
-  if (!currentTeam || !currentSettings) return;
-
-  const call = myCompensatoryCalls.find(
-    item => String(item.id) === String(callId)
-  );
-
-  if (!call) {
-    setMessage("Compensativa non trovata.", true);
-    return;
+  const call = myCompensatoryCalls.find(c => String(c.id) === String(callId));
+  if (!call || !canEditCompensatorySlot(call, slot)) {
+    setMessage("Questo slot è chiuso o non disponibile per la chiamata.", true); return;
   }
-
-  const playerInEl = document.querySelector(
-    `.compensatory-player-in[data-call-id="${callId}"]`
-  );
-
-  const playerIn = playerInEl?.value.trim() || "";
-  const playerInId = playerInEl?.dataset.playerId || call.player_in_id || null;
-
-  const playerInSecondEl = document.querySelector(
-    `.compensatory-player-in-second[data-call-id="${callId}"]`
-  );
-
-  const playerInSecond = playerInSecondEl?.value.trim() || "";
-  const playerInSecondId =
-    playerInSecondEl?.dataset.playerId || call.player_in_second_id || null;
-
-  if (!playerIn || !playerInId) {
-    setMessage("Seleziona la prima scelta della compensativa.", true);
-    return;
+  const inputClass = slot === 2 ? "compensatory-player-in-second" : "compensatory-player-in";
+  const input = document.querySelector("." + inputClass + '[data-call-id="' + callId + '"]');
+  const playerId = input?.dataset.playerId || null;
+  const out = document.querySelector('.compensatory-player-out[data-call-id="' + callId +
+    '"][data-choice-round="' + slot + '"]');
+  if (!playerId) { setMessage("Seleziona il giocatore per lo Slot " + slot + ".", true); return; }
+  if (call.requires_player_out && !out?.value) {
+    setMessage("Seleziona anche il giocatore da svincolare.", true); return;
   }
-
-  if (!playerInSecond || !playerInSecondId) {
-    setMessage("Seleziona anche la seconda scelta della compensativa.", true);
-    return;
-  }
-
-  if (
-    String(playerInId) === String(playerInSecondId) ||
-    normalizePlayerName(playerIn) === normalizePlayerName(playerInSecond)
-  ) {
-    setMessage("Prima e seconda scelta devono essere due giocatori diversi.", true);
-    return;
-  }
-
-  let playerOut = null;
-  let playerOutId = null;
-
-  if (call.requires_player_out === true) {
-    const playerOutEl = document.querySelector(
-      `.compensatory-player-out[data-call-id="${callId}"]`
-    );
-
-    playerOutId = playerOutEl?.value || null;
-    const selectedOption = playerOutEl?.selectedOptions?.[0];
-    playerOut = selectedOption && playerOutId
-      ? selectedOption.textContent.trim()
-      : "";
-
-    if (!playerOut || !playerOutId) {
-      setMessage(
-        "Questa compensativa richiede anche il giocatore da sostituire.",
-        true
-      );
-      return;
-    }
-  }
-
-  const { error } = await supabase
-    .from("waiver_compensatory_calls")
-    .update({
-      player_in: playerIn,
-      player_in_id: playerInId,
-      player_in_second: playerInSecond,
-      player_in_second_id: playerInSecondId,
-      player_out: playerOut,
-      player_out_id: playerOutId,
-      awarded_player: null,
-      awarded_player_id: null,
-      winning_round: null,
-      status: "submitted",
-      updated_at: new Date().toISOString()
-    })
-    .eq("id", callId)
-    .eq("team_id", currentTeam.id);
-
-  if (error) {
-    console.error("Errore salvataggio compensativa:", error);
-    setMessage("Errore salvataggio compensativa: " + error.message, true);
-    return;
-  }
-
-  setMessage(
-    call.injury_reserve_id
-      ? "Injury Reserve attivata e chiamata salvata correttamente."
-      : "Chiamata compensativa salvata correttamente."
-  );
-
+  const { error } = await supabase.rpc("save_my_compensatory_slot", {
+    p_call_id: callId, p_slot: slot, p_player_id: playerId,
+    p_player_out_id: call.requires_player_out ? out.value : null, p_reset: false
+  });
+  if (error) { setMessage("Errore salvataggio: " + error.message, true); return; }
+  setMessage(slot === 2 ? "Richiamo salvato. Sarà elaborato alla chiusura dello Slot 2."
+    : "Slot 1 salvato. Se perdi, potrai scegliere un nuovo giocatore nello Slot 2.");
+  await loadInjuryReserveMonitor();
+  await loadMyOwnedPlayers();
+  await loadMyReplacementCandidates();
   await loadMyCompensatoryCalls();
-
-  if (call.injury_reserve_id) {
-    await loadInjuryReserveMonitor();
-    await Promise.all([
-      loadMyOwnedPlayers(),
-      loadMyReplacementCandidates(),
-      loadFreeAgents()
-    ]);
-  }
-
-  if (currentUserIsAdmin) {
-    await loadAllCompensatoryCalls();
-  }
+  await loadFreeAgents();
+  if (currentUserIsAdmin) await loadAllCompensatoryCalls();
 }
-
-async function resetCompensatoryCall(callId) {
+async function resetCompensatoryCall(callId, slot = 1) {
   if (blockTeamWriteWhileViewingAs()) return;
-  const call = myCompensatoryCalls.find(
-    item => String(item.id) === String(callId)
-  );
-  const confirmed = confirm(
-    call?.injury_reserve_id
-      ? "Vuoi annullare la chiamata IR? Lo slot tornerà disponibile e il conteggio dei giorni verrà azzerato."
-      : "Vuoi cancellare questa chiamata compensativa?"
-  );
-  if (!confirmed) return;
-
-  const { error } = await supabase
-    .from("waiver_compensatory_calls")
-    .update({
-      player_in: null,
-      player_in_id: null,
-      player_in_second: null,
-      player_in_second_id: null,
-      player_out: null,
-      player_out_id: null,
-      awarded_player: null,
-      awarded_player_id: null,
-      winning_round: null,
-      status: "pending",
-      updated_at: new Date().toISOString()
-    })
-    .eq("id", callId)
-    .eq("team_id", currentTeam.id);
-
-  if (error) {
-    console.error("Errore cancellazione compensativa:", error);
-    setMessage("Errore nella cancellazione della compensativa.", true);
-    return;
+  const call = myCompensatoryCalls.find(c => String(c.id) === String(callId));
+  if (!call || !canEditCompensatorySlot(call, slot)) {
+    setMessage("Questo slot è chiuso o non disponibile.", true); return;
   }
-
-  setMessage(
-    call?.injury_reserve_id
-      ? "Chiamata IR annullata. Lo slot non risulta utilizzato."
-      : "Compensativa cancellata."
-  );
-
+  const question = slot === 2
+    ? "Cancellare il giocatore del richiamo? Il diritto allo Slot 2 e l’eventuale IR restano attivi."
+    : call.injury_reserve_id
+      ? "Annullare la chiamata IR? Lo slot tornerà disponibile e il conteggio sarà azzerato."
+      : "Cancellare la scelta dello Slot 1?";
+  if (!confirm(question)) return;
+  const { error } = await supabase.rpc("save_my_compensatory_slot", {
+    p_call_id: callId, p_slot: slot, p_player_id: null, p_player_out_id: null, p_reset: true
+  });
+  if (error) { setMessage("Errore cancellazione: " + error.message, true); return; }
+  setMessage(slot === 2 ? "Richiamo cancellato: puoi compilarlo nuovamente fino alla chiusura." : "Chiamata cancellata.");
+  await loadInjuryReserveMonitor();
+  await loadMyOwnedPlayers();
+  await loadMyReplacementCandidates();
   await loadMyCompensatoryCalls();
-
-  if (call?.injury_reserve_id) {
-    await loadInjuryReserveMonitor();
-    await Promise.all([
-      loadMyOwnedPlayers(),
-      loadMyReplacementCandidates(),
-      loadFreeAgents()
-    ]);
-  }
-
-  if (currentUserIsAdmin) {
-    await loadAllCompensatoryCalls();
-  }
+  await loadFreeAgents();
+  if (currentUserIsAdmin) await loadAllCompensatoryCalls();
 }
 
 function fillActiveCallWithPlayer(player) {
@@ -3306,6 +3039,7 @@ function fillActiveCallWithPlayer(player) {
     input.value = player.role ? `${player.name} (${player.role})` : player.name;
     input.dataset.playerId = player.id || "";
     input.classList.add("has-player-selection");
+    input.closest(".compensatory-call-card").dataset.dirty = "true";
 
     const chooseButton = document.querySelector(
       `.select-compensatory-call-btn[data-call-id="${callId}"][data-choice-round="${choiceRound}"]`
@@ -3745,6 +3479,7 @@ async function loadAllCompensatoryCalls() {
       const submitted =
         call.status === "submitted" ||
         call.status === "second_round" ||
+        call.status === "second_submitted" ||
         call.status === "won" ||
         call.status === "lost" ||
         call.status === "manual_required";
@@ -3772,8 +3507,12 @@ async function loadAllCompensatoryCalls() {
           <span>
             ${
               call.status === "manual_required"
-                ? "⚠️ Da risolvere manualmente: fallite entrambe le scelte"
-                : submitted
+                ? "⚠️ Da risolvere manualmente dopo lo Slot 2"
+                : call.status === "second_round"
+                  ? "↪️ Slot 2 attivato · in attesa di chiamata"
+                  : call.status === "second_submitted"
+                    ? "✅ Richiamo Slot 2 ricevuto"
+                    : submitted
                   ? "✅ Chiamata ricevuta"
                   : "⏳ Nessuna chiamata ricevuta"
             }
@@ -3982,6 +3721,9 @@ async function updateAdminCompensatoryCall(callId) {
             awarded_player: null,
             awarded_player_id: null,
             winning_round: null,
+            first_round_status: null,
+            first_round_processed_at: null,
+            second_submitted_at: null,
             status: "pending"
           }
         : requiresPlayerOut
@@ -4484,7 +4226,7 @@ async function hasSubmittedHighCompensatoryCalls() {
     .eq("week", currentSettings.active_week)
     .eq("phase", currentSettings.active_phase)
     .eq("priority_tier", "high")
-    .in("status", ["submitted", "second_round"]);
+    .in("status", ["submitted", "second_round", "second_submitted"]);
 
   if (error) throw error;
   return Number(count || 0) > 0;
@@ -4800,71 +4542,26 @@ async function applyWinningCompensatoryCall(call) {
   }
 }
 
-async function calculateCompensatoryResults(priorityTier = "normal") {
-  if (!currentSettings) return;
-
+async function calculateCompensatoryResults(priorityTier = "normal", slot = 1) {
+  if (!currentSettings || !currentUserIsAdmin || isAdminViewingAsTeam()) return;
   const tier = normalizeCompensatoryTier(priorityTier);
-
-  try {
-    if (tier === "high" && await hasCalculatedRegularWaiverCalls()) {
-      alert("Il waiver è già stato calcolato: le compensative prioritarie devono essere risolte prima.");
-      return;
-    }
-
-    if (tier === "normal" && await hasSubmittedHighCompensatoryCalls()) {
-      alert("Calcola prima le compensative prioritarie.");
-      return;
-    }
-
-    if (tier === "normal" && await hasPendingRegularWaiverCalls()) {
-      alert("Calcola prima tutte le chiamate waiver: le compensative normali vengono per ultime.");
-      return;
-    }
-  } catch (guardError) {
-    console.error("Errore controllo ordine di calcolo:", guardError);
-    alert("Impossibile verificare l'ordine di calcolo.");
-    return;
+  const { closeAt } = getCompensatoryTimesForTier(tier, slot);
+  if (!closeAt || Date.now() < new Date(closeAt).getTime()) {
+    setAdminMessage("Il calcolo è disponibile solo dopo la chiusura dello Slot " + slot + ".", true); return;
   }
-
-  const { data: processed, error } = await supabase.rpc(
-    "admin_process_waiver_compensatory_tier",
-    {
-      p_week: Number(currentSettings.active_week),
-      p_phase: currentSettings.active_phase,
-      p_priority_tier: tier
-    }
-  );
-
-  if (error) {
-    console.error("Errore calcolo compensative:", error);
-    alert("Errore calcolo compensative: " + error.message);
-    return;
-  }
-
-  const { count: manualCount, error: manualCountError } = await supabase
-    .from("waiver_compensatory_calls")
-    .select("id", { count: "exact", head: true })
-    .eq("week", currentSettings.active_week)
-    .eq("phase", currentSettings.active_phase)
-    .eq("priority_tier", tier)
-    .eq("status", "manual_required");
-
-  if (manualCountError) {
-    console.error("Errore conteggio compensative manuali:", manualCountError);
-  }
-
-  alert(`${getCompensatoryTierLabel(tier)} calcolate in due giri. Elaborate: ${Number(processed) || 0}.${manualCount ? ` Da risolvere manualmente: ${manualCount}.` : ""}`);
-
+  const { data, error } = await supabase.rpc("admin_process_waiver_compensatory_slot", {
+    p_week: Number(currentSettings.active_week), p_phase: currentSettings.active_phase,
+    p_priority_tier: tier, p_slot: slot
+  });
+  if (error) { setAdminMessage("Errore calcolo: " + error.message, true); return; }
+  setAdminMessage(getCompensatoryTierLabel(tier) + " · Slot " + slot + ": elaborate " + Number(data || 0) +
+    ". Il secondo slot richiede la propria chiusura; zero può indicare una fase precedente ancora da completare.");
   await loadInjuryReserveMonitor();
   await loadMyOwnedPlayers();
   await loadMyReplacementCandidates();
   await loadFreeAgents();
   await loadMyCompensatoryCalls();
-
-  if (currentUserIsAdmin) {
-    await loadAllCompensatoryCalls();
-  }
-
+  await loadAllCompensatoryCalls();
   await renderPublicWaiverOrder();
 }
 
@@ -4961,6 +4658,14 @@ function fromDateTimeLocalValue(value) {
 
 function syncSettingsPanel() {
   if (!currentSettings) return;
+  [
+    [highCompensatorySlot2OpenInput, "high_compensatory_slot2_open_at"],
+    [highCompensatorySlot2CloseInput, "high_compensatory_slot2_close_at"],
+    [compensatorySlot2OpenInput, "compensatory_slot2_open_at"],
+    [compensatorySlot2CloseInput, "compensatory_slot2_close_at"]
+  ].forEach(([input, key]) => {
+    if (input) input.value = toDateTimeLocalValue(currentSettings[key]);
+  });
 
   if (activePhaseSelect) {
     activePhaseSelect.value = currentSettings.active_phase || "conference";
@@ -5046,6 +4751,45 @@ function addMinutes(date, minutes) {
   return new Date(date.getTime() + minutes * 60 * 1000);
 }
 
+function fillCompensatoryPreset(firstOpen, firstClose, lastRegularClose) {
+  setInputDateTime(highCompensatoryOpenInput, firstOpen);
+  setInputDateTime(highCompensatoryCloseInput, addMinutes(firstClose, -60));
+  setInputDateTime(highCompensatorySlot2OpenInput, addMinutes(firstClose, -59));
+  setInputDateTime(highCompensatorySlot2CloseInput, addMinutes(firstClose, -30));
+  setInputDateTime(compensatoryOpenInput, addMinutes(lastRegularClose, 1));
+  setInputDateTime(compensatoryCloseInput, addMinutes(lastRegularClose, 30));
+  setInputDateTime(compensatorySlot2OpenInput, addMinutes(lastRegularClose, 31));
+  setInputDateTime(compensatorySlot2CloseInput, addMinutes(lastRegularClose, 60));
+}
+
+function validateCompensatoryTimingPayload(payload) {
+  for (const prefix of ["high_compensatory", "compensatory"]) {
+    const label = prefix === "high_compensatory" ? "Prioritarie" : "Normali";
+    const o1 = payload[prefix + "_open_at"], c1 = payload[prefix + "_close_at"];
+    const o2 = payload[prefix + "_slot2_open_at"], c2 = payload[prefix + "_slot2_close_at"];
+    if ([o1, c1, o2, c2].some(Boolean) && ![o1, c1, o2, c2].every(Boolean)) {
+      return label + ": imposta apertura e chiusura di entrambi gli slot.";
+    }
+    if (!o1) continue;
+    if (new Date(c1) <= new Date(o1) || new Date(c2) <= new Date(o2)) {
+      return label + ": ogni chiusura deve essere successiva all’apertura.";
+    }
+    if (new Date(o2) < new Date(c1)) return label + ": lo Slot 2 deve aprire dopo la chiusura dello Slot 1.";
+    if (prefix === "high_compensatory" && payload.slot1_close_at &&
+      new Date(c2) > new Date(payload.slot1_close_at)) {
+      return "Le prioritarie Slot 2 devono chiudere entro la chiusura dello Slot 1 waiver.";
+    }
+    if (prefix === "compensatory") {
+      const closes = ["slot1_close_at", "slot1s_close_at", "slot2_close_at", "slot2s_close_at"]
+        .map(key => payload[key]).filter(Boolean).map(value => new Date(value).getTime());
+      if (closes.length && new Date(c1).getTime() < Math.max(...closes)) {
+        return "Le compensative normali devono chiudere dopo tutti gli slot waiver.";
+      }
+    }
+  }
+  return "";
+}
+
 function fillStandardFridaySettings() {
   const friday = getNextFriday();
 
@@ -5080,8 +4824,9 @@ function fillStandardFridaySettings() {
   if (slot2SOpenInput) slot2SOpenInput.value = "";
   if (slot2SCloseInput) slot2SCloseInput.value = "";
 
+  fillCompensatoryPreset(slot1Open, slot1Close, slot2Close);
   setSettingsMessage(
-    "Venerdì standard impostato: prioritarie e Slot 1 da martedì 00:00 a venerdì 15:00; Slot 2 da venerdì 15:01 a venerdì 16:00. Ricordati di salvare."
+    "Venerdì standard: prioritarie 14:00 / 14:30; waiver 15:00 / 16:00; compensative normali 16:30 / 17:00. Controlla e salva."
   );
 }
 
@@ -5134,8 +4879,9 @@ function fillPlayoffFridaySettings() {
   setInputDateTime(slot2SOpenInput, slot2SOpen);
   setInputDateTime(slot2SCloseInput, slot2SClose);
 
+  fillCompensatoryPreset(slot1Open, slot1Close, slot2SClose);
   setSettingsMessage(
-    "Venerdì playoff impostato: prioritarie e Slot 1 da martedì 00:00 a venerdì 15:00; Slot 1S 15:01-15:30; Slot 2 15:31-16:00; Slot 2S 16:01-16:30. Ricordati di salvare."
+    "Venerdì playoff: prioritarie 14:00 / 14:30; waiver fino alle 16:30; compensative normali 17:00 / 17:30. Controlla e salva."
   );
 }
 
@@ -5194,6 +4940,10 @@ async function saveWaiverSettings() {
 
     high_compensatory_open_at: highCompensatoryOpenAt,
     high_compensatory_close_at: highCompensatoryCloseAt,
+    high_compensatory_slot2_open_at: fromDateTimeLocalValue(highCompensatorySlot2OpenInput?.value),
+    high_compensatory_slot2_close_at: fromDateTimeLocalValue(highCompensatorySlot2CloseInput?.value),
+    compensatory_slot2_open_at: fromDateTimeLocalValue(compensatorySlot2OpenInput?.value),
+    compensatory_slot2_close_at: fromDateTimeLocalValue(compensatorySlot2CloseInput?.value),
 
     slot1_open_at: fromDateTimeLocalValue(slot1OpenInput?.value),
     slot1_close_at: fromDateTimeLocalValue(slot1CloseInput?.value),
@@ -5210,6 +4960,9 @@ async function saveWaiverSettings() {
    compensatory_open_at: fromDateTimeLocalValue(compensatoryOpenInput?.value),
 compensatory_close_at: fromDateTimeLocalValue(compensatoryCloseInput?.value)
   };
+
+  const timingError = validateCompensatoryTimingPayload(payload);
+  if (timingError) { setSettingsMessage(timingError, true); return; }
 
   setSettingsMessage("Salvataggio impostazioni in corso...");
 
@@ -6574,6 +6327,14 @@ setPlayoffFridayBtn?.addEventListener("click", () => {
 saveWaiverSettingsBtn?.addEventListener("click", () => {
   saveWaiverSettings();
 });
+document.getElementById("calculateHighCompensatorySlot2Btn")?.addEventListener("click", () => {
+  calculateCompensatoryResults("high", 2);
+});
+document.getElementById("calculateCompensatorySlot2Btn")?.addEventListener("click", () => {
+  calculateCompensatoryResults("normal", 2);
+});
+document.getElementById("refreshCompensatorySlotsBtn")?.addEventListener("click", () => refreshCompensatorySlots(true));
+setInterval(() => refreshCompensatorySlots(), 30000);
 setupFreeAgentsSorting();
 setupMobileWaiverTabs();
 

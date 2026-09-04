@@ -5555,3 +5555,52 @@ body.waiver-view-as-mode .waiver-trades-card textarea {
     min-height: 46px;
   }
 }
+
+
+/* Compensative: due finestre distinte, richiami solo per i perdenti. */
+.compensatory-slot-section {
+  margin: 14px 0 22px;
+  padding: 14px;
+  border: 1px solid #dbe6f0;
+  border-radius: 16px;
+  background: #f8fafc;
+  min-width: 0;
+}
+.compensatory-slot-section.compensatory-slot-2 {
+  border-color: #c7d2fe;
+  background: #f4f6ff;
+}
+.compensatory-slot-heading {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  margin-bottom: 12px;
+  color: #082d50;
+}
+.compensatory-slot-heading strong { font-size: 1rem; }
+.compensatory-slot-heading span, .compensatory-slot-empty,
+.compensatory-refresh-note {
+  font-size: .82rem;
+  line-height: 1.5;
+  color: #53687d;
+  overflow-wrap: anywhere;
+}
+.compensatory-refresh-note { display: block; margin: 8px 0 16px; }
+.compensatory-slot-section .compensatory-call-card { margin: 10px 0; }
+.compensatory-call-card input,
+.compensatory-call-card select { width: 100%; min-width: 0; box-sizing: border-box; }
+.compensatory-player-in-second.has-player-selection {
+  border-color: #93c5fd;
+  background: #eff6ff;
+  color: #0f172a;
+  font-weight: 700;
+}
+.compensatory-call-card small { display: block; color: #53687d; line-height: 1.45; }
+.compensatory-recall-settings { border: 2px solid #c7d2fe; }
+.public-compensatory-group .public-waiver-group-title h3 { white-space: normal; }
+@media (max-width: 768px) {
+  .compensatory-slot-section { padding: 10px; margin: 10px 0 16px; }
+  .compensatory-slot-heading span { font-size: .78rem; }
+  .compensatory-slot-section .call-actions { flex-wrap: wrap; }
+  .compensatory-slot-section .call-actions button { flex: 1 1 100%; min-width: 0; }
+}
