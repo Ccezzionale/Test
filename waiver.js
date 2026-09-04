@@ -5626,11 +5626,12 @@ function renderFantacalcioPreview(preview, fileName, sheetName) {
       <div><span>Invariati</span><strong>${unchangedPlayers}</strong></div>
     </div>
 
-    <div class="admin-listone-warning">
-      Verranno aggiornati solo dati Fantacalcio: nome, ruolo, ruolo Mantra,
-      squadra, quotazione e stato attivo/inattivo. Rose, U21, slot U21,
-      keeper e blocchi waiver/trade non vengono toccati.
-    </div>
+<div class="admin-listone-warning">
+  Verranno aggiornati i dati Fantacalcio: nome, ruolo, ruolo Mantra,
+  squadra, quotazione e stato attivo/inattivo. Le batterie dei portieri
+  vengono riallineate automaticamente in base alle porte possedute.
+  U21, slot U21, keeper e blocchi waiver/trade non vengono modificati.
+</div>
 
     <div class="admin-listone-details-grid">
       ${renderFantacalcioPlayersList(
@@ -5706,10 +5707,10 @@ async function applyFantacalcioListone() {
     return;
   }
 
-  const confirmed = window.confirm(
-    `Confermi l'aggiornamento con "${pendingFantacalcioFileName}"?\n\n` +
-    "Rose, U21, slot U21, keeper e blocchi waiver/trade NON verranno modificati."
-  );
+const confirmed = window.confirm(
+  `Confermi l'aggiornamento con "${pendingFantacalcioFileName}"?\n\n` +
+  "Le batterie dei portieri verranno riallineate automaticamente. U21, slot U21, keeper e blocchi waiver/trade non verranno modificati."
+);
 
   if (!confirmed) return;
 
