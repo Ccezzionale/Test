@@ -1158,6 +1158,38 @@ async function sendTradeProposal() {
   const mySelectedWaiverCallKeys = getCheckedValues(".my-waiver-call-checkbox");
   const theirSelectedWaiverCallKeys = getCheckedValues(".their-waiver-call-checkbox");
 
+  const myGoalkeeperBatteryError = validateGoalkeeperBatterySelection(
+    mySelectedPlayerIds,
+    currentTeamId
+  );
+
+  if (myGoalkeeperBatteryError) {
+    showMessage(
+      formatGoalkeeperBatteryTradeError(
+        myGoalkeeperBatteryError,
+        "Nella tua offerta"
+      ),
+      "error"
+    );
+    return;
+  }
+
+  const theirGoalkeeperBatteryError = validateGoalkeeperBatterySelection(
+    theirSelectedPlayerIds,
+    toTeamId
+  );
+
+  if (theirGoalkeeperBatteryError) {
+    showMessage(
+      formatGoalkeeperBatteryTradeError(
+        theirGoalkeeperBatteryError,
+        "Nella richiesta all'altra squadra"
+      ),
+      "error"
+    );
+    return;
+  }
+
   const myDraftSlotCount =
     mySelectedPickNumbers.length +
     mySelectedPlayerIds.length;
@@ -2078,6 +2110,120 @@ function countSelectedNormalU21Players(selectedPlayerIds) {
 
     return player?.is_u21_slot === true;
   }).length;
+}
+
+
+function isTradeGoalkeeper(player) {
+  if (!player) return false;
+
+  const rawRole = `${player.role || ""} ${player.role_mantra || ""}`
+    .toUpperCase()
+    .trim();
+
+  const roles = rawRole
+    .split(/[;,/|\s]+/)
+    .map(role => role.trim())
+    .filter(Boolean);
+
+  return (
+    roles.includes("P") ||
+    roles.includes("POR") ||
+    roles.includes("PORTIERE") ||
+    roles.includes("PORTIERI")
+  );
+}
+
+function getTradePlayerById(playerId) {
+  return allPickedPlayers.find(p =>
+    String(p.id) === String(playerId) ||
+    String(p.player_id) === String(playerId) ||
+    String(p[CONFIG.PICKS_ID_COL]) === String(playerId)
+  );
+}
+
+function normalizeSerieATeamForTrade(value) {
+  return String(value || "").trim().toLowerCase();
+}
+
+function validateGoalkeeperBatterySelection(selectedPlayerIds, ownerTeamId) {
+  /*
+    Durante il draft ogni porta è ancora rappresentata dal singolo portiere
+    scelto come asset del draft. La regola della batteria completa si applica
+    al mercato successivo, quando allPickedPlayers contiene le rose reali.
+  */
+  if (isDraftPhase()) return null;
+
+  const selectedPlayers = selectedPlayerIds
+    .map(getTradePlayerById)
+    .filter(Boolean);
+
+  const selectedGoalkeepers = selectedPlayers.filter(isTradeGoalkeeper);
+
+  if (!selectedGoalkeepers.length) return null;
+
+  const selectedSerieATeams = [
+    ...new Set(
+      selectedGoalkeepers
+        .map(player => normalizeSerieATeamForTrade(player.serie_a_team))
+        .filter(Boolean)
+    )
+  ];
+
+  for (const serieATeamKey of selectedSerieATeams) {
+    const fullBattery = allPickedPlayers.filter(player =>
+      String(player[CONFIG.PICKS_OWNER_COL]) === String(ownerTeamId) &&
+      isTradeGoalkeeper(player) &&
+      normalizeSerieATeamForTrade(player.serie_a_team) === serieATeamKey
+    );
+
+    const selectedBattery = selectedGoalkeepers.filter(player =>
+      normalizeSerieATeamForTrade(player.serie_a_team) === serieATeamKey
+    );
+
+    const selectedIds = new Set(
+      selectedBattery.map(player =>
+        String(player.id || player.player_id || player[CONFIG.PICKS_ID_COL])
+      )
+    );
+
+    const missingPlayers = fullBattery.filter(player => {
+      const playerId = String(
+        player.id || player.player_id || player[CONFIG.PICKS_ID_COL]
+      );
+      return !selectedIds.has(playerId);
+    });
+
+    if (missingPlayers.length) {
+      const clubName =
+        fullBattery[0]?.serie_a_team ||
+        selectedBattery[0]?.serie_a_team ||
+        "questa squadra";
+
+      return {
+        clubName,
+        missingNames: missingPlayers.map(player =>
+          player.player_name || player.name || "Portiere"
+        )
+      };
+    }
+  }
+
+  return null;
+}
+
+function formatGoalkeeperBatteryTradeError(validation, sideLabel) {
+  if (!validation) return "";
+
+  const missingLabel = validation.missingNames.length
+    ? ` Mancano: ${validation.missingNames.join(", ")}.`
+    : "";
+
+  return (
+    `Trade non valida: i portieri si scambiano per batteria. ` +
+    `${sideLabel} hai selezionato solo una parte dei portieri del ${validation.clubName}. ` +
+    `Per scambiare quella porta devi selezionare tutti i portieri del ${validation.clubName} presenti in rosa.` +
+    missingLabel
+  );
 }
 
 async function confirmTradeWithCuts() {
