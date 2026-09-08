@@ -1027,6 +1027,43 @@ button:hover{ transform:translateY(-1px); background:var(--navy-2); }
   }
 }
 
+/* =========================================================
+   IMMAGINI EDITORIALI MOBILE - mostra sempre il 16:9 intero
+   ========================================================= */
+
+@media (max-width: 768px){
+
+  .hero-media,
+  .next-media,
+  .next-media-image-only{
+    width: 100%;
+    height: auto !important;
+    min-height: 0 !important;
+    aspect-ratio: 16 / 9;
+    background: #07111f;
+  }
+
+  .hero-media img,
+  .next-media img,
+  .next-media-image-only img{
+    width: 100%;
+    height: 100% !important;
+    min-height: 0 !important;
+    aspect-ratio: 16 / 9;
+    object-fit: contain !important;
+    object-position: center;
+    display: block;
+  }
+
+  .hero-placeholder,
+  .next-placeholder,
+  .next-media-image-only .next-placeholder{
+    width: 100%;
+    height: 100%;
+    min-height: 0;
+  }
+}
+
 
 /* Layout Gazzetta: se viene pubblicata solo una sezione tra Pagelle e Top & Flop */
 .lower-grid.lower-grid-single{
