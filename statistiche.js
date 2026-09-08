@@ -96,6 +96,22 @@ function normalize(vals){
   return vals.map(v=>Number.isFinite(v)? ((v-min)/(max-min))*100 : 0);
 }
 
+// Converte il fantapunteggio nei gol di lega (1 gol a 66, poi ogni +6).
+// Il Power Ranking deve usare il risultato reale della partita, non il
+// semplice confronto tra PointsFor e PointsAgainst: 71–68.5, ad esempio,
+// è un pareggio 1–1 e vale un punto per entrambe le squadre.
+function powerGoals(points){
+  const value = Number(points);
+  if (!Number.isFinite(value) || value < 66) return 0;
+  return 1 + Math.floor((value - 66) / 6);
+}
+
+function powerLeaguePoints(row){
+  const goalsFor = powerGoals(row.PointsFor);
+  const goalsAgainst = powerGoals(row.PointsAgainst);
+  return goalsFor > goalsAgainst ? 3 : (goalsFor === goalsAgainst ? 1 : 0);
+}
+
 /********** DATA PREP **********/
 
 function canonTeamName(name){
@@ -212,16 +228,19 @@ function computePower(clean){
         .filter(r => r.GW && r.GW <= upToGW)
         .sort((a,b) => a.GW - b.GW);
 
-      const pts = series.map(s => s.PointsFor);
-      if (!pts.length) continue;
+      const fantasyPoints = series.map(s => s.PointsFor);
+      const leaguePoints = series.map(powerLeaguePoints);
+      if (!fantasyPoints.length) continue;
 
       items.push({
         team,
-        games: pts.length,
-        recentRaw: weightedRecent(pts),
-        seasonRaw: mean(pts),
-        momentumRaw: momentumRaw(pts),
-        consRaw: reliabilityRaw(pts)
+        games: fantasyPoints.length,
+        // Forma = risultati recenti reali (3 vittoria, 1 pareggio, 0 sconfitta).
+        // Media, momentum e continuità restano basati sui fantapunteggi.
+        recentRaw: weightedRecent(leaguePoints),
+        seasonRaw: mean(fantasyPoints),
+        momentumRaw: momentumRaw(fantasyPoints),
+        consRaw: reliabilityRaw(fantasyPoints)
       });
     }
 
