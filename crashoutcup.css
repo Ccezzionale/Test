@@ -2354,3 +2354,168 @@ body::before{
     font-size:.64rem;
   }
 }
+
+
+/* =========================================================
+   CRASH OUT CUP - IMPORT RISULTATI DA EXCEL
+   ========================================================= */
+.crash-import-card{
+  display:grid;
+  gap:12px;
+  margin:0 0 14px;
+  padding:14px;
+  border:1px solid rgba(32,199,255,.24);
+  border-radius:17px;
+  background:
+    radial-gradient(circle at 0 0, rgba(32,199,255,.12), transparent 42%),
+    linear-gradient(180deg, rgba(10,18,40,.82), rgba(5,9,24,.88));
+  box-shadow:
+    0 12px 24px rgba(0,0,0,.18),
+    inset 0 1px 0 rgba(255,255,255,.06);
+}
+
+.crash-import-copy{
+  display:grid;
+  gap:4px;
+}
+
+.crash-import-kicker{
+  color:var(--crash-blue);
+  font-size:.68rem;
+  font-weight:950;
+  letter-spacing:.14em;
+  text-transform:uppercase;
+}
+
+.crash-import-copy strong{
+  color:#fff;
+  font-size:1rem;
+  font-weight:950;
+}
+
+.crash-import-copy small{
+  color:rgba(255,255,255,.62);
+  font-size:.78rem;
+  font-weight:700;
+  line-height:1.35;
+}
+
+.crash-import-actions{
+  display:grid;
+  grid-template-columns:minmax(260px, 1fr) auto;
+  align-items:stretch;
+  gap:10px;
+}
+
+.crash-import-file-label{
+  min-width:0;
+  display:grid;
+  grid-template-columns:auto 1fr;
+  grid-template-areas:
+    "title hint"
+    "input input";
+  gap:6px 10px;
+  align-items:center;
+  padding:10px 12px;
+  border:1px dashed rgba(32,199,255,.34);
+  border-radius:14px;
+  background:rgba(255,255,255,.035);
+  cursor:pointer;
+}
+
+.crash-import-file-label > span{
+  grid-area:title;
+  color:#fff;
+  font-size:.82rem;
+  font-weight:900;
+}
+
+.crash-import-file-label > small{
+  grid-area:hint;
+  justify-self:end;
+  color:rgba(255,255,255,.50);
+  font-size:.68rem;
+  font-weight:850;
+}
+
+.crash-import-file-label input[type="file"]{
+  grid-area:input;
+  width:100%;
+  min-width:0;
+  color:rgba(255,255,255,.72);
+  font:inherit;
+  font-size:.76rem;
+}
+
+.crash-import-file-label input[type="file"]::file-selector-button{
+  margin-right:9px;
+  border:1px solid rgba(255,49,223,.30);
+  border-radius:10px;
+  padding:7px 10px;
+  background:rgba(255,49,223,.14);
+  color:#fff;
+  font:inherit;
+  font-weight:900;
+  cursor:pointer;
+}
+
+.crash-import-button{
+  min-width:210px;
+}
+
+.crash-import-button:disabled{
+  opacity:.48;
+  cursor:not-allowed;
+  box-shadow:none;
+}
+
+.crash-import-status{
+  margin:0;
+}
+
+.admin-manual-divider{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  margin:4px 0 14px;
+  color:rgba(255,255,255,.42);
+  font-size:.64rem;
+  font-weight:900;
+  letter-spacing:.12em;
+  text-transform:uppercase;
+}
+
+.admin-manual-divider::before,
+.admin-manual-divider::after{
+  content:"";
+  height:1px;
+  flex:1;
+  background:rgba(255,255,255,.08);
+}
+
+@media (max-width:900px){
+  .crash-import-card{
+    padding:12px;
+  }
+
+  .crash-import-actions{
+    grid-template-columns:1fr;
+  }
+
+  .crash-import-button{
+    width:100%;
+    min-width:0;
+  }
+
+  .crash-import-file-label{
+    grid-template-columns:1fr;
+    grid-template-areas:
+      "title"
+      "hint"
+      "input";
+  }
+
+  .crash-import-file-label > small{
+    justify-self:start;
+  }
+}

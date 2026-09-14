@@ -8,6 +8,7 @@ import { supabase } from "./supabase.js";
 
 const CRASHOUT_SEASON = "2026";
 const MAX_MATCHDAY = 5;
+const XLSX_CDN = "https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js";
 const CONFERENCE_IDS = ["CHAMPIONSHIP", "LEAGUE"];
 const CONFERENCE_SIZE = 8;
 
@@ -148,6 +149,8 @@ let activeMatchday = 1;
 let currentConferences = cloneConferences(DEFAULT_CONFERENCES);
 let fixtures = [];
 let isAdminUser = false;
+let xlsxReady = null;
+let parsedResultsImport = null;
 
 const $ = (sel, root = document) => root.querySelector(sel);
 
@@ -273,6 +276,291 @@ function parseMagic(value) {
   if (value === null || value === undefined || String(value).trim() === "") return null;
   const n = Number(String(value).replace(",", "."));
   return Number.isFinite(n) ? n : null;
+}
+
+
+function normalizeImportText(value) {
+  return String(value ?? "").replace(/\s+/g, " ").trim();
+}
+
+function normalizeTeamImportKey(value) {
+  return normalizeImportText(value)
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]/g, "");
+}
+
+function canonicalTeamFromImport(value) {
+  const key = normalizeTeamImportKey(value);
+  const found = TEAM_NAMES.find(team => normalizeTeamImportKey(team) === key);
+  if (!found) {
+    throw new Error(`Squadra non riconosciuta nel file: ${normalizeImportText(value) || "(vuota)"}`);
+  }
+  return found;
+}
+
+function importNumber(value) {
+  if (typeof value === "number") return Number.isFinite(value) ? value : null;
+  if (value === null || value === undefined || value === "") return null;
+  const parsed = Number(String(value).replace(",", ".").trim());
+  return Number.isFinite(parsed) ? parsed : null;
+}
+
+function importMatchdayHeader(value) {
+  const text = normalizeImportText(value).toLowerCase();
+  const match = text.match(/^(\d+)\s*[ªºa]?\s*giornata\s+lega\b/i);
+  return match ? Number(match[1]) : null;
+}
+
+function findImportCalendarSheet(workbook) {
+  const preferred = workbook.SheetNames.find(name => /calendario/i.test(name));
+  return workbook.Sheets[preferred || workbook.SheetNames[0]];
+}
+
+function loadXLSX() {
+  if (window.XLSX) return Promise.resolve(window.XLSX);
+  if (xlsxReady) return xlsxReady;
+
+  xlsxReady = new Promise((resolve, reject) => {
+    const script = document.createElement("script");
+    script.src = XLSX_CDN;
+    script.async = true;
+    script.onload = () => window.XLSX
+      ? resolve(window.XLSX)
+      : reject(new Error("Libreria XLSX non caricata."));
+    script.onerror = () => reject(new Error("Impossibile caricare il lettore Excel."));
+    document.head.appendChild(script);
+  });
+
+  return xlsxReady;
+}
+
+function importedMatchesFromSheet(sheet) {
+  const matrix = window.XLSX.utils.sheet_to_json(sheet, {
+    header: 1,
+    defval: null,
+    raw: true
+  });
+
+  const matches = [];
+  const seen = new Set();
+  let ignoredUnplayed = 0;
+
+  for (let r = 0; r < matrix.length; r += 1) {
+    const row = matrix[r] || [];
+
+    for (let c = 0; c < row.length; c += 1) {
+      const matchday = importMatchdayHeader(row[c]);
+      if (!matchday || matchday < 1 || matchday > MAX_MATCHDAY) continue;
+
+      const startCol = c;
+
+      for (let rr = r + 1; rr < matrix.length; rr += 1) {
+        const current = matrix[rr] || [];
+
+        if (importMatchdayHeader(current[startCol])) break;
+
+        const rawHome = normalizeImportText(current[startCol]);
+        const rawAway = normalizeImportText(current[startCol + 3]);
+        const homeMagic = importNumber(current[startCol + 1]);
+        const awayMagic = importNumber(current[startCol + 2]);
+
+        const hasAnything = [
+          current[startCol],
+          current[startCol + 1],
+          current[startCol + 2],
+          current[startCol + 3]
+        ].some(value => normalizeImportText(value) !== "");
+
+        if (!hasAnything) break;
+
+        const looksLikeMatch = rawHome && rawAway && homeMagic !== null && awayMagic !== null;
+        if (!looksLikeMatch) continue;
+
+        if (homeMagic === 0 && awayMagic === 0) {
+          ignoredUnplayed += 1;
+          continue;
+        }
+
+        const home = canonicalTeamFromImport(rawHome);
+        const away = canonicalTeamFromImport(rawAway);
+        const key = `${matchday}|${pairKey(home, away)}`;
+
+        if (seen.has(key)) continue;
+        seen.add(key);
+
+        matches.push({
+          matchday,
+          home,
+          away,
+          homeMagic,
+          awayMagic
+        });
+      }
+    }
+  }
+
+  return {
+    matches: matches.sort((a, b) => a.matchday - b.matchday || a.home.localeCompare(b.home)),
+    ignoredUnplayed
+  };
+}
+
+async function parseCrashoutResultsFile(file) {
+  if (!file) throw new Error("Seleziona prima il file Excel.");
+
+  await loadXLSX();
+
+  const buffer = await file.arrayBuffer();
+  const workbook = window.XLSX.read(buffer, { type: "array", cellDates: true });
+  const sheet = findImportCalendarSheet(workbook);
+
+  if (!sheet) throw new Error("Non trovo il foglio Calendario nel file.");
+
+  const parsed = importedMatchesFromSheet(sheet);
+
+  if (!parsed.matches.length) {
+    throw new Error("Non trovo partite già disputate. Le giornate 0-0 vengono ignorate.");
+  }
+
+  const matchdays = [...new Set(parsed.matches.map(match => match.matchday))].sort((a, b) => a - b);
+
+  return {
+    ...parsed,
+    fileName: file.name,
+    matchdays
+  };
+}
+
+function importedResultsSummary(parsed) {
+  const days = parsed.matchdays.length === 1
+    ? `Giornata ${parsed.matchdays[0]}`
+    : `Giornate ${parsed.matchdays.join(", ")}`;
+
+  const ignored = parsed.ignoredUnplayed
+    ? ` · ${parsed.ignoredUnplayed} future 0-0 ignorate`
+    : "";
+
+  return `${days} · ${parsed.matches.length} partite pronte${ignored}`;
+}
+
+async function previewCrashoutResultsFile(input) {
+  const status = document.getElementById("admin-import-file-status");
+  const importBtn = document.getElementById("admin-import-results");
+  const file = input?.files?.[0];
+
+  parsedResultsImport = null;
+  if (importBtn) importBtn.disabled = true;
+
+  if (!file) {
+    setStatus("admin-import-file-status", "Nessun file selezionato.");
+    return;
+  }
+
+  setStatus("admin-import-file-status", "Controllo il calendario Excel...");
+
+  try {
+    parsedResultsImport = await parseCrashoutResultsFile(file);
+    setStatus(
+      "admin-import-file-status",
+      `✓ ${file.name} · ${importedResultsSummary(parsedResultsImport)}`,
+      "ok"
+    );
+    if (importBtn) importBtn.disabled = false;
+  } catch (error) {
+    console.error("Errore lettura calendario Crash Out Cup:", error);
+    setStatus("admin-import-file-status", `✕ ${error.message}`, "error");
+  }
+}
+
+function buildImportedFixtureUpdates(importedMatches) {
+  const updates = [];
+  const notFound = [];
+
+  importedMatches.forEach(imported => {
+    const fixture = fixtures.find(match =>
+      match.matchday === imported.matchday &&
+      pairKey(match.home, match.away) === pairKey(imported.home, imported.away)
+    );
+
+    if (!fixture) {
+      notFound.push(`G${imported.matchday}: ${imported.home} vs ${imported.away}`);
+      return;
+    }
+
+    const sameDirection = fixture.home === imported.home;
+    const homeMagic = sameDirection ? imported.homeMagic : imported.awayMagic;
+    const awayMagic = sameDirection ? imported.awayMagic : imported.homeMagic;
+
+    updates.push({
+      ...fixture,
+      homeMagic,
+      awayMagic,
+      homeGoals: goalsFromMagic(homeMagic),
+      awayGoals: goalsFromMagic(awayMagic),
+      isPlayed: true
+    });
+  });
+
+  if (notFound.length) {
+    throw new Error(
+      `Nel file ci sono partite che non coincidono con il calendario salvato: ${notFound.join("; ")}.`
+    );
+  }
+
+  return updates;
+}
+
+async function importAdminResultsFromExcel() {
+  const importBtn = document.getElementById("admin-import-results");
+
+  if (!parsedResultsImport) {
+    setStatus("admin-import-file-status", "Seleziona e valida prima il calendario Excel.", "error");
+    return;
+  }
+
+  let updates;
+  try {
+    updates = buildImportedFixtureUpdates(parsedResultsImport.matches);
+  } catch (error) {
+    setStatus("admin-import-file-status", error.message, "error");
+    return;
+  }
+
+  if (!updates.length) {
+    setStatus("admin-import-file-status", "Nessun risultato da importare.", "error");
+    return;
+  }
+
+  if (importBtn) importBtn.disabled = true;
+  setStatus("admin-import-file-status", "Salvataggio automatico dei risultati...");
+
+  const payload = updates.map(match => fixtureToRow(match, false));
+  const { error } = await supabase
+    .from("crashout_rivalry_matches")
+    .upsert(payload, { onConflict: "id" });
+
+  if (error) {
+    console.error("Errore import risultati Crash Out Cup:", error);
+    setStatus("admin-import-file-status", `Errore Supabase: ${error.message}`, "error");
+    if (importBtn) importBtn.disabled = false;
+    return;
+  }
+
+  const byId = new Map(updates.map(match => [match.id, match]));
+  fixtures = fixtures.map(match => byId.get(match.id) || match);
+
+  renderAllPublic();
+  renderAdminResults();
+
+  setStatus(
+    "admin-import-file-status",
+    `✓ Import completato: ${updates.length} partite aggiornate. Gol e classifica ricalcolati automaticamente.`,
+    "ok"
+  );
+
+  if (importBtn) importBtn.disabled = false;
 }
 
 function buildRivalryFixtures() {
@@ -1086,6 +1374,8 @@ async function initAdminPanel() {
   const toggle = document.getElementById("crash-admin-toggle");
   const saveConferencesBtn = document.getElementById("admin-save-groups-generate");
   const saveResultsBtn = document.getElementById("admin-save-results");
+  const resultsFileInput = document.getElementById("admin-results-file");
+  const importResultsBtn = document.getElementById("admin-import-results");
 
   if (!panel) return;
 
@@ -1113,6 +1403,8 @@ async function initAdminPanel() {
 
   saveConferencesBtn?.addEventListener("click", saveConferencesAndGenerateCalendar);
   saveResultsBtn?.addEventListener("click", saveAdminResults);
+  resultsFileInput?.addEventListener("change", () => previewCrashoutResultsFile(resultsFileInput));
+  importResultsBtn?.addEventListener("click", importAdminResultsFromExcel);
 }
 
 function initMobileMenuFallback() {

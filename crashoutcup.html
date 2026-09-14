@@ -6,7 +6,7 @@
   <title>Lega degli Eroi – Crash Out Cup • Prima fase</title>
 
   <link rel="stylesheet" href="navbar.css">
-  <link rel="stylesheet" href="crashoutcup.css?v=20260708-magicpoints-v7">
+  <link rel="stylesheet" href="crashoutcup.css?v=20260914-excel-import-v8">
 </head>
 
 <body>
@@ -132,7 +132,7 @@
     </div>
   </header>
 
-  <main class="cup-container" data-page-version="20260708-mobile-v6">
+  <main class="cup-container" data-page-version="20260914-excel-import-v8">
     <section class="phase-intro-card" aria-label="Formula Crash Out Cup">
       <div class="phase-intro-copy">
         <span class="section-kicker">Prima fase</span>
@@ -268,7 +268,7 @@
         <span>
           <span class="crash-admin-kicker">Admin Panel</span>
           <strong>Setup Rivalry Games</strong>
-          <small>Assegna le conference, sorteggia le due extra e inserisci i magic punteggi.</small>
+          <small>Assegna le conference, sorteggia le due extra e inserisci o importa i magic punteggi.</small>
         </span>
         <span class="crash-admin-chevron">⌄</span>
       </button>
@@ -307,6 +307,34 @@
             </div>
           </div>
 
+          <div class="crash-import-card">
+            <div class="crash-import-copy">
+              <span class="crash-import-kicker">Import automatico</span>
+              <strong>Calendario Fantacalcio</strong>
+              <small>Scarica il calendario Crash Out Cup e caricalo qui. Le giornate future 0-0 vengono ignorate.</small>
+            </div>
+
+            <div class="crash-import-actions">
+              <label class="crash-import-file-label" for="admin-results-file">
+                <span>📂 Scegli file Excel</span>
+                <small>.xlsx o .xls</small>
+                <input
+                  id="admin-results-file"
+                  type="file"
+                  accept=".xlsx,.xls,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel"
+                />
+              </label>
+
+              <button id="admin-import-results" type="button" class="crash-admin-save crash-import-button" disabled>
+                Carica risultati dal file
+              </button>
+            </div>
+
+            <p id="admin-import-file-status" class="crash-admin-status crash-import-status">Nessun file selezionato.</p>
+          </div>
+
+          <div class="admin-manual-divider"><span>oppure inserimento manuale</span></div>
+
           <div id="admin-results-grid" class="admin-results-grid"></div>
           <p id="admin-results-status" class="crash-admin-status"></p>
         </section>
@@ -319,7 +347,7 @@
   </main>
 
   <script src="mobile-nav.js"></script>
-  <script type="module" src="crashoutcup.js?v=20260708-magicpoints-v7" defer></script>
+  <script type="module" src="crashoutcup.js?v=20260914-excel-import-v8" defer></script>
   <script src="navbar.js"></script>
 </body>
 </html>
