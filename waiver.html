@@ -7,7 +7,7 @@
   <title>Waiver Room</title>
 
   <link rel="stylesheet" href="navbar.css" />
-  <link rel="stylesheet" href="waiver.css?v=comp-slots-20260904" />
+  <link rel="stylesheet" href="waiver.css?v=admin-ui-20260915" />
 </head>
 
 <body>
@@ -432,296 +432,384 @@
 
     <section class="waiver-admin-section">
       <article class="waiver-card admin-card" id="adminPanel" data-waiver-mobile-panel="admin" style="display:none;">
-        <h2>Admin Waiver Room</h2>
 
-        <div class="admin-settings-panel">
-          <h3>Impostazioni Waiver</h3>
-
-          <div class="admin-settings-grid">
-            <div class="admin-field">
-              <label for="activePhaseSelect">Fase attiva</label>
-              <select id="activePhaseSelect" class="waiver-owner-select">
-                <option value="conference">Conference</option>
-                <option value="round_robin">Round Robin</option>
-                <option value="playoff">Playoff</option>
-              </select>
-            </div>
-
-            <div class="admin-field">
-              <label for="activeWeekInput">Settimana</label>
-              <input type="number" id="activeWeekInput" min="1" />
+        <div class="admin-command-center">
+          <div class="admin-command-copy">
+            <p class="admin-command-eyebrow">Commissioner tools</p>
+            <h2>Admin Waiver Room</h2>
+            <div class="admin-active-context">
+              <span class="admin-live-dot" aria-hidden="true"></span>
+              <strong id="adminActiveContext">Waiver · Slot 1</strong>
             </div>
           </div>
 
-<div class="slot-settings-grid">
-  <div class="slot-settings-card high-compensatory-settings-card">
-    <h4>Prioritarie · Slot 1</h4>
-    <label for="highCompensatoryOpenInput">Apertura</label>
-    <input type="datetime-local" id="highCompensatoryOpenInput" />
-
-    <label for="highCompensatoryCloseInput">Chiusura</label>
-    <input type="datetime-local" id="highCompensatoryCloseInput" />
-
-    <small>Le chiamate perse passano alle prioritarie Slot 2.</small>
-  </div>
-
-
-  <div class="slot-settings-card high-compensatory-settings-card compensatory-recall-settings">
-    <h4>Prioritarie · Slot 2</h4>
-    <label for="highCompensatorySlot2OpenInput">Apertura richiamo</label>
-    <input type="datetime-local" id="highCompensatorySlot2OpenInput" />
-    <label for="highCompensatorySlot2CloseInput">Chiusura richiamo</label>
-    <input type="datetime-local" id="highCompensatorySlot2CloseInput" />
-    <small>Solo chi perde lo Slot 1. Deve terminare entro la chiusura dello Slot 1 waiver.</small>
-  </div>
-  <div class="slot-settings-card">
-    <h4>Slot 1</h4>
-    <label for="slot1OpenInput">Apertura</label>
-    <input type="datetime-local" id="slot1OpenInput" />
-
-    <label for="slot1CloseInput">Chiusura</label>
-    <input type="datetime-local" id="slot1CloseInput" />
-  </div>
-
-  <div class="slot-settings-card">
-    <h4>Slot 1S</h4>
-    <label for="slot1SOpenInput">Apertura</label>
-    <input type="datetime-local" id="slot1SOpenInput" />
-
-    <label for="slot1SCloseInput">Chiusura</label>
-    <input type="datetime-local" id="slot1SCloseInput" />
-  </div>
-
-  <div class="slot-settings-card">
-    <h4>Slot 2</h4>
-    <label for="slot2OpenInput">Apertura</label>
-    <input type="datetime-local" id="slot2OpenInput" />
-
-    <label for="slot2CloseInput">Chiusura</label>
-    <input type="datetime-local" id="slot2CloseInput" />
-  </div>
-
-  <div class="slot-settings-card">
-    <h4>Slot 2S</h4>
-    <label for="slot2SOpenInput">Apertura</label>
-    <input type="datetime-local" id="slot2SOpenInput" />
-
-    <label for="slot2SCloseInput">Chiusura</label>
-    <input type="datetime-local" id="slot2SCloseInput" />
-  </div>
-
-
-            <div class="slot-settings-card compensatory-settings-card">
-  <h4>Normali · Slot 1</h4>
-
-  <label for="compensatoryOpenInput">Apertura</label>
-  <input type="datetime-local" id="compensatoryOpenInput" />
-
-  <label for="compensatoryCloseInput">Chiusura</label>
-  <input type="datetime-local" id="compensatoryCloseInput" />
-</div>
-<div class="slot-settings-card compensatory-settings-card compensatory-recall-settings">
-  <h4>Normali · Slot 2</h4>
-  <label for="compensatorySlot2OpenInput">Apertura richiamo</label>
-  <input type="datetime-local" id="compensatorySlot2OpenInput" />
-  <label for="compensatorySlot2CloseInput">Chiusura richiamo</label>
-  <input type="datetime-local" id="compensatorySlot2CloseInput" />
-  <small>Solo per le chiamate perse nello Slot 1 compensative. Dopo questo slot, gestione manuale.</small>
-</div>
-          </div>
-
-          <div class="admin-actions">
-            <button id="setStandardFridayBtn" type="button" class="secondary-btn small-btn">
-              Imposta venerdì standard
-            </button>
-
-            <button id="setPlayoffFridayBtn" type="button" class="secondary-btn small-btn">
-              Imposta venerdì playoff
-            </button>
-
-            <button id="saveWaiverSettingsBtn" type="button" class="primary-btn small-btn">
-              Salva impostazioni
-            </button>
-          </div>
-
-          <p id="settingsMessage" class="priority-message"></p>
-        </div>
-
-
-        <div class="admin-listone-panel">
-          <div class="admin-listone-heading">
-            <div>
-              <h3>📊 Aggiornamento listone Fantacalcio</h3>
-              <p>
-                Carica il file Excel o CSV completo. Prima di modificare Supabase vedrai
-                sempre un'anteprima con nuovi giocatori, rimossi e quotazioni cambiate.
-              </p>
+          <div class="admin-command-stats">
+            <div class="admin-command-stat">
+              <span>Fase</span>
+              <strong id="adminPhaseSummary">-</strong>
             </div>
-            <span class="admin-listone-safe-badge">U21 e rose protetti</span>
+            <div class="admin-command-stat">
+              <span>Settimana</span>
+              <strong id="adminWeekSummary">-</strong>
+            </div>
+            <div class="admin-command-stat">
+              <span>Chiamate</span>
+              <strong id="adminCallsSummary">0</strong>
+            </div>
+            <div class="admin-command-stat">
+              <span>Comp.</span>
+              <strong id="adminCompSummary">0</strong>
+            </div>
           </div>
-
-          <div class="admin-listone-upload-row">
-            <label class="admin-listone-file-label" for="fantacalcioFileInput">
-              <span>📂 Scegli listone</span>
-              <small>.xlsx, .xls o .csv</small>
-            </label>
-
-            <input
-              id="fantacalcioFileInput"
-              class="admin-listone-file-input"
-              type="file"
-              accept=".xlsx,.xls,.csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel,text/csv"
-            />
-
-            <button
-              id="applyFantacalcioListoneBtn"
-              type="button"
-              class="primary-btn small-btn"
-              style="display:none;"
-            >
-              Conferma aggiornamento
-            </button>
-          </div>
-
-          <div id="fantacalcioListoneMessage" class="admin-listone-message">
-            Nessun file selezionato.
-          </div>
-
-          <div id="fantacalcioListonePreview" class="admin-listone-preview" style="display:none;"></div>
         </div>
 
-        <div class="admin-actions admin-main-actions">
-          <button id="generateWaiverOrderBtn" type="button" class="primary-btn small-btn">
-            Genera ordine waiver
-          </button>
+        <details class="admin-settings-panel admin-collapsible-panel">
+          <summary class="admin-panel-summary">
+            <span>
+              <strong>⚙ Orari e impostazioni</strong>
+              <small>Apri solo quando devi modificare finestre, fase o settimana.</small>
+            </span>
+            <span class="admin-summary-chevron">⌄</span>
+          </summary>
 
-          <button id="saveWaiverOrderBtn" type="button" class="primary-btn small-btn">
-            Salva ordine waiver
-          </button>
+          <div class="admin-panel-body">
+            <div class="admin-settings-grid">
+              <div class="admin-field">
+                <label for="activePhaseSelect">Fase attiva</label>
+                <select id="activePhaseSelect" class="waiver-owner-select">
+                  <option value="conference">Conference</option>
+                  <option value="round_robin">Round Robin</option>
+                  <option value="playoff">Playoff</option>
+                </select>
+              </div>
 
-          <button id="calculateHighCompensatoryBtn" type="button" class="primary-btn small-btn high-compensatory-action">
-            1. Prioritarie · Slot 1
-          </button>
-
-          <button id="calculateHighCompensatorySlot2Btn" type="button" class="primary-btn small-btn high-compensatory-action">
-            1. Prioritarie · Slot 2
-          </button>
-          <button id="calculateSlot1Btn" type="button" class="primary-btn small-btn">
-            2. Waiver · slot 1
-          </button>
-
-          <button id="calculateSlot1SBtn" type="button" class="primary-btn small-btn">
-            2. Waiver · slot 1S
-          </button>
-
-          <button id="calculateSlot2Btn" type="button" class="primary-btn small-btn">
-            2. Waiver · slot 2
-          </button>
-
-          <button id="calculateSlot2SBtn" type="button" class="primary-btn small-btn">
-            2. Waiver · slot 2S
-          </button>
-
-          <button id="calculateCompensatoryBtn" type="button" class="primary-btn small-btn">
-            3. Normali · Slot 1
-          </button>
-          <button id="calculateCompensatorySlot2Btn" type="button" class="primary-btn small-btn">
-            3. Normali · Slot 2
-          </button>
-        </div>
-
-        <div id="waiverOrderMessage" class="priority-message"></div>
-
-        <div class="admin-bottom-grid">
-          <div class="priority-panel">
-            <div class="priority-header">
-              <div>
-                <h3>Ordine Waiver</h3>
-                <p>
-                  Ogni riga è una chiamata. Cambia il proprietario per registrare una chiamata venduta.
-                </p>
+              <div class="admin-field">
+                <label for="activeWeekInput">Settimana</label>
+                <input type="number" id="activeWeekInput" min="1" />
               </div>
             </div>
 
-            <div id="waiverOrderAdmin" class="waiver-order-admin">
-              <p>Caricamento ordine waiver...</p>
+            <div class="slot-settings-grid">
+              <div class="slot-settings-card">
+                <h4>Waiver · Slot 1</h4>
+                <label for="slot1OpenInput">Apertura</label>
+                <input type="datetime-local" id="slot1OpenInput" />
+                <label for="slot1CloseInput">Chiusura</label>
+                <input type="datetime-local" id="slot1CloseInput" />
+              </div>
+
+              <div class="slot-settings-card">
+                <h4>Waiver · Slot 1S</h4>
+                <label for="slot1SOpenInput">Apertura</label>
+                <input type="datetime-local" id="slot1SOpenInput" />
+                <label for="slot1SCloseInput">Chiusura</label>
+                <input type="datetime-local" id="slot1SCloseInput" />
+              </div>
+
+              <div class="slot-settings-card">
+                <h4>Waiver · Slot 2</h4>
+                <label for="slot2OpenInput">Apertura</label>
+                <input type="datetime-local" id="slot2OpenInput" />
+                <label for="slot2CloseInput">Chiusura</label>
+                <input type="datetime-local" id="slot2CloseInput" />
+              </div>
+
+              <div class="slot-settings-card">
+                <h4>Waiver · Slot 2S</h4>
+                <label for="slot2SOpenInput">Apertura</label>
+                <input type="datetime-local" id="slot2SOpenInput" />
+                <label for="slot2SCloseInput">Chiusura</label>
+                <input type="datetime-local" id="slot2SCloseInput" />
+              </div>
+
+              <div class="slot-settings-card compensatory-settings-card">
+                <h4>Normali · Slot 1</h4>
+                <label for="compensatoryOpenInput">Apertura</label>
+                <input type="datetime-local" id="compensatoryOpenInput" />
+                <label for="compensatoryCloseInput">Chiusura</label>
+                <input type="datetime-local" id="compensatoryCloseInput" />
+              </div>
+
+              <div class="slot-settings-card compensatory-settings-card compensatory-recall-settings">
+                <h4>Normali · Slot 2</h4>
+                <label for="compensatorySlot2OpenInput">Apertura richiamo</label>
+                <input type="datetime-local" id="compensatorySlot2OpenInput" />
+                <label for="compensatorySlot2CloseInput">Chiusura richiamo</label>
+                <input type="datetime-local" id="compensatorySlot2CloseInput" />
+                <small>Solo per le chiamate perse nello Slot 1 compensative. Dopo questo slot, gestione manuale.</small>
+              </div>
+
+              <div class="slot-settings-card high-compensatory-settings-card">
+                <h4>Prioritarie · Slot 1</h4>
+                <label for="highCompensatoryOpenInput">Apertura</label>
+                <input type="datetime-local" id="highCompensatoryOpenInput" />
+                <label for="highCompensatoryCloseInput">Chiusura</label>
+                <input type="datetime-local" id="highCompensatoryCloseInput" />
+                <small>Le chiamate perse passano alle prioritarie Slot 2.</small>
+              </div>
+
+              <div class="slot-settings-card high-compensatory-settings-card compensatory-recall-settings">
+                <h4>Prioritarie · Slot 2</h4>
+                <label for="highCompensatorySlot2OpenInput">Apertura richiamo</label>
+                <input type="datetime-local" id="highCompensatorySlot2OpenInput" />
+                <label for="highCompensatorySlot2CloseInput">Chiusura richiamo</label>
+                <input type="datetime-local" id="highCompensatorySlot2CloseInput" />
+                <small>Solo chi perde lo Slot 1. Deve terminare entro la chiusura dello Slot 1 waiver.</small>
+              </div>
+            </div>
+
+            <div class="admin-actions">
+              <button id="setStandardFridayBtn" type="button" class="secondary-btn small-btn">
+                Imposta venerdì standard
+              </button>
+
+              <button id="setPlayoffFridayBtn" type="button" class="secondary-btn small-btn">
+                Imposta venerdì playoff
+              </button>
+
+              <button id="saveWaiverSettingsBtn" type="button" class="primary-btn small-btn">
+                Salva impostazioni
+              </button>
+            </div>
+
+            <p id="settingsMessage" class="priority-message"></p>
+          </div>
+        </details>
+
+        <details class="admin-listone-panel admin-collapsible-panel admin-listone-collapsible">
+          <summary class="admin-panel-summary">
+            <span>
+              <strong>📊 Aggiornamento listone Fantacalcio</strong>
+              <small>Import Excel/CSV con anteprima prima di toccare Supabase.</small>
+            </span>
+            <span class="admin-listone-safe-badge">U21 e rose protetti</span>
+          </summary>
+
+          <div class="admin-panel-body">
+            <div class="admin-listone-upload-row">
+              <label class="admin-listone-file-label" for="fantacalcioFileInput">
+                <span>📂 Scegli listone</span>
+                <small>.xlsx, .xls o .csv</small>
+              </label>
+
+              <input
+                id="fantacalcioFileInput"
+                class="admin-listone-file-input"
+                type="file"
+                accept=".xlsx,.xls,.csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel,text/csv"
+              />
+
+              <button
+                id="applyFantacalcioListoneBtn"
+                type="button"
+                class="primary-btn small-btn"
+                style="display:none;"
+              >
+                Conferma aggiornamento
+              </button>
+            </div>
+
+            <div id="fantacalcioListoneMessage" class="admin-listone-message">
+              Nessun file selezionato.
+            </div>
+
+            <div id="fantacalcioListonePreview" class="admin-listone-preview" style="display:none;"></div>
+          </div>
+        </details>
+
+        <div class="admin-global-actions">
+          <div class="admin-global-actions-main">
+            <button id="generateWaiverOrderBtn" type="button" class="secondary-btn small-btn">
+              Rigenera ordine
+            </button>
+
+            <button id="saveWaiverOrderBtn" type="button" class="primary-btn small-btn">
+              Salva ordine
+            </button>
+          </div>
+
+          <p id="waiverOrderMessage" class="priority-message" aria-live="polite"></p>
+        </div>
+
+        <section class="admin-workspace-shell">
+          <div class="admin-workspace-heading">
+            <div>
+              <p class="admin-command-eyebrow">Gestione settimana</p>
+              <h3>Lavora su una sola fase alla volta</h3>
+            </div>
+
+            <div id="adminWorkspaceTabs" class="admin-workspace-tabs" role="tablist" aria-label="Sezioni admin waiver">
+              <button type="button" class="admin-workspace-tab active" data-admin-workspace-view="waiver-1" role="tab" aria-selected="true">
+                Waiver S1
+              </button>
+              <button type="button" class="admin-workspace-tab" data-admin-workspace-view="waiver-1S" role="tab" aria-selected="false">
+                Waiver 1S
+              </button>
+              <button type="button" class="admin-workspace-tab" data-admin-workspace-view="waiver-2" role="tab" aria-selected="false">
+                Waiver S2
+              </button>
+              <button type="button" class="admin-workspace-tab" data-admin-workspace-view="waiver-2S" role="tab" aria-selected="false">
+                Waiver 2S
+              </button>
+              <button type="button" class="admin-workspace-tab admin-workspace-tab-comp" data-admin-workspace-view="comp-normal" role="tab" aria-selected="false">
+                Comp. normali
+              </button>
+              <button type="button" class="admin-workspace-tab admin-workspace-tab-high" data-admin-workspace-view="comp-high" role="tab" aria-selected="false">
+                Comp. prioritarie
+              </button>
             </div>
           </div>
 
-<div class="admin-calls-block">
-  <h3>Chiamate ricevute</h3>
+          <div id="adminWaiverWorkspace" class="admin-workspace-panel">
+            <div class="admin-context-actionbar">
+              <span class="admin-context-action-label">Risoluzione</span>
+              <button id="calculateSlot1Btn" type="button" class="primary-btn small-btn admin-context-action" data-admin-calc-view="waiver-1">
+                Calcola Waiver · Slot 1
+              </button>
 
-  <div id="allCalls" class="all-calls"></div>
+              <button id="calculateSlot1SBtn" type="button" class="primary-btn small-btn admin-context-action" data-admin-calc-view="waiver-1S" hidden>
+                Calcola Waiver · Slot 1S
+              </button>
 
-  <div class="admin-compensatory-overview">
-    <h3>Compensative prioritarie e normali</h3>
+              <button id="calculateSlot2Btn" type="button" class="primary-btn small-btn admin-context-action" data-admin-calc-view="waiver-2" hidden>
+                Calcola Waiver · Slot 2
+              </button>
 
-    <div id="allCompensatoryCalls" class="all-calls">
-      <p>Caricamento compensative...</p>
-    </div>
-  </div>
-</div>
+              <button id="calculateSlot2SBtn" type="button" class="primary-btn small-btn admin-context-action" data-admin-calc-view="waiver-2S" hidden>
+                Calcola Waiver · Slot 2S
+              </button>
+            </div>
 
+            <div class="admin-bottom-grid">
+              <div class="priority-panel">
+                <div class="priority-header">
+                  <div>
+                    <h3 id="adminOrderPanelTitle">Ordine Waiver · Slot 1</h3>
+                    <p>
+                      Trascina per riordinare. Cambia il proprietario solo se una chiamata è stata ceduta.
+                    </p>
+                  </div>
+                </div>
 
-<div class="admin-calls-block admin-compensatory-manager">
-  <h3>Gestione compensative</h3>
+                <div id="waiverOrderAdmin" class="waiver-order-admin">
+                  <p>Caricamento ordine waiver...</p>
+                </div>
+              </div>
 
-  <p class="card-subtitle">
-    Ordine di risoluzione: <strong>prioritarie → waiver → normali</strong>. La priorità numerica riparte da 1 dentro ciascun tipo.
-    Per le prioritarie assegna i numeri in base al giro di draft e, a parità, alla classifica inversa.
-  </p>
+              <div class="admin-calls-block">
+                <div class="admin-calls-heading">
+                  <div>
+                    <h3 id="adminCallsPanelTitle">Chiamate ricevute · Slot 1</h3>
+                    <p>Qui vedi solo se la chiamata è arrivata, non il giocatore scelto.</p>
+                  </div>
+                </div>
 
-  <div class="admin-compensatory-form">
-    <label for="adminCompTeamSelect">Squadra</label>
-    <select id="adminCompTeamSelect" class="waiver-owner-select">
-      <option value="">Seleziona squadra</option>
-    </select>
+                <div id="allCalls" class="all-calls"></div>
+              </div>
+            </div>
+          </div>
 
-    <label for="adminCompTierSelect">Tipo di compensativa</label>
-    <select id="adminCompTierSelect" class="waiver-owner-select">
-      <option value="normal" selected>Normale (dopo il waiver)</option>
-      <option value="high">Prioritaria (prima del waiver)</option>
-    </select>
+          <div id="adminCompensatoryWorkspace" class="admin-workspace-panel" hidden>
+            <div class="admin-compensatory-toolbar">
+              <div>
+                <h3 id="adminCompPanelTitle">Compensative normali</h3>
+                <p id="adminCompPanelSubtitle">
+                  Le normali vengono risolte dopo il waiver. Le prioritarie restano disponibili nell’ultima tab.
+                </p>
+              </div>
 
-    <label for="adminCompPriorityInput">Priorità</label>
-    <input
-      type="number"
-      id="adminCompPriorityInput"
-      min="1"
-      placeholder="Es. 1"
-    />
+              <div class="admin-compensatory-toolbar-actions">
+                <button id="calculateCompensatoryBtn" type="button" class="secondary-btn small-btn admin-context-action" data-admin-calc-view="comp-normal">
+                  Calcola Slot 1
+                </button>
+                <button id="calculateCompensatorySlot2Btn" type="button" class="secondary-btn small-btn admin-context-action" data-admin-calc-view="comp-normal">
+                  Calcola Slot 2
+                </button>
 
-    <label for="adminCompModeSelect">Modalità</label>
-    <select id="adminCompModeSelect" class="waiver-owner-select">
-      <option value="extra">Solo ingresso</option>
-      <option value="replace">Sostituzione 1→1</option>
-    </select>
+                <button id="calculateHighCompensatoryBtn" type="button" class="secondary-btn small-btn high-compensatory-action admin-context-action" data-admin-calc-view="comp-high" hidden>
+                  Calcola Slot 1
+                </button>
+                <button id="calculateHighCompensatorySlot2Btn" type="button" class="secondary-btn small-btn high-compensatory-action admin-context-action" data-admin-calc-view="comp-high" hidden>
+                  Calcola Slot 2
+                </button>
 
-    <label for="adminCompReasonSelect">Motivo</label>
-    <select id="adminCompReasonSelect" class="waiver-owner-select">
-      <option value="trade">Trade sbilanciata</option>
-      <option value="serie_a_exit">Giocatore uscito dalla Serie A</option>
-      <option value="injury_reserve">Injury Reserve</option>
-      <option value="other">Altro</option>
-    </select>
+                <button id="openAdminCompensatoryDialogBtn" type="button" class="primary-btn small-btn">
+                  + Aggiungi
+                </button>
+              </div>
+            </div>
 
-    <label for="adminCompReasonNoteInput">Nota / descrizione</label>
-    <input
-      type="text"
-      id="adminCompReasonNoteInput"
-      placeholder="Opzionale, es. sostituzione Lautaro"
-    />
+            <div class="admin-compensatory-overview">
+              <div id="allCompensatoryCalls" class="all-calls">
+                <p>Caricamento compensative...</p>
+              </div>
+            </div>
+          </div>
+        </section>
 
-    <button
-      id="addCompensatoryBtn"
-      type="button"
-      class="primary-btn small-btn"
-    >
-      Aggiungi compensativa
-    </button>
-  </div>
-</div>
-        </div>
+        <dialog id="adminCompensatoryDialog" class="admin-compensatory-dialog">
+          <div class="admin-dialog-head">
+            <div>
+              <p class="admin-command-eyebrow">Nuova chiamata extra</p>
+              <h3>Aggiungi compensativa</h3>
+            </div>
+            <button id="closeAdminCompensatoryDialogBtn" type="button" class="admin-dialog-close" aria-label="Chiudi">×</button>
+          </div>
+
+          <p class="card-subtitle">
+            L’ordine reale resta <strong>prioritarie → waiver → normali</strong>. Qui le prioritarie sono solo spostate in fondo graficamente perché vengono usate di rado.
+          </p>
+
+          <div class="admin-compensatory-form">
+            <label for="adminCompTeamSelect">Squadra</label>
+            <select id="adminCompTeamSelect" class="waiver-owner-select">
+              <option value="">Seleziona squadra</option>
+            </select>
+
+            <label for="adminCompTierSelect">Tipo di compensativa</label>
+            <select id="adminCompTierSelect" class="waiver-owner-select">
+              <option value="normal" selected>Normale (dopo il waiver)</option>
+              <option value="high">Prioritaria (prima del waiver)</option>
+            </select>
+
+            <label for="adminCompPriorityInput">Priorità</label>
+            <input
+              type="number"
+              id="adminCompPriorityInput"
+              min="1"
+              placeholder="Es. 1"
+            />
+
+            <label for="adminCompModeSelect">Modalità</label>
+            <select id="adminCompModeSelect" class="waiver-owner-select">
+              <option value="extra">Solo ingresso</option>
+              <option value="replace">Sostituzione 1→1</option>
+            </select>
+
+            <label for="adminCompReasonSelect">Motivo</label>
+            <select id="adminCompReasonSelect" class="waiver-owner-select">
+              <option value="trade">Trade sbilanciata</option>
+              <option value="serie_a_exit">Giocatore uscito dalla Serie A</option>
+              <option value="injury_reserve">Injury Reserve</option>
+              <option value="other">Altro</option>
+            </select>
+
+            <label for="adminCompReasonNoteInput">Nota / descrizione</label>
+            <input
+              type="text"
+              id="adminCompReasonNoteInput"
+              placeholder="Opzionale, es. sostituzione Lautaro"
+            />
+
+            <button
+              id="addCompensatoryBtn"
+              type="button"
+              class="primary-btn small-btn"
+            >
+              Aggiungi compensativa
+            </button>
+          </div>
+        </dialog>
 
       </article>
     </section>
@@ -729,7 +817,7 @@
   </main>
 <script src="mobile-nav.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
-  <script type="module" src="waiver.js?v=comp-slots-20260904"></script>
+  <script type="module" src="waiver.js?v=admin-ui-20260915"></script>
   <script type="module" src="home_auth.js"></script>
   <script src="navbar.js"></script>
 </body>

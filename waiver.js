@@ -78,6 +78,23 @@ const setPlayoffFridayBtn = document.getElementById("setPlayoffFridayBtn");
 const saveWaiverSettingsBtn = document.getElementById("saveWaiverSettingsBtn");
 const settingsMessageEl = document.getElementById("settingsMessage");
 
+// Admin UI compatta / workspace
+const adminWorkspaceTabsEl = document.getElementById("adminWorkspaceTabs");
+const adminWaiverWorkspaceEl = document.getElementById("adminWaiverWorkspace");
+const adminCompensatoryWorkspaceEl = document.getElementById("adminCompensatoryWorkspace");
+const adminActiveContextEl = document.getElementById("adminActiveContext");
+const adminPhaseSummaryEl = document.getElementById("adminPhaseSummary");
+const adminWeekSummaryEl = document.getElementById("adminWeekSummary");
+const adminCallsSummaryEl = document.getElementById("adminCallsSummary");
+const adminCompSummaryEl = document.getElementById("adminCompSummary");
+const adminOrderPanelTitleEl = document.getElementById("adminOrderPanelTitle");
+const adminCallsPanelTitleEl = document.getElementById("adminCallsPanelTitle");
+const adminCompPanelTitleEl = document.getElementById("adminCompPanelTitle");
+const adminCompPanelSubtitleEl = document.getElementById("adminCompPanelSubtitle");
+const adminCompensatoryDialogEl = document.getElementById("adminCompensatoryDialog");
+const openAdminCompensatoryDialogBtn = document.getElementById("openAdminCompensatoryDialogBtn");
+const closeAdminCompensatoryDialogBtn = document.getElementById("closeAdminCompensatoryDialogBtn");
+
 const fantacalcioFileInput = document.getElementById("fantacalcioFileInput");
 const applyFantacalcioListoneBtn = document.getElementById("applyFantacalcioListoneBtn");
 const fantacalcioListoneMessage = document.getElementById("fantacalcioListoneMessage");
@@ -132,6 +149,10 @@ let freeAgentsSortDirection = "asc";
 let activeWaiverOrderId = null;
 let draggedAdminOrderId = null;
 let draggedAdminGroupKey = null;
+
+let activeAdminWorkspaceView = "waiver-1";
+let adminReceivedCallsCount = 0;
+let adminCompensatoryCount = 0;
 
 let myCompensatoryCalls = [];
 let activeCompensatoryCallId = null;
@@ -1197,6 +1218,206 @@ function sortGroupKeys(keys) {
   });
 }
 
+function getAdminWorkspaceMeta(view = activeAdminWorkspaceView) {
+  const meta = {
+    "waiver-1": { label: "Waiver · Slot 1", slot: "1", type: "waiver" },
+    "waiver-1S": { label: "Waiver · Slot 1S", slot: "1S", type: "waiver" },
+    "waiver-2": { label: "Waiver · Slot 2", slot: "2", type: "waiver" },
+    "waiver-2S": { label: "Waiver · Slot 2S", slot: "2S", type: "waiver" },
+    "comp-normal": { label: "Compensative normali", tier: "normal", type: "comp" },
+    "comp-high": { label: "Compensative prioritarie", tier: "high", type: "comp" }
+  };
+
+  return meta[view] || meta["waiver-1"];
+}
+
+function syncAdminCommandCenter() {
+  if (adminPhaseSummaryEl) {
+    const phase = String(currentSettings?.active_phase || "-");
+    adminPhaseSummaryEl.textContent = phase === "round_robin"
+      ? "Round Robin"
+      : phase.charAt(0).toUpperCase() + phase.slice(1);
+  }
+
+  if (adminWeekSummaryEl) {
+    adminWeekSummaryEl.textContent = currentSettings?.active_week || "-";
+  }
+
+  if (adminCallsSummaryEl) {
+    adminCallsSummaryEl.textContent = String(adminReceivedCallsCount || 0);
+  }
+
+  if (adminCompSummaryEl) {
+    adminCompSummaryEl.textContent = String(adminCompensatoryCount || 0);
+  }
+
+  if (adminActiveContextEl) {
+    adminActiveContextEl.textContent = getAdminWorkspaceMeta().label;
+  }
+}
+
+function applyAdminWorkspaceView() {
+  if (!adminWorkspaceTabsEl) {
+    syncAdminCommandCenter();
+    return;
+  }
+
+  const playoff = isPlayoffPhase();
+
+  if (!playoff && ["waiver-1S", "waiver-2S"].includes(activeAdminWorkspaceView)) {
+    activeAdminWorkspaceView = "waiver-1";
+  }
+
+  const meta = getAdminWorkspaceMeta();
+
+  adminWorkspaceTabsEl
+    .querySelectorAll("[data-admin-workspace-view]")
+    .forEach(button => {
+      const view = button.dataset.adminWorkspaceView;
+      const isSupplementalWaiver = view === "waiver-1S" || view === "waiver-2S";
+      button.hidden = isSupplementalWaiver && !playoff;
+
+      const active = view === activeAdminWorkspaceView;
+      button.classList.toggle("active", active);
+      button.setAttribute("aria-selected", String(active));
+    });
+
+  const compensatoryView = meta.type === "comp";
+
+  if (adminWaiverWorkspaceEl) {
+    adminWaiverWorkspaceEl.hidden = compensatoryView;
+  }
+
+  if (adminCompensatoryWorkspaceEl) {
+    adminCompensatoryWorkspaceEl.hidden = !compensatoryView;
+  }
+
+  document.querySelectorAll("[data-admin-calc-view]").forEach(button => {
+    button.hidden = button.dataset.adminCalcView !== activeAdminWorkspaceView;
+  });
+
+  if (meta.type === "waiver") {
+    const slot = normalizeSlot(meta.slot);
+
+    if (adminOrderPanelTitleEl) {
+      adminOrderPanelTitleEl.textContent = `Ordine Waiver · Slot ${slot}`;
+    }
+
+    if (adminCallsPanelTitleEl) {
+      adminCallsPanelTitleEl.textContent = `Chiamate ricevute · Slot ${slot}`;
+    }
+
+    document
+      .querySelectorAll("#waiverOrderAdmin [data-admin-waiver-slot]")
+      .forEach(group => {
+        group.hidden = normalizeSlot(group.dataset.adminWaiverSlot) !== slot;
+      });
+
+    document
+      .querySelectorAll("#allCalls [data-admin-waiver-slot]")
+      .forEach(group => {
+        group.hidden = normalizeSlot(group.dataset.adminWaiverSlot) !== slot;
+      });
+  } else {
+    const tier = normalizeCompensatoryTier(meta.tier);
+
+    if (adminCompPanelTitleEl) {
+      adminCompPanelTitleEl.textContent = tier === "high"
+        ? "Compensative prioritarie"
+        : "Compensative normali";
+    }
+
+    if (adminCompPanelSubtitleEl) {
+      adminCompPanelSubtitleEl.textContent = tier === "high"
+        ? "Le prioritarie vengono risolte prima del waiver. Sono qui in fondo solo per tenere pulito l’admin quotidiano."
+        : "Le normali vengono risolte dopo il waiver e sono la sezione compensative usata più spesso.";
+    }
+
+    const compGroups = Array.from(
+      document.querySelectorAll("#allCompensatoryCalls [data-admin-comp-tier]")
+    );
+
+    let visibleCompGroups = 0;
+
+    compGroups.forEach(group => {
+      const visible = normalizeCompensatoryTier(group.dataset.adminCompTier) === tier;
+      group.hidden = !visible;
+      if (visible) visibleCompGroups += 1;
+    });
+
+    let filteredEmpty = document.getElementById("adminCompFilteredEmpty");
+
+    if (!filteredEmpty && allCompensatoryCallsEl) {
+      filteredEmpty = document.createElement("div");
+      filteredEmpty.id = "adminCompFilteredEmpty";
+      filteredEmpty.className = "admin-empty-state";
+      allCompensatoryCallsEl.appendChild(filteredEmpty);
+    }
+
+    if (filteredEmpty) {
+      filteredEmpty.hidden = adminCompensatoryCount === 0 || visibleCompGroups > 0;
+      filteredEmpty.innerHTML = tier === "high"
+        ? "<strong>Nessuna compensativa prioritaria</strong><span>Perfetto. Questa tab può continuare a vivere la sua serena vita annuale.</span>"
+        : "<strong>Nessuna compensativa normale</strong><span>Non ci sono chiamate normali attive per questa settimana.</span>";
+    }
+  }
+
+  syncAdminCommandCenter();
+}
+
+function setAdminWorkspaceView(view) {
+  if (!view) return;
+  activeAdminWorkspaceView = view;
+  applyAdminWorkspaceView();
+}
+
+function openAdminCompensatoryDialog() {
+  if (!adminCompensatoryDialogEl) return;
+
+  if (adminCompTierSelect) {
+    adminCompTierSelect.value = activeAdminWorkspaceView === "comp-high"
+      ? "high"
+      : "normal";
+  }
+
+  if (typeof adminCompensatoryDialogEl.showModal === "function") {
+    adminCompensatoryDialogEl.showModal();
+  } else {
+    adminCompensatoryDialogEl.setAttribute("open", "");
+  }
+}
+
+function closeAdminCompensatoryDialog() {
+  if (!adminCompensatoryDialogEl) return;
+
+  if (typeof adminCompensatoryDialogEl.close === "function") {
+    adminCompensatoryDialogEl.close();
+  } else {
+    adminCompensatoryDialogEl.removeAttribute("open");
+  }
+}
+
+function setupAdminWorkspace() {
+  adminWorkspaceTabsEl
+    ?.querySelectorAll("[data-admin-workspace-view]")
+    .forEach(button => {
+      button.addEventListener("click", () => {
+        setAdminWorkspaceView(button.dataset.adminWorkspaceView);
+      });
+    });
+
+  openAdminCompensatoryDialogBtn?.addEventListener("click", openAdminCompensatoryDialog);
+  closeAdminCompensatoryDialogBtn?.addEventListener("click", closeAdminCompensatoryDialog);
+
+  adminCompensatoryDialogEl?.addEventListener("click", event => {
+    if (event.target === adminCompensatoryDialogEl) {
+      closeAdminCompensatoryDialog();
+    }
+  });
+
+  applyAdminWorkspaceView();
+}
+
 function updateHeroPriority() {
   if (!heroPriorityEl) return;
 
@@ -2070,6 +2291,7 @@ function renderWaiverOrderAdmin() {
 
     const groupDiv = document.createElement("div");
     groupDiv.className = "waiver-admin-group";
+    groupDiv.dataset.adminWaiverSlot = normalizeSlot(group.slot);
 
     groupDiv.innerHTML = `
       <h4>${group.conference} - Slot ${group.slot}</h4>
@@ -2176,6 +2398,8 @@ function renderWaiverOrderAdmin() {
 
     waiverOrderAdminEl.appendChild(groupDiv);
   });
+
+  applyAdminWorkspaceView();
 }
 
 async function renderPublicWaiverOrder() {
@@ -2203,6 +2427,9 @@ async function renderPublicWaiverOrder() {
     `;
     return;
   }
+
+  adminReceivedCallsCount = (calls || []).length;
+  syncAdminCommandCenter();
 
   const callsByOrderId = {};
 
@@ -3331,6 +3558,7 @@ async function loadAllCalls() {
 
     const groupDiv = document.createElement("div");
     groupDiv.className = "admin-calls-group";
+    groupDiv.dataset.adminWaiverSlot = normalizeSlot(group.slot);
 
     groupDiv.innerHTML = `
       <h4>${group.conference} - Slot ${group.slot}</h4>
@@ -3389,6 +3617,8 @@ async function loadAllCalls() {
 
     allCallsEl.appendChild(groupDiv);
   });
+
+  applyAdminWorkspaceView();
 }
 
 async function loadAllCompensatoryCalls() {
@@ -3424,9 +3654,18 @@ async function loadAllCompensatoryCalls() {
     return;
   }
 
-  if (!data || data.length === 0) {
-    allCompensatoryCallsEl.innerHTML =
-      "<p>Nessuna chiamata compensativa.</p>";
+  const activeCalls = (data || []).filter(call => call.status !== "cancelled");
+  adminCompensatoryCount = activeCalls.length;
+  syncAdminCommandCenter();
+
+  if (activeCalls.length === 0) {
+    allCompensatoryCallsEl.innerHTML = `
+      <div class="admin-empty-state">
+        <strong>Nessuna compensativa attiva</strong>
+        <span>Quando ne aggiungi una comparirà qui senza trasformare la pagina in un papiro amministrativo.</span>
+      </div>
+    `;
+    applyAdminWorkspaceView();
     return;
   }
 
@@ -3434,7 +3673,7 @@ async function loadAllCompensatoryCalls() {
 
   const groups = {};
 
-  data.filter(call => call.status !== "cancelled").forEach(call => {
+  activeCalls.forEach(call => {
     const groupName = getCompensatoryGroupForTeamId(call.team_id);
     const tier = normalizeCompensatoryTier(call.priority_tier);
     const key = `${groupName}__${tier}`;
@@ -3450,164 +3689,186 @@ async function loadAllCompensatoryCalls() {
     ? ["Conference League", "Conference Championship"]
     : ["Totale"];
 
-  ["high", "normal"].forEach(tier => {
+  // Solo nell'admin: prima le normali, poi le prioritarie.
+  ["normal", "high"].forEach(tier => {
     groupOrder.forEach(groupName => {
-    const calls = groups[`${groupName}__${tier}`];
+      const calls = groups[`${groupName}__${tier}`];
 
-    if (!calls || calls.length === 0) return;
+      if (!calls || calls.length === 0) return;
 
-    calls.sort(sortCompensatoryCalls);
+      calls.sort(sortCompensatoryCalls);
 
-    const groupDiv = document.createElement("div");
-    groupDiv.className = "admin-calls-group";
+      const groupDiv = document.createElement("div");
+      groupDiv.className = "admin-calls-group admin-compensatory-group";
+      groupDiv.dataset.adminCompTier = tier;
 
-    groupDiv.innerHTML = `
-      <h4>
-        ${
-          groupName === "Totale"
-            ? getCompensatoryTierLabel(tier)
-            : `${groupName} - ${getCompensatoryTierLabel(tier)}`
-        }
-        <span class="compensatory-tier-badge ${tier}">${getCompensatoryTierShortLabel(tier)}</span>
-      </h4>
-    `;
-
-    calls.forEach(call => {
-      const team = teamMap[call.team_id];
-      const isSystemIrCall = Boolean(call.injury_reserve_id);
-
-      const submitted =
-        call.status === "submitted" ||
-        call.status === "second_round" ||
-        call.status === "second_submitted" ||
-        call.status === "won" ||
-        call.status === "lost" ||
-        call.status === "manual_required";
-
-      const teamOptions = teamsCache
-        .map(item => `
-          <option value="${item.id}" ${String(item.id) === String(call.team_id) ? "selected" : ""}>
-            ${item.name}
-          </option>
-        `)
-        .join("");
-
-      const div = document.createElement("div");
-      div.className = `admin-compensatory-row compensatory-tier-${tier}`;
-
-      div.innerHTML = `
-        <div class="admin-compensatory-main">
-          <strong>
-            ${tier === "high" ? "P" : "C"}${call.priority_order || "-"}
-            ${team?.name || "Squadra sconosciuta"}
-          </strong>
-
-          <span>${getCompensatoryTierShortLabel(call)} · ${getCompensatoryModeLabel(call)} · ${getCompensatoryReasonLabel(call)}</span>
-
-          <span>
+      groupDiv.innerHTML = `
+        <div class="admin-compensatory-group-head">
+          <h4>
             ${
-              call.status === "manual_required"
-                ? "⚠️ Da risolvere manualmente dopo lo Slot 2"
-                : call.status === "second_round"
-                  ? "↪️ Slot 2 attivato · in attesa di chiamata"
-                  : call.status === "second_submitted"
-                    ? "✅ Richiamo Slot 2 ricevuto"
-                    : submitted
-                  ? "✅ Chiamata ricevuta"
-                  : "⏳ Nessuna chiamata ricevuta"
+              groupName === "Totale"
+                ? getCompensatoryTierLabel(tier)
+                : `${groupName} · ${getCompensatoryTierLabel(tier)}`
             }
-          </span>
-
-          ${
-            submitted && call.updated_at
-              ? `<small>Ultimo salvataggio: ${formatWaiverDateTime(call.updated_at)}</small>`
-              : ""
-          }
-
-          <div class="admin-compensatory-edit-grid">
-            <label>
-              Squadra
-              <select class="waiver-owner-select admin-comp-team-edit" data-call-id="${call.id}" ${isSystemIrCall ? "disabled" : ""}>
-                ${teamOptions}
-              </select>
-            </label>
-
-            <label>
-              Priorità
-              <input
-                type="number"
-                min="1"
-                class="admin-comp-priority-edit"
-                data-call-id="${call.id}"
-                value="${call.priority_order || 1}"
-              />
-            </label>
-
-            <label>
-              Tipo
-              <select class="waiver-owner-select admin-comp-tier-edit" data-call-id="${call.id}" ${isSystemIrCall ? "disabled" : ""}>
-                <option value="high" ${tier === "high" ? "selected" : ""}>Prioritaria</option>
-                <option value="normal" ${tier === "normal" ? "selected" : ""}>Normale</option>
-              </select>
-            </label>
-
-            <label>
-              Modalità
-              <select class="waiver-owner-select admin-comp-mode-edit" data-call-id="${call.id}" ${isSystemIrCall ? "disabled" : ""}>
-                <option value="extra" ${call.requires_player_out ? "" : "selected"}>Solo ingresso</option>
-                <option value="replace" ${call.requires_player_out ? "selected" : ""}>Sostituzione 1→1</option>
-              </select>
-            </label>
-
-            <label>
-              Motivo
-              <select class="waiver-owner-select admin-comp-reason-edit" data-call-id="${call.id}" ${isSystemIrCall ? "disabled" : ""}>
-                <option value="trade" ${(call.reason_type || "trade") === "trade" ? "selected" : ""}>Trade sbilanciata</option>
-                <option value="serie_a_exit" ${call.reason_type === "serie_a_exit" ? "selected" : ""}>Giocatore uscito dalla Serie A</option>
-                <option value="injury_reserve" ${call.reason_type === "injury_reserve" ? "selected" : ""}>Injury Reserve</option>
-                <option value="other" ${call.reason_type === "other" ? "selected" : ""}>Altro</option>
-              </select>
-            </label>
-
-            <label>
-              Nota / descrizione
-              <input
-                type="text"
-                class="admin-comp-note-edit"
-                data-call-id="${call.id}"
-                value="${String(call.reason_note || "").replace(/"/g, "&quot;")}"
-                placeholder="Opzionale"
-                ${isSystemIrCall ? "disabled" : ""}
-              />
-            </label>
-          </div>
-        </div>
-
-        <div class="admin-compensatory-actions">
-          <button
-            type="button"
-            class="primary-btn small-btn save-admin-compensatory-btn"
-            data-call-id="${call.id}"
-          >
-            ${isSystemIrCall ? "Salva priorità IR" : "Salva modifiche"}
-          </button>
-
-          <button
-            type="button"
-            class="secondary-btn small-btn delete-compensatory-btn"
-            data-call-id="${call.id}"
-            ${isSystemIrCall ? "disabled" : ""}
-          >
-            Elimina
-          </button>
+          </h4>
+          <span class="compensatory-tier-badge ${tier}">${calls.length} ${calls.length === 1 ? "chiamata" : "chiamate"}</span>
         </div>
       `;
 
-      groupDiv.appendChild(div);
-    });
+      calls.forEach(call => {
+        const team = teamMap[call.team_id];
+        const isSystemIrCall = Boolean(call.injury_reserve_id);
+        const normalizedStatus = String(call.status || "pending").toLowerCase();
 
-    allCompensatoryCallsEl.appendChild(groupDiv);
-  });
+        const submitted = [
+          "submitted",
+          "second_round",
+          "second_submitted",
+          "won",
+          "lost",
+          "manual_required"
+        ].includes(normalizedStatus);
+
+        let statusLabel = "In attesa";
+        let statusClass = "pending";
+
+        if (normalizedStatus === "manual_required") {
+          statusLabel = "Da risolvere manualmente";
+          statusClass = "warning";
+        } else if (normalizedStatus === "second_round") {
+          statusLabel = "Slot 2 da compilare";
+          statusClass = "warning";
+        } else if (normalizedStatus === "second_submitted") {
+          statusLabel = "Richiamo ricevuto";
+          statusClass = "received";
+        } else if (normalizedStatus === "won") {
+          statusLabel = "Assegnata";
+          statusClass = "won";
+        } else if (normalizedStatus === "lost") {
+          statusLabel = "Non assegnata";
+          statusClass = "lost";
+        } else if (submitted) {
+          statusLabel = "Chiamata ricevuta";
+          statusClass = "received";
+        }
+
+        const teamOptions = teamsCache
+          .map(item => `
+            <option value="${item.id}" ${String(item.id) === String(call.team_id) ? "selected" : ""}>
+              ${escapeWaiverHtml(item.name)}
+            </option>
+          `)
+          .join("");
+
+        const div = document.createElement("div");
+        div.className = `admin-compensatory-row compensatory-tier-${tier}`;
+
+        div.innerHTML = `
+          <div class="admin-compensatory-compact-row">
+            <span class="admin-comp-priority-badge ${tier}">
+              ${tier === "high" ? "P" : "C"}${call.priority_order || "-"}
+            </span>
+
+            <div class="admin-compensatory-main">
+              <strong>${escapeWaiverHtml(team?.name || "Squadra sconosciuta")}</strong>
+              <span>${escapeWaiverHtml(getCompensatoryModeLabel(call))} · ${escapeWaiverHtml(getCompensatoryReasonLabel(call))}</span>
+              ${
+                submitted && call.updated_at
+                  ? `<small>Aggiornata ${escapeWaiverHtml(formatWaiverDateTime(call.updated_at))}</small>`
+                  : ""
+              }
+            </div>
+
+            <span class="admin-comp-status ${statusClass}">${statusLabel}</span>
+
+            <details class="admin-compensatory-editor">
+              <summary>Modifica</summary>
+
+              <div class="admin-compensatory-edit-grid">
+                <label>
+                  Squadra
+                  <select class="waiver-owner-select admin-comp-team-edit" data-call-id="${call.id}" ${isSystemIrCall ? "disabled" : ""}>
+                    ${teamOptions}
+                  </select>
+                </label>
+
+                <label>
+                  Priorità
+                  <input
+                    type="number"
+                    min="1"
+                    class="admin-comp-priority-edit"
+                    data-call-id="${call.id}"
+                    value="${call.priority_order || 1}"
+                  />
+                </label>
+
+                <label>
+                  Tipo
+                  <select class="waiver-owner-select admin-comp-tier-edit" data-call-id="${call.id}" ${isSystemIrCall ? "disabled" : ""}>
+                    <option value="normal" ${tier === "normal" ? "selected" : ""}>Normale</option>
+                    <option value="high" ${tier === "high" ? "selected" : ""}>Prioritaria</option>
+                  </select>
+                </label>
+
+                <label>
+                  Modalità
+                  <select class="waiver-owner-select admin-comp-mode-edit" data-call-id="${call.id}" ${isSystemIrCall ? "disabled" : ""}>
+                    <option value="extra" ${call.requires_player_out ? "" : "selected"}>Solo ingresso</option>
+                    <option value="replace" ${call.requires_player_out ? "selected" : ""}>Sostituzione 1→1</option>
+                  </select>
+                </label>
+
+                <label>
+                  Motivo
+                  <select class="waiver-owner-select admin-comp-reason-edit" data-call-id="${call.id}" ${isSystemIrCall ? "disabled" : ""}>
+                    <option value="trade" ${(call.reason_type || "trade") === "trade" ? "selected" : ""}>Trade sbilanciata</option>
+                    <option value="serie_a_exit" ${call.reason_type === "serie_a_exit" ? "selected" : ""}>Giocatore uscito dalla Serie A</option>
+                    <option value="injury_reserve" ${call.reason_type === "injury_reserve" ? "selected" : ""}>Injury Reserve</option>
+                    <option value="other" ${call.reason_type === "other" ? "selected" : ""}>Altro</option>
+                  </select>
+                </label>
+
+                <label>
+                  Nota / descrizione
+                  <input
+                    type="text"
+                    class="admin-comp-note-edit"
+                    data-call-id="${call.id}"
+                    value="${escapeWaiverHtml(call.reason_note || "")}"
+                    placeholder="Opzionale"
+                    ${isSystemIrCall ? "disabled" : ""}
+                  />
+                </label>
+              </div>
+
+              <div class="admin-compensatory-actions">
+                <button
+                  type="button"
+                  class="primary-btn small-btn save-admin-compensatory-btn"
+                  data-call-id="${call.id}"
+                >
+                  ${isSystemIrCall ? "Salva priorità IR" : "Salva modifiche"}
+                </button>
+
+                <button
+                  type="button"
+                  class="secondary-btn small-btn delete-compensatory-btn"
+                  data-call-id="${call.id}"
+                  ${isSystemIrCall ? "disabled" : ""}
+                >
+                  Elimina
+                </button>
+              </div>
+            </details>
+          </div>
+        `;
+
+        groupDiv.appendChild(div);
+      });
+
+      allCompensatoryCallsEl.appendChild(groupDiv);
+    });
   });
 
   document
@@ -3625,6 +3886,8 @@ async function loadAllCompensatoryCalls() {
         deleteAdminCompensatoryCall(button.dataset.callId);
       });
     });
+
+  applyAdminWorkspaceView();
 }
 
 async function updateAdminCompensatoryCall(callId) {
@@ -4726,6 +4989,9 @@ function syncSettingsPanel() {
 if (compensatoryCloseInput) {
   compensatoryCloseInput.value = toDateTimeLocalValue(currentSettings.compensatory_close_at);
 }
+
+  syncAdminCommandCenter();
+  applyAdminWorkspaceView();
 }
 
 function getNextFriday() {
@@ -5065,6 +5331,9 @@ async function addManualCompensatoryCall() {
   }
 
   setAdminMessage("Compensativa aggiunta correttamente.");
+
+  activeAdminWorkspaceView = priorityTier === "high" ? "comp-high" : "comp-normal";
+  closeAdminCompensatoryDialog();
 
   if (adminCompPriorityInput) adminCompPriorityInput.value = "";
   if (adminCompReasonNoteInput) adminCompReasonNoteInput.value = "";
@@ -6337,5 +6606,6 @@ document.getElementById("refreshCompensatorySlotsBtn")?.addEventListener("click"
 setInterval(() => refreshCompensatorySlots(), 30000);
 setupFreeAgentsSorting();
 setupMobileWaiverTabs();
+setupAdminWorkspace();
 
 initWaiverRoom();

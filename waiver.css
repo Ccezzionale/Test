@@ -5604,3 +5604,908 @@ body.waiver-view-as-mode .waiver-trades-card textarea {
   .compensatory-slot-section .call-actions { flex-wrap: wrap; }
   .compensatory-slot-section .call-actions button { flex: 1 1 100%; min-width: 0; }
 }
+
+/* =========================================================
+   ADMIN WAIVER ROOM V3 - COMPACT WORKSPACE 2026-09-15
+   Solo admin: nessuna logica waiver viene modificata.
+   ========================================================= */
+
+.waiver-admin-section .admin-card {
+  padding: 16px;
+  background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+  border: 1px solid rgba(0, 63, 127, 0.12);
+}
+
+.waiver-admin-section .admin-card > h2 {
+  display: none;
+}
+
+.admin-command-center {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 16px 18px;
+  margin-bottom: 12px;
+  border-radius: 18px;
+  color: #fff;
+  background: linear-gradient(135deg, #001f3f 0%, #075aa8 100%);
+  box-shadow: 0 12px 28px rgba(0, 31, 63, 0.16);
+}
+
+.admin-command-copy {
+  min-width: 0;
+}
+
+.admin-command-copy h2 {
+  margin: 0 0 7px;
+  color: #fff;
+  font-size: 1.18rem;
+}
+
+.admin-command-eyebrow {
+  margin: 0 0 4px;
+  color: #ffdf6b;
+  font-size: .68rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: .11em;
+}
+
+.admin-active-context {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: .78rem;
+  color: rgba(255,255,255,.86);
+}
+
+.admin-live-dot {
+  width: 8px;
+  height: 8px;
+  flex: 0 0 auto;
+  border-radius: 999px;
+  background: #ffcc00;
+  box-shadow: 0 0 0 5px rgba(255,204,0,.15);
+}
+
+.admin-command-stats {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(78px, 1fr));
+  gap: 8px;
+  min-width: min(500px, 48%);
+}
+
+.admin-command-stat {
+  padding: 10px 12px;
+  border-radius: 13px;
+  background: rgba(255,255,255,.10);
+  border: 1px solid rgba(255,255,255,.10);
+}
+
+.admin-command-stat span,
+.admin-command-stat strong {
+  display: block;
+}
+
+.admin-command-stat span {
+  margin-bottom: 3px;
+  color: rgba(255,255,255,.66);
+  font-size: .64rem;
+  font-weight: 850;
+  text-transform: uppercase;
+  letter-spacing: .07em;
+}
+
+.admin-command-stat strong {
+  color: #fff;
+  font-size: .88rem;
+  line-height: 1.05;
+}
+
+.admin-collapsible-panel {
+  margin: 0 0 10px !important;
+  padding: 0 !important;
+  overflow: hidden;
+  border-radius: 14px !important;
+  border: 1px solid rgba(0, 31, 63, .10) !important;
+  background: #fff !important;
+}
+
+.admin-collapsible-panel > summary {
+  list-style: none;
+}
+
+.admin-collapsible-panel > summary::-webkit-details-marker {
+  display: none;
+}
+
+.admin-panel-summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 54px;
+  padding: 11px 14px;
+  cursor: pointer;
+  user-select: none;
+  background: linear-gradient(180deg, #fff, #f8fbff);
+}
+
+.admin-panel-summary:hover {
+  background: #f2f7fd;
+}
+
+.admin-panel-summary > span:first-child {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.admin-panel-summary strong {
+  color: #001f3f;
+  font-size: .86rem;
+}
+
+.admin-panel-summary small {
+  color: #64748b;
+  font-size: .7rem;
+  font-weight: 700;
+}
+
+.admin-summary-chevron {
+  color: #52637a;
+  font-size: 1.1rem;
+  transition: transform .18s ease;
+}
+
+.admin-collapsible-panel[open] .admin-summary-chevron {
+  transform: rotate(180deg);
+}
+
+.admin-panel-body {
+  padding: 12px 14px 14px;
+  border-top: 1px solid rgba(0, 31, 63, .08);
+}
+
+.waiver-admin-section .admin-settings-grid {
+  max-width: 440px;
+  margin-bottom: 8px;
+}
+
+.waiver-admin-section .slot-settings-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.waiver-admin-section .slot-settings-card {
+  padding: 9px 10px;
+  border-radius: 11px;
+  box-shadow: none;
+}
+
+.waiver-admin-section .compensatory-settings-card {
+  border-color: rgba(210,169,0,.28);
+  background: linear-gradient(135deg, #fffdf2, #fff);
+  box-shadow: inset 3px 0 0 #d2a900;
+}
+
+.waiver-admin-section .high-compensatory-settings-card {
+  border-color: rgba(220,38,38,.22);
+  background: linear-gradient(135deg, #fff5f5, #fff);
+  box-shadow: inset 3px 0 0 #dc2626;
+}
+
+.admin-listone-collapsible .admin-listone-safe-badge {
+  flex: 0 0 auto;
+}
+
+.admin-global-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 46px;
+  padding: 8px 10px;
+  margin: 4px 0 10px;
+  border-radius: 13px;
+  background: #f8fafc;
+  border: 1px solid rgba(0,31,63,.08);
+}
+
+.admin-global-actions-main {
+  display: flex;
+  gap: 7px;
+  flex-wrap: wrap;
+}
+
+.admin-global-actions .priority-message {
+  margin: 0;
+  min-height: 0;
+  text-align: right;
+  font-size: .74rem;
+}
+
+.admin-workspace-shell {
+  overflow: hidden;
+  border-radius: 18px;
+  border: 1px solid rgba(0, 63, 127, .11);
+  background: #fff;
+  box-shadow: 0 10px 24px rgba(0,31,63,.07);
+}
+
+.admin-workspace-heading {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 13px 14px 11px;
+  background: linear-gradient(180deg, #f9fcff, #f2f7fd);
+  border-bottom: 1px solid rgba(0,31,63,.08);
+}
+
+.admin-workspace-heading h3 {
+  margin: 0;
+  color: #001f3f;
+  font-size: .94rem;
+}
+
+.admin-workspace-tabs {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  min-width: 0;
+  overflow-x: auto;
+  scrollbar-width: thin;
+}
+
+.admin-workspace-tab {
+  appearance: none;
+  flex: 0 0 auto;
+  min-height: 32px;
+  padding: 6px 10px;
+  border: 1px solid rgba(0,63,127,.12);
+  border-radius: 9px;
+  background: #fff;
+  color: #334155;
+  font-size: .72rem;
+  font-weight: 900;
+  cursor: pointer;
+  transition: background .15s ease, color .15s ease, border-color .15s ease;
+}
+
+.admin-workspace-tab:hover {
+  border-color: rgba(0,63,127,.28);
+  background: #eef6ff;
+}
+
+.admin-workspace-tab.active {
+  color: #fff;
+  border-color: #0b5fc2;
+  background: linear-gradient(135deg, #003f7f, #0b5fc2);
+  box-shadow: 0 7px 14px rgba(0,63,127,.16);
+}
+
+.admin-workspace-tab-comp.active {
+  color: #5f4900;
+  border-color: #d2a900;
+  background: linear-gradient(135deg, #fff4b5, #ffdf6b);
+  box-shadow: 0 7px 14px rgba(210,169,0,.15);
+}
+
+.admin-workspace-tab-high {
+  color: #8b1d1d;
+  border-color: rgba(220,38,38,.18);
+}
+
+.admin-workspace-tab-high.active {
+  color: #fff;
+  border-color: #b91c1c;
+  background: linear-gradient(135deg, #991b1b, #dc2626);
+  box-shadow: 0 7px 14px rgba(185,28,28,.16);
+}
+
+.admin-workspace-panel {
+  padding: 12px;
+}
+
+.admin-workspace-panel[hidden],
+.admin-context-action[hidden],
+.admin-workspace-tab[hidden],
+.waiver-admin-group[hidden],
+.admin-calls-group[hidden] {
+  display: none !important;
+}
+
+.admin-context-actionbar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 42px;
+  padding: 7px 9px;
+  margin-bottom: 10px;
+  border-radius: 11px;
+  background: #f8fafc;
+  border: 1px solid rgba(0,31,63,.07);
+}
+
+.admin-context-action-label {
+  color: #64748b;
+  font-size: .68rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+}
+
+.waiver-admin-section .admin-bottom-grid {
+  grid-template-columns: minmax(0, 1.55fr) minmax(300px, .65fr);
+  gap: 10px;
+  margin-top: 0;
+}
+
+.waiver-admin-section .priority-panel,
+.waiver-admin-section .admin-calls-block {
+  padding: 10px;
+  border-radius: 13px;
+  border: 1px solid rgba(0,31,63,.08);
+  background: #fbfdff;
+}
+
+.waiver-admin-section .priority-header,
+.waiver-admin-section .admin-calls-heading {
+  margin-bottom: 8px;
+}
+
+.waiver-admin-section .priority-header h3,
+.waiver-admin-section .admin-calls-heading h3 {
+  margin: 0 0 3px;
+  color: #001f3f;
+  font-size: .86rem;
+}
+
+.waiver-admin-section .priority-header p,
+.waiver-admin-section .admin-calls-heading p {
+  margin: 0;
+  color: #64748b;
+  font-size: .7rem;
+  line-height: 1.3;
+}
+
+.waiver-admin-section .waiver-order-admin {
+  gap: 7px;
+}
+
+.waiver-admin-section .waiver-admin-group {
+  padding: 7px;
+  border-radius: 10px;
+  background: #f2f7fc;
+}
+
+.waiver-admin-section .waiver-admin-group h4,
+.waiver-admin-section .admin-calls-group h4 {
+  margin: 0 0 6px;
+  color: #334155;
+  font-size: .72rem;
+  text-transform: uppercase;
+  letter-spacing: .03em;
+}
+
+.waiver-admin-section .waiver-admin-row {
+  grid-template-columns: 30px minmax(130px, .9fr) minmax(180px, 1.1fr);
+  gap: 7px;
+  min-height: 42px;
+  padding: 5px 7px;
+  margin-bottom: 4px;
+  border-radius: 8px;
+  background: #fff;
+  font-size: .76rem;
+}
+
+.waiver-admin-section .priority-rank {
+  font-size: .76rem;
+  font-weight: 900;
+  color: #003f7f;
+}
+
+.waiver-admin-section .waiver-admin-original strong {
+  font-size: .76rem;
+}
+
+.waiver-admin-section .waiver-admin-original span {
+  font-size: .62rem;
+}
+
+.waiver-admin-section .waiver-admin-row .waiver-owner-select {
+  min-height: 30px;
+  padding: 4px 7px;
+  font-size: .72rem;
+}
+
+.waiver-admin-section #allCalls {
+  gap: 7px;
+}
+
+.waiver-admin-section #allCalls > .admin-calls-group {
+  padding: 7px;
+  border-radius: 10px;
+  background: #f2f7fc;
+  border: 1px solid rgba(0,31,63,.07);
+}
+
+.admin-call-receipt {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 2px 8px;
+  align-items: center;
+  padding: 6px 7px;
+  margin-bottom: 4px;
+  border-radius: 8px;
+  background: #fff;
+  border: 1px solid rgba(0,31,63,.07);
+}
+
+.admin-call-receipt strong {
+  color: #0f172a;
+  font-size: .72rem;
+  line-height: 1.15;
+}
+
+.admin-call-receipt > span {
+  color: #52637a;
+  font-size: .64rem;
+  font-weight: 750;
+}
+
+.admin-call-receipt > span:last-of-type {
+  text-align: right;
+  white-space: nowrap;
+}
+
+.admin-call-receipt small {
+  grid-column: 1 / -1;
+  color: #94a3b8;
+  font-size: .6rem;
+}
+
+/* Compensative: tabella compatta e editor chiuso di default */
+.admin-compensatory-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 2px 2px 10px;
+  border-bottom: 1px solid rgba(0,31,63,.08);
+}
+
+.admin-compensatory-toolbar h3 {
+  margin: 0 0 3px;
+  color: #001f3f;
+  font-size: .9rem;
+}
+
+.admin-compensatory-toolbar p {
+  margin: 0;
+  color: #64748b;
+  font-size: .7rem;
+  line-height: 1.3;
+}
+
+.admin-compensatory-toolbar-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 6px;
+}
+
+.waiver-admin-section .admin-compensatory-overview {
+  margin-top: 10px;
+}
+
+.admin-compensatory-group {
+  padding: 8px !important;
+  border-radius: 11px !important;
+  border: 1px solid rgba(0,31,63,.08) !important;
+  background: #f8fafc !important;
+}
+
+.admin-compensatory-group + .admin-compensatory-group {
+  margin-top: 8px;
+}
+
+.admin-compensatory-group-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 6px;
+}
+
+.admin-compensatory-group-head h4 {
+  margin: 0 !important;
+  text-transform: none !important;
+  letter-spacing: 0 !important;
+  color: #001f3f !important;
+  font-size: .76rem !important;
+}
+
+.waiver-admin-section .admin-compensatory-row {
+  display: block;
+  padding: 0;
+  margin-bottom: 5px;
+  overflow: hidden;
+  border-radius: 9px;
+  background: #fff;
+  border-top: 1px solid rgba(0,31,63,.07);
+  border-right: 1px solid rgba(0,31,63,.07);
+  border-bottom: 1px solid rgba(0,31,63,.07);
+}
+
+.admin-compensatory-compact-row {
+  display: grid;
+  grid-template-columns: 44px minmax(170px, 1fr) auto auto;
+  gap: 8px;
+  align-items: center;
+  padding: 7px 8px;
+}
+
+.admin-comp-priority-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 30px;
+  border-radius: 8px;
+  font-size: .72rem;
+  font-weight: 950;
+}
+
+.admin-comp-priority-badge.normal {
+  color: #654d00;
+  background: #fff4b5;
+  border: 1px solid #ecd15f;
+}
+
+.admin-comp-priority-badge.high {
+  color: #fff;
+  background: linear-gradient(135deg, #991b1b, #dc2626);
+  border: 1px solid #b91c1c;
+}
+
+.waiver-admin-section .admin-compensatory-main {
+  min-width: 0;
+  gap: 1px;
+}
+
+.waiver-admin-section .admin-compensatory-main strong {
+  color: #0f172a;
+  font-size: .76rem;
+}
+
+.waiver-admin-section .admin-compensatory-main span {
+  overflow: hidden;
+  color: #64748b;
+  font-size: .65rem;
+  font-weight: 700;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.waiver-admin-section .admin-compensatory-main small {
+  color: #94a3b8;
+  font-size: .59rem;
+}
+
+.admin-comp-status {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 24px;
+  padding: 4px 7px;
+  border-radius: 999px;
+  font-size: .62rem;
+  font-weight: 900;
+  white-space: nowrap;
+}
+
+.admin-comp-status.pending {
+  color: #6b7280;
+  background: #f1f5f9;
+}
+
+.admin-comp-status.received,
+.admin-comp-status.won {
+  color: #166534;
+  background: #dcfce7;
+}
+
+.admin-comp-status.warning {
+  color: #92400e;
+  background: #fef3c7;
+}
+
+.admin-comp-status.lost {
+  color: #991b1b;
+  background: #fee2e2;
+}
+
+.admin-compensatory-editor {
+  min-width: 72px;
+}
+
+.admin-compensatory-editor > summary {
+  list-style: none;
+  cursor: pointer;
+  padding: 5px 8px;
+  border-radius: 7px;
+  color: #003f7f;
+  background: #eef6ff;
+  font-size: .64rem;
+  font-weight: 900;
+  text-align: center;
+}
+
+.admin-compensatory-editor > summary::-webkit-details-marker {
+  display: none;
+}
+
+.admin-compensatory-editor[open] {
+  grid-column: 1 / -1;
+  width: 100%;
+  margin-top: 3px;
+  padding-top: 8px;
+  border-top: 1px solid rgba(0,31,63,.08);
+}
+
+.admin-compensatory-editor[open] > summary {
+  width: fit-content;
+  margin-left: auto;
+}
+
+.waiver-admin-section .admin-compensatory-edit-grid {
+  grid-template-columns: repeat(3, minmax(130px, 1fr));
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.waiver-admin-section .admin-compensatory-edit-grid label {
+  margin: 0;
+  font-size: .64rem;
+}
+
+.waiver-admin-section .admin-compensatory-edit-grid input,
+.waiver-admin-section .admin-compensatory-edit-grid select {
+  min-height: 31px;
+  padding: 5px 7px;
+  border-radius: 8px;
+  font-size: .7rem;
+}
+
+.waiver-admin-section .admin-compensatory-actions {
+  margin-top: 7px;
+}
+
+.admin-empty-state {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 18px;
+  border-radius: 12px;
+  text-align: center;
+  color: #64748b;
+  background: #f8fafc;
+  border: 1px dashed rgba(0,63,127,.18);
+}
+
+.admin-empty-state strong {
+  color: #001f3f;
+  font-size: .82rem;
+}
+
+.admin-empty-state span {
+  font-size: .7rem;
+}
+
+/* Dialog nuova compensativa */
+.admin-compensatory-dialog {
+  width: min(620px, calc(100vw - 24px));
+  max-height: min(820px, calc(100vh - 32px));
+  overflow: auto;
+  padding: 16px;
+  border: 0;
+  border-radius: 18px;
+  color: #172033;
+  background: #fff;
+  box-shadow: 0 28px 70px rgba(0,31,63,.28);
+}
+
+.admin-compensatory-dialog::backdrop {
+  background: rgba(0, 20, 45, .48);
+  backdrop-filter: blur(3px);
+}
+
+.admin-dialog-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 6px;
+}
+
+.admin-dialog-head h3 {
+  margin: 0;
+  color: #001f3f;
+  font-size: 1rem;
+}
+
+.admin-dialog-close {
+  appearance: none;
+  width: 34px;
+  height: 34px;
+  flex: 0 0 auto;
+  border: 1px solid rgba(0,31,63,.10);
+  border-radius: 10px;
+  color: #334155;
+  background: #f8fafc;
+  font-size: 1.25rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.admin-compensatory-dialog .admin-compensatory-form {
+  margin: 12px 0 0;
+  padding: 0;
+  gap: 5px;
+  background: transparent;
+  border: 0;
+}
+
+.admin-compensatory-dialog .admin-compensatory-form label {
+  margin: 4px 0 2px;
+}
+
+@media (max-width: 1180px) {
+  .waiver-admin-section .slot-settings-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .admin-command-stats {
+    min-width: 440px;
+  }
+}
+
+@media (max-width: 900px) {
+  .admin-command-center {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .admin-command-stats {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .admin-workspace-heading {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .waiver-admin-section .slot-settings-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .waiver-admin-section .admin-bottom-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-compensatory-toolbar {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .admin-compensatory-toolbar-actions {
+    justify-content: flex-start;
+  }
+
+  .admin-compensatory-compact-row {
+    grid-template-columns: 44px minmax(0, 1fr) auto;
+  }
+
+  .admin-compensatory-editor {
+    grid-column: 2 / -1;
+  }
+}
+
+@media (max-width: 620px) {
+  .waiver-admin-section .admin-card {
+    padding: 10px;
+  }
+
+  .admin-command-center {
+    padding: 13px;
+    border-radius: 15px;
+  }
+
+  .admin-command-stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .admin-panel-summary {
+    align-items: flex-start;
+  }
+
+  .admin-panel-summary small {
+    display: none;
+  }
+
+  .waiver-admin-section .slot-settings-grid,
+  .waiver-admin-section .admin-settings-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-global-actions {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .admin-global-actions-main {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .admin-global-actions .priority-message {
+    text-align: left;
+  }
+
+  .admin-workspace-heading {
+    padding: 10px;
+  }
+
+  .admin-workspace-panel {
+    padding: 8px;
+  }
+
+  .waiver-admin-section .waiver-admin-row {
+    grid-template-columns: 28px 1fr;
+  }
+
+  .waiver-admin-section .waiver-admin-row .waiver-owner-select {
+    grid-column: 1 / -1;
+  }
+
+  .admin-call-receipt {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-call-receipt > span:last-of-type {
+    text-align: left;
+  }
+
+  .admin-compensatory-compact-row {
+    grid-template-columns: 40px minmax(0, 1fr);
+    gap: 6px;
+  }
+
+  .admin-comp-status,
+  .admin-compensatory-editor {
+    grid-column: 2;
+    justify-self: start;
+  }
+
+  .admin-compensatory-editor[open] {
+    grid-column: 1 / -1;
+  }
+
+  .waiver-admin-section .admin-compensatory-edit-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-compensatory-toolbar-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .admin-compensatory-toolbar-actions #openAdminCompensatoryDialogBtn {
+    grid-column: 1 / -1;
+  }
+}
