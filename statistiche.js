@@ -20,6 +20,8 @@ const TEAM_MASCOTS = {
   "Desperados": "desperados-mascotte.webp",
   "Wildboys 78": "wildboys-mascotte.webp",
   "Wildboys78": "wildboys-mascotte.webp",
+  "wildboys78": "wildboys-mascotte.webp",
+  "wildboys 78": "wildboys-mascotte.webp",
   "Pandinicoccolosini": "pandini-mascotte.webp",
   "Pokermantra": "pokermantra-mascotte.webp",
   "PokerMantra": "pokermantra-mascotte.webp",
