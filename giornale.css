@@ -1069,3 +1069,34 @@ button:hover{ transform:translateY(-1px); background:var(--navy-2); }
 .lower-grid.lower-grid-single{
   grid-template-columns: 1fr;
 }
+
+/* =========================================================
+   HERO GAZZETTA MOBILE - immagine intera senza bande nere
+   ========================================================= */
+
+@media (max-width: 768px){
+
+  .hero-media{
+    width: 100%;
+    height: auto !important;
+    min-height: 0 !important;
+    aspect-ratio: auto !important;
+
+    background: transparent !important;
+
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .hero-media img{
+    width: 100%;
+    height: auto !important;
+    min-height: 0 !important;
+
+    aspect-ratio: auto !important;
+    object-fit: initial !important;
+    object-position: center;
+
+    display: block;
+  }
+}
