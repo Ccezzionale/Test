@@ -314,6 +314,7 @@ function teamMascotImg(team, extraClass = ""){
     "riverfilo": "riverfilo-mascotte.webp",
     "desperados": "desperados-mascotte.webp",
     "wildboys 78": "wildboys-mascotte.webp",
+    "wildboys78": "wildboys-mascotte.webp",
     "pandinicoccolosini": "pandini-mascotte.webp",
     "pokermantra": "pokermantra-mascotte.webp",
     "minnesode timberland": "minnesode-mascotte.webp",
