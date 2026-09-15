@@ -1071,32 +1071,40 @@ button:hover{ transform:translateY(-1px); background:var(--navy-2); }
 }
 
 /* =========================================================
-   HERO GAZZETTA MOBILE - immagine intera senza bande nere
+   IMMAGINI EDITORIALI MOBILE - niente bande nere
+   Hero + Next On
    ========================================================= */
 
 @media (max-width: 768px){
 
-  .hero-media{
+  .hero-media,
+  .next-media,
+  .next-media-image-only{
     width: 100%;
     height: auto !important;
     min-height: 0 !important;
     aspect-ratio: auto !important;
-
     background: transparent !important;
-
-    border-radius: 12px;
     overflow: hidden;
   }
 
-  .hero-media img{
+  .hero-media img,
+  .next-media img,
+  .next-media-image-only img{
     width: 100%;
     height: auto !important;
     min-height: 0 !important;
-
     aspect-ratio: auto !important;
     object-fit: initial !important;
     object-position: center;
-
     display: block;
+  }
+
+  .hero-placeholder,
+  .next-placeholder,
+  .next-media-image-only .next-placeholder{
+    width: 100%;
+    height: auto !important;
+    min-height: 180px;
   }
 }
