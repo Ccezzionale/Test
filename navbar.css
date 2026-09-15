@@ -4416,3 +4416,57 @@ nav.site-nav .toggle-submenu .app-alert-badge {
     height: 49px !important;
   }
 }
+
+/* =========================================================
+   HOME APP V2 — IN EVIDENZA QUADRATO
+   Override finale: uniforma solo il carosello "In evidenza".
+   ========================================================= */
+@media (max-width: 900px) {
+  .home-app-v2 .featured-track {
+    align-items: stretch !important;
+    gap: 10px !important;
+    margin-right: -12px !important;
+    padding: 1px 12px 8px 0 !important;
+    scroll-padding-left: 0;
+  }
+
+  .home-app-v2 .featured-track .featured-card {
+    flex: 0 0 46% !important;
+    width: 46% !important;
+    height: auto !important;
+    aspect-ratio: 1 / 1 !important;
+    overflow: hidden !important;
+    border: 0 !important;
+    border-radius: 20px !important;
+    background: transparent !important;
+    box-shadow: 0 10px 22px rgba(14, 52, 96, .14) !important;
+    scroll-snap-align: start;
+    transition: transform .16s ease, box-shadow .16s ease;
+  }
+
+  .home-app-v2 .featured-track .featured-card:active {
+    transform: scale(.985);
+    box-shadow: 0 7px 16px rgba(14, 52, 96, .12) !important;
+  }
+
+  .home-app-v2 .featured-track .featured-card img {
+    display: block !important;
+    width: 100% !important;
+    height: 100% !important;
+    max-width: none !important;
+    object-fit: cover !important;
+    object-position: center !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    transform: none !important;
+  }
+}
+
+@media (max-width: 390px) {
+  .home-app-v2 .featured-track .featured-card,
+  .home-app-v2 .featured-track .featured-card img {
+    height: auto !important;
+  }
+}
+
