@@ -891,52 +891,43 @@ function renderMobileVoteTop5() {
     button.setAttribute("aria-selected", String(active));
   });
 
-  const totals = new Map();
+  // Mobile = stessa classifica cumulativa mostrata su desktop.
+  // Manteniamo anche il numero totale di chiamate come dettaglio compatto.
+  const callsByPlayer = new Map();
 
   votes
-    .filter((vote) => vote.week === state.activeWeek && vote.voterConference === conference)
+    .filter((vote) => vote.voterConference === conference)
     .forEach((vote) => {
-      const player = vote.player || players.find((p) => p.id === vote.playerId);
-      if (!player) return;
-
       const canonicalId = getCanonicalPlayerId(vote.playerId) || vote.playerId;
-      if (!totals.has(canonicalId)) {
-        totals.set(canonicalId, {
-          player,
-          points: 0,
-          calls: 0
-        });
-      }
-
-      const entry = totals.get(canonicalId);
-      entry.points += Number(vote.points || 0);
-      entry.calls += 1;
+      callsByPlayer.set(canonicalId, (callsByPlayer.get(canonicalId) || 0) + 1);
     });
 
-  const top = [...totals.values()]
-    .sort((a, b) => b.points - a.points || b.calls - a.calls || a.player.name.localeCompare(b.player.name))
-    .slice(0, 5);
+  const top = getVoteTotalsByConference(conference).slice(0, 5);
 
   if (!top.length) {
     els.mobileLiveTop5.innerHTML = `
       <div class="mobile-live-top5-empty">
         <strong>Nessun voto ancora</strong>
-        <small>La Top 5 ${escapeHtml(conference)} si aggiorna appena arrivano le prime schede della Week ${state.activeWeek}.</small>
+        <small>La Top 5 ${escapeHtml(conference)} si aggiorna appena arrivano i primi voti.</small>
       </div>
     `;
     return;
   }
 
-  els.mobileLiveTop5.innerHTML = top.map((entry, index) => `
-    <div class="mobile-live-top5-row">
-      <span class="mobile-live-top5-pos">${index + 1}</span>
-      <span class="mobile-live-top5-player">
-        <strong>${escapeHtml(entry.player.name)}</strong>
-        <small>${escapeHtml(entry.player.role)} · ${escapeHtml(entry.player.serieATeam)} · ${entry.calls} ${entry.calls === 1 ? "chiamata" : "chiamate"}</small>
-      </span>
-      <span class="mobile-live-top5-points">${entry.points} pt</span>
-    </div>
-  `).join("");
+  els.mobileLiveTop5.innerHTML = top.map((entry, index) => {
+    const calls = callsByPlayer.get(entry.playerId) || 0;
+
+    return `
+      <div class="mobile-live-top5-row">
+        <span class="mobile-live-top5-pos">${index + 1}</span>
+        <span class="mobile-live-top5-player">
+          <strong>${escapeHtml(entry.player.name)}</strong>
+          <small>${escapeHtml(entry.player.role)} · ${escapeHtml(entry.player.serieATeam)} · ${calls} ${calls === 1 ? "chiamata" : "chiamate"}</small>
+        </span>
+        <span class="mobile-live-top5-points">${entry.total} pt</span>
+      </div>
+    `;
+  }).join("");
 }
 
 function renderWeekStars() {
