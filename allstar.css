@@ -5425,3 +5425,472 @@ body {
     min-height: 40px !important;
   }
 }
+
+
+/* =========================================================
+   FESTIVAL DELLE STELLE - LIGHT CELEBRATION THEME
+   2026-09-16
+   Mantiene il banner originale, alleggerisce tutta la UI.
+   ========================================================= */
+
+:root {
+  --fs-bg: #f6f8ff;
+  --fs-surface: rgba(255,255,255,.92);
+  --fs-surface-strong: #ffffff;
+  --fs-text: #14264a;
+  --fs-muted: #6f7f9d;
+  --fs-blue: #2768e8;
+  --fs-blue-soft: #eaf2ff;
+  --fs-red: #e93f67;
+  --fs-red-soft: #fff0f4;
+  --fs-gold: #e6b84d;
+  --fs-gold-soft: #fff8e6;
+  --fs-purple: #7769e8;
+  --fs-border: rgba(41,66,115,.12);
+  --fs-shadow: 0 14px 36px rgba(56,75,120,.12);
+}
+
+html,
+body {
+  background: var(--fs-bg) !important;
+}
+
+body {
+  background:
+    radial-gradient(circle at 8% 7%, rgba(39,104,232,.13), transparent 25rem),
+    radial-gradient(circle at 92% 8%, rgba(233,63,103,.11), transparent 25rem),
+    radial-gradient(circle at 50% 34%, rgba(230,184,77,.10), transparent 28rem),
+    linear-gradient(180deg, #fbfcff 0%, #f5f7ff 46%, #fffaf0 100%) !important;
+  color: var(--fs-text) !important;
+}
+
+/* Keep the existing custom banner exactly as the visual hero. */
+.broadcast-hero {
+  border: 1px solid rgba(39,72,132,.14) !important;
+  box-shadow: 0 22px 55px rgba(44,65,112,.16) !important;
+}
+
+/* Remove any old dark-broadcast overlays around the banner. */
+.broadcast-hero::before,
+.broadcast-hero::after {
+  display: none !important;
+}
+
+/* The two duplicated leader cards are removed in HTML; the strip now breathes. */
+.broadcast-info-strip {
+  grid-template-columns: 1.35fr .85fr !important;
+  gap: 14px !important;
+}
+
+.info-card,
+.vote-card,
+.ranking-card,
+.wide-auto-pick,
+.team-panel,
+.clock-panel,
+.pool-section,
+.admin-panel,
+.pick-modal {
+  background: var(--fs-surface) !important;
+  border: 1px solid var(--fs-border) !important;
+  box-shadow: var(--fs-shadow) !important;
+  color: var(--fs-text) !important;
+}
+
+.info-card {
+  min-height: 82px;
+  background:
+    linear-gradient(135deg, rgba(255,255,255,.98), rgba(248,250,255,.94)) !important;
+}
+
+.info-card:nth-child(1)::before {
+  background: linear-gradient(90deg, var(--fs-blue), var(--fs-purple), var(--fs-red)) !important;
+}
+
+.info-card:nth-child(2)::before {
+  background: linear-gradient(90deg, #f1c75f, #f4d887) !important;
+}
+
+.info-icon {
+  background: linear-gradient(145deg, #ffffff, #eef3ff) !important;
+  border: 1px solid rgba(39,72,132,.08);
+  box-shadow: 0 7px 18px rgba(61,80,124,.08);
+}
+
+.info-card strong,
+.section-head h3,
+.ranking-card h4,
+.wide-auto-pick h4,
+.team-header h3,
+.star-card-kicker,
+.vote-slot strong,
+.vote-conference-select span {
+  color: var(--fs-text) !important;
+}
+
+.info-card small,
+.section-head p,
+.ranking-subtitle,
+.team-header p,
+.team-header span,
+.vote-slot small,
+.week-stars-split p,
+.ranking-player small,
+.auto-pick-row small,
+.player-mini span {
+  color: var(--fs-muted) !important;
+}
+
+/* Main focus: Top 5 + voting. */
+.broadcast-main-grid {
+  gap: 16px !important;
+}
+
+.ranking-card.ranking-championship {
+  background:
+    radial-gradient(circle at 0 0, rgba(39,104,232,.16), transparent 15rem),
+    linear-gradient(180deg, #f8fbff 0%, #eef5ff 100%) !important;
+  border-color: rgba(39,104,232,.20) !important;
+}
+
+.ranking-card.ranking-league {
+  background:
+    radial-gradient(circle at 100% 0, rgba(233,63,103,.15), transparent 15rem),
+    linear-gradient(180deg, #fff9fb 0%, #fff0f4 100%) !important;
+  border-color: rgba(233,63,103,.20) !important;
+}
+
+.ranking-card.ranking-championship h4 { color: #174fae !important; }
+.ranking-card.ranking-league h4 { color: #b9284d !important; }
+
+.ranking-row {
+  background: rgba(255,255,255,.86) !important;
+  border: 1px solid rgba(49,73,119,.10) !important;
+  box-shadow: 0 5px 14px rgba(63,79,116,.06) !important;
+}
+
+.ranking-player strong,
+.ranking-points {
+  color: var(--fs-text) !important;
+}
+
+.ranking-card.ranking-championship .ranking-pos {
+  background: linear-gradient(135deg, #2b6ee9, #5f9cff) !important;
+  color: #fff !important;
+}
+
+.ranking-card.ranking-league .ranking-pos {
+  background: linear-gradient(135deg, #eb4168, #ff7895) !important;
+  color: #fff !important;
+}
+
+.ranking-card.ranking-championship .ranking-row:first-child .ranking-pos,
+.ranking-card.ranking-league .ranking-row:first-child .ranking-pos {
+  background: linear-gradient(135deg, #c89221, #f4cf6d) !important;
+  color: #5d4100 !important;
+  box-shadow: 0 5px 16px rgba(207,164,60,.26);
+}
+
+.ranking-card.ranking-championship .auto-badge {
+  background: rgba(39,104,232,.10) !important;
+  color: #275cb9 !important;
+}
+
+.ranking-card.ranking-league .auto-badge {
+  background: rgba(233,63,103,.10) !important;
+  color: #bd3458 !important;
+}
+
+/* Voting card: white + champagne/gold celebration. */
+.broadcast-vote-center,
+.vote-form-card {
+  background:
+    radial-gradient(circle at 50% 0, rgba(230,184,77,.13), transparent 18rem),
+    linear-gradient(180deg, #fffef9 0%, #ffffff 58%, #fffaf0 100%) !important;
+  border-color: rgba(202,157,50,.20) !important;
+}
+
+.vote-form-card::before {
+  background: linear-gradient(90deg, var(--fs-blue), #ffffff 34%, var(--fs-gold) 50%, #ffffff 66%, var(--fs-red)) !important;
+}
+
+.vote-week-pill {
+  background: linear-gradient(135deg, #e9b73f, #f5d47c) !important;
+  color: #5d4100 !important;
+  box-shadow: 0 8px 18px rgba(218,170,59,.18) !important;
+}
+
+.vote-conference-select,
+.vote-slot {
+  background: rgba(255,255,255,.86) !important;
+  border: 1px solid rgba(46,68,112,.11) !important;
+}
+
+.vote-player-searchbox,
+.vote-player-input,
+.vote-conference-select select,
+.pool-filters input,
+.pool-filters select,
+.pick-modal input {
+  background: #fff !important;
+  color: var(--fs-text) !important;
+  border-color: rgba(44,68,116,.14) !important;
+}
+
+.vote-player-input::placeholder,
+.pool-filters input::placeholder,
+.pick-modal input::placeholder {
+  color: #9aa6bb !important;
+}
+
+.vote-player-picker.is-selected .vote-player-searchbox {
+  background: #f3fff8 !important;
+  border-color: rgba(42,163,100,.45) !important;
+}
+
+.vote-player-picker.is-selected .vote-player-input,
+.vote-player-picker.is-selected .vote-player-meta {
+  color: #23784f !important;
+}
+
+.vote-player-results {
+  background: #fff !important;
+  border-color: rgba(44,68,116,.14) !important;
+  box-shadow: 0 14px 30px rgba(44,68,116,.15) !important;
+}
+
+.vote-player-result {
+  color: var(--fs-text) !important;
+  border-bottom-color: rgba(44,68,116,.08) !important;
+}
+
+.vote-player-result:hover {
+  background: #f5f8ff !important;
+}
+
+.vote-player-result small,
+.vote-player-result em,
+.vote-player-meta {
+  color: var(--fs-muted) !important;
+}
+
+.primary-call-btn,
+.vote-submit-btn {
+  background: linear-gradient(135deg, #d8a735, #f2cf74) !important;
+  color: #493300 !important;
+  box-shadow: 0 12px 24px rgba(205,158,47,.20) !important;
+}
+
+/* Secondary sections: same bright family, not a funeral procession. */
+.broadcast-story-row .vote-card,
+.broadcast-story-row .auto-pick-card,
+.broadcast-draft-grid .team-panel,
+.broadcast-draft-grid .clock-panel,
+.broadcast-pool,
+.broadcast-admin {
+  background: rgba(255,255,255,.91) !important;
+}
+
+.week-stars-split > div,
+.auto-pick-row,
+.last-picks,
+.modal-player-row {
+  background: #fff !important;
+  border-color: rgba(44,68,116,.10) !important;
+}
+
+.auto-pick-row strong,
+.last-pick-row strong,
+.last-pick-row em,
+.modal-player-row strong,
+.players-table td,
+.players-table .player-name-cell,
+.clock-panel,
+#currentPickBig {
+  color: var(--fs-text) !important;
+}
+
+.team-championship {
+  background: linear-gradient(180deg, #f6f9ff, #eef5ff) !important;
+  border-color: rgba(39,104,232,.18) !important;
+}
+
+.team-league {
+  background: linear-gradient(180deg, #fff8fa, #fff0f4) !important;
+  border-color: rgba(233,63,103,.18) !important;
+}
+
+.clock-panel {
+  background:
+    radial-gradient(circle at 50% 0, rgba(230,184,77,.13), transparent 14rem),
+    linear-gradient(180deg, #ffffff, #f7f9ff) !important;
+}
+
+.last-picks {
+  box-shadow: none !important;
+}
+
+.players-table th {
+  color: #7484a0 !important;
+}
+
+.players-table td {
+  border-bottom-color: rgba(44,68,116,.08) !important;
+}
+
+.pool-filters input,
+.pool-filters select,
+.admin-field select {
+  background: #fff !important;
+  color: var(--fs-text) !important;
+}
+
+.admin-toggle {
+  background: linear-gradient(90deg, rgba(39,104,232,.08), rgba(255,255,255,.96), rgba(233,63,103,.08)) !important;
+  color: var(--fs-text) !important;
+}
+
+.admin-body,
+.allstar-admin-box {
+  color: var(--fs-text) !important;
+}
+
+/* =========================================================
+   FESTIVAL MOBILE
+   ========================================================= */
+@media (max-width: 768px) {
+  .allstar-page {
+    background: transparent !important;
+  }
+
+  .mobile-allstar-tabs {
+    background: rgba(255,255,255,.94) !important;
+    border: 1px solid rgba(43,66,110,.12) !important;
+    box-shadow: 0 16px 38px rgba(52,72,116,.18) !important;
+  }
+
+  .mobile-tab-btn {
+    color: #72809a !important;
+  }
+
+  .mobile-tab-btn b {
+    color: #7886a0 !important;
+  }
+
+  .mobile-tab-btn.is-active {
+    background: linear-gradient(145deg, #fff7df, #fff) !important;
+    border-color: rgba(217,167,45,.22) !important;
+  }
+
+  .mobile-tab-btn.is-active b {
+    color: #9f7110 !important;
+  }
+
+  .mobile-live-summary {
+    background: linear-gradient(135deg, rgba(255,255,255,.98), rgba(246,249,255,.96)) !important;
+    border-color: rgba(44,68,116,.11) !important;
+    box-shadow: 0 10px 24px rgba(61,79,121,.10) !important;
+  }
+
+  .mobile-live-summary small { color: #8794aa !important; }
+  .mobile-live-summary strong { color: var(--fs-text) !important; }
+  .mobile-live-chip {
+    background: #fff7df !important;
+    color: #9b7012 !important;
+    border: 1px solid rgba(215,167,49,.18);
+  }
+
+  /* On mobile the live summary already says whether the vote is complete,
+     so the strip only needs the active week. */
+  .broadcast-info-strip[data-mobile-section="vote"].is-mobile-active {
+    grid-template-columns: 1fr !important;
+  }
+
+  .broadcast-info-strip .vote-rules-card {
+    display: none !important;
+  }
+
+  .broadcast-info-strip .vote-week-card {
+    grid-column: 1 !important;
+  }
+
+  .mobile-vote-live-board.is-mobile-active {
+    background:
+      radial-gradient(circle at 0 0, rgba(39,104,232,.10), transparent 13rem),
+      radial-gradient(circle at 100% 0, rgba(233,63,103,.09), transparent 13rem),
+      linear-gradient(180deg, #ffffff, #f9fbff) !important;
+    border-color: rgba(44,68,116,.11) !important;
+    box-shadow: 0 12px 28px rgba(61,79,121,.11) !important;
+  }
+
+  .mobile-vote-live-board::before {
+    background: linear-gradient(90deg, var(--fs-blue), var(--fs-gold), var(--fs-red)) !important;
+  }
+
+  .mobile-live-board-head small { color: #8794aa !important; }
+  .mobile-live-board-head strong { color: var(--fs-text) !important; }
+  .mobile-live-board-head > span {
+    background: #f3f5fa !important;
+    color: #6f7f9d !important;
+  }
+
+  .mobile-live-conference-switch {
+    background: #f4f6fb !important;
+    border-color: rgba(44,68,116,.08) !important;
+  }
+
+  .mobile-live-conf-btn { color: #7c8aa4 !important; }
+
+  .mobile-live-conf-btn.championship.is-active {
+    color: #174fae !important;
+    border-color: rgba(39,104,232,.22) !important;
+    background: linear-gradient(135deg, #e8f1ff, #f7faff) !important;
+  }
+
+  .mobile-live-conf-btn.league.is-active {
+    color: #b9284d !important;
+    border-color: rgba(233,63,103,.22) !important;
+    background: linear-gradient(135deg, #ffe9ef, #fff8fa) !important;
+  }
+
+  .mobile-live-top5-row {
+    background: rgba(255,255,255,.94) !important;
+    border-color: rgba(44,68,116,.09) !important;
+    box-shadow: 0 4px 12px rgba(61,79,121,.05);
+  }
+
+  .mobile-live-top5-pos {
+    background: #eef2f9 !important;
+    color: #50627f !important;
+  }
+
+  .mobile-live-top5-row:first-child .mobile-live-top5-pos {
+    background: linear-gradient(135deg, #d4a239, #f4d174) !important;
+    color: #5d4100 !important;
+  }
+
+  .mobile-live-top5-player strong,
+  .mobile-live-top5-points {
+    color: var(--fs-text) !important;
+  }
+
+  .mobile-live-top5-player small { color: #8491a8 !important; }
+
+  .mobile-live-top5-empty {
+    background: #f7f9fd !important;
+  }
+  .mobile-live-top5-empty strong { color: var(--fs-text) !important; }
+  .mobile-live-top5-empty small { color: #8491a8 !important; }
+
+  .broadcast-main-grid .broadcast-vote-center {
+    background:
+      radial-gradient(circle at 50% 0, rgba(230,184,77,.14), transparent 15rem),
+      linear-gradient(180deg, #fffef9, #ffffff) !important;
+  }
+
+  .mobile-expand-btn {
+    background: #f6f8fc !important;
+    color: var(--fs-text) !important;
+    border-color: rgba(44,68,116,.10) !important;
+  }
+}
