@@ -4494,3 +4494,274 @@ nav.site-nav .toggle-submenu .app-alert-badge {
   }
 }
 
+
+
+/* =========================================================
+   HOME APP V2 — MATCH DELLA SETTIMANA / ARENA MIX
+   Mix proposta 6 + split proposta 1 + VS proposta 4.
+   Mantiene i dati dinamici già caricati da home-dashboard.js.
+   ========================================================= */
+@media (max-width: 900px) {
+  .home-app-v2 .matchup-track {
+    align-items: stretch !important;
+    gap: 12px !important;
+    padding-bottom: 9px !important;
+  }
+
+  .home-app-v2 .league-matchup-card {
+    position: relative !important;
+    isolation: isolate;
+    overflow: hidden !important;
+    flex: 0 0 89% !important;
+    width: 89% !important;
+    min-height: 184px !important;
+    padding: 12px 12px 11px !important;
+    border: 1px solid rgba(238, 191, 65, .82) !important;
+    border-radius: 22px !important;
+    color: #fff !important;
+    background:
+      radial-gradient(150px 115px at 13% 55%, rgba(35, 132, 230, .24), transparent 70%),
+      radial-gradient(150px 115px at 87% 55%, rgba(35, 132, 230, .18), transparent 70%),
+      linear-gradient(106deg,
+        #092f69 0%,
+        #071f4d 45%,
+        #06183a 49.2%,
+        #0d3977 50%,
+        #06183a 50.8%,
+        #071f4d 55%,
+        #092f69 100%) !important;
+    box-shadow:
+      0 12px 26px rgba(6, 35, 76, .22),
+      inset 0 1px 0 rgba(255,255,255,.08) !important;
+    scroll-snap-align: start;
+  }
+
+  .home-app-v2 .league-matchup-card::before {
+    content: "";
+    position: absolute;
+    z-index: 1;
+    left: 50%;
+    top: -24%;
+    width: 3px;
+    height: 150%;
+    transform: translateX(-50%) rotate(12deg);
+    background: linear-gradient(180deg,
+      transparent 0%,
+      rgba(255, 214, 87, .16) 20%,
+      rgba(255, 214, 87, .96) 49%,
+      rgba(255,255,255,.95) 50%,
+      rgba(255, 214, 87, .96) 51%,
+      rgba(255, 214, 87, .16) 80%,
+      transparent 100%);
+    box-shadow: 0 0 18px rgba(245, 194, 55, .65);
+    pointer-events: none;
+  }
+
+  .home-app-v2 .league-matchup-card::after {
+    content: "";
+    position: absolute;
+    z-index: 0;
+    inset: 0;
+    pointer-events: none;
+    background:
+      linear-gradient(180deg, rgba(255,255,255,.045), transparent 34%),
+      radial-gradient(260px 110px at 50% 112%, rgba(0,0,0,.32), transparent 70%);
+  }
+
+  .home-app-v2 .league-matchup-label {
+    position: relative;
+    z-index: 5;
+    margin: 0 0 9px !important;
+    color: #f5cc55 !important;
+    font-size: .64rem !important;
+    font-weight: 1000 !important;
+    letter-spacing: .08em !important;
+    line-height: 1.1 !important;
+    text-align: center;
+    text-transform: uppercase;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .home-app-v2 .league-matchup-versus {
+    position: relative;
+    z-index: 4;
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) 62px minmax(0, 1fr) !important;
+    align-items: center !important;
+    gap: 4px !important;
+    min-height: 116px;
+  }
+
+  .home-app-v2 .league-matchup-versus > div {
+    position: relative;
+    min-width: 0;
+    min-height: 112px;
+    padding: 6px 4px 28px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+  }
+
+  /* Logo gigante in trasparenza sullo sfondo, ricavato automaticamente dal logo squadra. */
+  .home-app-v2 .league-matchup-versus .matchup-watermark {
+    position: absolute !important;
+    z-index: -1 !important;
+    left: 50% !important;
+    top: 50% !important;
+    width: 126px !important;
+    height: 126px !important;
+    margin: 0 !important;
+    object-fit: contain !important;
+    transform: translate(-50%, -50%) scale(1.05) !important;
+    opacity: .085 !important;
+    filter: grayscale(.2) brightness(1.8) saturate(.75) !important;
+    pointer-events: none;
+  }
+
+  .home-app-v2 .league-matchup-versus > div > img:not(.matchup-watermark) {
+    position: relative;
+    z-index: 3;
+    display: block !important;
+    width: 58px !important;
+    height: 58px !important;
+    margin: 0 auto 5px !important;
+    object-fit: contain !important;
+    filter: drop-shadow(0 8px 9px rgba(0,0,0,.38)) !important;
+  }
+
+  .home-app-v2 .league-matchup-versus > div > strong {
+    position: relative;
+    z-index: 3;
+    display: -webkit-box !important;
+    width: 100%;
+    min-height: 26px;
+    overflow: hidden !important;
+    color: #ffffff !important;
+    font-size: .69rem !important;
+    font-weight: 1000 !important;
+    line-height: 1.05 !important;
+    text-shadow: 0 2px 6px rgba(0,0,0,.42);
+    white-space: normal !important;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+  }
+
+  /* Badge posizione ricavato dal testo già esistente "3° contro 1°". */
+  .home-app-v2 .league-matchup-versus > div[data-rank]::after {
+    content: attr(data-rank) " in classifica";
+    position: absolute;
+    z-index: 4;
+    left: 50%;
+    bottom: 2px;
+    transform: translateX(-50%);
+    max-width: 94%;
+    padding: 4px 8px;
+    border: 1px solid rgba(243, 202, 86, .74);
+    border-radius: 999px;
+    color: #f9d96f;
+    background: rgba(2, 18, 45, .72);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.06);
+    font-size: .52rem;
+    font-weight: 1000;
+    line-height: 1;
+    white-space: nowrap;
+  }
+
+  /* VS grande, diagonale e "pennellato" come la proposta 4. */
+  .home-app-v2 .league-matchup-versus > span {
+    position: relative;
+    z-index: 8;
+    display: flex !important;
+    width: 62px;
+    height: 72px;
+    align-items: center;
+    justify-content: center;
+    color: #f8cd54 !important;
+    font-family: Impact, Haettenschweiler, "Arial Narrow Bold", sans-serif !important;
+    font-size: 2.18rem !important;
+    font-style: italic;
+    font-weight: 1000 !important;
+    letter-spacing: -.06em;
+    line-height: 1 !important;
+    transform: rotate(-8deg) skewX(-5deg);
+    text-shadow:
+      0 2px 0 #8c5e00,
+      0 0 8px rgba(255, 211, 77, .38),
+      0 6px 16px rgba(0,0,0,.42);
+  }
+
+  .home-app-v2 .league-matchup-versus > span::before,
+  .home-app-v2 .league-matchup-versus > span::after {
+    content: "";
+    position: absolute;
+    z-index: -1;
+    left: 5px;
+    right: 5px;
+    height: 9px;
+    border-radius: 1px 10px 1px 10px;
+    background: linear-gradient(90deg, transparent, rgba(245, 197, 57, .82), transparent);
+    filter: blur(.2px);
+  }
+
+  .home-app-v2 .league-matchup-versus > span::before {
+    top: 16px;
+    transform: rotate(-18deg);
+  }
+
+  .home-app-v2 .league-matchup-versus > span::after {
+    bottom: 16px;
+    transform: rotate(-18deg);
+  }
+
+  /* Il vecchio "3° contro 1°" viene trasformato in una piccola caption centrale. */
+  .home-app-v2 .league-matchup-card > small {
+    position: relative;
+    z-index: 5;
+    display: block !important;
+    margin: 4px auto 0 !important;
+    color: rgba(255,255,255,.68) !important;
+    font-size: .53rem !important;
+    font-weight: 850 !important;
+    letter-spacing: .04em;
+    line-height: 1 !important;
+    text-align: center;
+    text-transform: uppercase;
+  }
+
+  .home-app-v2 .league-matchup-card.loading-card {
+    min-height: 184px !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
+}
+
+@media (max-width: 390px) {
+  .home-app-v2 .league-matchup-card {
+    flex-basis: 92% !important;
+    width: 92% !important;
+    min-height: 176px !important;
+  }
+
+  .home-app-v2 .league-matchup-versus {
+    grid-template-columns: minmax(0, 1fr) 56px minmax(0, 1fr) !important;
+  }
+
+  .home-app-v2 .league-matchup-versus > span {
+    width: 56px;
+    font-size: 1.95rem !important;
+  }
+
+  .home-app-v2 .league-matchup-versus > div > img:not(.matchup-watermark) {
+    width: 53px !important;
+    height: 53px !important;
+  }
+
+  .home-app-v2 .league-matchup-versus .matchup-watermark {
+    width: 112px !important;
+    height: 112px !important;
+  }
+}

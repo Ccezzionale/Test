@@ -6,7 +6,7 @@
   <title>Lega degli Eroi</title>
   
 
-  <link rel="stylesheet" href="navbar.css?v=20260916-1">
+  <link rel="stylesheet" href="navbar.css?v=20260916-2">
 
   <!-- PWA -->
   <link rel="manifest" href="manifest.json">
@@ -754,6 +754,51 @@ document.addEventListener("DOMContentLoaded", function () {
           });
       });
     }
+  </script>
+
+  <script>
+  /* Match della settimana: aggiunge watermark e badge classifica
+     senza toccare la logica che carica i matchup. */
+  (function () {
+    function decorateMatchupCards() {
+      const track = document.getElementById('dashboard-matchups');
+      if (!track) return;
+
+      track.querySelectorAll('.league-matchup-card:not(.loading-card)').forEach(function (card) {
+        const teams = card.querySelectorAll('.league-matchup-versus > div');
+        if (teams.length < 2) return;
+
+        teams.forEach(function (team) {
+          const originalLogo = team.querySelector('img:not(.matchup-watermark)');
+          if (originalLogo && !team.querySelector('.matchup-watermark')) {
+            const watermark = originalLogo.cloneNode(true);
+            watermark.className = 'matchup-watermark';
+            watermark.alt = '';
+            watermark.setAttribute('aria-hidden', 'true');
+            team.prepend(watermark);
+          }
+        });
+
+        const meta = card.querySelector('small');
+        if (meta) {
+          const match = meta.textContent.match(/(\d+°).*?(\d+°)/i);
+          if (match) {
+            teams[0].setAttribute('data-rank', match[1]);
+            teams[1].setAttribute('data-rank', match[2]);
+          }
+        }
+      });
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+      const track = document.getElementById('dashboard-matchups');
+      if (!track) return;
+
+      decorateMatchupCards();
+      const observer = new MutationObserver(decorateMatchupCards);
+      observer.observe(track, { childList: true, subtree: true });
+    });
+  })();
   </script>
 
   <script type="module" src="home-dashboard.js"></script>
