@@ -1,4 +1,5 @@
 import { supabase } from './supabase.js';
+import { loadResultsRows } from './results-source.js';
 const FUTURE_PICK_SEASON = 2027;
 
 const DYNAMIC_TRADE_BASE_PALETTES = [
@@ -410,8 +411,12 @@ function removeDuplicateRows(rows) {
   });
 }
 
-function buildTotalRankingFromStats(statsCSV) {
-  const rawRows = parseCSV(statsCSV);
+function buildTotalRankingFromStats(statsSource) {
+  // La classifica ora usa results-source.js (Supabase con fallback CSV).
+  // Manteniamo anche la compatibilità con un eventuale CSV testuale.
+  const rawRows = Array.isArray(statsSource)
+    ? statsSource
+    : parseCSV(statsSource);
   const rows = removeDuplicateRows(rawRows);
 
   const table = new Map();
@@ -2255,15 +2260,18 @@ function initDraftTabs() {
 initDraftTabs();
 initDraftOrderTabs();
 
-// Fetch classifica totale + future picks
+// Carica la STESSA fonte usata dalla pagina Classifica (Supabase + fallback CSV)
+// insieme alle future picks. In questo modo il Draft Dinamico segue sempre
+// i risultati importati dal pannello admin.
 Promise.all([
-  fetch(STATS_MASTER_CSV_URL + "&nocache=" + Date.now(), { cache: "no-store" }).then(r => r.text()),
+  loadResultsRows(),
   loadFutureDraftPicks()
 ])
-.then(([statsCSV, futurePicks]) => {
+.then(([statsRows, futurePicks]) => {
+  console.log("RISULTATI DRAFT DA RESULTS-SOURCE:", statsRows);
   console.log("FUTURE PICKS DA SUPABASE:", futurePicks);
 
-  const draft = generaDraftDaCSV(statsCSV, futurePicks);
+  const draft = generaDraftDaCSV(statsRows, futurePicks);
 
   generaTabellaVerticale("draft-league", draft.league, draft.leagueTeams);
   generaTabellaVerticale("draft-championship", draft.championship, draft.champTeams);
