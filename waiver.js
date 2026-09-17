@@ -360,11 +360,20 @@ function getTeamLogoPath(teamName) {
 function formatWaiverDateTime(value) {
   if (!value) return "";
 
-  const date = new Date(value);
+  const rawValue = String(value).trim();
+
+  // Se Supabase restituisce l'orario senza timezone,
+  // lo trattiamo come UTC.
+  const hasTimezone = /(?:Z|[+-]\d{2}:\d{2})$/i.test(rawValue);
+
+  const date = new Date(
+    hasTimezone ? rawValue : `${rawValue}Z`
+  );
 
   if (Number.isNaN(date.getTime())) return "";
 
   return date.toLocaleString("it-IT", {
+    timeZone: "Europe/Brussels",
     weekday: "long",
     day: "2-digit",
     month: "2-digit",
