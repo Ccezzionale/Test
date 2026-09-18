@@ -261,7 +261,13 @@ function beginWaiverPlayerSelection(orderId) {
     row => String(row.id) === String(orderId)
   );
 
-  if (!orderRow || !isSlotOpen(orderRow.slot)) {
+  const savedCall = getCallByOrderId(orderId);
+
+  if (
+    !orderRow ||
+    !isSlotOpen(orderRow.slot) ||
+    isFinalizedWaiverCall(savedCall)
+  ) {
     setMessage("Questa chiamata non è disponibile in questo momento.", true);
     return;
   }
@@ -392,6 +398,11 @@ function isPlayoffPhase() {
 
 function normalizeSlot(slot) {
   return String(slot || "").toUpperCase();
+}
+
+function isFinalizedWaiverCall(call) {
+  const status = String(call?.status || "").toLowerCase();
+  return status === "won" || status === "lost";
 }
 
 function normalizePlayerName(name) {
@@ -2805,6 +2816,7 @@ slotBlock.innerHTML = `
       const savedCall = getCallByOrderId(orderRow.id);
       const slotActuallyOpen = isSlotOpen(orderRow.slot);
       const slotOpen = slotActuallyOpen && !isAdminViewingAsTeam();
+      const callEditable = slotOpen && !isFinalizedWaiverCall(savedCall);
 
       const isVia = String(orderRow.original_team_id) !== String(orderRow.owner_team_id);
 
@@ -2835,7 +2847,7 @@ slotBlock.innerHTML = `
           readonly
           placeholder="Nessun giocatore selezionato"
           value="${savedCall?.player_in || ""}"
-          ${slotOpen ? "" : "disabled"}
+          ${callEditable ? "" : "disabled"}
         />
 
         <div class="player-choice-actions">
@@ -2843,7 +2855,7 @@ slotBlock.innerHTML = `
             type="button"
             class="secondary-btn choose-player-btn select-dynamic-call-btn"
             data-order-id="${orderRow.id}"
-            ${slotOpen ? "" : "disabled"}
+            ${callEditable ? "" : "disabled"}
           >
             ${savedCall?.player_in ? "✏️ Cambia giocatore" : "🔍 Scegli giocatore"}
           </button>
@@ -2853,7 +2865,7 @@ slotBlock.innerHTML = `
         <select
           class="dynamic-player-out"
           data-order-id="${orderRow.id}"
-          ${slotOpen ? "" : "disabled"}
+          ${callEditable ? "" : "disabled"}
         >
           ${buildPlayerOutOptions(savedCall?.player_out_id, savedCall?.player_out || "")}
         </select>
@@ -2863,7 +2875,7 @@ slotBlock.innerHTML = `
             type="button"
             class="primary-btn save-dynamic-call-btn"
             data-order-id="${orderRow.id}"
-            ${slotOpen ? "" : "disabled"}
+            ${callEditable ? "" : "disabled"}
           >
             Salva chiamata
           </button>
@@ -2872,7 +2884,7 @@ slotBlock.innerHTML = `
             type="button"
             class="secondary-btn reset-dynamic-call-btn"
             data-order-id="${orderRow.id}"
-            ${slotOpen ? "" : "disabled"}
+            ${callEditable ? "" : "disabled"}
           >
             Cancella chiamata
           </button>
@@ -2885,7 +2897,11 @@ slotBlock.innerHTML = `
                 ? `👁️ Modalità test · chiamata salvata il ${formatWaiverDateTime(savedCall.updated_at)}`
                 : "👁️ Modalità test · nessuna chiamata salvata."
               : savedCall
-                ? `✅ Chiamata salvata il ${formatWaiverDateTime(savedCall.updated_at)}`
+                ? isFinalizedWaiverCall(savedCall)
+                  ? String(savedCall.status).toLowerCase() === "won"
+                    ? `🏆 Chiamata completata il ${formatWaiverDateTime(savedCall.updated_at)}`
+                    : `⛔ Chiamata elaborata il ${formatWaiverDateTime(savedCall.updated_at)}`
+                  : `✅ Chiamata salvata il ${formatWaiverDateTime(savedCall.updated_at)}`
                 : slotOpen
                   ? "Nessuna chiamata salvata."
                   : `Slot ${normalizeSlot(orderRow.slot)} chiuso o non disponibile.`
@@ -3371,6 +3387,14 @@ async function saveDynamicCall(orderId) {
     return;
   }
 
+  const cachedCall = getCallByOrderId(orderRow.id);
+
+  if (isFinalizedWaiverCall(cachedCall)) {
+    setMessage("Questa chiamata è già stata calcolata e non può più essere modificata.", true);
+    await loadMyWaiverCalls();
+    return;
+  }
+
   const playerInEl = document.querySelector(`.dynamic-player-in[data-order-id="${orderId}"]`);
   const playerOutEl = document.querySelector(`.dynamic-player-out[data-order-id="${orderId}"]`);
 
@@ -3415,7 +3439,7 @@ status: "pending",
 
   const { data: existingCall, error: existingError } = await supabase
     .from("waiver_calls")
-    .select("id")
+    .select("id, status")
     .eq("week", currentSettings.active_week)
     .eq("phase", currentSettings.active_phase)
     .eq("slot", normalizeSlot(orderRow.slot))
@@ -3428,15 +3452,26 @@ status: "pending",
     return;
   }
 
+  if (isFinalizedWaiverCall(existingCall)) {
+    setMessage("Questa chiamata è già stata calcolata e non può più essere modificata.", true);
+    await loadMyWaiverCalls();
+    return;
+  }
+
   let error;
+  let updatedCall = null;
 
   if (existingCall) {
     const result = await supabase
       .from("waiver_calls")
       .update(payload)
-      .eq("id", existingCall.id);
+      .eq("id", existingCall.id)
+      .eq("status", "pending")
+      .select("id")
+      .maybeSingle();
 
     error = result.error;
+    updatedCall = result.data;
   } else {
     const result = await supabase
       .from("waiver_calls")
@@ -3451,6 +3486,12 @@ status: "pending",
     return;
   }
 
+  if (existingCall && !updatedCall) {
+    setMessage("La chiamata è stata chiusa o calcolata nel frattempo. Nessuna modifica applicata.", true);
+    await loadMyWaiverCalls();
+    return;
+  }
+
   setMessage("Chiamata salvata correttamente.");
 
   await loadMyWaiverCalls();
@@ -3460,37 +3501,45 @@ status: "pending",
 
 async function resetDynamicCall(orderId) {
   if (blockTeamWriteWhileViewingAs()) return;
+
+  const orderRow = myOrderRows.find(
+    row => String(row.id) === String(orderId)
+  );
+
+  if (!orderRow || !isSlotOpen(orderRow.slot)) {
+    setMessage("Lo slot è chiuso: la chiamata non può più essere cancellata.", true);
+    await loadMyWaiverCalls();
+    return;
+  }
+
   const playerInEl = document.querySelector(`.dynamic-player-in[data-order-id="${orderId}"]`);
   const playerOutEl = document.querySelector(`.dynamic-player-out[data-order-id="${orderId}"]`);
-
-  if (playerInEl) {
-    playerInEl.value = "";
-    delete playerInEl.dataset.playerId;
-    playerInEl.classList.remove("has-player-selection");
-  }
 
   const chooseButton = document.querySelector(
     `.select-dynamic-call-btn[data-order-id="${orderId}"]`
   );
-
-  if (chooseButton) {
-    chooseButton.textContent = "🔍 Scegli giocatore";
-  }
-
-  if (playerOutEl) playerOutEl.value = "";
 
   const existingCall = mySavedCalls.find(
     call => String(call.waiver_order_id) === String(orderId)
   );
 
   if (existingCall) {
+    if (isFinalizedWaiverCall(existingCall)) {
+      setMessage("Questa chiamata è già stata calcolata e non può essere cancellata.", true);
+      await loadMyWaiverCalls();
+      return;
+    }
+
     const confirmed = confirm("Vuoi cancellare questa chiamata salvata?");
     if (!confirmed) return;
 
-    const { error } = await supabase
+    const { data: deletedCall, error } = await supabase
       .from("waiver_calls")
       .delete()
-      .eq("id", existingCall.id);
+      .eq("id", existingCall.id)
+      .eq("status", "pending")
+      .select("id")
+      .maybeSingle();
 
     if (error) {
       console.error("Errore cancellazione chiamata:", error);
@@ -3498,12 +3547,42 @@ async function resetDynamicCall(orderId) {
       return;
     }
 
+    if (!deletedCall) {
+      setMessage("La chiamata è stata chiusa o calcolata nel frattempo e non è stata cancellata.", true);
+      await loadMyWaiverCalls();
+      return;
+    }
+
+    if (playerInEl) {
+      playerInEl.value = "";
+      delete playerInEl.dataset.playerId;
+      playerInEl.classList.remove("has-player-selection");
+    }
+
+    if (chooseButton) {
+      chooseButton.textContent = "🔍 Scegli giocatore";
+    }
+
+    if (playerOutEl) playerOutEl.value = "";
+
     setMessage("Chiamata cancellata.");
     await loadMyWaiverCalls();
     await loadAllCalls();
      await renderPublicWaiverOrder();
     return;
   }
+
+  if (playerInEl) {
+    playerInEl.value = "";
+    delete playerInEl.dataset.playerId;
+    playerInEl.classList.remove("has-player-selection");
+  }
+
+  if (chooseButton) {
+    chooseButton.textContent = "🔍 Scegli giocatore";
+  }
+
+  if (playerOutEl) playerOutEl.value = "";
 
   setMessage("Box pulito.");
 }
