@@ -6149,14 +6149,14 @@ nav.site-nav .toggle-submenu .app-alert-badge {
       background-color .38s ease;
   }
 
-  /* CAMPIONATO · atmosfera standard blu/ghiaccio */
-  body.home-app-theme-league {
-    --home-bg-top: #eaf4fd;
-    --home-bg-mid: #eef5fb;
-    --home-bg-bottom: #f4f8fb;
-    --home-glow-main: rgba(23, 126, 230, .19);
-    --home-glow-side: rgba(0, 92, 190, .08);
-  }
+/* CAMPIONATO · royal blue più deciso */
+body.home-app-theme-league {
+  --home-bg-top: #cfe6ff;
+  --home-bg-mid: #dcecff;
+  --home-bg-bottom: #eef5fb;
+  --home-glow-main: rgba(0, 102, 230, .32);
+  --home-glow-side: rgba(0, 63, 150, .18);
+}
 
   /* CRASH OUT CUP · rosa elettrico / viola, ma su base chiara */
   body.home-app-theme-crashout {
