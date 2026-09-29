@@ -404,28 +404,79 @@ function renderH2H(params, meetings, targetCompleted) {
     : "–";
 
   const list = document.getElementById("mc-recent-list");
-  const recent = sortMeetings(meetings)
+  const allRecent = sortMeetings(meetings)
     .filter(meeting => !(targetCompleted && meeting.isTarget))
-    .slice(-4)
     .reverse();
 
-  if (!recent.length) {
+  const recentRowMarkup = (meeting) => {
+    const homeResult = resultFromPoints(meeting.pointsHome, meeting.pointsAway);
+    const awayResult = homeResult === "V" ? "P" : homeResult === "P" ? "V" : "N";
+    const resultClass = result => result === "V" ? "win" : result === "P" ? "loss" : "draw";
+
+    return `
+      <div class="mc-recent-row">
+        <div class="mc-recent-meta">
+          <strong>${escapeHtml(meeting.season)}</strong>
+          <span>Giornata ${meeting.seasonWeek}</span>
+        </div>
+
+        <div class="mc-recent-team mc-recent-team-home">
+          <img src="${teamLogo(params.home)}" alt="Logo ${escapeHtml(params.home)}">
+          <span class="mc-recent-team-name">${escapeHtml(params.home)}</span>
+          <span class="mc-result-pill ${resultClass(homeResult)}" title="Risultato ${escapeHtml(params.home)}">${homeResult}</span>
+        </div>
+
+        <span class="mc-recent-score">
+          <strong>${pointsToGoals(meeting.pointsHome)} - ${pointsToGoals(meeting.pointsAway)}</strong>
+          <small>${formatNumber(meeting.pointsHome)} - ${formatNumber(meeting.pointsAway)} FP</small>
+        </span>
+
+        <div class="mc-recent-team mc-recent-team-away">
+          <span class="mc-result-pill ${resultClass(awayResult)}" title="Risultato ${escapeHtml(params.away)}">${awayResult}</span>
+          <span class="mc-recent-team-name">${escapeHtml(params.away)}</span>
+          <img src="${teamLogo(params.away)}" alt="Logo ${escapeHtml(params.away)}">
+        </div>
+      </div>`;
+  };
+
+  if (!allRecent.length) {
     list.innerHTML = '<div class="mc-empty">Nessun precedente disponibile.</div>';
   } else {
-    list.innerHTML = recent.map(meeting => {
-      const result = resultFromPoints(meeting.pointsHome, meeting.pointsAway);
-      return `
-        <div class="mc-recent-row">
-          <div class="mc-recent-meta"><strong>${escapeHtml(meeting.season)}</strong><span>Giornata ${meeting.seasonWeek}</span></div>
-          <img src="${teamLogo(params.home)}" alt="">
-          <span class="mc-recent-score">
-            <strong>${pointsToGoals(meeting.pointsHome)} - ${pointsToGoals(meeting.pointsAway)}</strong>
-            <small>${formatNumber(meeting.pointsHome)} - ${formatNumber(meeting.pointsAway)} FP</small>
-          </span>
-          <img src="${teamLogo(params.away)}" alt="">
-          <span class="mc-result-pill ${result === "V" ? "win" : result === "P" ? "loss" : "draw"}">${result}</span>
-        </div>`;
-    }).join("");
+    const INITIAL_RECENT_COUNT = 4;
+    let expanded = false;
+
+    const renderRecentMeetings = () => {
+      const visible = expanded ? allRecent : allRecent.slice(0, INITIAL_RECENT_COUNT);
+      const hiddenCount = Math.max(0, allRecent.length - INITIAL_RECENT_COUNT);
+
+      list.innerHTML = visible.map(recentRowMarkup).join("");
+
+      if (allRecent.length > INITIAL_RECENT_COUNT) {
+        const controls = document.createElement("div");
+        controls.className = "mc-recent-controls";
+
+        const toggle = document.createElement("button");
+        toggle.type = "button";
+        toggle.className = "mc-recent-toggle";
+        toggle.setAttribute("aria-expanded", String(expanded));
+        toggle.innerHTML = expanded
+          ? 'Mostra meno <span aria-hidden="true">↑</span>'
+          : `Mostra altri ${hiddenCount} <span aria-hidden="true">↓</span>`;
+
+        toggle.addEventListener("click", () => {
+          expanded = !expanded;
+          renderRecentMeetings();
+          if (!expanded) {
+            list.closest(".mc-recent-card")?.scrollIntoView({ behavior: "smooth", block: "start" });
+          }
+        });
+
+        controls.appendChild(toggle);
+        list.appendChild(controls);
+      }
+    };
+
+    renderRecentMeetings();
   }
 
   const records = document.getElementById("mc-records");
