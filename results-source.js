@@ -82,19 +82,35 @@ function mapSupabaseRows(rows) {
       Result: r.result || '',
       Phase: r.phase || 'Regular',
       Conference: r.conference || '',
-      TeamKey: r.team_key || ''
+      TeamKey: r.team_key || '',
+      IsHome: typeof r.is_home === 'boolean' ? r.is_home : null
     };
   });
 }
 
 export async function loadResultsRows() {
   try {
-    const { data, error } = await supabase
+    let query = supabase
       .from('fantacalcio_results')
-      .select('gw, match_date, team, opponent, points_for, points_against, result, phase, conference, team_key')
+      .select('gw, match_date, team, opponent, points_for, points_against, result, phase, conference, team_key, is_home')
       .order('conference', { ascending: true })
       .order('gw', { ascending: true })
       .order('team', { ascending: true });
+
+    let { data, error } = await query;
+
+    // Compatibilità temporanea: se la migration is_home non è stata ancora eseguita,
+    // continuiamo a leggere i risultati senza rompere il resto dell'app.
+    if (error && /is_home/i.test(String(error.message || ''))) {
+      const fallback = await supabase
+        .from('fantacalcio_results')
+        .select('gw, match_date, team, opponent, points_for, points_against, result, phase, conference, team_key')
+        .order('conference', { ascending: true })
+        .order('gw', { ascending: true })
+        .order('team', { ascending: true });
+      data = fallback.data;
+      error = fallback.error;
+    }
 
     if (error) throw error;
     if (Array.isArray(data) && data.length) return mapSupabaseRows(data);

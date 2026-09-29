@@ -101,12 +101,13 @@ function rowsFromSheet(sheet, conference) {
 
         if (isGWHeader(current[startCol])) break;
 
-        const teamA = normalizeText(current[startCol]);
-        const scoreA = toNumber(current[startCol + 1]);
-        const scoreB = toNumber(current[startCol + 2]);
-        const teamB = normalizeText(current[startCol + 3]);
+        // Nel calendario Fantacalcio la prima squadra della riga è la squadra di casa.
+        const homeTeam = normalizeText(current[startCol]);
+        const homeScore = toNumber(current[startCol + 1]);
+        const awayScore = toNumber(current[startCol + 2]);
+        const awayTeam = normalizeText(current[startCol + 3]);
 
-        const looksLikeMatch = teamA && teamB && scoreA !== null && scoreB !== null;
+        const looksLikeMatch = homeTeam && awayTeam && homeScore !== null && awayScore !== null;
         if (!looksLikeMatch) {
           const hasAnything = [current[startCol], current[startCol + 1], current[startCol + 2], current[startCol + 3]]
             .some(v => normalizeText(v) !== '');
@@ -115,9 +116,9 @@ function rowsFromSheet(sheet, conference) {
         }
 
         // Nei file Fantacalcio 0-0 significa giornata non ancora disputata.
-        if (scoreA === 0 && scoreB === 0) continue;
+        if (homeScore === 0 && awayScore === 0) continue;
 
-        const matchKey = `${gw}|${teamA}|${teamB}`;
+        const matchKey = `${gw}|${homeTeam}|${awayTeam}`;
         if (seen.has(matchKey)) continue;
         seen.add(matchKey);
 
@@ -125,27 +126,29 @@ function rowsFromSheet(sheet, conference) {
           {
             gw,
             match_date: null,
-            team: teamA,
-            opponent: teamB,
-            points_for: scoreA,
-            points_against: scoreB,
-            result: resultFor(scoreA, scoreB),
+            team: homeTeam,
+            opponent: awayTeam,
+            points_for: homeScore,
+            points_against: awayScore,
+            result: resultFor(homeScore, awayScore),
             phase: 'Regular',
             conference,
-            team_key: `${conference}::${teamA}`,
+            team_key: `${conference}::${homeTeam}`,
+            is_home: true,
             updated_at: new Date().toISOString()
           },
           {
             gw,
             match_date: null,
-            team: teamB,
-            opponent: teamA,
-            points_for: scoreB,
-            points_against: scoreA,
-            result: resultFor(scoreB, scoreA),
+            team: awayTeam,
+            opponent: homeTeam,
+            points_for: awayScore,
+            points_against: homeScore,
+            result: resultFor(awayScore, homeScore),
             phase: 'Regular',
             conference,
-            team_key: `${conference}::${teamB}`,
+            team_key: `${conference}::${awayTeam}`,
+            is_home: false,
             updated_at: new Date().toISOString()
           }
         );

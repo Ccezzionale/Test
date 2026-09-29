@@ -312,7 +312,7 @@ body.match-center-page {
 .mc-recent-card .mc-card-body { padding-top: 7px; padding-bottom: 7px; }
 .mc-recent-row {
   display: grid;
-  grid-template-columns: minmax(86px, .65fr) minmax(120px, 1fr) minmax(86px, .62fr) minmax(120px, 1fr);
+  grid-template-columns: minmax(86px, .72fr) 64px minmax(92px, .68fr) 64px;
   align-items: center;
   gap: 10px;
   padding: 11px 4px;
@@ -328,21 +328,9 @@ body.match-center-page {
   align-items: center;
   gap: 6px;
 }
-.mc-recent-team-home { grid-template-columns: 34px minmax(0,1fr) 24px; }
-.mc-recent-team-away { grid-template-columns: 24px minmax(0,1fr) 34px; }
-.mc-recent-team img { width: 34px; height: 34px; object-fit: contain; }
-.mc-recent-team-name {
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  color: #17385e;
-  font-size: .67rem;
-  font-weight: 900;
-  line-height: 1.05;
-  text-transform: uppercase;
-}
-.mc-recent-team-away .mc-recent-team-name { text-align: right; }
+.mc-recent-team-left { grid-template-columns: 36px 24px; justify-content: center; }
+.mc-recent-team-right { grid-template-columns: 24px 36px; justify-content: center; }
+.mc-recent-team img { width: 36px; height: 36px; object-fit: contain; }
 .mc-recent-score { display: grid; gap: 2px; text-align: center; }
 .mc-recent-score strong { font-size: .98rem; font-weight: 1000; line-height: 1.05; }
 .mc-recent-score small { color: var(--mc-muted); font-size: .62rem; font-weight: 800; white-space: nowrap; }
@@ -409,14 +397,13 @@ body.match-center-page {
   .mc-form-dot { width: 26px; height: 26px; font-size: .65rem; }
   .mc-form-dots { gap: 4px; }
   .mc-recent-row {
-    grid-template-columns: 72px minmax(0,1fr) 64px minmax(0,1fr);
+    grid-template-columns: 72px 48px 64px 48px;
     gap: 6px;
   }
   .mc-recent-team { gap: 4px; }
-  .mc-recent-team-home { grid-template-columns: 28px minmax(0,1fr) 20px; }
-  .mc-recent-team-away { grid-template-columns: 20px minmax(0,1fr) 28px; }
-  .mc-recent-team img { width: 28px; height: 28px; }
-  .mc-recent-team-name { font-size: .56rem; }
+  .mc-recent-team-left { grid-template-columns: 30px 20px; }
+  .mc-recent-team-right { grid-template-columns: 20px 30px; }
+  .mc-recent-team img { width: 30px; height: 30px; }
   .mc-recent-score strong { font-size: .82rem; }
   .mc-recent-score small { font-size: .52rem; }
   .mc-result-pill { width: 20px; height: 20px; font-size: .55rem; }

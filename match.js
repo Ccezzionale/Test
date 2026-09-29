@@ -207,15 +207,40 @@ function currentSeasonMeetings(rows, params) {
     if (seen.has(key)) return;
     seen.add(key);
 
-    const rowIsHome = normalizeTeamName(row.Team) === normalizeTeamName(params.home);
+    // pointsHome/pointsAway restano riferiti alle due squadre del Match Center
+    // e servono per statistiche H2H, medie e record.
+    const rowIsParamHome = normalizeTeamName(row.Team) === normalizeTeamName(params.home);
+    const pointsHome = rowIsParamHome ? parseNumber(row.PointsFor) : parseNumber(row.PointsAgainst);
+    const pointsAway = rowIsParamHome ? parseNumber(row.PointsAgainst) : parseNumber(row.PointsFor);
+
+    // is_home arriva dal calendario importato: prima squadra della riga = casa.
+    const venueKnown = typeof row.IsHome === "boolean";
+    const venueHomeTeam = venueKnown
+      ? canonicalTeamName(row.IsHome ? row.Team : row.Opponent)
+      : null;
+    const venueAwayTeam = venueKnown
+      ? canonicalTeamName(row.IsHome ? row.Opponent : row.Team)
+      : null;
+    const pointsVenueHome = venueKnown
+      ? parseNumber(row.IsHome ? row.PointsFor : row.PointsAgainst)
+      : null;
+    const pointsVenueAway = venueKnown
+      ? parseNumber(row.IsHome ? row.PointsAgainst : row.PointsFor)
+      : null;
+
     meetings.push({
       season: CURRENT_SEASON,
       seasonWeek: Number(row.GW_Stagionale) || Number(row.GW) || 0,
       localGw: Number(row.GW) || 0,
       competition: String(row.Conference || ""),
       phase: row.Phase || "Regular",
-      pointsHome: rowIsHome ? parseNumber(row.PointsFor) : parseNumber(row.PointsAgainst),
-      pointsAway: rowIsHome ? parseNumber(row.PointsAgainst) : parseNumber(row.PointsFor),
+      pointsHome,
+      pointsAway,
+      venueKnown,
+      venueHomeTeam,
+      venueAwayTeam,
+      pointsVenueHome,
+      pointsVenueAway,
       isTarget: String(row.Conference || "").trim() === params.competition && Number(row.GW) === Number(params.gw)
     });
   });
@@ -226,7 +251,7 @@ function currentSeasonMeetings(rows, params) {
 async function historicalMeetings(params) {
   const { data, error } = await supabase
     .from("match_history")
-    .select("season, season_week, competition, phase, conference, team_a, team_b, score_a, score_b")
+    .select("season, season_week, competition, phase, conference, team_a, team_b, score_a, score_b, home_team, away_team")
     .in("team_a", [params.home, params.away])
     .in("team_b", [params.home, params.away])
     .order("season", { ascending: true })
@@ -237,15 +262,33 @@ async function historicalMeetings(params) {
   return (data || [])
     .filter(row => pairMatches(row.team_a, row.team_b, params.home, params.away))
     .map(row => {
-      const aIsHome = normalizeTeamName(row.team_a) === normalizeTeamName(params.home);
+      const aIsParamHome = normalizeTeamName(row.team_a) === normalizeTeamName(params.home);
+      const pointsHome = aIsParamHome ? parseNumber(row.score_a) : parseNumber(row.score_b);
+      const pointsAway = aIsParamHome ? parseNumber(row.score_b) : parseNumber(row.score_a);
+
+      const venueHomeTeam = row.home_team ? canonicalTeamName(row.home_team) : null;
+      const venueAwayTeam = row.away_team ? canonicalTeamName(row.away_team) : null;
+      const venueKnown = Boolean(venueHomeTeam && venueAwayTeam);
+
+      const scoreForTeam = team => {
+        if (normalizeTeamName(team) === normalizeTeamName(row.team_a)) return parseNumber(row.score_a);
+        if (normalizeTeamName(team) === normalizeTeamName(row.team_b)) return parseNumber(row.score_b);
+        return null;
+      };
+
       return {
         season: row.season,
         seasonWeek: Number(row.season_week) || 0,
         localGw: Number(row.season_week) || 0,
         competition: row.conference || row.competition || "",
         phase: row.phase || "",
-        pointsHome: aIsHome ? parseNumber(row.score_a) : parseNumber(row.score_b),
-        pointsAway: aIsHome ? parseNumber(row.score_b) : parseNumber(row.score_a),
+        pointsHome,
+        pointsAway,
+        venueKnown,
+        venueHomeTeam,
+        venueAwayTeam,
+        pointsVenueHome: venueKnown ? scoreForTeam(venueHomeTeam) : null,
+        pointsVenueAway: venueKnown ? scoreForTeam(venueAwayTeam) : null,
         isTarget: false
       };
     });
@@ -409,32 +452,40 @@ function renderH2H(params, meetings, targetCompleted) {
     .reverse();
 
   const recentRowMarkup = (meeting) => {
-    const homeResult = resultFromPoints(meeting.pointsHome, meeting.pointsAway);
-    const awayResult = homeResult === "V" ? "P" : homeResult === "P" ? "V" : "N";
+    // Se conosciamo casa/trasferta, mostriamo SEMPRE trasferta a sinistra e casa a destra.
+    // Per lo storico senza dato venue (2025/26), manteniamo l'ordine neutro delle due squadre.
+    const leftTeam = meeting.venueKnown ? meeting.venueAwayTeam : params.home;
+    const rightTeam = meeting.venueKnown ? meeting.venueHomeTeam : params.away;
+    const leftPoints = meeting.venueKnown ? meeting.pointsVenueAway : meeting.pointsHome;
+    const rightPoints = meeting.venueKnown ? meeting.pointsVenueHome : meeting.pointsAway;
+
+    const leftResult = resultFromPoints(leftPoints, rightPoints);
+    const rightResult = leftResult === "V" ? "P" : leftResult === "P" ? "V" : "N";
     const resultClass = result => result === "V" ? "win" : result === "P" ? "loss" : "draw";
+    const rowTitle = meeting.venueKnown
+      ? `${leftTeam} in trasferta · ${rightTeam} in casa`
+      : "Casa/trasferta non disponibile nello storico";
 
     return `
-      <div class="mc-recent-row">
+      <div class="mc-recent-row ${meeting.venueKnown ? "has-venue" : "venue-unknown"}" title="${escapeHtml(rowTitle)}">
         <div class="mc-recent-meta">
           <strong>${escapeHtml(meeting.season)}</strong>
           <span>Giornata ${meeting.seasonWeek}</span>
         </div>
 
-        <div class="mc-recent-team mc-recent-team-home">
-          <img src="${teamLogo(params.home)}" alt="Logo ${escapeHtml(params.home)}">
-          <span class="mc-recent-team-name">${escapeHtml(params.home)}</span>
-          <span class="mc-result-pill ${resultClass(homeResult)}" title="Risultato ${escapeHtml(params.home)}">${homeResult}</span>
+        <div class="mc-recent-team mc-recent-team-left" aria-label="${escapeHtml(leftTeam)}${meeting.venueKnown ? " · trasferta" : ""}">
+          <img src="${teamLogo(leftTeam)}" alt="Logo ${escapeHtml(leftTeam)}">
+          <span class="mc-result-pill ${resultClass(leftResult)}" title="Risultato ${escapeHtml(leftTeam)}">${leftResult}</span>
         </div>
 
         <span class="mc-recent-score">
-          <strong>${pointsToGoals(meeting.pointsHome)} - ${pointsToGoals(meeting.pointsAway)}</strong>
-          <small>${formatNumber(meeting.pointsHome)} - ${formatNumber(meeting.pointsAway)} FP</small>
+          <strong>${pointsToGoals(leftPoints)} - ${pointsToGoals(rightPoints)}</strong>
+          <small>${formatNumber(leftPoints)} - ${formatNumber(rightPoints)} FP</small>
         </span>
 
-        <div class="mc-recent-team mc-recent-team-away">
-          <span class="mc-result-pill ${resultClass(awayResult)}" title="Risultato ${escapeHtml(params.away)}">${awayResult}</span>
-          <span class="mc-recent-team-name">${escapeHtml(params.away)}</span>
-          <img src="${teamLogo(params.away)}" alt="Logo ${escapeHtml(params.away)}">
+        <div class="mc-recent-team mc-recent-team-right" aria-label="${escapeHtml(rightTeam)}${meeting.venueKnown ? " · casa" : ""}">
+          <span class="mc-result-pill ${resultClass(rightResult)}" title="Risultato ${escapeHtml(rightTeam)}">${rightResult}</span>
+          <img src="${teamLogo(rightTeam)}" alt="Logo ${escapeHtml(rightTeam)}">
         </div>
       </div>`;
   };
