@@ -998,7 +998,13 @@ function renderCrashoutHomePlayoff(series) {
   document.getElementById("dashboard-crashout-away-name").textContent = away;
   document.getElementById("dashboard-crashout-score").innerHTML = `<strong>${series.score.home}</strong><span>–</span><strong>${series.score.away}</strong>`;
   document.getElementById("dashboard-crashout-meta").textContent = "Crash Out Cup · Serie al meglio delle 5";
-  document.getElementById("dashboard-crashout-status").textContent = home === "Da definire" || away === "Da definire" ? "Avversario in attesa" : "Serie in corso";
+  const seriesStarted = Number(series.score.home) > 0 || Number(series.score.away) > 0;
+  document.getElementById("dashboard-crashout-status").textContent =
+    home === "Da definire" || away === "Da definire"
+      ? "Avversario in attesa"
+      : seriesStarted
+        ? `Serie ${series.score.home}–${series.score.away} · primo a 3 vittorie`
+        : "Serie 0–0 · primo a 3 vittorie";
   const cta = document.getElementById("dashboard-crashout-cta");
   cta.href = "crashoutplayoff.html";
   cta.querySelector("span").textContent = "VAI AI PLAYOFF";
