@@ -6083,3 +6083,121 @@ nav.site-nav .toggle-submenu .app-alert-badge {
     font-size: 1.17rem !important;
   }
 }
+/* =========================================================
+   HOME PREMIUM V2 · AMBIENT THEME SWITCH
+   Campionato / Crash Out Cup / Highlander
+   ========================================================= */
+
+/*
+  Le variabili colore sono registrate per avere una transizione morbida
+  anche tra gradienti nei browser moderni. Dove @property non è supportato,
+  il cambio resta comunque perfettamente funzionante (semplicemente istantaneo).
+*/
+@property --home-bg-top {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: #edf5fc;
+}
+
+@property --home-bg-mid {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: #eef5fb;
+}
+
+@property --home-bg-bottom {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: #f5f8fb;
+}
+
+@property --home-glow-main {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: rgba(26, 123, 225, .15);
+}
+
+@property --home-glow-side {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: rgba(0, 88, 180, .07);
+}
+
+@media (max-width: 900px) {
+  body.home-app-theme-league,
+  body.home-app-theme-crashout,
+  body.home-app-theme-highlander {
+    min-height: 100vh;
+    background:
+      radial-gradient(680px 390px at 50% 4%, var(--home-glow-main), transparent 67%),
+      radial-gradient(540px 410px at -8% 48%, var(--home-glow-side), transparent 72%),
+      linear-gradient(
+        180deg,
+        var(--home-bg-top) 0%,
+        var(--home-bg-mid) 48%,
+        var(--home-bg-bottom) 100%
+      ) !important;
+
+    background-attachment: fixed !important;
+
+    transition:
+      --home-bg-top .38s ease,
+      --home-bg-mid .38s ease,
+      --home-bg-bottom .38s ease,
+      --home-glow-main .38s ease,
+      --home-glow-side .38s ease,
+      background-color .38s ease;
+  }
+
+  /* CAMPIONATO · atmosfera standard blu/ghiaccio */
+  body.home-app-theme-league {
+    --home-bg-top: #eaf4fd;
+    --home-bg-mid: #eef5fb;
+    --home-bg-bottom: #f4f8fb;
+    --home-glow-main: rgba(23, 126, 230, .19);
+    --home-glow-side: rgba(0, 92, 190, .08);
+  }
+
+  /* CRASH OUT CUP · rosa elettrico / viola, ma su base chiara */
+  body.home-app-theme-crashout {
+    --home-bg-top: #f4dcff;
+    --home-bg-mid: #f1e5fb;
+    --home-bg-bottom: #f5edf9;
+    --home-glow-main: rgba(235, 39, 255, .30);
+    --home-glow-side: rgba(104, 49, 235, .16);
+  }
+
+  /* HIGHLANDER · sabbia / bronzo / oro */
+  body.home-app-theme-highlander {
+    --home-bg-top: #ffe5b5;
+    --home-bg-mid: #f7ead4;
+    --home-bg-bottom: #f5f0e8;
+    --home-glow-main: rgba(214, 145, 28, .28);
+    --home-glow-side: rgba(115, 71, 21, .13);
+  }
+
+  /*
+    Lasciamo trasparente il wrapper: così il tema del body resta visibile
+    dall'inizio alla fine della Home, comprese le sezioni sotto "Il tuo match".
+  */
+  body.home-app-theme-league .home-wrap.home-dashboard,
+  body.home-app-theme-crashout .home-wrap.home-dashboard,
+  body.home-app-theme-highlander .home-wrap.home-dashboard {
+    background: transparent !important;
+  }
+}
+
+/* Desktop: tinta molto più discreta, senza stravolgere la pagina larga */
+@media (min-width: 901px) {
+  body.home-app-theme-crashout {
+    background:
+      radial-gradient(950px 520px at 50% 0%, rgba(225, 48, 255, .10), transparent 70%),
+      linear-gradient(180deg, #f8f2fb 0%, #f6f8fb 100%) !important;
+  }
+
+  body.home-app-theme-highlander {
+    background:
+      radial-gradient(950px 520px at 50% 0%, rgba(205, 143, 35, .10), transparent 70%),
+      linear-gradient(180deg, #fbf6ed 0%, #f6f8fb 100%) !important;
+  }
+}

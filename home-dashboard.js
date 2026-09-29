@@ -901,6 +901,15 @@ function setupHomeMatchTabs() {
       shell.classList.add(`theme-${name}`);
     }
 
+    // Tema ambientale dell'intera Home.
+    // Le card restano leggibili e coerenti, cambia l'atmosfera dietro l'app.
+    document.body.classList.remove(
+      "home-app-theme-league",
+      "home-app-theme-crashout",
+      "home-app-theme-highlander"
+    );
+    document.body.classList.add(`home-app-theme-${name}`);
+
     if (stateEl) {
       stateEl.textContent = name === "crashout"
         ? "Crash Out Cup"
