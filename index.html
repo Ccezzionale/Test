@@ -6,7 +6,7 @@
   <title>Lega degli Eroi</title>
   
 
-  <link rel="stylesheet" href="navbar.css?v=20260916-2">
+  <link rel="stylesheet" href="navbar.css?v=20260929-matchcarousel">
 
   <!-- PWA -->
   <link rel="manifest" href="manifest.json">
@@ -487,26 +487,29 @@
       <span class="app-role-chip" id="dashboard-user-role">Coach</span>
     </section>
 
-    <section class="next-match-card" id="dashboard-next-match" aria-label="La tua prossima sfida">
-      <div class="next-match-heading">
-        <span>La tua prossima sfida</span>
-        <strong id="dashboard-next-gw">GIORNATA –</strong>
+    <section class="match-carousel-section" id="dashboard-match-carousel" aria-label="Il tuo match">
+      <div class="match-carousel-heading">
+        <span>Il tuo match</span>
+        <small id="dashboard-match-carousel-state">Calendario</small>
       </div>
-      <div class="next-match-versus">
-        <div class="next-match-team">
-          <img id="dashboard-next-home-logo" src="icon-192.png" alt="">
-          <strong id="dashboard-next-home-name">La tua squadra</strong>
+
+      <div class="match-carousel-round-nav" aria-label="Navigazione partite">
+        <button type="button" class="match-carousel-arrow" id="dashboard-match-prev" aria-label="Partita precedente">‹</button>
+        <div class="match-carousel-rounds" id="dashboard-match-rounds" aria-label="Giornate disponibili"></div>
+        <button type="button" class="match-carousel-arrow" id="dashboard-match-next" aria-label="Partita successiva">›</button>
+      </div>
+
+      <div class="match-carousel-viewport" id="dashboard-match-viewport" tabindex="0" aria-live="polite">
+        <div class="match-carousel-track" id="dashboard-match-track">
+          <article class="match-carousel-slide is-loading">
+            <div class="match-carousel-card">
+              <span class="match-carousel-loading">Caricamento partita…</span>
+            </div>
+          </article>
         </div>
-        <div class="next-match-vs">VS</div>
-        <div class="next-match-team">
-          <img id="dashboard-next-away-logo" src="icon-192.png" alt="">
-          <strong id="dashboard-next-away-name">Avversario</strong>
-        </div>
       </div>
-      <div class="next-match-footer">
-        <span id="dashboard-next-meta">Calendario in aggiornamento</span>
-        <strong id="dashboard-next-ranking"></strong>
-      </div>
+
+      <div class="match-carousel-dots" id="dashboard-match-dots" aria-hidden="true"></div>
     </section>
 
     <div class="dashboard-status-grid">
@@ -801,7 +804,7 @@ document.addEventListener("DOMContentLoaded", function () {
   })();
   </script>
 
-  <script type="module" src="home-dashboard.js"></script>
+  <script type="module" src="home-dashboard.js?v=20260929-matchcarousel"></script>
   <script type="module" src="home_auth.js"></script>
   <script src="mobile-nav.js?v=2"></script>
   <script src="navbar.js"></script>

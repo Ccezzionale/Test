@@ -315,41 +315,224 @@ function renderTeamStatsAndForm(context, rows) {
   }
 }
 
-function renderNextMatch(context, rows) {
-  if (!context?.team) return;
+function fixtureForTeamAndRound(rows, conferenceCode, gw, teamName) {
+  if (!gw) return null;
+  const liveFixture = findTeamFixture(uniqueFixturesFromRows(rows, conferenceCode, gw), teamName);
+  if (liveFixture) return liveFixture;
+  return findTeamFixture(fallbackFixtures(conferenceCode, gw), teamName) || null;
+}
+
+function completedMatchForTeamAndRound(rows, conferenceCode, gw, teamName) {
+  if (!gw) return null;
+  const teamKey = normalizeTeamName(teamName);
+  const row = rows.find(item =>
+    String(item.Conference || "").trim() === conferenceCode &&
+    Number(item.GW) === Number(gw) &&
+    normalizeTeamName(item.Team) === teamKey &&
+    isCompletedRow(item)
+  );
+  if (!row) return null;
+
+  return {
+    gw: Number(row.GW) || Number(gw),
+    home: canonicalTeamName(row.Team),
+    away: canonicalTeamName(row.Opponent),
+    homeScore: parseNumber(row.PointsFor),
+    awayScore: parseNumber(row.PointsAgainst),
+    result: rowResult(row)
+  };
+}
+
+function matchRankingText(fixture, standings) {
+  if (!fixture) return "";
+  const positionMap = new Map(standings.map((row, index) => [normalizeTeamName(row.squadra), index + 1]));
+  const homePosition = positionMap.get(normalizeTeamName(fixture.home));
+  const awayPosition = positionMap.get(normalizeTeamName(fixture.away));
+  return homePosition && awayPosition ? `${homePosition}° vs ${awayPosition}°` : "";
+}
+
+function resultLabel(result) {
+  if (result === "V") return "Vittoria";
+  if (result === "P") return "Sconfitta";
+  if (result === "N") return "Pareggio";
+  return "Finale";
+}
+
+function matchSlideMarkup(slide, competitionLabel) {
+  const stateClass = slide.kind === "previous" ? "is-previous" : slide.kind === "next" ? "is-next" : "is-current";
+  const statusLabel = slide.kind === "previous" ? "Precedente" : slide.kind === "next" ? "Successivo" : "Attuale";
+  const middle = slide.completed
+    ? `<div class="match-carousel-score"><strong>${formatNumber(slide.homeScore)}</strong><span>–</span><strong>${formatNumber(slide.awayScore)}</strong></div>`
+    : `<div class="match-carousel-vs">VS</div>`;
+  const footerRight = slide.completed ? resultLabel(slide.result) : (slide.ranking || "Match Preview");
+  const cta = slide.completed ? "MATCH REPORT" : "MATCH PREVIEW";
+
+  return `
+    <article class="match-carousel-slide ${stateClass}" data-match-kind="${slide.kind}" data-gw="${slide.gw}">
+      <div class="match-carousel-card">
+        <div class="match-carousel-card-head">
+          <span>${statusLabel}</span>
+          <strong>GIORNATA ${slide.gw}</strong>
+        </div>
+
+        <div class="match-carousel-versus">
+          <div class="match-carousel-team">
+            <img src="${findTeamLogo(slide.home)}" alt="Logo ${escapeHtml(slide.home)}">
+            <strong>${escapeHtml(slide.home)}</strong>
+          </div>
+          ${middle}
+          <div class="match-carousel-team">
+            <img src="${findTeamLogo(slide.away)}" alt="Logo ${escapeHtml(slide.away)}">
+            <strong>${escapeHtml(slide.away)}</strong>
+          </div>
+        </div>
+
+        <div class="match-carousel-meta">
+          <span>${escapeHtml(competitionLabel)}</span>
+          <strong>${escapeHtml(footerRight)}</strong>
+        </div>
+
+        <div class="match-carousel-cta" aria-label="${cta} disponibile nella futura pagina Match Center">
+          <span>${cta}</span><b>→</b>
+        </div>
+      </div>
+    </article>`;
+}
+
+function setupMatchCarousel(initialIndex = 0) {
+  const viewport = document.getElementById("dashboard-match-viewport");
+  const slides = [...document.querySelectorAll("#dashboard-match-track .match-carousel-slide")];
+  const prevButton = document.getElementById("dashboard-match-prev");
+  const nextButton = document.getElementById("dashboard-match-next");
+  const roundButtons = [...document.querySelectorAll("#dashboard-match-rounds .match-carousel-round")];
+  const dots = [...document.querySelectorAll("#dashboard-match-dots .match-carousel-dot")];
+  const stateEl = document.getElementById("dashboard-match-carousel-state");
+  if (!viewport || !slides.length) return;
+
+  let activeIndex = Math.max(0, Math.min(initialIndex, slides.length - 1));
+  let scrollTimer = null;
+
+  const updateUi = index => {
+    activeIndex = Math.max(0, Math.min(index, slides.length - 1));
+    slides.forEach((slide, slideIndex) => slide.classList.toggle("is-active", slideIndex === activeIndex));
+    roundButtons.forEach((button, buttonIndex) => {
+      button.classList.toggle("is-active", buttonIndex === activeIndex);
+      button.setAttribute("aria-current", buttonIndex === activeIndex ? "true" : "false");
+    });
+    dots.forEach((dot, dotIndex) => dot.classList.toggle("is-active", dotIndex === activeIndex));
+    if (prevButton) prevButton.disabled = activeIndex === 0;
+    if (nextButton) nextButton.disabled = activeIndex === slides.length - 1;
+    if (stateEl) {
+      const kind = slides[activeIndex]?.dataset.matchKind;
+      stateEl.textContent = kind === "previous" ? "Ultimo risultato" : kind === "next" ? "Prossimo turno" : "Partita attuale";
+    }
+  };
+
+  const goTo = (index, behavior = "smooth") => {
+    const targetIndex = Math.max(0, Math.min(index, slides.length - 1));
+    const target = slides[targetIndex];
+    if (!target) return;
+    viewport.scrollTo({ left: target.offsetLeft, behavior });
+    updateUi(targetIndex);
+  };
+
+  prevButton?.addEventListener("click", () => goTo(activeIndex - 1));
+  nextButton?.addEventListener("click", () => goTo(activeIndex + 1));
+  roundButtons.forEach((button, index) => button.addEventListener("click", () => goTo(index)));
+
+  viewport.addEventListener("scroll", () => {
+    window.clearTimeout(scrollTimer);
+    scrollTimer = window.setTimeout(() => {
+      const closestIndex = slides.reduce((bestIndex, slide, index) => {
+        const bestDistance = Math.abs(slides[bestIndex].offsetLeft - viewport.scrollLeft);
+        const currentDistance = Math.abs(slide.offsetLeft - viewport.scrollLeft);
+        return currentDistance < bestDistance ? index : bestIndex;
+      }, 0);
+      updateUi(closestIndex);
+    }, 70);
+  }, { passive: true });
+
+  viewport.addEventListener("keydown", event => {
+    if (event.key === "ArrowLeft") { event.preventDefault(); goTo(activeIndex - 1); }
+    if (event.key === "ArrowRight") { event.preventDefault(); goTo(activeIndex + 1); }
+  });
+
+  window.addEventListener("resize", () => goTo(activeIndex, "auto"), { passive: true });
+  requestAnimationFrame(() => goTo(activeIndex, "auto"));
+}
+
+function renderMatchCarousel(context, rows) {
+  const track = document.getElementById("dashboard-match-track");
+  const roundsEl = document.getElementById("dashboard-match-rounds");
+  const dotsEl = document.getElementById("dashboard-match-dots");
+  if (!track || !roundsEl || !dotsEl || !context?.team) return;
+
   const competitionCode = activeCompetitionCode(rows) || conferenceCodeFromLabel(context.team.conference);
-  const nextGw = nextRoundForConference(rows, competitionCode);
-  const fixture = findTeamFixture(fixturesForRound(rows, competitionCode, nextGw), context.team.name);
-  const gwEl = document.getElementById("dashboard-next-gw");
-  const homeLogo = document.getElementById("dashboard-next-home-logo");
-  const awayLogo = document.getElementById("dashboard-next-away-logo");
-  const homeName = document.getElementById("dashboard-next-home-name");
-  const awayName = document.getElementById("dashboard-next-away-name");
-  const metaEl = document.getElementById("dashboard-next-meta");
-  const rankingEl = document.getElementById("dashboard-next-ranking");
-  if (!fixture) {
-    if (gwEl) gwEl.textContent = "CALENDARIO";
-    if (homeName) homeName.textContent = context.team.name;
-    if (awayName) awayName.textContent = "In aggiornamento";
-    if (homeLogo) homeLogo.src = findTeamLogo(context.team.name);
-    if (awayLogo) awayLogo.src = "icon-192.png";
-    if (metaEl) metaEl.textContent = `${conferenceLabel(competitionCode)} · Prossimo turno da definire`;
-    if (rankingEl) rankingEl.textContent = "";
+  const competitionLabel = conferenceLabel(competitionCode);
+  const standings = buildStandings(completedRowsFor(rows, competitionCode));
+  const currentGw = nextRoundForConference(rows, competitionCode);
+
+  const completedTeamRows = completedRowsFor(rows, competitionCode)
+    .filter(row => normalizeTeamName(row.Team) === normalizeTeamName(context.team.name))
+    .sort((a, b) => (Number(a.GW_Stagionale) || Number(a.GW) || 0) - (Number(b.GW_Stagionale) || Number(b.GW) || 0));
+
+  const previousGw = completedTeamRows.length ? Number(completedTeamRows[completedTeamRows.length - 1].GW) : null;
+  const previousMatch = completedMatchForTeamAndRound(rows, competitionCode, previousGw, context.team.name);
+  const currentFixture = fixtureForTeamAndRound(rows, competitionCode, currentGw, context.team.name);
+  const nextGw = currentGw ? currentGw + 1 : null;
+  const nextFixture = fixtureForTeamAndRound(rows, competitionCode, nextGw, context.team.name);
+
+  const slides = [];
+  if (previousMatch) {
+    slides.push({
+      kind: "previous",
+      completed: true,
+      ...previousMatch
+    });
+  }
+  if (currentFixture && currentGw) {
+    slides.push({
+      kind: "current",
+      completed: false,
+      gw: currentGw,
+      home: currentFixture.home,
+      away: currentFixture.away,
+      ranking: matchRankingText(currentFixture, standings)
+    });
+  }
+  if (nextFixture && nextGw) {
+    slides.push({
+      kind: "next",
+      completed: false,
+      gw: nextGw,
+      home: nextFixture.home,
+      away: nextFixture.away,
+      ranking: matchRankingText(nextFixture, standings)
+    });
+  }
+
+  if (!slides.length) {
+    track.innerHTML = `
+      <article class="match-carousel-slide is-active">
+        <div class="match-carousel-card match-carousel-empty">
+          <strong>Calendario in aggiornamento</strong>
+          <span>La prossima partita comparirà qui appena disponibile.</span>
+        </div>
+      </article>`;
+    roundsEl.innerHTML = '<span class="match-carousel-round is-active">–</span>';
+    dotsEl.innerHTML = '<span class="match-carousel-dot is-active"></span>';
+    setupMatchCarousel(0);
     return;
   }
-  if (gwEl) gwEl.textContent = `GIORNATA ${nextGw}`;
-  if (homeName) homeName.textContent = fixture.home;
-  if (awayName) awayName.textContent = fixture.away;
-  if (homeLogo) { homeLogo.src = findTeamLogo(fixture.home); homeLogo.alt = fixture.home; }
-  if (awayLogo) { awayLogo.src = findTeamLogo(fixture.away); awayLogo.alt = fixture.away; }
-  if (metaEl) metaEl.textContent = conferenceLabel(competitionCode);
-  if (rankingEl) {
-    const standings = buildStandings(completedRowsFor(rows, competitionCode));
-    const positionMap = new Map(standings.map((row, index) => [normalizeTeamName(row.squadra), index + 1]));
-    const homePosition = positionMap.get(normalizeTeamName(fixture.home));
-    const awayPosition = positionMap.get(normalizeTeamName(fixture.away));
-    rankingEl.textContent = homePosition && awayPosition ? `${homePosition}° vs ${awayPosition}°` : "";
-  }
+
+  track.innerHTML = slides.map(slide => matchSlideMarkup(slide, competitionLabel)).join("");
+  roundsEl.innerHTML = slides.map((slide, index) => `
+    <button type="button" class="match-carousel-round" data-index="${index}" aria-label="Vai alla giornata ${slide.gw}">G${slide.gw}</button>`
+  ).join("");
+  dotsEl.innerHTML = slides.map(() => '<span class="match-carousel-dot"></span>').join("");
+
+  const currentIndex = Math.max(0, slides.findIndex(slide => slide.kind === "current"));
+  setupMatchCarousel(currentIndex);
 }
 
 function matchupScore(fixture, standings) {
@@ -588,7 +771,7 @@ async function initHomeDashboard() {
   const rows = rowsResult.status === "fulfilled" && Array.isArray(rowsResult.value) ? rowsResult.value : [];
   if (rowsResult.status === "rejected") console.warn("Risultati home non disponibili:", rowsResult.reason);
   renderTeamStatsAndForm(context, rows);
-  renderNextMatch(context, rows);
+  renderMatchCarousel(context, rows);
   renderMatchups(rows);
   renderRecord(rows);
   window.setInterval(renderWaiverCountdown, 60000);
