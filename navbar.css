@@ -6793,256 +6793,161 @@ nav.site-nav .toggle-submenu .app-alert-badge {
   }
 }
 /* =========================================================
-   HOME PREMIUM V4 · TROFEI DENTRO LE CARD COMPETIZIONE
-   Stesse dimensioni: nessuna card viene ingrandita.
+   TEST CAMPIONATO · FIXED CINEMATIC BACKGROUND
+   Usa un vero fondale grafico, senza ingrandire la card.
+   Crash Out e Highlander restano invariati.
    ========================================================= */
 @media (max-width: 900px) {
-  .competition-cup-art {
-    position: absolute !important;
-    z-index: 1 !important;
-    display: block !important;
-    pointer-events: none !important;
-    user-select: none !important;
-    object-fit: contain !important;
-    object-position: center !important;
-    transform-origin: center center;
+
+  /* Il banner diventa il vero fondale della card Campionato. */
+  .match-carousel-section.theme-league .match-carousel-card,
+  .match-carousel-section.theme-league .match-carousel-slide.is-current .match-carousel-card,
+  .match-carousel-section.theme-league .match-carousel-slide.is-previous .match-carousel-card,
+  .match-carousel-section.theme-league .match-carousel-slide.is-next .match-carousel-card {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+
+    border-color: rgba(244, 197, 66, .72) !important;
+
+    background:
+      url("img/match-bg/campionato-bg.webp") 56% center / cover no-repeat !important;
+
+    box-shadow:
+      0 14px 28px rgba(4, 45, 98, .24),
+      0 0 0 1px rgba(255, 220, 105, .08) inset !important;
   }
 
-  /* Tutto il contenuto vero resta sopra al trofeo decorativo. */
-  .match-carousel-card-head,
-  .match-carousel-versus,
-  .match-carousel-meta,
-  .match-carousel-cta,
-  .crashout-home-head,
-  .crashout-home-versus,
-  .crashout-home-meta,
-  .crashout-home-cta,
-  .highlander-home-head,
-  .highlander-home-focus,
-  .highlander-home-stats,
-  .highlander-home-cta {
+  /*
+    Velo scuro integrato sopra il banner.
+    A sinistra/centro protegge loghi e testi.
+    A destra lascia respirare la coppa.
+  */
+  .match-carousel-section.theme-league .match-carousel-card::before {
+    content: "";
+    position: absolute;
+    z-index: 0;
+    inset: 0;
+    pointer-events: none;
+
+    background:
+      linear-gradient(
+        90deg,
+        rgba(2, 20, 52, .88) 0%,
+        rgba(2, 24, 62, .77) 45%,
+        rgba(2, 23, 58, .47) 68%,
+        rgba(2, 18, 45, .08) 100%
+      ),
+      linear-gradient(
+        180deg,
+        rgba(1, 18, 46, .12) 0%,
+        rgba(1, 18, 46, .03) 54%,
+        rgba(1, 16, 40, .62) 100%
+      );
+  }
+
+  /* Via il vecchio riflesso bianco da card chiara. */
+  .match-carousel-section.theme-league .match-carousel-card::after {
+    content: "";
+    position: absolute;
+    z-index: 1;
+    inset: 0;
+    pointer-events: none;
+
+    background:
+      radial-gradient(220px 120px at 42% 46%, rgba(34, 134, 255, .11), transparent 72%),
+      linear-gradient(115deg, transparent 14%, rgba(255, 220, 92, .055) 49%, transparent 76%);
+  }
+
+  .match-carousel-section.theme-league .match-carousel-card-head,
+  .match-carousel-section.theme-league .match-carousel-versus,
+  .match-carousel-section.theme-league .match-carousel-meta,
+  .match-carousel-section.theme-league .match-carousel-cta {
     position: relative;
     z-index: 3;
   }
 
-  /* ---------------------------------------------------------
-     CAMPIONATO · blu notte + Eternal Glory a destra
-     --------------------------------------------------------- */
-  .theme-league .match-carousel-card {
-    min-height: 213px !important;
+  /* Lasciamo circa il 28% destro alla coppa del banner. */
+  .match-carousel-section.theme-league .match-carousel-versus {
+    width: 73% !important;
+    grid-template-columns: minmax(0, 1fr) 48px minmax(0, 1fr) !important;
+    gap: 3px !important;
+  }
+
+  .match-carousel-section.theme-league .match-carousel-meta {
+    width: 73% !important;
+    border-top-color: rgba(255,255,255,.20) !important;
+  }
+
+  .match-carousel-section.theme-league .match-carousel-card-head > span {
+    color: #ffe27a !important;
+    text-shadow: 0 2px 8px rgba(0,0,0,.48);
+  }
+
+  .match-carousel-section.theme-league .match-carousel-team strong {
     color: #fff !important;
-    border-color: rgba(236, 190, 64, .56) !important;
+    text-shadow: 0 2px 8px rgba(0,0,0,.72);
+  }
+
+  .match-carousel-section.theme-league .match-carousel-team img {
+    filter:
+      drop-shadow(0 7px 8px rgba(0,0,0,.46))
+      drop-shadow(0 0 7px rgba(255,255,255,.08)) !important;
+  }
+
+  .match-carousel-section.theme-league .match-carousel-vs {
+    color: #ffd85e !important;
+    text-shadow:
+      0 2px 0 rgba(114, 77, 0, .92),
+      0 0 12px rgba(255, 211, 69, .34) !important;
+  }
+
+  .match-carousel-section.theme-league .match-carousel-score {
+    color: #fff !important;
+    text-shadow: 0 2px 8px rgba(0,0,0,.56);
+  }
+
+  .match-carousel-section.theme-league .match-carousel-score span {
+    color: #f3c94d !important;
+  }
+
+  .match-carousel-section.theme-league .match-carousel-meta span {
+    color: rgba(255,255,255,.78) !important;
+    text-shadow: 0 2px 6px rgba(0,0,0,.58);
+  }
+
+  .match-carousel-section.theme-league .match-carousel-meta strong {
+    color: #ffe070 !important;
+    text-shadow: 0 2px 7px rgba(0,0,0,.55);
+  }
+
+  .match-carousel-section.theme-league .match-carousel-cta {
+    border: 1px solid rgba(255,229,133,.46) !important;
+    color: #10213d !important;
+
     background:
-      radial-gradient(210px 150px at 88% 34%, rgba(43, 139, 255, .22), transparent 70%),
-      radial-gradient(190px 120px at 18% 30%, rgba(29, 94, 181, .22), transparent 74%),
-      linear-gradient(145deg, #062854 0%, #08234a 48%, #061b38 100%) !important;
+      linear-gradient(135deg, #ffe27a 0%, #e4b52d 58%, #c98b08 100%) !important;
+
     box-shadow:
-      0 13px 28px rgba(5, 45, 94, .25),
-      inset 0 1px 0 rgba(255,255,255,.05) !important;
-  }
-
-  .theme-league .match-carousel-card::after {
-    z-index: 0 !important;
-    background:
-      linear-gradient(90deg, rgba(4,29,62,.04) 0%, rgba(4,29,62,.08) 56%, rgba(1,15,34,.58) 100%),
-      linear-gradient(120deg, transparent 18%, rgba(255,255,255,.035) 49%, transparent 78%) !important;
-  }
-
-  .theme-league .competition-cup-art-league {
-    top: 28px !important;
-    right: -18px !important;
-    width: 118px !important;
-    height: 164px !important;
-    opacity: .83 !important;
-    filter:
-      drop-shadow(0 10px 16px rgba(0,0,0,.34))
-      drop-shadow(0 0 13px rgba(66,155,255,.18));
-    -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 75%, transparent 100%);
-    mask-image: linear-gradient(to bottom, #000 0%, #000 75%, transparent 100%);
-  }
-
-  .theme-league .match-carousel-card-head,
-  .theme-league .match-carousel-versus,
-  .theme-league .match-carousel-meta {
-    padding-right: 72px !important;
-  }
-
-  .theme-league .match-carousel-card-head > span {
-    color: #f2cb5c !important;
-  }
-
-  .theme-league .match-carousel-card-head > strong,
-  .theme-league .match-carousel-slide.is-current .match-carousel-card-head > strong {
-    color: #171006 !important;
-    border-color: rgba(255,225,132,.28) !important;
-    background: linear-gradient(135deg, #ffe27a, #c98c13) !important;
-    box-shadow: 0 6px 14px rgba(0,0,0,.20) !important;
-  }
-
-  .theme-league .match-carousel-team strong {
-    color: #fff !important;
-    text-shadow: 0 2px 7px rgba(0,0,0,.42) !important;
-  }
-
-  .theme-league .match-carousel-team img {
-    filter: drop-shadow(0 8px 10px rgba(0,0,0,.38)) !important;
-  }
-
-  .theme-league .match-carousel-meta {
-    border-top-color: rgba(255,255,255,.13) !important;
-  }
-
-  .theme-league .match-carousel-meta span {
-    color: rgba(231,241,255,.76) !important;
-  }
-
-  .theme-league .match-carousel-meta strong {
-    color: #f4cf67 !important;
-  }
-
-  .theme-league .match-carousel-vs,
-  .theme-league .match-carousel-score span {
-    color: #f1c44f !important;
-    text-shadow: 0 4px 12px rgba(241,196,79,.20) !important;
-  }
-
-  .theme-league .match-carousel-score strong {
-    color: #fff !important;
-  }
-
-  .theme-league .match-carousel-cta,
-  .theme-league .match-carousel-slide.is-current .match-carousel-cta {
-    color: #1a1205 !important;
-    background: linear-gradient(135deg, #ffe177, #c98b13) !important;
-    box-shadow: 0 7px 16px rgba(0,0,0,.23) !important;
-  }
-
-  /* ---------------------------------------------------------
-     CRASH OUT · trofeo neon integrato nel bordo destro
-     --------------------------------------------------------- */
-  .crashout-home-card {
-    min-height: 225px !important;
-  }
-
-  .crashout-home-card::after {
-    content: "";
-    position: absolute;
-    z-index: 2;
-    inset: 0;
-    pointer-events: none;
-    background: linear-gradient(90deg, transparent 0%, transparent 56%, rgba(14,8,43,.52) 100%);
-  }
-
-  .competition-cup-art-crashout {
-    top: 26px !important;
-    right: -19px !important;
-    width: 122px !important;
-    height: 174px !important;
-    opacity: .88 !important;
-    filter:
-      drop-shadow(0 11px 18px rgba(0,0,0,.38))
-      drop-shadow(0 0 18px rgba(237,43,255,.28));
-    -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 76%, transparent 100%);
-    mask-image: linear-gradient(to bottom, #000 0%, #000 76%, transparent 100%);
-  }
-
-  .crashout-home-head,
-  .crashout-home-versus,
-  .crashout-home-meta {
-    padding-right: 74px !important;
-  }
-
-  .crashout-home-head > div {
-    max-width: calc(100% - 56px);
-  }
-
-  /* ---------------------------------------------------------
-     HIGHLANDER · Eternal Blade sul fianco destro
-     --------------------------------------------------------- */
-  .highlander-home-card {
-    min-height: 225px !important;
-  }
-
-  .highlander-home-card::after {
-    content: "";
-    position: absolute;
-    z-index: 2;
-    inset: 0;
-    pointer-events: none;
-    background: linear-gradient(90deg, transparent 0%, transparent 57%, rgba(20,10,4,.52) 100%);
-  }
-
-  .competition-cup-art-highlander {
-    top: 22px !important;
-    right: -24px !important;
-    width: 126px !important;
-    height: 184px !important;
-    opacity: .86 !important;
-    filter:
-      drop-shadow(0 12px 18px rgba(0,0,0,.46))
-      drop-shadow(0 0 14px rgba(222,151,38,.18));
-    -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 78%, transparent 100%);
-    mask-image: linear-gradient(to bottom, #000 0%, #000 78%, transparent 100%);
-  }
-
-  .highlander-home-head,
-  .highlander-home-focus {
-    padding-right: 78px !important;
-  }
-
-  .highlander-home-focus {
-    grid-template-columns: 78px minmax(0,1fr) !important;
-    gap: 10px !important;
-  }
-
-  .highlander-home-focus img:not(.competition-cup-art) {
-    width: 76px !important;
-    height: 76px !important;
+      0 7px 15px rgba(0,0,0,.24),
+      inset 0 1px 0 rgba(255,255,255,.36) !important;
   }
 }
 
 @media (max-width: 390px) {
-  .theme-league .competition-cup-art-league {
-    right: -23px !important;
-    width: 108px !important;
-    height: 152px !important;
+  .match-carousel-section.theme-league .match-carousel-versus,
+  .match-carousel-section.theme-league .match-carousel-meta {
+    width: 75% !important;
   }
 
-  .theme-league .match-carousel-card-head,
-  .theme-league .match-carousel-versus,
-  .theme-league .match-carousel-meta {
-    padding-right: 62px !important;
+  .match-carousel-section.theme-league .match-carousel-versus {
+    grid-template-columns: minmax(0, 1fr) 40px minmax(0, 1fr) !important;
   }
 
-  .competition-cup-art-crashout {
-    right: -24px !important;
-    width: 112px !important;
-    height: 160px !important;
-  }
-
-  .crashout-home-head,
-  .crashout-home-versus,
-  .crashout-home-meta {
-    padding-right: 63px !important;
-  }
-
-  .competition-cup-art-highlander {
-    right: -28px !important;
-    width: 114px !important;
-    height: 169px !important;
-  }
-
-  .highlander-home-head,
-  .highlander-home-focus {
-    padding-right: 66px !important;
-  }
-
-  .highlander-home-focus {
-    grid-template-columns: 70px minmax(0,1fr) !important;
-  }
-
-  .highlander-home-focus img:not(.competition-cup-art) {
-    width: 68px !important;
-    height: 68px !important;
+  .match-carousel-section.theme-league .match-carousel-card,
+  .match-carousel-section.theme-league .match-carousel-slide.is-current .match-carousel-card,
+  .match-carousel-section.theme-league .match-carousel-slide.is-previous .match-carousel-card,
+  .match-carousel-section.theme-league .match-carousel-slide.is-next .match-carousel-card {
+    background-position: 58% center !important;
   }
 }
