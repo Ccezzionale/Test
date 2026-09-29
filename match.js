@@ -447,9 +447,10 @@ function renderH2H(params, meetings, targetCompleted) {
     : "–";
 
   const list = document.getElementById("mc-recent-list");
-  const allRecent = sortMeetings(meetings)
-    .filter(meeting => !(targetCompleted && meeting.isTarget))
-    .reverse();
+  // Mostriamo tutti gli scontri disponibili, compreso il match del report
+  // quando è già concluso. In questo modo il numero "sfide disponibili"
+  // coincide sempre con le righe consultabili negli Ultimi confronti.
+  const allRecent = sortMeetings(meetings).reverse();
 
   const recentRowMarkup = (meeting) => {
     // Se conosciamo casa/trasferta, mostriamo SEMPRE trasferta a sinistra e casa a destra.
