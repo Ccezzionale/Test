@@ -358,7 +358,17 @@ function resultLabel(result) {
   return "Finale";
 }
 
-function matchSlideMarkup(slide, competitionLabel) {
+function matchCenterUrl(slide, competitionCode) {
+  const params = new URLSearchParams({
+    home: slide.home,
+    away: slide.away,
+    gw: String(slide.gw),
+    competition: competitionCode
+  });
+  return `match.html?${params.toString()}`;
+}
+
+function matchSlideMarkup(slide, competitionLabel, competitionCode) {
   const stateClass = slide.kind === "previous" ? "is-previous" : slide.kind === "next" ? "is-next" : "is-current";
   const statusLabel = slide.kind === "previous" ? "Precedente" : slide.kind === "next" ? "Successivo" : "Attuale";
   const middle = slide.completed
@@ -392,9 +402,9 @@ function matchSlideMarkup(slide, competitionLabel) {
           <strong>${escapeHtml(footerRight)}</strong>
         </div>
 
-        <div class="match-carousel-cta" aria-label="${cta} disponibile nella futura pagina Match Center">
+        <a class="match-carousel-cta" href="${matchCenterUrl(slide, competitionCode)}" aria-label="Apri ${cta}: ${escapeHtml(slide.home)} contro ${escapeHtml(slide.away)}">
           <span>${cta}</span><b>→</b>
-        </div>
+        </a>
       </div>
     </article>`;
 }
@@ -525,7 +535,7 @@ function renderMatchCarousel(context, rows) {
     return;
   }
 
-  track.innerHTML = slides.map(slide => matchSlideMarkup(slide, competitionLabel)).join("");
+  track.innerHTML = slides.map(slide => matchSlideMarkup(slide, competitionLabel, competitionCode)).join("");
   roundsEl.innerHTML = slides.map((slide, index) => `
     <button type="button" class="match-carousel-round" data-index="${index}" aria-label="Vai alla giornata ${slide.gw}">G${slide.gw}</button>`
   ).join("");

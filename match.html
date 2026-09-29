@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Match Center - Lega degli Eroi</title>
+  <link rel="stylesheet" href="navbar.css?v=20260929-matchcenter">
+  <link rel="stylesheet" href="match.css?v=20260929-1">
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+  <meta name="theme-color" content="#061326">
+</head>
+<body class="match-center-page">
+  <nav class="site-nav">
+    <div class="nav-inner">
+<div class="nav-left">
+  <span id="hamburger" class="hamburger" aria-label="Apri menu">☰</span>
+
+  <button type="button" class="mobile-nav-title" id="mobile-nav-title" aria-label="Apri menu">
+    <span class="mobile-nav-logo">
+      <img src="icon-192.png" alt="">
+    </span>
+    <span>Lega degli Eroi</span>
+    <span class="mobile-nav-caret">▾</span>
+  </button>
+
+  <a href="index.html" class="brand-home desktop-home-link" aria-label="Home">
+    <img src="icons/nav/home.webp" alt="" class="nav-home-icon">
+  </a>
+</div>
+
+<ul class="navbar" id="mainMenu">
+
+<!-- ROSE NORMALE: visibile ai non-admin -->
+<li id="nav-rose-normal" class="dropdown">
+  <a href="#" class="toggle-submenu">
+    Rose <span class="caret">▾</span>
+  </a>
+
+  <ul class="submenu">
+    <li>
+      <a href="rose.html">
+        Rose Squadre
+      </a>
+    </li>
+
+    <li>
+      <a href="franchigie.html">
+        Franchigie
+      </a>
+    </li>
+  </ul>
+</li>
+
+<!-- ROSE ADMIN: visibile solo agli admin -->
+<li id="nav-rose-admin" class="dropdown" style="display:none;">
+  <a href="#" class="toggle-submenu">
+    Rose <span class="caret">▾</span>
+  </a>
+
+  <ul class="submenu">
+    <li>
+      <a href="rose.html">
+        Rose Squadre
+      </a>
+    </li>
+
+    <li>
+      <a href="franchigie.html">
+        Franchigie
+      </a>
+    </li>
+
+    <li>
+      <a href="admin-rose.html">
+        Admin Rose
+      </a>
+    </li>
+
+    <li>
+      <a href="admin-gazzetta.html">
+        Admin Gazzetta
+      </a>
+    </li>
+  </ul>
+</li>
+
+        <li class="dropdown">
+          <a href="#" class="toggle-submenu">
+            Draft <span class="caret">▾</span>
+          </a>
+
+          <ul class="submenu">
+            <li>
+              <a href="pre-draft.html">
+                <img src="icons/nav/pre-draft.webp" class="menu-icon" alt="">
+                Pre-Draft
+              </a>
+            </li>
+
+            <li>
+              <a href="draft_championship.html">
+                <img src="icons/nav/conf-championship.webp" class="menu-icon" alt="">
+                Conf. Championship
+              </a>
+            </li>
+
+            <li>
+              <a href="draft_conference.html">
+                <img src="icons/nav/conf-league.webp" class="menu-icon" alt="">
+                Conf. League
+              </a>
+            </li>
+
+            <li>
+              <a href="dinamico-draft.html">
+                <img src="icons/nav/draft-2026.webp" class="menu-icon" alt="">
+                Draft 2027-28
+              </a>
+            </li>
+          </ul>
+        </li>
+
+        <li class="dropdown competizioni">
+          <a href="#" class="toggle-submenu">
+            Competizioni <span class="caret">▾</span>
+          </a>
+
+          <ul class="submenu">
+            <li>
+              <a href="classifica.html">
+                <img src="icons/nav/classifiche.webp" class="menu-icon" alt="">
+                Classifiche
+              </a>
+            </li>
+
+            <li>
+              <a href="playoff.html">
+                <img src="icons/nav/playoff.webp" class="menu-icon" alt="">
+                Playoff
+              </a>
+            </li>
+
+            <li>
+              <a href="arena.html">
+                <img src="icons/nav/highlander.webp" class="menu-icon" alt="">
+                Highlander
+              </a>
+            </li>
+
+            <li>
+              <a href="crashoutcup.html">
+                <img src="icons/nav/crashout-cup.webp" class="menu-icon" alt="">
+                Crash Out Cup
+              </a>
+            </li>
+
+            <li>
+              <a href="crashoutplayoff.html">
+                <img src="icons/nav/crashout-playoff.webp" class="menu-icon" alt="">
+                Crash Out Cup - Playoff
+              </a>
+            </li>
+
+            <li>
+              <a href="supercoppa.html">
+                <img src="icons/nav/supercoppa.webp" class="menu-icon" alt="">
+                Supercoppa
+              </a>
+            </li>
+
+                        <li>
+              <a href="allstar.html">
+                <img src="icons/nav/allstar.webp" class="menu-icon" alt="">
+                All-Star Game
+              </a>
+            </li>
+
+            <li>
+              <a href="statistiche.html">
+                <img src="icons/nav/statistiche.webp" class="menu-icon" alt="">
+                Statistiche
+              </a>
+            </li>
+          </ul>
+        </li>
+
+        <li><a href="waiver.html">Waiver Wire</a></li>
+
+        <li class="dropdown">
+          <a href="#" class="toggle-submenu">
+            Hall of Fame <span class="caret">▾</span>
+          </a>
+
+          <ul class="submenu">
+            <li>
+              <a href="medagliere.html">
+                <img src="icons/nav/albo-oro.webp" class="menu-icon" alt="">
+                Albo d'Oro
+              </a>
+            </li>
+
+            <li>
+              <a href="albo.html">
+                <img src="icons/nav/medagliere.webp" class="menu-icon" alt="">
+                Medagliere
+              </a>
+            </li>
+          </ul>
+        </li>
+
+        <li><a href="regolamento.html">Regolamento</a></li>
+      </ul>
+
+      <div class="nav-right hero-actions">
+        <a id="trade-badge" href="trade-room.html" class="btn-hero trade-badge" aria-label="Trade Room">
+          <img src="icons/nav/trade-room.webp" class="action-icon" alt="">
+          <span class="btn-label">Trade Room</span>
+        </a>
+
+        <a id="login-btn" href="login.html" class="btn-hero" style="display:none;" aria-label="Login">
+          <img src="icons/nav/login-logout.webp" class="action-icon" alt="">
+          <span class="btn-label">Login</span>
+        </a>
+
+        <button id="logout-btn" type="button" class="btn-hero" style="display:none;" aria-label="Logout">
+          <img src="icons/nav/login-logout.webp" class="action-icon" alt="">
+          <span class="btn-label">Logout</span>
+        </button>
+
+        <button id="attiva-notifiche-btn" type="button" class="btn-hero warning" aria-label="Attiva notifiche">
+          <img src="icons/nav/notifications.webp" class="action-icon" alt="">
+          <span class="btn-label">Attiva notifiche</span>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+<main class="mc-shell">
+  <div id="mc-loading" class="mc-loading-card">
+    <div class="mc-spinner" aria-hidden="true"></div>
+    <strong>Caricamento Match Center…</strong>
+    <span>Sto interrogando tre stagioni di calcio immaginario. Inevitabile che sembri una procedura UEFA.</span>
+  </div>
+
+  <div id="mc-app" hidden>
+    <section class="mc-hero">
+      <div class="mc-hero-top">
+        <a href="index.html" class="mc-back" aria-label="Torna alla Home">‹</a>
+        <div>
+          <h1 id="mc-mode">MATCH PREVIEW</h1>
+          <p id="mc-subtitle">Giornata · Competizione</p>
+        </div>
+        <span class="mc-status" id="mc-status">Pre-partita</span>
+      </div>
+
+      <div class="mc-versus">
+        <div class="mc-team mc-team-home">
+          <img id="mc-home-logo" src="icon-192.png" alt="">
+          <strong id="mc-home-name">Squadra A</strong>
+        </div>
+        <div class="mc-score" id="mc-score"><span class="mc-vs-large">VS</span></div>
+        <div class="mc-team mc-team-away">
+          <img id="mc-away-logo" src="icon-192.png" alt="">
+          <strong id="mc-away-name">Squadra B</strong>
+        </div>
+      </div>
+
+      <div class="mc-rank-chip" id="mc-rank-chip">Classifica in aggiornamento</div>
+    </section>
+
+    <section class="mc-grid mc-grid-top">
+      <article class="mc-card">
+        <header class="mc-card-head">
+          <span class="mc-card-icon">▥</span>
+          <h2 id="mc-standings-title">Contesto classifica</h2>
+        </header>
+        <div class="mc-card-body" id="mc-standings-body"></div>
+      </article>
+
+      <article class="mc-card mc-story-card">
+        <header class="mc-card-head">
+          <span class="mc-card-icon">✦</span>
+          <h2 id="mc-story-title">Prima del match</h2>
+        </header>
+        <div class="mc-card-body">
+          <p id="mc-story-body" class="mc-story-text"></p>
+        </div>
+      </article>
+    </section>
+
+    <section class="mc-grid">
+      <article class="mc-card mc-h2h-card">
+        <header class="mc-card-head">
+          <span class="mc-card-icon">⚔</span>
+          <h2>Testa a testa</h2>
+          <small id="mc-h2h-count">0 sfide disponibili</small>
+        </header>
+        <div class="mc-card-body">
+          <div class="mc-h2h-logos">
+            <div>
+              <img id="mc-h2h-home-logo" alt="" src="icon-192.png">
+              <span id="mc-h2h-home-label">Squadra A</span>
+            </div>
+            <strong>VS</strong>
+            <div>
+              <img id="mc-h2h-away-logo" alt="" src="icon-192.png">
+              <span id="mc-h2h-away-label">Squadra B</span>
+            </div>
+          </div>
+
+          <div class="mc-h2h-scoreline">
+            <div><strong id="mc-h2h-home">0</strong><span>Vittorie</span></div>
+            <div><strong id="mc-h2h-draw">0</strong><span>Pareggi</span></div>
+            <div><strong id="mc-h2h-away">0</strong><span>Vittorie</span></div>
+          </div>
+
+          <div class="mc-h2h-average"><span>Media fantapunti</span><strong id="mc-h2h-average">–</strong></div>
+          <div class="mc-records" id="mc-records"></div>
+        </div>
+      </article>
+
+      <article class="mc-card">
+        <header class="mc-card-head">
+          <span class="mc-card-icon">↗</span>
+          <h2>Forma recente</h2>
+        </header>
+        <div class="mc-card-body mc-form-list">
+          <div class="mc-form-row">
+            <div class="mc-form-team"><img id="mc-form-home-logo" src="icon-192.png" alt=""><strong id="mc-form-home-name">Squadra A</strong></div>
+            <div class="mc-form-dots" id="mc-form-home-dots"></div>
+            <div class="mc-form-average"><span>Media</span><strong id="mc-form-home-avg">–</strong></div>
+          </div>
+          <div class="mc-form-row">
+            <div class="mc-form-team"><img id="mc-form-away-logo" src="icon-192.png" alt=""><strong id="mc-form-away-name">Squadra B</strong></div>
+            <div class="mc-form-dots" id="mc-form-away-dots"></div>
+            <div class="mc-form-average"><span>Media</span><strong id="mc-form-away-avg">–</strong></div>
+          </div>
+        </div>
+      </article>
+    </section>
+
+    <section class="mc-card mc-recent-card">
+      <header class="mc-card-head">
+        <span class="mc-card-icon">◷</span>
+        <h2>Ultimi confronti</h2>
+      </header>
+      <div class="mc-card-body" id="mc-recent-list"></div>
+    </section>
+  </div>
+</main>
+
+<script type="module" src="match.js?v=20260929-1"></script>
+<script src="mobile-nav.js?v=2"></script>
+<script src="navbar.js"></script>
+<script type="module" src="admin-nav.js?v=1"></script>
+</body>
+</html>
