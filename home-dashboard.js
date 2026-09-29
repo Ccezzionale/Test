@@ -5,22 +5,22 @@ const GOAL_BASE = 66;
 const GOAL_STEP = 6;
 
 const squadreBase = [
-  { nome: "Atlético Leon", logo: "img/Atlético Leon.webp", shirt: "img/maglie/leon-mascotte.webp", coach: "Coach Leo e Anthony" },
-  { nome: "Bayern Christiansen", logo: "img/Bayern Christiansen.webp", shirt: "img/maglie/bayern-mascotte.webp", coach: "Coach Christian" },
-  { nome: "Team Bartowski", logo: "img/Team Bartowski.webp", shirt: "img/maglie/bartowski-mascotte.webp", coach: "Coach Marco" },
-  { nome: "Golden Knights", logo: "img/Golden Knights.webp", shirt: "img/maglie/golden-mascotte.webp", coach: "Coach Mimmo&Francesco" },
-  { nome: "Ibla", logo: "img/Ibla.webp", shirt: "img/maglie/ibla-mascotte.webp", coach: "Coach Francesco" },
-  { nome: "Fantaugusta", logo: "img/Fantaugusta.webp", shirt: "img/maglie/fantaugusta-mascotte.webp", coach: "Coach Giancarlo" },
-  { nome: "Riverfilo", logo: "img/Riverfilo.webp", shirt: "img/maglie/riverfilo-mascotte.webp", coach: "Coach Federico" },
-  { nome: "Desperados", logo: "img/Desperados.webp", shirt: "img/maglie/desperados-mascotte.webp", coach: "Coach Stefano" },
-  { nome: "Wildboys 78", logo: "img/wildboys78.webp", shirt: "img/maglie/wildboys-mascotte.webp", coach: "Coach Francesco" },
-  { nome: "Pandinicoccolosini", logo: "img/Pandinicoccolosini.webp", shirt: "img/maglie/pandini-mascotte.webp", coach: "Coach Davide" },
-  { nome: "Pokermantra", logo: "img/PokerMantra.webp", shirt: "img/maglie/pokermantra-mascotte.webp", coach: "Coach Omar" },
-  { nome: "Minnesode Timberland", logo: "img/Minnesode Timberland.webp", shirt: "img/maglie/minnesode-mascotte.webp", coach: "Coach Pierpaolo&Leandro" },
-  { nome: "Minnesota Snakes", logo: "img/MinneSota Snakes.webp", shirt: "img/maglie/snakes-mascotte.webp", coach: "Coach Alberto" },
-  { nome: "Eintracht Franco 126", logo: "img/Eintracht Franco 126.webp", shirt: "img/maglie/franco-mascotte.webp", coach: "Coach Lorenzo" },
-  { nome: "FC Disoneste", logo: "img/FC Disoneste.webp", shirt: "img/maglie/disoneste-mascotte.webp", coach: "Coach Basilio" },
-  { nome: "Athletic Pongao", logo: "img/Athletic Pongao.webp", shirt: "img/maglie/pongao-mascotte.webp", coach: "Coach Dario&Giorgio" }
+  { nome: "Atlético Leon", logo: "img/Atlético Leon.webp", shirt: "img/maglie/leon-mascotte.webp", mascotWin: "img/maglie/leon-mascotte-win.webp", mascotDraw: "img/maglie/leon-mascotte-draw.webp", mascotLoss: "img/maglie/leon-mascotte-loss.webp", coach: "Coach Leo e Anthony" },
+  { nome: "Bayern Christiansen", logo: "img/Bayern Christiansen.webp", shirt: "img/maglie/bayern-mascotte.webp", mascotWin: "img/maglie/bayern-mascotte-win.webp", mascotDraw: "img/maglie/bayern-mascotte-draw.webp", mascotLoss: "img/maglie/bayern-mascotte-loss.webp", coach: "Coach Christian" },
+  { nome: "Team Bartowski", logo: "img/Team Bartowski.webp", shirt: "img/maglie/bartowski-mascotte.webp", mascotWin: "img/maglie/bartowski-mascotte-win.webp", mascotDraw: "img/maglie/bartowski-mascotte-draw.webp", mascotLoss: "img/maglie/bartowski-mascotte-loss.webp", coach: "Coach Marco" },
+  { nome: "Golden Knights", logo: "img/Golden Knights.webp", shirt: "img/maglie/golden-mascotte.webp", mascotWin: "img/maglie/golden-mascotte-win.webp", mascotDraw: "img/maglie/golden-mascotte-draw.webp", mascotLoss: "img/maglie/golden-mascotte-loss.webp", coach: "Coach Mimmo&Francesco" },
+  { nome: "Ibla", logo: "img/Ibla.webp", shirt: "img/maglie/ibla-mascotte.webp", mascotWin: "img/maglie/ibla-mascotte-win.webp", mascotDraw: "img/maglie/ibla-mascotte-draw.webp", mascotLoss: "img/maglie/ibla-mascotte-loss.webp", coach: "Coach Francesco" },
+  { nome: "Fantaugusta", logo: "img/Fantaugusta.webp", shirt: "img/maglie/fantaugusta-mascotte.webp", mascotWin: "img/maglie/fantaugusta-mascotte-win.webp", mascotDraw: "img/maglie/fantaugusta-mascotte-draw.webp", mascotLoss: "img/maglie/fantaugusta-mascotte-loss.webp", coach: "Coach Giancarlo" },
+  { nome: "Riverfilo", logo: "img/Riverfilo.webp", shirt: "img/maglie/riverfilo-mascotte.webp", mascotWin: "img/maglie/riverfilo-mascotte-win.webp", mascotDraw: "img/maglie/riverfilo-mascotte-draw.webp", mascotLoss: "img/maglie/riverfilo-mascotte-loss.webp", coach: "Coach Federico" },
+  { nome: "Desperados", logo: "img/Desperados.webp", shirt: "img/maglie/desperados-mascotte.webp", mascotWin: "img/maglie/desperados-mascotte-win.webp", mascotDraw: "img/maglie/desperados-mascotte-draw.webp", mascotLoss: "img/maglie/desperados-mascotte-loss.webp", coach: "Coach Stefano" },
+  { nome: "Wildboys 78", logo: "img/wildboys78.webp", shirt: "img/maglie/wildboys-mascotte.webp", mascotWin: "img/maglie/wildboys-mascotte-win.webp", mascotDraw: "img/maglie/wildboys-mascotte-draw.webp", mascotLoss: "img/maglie/wildboys-mascotte-loss.webp", coach: "Coach Francesco" },
+  { nome: "Pandinicoccolosini", logo: "img/Pandinicoccolosini.webp", shirt: "img/maglie/pandini-mascotte.webp", mascotWin: "img/maglie/pandini-mascotte-win.webp", mascotDraw: "img/maglie/pandini-mascotte-draw.webp", mascotLoss: "img/maglie/pandini-mascotte-loss.webp", coach: "Coach Davide" },
+  { nome: "Pokermantra", logo: "img/PokerMantra.webp", shirt: "img/maglie/pokermantra-mascotte.webp", mascotWin: "img/maglie/pokermantra-mascotte-win.webp", mascotDraw: "img/maglie/pokermantra-mascotte-draw.webp", mascotLoss: "img/maglie/pokermantra-mascotte-loss.webp", coach: "Coach Omar" },
+  { nome: "Minnesode Timberland", logo: "img/Minnesode Timberland.webp", shirt: "img/maglie/minnesode-mascotte.webp", mascotWin: "img/maglie/minnesode-mascotte-win.webp", mascotDraw: "img/maglie/minnesode-mascotte-draw.webp", mascotLoss: "img/maglie/minnesode-mascotte-loss.webp", coach: "Coach Pierpaolo&Leandro" },
+  { nome: "Minnesota Snakes", logo: "img/MinneSota Snakes.webp", shirt: "img/maglie/snakes-mascotte.webp", mascotWin: "img/maglie/snakes-mascotte-win.webp", mascotDraw: "img/maglie/snakes-mascotte-draw.webp", mascotLoss: "img/maglie/snakes-mascotte-loss.webp", coach: "Coach Alberto" },
+  { nome: "Eintracht Franco 126", logo: "img/Eintracht Franco 126.webp", shirt: "img/maglie/franco-mascotte.webp", mascotWin: "img/maglie/franco-mascotte-win.webp", mascotDraw: "img/maglie/franco-mascotte-draw.webp", mascotLoss: "img/maglie/franco-mascotte-loss.webp", coach: "Coach Lorenzo" },
+  { nome: "FC Disoneste", logo: "img/FC Disoneste.webp", shirt: "img/maglie/disoneste-mascotte.webp", mascotWin: "img/maglie/disoneste-mascotte-win.webp", mascotDraw: "img/maglie/disoneste-mascotte-draw.webp", mascotLoss: "img/maglie/disoneste-mascotte-loss.webp", coach: "Coach Basilio" },
+  { nome: "Athletic Pongao", logo: "img/Athletic Pongao.webp", shirt: "img/maglie/pongao-mascotte.webp", mascotWin: "img/maglie/pongao-mascotte-win.webp", mascotDraw: "img/maglie/pongao-mascotte-draw.webp", mascotLoss: "img/maglie/pongao-mascotte-loss.webp", coach: "Coach Dario&Giorgio" }
 ];
 
 // Calendari 2026/27: fallback quando le righe future non sono ancora in fantacalcio_results.
@@ -88,6 +88,50 @@ function findTeamLogo(teamName) {
 
 function findTeamShirt(teamName) {
   return findTeam(teamName)?.shirt || "img/maglie/default-shirt.png";
+}
+
+function findTeamResultMascot(teamName, state) {
+  const team = findTeam(teamName);
+  if (!team) return "img/maglie/default-shirt.png";
+  if (state === "win") return team.mascotWin || team.shirt;
+  if (state === "draw") return team.mascotDraw || team.shirt;
+  if (state === "loss") return team.mascotLoss || team.shirt;
+  return team.shirt;
+}
+
+function previousMascotState(slide, side) {
+  const result = String(slide?.result || "").toUpperCase();
+  if (result === "N") return "draw";
+  if (side === "home") return result === "V" ? "win" : "loss";
+  return result === "V" ? "loss" : "win";
+}
+
+function matchCarouselTeamVisual(slide, teamName, side) {
+  if (slide.kind === "current") {
+    return {
+      src: findTeamLogo(teamName),
+      fallback: "icon-192.png",
+      className: "is-logo",
+      altPrefix: "Logo"
+    };
+  }
+
+  if (slide.kind === "next") {
+    return {
+      src: findTeamShirt(teamName),
+      fallback: "img/maglie/default-shirt.png",
+      className: "is-mascot is-standard-mascot",
+      altPrefix: "Mascotte"
+    };
+  }
+
+  const mascotState = previousMascotState(slide, side);
+  return {
+    src: findTeamResultMascot(teamName, mascotState),
+    fallback: findTeamShirt(teamName),
+    className: `is-mascot is-result-mascot is-${mascotState}`,
+    altPrefix: "Mascotte"
+  };
 }
 
 function findTeamCoach(teamName) {
@@ -376,6 +420,8 @@ function matchSlideMarkup(slide, competitionLabel, competitionCode) {
     : `<div class="match-carousel-vs">VS</div>`;
   const footerRight = slide.completed ? resultLabel(slide.result) : (slide.ranking || "Match Preview");
   const cta = slide.completed ? "MATCH REPORT" : "MATCH PREVIEW";
+  const homeVisual = matchCarouselTeamVisual(slide, slide.home, "home");
+  const awayVisual = matchCarouselTeamVisual(slide, slide.away, "away");
 
   return `
     <article class="match-carousel-slide ${stateClass}" data-match-kind="${slide.kind}" data-gw="${slide.gw}">
@@ -387,12 +433,12 @@ function matchSlideMarkup(slide, competitionLabel, competitionCode) {
 
         <div class="match-carousel-versus">
           <div class="match-carousel-team">
-            <img src="${findTeamLogo(slide.home)}" alt="Logo ${escapeHtml(slide.home)}">
+            <img class="${homeVisual.className}" src="${homeVisual.src}" data-fallback="${homeVisual.fallback}" alt="${homeVisual.altPrefix} ${escapeHtml(slide.home)}">
             <strong>${escapeHtml(slide.home)}</strong>
           </div>
           ${middle}
           <div class="match-carousel-team">
-            <img src="${findTeamLogo(slide.away)}" alt="Logo ${escapeHtml(slide.away)}">
+            <img class="${awayVisual.className}" src="${awayVisual.src}" data-fallback="${awayVisual.fallback}" alt="${awayVisual.altPrefix} ${escapeHtml(slide.away)}">
             <strong>${escapeHtml(slide.away)}</strong>
           </div>
         </div>
@@ -407,6 +453,17 @@ function matchSlideMarkup(slide, competitionLabel, competitionCode) {
         </a>
       </div>
     </article>`;
+}
+
+function setupMatchCarouselImageFallbacks() {
+  document.querySelectorAll("#dashboard-match-track .match-carousel-team img[data-fallback]").forEach(image => {
+    image.addEventListener("error", () => {
+      const fallback = image.dataset.fallback;
+      if (!fallback || image.dataset.fallbackApplied === "true") return;
+      image.dataset.fallbackApplied = "true";
+      image.src = fallback;
+    }, { once: true });
+  });
 }
 
 function setupMatchCarousel(initialIndex = 0) {
@@ -536,6 +593,7 @@ function renderMatchCarousel(context, rows) {
   }
 
   track.innerHTML = slides.map(slide => matchSlideMarkup(slide, competitionLabel, competitionCode)).join("");
+  setupMatchCarouselImageFallbacks();
   roundsEl.innerHTML = slides.map((slide, index) => `
     <button type="button" class="match-carousel-round" data-index="${index}" aria-label="Vai alla giornata ${slide.gw}">G${slide.gw}</button>`
   ).join("");
