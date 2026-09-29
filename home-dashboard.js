@@ -1131,8 +1131,14 @@ async function renderHomeHighlanderTab(context) {
       : "IN CORSO";
 
     const image = document.getElementById("dashboard-highlander-image");
-    image.src = findHomeHighlanderMascot(context.team.name);
-    image.alt = `Highlander ${context.team.name}`;
+    // In gara: mascotte standard. Campione: variante vittoria.
+    // L'immagine Highlander "eliminata" resta riservata alla pagina Arena.
+    image.src = isChampion
+      ? findTeamResultMascot(context.team.name, "win")
+      : findTeamResultMascot(context.team.name, "standard");
+    image.alt = isChampion
+      ? `Mascotte vittoria ${context.team.name}`
+      : `Mascotte ${context.team.name}`;
 
     document.getElementById("dashboard-highlander-team").textContent = context.team.name;
     document.getElementById("dashboard-highlander-status").textContent = isChampion
