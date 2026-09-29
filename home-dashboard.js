@@ -833,7 +833,212 @@ function scheduleHomeActionBadgesRefresh(teamId) {
   document.addEventListener("visibilitychange", () => { if (!document.hidden) updateHomeActionBadges(teamId); });
 }
 
+
+// =========================================================
+// HOME · SWITCH COMPETIZIONI
+// Campionato = carousel standard.
+// Crash Out Cup = una sola sfida corrente. Rivalry prima,
+// poi stessa tab con la serie playoff quando la prima fase termina.
+// =========================================================
+const HOME_CRASHOUT_SEASON = "2026";
+
+function setupHomeMatchTabs() {
+  const tabs = [...document.querySelectorAll("#dashboard-match-tabs [data-match-tab]")];
+  const panels = [...document.querySelectorAll("#dashboard-match-carousel [data-match-panel]")];
+  const stateEl = document.getElementById("dashboard-match-carousel-state");
+  if (!tabs.length || !panels.length) return;
+
+  const activate = name => {
+    tabs.forEach(tab => {
+      const active = tab.dataset.matchTab === name;
+      tab.classList.toggle("is-active", active);
+      tab.setAttribute("aria-selected", String(active));
+    });
+    panels.forEach(panel => {
+      const active = panel.dataset.matchPanel === name;
+      panel.classList.toggle("is-active", active);
+      panel.hidden = !active;
+    });
+    if (stateEl) stateEl.textContent = name === "crashout" ? "Crash Out Cup" : "Partita attuale";
+  };
+
+  tabs.forEach(tab => tab.addEventListener("click", () => activate(tab.dataset.matchTab)));
+  activate("league");
+}
+
+function crashoutResult(homeGoals, awayGoals, side) {
+  const hg = Number(homeGoals);
+  const ag = Number(awayGoals);
+  if (!Number.isFinite(hg) || !Number.isFinite(ag)) return "";
+  const homeResult = hg > ag ? "V" : hg < ag ? "P" : "N";
+  return side === "home" ? homeResult : homeResult === "V" ? "P" : homeResult === "P" ? "V" : "N";
+}
+
+function crashoutMatchCenterUrl(match) {
+  const params = new URLSearchParams({
+    source: "crashout",
+    matchId: match.id,
+    home: canonicalTeamName(match.home_team),
+    away: canonicalTeamName(match.away_team),
+    gw: String(match.matchday),
+    competition: "Crash Out Cup"
+  });
+  return `match.html?${params.toString()}`;
+}
+
+function renderCrashoutHomeRivalry(match) {
+  const card = document.getElementById("dashboard-crashout-card");
+  const tab = document.getElementById("dashboard-match-tab-crashout");
+  if (!card || !tab || !match) return;
+  const home = canonicalTeamName(match.home_team);
+  const away = canonicalTeamName(match.away_team);
+  const played = !!match.is_played;
+
+  tab.hidden = false;
+  card.classList.remove("is-loading", "is-playoff");
+  card.classList.toggle("is-completed", played);
+  document.getElementById("dashboard-crashout-stage").textContent = `Rivalry Games · Giornata ${match.matchday}`;
+  document.getElementById("dashboard-crashout-badge").textContent = played ? "FINALE" : "SFIDA ATTUALE";
+  document.getElementById("dashboard-crashout-home-logo").src = findTeamLogo(home);
+  document.getElementById("dashboard-crashout-home-logo").alt = `Logo ${home}`;
+  document.getElementById("dashboard-crashout-away-logo").src = findTeamLogo(away);
+  document.getElementById("dashboard-crashout-away-logo").alt = `Logo ${away}`;
+  document.getElementById("dashboard-crashout-home-name").textContent = home;
+  document.getElementById("dashboard-crashout-away-name").textContent = away;
+  document.getElementById("dashboard-crashout-score").innerHTML = played
+    ? `<strong>${Number(match.home_goals)}</strong><span>–</span><strong>${Number(match.away_goals)}</strong>`
+    : "VS";
+  document.getElementById("dashboard-crashout-meta").textContent = "Crash Out Cup · Rivalry Games";
+  document.getElementById("dashboard-crashout-status").textContent = played ? "Risultato ufficiale" : "Match Preview";
+  const cta = document.getElementById("dashboard-crashout-cta");
+  cta.href = crashoutMatchCenterUrl(match);
+  cta.querySelector("span").textContent = played ? "MATCH REPORT" : "MATCH PREVIEW";
+}
+
+function playoffWinner(match, scoreMap) {
+  const score = scoreMap.get(match.id) || { home: 0, away: 0 };
+  if (score.home >= 3 && score.home > score.away) return match.home;
+  if (score.away >= 3 && score.away > score.home) return match.away;
+  return null;
+}
+
+function buildHomePlayoffBracket(seeds, scoreMap) {
+  const bySeed = Object.fromEntries(seeds.map(row => [Number(row.seed), row.team]));
+  const mk = (id, h, a, stage) => ({ id, home: h || "TBD", away: a || "TBD", stage });
+  const r1 = [
+    mk("L1", bySeed[1], bySeed[16], "Ottavi"), mk("L2", bySeed[8], bySeed[9], "Ottavi"),
+    mk("L3", bySeed[5], bySeed[12], "Ottavi"), mk("L4", bySeed[4], bySeed[13], "Ottavi"),
+    mk("R1", bySeed[3], bySeed[14], "Ottavi"), mk("R2", bySeed[6], bySeed[11], "Ottavi"),
+    mk("R3", bySeed[7], bySeed[10], "Ottavi"), mk("R4", bySeed[2], bySeed[15], "Ottavi")
+  ];
+  const winners = Object.fromEntries(r1.map(m => [m.id, playoffWinner(m, scoreMap)]));
+  const qf = [
+    mk("LSF1", winners.L1, winners.L2, "Quarti"), mk("LSF2", winners.L3, winners.L4, "Quarti"),
+    mk("RSF1", winners.R1, winners.R2, "Quarti"), mk("RSF2", winners.R3, winners.R4, "Quarti")
+  ];
+  qf.forEach(m => { winners[m.id] = playoffWinner(m, scoreMap); });
+  const sf = [mk("LCF", winners.LSF1, winners.LSF2, "Semifinale"), mk("RCF", winners.RSF1, winners.RSF2, "Semifinale")];
+  sf.forEach(m => { winners[m.id] = playoffWinner(m, scoreMap); });
+  const final = mk("F", winners.LCF, winners.RCF, "Finale");
+  return [...r1, ...qf, ...sf, final];
+}
+
+function calculateHomeCrashoutSeeds(rows) {
+  const records = new Map(squadreBase.map(team => [normalizeTeamName(team.nome), { team: team.nome, pts: 0, gf: 0, ga: 0, fp: 0 }]));
+  rows.filter(row => row.is_played).forEach(row => {
+    const home = records.get(normalizeTeamName(row.home_team));
+    const away = records.get(normalizeTeamName(row.away_team));
+    if (!home || !away) return;
+    const hg = Number(row.home_goals); const ag = Number(row.away_goals);
+    home.gf += hg; home.ga += ag; away.gf += ag; away.ga += hg;
+    home.fp += Number(row.home_magic || 0); away.fp += Number(row.away_magic || 0);
+    if (hg > ag) home.pts += 3; else if (hg < ag) away.pts += 3; else { home.pts += 1; away.pts += 1; }
+  });
+  return [...records.values()]
+    .sort((a,b) => b.pts-a.pts || (b.gf-b.ga)-(a.gf-a.ga) || b.gf-a.gf || b.fp-a.fp || a.team.localeCompare(b.team))
+    .map((row,index) => ({ seed:index+1, team:row.team }));
+}
+
+async function loadHomeCrashoutPlayoffSeries(teamName, rivalryRows) {
+  const [{ data: seedRows, error: seedError }, { data: scoreRows, error: scoreError }] = await Promise.all([
+    supabase.from("crashout_playoff_seeds").select("seed_number, team_name").eq("season", HOME_CRASHOUT_SEASON).order("seed_number"),
+    supabase.from("crashout_playoff_scores").select("series_id, home_score, away_score")
+  ]);
+  if (seedError) console.warn("Seed Crash Out non disponibili:", seedError);
+  if (scoreError) throw scoreError;
+  const seeds = seedRows?.length >= 16
+    ? seedRows.slice(0,16).map(row => ({ seed:Number(row.seed_number), team:canonicalTeamName(row.team_name) }))
+    : calculateHomeCrashoutSeeds(rivalryRows);
+  if (seeds.length < 16) return null;
+  const scoreMap = new Map((scoreRows || []).map(row => [row.series_id, { home:Number(row.home_score||0), away:Number(row.away_score||0) }]));
+  const bracket = buildHomePlayoffBracket(seeds, scoreMap);
+  const teamKey = normalizeTeamName(teamName);
+  const current = bracket.find(match =>
+    (normalizeTeamName(match.home) === teamKey || normalizeTeamName(match.away) === teamKey) &&
+    !playoffWinner(match, scoreMap)
+  );
+  if (!current) return null;
+  return { ...current, score: scoreMap.get(current.id) || { home:0, away:0 } };
+}
+
+function renderCrashoutHomePlayoff(series) {
+  const card = document.getElementById("dashboard-crashout-card");
+  const tab = document.getElementById("dashboard-match-tab-crashout");
+  if (!card || !tab || !series) return;
+  const home = series.home === "TBD" ? "Da definire" : canonicalTeamName(series.home);
+  const away = series.away === "TBD" ? "Da definire" : canonicalTeamName(series.away);
+  tab.hidden = false;
+  card.classList.remove("is-loading", "is-completed");
+  card.classList.add("is-playoff");
+  document.getElementById("dashboard-crashout-stage").textContent = `Playoff · ${series.stage}`;
+  document.getElementById("dashboard-crashout-badge").textContent = "FASE FINALE";
+  document.getElementById("dashboard-crashout-home-logo").src = home === "Da definire" ? "icon-192.png" : findTeamLogo(home);
+  document.getElementById("dashboard-crashout-away-logo").src = away === "Da definire" ? "icon-192.png" : findTeamLogo(away);
+  document.getElementById("dashboard-crashout-home-name").textContent = home;
+  document.getElementById("dashboard-crashout-away-name").textContent = away;
+  document.getElementById("dashboard-crashout-score").innerHTML = `<strong>${series.score.home}</strong><span>–</span><strong>${series.score.away}</strong>`;
+  document.getElementById("dashboard-crashout-meta").textContent = "Crash Out Cup · Serie al meglio delle 5";
+  document.getElementById("dashboard-crashout-status").textContent = home === "Da definire" || away === "Da definire" ? "Avversario in attesa" : "Serie in corso";
+  const cta = document.getElementById("dashboard-crashout-cta");
+  cta.href = "crashoutplayoff.html";
+  cta.querySelector("span").textContent = "VAI AI PLAYOFF";
+}
+
+async function renderHomeCrashoutTab(context) {
+  const tab = document.getElementById("dashboard-match-tab-crashout");
+  if (!tab || !context?.team?.name) return;
+  tab.hidden = true;
+  try {
+    const { data, error } = await supabase
+      .from("crashout_rivalry_matches")
+      .select("id, season, match_type, bucket_id, matchday, match_index, home_team, away_team, home_magic, away_magic, home_goals, away_goals, is_played")
+      .eq("season", HOME_CRASHOUT_SEASON)
+      .order("matchday", { ascending:true })
+      .order("match_index", { ascending:true });
+    if (error) throw error;
+    const rows = data || [];
+    const teamKey = normalizeTeamName(context.team.name);
+    const teamRows = rows.filter(row => normalizeTeamName(row.home_team) === teamKey || normalizeTeamName(row.away_team) === teamKey);
+    if (!teamRows.length) return;
+
+    const allRivalryComplete = rows.length > 0 && rows.every(row => !!row.is_played);
+    if (!allRivalryComplete) {
+      const upcoming = teamRows.find(row => !row.is_played);
+      const latest = [...teamRows].filter(row => row.is_played).sort((a,b) => Number(b.matchday)-Number(a.matchday))[0];
+      renderCrashoutHomeRivalry(upcoming || latest);
+      return;
+    }
+
+    const series = await loadHomeCrashoutPlayoffSeries(context.team.name, rows);
+    if (series) renderCrashoutHomePlayoff(series);
+    // Se la squadra è eliminata, la tab sparisce automaticamente.
+  } catch (error) {
+    console.warn("Crash Out Cup non disponibile nella Home:", error);
+  }
+}
+
 async function initHomeDashboard() {
+  setupHomeMatchTabs();
   const context = await loadDashboardTeam();
   const [rowsResult] = await Promise.allSettled([loadResultsRows(), loadWaiverCountdown(), loadLatestTrade()]);
   const rows = rowsResult.status === "fulfilled" && Array.isArray(rowsResult.value) ? rowsResult.value : [];
@@ -842,7 +1047,7 @@ async function initHomeDashboard() {
   renderMatchCarousel(context, rows);
   renderMatchups(rows);
   renderRecord(rows);
-  window.setInterval(renderWaiverCountdown, 60000);
+  await renderHomeCrashoutTab(context);
 }
 
 document.addEventListener("DOMContentLoaded", initHomeDashboard);

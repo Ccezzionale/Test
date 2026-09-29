@@ -92,6 +92,7 @@ function competitionLabel(code) {
   if (code === "Conf B") return "Conference Championship";
   if (code === "Unificata") return "Round Robin";
   if (String(code).toLowerCase().includes("playoff")) return "Playoff";
+  if (String(code).toLowerCase().includes("crash out")) return "Crash Out Cup · Rivalry Games";
   return "Conference League";
 }
 
@@ -101,7 +102,9 @@ function getParams() {
     home: canonicalTeamName(params.get("home")),
     away: canonicalTeamName(params.get("away")),
     gw: Number(params.get("gw")) || null,
-    competition: params.get("competition") || "Conf A"
+    competition: params.get("competition") || "Conf A",
+    source: params.get("source") || "league",
+    matchId: params.get("matchId") || ""
   };
 }
 
@@ -193,7 +196,7 @@ function roundIsComplete(rows, params) {
     completedRowsFor(rows, params.competition, row => Number(row.GW) === Number(params.gw))
       .map(row => normalizeTeamName(row.Team))
   );
-  const expected = params.competition === "Unificata" ? 16 : 8;
+  const expected = params.competition === "Unificata" || params.competition === "Crash Out Cup" ? 16 : 8;
   return uniqueTeams.size >= expected;
 }
 
@@ -366,7 +369,9 @@ function renderHeader(params, target, completed) {
   document.title = `${completed ? "Match Report" : "Match Preview"} - ${params.home} vs ${params.away}`;
   document.getElementById("mc-mode").textContent = completed ? "MATCH REPORT" : "MATCH PREVIEW";
   document.getElementById("mc-status").textContent = completed ? "Finale" : "Pre-partita";
-  document.getElementById("mc-subtitle").textContent = `Giornata ${target?.seasonalGw || params.gw} · ${competitionLabel(params.competition)}`;
+  document.getElementById("mc-subtitle").textContent = params.source === "crashout"
+    ? `Crash Out Cup · Rivalry Games · Giornata ${target?.seasonalGw || params.gw}`
+    : `Giornata ${target?.seasonalGw || params.gw} · ${competitionLabel(params.competition)}`;
 
   const homeLogo = document.getElementById("mc-home-logo");
   const awayLogo = document.getElementById("mc-away-logo");
@@ -601,6 +606,42 @@ function renderStory(params, meetings, rows, target, completed, roundComplete) {
   storyBody.textContent = `${opening} Dopo questo risultato, il bilancio disponibile degli scontri diretti è ${stats.homeWins}-${stats.draws}-${stats.awayWins} dal punto di vista di ${params.home}.${impact}`;
 }
 
+
+async function loadCrashoutMatchRows() {
+  const { data, error } = await supabase
+    .from("crashout_rivalry_matches")
+    .select("id, season, match_type, matchday, home_team, away_team, home_magic, away_magic, home_goals, away_goals, is_played")
+    .eq("season", "2026")
+    .order("matchday", { ascending: true });
+  if (error) throw error;
+  const rows = [];
+  (data || []).forEach(match => {
+    const played = !!match.is_played;
+    const homeMagic = played ? parseNumber(match.home_magic) : 0;
+    const awayMagic = played ? parseNumber(match.away_magic) : 0;
+    const hg = Number(match.home_goals);
+    const ag = Number(match.away_goals);
+    const homeResult = played ? (hg > ag ? "V" : hg < ag ? "P" : "N") : "";
+    const awayResult = homeResult === "V" ? "P" : homeResult === "P" ? "V" : homeResult;
+    const phase = match.match_type === "rivalry" ? "Rivalry Games" : "Rivalry Games";
+    rows.push(
+      {
+        MatchId: match.id, GW: Number(match.matchday), GW_Stagionale: Number(match.matchday), Date: "",
+        Team: canonicalTeamName(match.home_team), Opponent: canonicalTeamName(match.away_team),
+        PointsFor: homeMagic, PointsAgainst: awayMagic, Result: homeResult, Phase: phase,
+        Conference: "Crash Out Cup", TeamKey: `Crash Out Cup::${canonicalTeamName(match.home_team)}`, IsHome: true
+      },
+      {
+        MatchId: match.id, GW: Number(match.matchday), GW_Stagionale: Number(match.matchday), Date: "",
+        Team: canonicalTeamName(match.away_team), Opponent: canonicalTeamName(match.home_team),
+        PointsFor: awayMagic, PointsAgainst: homeMagic, Result: awayResult, Phase: phase,
+        Conference: "Crash Out Cup", TeamKey: `Crash Out Cup::${canonicalTeamName(match.away_team)}`, IsHome: false
+      }
+    );
+  });
+  return rows;
+}
+
 function showError(message) {
   document.getElementById("mc-loading").style.display = "none";
   const app = document.getElementById("mc-app");
@@ -616,10 +657,13 @@ async function initMatchCenter() {
   }
 
   try {
-    const [rows, history] = await Promise.all([
-      loadResultsRows(),
+    const [allRows, history] = await Promise.all([
+      params.source === "crashout" ? loadCrashoutMatchRows() : loadResultsRows(),
       historicalMeetings(params)
     ]);
+    const rows = params.source === "crashout" && params.matchId
+      ? allRows
+      : allRows;
 
     const target = targetMatch(rows, params);
     const completed = !!target;

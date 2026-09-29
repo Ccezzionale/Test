@@ -5245,3 +5245,221 @@ nav.site-nav .toggle-submenu .app-alert-badge {
     margin: -6px auto 5px;
   }
 }
+
+
+/* =========================================================
+   HOME APP V2 — SWITCH COMPETIZIONI (Campionato / Crash Out)
+   ========================================================= */
+@media (max-width: 900px) {
+  .match-competition-tabs {
+    display: flex;
+    gap: 6px;
+    margin: 0 0 8px;
+  }
+
+  .match-competition-tab {
+    appearance: none;
+    flex: 1 1 0;
+    min-width: 0;
+    min-height: 35px;
+    padding: 0 8px;
+    border: 1px solid rgba(8, 66, 132, .12);
+    border-radius: 12px;
+    color: #72829a;
+    background: rgba(255,255,255,.68);
+    box-shadow: 0 5px 12px rgba(15,66,124,.06);
+    font: inherit;
+    font-size: .59rem;
+    font-weight: 950;
+    line-height: 1.05;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+
+  .match-competition-tab span { margin-right: 3px; }
+
+  .match-competition-tab.is-active {
+    color: #fff;
+    border-color: rgba(10,84,165,.28);
+    background: linear-gradient(135deg,#0d67bf,#073d7d);
+    box-shadow: 0 7px 16px rgba(7,65,131,.18);
+  }
+
+  .match-competition-tab.is-crashout.is-active {
+    border-color: rgba(220,70,255,.55);
+    background: linear-gradient(135deg,#6512a9 0%,#a20db5 48%,#4b117d 100%);
+    box-shadow: 0 7px 18px rgba(132,24,173,.25), inset 0 0 0 1px rgba(255,126,255,.18);
+  }
+
+  .match-competition-panel[hidden],
+  .match-competition-tab[hidden] { display: none !important; }
+
+  .crashout-home-card {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    min-height: 225px;
+    padding: 12px 14px 11px;
+    border: 1px solid rgba(219,66,255,.58);
+    border-radius: 21px;
+    color: #fff;
+    background:
+      radial-gradient(220px 135px at 50% 42%, rgba(255,46,227,.28), transparent 70%),
+      radial-gradient(170px 120px at 15% 30%, rgba(67,114,255,.23), transparent 74%),
+      linear-gradient(145deg,#11194b 0%,#29105f 46%,#5c0d73 100%);
+    box-shadow: 0 13px 28px rgba(69,16,111,.24);
+  }
+
+  .crashout-home-card::before {
+    content:"";
+    position:absolute;
+    z-index:-1;
+    inset:0;
+    opacity:.55;
+    background:
+      linear-gradient(115deg, transparent 30%, rgba(255,196,39,.13) 50%, transparent 68%),
+      repeating-linear-gradient(135deg, transparent 0 38px, rgba(255,255,255,.025) 39px 40px);
+  }
+
+  .crashout-home-card.is-playoff {
+    background:
+      radial-gradient(230px 140px at 50% 42%, rgba(236,177,37,.22), transparent 70%),
+      radial-gradient(180px 120px at 12% 30%, rgba(117,67,255,.25), transparent 74%),
+      linear-gradient(145deg,#0d1744 0%,#2c145d 48%,#541069 100%);
+  }
+
+  .crashout-home-head {
+    display:flex;
+    align-items:flex-start;
+    justify-content:space-between;
+    gap:10px;
+  }
+  .crashout-home-head > div { min-width:0; }
+  .crashout-home-head span {
+    display:block;
+    color:#f5bc31;
+    font-size:.61rem;
+    font-weight:1000;
+    letter-spacing:.11em;
+    text-transform:uppercase;
+  }
+  .crashout-home-head strong {
+    display:block;
+    margin-top:2px;
+    overflow:hidden;
+    color:#fff;
+    font-size:.82rem;
+    font-weight:1000;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+  }
+  .crashout-home-head b {
+    flex:0 0 auto;
+    padding:5px 8px;
+    border:1px solid rgba(255,255,255,.22);
+    border-radius:9px;
+    color:#fff;
+    background:rgba(255,255,255,.10);
+    font-size:.54rem;
+    font-weight:1000;
+    letter-spacing:.05em;
+  }
+
+  .crashout-home-versus {
+    display:grid;
+    grid-template-columns:minmax(0,1fr) 66px minmax(0,1fr);
+    align-items:center;
+    gap:6px;
+    min-height:115px;
+    margin-top:2px;
+  }
+  .crashout-home-team { min-width:0; text-align:center; }
+  .crashout-home-team img {
+    display:block;
+    width:62px;
+    height:62px;
+    margin:0 auto 4px;
+    object-fit:contain;
+    filter:drop-shadow(0 8px 9px rgba(0,0,0,.34));
+  }
+  .crashout-home-team strong {
+    display:-webkit-box;
+    overflow:hidden;
+    color:#fff;
+    font-size:.68rem;
+    font-weight:1000;
+    line-height:1.08;
+    text-transform:uppercase;
+    -webkit-box-orient:vertical;
+    -webkit-line-clamp:2;
+  }
+  .crashout-home-middle {
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:4px;
+    color:#ffc62d;
+    font-family:Impact,Haettenschweiler,"Arial Narrow Bold",sans-serif;
+    font-size:1.65rem;
+    font-style:italic;
+    text-shadow:0 5px 16px rgba(255,63,231,.45);
+    transform:rotate(-4deg);
+  }
+  .crashout-home-middle strong { font-size:1.23rem; }
+  .crashout-home-middle span { font-size:.95rem; }
+  .crashout-home-meta {
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:8px;
+    min-height:24px;
+    padding-top:6px;
+    border-top:1px solid rgba(255,255,255,.14);
+  }
+  .crashout-home-meta span {
+    overflow:hidden;
+    color:rgba(255,255,255,.74);
+    font-size:.60rem;
+    font-weight:800;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+  }
+  .crashout-home-meta strong {
+    flex:0 0 auto;
+    color:#ffc62d;
+    font-size:.61rem;
+    font-weight:1000;
+    text-transform:uppercase;
+  }
+  .crashout-home-cta {
+    display:flex;
+    min-height:32px;
+    margin-top:5px;
+    align-items:center;
+    justify-content:center;
+    gap:7px;
+    border:1px solid rgba(255,133,255,.25);
+    border-radius:11px;
+    color:#fff;
+    background:linear-gradient(135deg,#b718c6,#7315a6);
+    box-shadow:0 7px 16px rgba(74,8,103,.28);
+    font-size:.64rem;
+    font-weight:1000;
+    letter-spacing:.08em;
+    text-transform:uppercase;
+  }
+  .crashout-home-card.is-playoff .crashout-home-cta {
+    background:linear-gradient(135deg,#d7a51f,#a96e04);
+    border-color:rgba(255,213,100,.28);
+  }
+
+  .home-weekly-match-section { margin-top: 2px; }
+  .home-league-pulse-section { margin-top: 4px; }
+}
+
+@media (max-width: 390px) {
+  .match-competition-tab { padding:0 5px; font-size:.54rem; }
+  .crashout-home-card { min-height:218px; padding-left:11px; padding-right:11px; }
+  .crashout-home-versus { grid-template-columns:minmax(0,1fr) 58px minmax(0,1fr); }
+  .crashout-home-team img { width:56px; height:56px; }
+}

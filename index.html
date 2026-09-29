@@ -493,42 +493,77 @@
         <small id="dashboard-match-carousel-state">Calendario</small>
       </div>
 
-      <div class="match-carousel-round-nav" aria-label="Navigazione partite">
-        <button type="button" class="match-carousel-arrow" id="dashboard-match-prev" aria-label="Partita precedente">‹</button>
-        <div class="match-carousel-rounds" id="dashboard-match-rounds" aria-label="Giornate disponibili"></div>
-        <button type="button" class="match-carousel-arrow" id="dashboard-match-next" aria-label="Partita successiva">›</button>
+      <div class="match-competition-tabs" id="dashboard-match-tabs" role="tablist" aria-label="Competizioni della tua squadra">
+        <button type="button" class="match-competition-tab is-active" id="dashboard-match-tab-league" data-match-tab="league" role="tab" aria-selected="true" aria-controls="dashboard-league-match-panel">
+          <span aria-hidden="true">🏆</span> Campionato
+        </button>
+        <button type="button" class="match-competition-tab is-crashout" id="dashboard-match-tab-crashout" data-match-tab="crashout" role="tab" aria-selected="false" aria-controls="dashboard-crashout-match-panel" hidden>
+          <span aria-hidden="true">🏆</span> Crash Out Cup
+        </button>
+        <button type="button" class="match-competition-tab is-highlander" id="dashboard-match-tab-highlander" data-match-tab="highlander" role="tab" aria-selected="false" hidden>
+          <span aria-hidden="true">⚔</span> Highlander
+        </button>
       </div>
 
-      <div class="match-carousel-viewport" id="dashboard-match-viewport" tabindex="0" aria-live="polite">
-        <div class="match-carousel-track" id="dashboard-match-track">
-          <article class="match-carousel-slide is-loading">
-            <div class="match-carousel-card">
-              <span class="match-carousel-loading">Caricamento partita…</span>
-            </div>
-          </article>
+      <div class="match-competition-panel is-active" id="dashboard-league-match-panel" data-match-panel="league" role="tabpanel" aria-labelledby="dashboard-match-tab-league">
+        <div class="match-carousel-round-nav" aria-label="Navigazione partite">
+          <button type="button" class="match-carousel-arrow" id="dashboard-match-prev" aria-label="Partita precedente">‹</button>
+          <div class="match-carousel-rounds" id="dashboard-match-rounds" aria-label="Giornate disponibili"></div>
+          <button type="button" class="match-carousel-arrow" id="dashboard-match-next" aria-label="Partita successiva">›</button>
         </div>
+
+        <div class="match-carousel-viewport" id="dashboard-match-viewport" tabindex="0" aria-live="polite">
+          <div class="match-carousel-track" id="dashboard-match-track">
+            <article class="match-carousel-slide is-loading">
+              <div class="match-carousel-card">
+                <span class="match-carousel-loading">Caricamento partita…</span>
+              </div>
+            </article>
+          </div>
+        </div>
+
+        <div class="match-carousel-dots" id="dashboard-match-dots" aria-hidden="true"></div>
       </div>
 
-      <div class="match-carousel-dots" id="dashboard-match-dots" aria-hidden="true"></div>
+      <div class="match-competition-panel" id="dashboard-crashout-match-panel" data-match-panel="crashout" role="tabpanel" aria-labelledby="dashboard-match-tab-crashout" hidden>
+        <article class="crashout-home-card is-loading" id="dashboard-crashout-card">
+          <div class="crashout-home-head">
+            <div>
+              <span>Crash Out Cup</span>
+              <strong id="dashboard-crashout-stage">Caricamento…</strong>
+            </div>
+            <b id="dashboard-crashout-badge">SFIDA ATTUALE</b>
+          </div>
+          <div class="crashout-home-versus">
+            <div class="crashout-home-team">
+              <img id="dashboard-crashout-home-logo" src="icon-192.png" alt="">
+              <strong id="dashboard-crashout-home-name">Squadra A</strong>
+            </div>
+            <div class="crashout-home-middle" id="dashboard-crashout-score">VS</div>
+            <div class="crashout-home-team">
+              <img id="dashboard-crashout-away-logo" src="icon-192.png" alt="">
+              <strong id="dashboard-crashout-away-name">Squadra B</strong>
+            </div>
+          </div>
+          <div class="crashout-home-meta">
+            <span id="dashboard-crashout-meta">Rivalry Games</span>
+            <strong id="dashboard-crashout-status">In programma</strong>
+          </div>
+          <a class="crashout-home-cta" id="dashboard-crashout-cta" href="crashoutcup.html">
+            <span>APRI LA COPPA</span><b>→</b>
+          </a>
+        </article>
+      </div>
     </section>
 
-    <div class="dashboard-status-grid">
-      <a class="dashboard-status-card waiver-status-card" href="waiver.html">
-        <span class="dashboard-status-title">Waiver</span>
-        <strong id="dashboard-waiver-countdown">–</strong>
-        <small id="dashboard-waiver-note">Caricamento…</small>
-      </a>
-      <div class="dashboard-status-card form-status-card">
-        <span class="dashboard-status-title">La tua forma</span>
-        <div class="dashboard-form-dots" id="dashboard-form-dots" aria-label="Ultimi risultati">
-          <span class="form-dot neutral">–</span>
-          <span class="form-dot neutral">–</span>
-          <span class="form-dot neutral">–</span>
-          <span class="form-dot neutral">–</span>
-        </div>
-        <small id="dashboard-form-note">Ultime giornate</small>
+    <section class="home-app-section home-weekly-match-section" aria-labelledby="league-now-title">
+      <div class="home-app-heading">
+        <h2 id="league-now-title">Match della settimana</h2>
       </div>
-    </div>
+      <div class="home-horizontal-track matchup-track" id="dashboard-matchups">
+        <article class="league-matchup-card loading-card">Calcolo matchup…</article>
+      </div>
+    </section>
 
     <section class="quick-actions" aria-label="Azioni rapide">
       <a href="pre-draft.html" class="quick-card quick-predraft">
@@ -577,12 +612,9 @@
       </div>
     </section>
 
-    <section class="home-app-section" aria-labelledby="league-now-title">
+    <section class="home-app-section home-league-pulse-section" aria-labelledby="league-pulse-title">
       <div class="home-app-heading">
-        <h2 id="league-now-title">Match della settimana</h2>
-      </div>
-      <div class="home-horizontal-track matchup-track" id="dashboard-matchups">
-        <article class="league-matchup-card loading-card">Calcolo matchup…</article>
+        <h2 id="league-pulse-title">Dalla lega</h2>
       </div>
       <div class="league-live-grid">
         <a href="trade-room.html" class="league-mini-card trade-mini-card">
@@ -804,7 +836,7 @@ document.addEventListener("DOMContentLoaded", function () {
   })();
   </script>
 
-  <script type="module" src="home-dashboard.js?v=20260929-matchcenter"></script>
+  <script type="module" src="home-dashboard.js?v=20260929-tabs1"></script>
   <script type="module" src="home_auth.js"></script>
   <script src="mobile-nav.js?v=2"></script>
   <script src="navbar.js"></script>
