@@ -6669,3 +6669,126 @@ nav.site-nav .toggle-submenu .app-alert-badge {
 .home-league-pulse-section {
   display: none !important;
 }
+/* =========================================================
+   MATCH DELLA SETTIMANA · ALLINEAMENTO FINALE
+   Logo centrati, niente nomi, niente badge doppi, niente watermark
+   ========================================================= */
+@media (max-width: 900px) {
+
+  /* Il vecchio watermark duplicava visivamente il logo e lo faceva sembrare sfasato. */
+  .home-app-v2 .weekly-broadcast-card .matchup-watermark {
+    display: none !important;
+  }
+
+  .home-app-v2 .league-matchup-card.weekly-broadcast-card {
+    min-height: 126px !important;
+  }
+
+  .home-app-v2 .weekly-broadcast-card .league-matchup-versus {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) 52px minmax(0, 1fr) !important;
+    align-items: center !important;
+    gap: 8px !important;
+    min-height: 78px !important;
+    padding: 0 10px !important;
+  }
+
+  .home-app-v2 .weekly-broadcast-card .weekly-broadcast-team,
+  .home-app-v2 .weekly-broadcast-card .weekly-home,
+  .home-app-v2 .weekly-broadcast-card .weekly-away {
+    position: relative !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    min-width: 0 !important;
+    min-height: 76px !important;
+    padding: 0 4px 24px !important;
+    gap: 0 !important;
+  }
+
+  /* Nome squadra e vecchio badge tondo non servono più. */
+  .home-app-v2 .weekly-broadcast-card .weekly-broadcast-team strong,
+  .home-app-v2 .weekly-broadcast-card .weekly-broadcast-team em {
+    display: none !important;
+  }
+
+  .home-app-v2 .weekly-broadcast-card .weekly-broadcast-team img:not(.matchup-watermark) {
+    display: block !important;
+    width: 60px !important;
+    height: 60px !important;
+    flex: 0 0 60px !important;
+    margin: 0 auto !important;
+    object-fit: contain !important;
+    object-position: center !important;
+    transform: none !important;
+    filter: drop-shadow(0 7px 9px rgba(0,0,0,.34)) !important;
+  }
+
+  /* Un solo badge posizione, perfettamente centrato sotto il logo. */
+  .home-app-v2 .weekly-broadcast-card .league-matchup-versus > div[data-rank]::after {
+    content: attr(data-rank) " in classifica" !important;
+    position: absolute !important;
+    left: 50% !important;
+    bottom: 0 !important;
+    transform: translateX(-50%) !important;
+    width: max-content !important;
+    max-width: calc(100% - 8px) !important;
+    padding: 4px 9px !important;
+    border: 1px solid rgba(243,202,86,.78) !important;
+    border-radius: 999px !important;
+    background: rgba(2,18,45,.82) !important;
+    color: #f9d96f !important;
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,.06),
+      0 4px 10px rgba(0,0,0,.16) !important;
+    font-size: .52rem !important;
+    font-weight: 1000 !important;
+    line-height: 1 !important;
+    white-space: nowrap !important;
+  }
+
+  .home-app-v2 .weekly-broadcast-card .weekly-broadcast-vs {
+    width: 52px !important;
+    height: 52px !important;
+    margin-top: -3px !important;
+    font-size: 1.48rem !important;
+  }
+
+  /* Ridondante ora che ogni lato mostra già la posizione. */
+  .home-app-v2 .weekly-broadcast-card > small {
+    display: none !important;
+  }
+}
+
+@media (max-width: 390px) {
+  .home-app-v2 .weekly-broadcast-card .league-matchup-versus {
+    grid-template-columns: minmax(0, 1fr) 44px minmax(0, 1fr) !important;
+    gap: 5px !important;
+    padding: 0 6px !important;
+  }
+
+  .home-app-v2 .weekly-broadcast-card .weekly-broadcast-team,
+  .home-app-v2 .weekly-broadcast-card .weekly-home,
+  .home-app-v2 .weekly-broadcast-card .weekly-away {
+    min-height: 71px !important;
+    padding-bottom: 23px !important;
+  }
+
+  .home-app-v2 .weekly-broadcast-card .weekly-broadcast-team img:not(.matchup-watermark) {
+    width: 54px !important;
+    height: 54px !important;
+    flex-basis: 54px !important;
+  }
+
+  .home-app-v2 .weekly-broadcast-card .league-matchup-versus > div[data-rank]::after {
+    padding: 4px 7px !important;
+    font-size: .48rem !important;
+  }
+
+  .home-app-v2 .weekly-broadcast-card .weekly-broadcast-vs {
+    width: 44px !important;
+    height: 44px !important;
+    font-size: 1.22rem !important;
+  }
+}
