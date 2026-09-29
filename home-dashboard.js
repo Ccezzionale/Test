@@ -637,12 +637,23 @@ function renderMatchups(rows) {
     const awayPosition = positionMap.get(normalizeTeamName(fixture.away));
     const rankText = homePosition && awayPosition ? `${homePosition}° contro ${awayPosition}°` : "Sfida da non perdere";
     return `
-      <article class="league-matchup-card">
-        <div class="league-matchup-label">${conferenceLabel(code)} · Giornata ${nextGw}</div>
+      <article class="league-matchup-card weekly-broadcast-card">
+        <div class="league-matchup-label">
+          <span>${conferenceLabel(code)}</span>
+          <b>G${nextGw}</b>
+        </div>
         <div class="league-matchup-versus">
-          <div><img src="${findTeamLogo(fixture.home)}" alt=""><strong>${escapeHtml(fixture.home)}</strong></div>
-          <span>VS</span>
-          <div><img src="${findTeamLogo(fixture.away)}" alt=""><strong>${escapeHtml(fixture.away)}</strong></div>
+          <div class="weekly-broadcast-team weekly-home">
+            <img src="${findTeamLogo(fixture.home)}" alt="">
+            <strong>${escapeHtml(fixture.home)}</strong>
+            <em>${homePosition ? `${homePosition}°` : "–"}</em>
+          </div>
+          <span class="weekly-broadcast-vs">VS</span>
+          <div class="weekly-broadcast-team weekly-away">
+            <img src="${findTeamLogo(fixture.away)}" alt="">
+            <strong>${escapeHtml(fixture.away)}</strong>
+            <em>${awayPosition ? `${awayPosition}°` : "–"}</em>
+          </div>
         </div>
         <small>${rankText}</small>
       </article>`;
@@ -867,6 +878,7 @@ function findHomeHighlanderMascot(teamName) {
 }
 
 function setupHomeMatchTabs() {
+  const shell = document.getElementById("dashboard-match-carousel");
   const tabs = [...document.querySelectorAll("#dashboard-match-tabs [data-match-tab]")];
   const panels = [...document.querySelectorAll("#dashboard-match-carousel [data-match-panel]")];
   const stateEl = document.getElementById("dashboard-match-carousel-state");
@@ -883,6 +895,12 @@ function setupHomeMatchTabs() {
       panel.classList.toggle("is-active", active);
       panel.hidden = !active;
     });
+
+    if (shell) {
+      shell.classList.remove("theme-league", "theme-crashout", "theme-highlander");
+      shell.classList.add(`theme-${name}`);
+    }
+
     if (stateEl) {
       stateEl.textContent = name === "crashout"
         ? "Crash Out Cup"
@@ -893,6 +911,27 @@ function setupHomeMatchTabs() {
   };
 
   tabs.forEach(tab => tab.addEventListener("click", () => activate(tab.dataset.matchTab)));
+
+  const crashoutCard = document.getElementById("dashboard-crashout-card");
+  if (crashoutCard && !crashoutCard.dataset.cardLinkBound) {
+    const openCompetition = event => {
+      if (event.target.closest("a, button")) return;
+      const href = crashoutCard.dataset.competitionHref;
+      if (href) window.location.href = href;
+    };
+
+    crashoutCard.addEventListener("click", openCompetition);
+    crashoutCard.addEventListener("keydown", event => {
+      if (event.key !== "Enter" && event.key !== " ") return;
+      if (event.target.closest("a, button")) return;
+      event.preventDefault();
+      const href = crashoutCard.dataset.competitionHref;
+      if (href) window.location.href = href;
+    });
+
+    crashoutCard.dataset.cardLinkBound = "1";
+  }
+
   activate("league");
 }
 
@@ -927,6 +966,11 @@ function renderCrashoutHomeRivalry(match) {
   tab.hidden = false;
   card.classList.remove("is-loading", "is-playoff");
   card.classList.toggle("is-completed", played);
+  card.classList.add("is-clickable");
+  card.dataset.competitionHref = "crashoutcup.html";
+  card.setAttribute("role", "link");
+  card.setAttribute("tabindex", "0");
+  card.setAttribute("aria-label", "Apri Crash Out Cup - Rivalry Games");
   document.getElementById("dashboard-crashout-stage").textContent = `Rivalry Games · Giornata ${match.matchday}`;
   document.getElementById("dashboard-crashout-badge").textContent = played ? "FINALE" : "SFIDA ATTUALE";
   document.getElementById("dashboard-crashout-home-logo").src = findTeamLogo(home);
@@ -1019,7 +1063,11 @@ function renderCrashoutHomePlayoff(series) {
   const away = series.away === "TBD" ? "Da definire" : canonicalTeamName(series.away);
   tab.hidden = false;
   card.classList.remove("is-loading", "is-completed");
-  card.classList.add("is-playoff");
+  card.classList.add("is-playoff", "is-clickable");
+  card.dataset.competitionHref = "crashoutplayoff.html";
+  card.setAttribute("role", "link");
+  card.setAttribute("tabindex", "0");
+  card.setAttribute("aria-label", "Apri Crash Out Cup - Playoff");
   document.getElementById("dashboard-crashout-stage").textContent = `Playoff · ${series.stage}`;
   document.getElementById("dashboard-crashout-badge").textContent = "FASE FINALE";
   document.getElementById("dashboard-crashout-home-logo").src = home === "Da definire" ? "icon-192.png" : findTeamLogo(home);
