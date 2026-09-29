@@ -323,7 +323,9 @@ body.match-center-page {
 .mc-recent-meta strong { font-size: .78rem; }
 .mc-recent-meta span { color: var(--mc-muted); font-size: .68rem; }
 .mc-recent-row img { width: 38px; height: 38px; object-fit: contain; }
-.mc-recent-score { font-size: .95rem; font-weight: 1000; text-align: center; }
+.mc-recent-score { display: grid; gap: 2px; text-align: center; }
+.mc-recent-score strong { font-size: .98rem; font-weight: 1000; line-height: 1.05; }
+.mc-recent-score small { color: var(--mc-muted); font-size: .62rem; font-weight: 800; white-space: nowrap; }
 .mc-result-pill { width: 30px; height: 30px; display: grid; place-items: center; border-radius: 50%; color: #fff; font-size: .72rem; font-weight: 1000; }
 .mc-result-pill.win { background: #18ae5b; }
 .mc-result-pill.loss { background: #e53c49; }
@@ -360,7 +362,8 @@ body.match-center-page {
   .mc-form-dots { gap: 4px; }
   .mc-recent-row { grid-template-columns: 78px 34px 1fr 34px 28px; gap: 7px; }
   .mc-recent-row img { width: 31px; height: 31px; }
-  .mc-recent-score { font-size: .82rem; }
+  .mc-recent-score strong { font-size: .84rem; }
+  .mc-recent-score small { font-size: .56rem; }
   .mc-result-pill { width: 27px; height: 27px; }
   .mc-records { grid-template-columns: 1fr; }
 }

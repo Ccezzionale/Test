@@ -416,7 +416,7 @@ function matchSlideMarkup(slide, competitionLabel, competitionCode) {
   const stateClass = slide.kind === "previous" ? "is-previous" : slide.kind === "next" ? "is-next" : "is-current";
   const statusLabel = slide.kind === "previous" ? "Precedente" : slide.kind === "next" ? "Successivo" : "Attuale";
   const middle = slide.completed
-    ? `<div class="match-carousel-score"><strong>${formatNumber(slide.homeScore)}</strong><span>–</span><strong>${formatNumber(slide.awayScore)}</strong></div>`
+    ? `<div class="match-carousel-score"><strong>${pointsToGoals(slide.homeScore)}</strong><span>–</span><strong>${pointsToGoals(slide.awayScore)}</strong></div>`
     : `<div class="match-carousel-vs">VS</div>`;
   const footerRight = slide.completed ? resultLabel(slide.result) : (slide.ranking || "Match Preview");
   const cta = slide.completed ? "MATCH REPORT" : "MATCH PREVIEW";

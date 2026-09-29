@@ -336,7 +336,7 @@ function renderHeader(params, target, completed) {
 
   const score = document.getElementById("mc-score");
   score.innerHTML = completed
-    ? `<strong>${formatNumber(target.pointsHome)}</strong><span>–</span><strong>${formatNumber(target.pointsAway)}</strong>`
+    ? `<strong>${pointsToGoals(target.pointsHome)}</strong><span>–</span><strong>${pointsToGoals(target.pointsAway)}</strong>`
     : `<span class="mc-vs-large">VS</span>`;
 }
 
@@ -418,7 +418,10 @@ function renderH2H(params, meetings, targetCompleted) {
         <div class="mc-recent-row">
           <div class="mc-recent-meta"><strong>${escapeHtml(meeting.season)}</strong><span>Giornata ${meeting.seasonWeek}</span></div>
           <img src="${teamLogo(params.home)}" alt="">
-          <span class="mc-recent-score">${formatNumber(meeting.pointsHome)} - ${formatNumber(meeting.pointsAway)}</span>
+          <span class="mc-recent-score">
+            <strong>${pointsToGoals(meeting.pointsHome)} - ${pointsToGoals(meeting.pointsAway)}</strong>
+            <small>${formatNumber(meeting.pointsHome)} - ${formatNumber(meeting.pointsAway)} FP</small>
+          </span>
           <img src="${teamLogo(params.away)}" alt="">
           <span class="mc-result-pill ${result === "V" ? "win" : result === "P" ? "loss" : "draw"}">${result}</span>
         </div>`;
@@ -472,9 +475,11 @@ function renderStory(params, meetings, rows, target, completed, roundComplete) {
 
   storyTitle.textContent = "Match story";
   const result = resultFromPoints(target.pointsHome, target.pointsAway);
-  let opening = "La partita termina in pareggio.";
-  if (result === "V") opening = `${params.home} supera ${params.away} ${formatNumber(target.pointsHome)} - ${formatNumber(target.pointsAway)}.`;
-  if (result === "P") opening = `${params.away} supera ${params.home} ${formatNumber(target.pointsAway)} - ${formatNumber(target.pointsHome)}.`;
+  const goalsHome = pointsToGoals(target.pointsHome);
+  const goalsAway = pointsToGoals(target.pointsAway);
+  let opening = `La partita termina ${goalsHome} - ${goalsAway}.`;
+  if (result === "V") opening = `${params.home} supera ${params.away} ${goalsHome} - ${goalsAway}.`;
+  if (result === "P") opening = `${params.away} supera ${params.home} ${goalsAway} - ${goalsHome}.`;
 
   let impact = "";
   if (roundComplete) {
