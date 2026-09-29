@@ -5291,6 +5291,13 @@ nav.site-nav .toggle-submenu .app-alert-badge {
     box-shadow: 0 7px 18px rgba(132,24,173,.25), inset 0 0 0 1px rgba(255,126,255,.18);
   }
 
+  .match-competition-tab.is-highlander.is-active {
+    color:#151006;
+    border-color:rgba(224,170,43,.68);
+    background:linear-gradient(135deg,#ffe07b 0%,#d5a122 52%,#8d5f05 100%);
+    box-shadow:0 7px 18px rgba(117,77,4,.24), inset 0 0 0 1px rgba(255,244,190,.24);
+  }
+
   .match-competition-panel[hidden],
   .match-competition-tab[hidden] { display: none !important; }
 
@@ -5453,6 +5460,156 @@ nav.site-nav .toggle-submenu .app-alert-badge {
     border-color:rgba(255,213,100,.28);
   }
 
+
+
+  .highlander-home-card {
+    position:relative;
+    isolation:isolate;
+    overflow:hidden;
+    min-height:225px;
+    padding:12px 14px 11px;
+    border:1px solid rgba(218,168,48,.56);
+    border-radius:21px;
+    color:#fff;
+    background:
+      radial-gradient(220px 150px at 50% 38%, rgba(255,179,53,.16), transparent 70%),
+      radial-gradient(170px 120px at 12% 28%, rgba(167,57,27,.18), transparent 74%),
+      linear-gradient(145deg,#10100f 0%,#211812 48%,#3b210d 100%);
+    box-shadow:0 13px 28px rgba(38,25,10,.28);
+  }
+
+  .highlander-home-card::before {
+    content:"";
+    position:absolute;
+    z-index:-1;
+    inset:0;
+    opacity:.58;
+    background:
+      linear-gradient(115deg, transparent 30%, rgba(255,214,106,.10) 50%, transparent 68%),
+      repeating-linear-gradient(135deg, transparent 0 38px, rgba(255,255,255,.022) 39px 40px);
+  }
+
+  .highlander-home-card.is-champion {
+    border-color:rgba(255,215,0,.78);
+    background:
+      radial-gradient(230px 145px at 50% 38%, rgba(255,215,0,.24), transparent 70%),
+      linear-gradient(145deg,#13110a 0%,#33250d 50%,#644407 100%);
+  }
+
+  .highlander-home-head {
+    display:flex;
+    align-items:flex-start;
+    justify-content:space-between;
+    gap:10px;
+  }
+  .highlander-home-head span {
+    display:block;
+    color:#ffd968;
+    font-size:.61rem;
+    font-weight:1000;
+    letter-spacing:.11em;
+    text-transform:uppercase;
+  }
+  .highlander-home-head strong {
+    display:block;
+    margin-top:2px;
+    color:#fff;
+    font-size:.84rem;
+    font-weight:1000;
+  }
+  .highlander-home-head b {
+    flex:0 0 auto;
+    padding:5px 8px;
+    border:1px solid rgba(255,215,0,.25);
+    border-radius:9px;
+    color:#ffe48a;
+    background:rgba(255,215,0,.08);
+    font-size:.54rem;
+    font-weight:1000;
+    letter-spacing:.05em;
+  }
+
+  .highlander-home-focus {
+    display:grid;
+    grid-template-columns:92px minmax(0,1fr);
+    align-items:center;
+    gap:12px;
+    min-height:104px;
+    padding:7px 4px 4px;
+  }
+  .highlander-home-focus img {
+    width:88px;
+    height:88px;
+    object-fit:contain;
+    filter:drop-shadow(0 9px 12px rgba(0,0,0,.42));
+  }
+  .highlander-home-copy {
+    min-width:0;
+    text-align:left;
+  }
+  .highlander-home-copy strong {
+    display:block;
+    color:#fff;
+    font-size:.86rem;
+    font-weight:1000;
+    line-height:1.05;
+    text-transform:uppercase;
+  }
+  .highlander-home-copy span {
+    display:block;
+    margin-top:7px;
+    color:#ffd968;
+    font-size:1.02rem;
+    font-weight:1000;
+    letter-spacing:.03em;
+  }
+
+  .highlander-home-stats {
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:8px;
+    padding-top:7px;
+    border-top:1px solid rgba(255,255,255,.12);
+  }
+  .highlander-home-stats div {
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:8px;
+    min-width:0;
+    padding:7px 9px;
+    border-radius:10px;
+    background:rgba(0,0,0,.20);
+  }
+  .highlander-home-stats span {
+    color:rgba(255,255,255,.68);
+    font-size:.58rem;
+    font-weight:850;
+  }
+  .highlander-home-stats strong {
+    color:#ffe17b;
+    font-size:.83rem;
+    font-weight:1000;
+  }
+
+  .highlander-home-cta {
+    display:flex;
+    min-height:32px;
+    margin-top:6px;
+    align-items:center;
+    justify-content:center;
+    gap:7px;
+    border:1px solid rgba(255,218,111,.28);
+    border-radius:11px;
+    color:#1c1408;
+    background:linear-gradient(135deg,#ffe17a,#bf8420);
+    box-shadow:0 7px 16px rgba(42,25,2,.30);
+    font-size:.64rem;
+    font-weight:1000;
+    letter-spacing:.08em;
+    text-transform:uppercase;
+  }
+
   .home-weekly-match-section { margin-top: 2px; }
   .home-league-pulse-section { margin-top: 4px; }
 }
@@ -5462,4 +5619,6 @@ nav.site-nav .toggle-submenu .app-alert-badge {
   .crashout-home-card { min-height:218px; padding-left:11px; padding-right:11px; }
   .crashout-home-versus { grid-template-columns:minmax(0,1fr) 58px minmax(0,1fr); }
   .crashout-home-team img { width:56px; height:56px; }
+  .highlander-home-focus { grid-template-columns:82px minmax(0,1fr); }
+  .highlander-home-focus img { width:78px; height:78px; }
 }

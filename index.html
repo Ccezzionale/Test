@@ -500,7 +500,7 @@
         <button type="button" class="match-competition-tab is-crashout" id="dashboard-match-tab-crashout" data-match-tab="crashout" role="tab" aria-selected="false" aria-controls="dashboard-crashout-match-panel" hidden>
           <span aria-hidden="true">🏆</span> Crash Out Cup
         </button>
-        <button type="button" class="match-competition-tab is-highlander" id="dashboard-match-tab-highlander" data-match-tab="highlander" role="tab" aria-selected="false" hidden>
+        <button type="button" class="match-competition-tab is-highlander" id="dashboard-match-tab-highlander" data-match-tab="highlander" role="tab" aria-selected="false" aria-controls="dashboard-highlander-match-panel" hidden>
           <span aria-hidden="true">⚔</span> Highlander
         </button>
       </div>
@@ -551,6 +551,35 @@
           </div>
           <a class="crashout-home-cta" id="dashboard-crashout-cta" href="crashoutcup.html">
             <span>APRI LA COPPA</span><b>→</b>
+          </a>
+        </article>
+      </div>
+
+      <div class="match-competition-panel" id="dashboard-highlander-match-panel" data-match-panel="highlander" role="tabpanel" aria-labelledby="dashboard-match-tab-highlander" hidden>
+        <article class="highlander-home-card is-loading" id="dashboard-highlander-card">
+          <div class="highlander-home-head">
+            <div>
+              <span>Highlander Cup</span>
+              <strong id="dashboard-highlander-stage">Arena</strong>
+            </div>
+            <b id="dashboard-highlander-badge">IN CORSO</b>
+          </div>
+
+          <div class="highlander-home-focus">
+            <img id="dashboard-highlander-image" src="icon-192.png" alt="">
+            <div class="highlander-home-copy">
+              <strong id="dashboard-highlander-team">La tua squadra</strong>
+              <span id="dashboard-highlander-status">Ancora in gara</span>
+            </div>
+          </div>
+
+          <div class="highlander-home-stats">
+            <div><span>Sopravvissute</span><strong id="dashboard-highlander-survivors">16</strong></div>
+            <div><span>Eliminate</span><strong id="dashboard-highlander-eliminated">0</strong></div>
+          </div>
+
+          <a class="highlander-home-cta" id="dashboard-highlander-cta" href="arena.html">
+            <span>VAI ALLA HIGHLANDER</span><b>→</b>
           </a>
         </article>
       </div>

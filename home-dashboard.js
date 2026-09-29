@@ -841,6 +841,30 @@ function scheduleHomeActionBadgesRefresh(teamId) {
 // poi stessa tab con la serie playoff quando la prima fase termina.
 // =========================================================
 const HOME_CRASHOUT_SEASON = "2026";
+const HOME_HIGHLANDER_SEASON = "2026";
+
+const HOME_HIGHLANDER_MASCOTS = {
+  atleticoleon: "img/maglie/rubinkebab-higlander.webp",
+  bayernchristiansen: "img/maglie/bayern-higlander.webp",
+  teambartowski: "img/maglie/bartowski-higlander.webp",
+  goldenknights: "img/maglie/golden-higlander.webp",
+  ibla: "img/maglie/ibla-higlander.webp",
+  fantaugusta: "img/maglie/fantaugusta-higlander.webp",
+  riverfilo: "img/maglie/riverfilo-higlander.webp",
+  desperados: "img/maglie/desperados-higlander.webp",
+  wildboys78: "img/maglie/wildboys-higlander.webp",
+  pandinicoccolosini: "img/maglie/pandini-higlander.webp",
+  pokermantra: "img/maglie/pokermantra-higlander.webp",
+  minnesodetimberland: "img/maglie/minnesode-higlander.webp",
+  minnesotasnakes: "img/maglie/minnesota-higlander.webp",
+  eintrachtfranco126: "img/maglie/franco-higlander.webp",
+  fcdisoneste: "img/maglie/disoneste-higlander.webp",
+  athleticpongao: "img/maglie/pongao-higlander.webp"
+};
+
+function findHomeHighlanderMascot(teamName) {
+  return HOME_HIGHLANDER_MASCOTS[normalizeTeamName(teamName)] || findTeamLogo(teamName);
+}
 
 function setupHomeMatchTabs() {
   const tabs = [...document.querySelectorAll("#dashboard-match-tabs [data-match-tab]")];
@@ -859,7 +883,13 @@ function setupHomeMatchTabs() {
       panel.classList.toggle("is-active", active);
       panel.hidden = !active;
     });
-    if (stateEl) stateEl.textContent = name === "crashout" ? "Crash Out Cup" : "Partita attuale";
+    if (stateEl) {
+      stateEl.textContent = name === "crashout"
+        ? "Crash Out Cup"
+        : name === "highlander"
+          ? "Highlander Cup"
+          : "Partita attuale";
+    }
   };
 
   tabs.forEach(tab => tab.addEventListener("click", () => activate(tab.dataset.matchTab)));
@@ -1043,6 +1073,80 @@ async function renderHomeCrashoutTab(context) {
   }
 }
 
+
+// =========================================================
+// HOME · HIGHLANDER
+// La tab compare soltanto quando la competizione è attivata
+// dall'admin e la squadra dell'utente non è stata eliminata.
+// =========================================================
+async function renderHomeHighlanderTab(context) {
+  const tab = document.getElementById("dashboard-match-tab-highlander");
+  const card = document.getElementById("dashboard-highlander-card");
+  if (!tab || !card || !context?.team?.name) return;
+
+  tab.hidden = true;
+
+  try {
+    const [{ data: stateRow, error: stateError }, { data: eliminationRows, error: eliminationError }] = await Promise.all([
+      supabase
+        .from("highlander_state")
+        .select("season, is_active")
+        .eq("season", HOME_HIGHLANDER_SEASON)
+        .maybeSingle(),
+      supabase
+        .from("highlander_eliminations")
+        .select("season, turno, team_name, magic_punti")
+        .eq("season", HOME_HIGHLANDER_SEASON)
+        .order("turno", { ascending: true })
+    ]);
+
+    if (stateError) throw stateError;
+    if (eliminationError) throw eliminationError;
+    if (!stateRow?.is_active) return;
+
+    const rows = eliminationRows || [];
+    const teamKey = normalizeTeamName(context.team.name);
+    const eliminated = rows.some(row => normalizeTeamName(row.team_name) === teamKey);
+
+    // Dopo l'eliminazione la tab sparisce dalla Home di quella squadra.
+    if (eliminated) return;
+
+    const eliminatedCount = rows.length;
+    const survivors = Math.max(0, squadreBase.length - eliminatedCount);
+    const lastRound = rows.length
+      ? Math.max(...rows.map(row => Number(row.turno) || 0))
+      : 0;
+    const currentRound = Math.min(15, lastRound + 1);
+    const isChampion = survivors === 1;
+
+    tab.hidden = false;
+    card.classList.remove("is-loading");
+    card.classList.toggle("is-champion", isChampion);
+
+    document.getElementById("dashboard-highlander-stage").textContent = isChampion
+      ? "Verdetto finale"
+      : `Turno ${currentRound}`;
+    document.getElementById("dashboard-highlander-badge").textContent = isChampion
+      ? "CAMPIONE"
+      : "IN CORSO";
+
+    const image = document.getElementById("dashboard-highlander-image");
+    image.src = findHomeHighlanderMascot(context.team.name);
+    image.alt = `Highlander ${context.team.name}`;
+
+    document.getElementById("dashboard-highlander-team").textContent = context.team.name;
+    document.getElementById("dashboard-highlander-status").textContent = isChampion
+      ? "ULTIMO SOPRAVVISSUTO"
+      : "ANCORA IN GARA";
+    document.getElementById("dashboard-highlander-survivors").textContent = String(survivors);
+    document.getElementById("dashboard-highlander-eliminated").textContent = String(eliminatedCount);
+  } catch (error) {
+    // Se la tabella highlander_state non è stata ancora creata, la Home continua
+    // semplicemente senza tab Highlander.
+    console.warn("Highlander non disponibile nella Home:", error);
+  }
+}
+
 async function initHomeDashboard() {
   setupHomeMatchTabs();
   const context = await loadDashboardTeam();
@@ -1054,6 +1158,7 @@ async function initHomeDashboard() {
   renderMatchups(rows);
   renderRecord(rows);
   await renderHomeCrashoutTab(context);
+  await renderHomeHighlanderTab(context);
 }
 
 document.addEventListener("DOMContentLoaded", initHomeDashboard);

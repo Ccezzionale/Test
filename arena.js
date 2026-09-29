@@ -144,6 +144,9 @@ const adminRiskPoints1 = document.getElementById("admin-risk-points-1");
 const adminRiskPoints2 = document.getElementById("admin-risk-points-2");
 const adminRiskPoints3 = document.getElementById("admin-risk-points-3");
 const adminResetBtn = document.getElementById("admin-reset-highlander");
+const adminToggleBtn = document.getElementById("admin-toggle-highlander");
+const adminStateEl = document.getElementById("admin-highlander-state");
+let highlanderIsActive = false;
 
 /* =========================
    SUPABASE HELPER
@@ -178,6 +181,82 @@ function setTeamImage(img, team) {
 /* =========================
    DATA
    ========================= */
+
+async function loadHighlanderState() {
+  if (!db) {
+    highlanderIsActive = false;
+    return;
+  }
+
+  const { data, error } = await db
+    .from("highlander_state")
+    .select("season, is_active")
+    .eq("season", HIGHLANDER_SEASON)
+    .maybeSingle();
+
+  if (error) {
+    console.warn("Stato Highlander non disponibile:", error);
+    highlanderIsActive = false;
+    return;
+  }
+
+  highlanderIsActive = Boolean(data?.is_active);
+}
+
+function renderHighlanderStateAdmin() {
+  if (adminStateEl) {
+    adminStateEl.textContent = highlanderIsActive ? "Attiva" : "Non attiva";
+    adminStateEl.classList.toggle("is-active", highlanderIsActive);
+  }
+
+  if (adminToggleBtn) {
+    adminToggleBtn.textContent = highlanderIsActive
+      ? "Nascondi dalla Home"
+      : "Avvia Highlander";
+    adminToggleBtn.classList.toggle("is-active", highlanderIsActive);
+  }
+}
+
+async function setHighlanderActive(isActive, { silent = false } = {}) {
+  if (!db) return false;
+
+  if (adminToggleBtn && !silent) adminToggleBtn.disabled = true;
+
+  const { error } = await db
+    .from("highlander_state")
+    .upsert({
+      season: HIGHLANDER_SEASON,
+      is_active: Boolean(isActive),
+      updated_at: new Date().toISOString()
+    }, { onConflict: "season" });
+
+  if (error) {
+    console.error("Errore aggiornamento stato Highlander:", error);
+    if (!silent) setAdminMsg("Impossibile aggiornare lo stato Highlander.", "error");
+    if (adminToggleBtn && !silent) adminToggleBtn.disabled = false;
+    return false;
+  }
+
+  highlanderIsActive = Boolean(isActive);
+  renderHighlanderStateAdmin();
+
+  if (!silent) {
+    setAdminMsg(
+      highlanderIsActive
+        ? "Highlander attivata: la tab compare nella Home delle squadre ancora in gara."
+        : "Highlander nascosta dalla Home.",
+      "ok"
+    );
+  }
+
+  if (adminToggleBtn && !silent) adminToggleBtn.disabled = false;
+  return true;
+}
+
+async function toggleHighlanderActive() {
+  await setHighlanderActive(!highlanderIsActive);
+}
+
 async function resetHighlander() {
   if (!db) {
     setAdminMsg("Supabase non trovato: impossibile resettare.", "error");
@@ -224,7 +303,9 @@ async function resetHighlander() {
   if (adminRiskPoints2) adminRiskPoints2.value = "";
   if (adminRiskPoints3) adminRiskPoints3.value = "";
 
-  setAdminMsg("Reset completato. L’arena è tornata al turno 1.", "ok");
+  await setHighlanderActive(false, { silent: true });
+
+  setAdminMsg("Reset completato. L’arena è tornata al turno 1 e la tab Home è stata disattivata.", "ok");
 
   await refreshArena();
 
@@ -630,6 +711,8 @@ async function checkIsAdmin() {
 function populateAdminPanel() {
   if (!adminPanel || !adminSquadraSelect || !adminTurnoInput) return;
 
+  renderHighlanderStateAdmin();
+
   const prossimoTurno = eliminateCount + 1;
 
   adminTurnoInput.value = prossimoTurno <= squadreBase.length - 1
@@ -797,10 +880,16 @@ if (adminSaveBtn) {
 function initAdminEvents() {
   const saveBtn = document.getElementById("admin-salva-eliminazione");
   const resetBtn = document.getElementById("admin-reset-highlander");
+  const toggleBtn = document.getElementById("admin-toggle-highlander");
 
   if (saveBtn && !saveBtn.dataset.bound) {
     saveBtn.addEventListener("click", salvaEliminazione);
     saveBtn.dataset.bound = "1";
+  }
+
+  if (toggleBtn && !toggleBtn.dataset.bound) {
+    toggleBtn.addEventListener("click", toggleHighlanderActive);
+    toggleBtn.dataset.bound = "1";
   }
 
   if (resetBtn && !resetBtn.dataset.bound) {
@@ -829,7 +918,7 @@ function renderAll() {
 }
 
 async function refreshArena() {
-  await loadEliminazioni();
+  await Promise.all([loadEliminazioni(), loadHighlanderState()]);
   renderAll();
 }
 
