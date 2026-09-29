@@ -6792,3 +6792,257 @@ nav.site-nav .toggle-submenu .app-alert-badge {
     font-size: 1.22rem !important;
   }
 }
+/* =========================================================
+   HOME PREMIUM V4 · TROFEI DENTRO LE CARD COMPETIZIONE
+   Stesse dimensioni: nessuna card viene ingrandita.
+   ========================================================= */
+@media (max-width: 900px) {
+  .competition-cup-art {
+    position: absolute !important;
+    z-index: 1 !important;
+    display: block !important;
+    pointer-events: none !important;
+    user-select: none !important;
+    object-fit: contain !important;
+    object-position: center !important;
+    transform-origin: center center;
+  }
+
+  /* Tutto il contenuto vero resta sopra al trofeo decorativo. */
+  .match-carousel-card-head,
+  .match-carousel-versus,
+  .match-carousel-meta,
+  .match-carousel-cta,
+  .crashout-home-head,
+  .crashout-home-versus,
+  .crashout-home-meta,
+  .crashout-home-cta,
+  .highlander-home-head,
+  .highlander-home-focus,
+  .highlander-home-stats,
+  .highlander-home-cta {
+    position: relative;
+    z-index: 3;
+  }
+
+  /* ---------------------------------------------------------
+     CAMPIONATO · blu notte + Eternal Glory a destra
+     --------------------------------------------------------- */
+  .theme-league .match-carousel-card {
+    min-height: 213px !important;
+    color: #fff !important;
+    border-color: rgba(236, 190, 64, .56) !important;
+    background:
+      radial-gradient(210px 150px at 88% 34%, rgba(43, 139, 255, .22), transparent 70%),
+      radial-gradient(190px 120px at 18% 30%, rgba(29, 94, 181, .22), transparent 74%),
+      linear-gradient(145deg, #062854 0%, #08234a 48%, #061b38 100%) !important;
+    box-shadow:
+      0 13px 28px rgba(5, 45, 94, .25),
+      inset 0 1px 0 rgba(255,255,255,.05) !important;
+  }
+
+  .theme-league .match-carousel-card::after {
+    z-index: 0 !important;
+    background:
+      linear-gradient(90deg, rgba(4,29,62,.04) 0%, rgba(4,29,62,.08) 56%, rgba(1,15,34,.58) 100%),
+      linear-gradient(120deg, transparent 18%, rgba(255,255,255,.035) 49%, transparent 78%) !important;
+  }
+
+  .theme-league .competition-cup-art-league {
+    top: 28px !important;
+    right: -18px !important;
+    width: 118px !important;
+    height: 164px !important;
+    opacity: .83 !important;
+    filter:
+      drop-shadow(0 10px 16px rgba(0,0,0,.34))
+      drop-shadow(0 0 13px rgba(66,155,255,.18));
+    -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 75%, transparent 100%);
+    mask-image: linear-gradient(to bottom, #000 0%, #000 75%, transparent 100%);
+  }
+
+  .theme-league .match-carousel-card-head,
+  .theme-league .match-carousel-versus,
+  .theme-league .match-carousel-meta {
+    padding-right: 72px !important;
+  }
+
+  .theme-league .match-carousel-card-head > span {
+    color: #f2cb5c !important;
+  }
+
+  .theme-league .match-carousel-card-head > strong,
+  .theme-league .match-carousel-slide.is-current .match-carousel-card-head > strong {
+    color: #171006 !important;
+    border-color: rgba(255,225,132,.28) !important;
+    background: linear-gradient(135deg, #ffe27a, #c98c13) !important;
+    box-shadow: 0 6px 14px rgba(0,0,0,.20) !important;
+  }
+
+  .theme-league .match-carousel-team strong {
+    color: #fff !important;
+    text-shadow: 0 2px 7px rgba(0,0,0,.42) !important;
+  }
+
+  .theme-league .match-carousel-team img {
+    filter: drop-shadow(0 8px 10px rgba(0,0,0,.38)) !important;
+  }
+
+  .theme-league .match-carousel-meta {
+    border-top-color: rgba(255,255,255,.13) !important;
+  }
+
+  .theme-league .match-carousel-meta span {
+    color: rgba(231,241,255,.76) !important;
+  }
+
+  .theme-league .match-carousel-meta strong {
+    color: #f4cf67 !important;
+  }
+
+  .theme-league .match-carousel-vs,
+  .theme-league .match-carousel-score span {
+    color: #f1c44f !important;
+    text-shadow: 0 4px 12px rgba(241,196,79,.20) !important;
+  }
+
+  .theme-league .match-carousel-score strong {
+    color: #fff !important;
+  }
+
+  .theme-league .match-carousel-cta,
+  .theme-league .match-carousel-slide.is-current .match-carousel-cta {
+    color: #1a1205 !important;
+    background: linear-gradient(135deg, #ffe177, #c98b13) !important;
+    box-shadow: 0 7px 16px rgba(0,0,0,.23) !important;
+  }
+
+  /* ---------------------------------------------------------
+     CRASH OUT · trofeo neon integrato nel bordo destro
+     --------------------------------------------------------- */
+  .crashout-home-card {
+    min-height: 225px !important;
+  }
+
+  .crashout-home-card::after {
+    content: "";
+    position: absolute;
+    z-index: 2;
+    inset: 0;
+    pointer-events: none;
+    background: linear-gradient(90deg, transparent 0%, transparent 56%, rgba(14,8,43,.52) 100%);
+  }
+
+  .competition-cup-art-crashout {
+    top: 26px !important;
+    right: -19px !important;
+    width: 122px !important;
+    height: 174px !important;
+    opacity: .88 !important;
+    filter:
+      drop-shadow(0 11px 18px rgba(0,0,0,.38))
+      drop-shadow(0 0 18px rgba(237,43,255,.28));
+    -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 76%, transparent 100%);
+    mask-image: linear-gradient(to bottom, #000 0%, #000 76%, transparent 100%);
+  }
+
+  .crashout-home-head,
+  .crashout-home-versus,
+  .crashout-home-meta {
+    padding-right: 74px !important;
+  }
+
+  .crashout-home-head > div {
+    max-width: calc(100% - 56px);
+  }
+
+  /* ---------------------------------------------------------
+     HIGHLANDER · Eternal Blade sul fianco destro
+     --------------------------------------------------------- */
+  .highlander-home-card {
+    min-height: 225px !important;
+  }
+
+  .highlander-home-card::after {
+    content: "";
+    position: absolute;
+    z-index: 2;
+    inset: 0;
+    pointer-events: none;
+    background: linear-gradient(90deg, transparent 0%, transparent 57%, rgba(20,10,4,.52) 100%);
+  }
+
+  .competition-cup-art-highlander {
+    top: 22px !important;
+    right: -24px !important;
+    width: 126px !important;
+    height: 184px !important;
+    opacity: .86 !important;
+    filter:
+      drop-shadow(0 12px 18px rgba(0,0,0,.46))
+      drop-shadow(0 0 14px rgba(222,151,38,.18));
+    -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 78%, transparent 100%);
+    mask-image: linear-gradient(to bottom, #000 0%, #000 78%, transparent 100%);
+  }
+
+  .highlander-home-head,
+  .highlander-home-focus {
+    padding-right: 78px !important;
+  }
+
+  .highlander-home-focus {
+    grid-template-columns: 78px minmax(0,1fr) !important;
+    gap: 10px !important;
+  }
+
+  .highlander-home-focus img:not(.competition-cup-art) {
+    width: 76px !important;
+    height: 76px !important;
+  }
+}
+
+@media (max-width: 390px) {
+  .theme-league .competition-cup-art-league {
+    right: -23px !important;
+    width: 108px !important;
+    height: 152px !important;
+  }
+
+  .theme-league .match-carousel-card-head,
+  .theme-league .match-carousel-versus,
+  .theme-league .match-carousel-meta {
+    padding-right: 62px !important;
+  }
+
+  .competition-cup-art-crashout {
+    right: -24px !important;
+    width: 112px !important;
+    height: 160px !important;
+  }
+
+  .crashout-home-head,
+  .crashout-home-versus,
+  .crashout-home-meta {
+    padding-right: 63px !important;
+  }
+
+  .competition-cup-art-highlander {
+    right: -28px !important;
+    width: 114px !important;
+    height: 169px !important;
+  }
+
+  .highlander-home-head,
+  .highlander-home-focus {
+    padding-right: 66px !important;
+  }
+
+  .highlander-home-focus {
+    grid-template-columns: 70px minmax(0,1fr) !important;
+  }
+
+  .highlander-home-focus img:not(.competition-cup-art) {
+    width: 68px !important;
+    height: 68px !important;
+  }
+}
