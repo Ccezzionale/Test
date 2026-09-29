@@ -6554,3 +6554,118 @@ nav.site-nav .toggle-submenu .app-alert-badge {
     box-shadow: inset 0 0 0 1px rgba(255,255,255,.06);
   }
 }
+
+
+/* =========================================================
+   WEEKLY MATCH CARD · LOGO CLEANUP
+   - remove team names
+   - give logos more room
+   - keep rank badges near the center
+   ========================================================= */
+@media (max-width: 900px) {
+  .home-app-v2 .weekly-broadcast-card .league-matchup-versus {
+    grid-template-columns: minmax(0,1fr) 50px minmax(0,1fr) !important;
+    min-height: 74px !important;
+    gap: 8px !important;
+  }
+
+  .home-app-v2 .weekly-broadcast-card .weekly-broadcast-team {
+    min-height: 64px !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    padding: 2px 2px !important;
+  }
+
+  .home-app-v2 .weekly-broadcast-card .weekly-home {
+    justify-content: flex-start !important;
+  }
+
+  .home-app-v2 .weekly-broadcast-card .weekly-away {
+    justify-content: flex-end !important;
+  }
+
+  .home-app-v2 .weekly-broadcast-card .weekly-broadcast-team strong {
+    display: none !important;
+  }
+
+  .home-app-v2 .weekly-broadcast-card .weekly-home img {
+    order: 1;
+  }
+
+  .home-app-v2 .weekly-broadcast-card .weekly-home em {
+    order: 2;
+  }
+
+  .home-app-v2 .weekly-broadcast-card .weekly-away em {
+    order: 1;
+  }
+
+  .home-app-v2 .weekly-broadcast-card .weekly-away img {
+    order: 2;
+    grid-column: auto !important;
+    grid-row: auto !important;
+  }
+
+  .home-app-v2 .weekly-broadcast-card .weekly-broadcast-team img {
+    width: 54px !important;
+    height: 54px !important;
+    flex: 0 0 54px;
+    object-fit: contain !important;
+    filter: drop-shadow(0 8px 10px rgba(0,0,0,.34)) !important;
+  }
+
+  .home-app-v2 .weekly-broadcast-card .weekly-broadcast-team em {
+    min-width: 30px;
+    height: 24px;
+    padding: 0 6px;
+    font-size: .54rem;
+  }
+
+  .home-app-v2 .weekly-broadcast-card .weekly-broadcast-vs {
+    width: 50px !important;
+    height: 50px !important;
+    font-size: 1.48rem !important;
+  }
+
+  .home-app-v2 .weekly-broadcast-card > small {
+    margin-top: 5px !important;
+  }
+}
+
+@media (max-width: 390px) {
+  .home-app-v2 .weekly-broadcast-card .league-matchup-versus {
+    grid-template-columns: minmax(0,1fr) 42px minmax(0,1fr) !important;
+    gap: 6px !important;
+  }
+
+  .home-app-v2 .weekly-broadcast-card .weekly-broadcast-team {
+    min-height: 58px !important;
+    gap: 6px !important;
+  }
+
+  .home-app-v2 .weekly-broadcast-card .weekly-broadcast-team img {
+    width: 46px !important;
+    height: 46px !important;
+    flex-basis: 46px;
+  }
+
+  .home-app-v2 .weekly-broadcast-card .weekly-broadcast-team em {
+    min-width: 26px;
+    height: 22px;
+    padding: 0 5px;
+    font-size: .49rem;
+  }
+
+  .home-app-v2 .weekly-broadcast-card .weekly-broadcast-vs {
+    width: 42px !important;
+    height: 42px !important;
+    font-size: 1.22rem !important;
+  }
+}
+/* =========================================================
+   HOME · TEMPORANEAMENTE NASCONDE "DALLA LEGA"
+   ========================================================= */
+.home-league-pulse-section {
+  display: none !important;
+}
