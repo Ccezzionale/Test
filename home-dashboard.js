@@ -1345,8 +1345,10 @@ function reorganizeHomeLowerSections() {
     }
   }
 
-  // 2) COMPETIZIONI: accorpiamo anche tutte le coppe/eventi.
-  if (competitionsSection && cupsSection) {
+  // 2) COMPETIZIONI:
+  // Mobile: accorpiamo Coppe & Eventi come nella Home mobile definitiva.
+  // Desktop: le teniamo separate per sfruttare lo spazio orizzontale.
+  if (window.innerWidth <= 900 && competitionsSection && cupsSection) {
     const competitionTrack = competitionsSection.querySelector('.competition-track, .home-horizontal-track');
     const cupTrack = cupsSection.querySelector('.cup-track, .home-horizontal-track');
 

@@ -7600,3 +7600,1180 @@ nav.site-nav .toggle-submenu .app-alert-badge {
     gap: 10px !important;
   }
 }
+
+/* =========================================================
+   HOME DESKTOP V1 · PROPOSTA 1
+   Dashboard della Lega. Mobile invariato.
+   ========================================================= */
+@media (min-width: 901px) {
+  html {
+    background: #eaf3fb;
+  }
+
+  body {
+    min-height: 100vh;
+    color: #10213d;
+    background:
+      radial-gradient(900px 420px at 8% 0%, rgba(0, 103, 210, .18), transparent 68%),
+      radial-gradient(720px 360px at 92% 8%, rgba(255, 198, 45, .10), transparent 66%),
+      linear-gradient(180deg, #edf6ff 0%, #f6f9fd 46%, #edf4fa 100%) !important;
+    transition: background .30s ease;
+  }
+
+  body.home-app-theme-crashout {
+    background:
+      radial-gradient(900px 430px at 8% 0%, rgba(173, 31, 210, .13), transparent 68%),
+      radial-gradient(780px 390px at 92% 10%, rgba(55, 80, 255, .10), transparent 68%),
+      linear-gradient(180deg, #f3efff 0%, #f8f6fc 48%, #edf3f9 100%) !important;
+  }
+
+  body.home-app-theme-highlander {
+    background:
+      radial-gradient(900px 430px at 8% 0%, rgba(210, 154, 36, .15), transparent 68%),
+      radial-gradient(760px 390px at 92% 10%, rgba(109, 65, 20, .08), transparent 68%),
+      linear-gradient(180deg, #faf5e8 0%, #f7f8f7 48%, #edf3f8 100%) !important;
+  }
+
+  /* Navbar desktop più "prodotto", meno barra tecnica. */
+  nav.site-nav {
+    background: linear-gradient(180deg, #073f89 0%, #043371 100%) !important;
+    border-bottom: 1px solid rgba(255,255,255,.12) !important;
+    box-shadow: 0 10px 28px rgba(0,43,96,.18) !important;
+  }
+
+  nav.site-nav .nav-inner {
+    max-width: 1500px !important;
+    min-height: 70px !important;
+    padding: 0 24px !important;
+    gap: 14px !important;
+  }
+
+  nav.site-nav .nav-left {
+    gap: 10px !important;
+  }
+
+  nav.site-nav .nav-left::after {
+    content: "Lega degli Eroi";
+    color: #fff;
+    font-size: 1.02rem;
+    font-weight: 1000;
+    letter-spacing: -.01em;
+    white-space: nowrap;
+  }
+
+  nav.site-nav .brand-home {
+    width: 44px !important;
+    height: 44px !important;
+    border: 1px solid rgba(255,255,255,.14) !important;
+    background: rgba(255,255,255,.10) !important;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.08) !important;
+  }
+
+  nav.site-nav .navbar > li > a {
+    padding: 11px 11px !important;
+    font-size: .90rem !important;
+    font-weight: 800 !important;
+  }
+
+  nav.site-nav .btn-hero {
+    min-height: 42px !important;
+    border: 1px solid rgba(255,255,255,.13) !important;
+    background: rgba(255,255,255,.09) !important;
+  }
+
+  nav.site-nav .btn-hero.warning {
+    background: rgba(255,204,0,.16) !important;
+    border-color: rgba(255,204,0,.24) !important;
+  }
+
+  /* La vecchia home desktop era l'iframe della Gazzetta. Ora resta una pagina separata. */
+  .desktop-gazzetta-section {
+    display: none !important;
+  }
+
+  .home-wrap.home-dashboard {
+    width: 100% !important;
+    max-width: 1520px !important;
+    margin: 0 auto !important;
+    padding: 26px 28px 46px !important;
+    overflow: visible !important;
+    background: transparent !important;
+  }
+
+  .mobile-app-hero.home-app-v2 {
+    display: grid !important;
+    grid-template-columns: minmax(320px, .78fr) minmax(620px, 1.72fr);
+    grid-template-areas:
+      "identity match"
+      "quick    match"
+      "weekly   weekly"
+      "featured featured"
+      "competitions competitions"
+      "cups cups"
+      "explore explore";
+    align-items: stretch;
+    gap: 22px 24px;
+    width: 100%;
+  }
+
+  .app-identity-card {
+    grid-area: identity;
+    position: relative;
+    min-height: 206px;
+    overflow: hidden;
+    padding: 31px 82px 24px 148px;
+    border: 1px solid rgba(255,255,255,.14);
+    border-radius: 24px;
+    color: #fff;
+    background:
+      radial-gradient(310px 190px at 100% 0%, rgba(33,143,255,.25), transparent 67%),
+      radial-gradient(270px 170px at 0% 100%, rgba(255,255,255,.08), transparent 68%),
+      linear-gradient(135deg, #0a54a8 0%, #063a7b 54%, #04295e 100%);
+    box-shadow: 0 18px 38px rgba(5,55,119,.22);
+  }
+
+  .app-identity-watermark {
+    position: absolute;
+    right: 46px;
+    bottom: -72px;
+    width: 220px;
+    height: 220px;
+    object-fit: contain;
+    opacity: .07;
+    filter: grayscale(1) brightness(1.35);
+    pointer-events: none;
+  }
+
+  .app-identity-mascot {
+    position: absolute;
+    left: 4px;
+    bottom: -4px;
+    z-index: 2;
+    width: 148px;
+    height: 195px;
+    object-fit: contain;
+    object-position: center bottom;
+    filter: drop-shadow(0 12px 14px rgba(0,0,0,.28));
+  }
+
+  .app-identity-copy {
+    position: relative;
+    z-index: 3;
+    min-width: 0;
+  }
+
+  .app-identity-kicker {
+    display: block;
+    margin-bottom: 7px;
+    color: #ffd94f;
+    font-size: .73rem;
+    font-weight: 1000;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+  }
+
+  .app-identity-copy h1 {
+    margin: 0 !important;
+    color: #fff !important;
+    font-size: 1.58rem !important;
+    font-weight: 1000 !important;
+    line-height: 1.04 !important;
+    letter-spacing: -.025em;
+  }
+
+  .app-identity-copy p,
+  .app-identity-copy small {
+    display: block;
+    margin: 8px 0 0;
+    color: rgba(255,255,255,.88);
+    font-size: .88rem;
+    font-weight: 800;
+    line-height: 1.25;
+  }
+
+  .app-identity-copy small {
+    margin-top: 5px;
+    color: rgba(255,255,255,.70);
+  }
+
+  .app-identity-logo {
+    position: absolute;
+    top: 22px;
+    right: 19px;
+    z-index: 3;
+    width: 64px;
+    height: 64px;
+    object-fit: contain;
+    filter: drop-shadow(0 8px 10px rgba(0,0,0,.26));
+  }
+
+  .app-role-chip {
+    position: absolute;
+    right: 18px;
+    bottom: 17px;
+    z-index: 3;
+    min-width: 62px;
+    min-height: 30px;
+    padding: 0 11px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgba(255,255,255,.20);
+    border-radius: 999px;
+    color: #fff;
+    background: rgba(255,255,255,.12);
+    font-size: .72rem;
+    font-weight: 950;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.08);
+  }
+
+  /* Azioni rapide nella colonna sinistra */
+  .home-app-v2 > .quick-actions {
+    grid-area: quick;
+    display: grid !important;
+    grid-template-columns: repeat(4, minmax(0,1fr));
+    gap: 10px;
+    margin: 0 !important;
+  }
+
+  .home-app-v2 .quick-card {
+    min-width: 0;
+    min-height: 104px;
+    padding: 11px 7px 9px;
+    border: 1px solid rgba(12,64,120,.08);
+    border-radius: 18px;
+    background: rgba(255,255,255,.92);
+    box-shadow: 0 10px 24px rgba(22,66,116,.09);
+    color: #10213d;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    text-align: center;
+    text-decoration: none;
+    transition: transform .16s ease, box-shadow .16s ease, border-color .16s ease;
+  }
+
+  .home-app-v2 .quick-card:hover {
+    transform: translateY(-3px);
+    border-color: rgba(18,99,188,.20);
+    box-shadow: 0 15px 30px rgba(22,66,116,.14);
+  }
+
+  .home-app-v2 .quick-icon {
+    width: 54px;
+    height: 54px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .home-app-v2 .quick-icon img {
+    width: 54px;
+    height: 54px;
+    object-fit: contain;
+    filter: drop-shadow(0 6px 8px rgba(7,43,89,.17));
+  }
+
+  .home-app-v2 .quick-title {
+    color: #0b2d59;
+    font-size: .78rem;
+    font-weight: 1000;
+    line-height: 1;
+  }
+
+  .home-app-v2 .quick-sub {
+    color: #718096;
+    font-size: .66rem;
+    font-weight: 800;
+    line-height: 1;
+  }
+
+  /* Il tuo match: cuore della home desktop. */
+  .match-carousel-section {
+    grid-area: match;
+    position: relative;
+    min-width: 0;
+    margin: 0 !important;
+    padding: 18px;
+    border: 1px solid rgba(17,74,137,.09);
+    border-radius: 26px;
+    background: rgba(255,255,255,.76);
+    box-shadow: 0 18px 40px rgba(16,63,113,.11);
+    backdrop-filter: blur(8px);
+  }
+
+  .match-carousel-heading {
+    min-height: 34px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 10px;
+  }
+
+  .match-carousel-heading > span {
+    color: #0b2d59;
+    font-size: 1.05rem;
+    font-weight: 1000;
+    letter-spacing: .10em;
+    text-transform: uppercase;
+  }
+
+  .match-carousel-heading > small {
+    color: #718096;
+    font-size: .78rem;
+    font-weight: 850;
+  }
+
+  .match-competition-tabs {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0,1fr));
+    gap: 7px;
+    margin: 0 0 13px;
+    padding: 5px;
+    border: 1px solid rgba(17,74,137,.08);
+    border-radius: 17px;
+    background: rgba(246,249,253,.92);
+  }
+
+  .match-competition-tab {
+    min-height: 44px;
+    padding: 0 12px;
+    border: 0;
+    border-radius: 13px;
+    color: #6c7e94;
+    background: transparent;
+    box-shadow: none;
+    font-family: inherit;
+    font-size: .78rem;
+    font-weight: 950;
+    cursor: pointer;
+    transition: transform .16s ease, background .18s ease, color .18s ease, box-shadow .18s ease;
+  }
+
+  .match-competition-tab span {
+    margin-right: 5px;
+  }
+
+  .match-competition-tab:hover:not(.is-active) {
+    color: #164f91;
+    background: #edf5ff;
+  }
+
+  .match-competition-tab.is-active {
+    color: #fff;
+    background: linear-gradient(135deg,#0e71cf 0%,#0751a3 55%,#073873 100%);
+    box-shadow: 0 8px 18px rgba(8,78,153,.20);
+  }
+
+  .match-competition-tab.is-crashout.is-active {
+    background: linear-gradient(135deg,#4d147f 0%,#ad18bd 50%,#67118c 100%);
+    box-shadow: 0 8px 20px rgba(145,28,177,.24);
+  }
+
+  .match-competition-tab.is-highlander.is-active {
+    color: #251805;
+    background: linear-gradient(135deg,#ffe783 0%,#e1ad2f 52%,#ad7310 100%);
+    box-shadow: 0 8px 20px rgba(128,83,8,.20);
+  }
+
+  .match-competition-panel {
+    min-width: 0;
+  }
+
+  .match-carousel-round-nav {
+    display: grid;
+    grid-template-columns: 42px minmax(0,1fr) 42px;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+  }
+
+  .match-carousel-arrow {
+    width: 42px;
+    height: 42px;
+    border: 1px solid rgba(12,76,148,.09);
+    border-radius: 50%;
+    background: #fff;
+    color: #0a5db5;
+    box-shadow: 0 7px 16px rgba(21,78,137,.10);
+    font-size: 1.65rem;
+    line-height: 1;
+    cursor: pointer;
+  }
+
+  .match-carousel-arrow:disabled {
+    opacity: .35;
+    cursor: default;
+  }
+
+  .match-carousel-rounds {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+
+  .match-carousel-round {
+    min-width: 52px;
+    height: 34px;
+    padding: 0 12px;
+    border: 0;
+    border-radius: 999px;
+    color: #7a899e;
+    background: transparent;
+    font-family: inherit;
+    font-size: .78rem;
+    font-weight: 950;
+    cursor: pointer;
+  }
+
+  .match-carousel-round.is-active {
+    color: #fff;
+    background: linear-gradient(135deg,#0d67bf,#073c7c);
+    box-shadow: 0 6px 14px rgba(8,76,151,.18);
+  }
+
+  .match-carousel-viewport {
+    width: 100%;
+    min-width: 0;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    border-radius: 22px;
+    outline: none;
+  }
+  .match-carousel-viewport::-webkit-scrollbar { display:none; }
+
+  .match-carousel-track {
+    display: flex;
+    width: 100%;
+    align-items: stretch;
+  }
+
+  .match-carousel-slide {
+    flex: 0 0 100%;
+    width: 100%;
+    padding: 1px;
+    scroll-snap-align: start;
+  }
+
+  .match-carousel-card {
+    position: relative;
+    isolation: isolate;
+    min-height: 270px;
+    overflow: hidden;
+    padding: 16px 20px 15px;
+    border: 1px solid rgba(244,198,68,.56);
+    border-radius: 22px;
+    color: #fff;
+    background-color: #052c61;
+    box-shadow: 0 14px 28px rgba(8,66,132,.20);
+  }
+
+  .match-carousel-card::after {
+    content: "";
+    position: absolute;
+    z-index: -1;
+    inset: 0;
+    pointer-events: none;
+    background: linear-gradient(118deg, transparent 18%, rgba(255,255,255,.045) 48%, transparent 74%);
+  }
+
+  .match-carousel-card-head,
+  .match-carousel-meta,
+  .match-carousel-versus,
+  .match-carousel-cta {
+    position: relative;
+    z-index: 4;
+  }
+
+  .match-carousel-card-head {
+    min-height: 34px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .match-carousel-card-head > span {
+    color: #ffd84d;
+    font-size: .78rem;
+    font-weight: 1000;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+  }
+
+  .match-carousel-card-head > strong {
+    min-height: 35px;
+    padding: 0 15px;
+    display: inline-flex;
+    align-items: center;
+    border: 0;
+    border-radius: 11px;
+    color: #11294a;
+    background: linear-gradient(135deg,#ffe071,#dca108);
+    font-size: .82rem;
+    font-weight: 1000;
+    letter-spacing: .07em;
+  }
+
+  .match-carousel-versus {
+    display: grid;
+    grid-template-columns: minmax(0,1fr) 86px minmax(0,1fr);
+    align-items: center;
+    gap: 10px;
+    min-height: 132px;
+    margin-top: 4px;
+  }
+
+  .match-carousel-team {
+    min-width: 0;
+    text-align: center;
+  }
+
+  .match-carousel-team img {
+    display: block;
+    width: 82px;
+    height: 82px;
+    margin: 0 auto 6px;
+    object-fit: contain;
+    filter: drop-shadow(0 9px 11px rgba(0,0,0,.34));
+  }
+
+  .match-carousel-team strong {
+    display: block;
+    max-width: 210px;
+    margin: 0 auto;
+    overflow: hidden;
+    color: #fff;
+    font-size: .84rem;
+    font-weight: 1000;
+    line-height: 1.10;
+    text-transform: uppercase;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    text-shadow: 0 2px 6px rgba(0,0,0,.28);
+  }
+
+  .match-carousel-vs {
+    color: #f3c632;
+    font-family: Impact, Haettenschweiler, "Arial Narrow Bold", sans-serif;
+    font-size: 2.25rem;
+    font-style: italic;
+    font-weight: 1000;
+    text-align: center;
+    text-shadow: 0 6px 14px rgba(243,198,50,.22);
+    transform: rotate(-4deg);
+  }
+
+  .match-carousel-score {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    gap: 7px;
+    color: #fff;
+    text-align: center;
+  }
+
+  .match-carousel-score strong {
+    font-size: 1.55rem;
+    font-weight: 1000;
+  }
+
+  .match-carousel-score span {
+    color: #f3c632;
+    font-size: 1.1rem;
+    font-weight: 1000;
+  }
+
+  .match-carousel-meta {
+    min-height: 30px;
+    padding-top: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    border-top: 1px solid rgba(255,255,255,.16);
+  }
+
+  .match-carousel-meta span {
+    color: rgba(255,255,255,.76);
+    font-size: .72rem;
+    font-weight: 850;
+  }
+
+  .match-carousel-meta strong {
+    color: #f3c632;
+    font-size: .74rem;
+    font-weight: 1000;
+    text-transform: uppercase;
+  }
+
+  .match-carousel-cta {
+    min-height: 39px;
+    margin-top: 7px;
+    padding: 0 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    border-radius: 12px;
+    color: #1b2b45;
+    background: linear-gradient(135deg,#ffe071,#dca108);
+    box-shadow: 0 7px 16px rgba(33,22,1,.18);
+    font-size: .74rem;
+    font-weight: 1000;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+  }
+
+  .match-carousel-dots {
+    min-height: 16px;
+    margin-top: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+  }
+
+  .match-carousel-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 999px;
+    background: rgba(8,67,132,.22);
+  }
+
+  .match-carousel-dot.is-active {
+    width: 20px;
+    background: #0b5eaf;
+  }
+
+  .competition-cup-art {
+    pointer-events: none;
+  }
+
+  /* Crash Out e Highlander usano gli stessi pannelli/dati del mobile, ma respirano su desktop. */
+  .crashout-home-card,
+  .highlander-home-card {
+    position: relative;
+    isolation: isolate;
+    min-height: 270px;
+    overflow: hidden;
+    padding: 18px 20px 16px;
+    border-radius: 22px;
+    color: #fff;
+    box-shadow: 0 14px 30px rgba(35,23,68,.20);
+  }
+
+  .crashout-home-card {
+    border: 1px solid rgba(239,84,255,.38);
+    background-image:
+      linear-gradient(90deg, rgba(35,5,66,.86) 0%, rgba(48,7,86,.66) 42%, rgba(40,6,70,.20) 72%, rgba(40,6,70,.06) 100%),
+      url("img/match-bg/crashout-bg.webp");
+    background-size: cover;
+    background-position: center right;
+  }
+
+  .highlander-home-card {
+    border: 1px solid rgba(220,173,53,.43);
+    background-image:
+      linear-gradient(90deg, rgba(39,22,8,.88) 0%, rgba(48,28,10,.68) 42%, rgba(36,21,9,.22) 72%, rgba(36,21,9,.08) 100%),
+      url("img/match-bg/highlander-bg.webp");
+    background-size: cover;
+    background-position: center right;
+  }
+
+  .crashout-home-head,
+  .highlander-home-head {
+    position: relative;
+    z-index: 4;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 14px;
+  }
+
+  .crashout-home-head span,
+  .highlander-home-head span {
+    display: block;
+    color: #ffd84d;
+    font-size: .76rem;
+    font-weight: 1000;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+  }
+
+  .crashout-home-head strong,
+  .highlander-home-head strong {
+    display: block;
+    margin-top: 4px;
+    color: #fff;
+    font-size: 1.05rem;
+    font-weight: 1000;
+  }
+
+  .crashout-home-head b,
+  .highlander-home-head b {
+    min-height: 31px;
+    padding: 0 12px;
+    display: inline-flex;
+    align-items: center;
+    border: 1px solid rgba(255,255,255,.20);
+    border-radius: 999px;
+    color: #fff;
+    background: rgba(0,0,0,.18);
+    font-size: .68rem;
+    font-weight: 1000;
+  }
+
+  .crashout-home-versus {
+    position: relative;
+    z-index: 4;
+    min-height: 128px;
+    display: grid;
+    grid-template-columns: minmax(0,1fr) 78px minmax(0,1fr);
+    align-items: center;
+    gap: 8px;
+  }
+
+  .crashout-home-team {
+    min-width: 0;
+    text-align: center;
+  }
+
+  .crashout-home-team img {
+    width: 78px;
+    height: 78px;
+    object-fit: contain;
+    filter: drop-shadow(0 8px 10px rgba(0,0,0,.34));
+  }
+
+  .crashout-home-team strong {
+    display: block;
+    overflow: hidden;
+    color: #fff;
+    font-size: .80rem;
+    font-weight: 1000;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .crashout-home-middle {
+    color: #ffd43d;
+    font-size: 1.85rem;
+    font-weight: 1000;
+    text-align: center;
+    text-shadow: 0 6px 14px rgba(255,212,61,.22);
+  }
+
+  .crashout-home-meta,
+  .highlander-home-stats {
+    position: relative;
+    z-index: 4;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding-top: 8px;
+    border-top: 1px solid rgba(255,255,255,.15);
+  }
+
+  .crashout-home-meta span,
+  .crashout-home-meta strong {
+    color: rgba(255,255,255,.80);
+    font-size: .71rem;
+    font-weight: 850;
+  }
+
+  .crashout-home-cta,
+  .highlander-home-cta {
+    position: relative;
+    z-index: 4;
+    min-height: 39px;
+    margin-top: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    border-radius: 12px;
+    color: #241705;
+    background: linear-gradient(135deg,#ffe071,#dca108);
+    font-size: .74rem;
+    font-weight: 1000;
+    letter-spacing: .07em;
+    text-transform: uppercase;
+  }
+
+  .highlander-home-focus {
+    position: relative;
+    z-index: 4;
+    min-height: 132px;
+    display: grid;
+    grid-template-columns: 110px minmax(0,1fr);
+    align-items: center;
+    gap: 18px;
+    padding-right: 120px;
+  }
+
+  .highlander-home-focus img:not(.competition-cup-art) {
+    width: 108px;
+    height: 108px;
+    object-fit: contain;
+    filter: drop-shadow(0 9px 12px rgba(0,0,0,.34));
+  }
+
+  .highlander-home-copy strong {
+    display: block;
+    color: #fff;
+    font-size: .94rem;
+    font-weight: 1000;
+    text-transform: uppercase;
+  }
+
+  .highlander-home-copy span {
+    display: block;
+    margin-top: 6px;
+    color: #ffd84d;
+    font-size: 1.35rem;
+    font-weight: 1000;
+  }
+
+  .highlander-home-stats > div {
+    flex: 1;
+    min-height: 42px;
+    padding: 0 12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-radius: 10px;
+    background: rgba(0,0,0,.16);
+  }
+
+  .highlander-home-stats span {
+    color: rgba(255,255,255,.72);
+    font-size: .70rem;
+    font-weight: 800;
+  }
+
+  .highlander-home-stats strong {
+    color: #ffd84d;
+    font-size: 1.08rem;
+    font-weight: 1000;
+  }
+
+  /* Match della settimana: due conference affiancate, entrambe cliccabili. */
+  .home-weekly-match-section {
+    grid-area: weekly;
+    min-width: 0;
+    margin: 4px 0 0 !important;
+  }
+
+  .home-app-heading {
+    min-height: 35px;
+    margin: 0 2px 11px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .home-app-heading::after {
+    content: "";
+    height: 1px;
+    flex: 1;
+    background: linear-gradient(90deg, rgba(16,94,179,.35), transparent);
+  }
+
+  .home-app-heading h2 {
+    margin: 0;
+    color: #0a2c57;
+    font-size: 1.03rem;
+    font-weight: 1000;
+    letter-spacing: .10em;
+    text-transform: uppercase;
+  }
+
+  .home-app-heading > span,
+  .home-app-heading > a {
+    order: 3;
+    color: #0b62bb;
+    font-size: .76rem;
+    font-weight: 900;
+    white-space: nowrap;
+  }
+
+  #dashboard-matchups.home-horizontal-track,
+  .home-app-v2 .matchup-track {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0,1fr));
+    gap: 16px !important;
+    overflow: visible !important;
+    padding: 0 !important;
+  }
+
+  .home-app-v2 .league-matchup-card.weekly-broadcast-card {
+    position: relative;
+    min-width: 0 !important;
+    width: auto !important;
+    min-height: 154px !important;
+    padding: 11px 18px 13px !important;
+    overflow: hidden;
+    border: 1px solid rgba(235,188,50,.55);
+    border-radius: 20px;
+    color: #fff;
+    background:
+      linear-gradient(125deg, rgba(4,30,68,.96), rgba(5,46,98,.93) 58%, rgba(5,37,78,.96));
+    box-shadow: 0 13px 28px rgba(9,56,110,.17);
+  }
+
+  .home-app-v2 .weekly-broadcast-card .league-matchup-label {
+    min-height: 25px;
+    margin: 0 0 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+
+  .home-app-v2 .weekly-broadcast-card .league-matchup-label span {
+    color: #ffd84d;
+    font-size: .67rem;
+    font-weight: 1000;
+    letter-spacing: .05em;
+    text-transform: uppercase;
+  }
+
+  .home-app-v2 .weekly-broadcast-card .league-matchup-label b {
+    min-width: 28px;
+    height: 21px;
+    padding: 0 7px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 999px;
+    color: #11294a;
+    background: #f2c63e;
+    font-size: .56rem;
+    font-weight: 1000;
+  }
+
+  .home-app-v2 .weekly-broadcast-card .league-matchup-versus {
+    display: grid;
+    grid-template-columns: minmax(0,1fr) 62px minmax(0,1fr);
+    align-items: center;
+    gap: 9px;
+    min-height: 101px;
+  }
+
+  .home-app-v2 .weekly-broadcast-card .weekly-broadcast-team {
+    min-width: 0;
+    display: grid;
+    grid-template-columns: 64px minmax(0,1fr);
+    grid-template-rows: auto auto;
+    align-items: center;
+    gap: 3px 9px;
+  }
+
+  .home-app-v2 .weekly-broadcast-card .weekly-away {
+    grid-template-columns: minmax(0,1fr) 64px;
+    text-align: right;
+  }
+
+  .home-app-v2 .weekly-broadcast-card .weekly-broadcast-team img:not(.matchup-watermark) {
+    width: 62px;
+    height: 62px;
+    object-fit: contain;
+    filter: drop-shadow(0 7px 9px rgba(0,0,0,.28));
+  }
+
+  .home-app-v2 .weekly-broadcast-card .weekly-home img:not(.matchup-watermark) {
+    grid-column: 1;
+    grid-row: 1 / 3;
+  }
+
+  .home-app-v2 .weekly-broadcast-card .weekly-away img:not(.matchup-watermark) {
+    grid-column: 2;
+    grid-row: 1 / 3;
+  }
+
+  .home-app-v2 .weekly-broadcast-card .weekly-broadcast-team strong {
+    display: block;
+    min-width: 0;
+    overflow: hidden;
+    color: #fff;
+    font-size: .76rem;
+    font-weight: 1000;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .home-app-v2 .weekly-broadcast-card .weekly-home strong { grid-column:2; grid-row:1; }
+  .home-app-v2 .weekly-broadcast-card .weekly-away strong { grid-column:1; grid-row:1; }
+
+  .home-app-v2 .weekly-broadcast-card .weekly-broadcast-team em {
+    width: max-content;
+    min-height: 24px;
+    padding: 0 9px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgba(244,199,56,.80);
+    border-radius: 999px;
+    color: #f7d45f;
+    background: rgba(2,21,49,.68);
+    font-size: .57rem;
+    font-weight: 950;
+    font-style: normal;
+  }
+
+  .home-app-v2 .weekly-broadcast-card .weekly-broadcast-team em::after { content:" in classifica"; }
+  .home-app-v2 .weekly-broadcast-card .weekly-home em { grid-column:2; grid-row:2; justify-self:start; }
+  .home-app-v2 .weekly-broadcast-card .weekly-away em { grid-column:1; grid-row:2; justify-self:end; }
+
+  .home-app-v2 .weekly-broadcast-card .weekly-broadcast-vs {
+    width: 62px;
+    height: 66px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #f2c63e;
+    font-size: 1.48rem;
+    font-weight: 1000;
+    font-style: italic;
+    text-shadow: 0 5px 11px rgba(241,190,38,.24);
+  }
+
+  .home-app-v2 .weekly-broadcast-card > small,
+  .home-app-v2 .weekly-broadcast-card .matchup-watermark {
+    display: none !important;
+  }
+
+  /* Lower content: dashboard grids, niente carousel da telefono. */
+  .home-app-v2 > section[aria-labelledby="featured-title"] { grid-area: featured; }
+  .home-app-v2 > section[aria-labelledby="competitions-title"] { grid-area: competitions; }
+  .home-app-v2 > section[aria-labelledby="cups-title"] { grid-area: cups; }
+  .home-app-v2 > .explore-section { grid-area: explore; }
+  .home-app-v2 > .home-league-pulse-section { display:none !important; }
+
+  .home-app-v2 .home-horizontal-track,
+  .home-app-v2 .featured-track,
+  .home-app-v2 .competition-track,
+  .home-app-v2 .cup-track,
+  .home-app-v2 .explore-grid {
+    overflow: visible !important;
+    padding: 0 !important;
+    scrollbar-width: none;
+  }
+
+  .home-app-v2 .featured-track {
+    display: grid !important;
+    grid-template-columns: repeat(3, minmax(0,1fr));
+    gap: 16px !important;
+  }
+
+  .home-app-v2 .competition-track {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0,1fr));
+    gap: 16px !important;
+  }
+
+  .home-app-v2 .cup-track {
+    display: grid !important;
+    grid-template-columns: repeat(4, minmax(0,1fr));
+    gap: 16px !important;
+  }
+
+  .home-app-v2 .explore-grid {
+    display: grid !important;
+    grid-template-columns: repeat(4, minmax(0,1fr));
+    gap: 16px !important;
+  }
+
+  .home-app-v2 .home-image-card {
+    position: relative;
+    min-width: 0 !important;
+    width: auto !important;
+    overflow: hidden;
+    border: 1px solid rgba(15,66,123,.10);
+    border-radius: 20px;
+    background: #fff;
+    box-shadow: 0 11px 25px rgba(19,65,114,.10);
+    transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+  }
+
+  .home-app-v2 .home-image-card:hover {
+    transform: translateY(-4px);
+    border-color: rgba(18,103,194,.22);
+    box-shadow: 0 17px 34px rgba(19,65,114,.15);
+  }
+
+  .home-app-v2 .featured-card {
+    aspect-ratio: 1.52 / 1;
+  }
+
+  .home-app-v2 .competition-app-card,
+  .home-app-v2 .cup-app-card,
+  .home-app-v2 .explore-card {
+    aspect-ratio: 1 / 1;
+  }
+
+  .home-app-v2 .home-image-card img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .home-app-v2 .competition-app-card img,
+  .home-app-v2 .cup-app-card img,
+  .home-app-v2 .explore-card img {
+    object-fit: cover;
+  }
+
+  /* Stati vuoti/caricamento */
+  .home-app-v2 .loading-card {
+    min-height: 130px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px dashed rgba(12,74,143,.18);
+    border-radius: 18px;
+    background: rgba(255,255,255,.70);
+    color: #718096;
+    font-weight: 850;
+  }
+
+}
+
+/* Responsività desktop/tablet larga senza ricadere nella UI mobile. */
+@media (min-width: 901px) and (max-width: 1180px) {
+  .home-wrap.home-dashboard {
+    padding-left: 18px !important;
+    padding-right: 18px !important;
+  }
+
+  .mobile-app-hero.home-app-v2 {
+    grid-template-columns: 330px minmax(0,1fr);
+    gap: 18px;
+  }
+
+  .app-identity-card {
+    padding-left: 128px;
+  }
+
+  .app-identity-mascot {
+    width: 128px;
+  }
+
+  .home-app-v2 .featured-track {
+    grid-template-columns: repeat(3, minmax(0,1fr));
+  }
+
+  .home-app-v2 .cup-track,
+  .home-app-v2 .explore-grid {
+    grid-template-columns: repeat(2, minmax(0,1fr));
+  }
+}
