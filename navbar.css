@@ -7281,3 +7281,277 @@ nav.site-nav .toggle-submenu .app-alert-badge {
     --home-glow-side: rgba(0, 35, 95, .17);
   }
 }
+
+/* =========================================================
+   MATCH DELLA SETTIMANA · SOLUZIONE 2 ULTRA-COMPACT
+   Più bassa, rettangolare, essenziale.
+   Logo + nome + posizione, VS centrale con separatori.
+   ========================================================= */
+@media (max-width: 900px) {
+  .home-app-v2 .league-matchup-card.weekly-broadcast-card {
+    min-height: 0 !important;
+    height: 108px !important;
+    padding: 7px 11px 8px !important;
+    border-radius: 18px !important;
+    overflow: hidden !important;
+  }
+
+  .home-app-v2 .weekly-broadcast-card .league-matchup-label {
+    min-height: 22px !important;
+    margin: 0 0 2px !important;
+    padding: 0 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 7px !important;
+  }
+
+  .home-app-v2 .weekly-broadcast-card .league-matchup-label span {
+    color: #ffd84d !important;
+    font-size: .57rem !important;
+    font-weight: 1000 !important;
+    letter-spacing: .035em !important;
+    line-height: 1 !important;
+    text-transform: uppercase !important;
+  }
+
+  .home-app-v2 .weekly-broadcast-card .league-matchup-label b {
+    min-width: 25px !important;
+    height: 19px !important;
+    padding: 0 6px !important;
+    border: 0 !important;
+    border-radius: 999px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    color: #12294a !important;
+    background: #f2c63e !important;
+    font-size: .52rem !important;
+    font-weight: 1000 !important;
+    line-height: 1 !important;
+  }
+
+  .home-app-v2 .weekly-broadcast-card .league-matchup-versus {
+    display: grid !important;
+    grid-template-columns: minmax(0,1fr) 43px minmax(0,1fr) !important;
+    align-items: center !important;
+    gap: 5px !important;
+    min-height: 68px !important;
+    height: 68px !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  .home-app-v2 .weekly-broadcast-card .weekly-broadcast-team,
+  .home-app-v2 .weekly-broadcast-card .weekly-home,
+  .home-app-v2 .weekly-broadcast-card .weekly-away {
+    position: relative !important;
+    min-width: 0 !important;
+    min-height: 0 !important;
+    height: 62px !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    display: grid !important;
+    align-items: center !important;
+    column-gap: 7px !important;
+    row-gap: 1px !important;
+  }
+
+  .home-app-v2 .weekly-broadcast-card .weekly-home {
+    grid-template-columns: 45px minmax(0,1fr) !important;
+    grid-template-rows: auto auto !important;
+    text-align: left !important;
+  }
+
+  .home-app-v2 .weekly-broadcast-card .weekly-away {
+    grid-template-columns: minmax(0,1fr) 45px !important;
+    grid-template-rows: auto auto !important;
+    text-align: right !important;
+  }
+
+  .home-app-v2 .weekly-broadcast-card .weekly-broadcast-team img:not(.matchup-watermark) {
+    display: block !important;
+    width: 44px !important;
+    height: 44px !important;
+    min-width: 44px !important;
+    max-width: 44px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    object-fit: contain !important;
+    transform: none !important;
+    filter: drop-shadow(0 5px 7px rgba(0,0,0,.30)) !important;
+  }
+
+  .home-app-v2 .weekly-broadcast-card .weekly-home img:not(.matchup-watermark) {
+    grid-column: 1 !important;
+    grid-row: 1 / 3 !important;
+  }
+
+  .home-app-v2 .weekly-broadcast-card .weekly-away img:not(.matchup-watermark) {
+    grid-column: 2 !important;
+    grid-row: 1 / 3 !important;
+  }
+
+  .home-app-v2 .weekly-broadcast-card .weekly-broadcast-team strong {
+    display: block !important;
+    min-width: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+    color: #fff !important;
+    font-size: .57rem !important;
+    font-weight: 950 !important;
+    line-height: 1.05 !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+    text-transform: none !important;
+    text-shadow: 0 2px 5px rgba(0,0,0,.35) !important;
+  }
+
+  .home-app-v2 .weekly-broadcast-card .weekly-home strong {
+    grid-column: 2 !important;
+    grid-row: 1 !important;
+  }
+
+  .home-app-v2 .weekly-broadcast-card .weekly-away strong {
+    grid-column: 1 !important;
+    grid-row: 1 !important;
+  }
+
+  .home-app-v2 .weekly-broadcast-card .weekly-broadcast-team em {
+    display: inline-flex !important;
+    width: max-content !important;
+    min-width: 0 !important;
+    height: 19px !important;
+    margin: 0 !important;
+    padding: 0 7px !important;
+    align-items: center !important;
+    justify-content: center !important;
+    border: 1px solid rgba(244,199,56,.85) !important;
+    border-radius: 999px !important;
+    color: #f7d45f !important;
+    background: rgba(2,21,49,.78) !important;
+    box-shadow: none !important;
+    font-size: .46rem !important;
+    font-weight: 950 !important;
+    font-style: normal !important;
+    line-height: 1 !important;
+    white-space: nowrap !important;
+  }
+
+  .home-app-v2 .weekly-broadcast-card .weekly-broadcast-team em::after {
+    content: " in classifica";
+  }
+
+  .home-app-v2 .weekly-broadcast-card .weekly-home em {
+    grid-column: 2 !important;
+    grid-row: 2 !important;
+    justify-self: start !important;
+  }
+
+  .home-app-v2 .weekly-broadcast-card .weekly-away em {
+    grid-column: 1 !important;
+    grid-row: 2 !important;
+    justify-self: end !important;
+  }
+
+  /* Disattiva il vecchio badge pseudo generato dalle versioni precedenti. */
+  .home-app-v2 .weekly-broadcast-card .league-matchup-versus > div[data-rank]::after {
+    content: none !important;
+    display: none !important;
+  }
+
+  .home-app-v2 .weekly-broadcast-card .weekly-broadcast-vs {
+    position: relative !important;
+    width: 43px !important;
+    height: 54px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    color: #f2c63e !important;
+    background: transparent !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    font-size: 1.16rem !important;
+    font-weight: 1000 !important;
+    font-style: italic !important;
+    text-shadow: 0 4px 10px rgba(241,190,38,.25) !important;
+    transform: none !important;
+  }
+
+  .home-app-v2 .weekly-broadcast-card .weekly-broadcast-vs::before,
+  .home-app-v2 .weekly-broadcast-card .weekly-broadcast-vs::after {
+    content: "" !important;
+    position: absolute !important;
+    top: 7px !important;
+    bottom: 7px !important;
+    width: 1px !important;
+    height: auto !important;
+    opacity: 1 !important;
+    background: linear-gradient(180deg, transparent, rgba(243,199,62,.55), transparent) !important;
+  }
+
+  .home-app-v2 .weekly-broadcast-card .weekly-broadcast-vs::before {
+    left: 0 !important;
+  }
+
+  .home-app-v2 .weekly-broadcast-card .weekly-broadcast-vs::after {
+    right: 0 !important;
+  }
+
+  .home-app-v2 .weekly-broadcast-card > small,
+  .home-app-v2 .weekly-broadcast-card .matchup-watermark {
+    display: none !important;
+  }
+}
+
+@media (max-width: 390px) {
+  .home-app-v2 .league-matchup-card.weekly-broadcast-card {
+    height: 102px !important;
+    padding-left: 8px !important;
+    padding-right: 8px !important;
+  }
+
+  .home-app-v2 .weekly-broadcast-card .league-matchup-versus {
+    grid-template-columns: minmax(0,1fr) 37px minmax(0,1fr) !important;
+    gap: 3px !important;
+    height: 64px !important;
+    min-height: 64px !important;
+  }
+
+  .home-app-v2 .weekly-broadcast-card .weekly-home {
+    grid-template-columns: 39px minmax(0,1fr) !important;
+    column-gap: 5px !important;
+  }
+
+  .home-app-v2 .weekly-broadcast-card .weekly-away {
+    grid-template-columns: minmax(0,1fr) 39px !important;
+    column-gap: 5px !important;
+  }
+
+  .home-app-v2 .weekly-broadcast-card .weekly-broadcast-team img:not(.matchup-watermark) {
+    width: 38px !important;
+    height: 38px !important;
+    min-width: 38px !important;
+    max-width: 38px !important;
+  }
+
+  .home-app-v2 .weekly-broadcast-card .weekly-broadcast-team strong {
+    font-size: .51rem !important;
+  }
+
+  .home-app-v2 .weekly-broadcast-card .weekly-broadcast-team em {
+    height: 18px !important;
+    padding: 0 5px !important;
+    font-size: .42rem !important;
+  }
+
+  .home-app-v2 .weekly-broadcast-card .weekly-broadcast-vs {
+    width: 37px !important;
+    height: 50px !important;
+    font-size: 1.03rem !important;
+  }
+}
