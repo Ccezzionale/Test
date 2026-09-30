@@ -1269,7 +1269,77 @@ async function renderHomeHighlanderTab(context) {
   }
 }
 
+
+// =========================================================
+// HOME · RIORDINO SEZIONI INFERIORI
+// - In evidenza: Gazzetta + All Star
+// - Competizioni: unisce Competizioni + Coppe & Eventi
+// - Esplora: aggiunge Regolamento
+// Nessuna modifica alle logiche delle competizioni.
+// =========================================================
+function reorganizeHomeLowerSections() {
+  const sections = [...document.querySelectorAll('.home-app-section')];
+
+  const normalizeHeading = value => String(value || '')
+    .trim()
+    .toLowerCase()
+    .replace(/\s+/g, ' ');
+
+  const findSection = title => sections.find(section => {
+    const heading = section.querySelector('.home-app-heading h2');
+    return normalizeHeading(heading?.textContent) === normalizeHeading(title);
+  });
+
+  const featuredSection = findSection('In evidenza');
+  const competitionsSection = findSection('Competizioni');
+  const cupsSection = findSection('Coppe & Eventi');
+  const exploreSection = findSection('Esplora');
+
+  // 1) IN EVIDENZA: teniamo solo contenuti realmente editoriali/evento.
+  if (featuredSection) {
+    const featuredTrack = featuredSection.querySelector('.featured-track, .home-horizontal-track');
+    if (featuredTrack) {
+      [...featuredTrack.querySelectorAll('a.home-image-card')].forEach(card => {
+        const href = String(card.getAttribute('href') || '').toLowerCase();
+        const keep = href.includes('giornale.html') || href.includes('allstar.html');
+        if (!keep) card.remove();
+      });
+    }
+  }
+
+  // 2) COMPETIZIONI: accorpiamo anche tutte le coppe/eventi.
+  if (competitionsSection && cupsSection) {
+    const competitionTrack = competitionsSection.querySelector('.competition-track, .home-horizontal-track');
+    const cupTrack = cupsSection.querySelector('.cup-track, .home-horizontal-track');
+
+    if (competitionTrack && cupTrack) {
+      [...cupTrack.querySelectorAll('a.home-image-card')].forEach(card => {
+        card.classList.remove('cup-app-card');
+        card.classList.add('competition-app-card');
+        competitionTrack.appendChild(card);
+      });
+    }
+
+    cupsSection.remove();
+  }
+
+  // 3) ESPLORA: Regolamento come voce permanente della lega.
+  if (exploreSection) {
+    const exploreTrack = exploreSection.querySelector('.explore-grid');
+    if (exploreTrack && !exploreTrack.querySelector('a[href*="regolamento"]')) {
+      const regulationCard = document.createElement('a');
+      regulationCard.href = 'regolamento.html';
+      regulationCard.className = 'home-image-card explore-card';
+      regulationCard.innerHTML = `
+        <img src="img/maglie/evidenzaregolamento.webp?v=20260915-2" alt="Regolamento" loading="lazy">
+      `;
+      exploreTrack.appendChild(regulationCard);
+    }
+  }
+}
+
 async function initHomeDashboard() {
+  reorganizeHomeLowerSections();
   setupHomeMatchTabs();
   const context = await loadDashboardTeam();
   const [rowsResult] = await Promise.allSettled([loadResultsRows(), loadWaiverCountdown(), loadLatestTrade()]);

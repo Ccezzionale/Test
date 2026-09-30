@@ -7555,3 +7555,48 @@ nav.site-nav .toggle-submenu .app-alert-badge {
     font-size: 1.03rem !important;
   }
 }
+/* =========================================================
+   HOME V8 · SEZIONI INFERIORI PIÙ PULITE
+   ========================================================= */
+@media (max-width: 900px) {
+  /* Competizioni ora contiene anche Coppe & Eventi: un solo linguaggio visivo. */
+  .home-app-v2 .competition-track {
+    align-items: stretch !important;
+    gap: 10px !important;
+  }
+
+  .home-app-v2 .competition-track .competition-app-card {
+    width: 48% !important;
+    aspect-ratio: 1 / 1 !important;
+    border: 1px solid rgba(218, 166, 42, .34) !important;
+    border-radius: 20px !important;
+    background: transparent !important;
+    box-shadow:
+      0 10px 22px rgba(14, 52, 96, .12),
+      0 0 0 1px rgba(255,255,255,.18) inset !important;
+  }
+
+  .home-app-v2 .competition-track .competition-app-card img {
+    border-radius: 19px !important;
+  }
+
+  /* Esplora resta volutamente più sobria rispetto alle competizioni. */
+  .home-app-v2 .explore-grid {
+    gap: 10px !important;
+  }
+
+  .home-app-v2 .explore-card {
+    width: 48% !important;
+    border-color: rgba(13, 64, 120, .10) !important;
+    box-shadow: 0 8px 18px rgba(14, 52, 96, .09) !important;
+  }
+
+  .home-app-v2 .explore-card img {
+    filter: saturate(.96) contrast(.99);
+  }
+
+  /* Dopo la semplificazione, In evidenza respira un po' di più. */
+  .home-app-v2 .featured-track {
+    gap: 10px !important;
+  }
+}
