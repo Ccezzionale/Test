@@ -8777,3 +8777,655 @@ nav.site-nav .toggle-submenu .app-alert-badge {
     grid-template-columns: repeat(2, minmax(0,1fr));
   }
 }
+
+
+/* =========================================================
+   HOME DESKTOP V2 · COMPACT DASHBOARD
+   Più vicino alla proposta scelta:
+   3 colonne, sidebar reale, densità da desktop.
+   SOLO desktop. Mobile invariato.
+   ========================================================= */
+@media (min-width: 901px) {
+
+  .home-wrap.home-dashboard{
+    max-width: 1460px !important;
+    width: calc(100% - 28px) !important;
+    margin: 0 auto !important;
+    padding: 14px 0 34px !important;
+  }
+
+  .mobile-app-hero.home-app-v2{
+    display:grid !important;
+    grid-template-columns: 350px minmax(0, 1fr) 300px !important;
+    grid-template-areas:
+      "identity match sidebar"
+      "quick    match sidebar"
+      "weekly   weekly sidebar"
+      "featured featured sidebar"
+      "competitions competitions competitions"
+      "cups cups cups"
+      "explore explore explore" !important;
+    gap:14px 16px !important;
+    align-items:start !important;
+  }
+
+  /* ===== TEAM: più compatta, come nel mockup ===== */
+  .app-identity-card{
+    grid-area:identity;
+    min-height:190px !important;
+    height:190px;
+    padding:24px 66px 18px 126px !important;
+    border-radius:20px !important;
+  }
+
+  .app-identity-mascot{
+    width:126px !important;
+    height:178px !important;
+    left:0 !important;
+    bottom:-2px !important;
+  }
+
+  .app-identity-logo{
+    width:58px !important;
+    height:58px !important;
+    top:17px !important;
+    right:15px !important;
+  }
+
+  .app-identity-watermark{
+    width:180px !important;
+    height:180px !important;
+    right:30px !important;
+    bottom:-64px !important;
+  }
+
+  .app-identity-copy h1{
+    font-size:1.38rem !important;
+  }
+
+  .app-identity-copy p,
+  .app-identity-copy small{
+    font-size:.78rem !important;
+  }
+
+  .app-role-chip{
+    right:14px !important;
+    bottom:13px !important;
+    min-height:27px !important;
+    font-size:.67rem !important;
+  }
+
+  /* ===== QUICK ACTIONS: fascia corta sotto la squadra ===== */
+  .home-app-v2 > .quick-actions{
+    grid-area:quick;
+    grid-template-columns:repeat(4,minmax(0,1fr)) !important;
+    gap:8px !important;
+    height:94px;
+  }
+
+  .home-app-v2 .quick-card{
+    min-height:94px !important;
+    height:94px;
+    padding:7px 4px !important;
+    border-radius:16px !important;
+    gap:3px !important;
+  }
+
+  .home-app-v2 .quick-icon,
+  .home-app-v2 .quick-icon img{
+    width:45px !important;
+    height:45px !important;
+  }
+
+  .home-app-v2 .quick-title{ font-size:.70rem !important; }
+  .home-app-v2 .quick-sub{ font-size:.59rem !important; }
+
+  /* ===== IL TUO MATCH: forte, ma non mezza pagina ===== */
+  .match-carousel-section{
+    grid-area:match;
+    min-height:298px !important;
+    height:298px;
+    padding:12px !important;
+    border-radius:20px !important;
+  }
+
+  .match-carousel-heading{
+    min-height:27px !important;
+    margin-bottom:6px !important;
+  }
+
+  .match-carousel-heading > span{
+    font-size:.92rem !important;
+  }
+
+  .match-carousel-heading > small{
+    font-size:.69rem !important;
+  }
+
+  .match-competition-tabs{
+    gap:5px !important;
+    margin-bottom:7px !important;
+    padding:4px !important;
+    border-radius:14px !important;
+  }
+
+  .match-competition-tab{
+    min-height:35px !important;
+    font-size:.70rem !important;
+    border-radius:10px !important;
+  }
+
+  .match-carousel-round-nav{
+    grid-template-columns:34px minmax(0,1fr) 34px !important;
+    gap:6px !important;
+    margin-bottom:5px !important;
+  }
+
+  .match-carousel-arrow{
+    width:34px !important;
+    height:34px !important;
+    font-size:1.35rem !important;
+  }
+
+  .match-carousel-round{
+    min-width:43px !important;
+    height:28px !important;
+    font-size:.68rem !important;
+  }
+
+  .match-carousel-card{
+    min-height:176px !important;
+    height:176px;
+    padding:10px 14px 9px !important;
+    border-radius:18px !important;
+  }
+
+  .match-carousel-card-head{
+    min-height:26px !important;
+  }
+
+  .match-carousel-card-head > span{
+    font-size:.67rem !important;
+  }
+
+  .match-carousel-card-head > strong{
+    min-height:29px !important;
+    padding:0 12px !important;
+    font-size:.69rem !important;
+  }
+
+  .match-carousel-versus{
+    min-height:89px !important;
+    grid-template-columns:minmax(0,1fr) 62px minmax(0,1fr) !important;
+    margin-top:0 !important;
+  }
+
+  .match-carousel-team img{
+    width:60px !important;
+    height:60px !important;
+    margin-bottom:2px !important;
+  }
+
+  .match-carousel-team strong{
+    font-size:.70rem !important;
+  }
+
+  .match-carousel-vs{
+    font-size:1.75rem !important;
+  }
+
+  .match-carousel-meta{
+    min-height:22px !important;
+    padding-top:4px !important;
+  }
+
+  .match-carousel-meta span,
+  .match-carousel-meta strong{
+    font-size:.62rem !important;
+  }
+
+  .match-carousel-cta{
+    min-height:31px !important;
+    margin-top:4px !important;
+    border-radius:9px !important;
+    font-size:.64rem !important;
+  }
+
+  .match-carousel-dots{
+    min-height:9px !important;
+    margin-top:3px !important;
+  }
+
+  .match-carousel-dot{
+    width:5px !important;
+    height:5px !important;
+  }
+
+  .match-carousel-dot.is-active{
+    width:18px !important;
+  }
+
+  /* Crash/Highlander nella stessa altezza del Campionato */
+  .crashout-home-card,
+  .highlander-home-card{
+    min-height:215px !important;
+    height:215px;
+    padding:13px 15px 11px !important;
+    border-radius:18px !important;
+  }
+
+  .crashout-home-versus{
+    min-height:100px !important;
+  }
+
+  .crashout-home-team img{
+    width:61px !important;
+    height:61px !important;
+  }
+
+  .highlander-home-focus{
+    min-height:100px !important;
+    grid-template-columns:86px minmax(0,1fr) !important;
+    padding-right:90px !important;
+  }
+
+  .highlander-home-focus img:not(.competition-cup-art){
+    width:82px !important;
+    height:82px !important;
+  }
+
+  .highlander-home-copy span{
+    font-size:1.05rem !important;
+  }
+
+  /* ===== SIDEBAR DESTRA ===== */
+  .desktop-dashboard-sidebar{
+    grid-area:sidebar;
+    display:flex;
+    flex-direction:column;
+    gap:11px;
+    min-width:0;
+  }
+
+  .desktop-side-card{
+    overflow:hidden;
+    border:1px solid rgba(14,68,127,.09);
+    border-radius:17px;
+    background:rgba(255,255,255,.90);
+    box-shadow:0 9px 22px rgba(21,66,115,.08);
+  }
+
+  .desktop-side-head{
+    min-height:38px;
+    padding:0 13px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:8px;
+    border-bottom:1px solid rgba(14,68,127,.07);
+  }
+
+  .desktop-side-head h2{
+    margin:0;
+    color:#0a2c57;
+    font-size:.76rem;
+    font-weight:1000;
+    letter-spacing:.10em;
+    text-transform:uppercase;
+  }
+
+  .desktop-side-head a{
+    color:#0861b9;
+    font-size:.59rem;
+    font-weight:900;
+    white-space:nowrap;
+  }
+
+  .desktop-home-standings{
+    padding:6px 8px 8px;
+  }
+
+  .desktop-standing-row{
+    min-height:32px;
+    display:grid;
+    grid-template-columns:20px 25px minmax(0,1fr) 28px;
+    align-items:center;
+    gap:6px;
+    padding:3px 7px;
+    border-radius:9px;
+    color:#41536b;
+  }
+
+  .desktop-standing-row.is-current{
+    background:#fff0b9;
+    color:#10213d;
+  }
+
+  .desktop-standing-pos{
+    text-align:center;
+    font-size:.63rem;
+    font-weight:1000;
+  }
+
+  .desktop-standing-row img{
+    width:23px;
+    height:23px;
+    object-fit:contain;
+  }
+
+  .desktop-standing-row strong{
+    min-width:0;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+    font-size:.65rem;
+    font-weight:900;
+  }
+
+  .desktop-standing-row b{
+    color:#0b2e5a;
+    text-align:right;
+    font-size:.67rem;
+    font-weight:1000;
+  }
+
+  .desktop-side-loading{
+    padding:14px 10px;
+    color:#718096;
+    font-size:.67rem;
+    font-weight:800;
+  }
+
+  .desktop-status-grid{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:5px;
+    padding:10px 8px 11px;
+  }
+
+  .desktop-status-grid > div{
+    min-width:0;
+    text-align:center;
+  }
+
+  .desktop-status-grid span{
+    display:block;
+    height:18px;
+    color:#d49300;
+    font-size:.88rem;
+    line-height:18px;
+  }
+
+  .desktop-status-grid strong{
+    display:block;
+    margin-top:2px;
+    color:#0b2d59;
+    font-size:.82rem;
+    font-weight:1000;
+  }
+
+  .desktop-status-grid small{
+    display:block;
+    margin-top:2px;
+    color:#7d899a;
+    font-size:.50rem;
+    font-weight:800;
+    white-space:nowrap;
+  }
+
+  .desktop-alerts-card{
+    padding-bottom:5px;
+  }
+
+  .desktop-alert-row{
+    min-height:42px;
+    margin:0 6px;
+    padding:5px 6px;
+    display:grid;
+    grid-template-columns:31px minmax(0,1fr);
+    align-items:center;
+    gap:7px;
+    border-bottom:1px solid rgba(15,64,117,.06);
+    color:#10213d;
+  }
+
+  .desktop-alert-row:last-child{
+    border-bottom:0;
+  }
+
+  .desktop-alert-icon{
+    width:29px;
+    height:29px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    border-radius:9px;
+    background:#edf5ff;
+    font-size:.82rem;
+  }
+
+  .desktop-alert-row strong,
+  .desktop-alert-row small{
+    display:block;
+    min-width:0;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+  }
+
+  .desktop-alert-row strong{
+    font-size:.63rem;
+    font-weight:1000;
+  }
+
+  .desktop-alert-row small{
+    margin-top:2px;
+    color:#7a8798;
+    font-size:.53rem;
+    font-weight:700;
+  }
+
+  .desktop-side-banner{
+    overflow:hidden;
+    display:block;
+    aspect-ratio:1.78 / 1;
+    border:1px solid rgba(15,64,117,.09);
+    border-radius:17px;
+    box-shadow:0 10px 22px rgba(21,66,115,.09);
+  }
+
+  .desktop-side-banner img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    display:block;
+  }
+
+  /* ===== MATCH SETTIMANA: due card molto compatte ===== */
+  .home-weekly-match-section{
+    grid-area:weekly;
+    margin:0 !important;
+  }
+
+  .home-app-heading{
+    min-height:27px !important;
+    margin:0 2px 7px !important;
+  }
+
+  .home-app-heading h2{
+    font-size:.84rem !important;
+  }
+
+  .home-app-heading > span,
+  .home-app-heading > a{
+    font-size:.62rem !important;
+  }
+
+  #dashboard-matchups.home-horizontal-track,
+  .home-app-v2 .matchup-track{
+    gap:12px !important;
+  }
+
+  .home-app-v2 .league-matchup-card.weekly-broadcast-card{
+    min-height:112px !important;
+    height:112px;
+    padding:7px 13px 8px !important;
+    border-radius:17px !important;
+  }
+
+  .home-app-v2 .weekly-broadcast-card .league-matchup-label{
+    min-height:19px !important;
+    margin-bottom:1px !important;
+  }
+
+  .home-app-v2 .weekly-broadcast-card .league-matchup-versus{
+    min-height:76px !important;
+    grid-template-columns:minmax(0,1fr) 48px minmax(0,1fr) !important;
+  }
+
+  .home-app-v2 .weekly-broadcast-card .weekly-broadcast-team{
+    grid-template-columns:48px minmax(0,1fr) !important;
+  }
+
+  .home-app-v2 .weekly-broadcast-card .weekly-away{
+    grid-template-columns:minmax(0,1fr) 48px !important;
+  }
+
+  .home-app-v2 .weekly-broadcast-card .weekly-broadcast-team img:not(.matchup-watermark){
+    width:46px !important;
+    height:46px !important;
+  }
+
+  .home-app-v2 .weekly-broadcast-card .weekly-broadcast-team strong{
+    font-size:.66rem !important;
+  }
+
+  .home-app-v2 .weekly-broadcast-card .weekly-broadcast-team em{
+    min-height:20px !important;
+    padding:0 7px !important;
+    font-size:.50rem !important;
+  }
+
+  .home-app-v2 .weekly-broadcast-card .weekly-broadcast-vs{
+    width:48px !important;
+    height:48px !important;
+    font-size:1.23rem !important;
+  }
+
+  /* ===== IN EVIDENZA: banner, non poster giganti ===== */
+  .home-app-v2 > section[aria-labelledby="featured-title"]{
+    grid-area:featured;
+    margin:0 !important;
+  }
+
+  .home-app-v2 .featured-track{
+    grid-template-columns:repeat(3,minmax(0,1fr)) !important;
+    gap:12px !important;
+  }
+
+  .home-app-v2 .featured-card{
+    height:152px !important;
+    aspect-ratio:auto !important;
+    border-radius:17px !important;
+  }
+
+  /* Nasconde eventuali card che JS lascia oltre le tre principali */
+  .home-app-v2 .featured-track > .featured-card:nth-child(n+4){
+    display:none !important;
+  }
+
+  /* ===== COMPETIZIONI: tutte insieme, compatte ===== */
+  .home-app-v2 > section[aria-labelledby="competitions-title"]{
+    grid-area:competitions;
+    margin:0 !important;
+  }
+
+  .home-app-v2 .competition-track{
+    display:grid !important;
+    grid-template-columns:repeat(3,minmax(0,1fr)) !important;
+    gap:12px !important;
+  }
+
+  .home-app-v2 .competition-app-card{
+    height:126px !important;
+    aspect-ratio:auto !important;
+    border-radius:17px !important;
+  }
+
+  /* Se JS ha già accorpato Coppe & Eventi, la sezione vecchia non serve. */
+  .home-app-v2 > section[aria-labelledby="cups-title"]{
+    grid-area:cups;
+    margin:0 !important;
+  }
+
+  .home-app-v2 .cup-track{
+    display:grid !important;
+    grid-template-columns:repeat(4,minmax(0,1fr)) !important;
+    gap:12px !important;
+  }
+
+  .home-app-v2 .cup-app-card{
+    height:138px !important;
+    aspect-ratio:auto !important;
+    border-radius:17px !important;
+  }
+
+  /* ===== ESPLORA: 4 banner bassi ===== */
+  .home-app-v2 > .explore-section{
+    grid-area:explore;
+    margin:0 !important;
+  }
+
+  .home-app-v2 .explore-grid{
+    grid-template-columns:repeat(4,minmax(0,1fr)) !important;
+    gap:12px !important;
+  }
+
+  .home-app-v2 .explore-card{
+    height:145px !important;
+    aspect-ratio:auto !important;
+    border-radius:17px !important;
+  }
+
+  /* Dalla lega resta fuori: la sidebar assorbe quella funzione */
+  .home-app-v2 > .home-league-pulse-section{
+    display:none !important;
+  }
+}
+
+/* Tablet/desktop stretto: sidebar sotto, non trasformiamo in gigantografia. */
+@media (min-width: 901px) and (max-width: 1180px){
+  .home-wrap.home-dashboard{
+    width:calc(100% - 22px) !important;
+  }
+
+  .mobile-app-hero.home-app-v2{
+    grid-template-columns:310px minmax(0,1fr) !important;
+    grid-template-areas:
+      "identity match"
+      "quick match"
+      "sidebar sidebar"
+      "weekly weekly"
+      "featured featured"
+      "competitions competitions"
+      "cups cups"
+      "explore explore" !important;
+  }
+
+  .desktop-dashboard-sidebar{
+    display:grid !important;
+    grid-template-columns:1.15fr .85fr 1fr 1fr;
+    gap:10px !important;
+  }
+
+  .desktop-side-banner{
+    aspect-ratio:auto;
+    min-height:150px;
+  }
+}
+
+@media (max-width: 900px){
+  .desktop-dashboard-sidebar{
+    display:none !important;
+  }
+}

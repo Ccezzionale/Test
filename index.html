@@ -6,7 +6,7 @@
   <title>Lega degli Eroi</title>
   
 
-  <link rel="stylesheet" href="navbar.css?v=20260930-desktop1">
+  <link rel="stylesheet" href="navbar.css?v=20260930-desktop2">
 
   <!-- PWA -->
   <link rel="manifest" href="manifest.json">
@@ -585,6 +585,58 @@
       </div>
     </section>
 
+
+    <aside class="desktop-dashboard-sidebar" aria-label="Panoramica della lega">
+      <section class="desktop-side-card desktop-standings-card">
+        <div class="desktop-side-head">
+          <h2>Classifica</h2>
+          <a href="classifica.html">Vai alla lega →</a>
+        </div>
+        <div id="desktop-home-standings" class="desktop-home-standings">
+          <div class="desktop-side-loading">Caricamento classifica…</div>
+        </div>
+      </section>
+
+      <section class="desktop-side-card desktop-status-card">
+        <div class="desktop-side-head">
+          <h2>Il tuo stato</h2>
+          <a href="statistiche.html">Dettagli →</a>
+        </div>
+        <div class="desktop-status-grid">
+          <div><span>🏆</span><strong id="desktop-status-position">–</strong><small>Posizione</small></div>
+          <div><span>★</span><strong id="desktop-status-points">–</strong><small>Punti</small></div>
+          <div><span>▥</span><strong id="desktop-status-average">–</strong><small>Media FP</small></div>
+          <div><span>◕</span><strong id="desktop-status-winrate">–</strong><small>Win rate</small></div>
+        </div>
+      </section>
+
+      <section class="desktop-side-card desktop-alerts-card">
+        <div class="desktop-side-head">
+          <h2>Avvisi &amp; notizie</h2>
+        </div>
+        <a href="waiver.html" class="desktop-alert-row">
+          <span class="desktop-alert-icon">⏱</span>
+          <span><strong id="desktop-waiver-title">Waiver Wire</strong><small id="desktop-waiver-note">Controlla la prossima scadenza</small></span>
+        </a>
+        <a href="trade-room.html" class="desktop-alert-row">
+          <span class="desktop-alert-icon">🤝</span>
+          <span><strong>Trade Room</strong><small>Proposte e movimenti della lega</small></span>
+        </a>
+        <a href="giornale.html" class="desktop-alert-row">
+          <span class="desktop-alert-icon">📰</span>
+          <span><strong>La Gazzetta degli Eroi</strong><small>Leggi l'ultima edizione</small></span>
+        </a>
+        <a href="statistiche.html" class="desktop-alert-row">
+          <span class="desktop-alert-icon">📊</span>
+          <span><strong>Statistiche</strong><small>Power Ranking e numeri della stagione</small></span>
+        </a>
+      </section>
+
+      <a href="allstar.html" class="desktop-side-banner" aria-label="Vai all'All-Star Game">
+        <img src="img/maglie/evidenzaallstar.webp?v=20260915-2" alt="All-Star Game">
+      </a>
+    </aside>
+
     <section class="home-app-section home-weekly-match-section" aria-labelledby="league-now-title">
       <div class="home-app-heading">
         <h2 id="league-now-title">Match della settimana</h2>
@@ -865,7 +917,7 @@ document.addEventListener("DOMContentLoaded", function () {
   })();
   </script>
 
-  <script type="module" src="home-dashboard.js?v=20260930-desktop1"></script>
+  <script type="module" src="home-dashboard.js?v=20260930-desktop2"></script>
   <script type="module" src="home_auth.js"></script>
   <script src="mobile-nav.js?v=2"></script>
   <script src="navbar.js"></script>

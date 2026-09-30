@@ -1378,6 +1378,69 @@ function reorganizeHomeLowerSections() {
   }
 }
 
+
+function renderDesktopSidebar(context, rows) {
+  const standingsHost = document.getElementById("desktop-home-standings");
+  if (!standingsHost || !context?.team) return;
+
+  const competitionCode = activeCompetitionCode(rows) || conferenceCodeFromLabel(context.team.conference);
+  const standings = buildStandings(completedRowsFor(rows, competitionCode));
+  const teamKey = normalizeTeamName(context.team.name);
+  const teamIndex = standings.findIndex(row => normalizeTeamName(row.squadra) === teamKey);
+  const teamStanding = teamIndex >= 0 ? standings[teamIndex] : null;
+
+  let visible = standings.slice(0, 6);
+  if (teamIndex >= 6 && teamStanding) {
+    visible = [...standings.slice(0, 5), teamStanding];
+  }
+
+  standingsHost.innerHTML = visible.length
+    ? visible.map((row, index) => {
+        const realIndex = standings.findIndex(item => normalizeTeamName(item.squadra) === normalizeTeamName(row.squadra));
+        const current = normalizeTeamName(row.squadra) === teamKey;
+        return `
+          <div class="desktop-standing-row${current ? " is-current" : ""}">
+            <span class="desktop-standing-pos">${realIndex + 1}</span>
+            <img src="${findTeamLogo(row.squadra)}" alt="">
+            <strong>${escapeHtml(row.squadra)}</strong>
+            <b>${row.pt}</b>
+          </div>`;
+      }).join("")
+    : '<div class="desktop-side-loading">Classifica in attesa dei primi risultati.</div>';
+
+  const posEl = document.getElementById("desktop-status-position");
+  const ptsEl = document.getElementById("desktop-status-points");
+  const avgEl = document.getElementById("desktop-status-average");
+  const winEl = document.getElementById("desktop-status-winrate");
+
+  if (teamStanding) {
+    const avg = teamStanding.g ? teamStanding.mp / teamStanding.g : 0;
+    const winRate = teamStanding.g ? Math.round((teamStanding.v / teamStanding.g) * 100) : 0;
+    if (posEl) posEl.textContent = `${teamIndex + 1}°`;
+    if (ptsEl) ptsEl.textContent = String(teamStanding.pt);
+    if (avgEl) avgEl.textContent = avg ? formatNumber(avg) : "–";
+    if (winEl) winEl.textContent = `${winRate}%`;
+  }
+
+  const waiverTitle = document.getElementById("desktop-waiver-title");
+  const waiverNote = document.getElementById("desktop-waiver-note");
+  if (waiverDeadline && waiverNote) {
+    const remaining = Math.max(0, waiverDeadline.getTime() - Date.now());
+    const totalMinutes = Math.floor(remaining / 60000);
+    const days = Math.floor(totalMinutes / 1440);
+    const hours = Math.floor((totalMinutes % 1440) / 60);
+    const minutes = totalMinutes % 60;
+    const countdown = days > 0
+      ? `${days}g ${String(hours).padStart(2, "0")}h`
+      : hours > 0
+        ? `${hours}h ${String(minutes).padStart(2, "0")}m`
+        : `${Math.max(minutes, 1)}m`;
+
+    if (waiverTitle) waiverTitle.textContent = "Waiver aperto";
+    waiverNote.textContent = `${waiverDeadlineLabel || "Prossima chiusura"} · ${countdown}`;
+  }
+}
+
 async function initHomeDashboard() {
   reorganizeHomeLowerSections();
   setupHomeMatchTabs();
@@ -1394,6 +1457,7 @@ async function initHomeDashboard() {
   renderMatchCarousel(context, rows);
   renderMatchups(rows);
   renderRecord(rows);
+  renderDesktopSidebar(context, rows);
   await renderHomeCrashoutTab(context);
   await renderHomeHighlanderTab(context);
 }
