@@ -855,8 +855,34 @@ function scheduleHomeActionBadgesRefresh(teamId) {
 const HOME_CRASHOUT_SEASON = "2026";
 const HOME_HIGHLANDER_SEASON = "2026";
 
+// VISUALE CAMPIONATO AUTOMATICA:
+// Conference + Round Robin -> look Campionato
+// Playoff -> look Playoff
+// Legge direttamente active_phase da waiver_settings.
+function getHomeLeagueVisualPhase() {
+  const phase = String(activeLeaguePhase || "").trim().toLowerCase();
+  return phase === "playoff" ? "playoff" : "regular";
+}
+
+function applyHomeLeagueVisualPhase() {
+  const shell = document.getElementById("dashboard-match-carousel");
+  const leagueVisualPhase = getHomeLeagueVisualPhase();
+
+  if (shell) {
+    shell.classList.remove("league-visual-regular", "league-visual-playoff");
+    shell.classList.add(`league-visual-${leagueVisualPhase}`);
+  }
+
+  document.body.classList.remove(
+    "home-league-visual-regular",
+    "home-league-visual-playoff"
+  );
+  document.body.classList.add(`home-league-visual-${leagueVisualPhase}`);
+}
+
 const HOME_COMPETITION_CUPS = {
   league: "img/cups/campionato-cup.webp",
+  playoff: "img/cups/playoff-cup.webp",
   crashout: "img/cups/crashout-cup.webp",
   highlander: "img/cups/highlander-cup.webp"
 };
@@ -908,6 +934,10 @@ function ensureHomeCompetitionCupArts() {
 function setupHomeMatchTabs() {
   ensureHomeCompetitionCupArts();
   const shell = document.getElementById("dashboard-match-carousel");
+
+  // Primo render: regular finché non viene letto active_phase.
+  // Dopo il caricamento settings viene aggiornato automaticamente.
+  applyHomeLeagueVisualPhase();
   const tabs = [...document.querySelectorAll("#dashboard-match-tabs [data-match-tab]")];
   const panels = [...document.querySelectorAll("#dashboard-match-carousel [data-match-panel]")];
   const stateEl = document.getElementById("dashboard-match-carousel-state");
@@ -1243,6 +1273,11 @@ async function initHomeDashboard() {
   setupHomeMatchTabs();
   const context = await loadDashboardTeam();
   const [rowsResult] = await Promise.allSettled([loadResultsRows(), loadWaiverCountdown(), loadLatestTrade()]);
+
+  // loadWaiverCountdown() ha appena valorizzato activeLeaguePhase:
+  // aggiorniamo subito Campionato/Playoff senza interventi manuali.
+  applyHomeLeagueVisualPhase();
+
   const rows = rowsResult.status === "fulfilled" && Array.isArray(rowsResult.value) ? rowsResult.value : [];
   if (rowsResult.status === "rejected") console.warn("Risultati home non disponibili:", rowsResult.reason);
   renderTeamStatsAndForm(context, rows);

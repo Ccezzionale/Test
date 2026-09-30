@@ -7209,3 +7209,75 @@ nav.site-nav .toggle-submenu .app-alert-badge {
     padding-right: 74px !important;
   }
 }
+/* =========================================================
+   V6 · CAMPIONATO / PLAYOFF VISUAL PHASE
+   Manuale:
+   HOME_LEAGUE_VISUAL_PHASE = "regular" oppure "playoff"
+   ========================================================= */
+
+/* Conference + Round Robin: coppa Campionato, blu più luminoso */
+.match-carousel-section.theme-league.league-visual-regular .match-carousel-card {
+  background-image:
+    linear-gradient(90deg, rgba(4, 28, 66, .78) 0%, rgba(4, 28, 66, .58) 34%, rgba(4, 28, 66, .23) 60%, rgba(4, 28, 66, .08) 100%),
+    linear-gradient(140deg, rgba(255,255,255,.055) 0%, transparent 42%, rgba(255,226,120,.055) 84%, rgba(255,255,255,.025) 100%),
+    url("img/match-bg/campionato-bg.webp") !important;
+  background-size: 100% 100%, 100% 100%, cover !important;
+  background-position: center, center, center right !important;
+  background-repeat: no-repeat !important;
+  border-color: rgba(244, 198, 68, .62) !important;
+  box-shadow:
+    0 13px 28px rgba(8, 66, 132, .25),
+    inset 0 1px 0 rgba(255,255,255,.06) !important;
+}
+
+/* Playoff: vecchia/coppa Playoff, blu notte stile Champions */
+.match-carousel-section.theme-league.league-visual-playoff .match-carousel-card {
+  background-image:
+    linear-gradient(90deg, rgba(1, 13, 38, .88) 0%, rgba(1, 15, 43, .72) 35%, rgba(1, 18, 50, .34) 61%, rgba(1, 15, 42, .12) 100%),
+    linear-gradient(140deg, rgba(67,132,255,.055) 0%, transparent 44%, rgba(255,216,92,.05) 84%, rgba(255,255,255,.02) 100%),
+    url("img/match-bg/playoff-bg.webp") !important;
+  background-size: 100% 100%, 100% 100%, cover !important;
+  background-position: center, center, center right !important;
+  background-repeat: no-repeat !important;
+  border-color: rgba(199, 169, 80, .60) !important;
+  box-shadow:
+    0 14px 30px rgba(0, 20, 58, .38),
+    0 0 18px rgba(34, 103, 215, .08),
+    inset 0 1px 0 rgba(255,255,255,.05) !important;
+}
+
+.match-carousel-section.theme-league.league-visual-playoff .match-carousel-card::after {
+  background:
+    radial-gradient(240px 130px at 44% 45%, rgba(41,111,230,.10), transparent 72%),
+    linear-gradient(120deg, transparent 14%, rgba(255,255,255,.035) 46%, transparent 74%),
+    linear-gradient(90deg, rgba(0,11,34,.03) 0%, rgba(0,11,34,.08) 54%, rgba(0,11,34,.34) 100%) !important;
+}
+
+.match-carousel-section.theme-league.league-visual-playoff .match-carousel-card-head > span {
+  color: #f7d36b !important;
+}
+
+.match-carousel-section.theme-league.league-visual-playoff .match-carousel-card-head > strong,
+.match-carousel-section.theme-league.league-visual-playoff .match-carousel-slide.is-current .match-carousel-card-head > strong {
+  color: #07152f !important;
+  background: linear-gradient(135deg, #fff0a2 0%, #ddb547 58%, #b47b12 100%) !important;
+}
+
+.match-carousel-section.theme-league.league-visual-playoff .match-carousel-cta,
+.match-carousel-section.theme-league.league-visual-playoff .match-carousel-slide.is-current .match-carousel-cta {
+  color: #07152f !important;
+  background: linear-gradient(135deg, #fbe68d 0%, #d7ae3f 56%, #a86e08 100%) !important;
+}
+
+/* La Home resta con il blu più leggero nella fase normale.
+   Nei playoff scurisco solo leggermente l'atmosfera generale,
+   senza rendere il resto della dashboard il caveau della Champions. */
+@media (max-width: 900px) {
+  body.home-app-theme-league.home-league-visual-playoff {
+    --home-bg-top: #b9d4f2;
+    --home-bg-mid: #d2e3f5;
+    --home-bg-bottom: #edf4fa;
+    --home-glow-main: rgba(0, 55, 135, .30);
+    --home-glow-side: rgba(0, 35, 95, .17);
+  }
+}
