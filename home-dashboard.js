@@ -1039,7 +1039,7 @@ function renderCrashoutHomeRivalry(match) {
   card.setAttribute("role", "link");
   card.setAttribute("tabindex", "0");
   card.setAttribute("aria-label", "Apri Crash Out Cup - Rivalry Games");
-  document.getElementById("dashboard-crashout-stage").textContent = `Rivalry Games · Giornata ${match.matchday}`;
+  document.getElementById("dashboard-crashout-stage").textContent = `Giornata ${match.matchday}`;
   document.getElementById("dashboard-crashout-badge").textContent = played ? "FINALE" : "SFIDA ATTUALE";
   document.getElementById("dashboard-crashout-home-logo").src = findTeamLogo(home);
   document.getElementById("dashboard-crashout-home-logo").alt = `Logo ${home}`;
@@ -1136,7 +1136,12 @@ function renderCrashoutHomePlayoff(series) {
   card.setAttribute("role", "link");
   card.setAttribute("tabindex", "0");
   card.setAttribute("aria-label", "Apri Crash Out Cup - Playoff");
-  document.getElementById("dashboard-crashout-stage").textContent = `Playoff · ${series.stage}`;
+  const playoffGameNumber = Math.min(
+    5,
+    Number(series.score.home || 0) + Number(series.score.away || 0) + 1
+  );
+  document.getElementById("dashboard-crashout-stage").textContent =
+    `${series.stage} · Gara ${playoffGameNumber}`;
   document.getElementById("dashboard-crashout-badge").textContent = "FASE FINALE";
   document.getElementById("dashboard-crashout-home-logo").src = home === "Da definire" ? "icon-192.png" : findTeamLogo(home);
   document.getElementById("dashboard-crashout-away-logo").src = away === "Da definire" ? "icon-192.png" : findTeamLogo(away);
@@ -1301,7 +1306,10 @@ function reorganizeHomeLowerSections() {
     if (featuredTrack) {
       [...featuredTrack.querySelectorAll('a.home-image-card')].forEach(card => {
         const href = String(card.getAttribute('href') || '').toLowerCase();
-        const keep = href.includes('giornale.html') || href.includes('allstar.html');
+        const keep =
+          href.includes('giornale.html') ||
+          href.includes('allstar.html') ||
+          href.includes('statistiche.html');
         if (!keep) card.remove();
       });
     }
