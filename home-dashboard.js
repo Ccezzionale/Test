@@ -637,8 +637,21 @@ function renderMatchups(rows) {
     const homePosition = positionMap.get(normalizeTeamName(fixture.home));
     const awayPosition = positionMap.get(normalizeTeamName(fixture.away));
     const rankText = homePosition && awayPosition ? `${homePosition}° contro ${awayPosition}°` : "Sfida da non perdere";
+    const matchHref = matchCenterUrl({
+      home: fixture.home,
+      away: fixture.away,
+      gw: nextGw
+    }, code);
+
     return `
-      <article class="league-matchup-card weekly-broadcast-card">
+      <article
+        class="league-matchup-card weekly-broadcast-card is-match-center-link"
+        role="link"
+        tabindex="0"
+        data-match-href="${matchHref}"
+        aria-label="Apri Match Center: ${escapeHtml(fixture.home)} contro ${escapeHtml(fixture.away)}, giornata ${nextGw}"
+        style="cursor:pointer"
+      >
         <div class="league-matchup-label">
           <span>${conferenceLabel(code)}</span>
           <b>G${nextGw}</b>
@@ -659,7 +672,24 @@ function renderMatchups(rows) {
         <small>${rankText}</small>
       </article>`;
   }).filter(Boolean);
-  container.innerHTML = cards.length ? cards.join("") : '<article class="league-matchup-card loading-card">Calendario matchup in aggiornamento</article>';
+
+  container.innerHTML = cards.length
+    ? cards.join("")
+    : '<article class="league-matchup-card loading-card">Calendario matchup in aggiornamento</article>';
+
+  container.querySelectorAll(".weekly-broadcast-card[data-match-href]").forEach(card => {
+    const openMatchCenter = () => {
+      const href = card.dataset.matchHref;
+      if (href) window.location.href = href;
+    };
+
+    card.addEventListener("click", openMatchCenter);
+    card.addEventListener("keydown", event => {
+      if (event.key !== "Enter" && event.key !== " ") return;
+      event.preventDefault();
+      openMatchCenter();
+    });
+  });
 }
 
 function renderRecord(rows) {
