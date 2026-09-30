@@ -426,6 +426,7 @@ function matchSlideMarkup(slide, competitionLabel, competitionCode) {
   return `
     <article class="match-carousel-slide ${stateClass}" data-match-kind="${slide.kind}" data-gw="${slide.gw}">
       <div class="match-carousel-card">
+        <img class="competition-cup-art competition-cup-art-league" src="${HOME_COMPETITION_CUPS.league}" alt="" aria-hidden="true">
         <div class="match-carousel-card-head">
           <span>${statusLabel}</span>
           <strong>GIORNATA ${slide.gw}</strong>
@@ -854,6 +855,12 @@ function scheduleHomeActionBadgesRefresh(teamId) {
 const HOME_CRASHOUT_SEASON = "2026";
 const HOME_HIGHLANDER_SEASON = "2026";
 
+const HOME_COMPETITION_CUPS = {
+  league: "img/cups/campionato-cup.webp",
+  crashout: "img/cups/crashout-cup.webp",
+  highlander: "img/cups/highlander-cup.webp"
+};
+
 const HOME_HIGHLANDER_MASCOTS = {
   atleticoleon: "img/maglie/rubinkebab-higlander.webp",
   bayernchristiansen: "img/maglie/bayern-higlander.webp",
@@ -877,7 +884,29 @@ function findHomeHighlanderMascot(teamName) {
   return HOME_HIGHLANDER_MASCOTS[normalizeTeamName(teamName)] || findTeamLogo(teamName);
 }
 
+function ensureHomeCompetitionCupArts() {
+  const targets = [
+    ["dashboard-crashout-card", "crashout", "Crash Out Cup"],
+    ["dashboard-highlander-card", "highlander", "Highlander Cup"]
+  ];
+
+  targets.forEach(([cardId, type, label]) => {
+    const card = document.getElementById(cardId);
+    if (!card || card.querySelector(".competition-cup-art")) return;
+
+    const img = document.createElement("img");
+    img.className = `competition-cup-art competition-cup-art-${type}`;
+    img.src = HOME_COMPETITION_CUPS[type];
+    img.alt = "";
+    img.setAttribute("aria-hidden", "true");
+    img.decoding = "async";
+    img.loading = "eager";
+    card.prepend(img);
+  });
+}
+
 function setupHomeMatchTabs() {
+  ensureHomeCompetitionCupArts();
   const shell = document.getElementById("dashboard-match-carousel");
   const tabs = [...document.querySelectorAll("#dashboard-match-tabs [data-match-tab]")];
   const panels = [...document.querySelectorAll("#dashboard-match-carousel [data-match-panel]")];
@@ -900,6 +929,15 @@ function setupHomeMatchTabs() {
       shell.classList.remove("theme-league", "theme-crashout", "theme-highlander");
       shell.classList.add(`theme-${name}`);
     }
+
+    // Tema ambientale dell'intera Home.
+    // Le card restano leggibili e coerenti, cambia l'atmosfera dietro l'app.
+    document.body.classList.remove(
+      "home-app-theme-league",
+      "home-app-theme-crashout",
+      "home-app-theme-highlander"
+    );
+    document.body.classList.add(`home-app-theme-${name}`);
 
     if (stateEl) {
       stateEl.textContent = name === "crashout"
