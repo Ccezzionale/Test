@@ -10531,3 +10531,74 @@ nav.site-nav .toggle-submenu .app-alert-badge {
     filter:drop-shadow(0 16px 22px rgba(0,0,0,.18));
   }
 }
+
+/* =========================================================
+   FIX COMPETITION BANNERS · 2026-10-02
+   Usa i nuovi artwork wide senza tagliarli.
+   ========================================================= */
+@media (min-width: 901px){
+  .desktop-fun-competition-tile{
+    min-height: 150px;
+    isolation: isolate;
+    background: #061b38 !important;
+  }
+
+  /* L'artwork ora riempie TUTTO il banner */
+  .desktop-fun-competition-tile img{
+    position: absolute;
+    inset: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    top: 0 !important;
+    bottom: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    max-width: none !important;
+    object-fit: cover !important;
+    object-position: center center !important;
+    opacity: 1 !important;
+    transform: none !important;
+    filter: none !important;
+    -webkit-mask-image: none !important;
+    mask-image: none !important;
+    z-index: 0;
+  }
+
+  /* Gradiente solo per rendere leggibile il testo a destra */
+  .desktop-fun-competition-tile::after{
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    background: linear-gradient(
+      90deg,
+      rgba(3,15,35,.03) 0%,
+      rgba(3,15,35,.08) 36%,
+      rgba(3,15,35,.54) 58%,
+      rgba(3,15,35,.90) 82%,
+      rgba(3,15,35,.96) 100%
+    ) !important;
+    pointer-events: none;
+  }
+
+  .desktop-fun-competition-tile > div{
+    position: relative;
+    z-index: 2;
+    width: 48% !important;
+    margin-left: auto;
+    padding: 18px 18px 16px 10px !important;
+  }
+
+  .desktop-fun-competition-tile span,
+  .desktop-fun-competition-tile h3{
+    text-shadow: 0 2px 10px rgba(0,0,0,.72);
+  }
+
+  /* I colori arrivano dagli artwork, niente pannelli tinta unita sopra */
+  .desktop-fun-competition-tile.is-campionato,
+  .desktop-fun-competition-tile.is-crashout,
+  .desktop-fun-competition-tile.is-highlander,
+  .desktop-fun-competition-tile.is-allstar{
+    background: #061b38 !important;
+  }
+}
