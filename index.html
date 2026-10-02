@@ -497,14 +497,20 @@
     </header>
 
     <div class="desktop-fun-grid desktop-fun-grid-top">
-      <section class="desktop-fun-card desktop-fun-match-card" aria-labelledby="desktop-fun-match-title">
-        <div class="desktop-fun-card-head">
-          <h2 id="desktop-fun-match-title">🔥 Match della settimana</h2>
-          <span id="desktop-fun-match-gw">Giornata</span>
+      <section class="desktop-fun-card desktop-fun-personal-card" aria-labelledby="desktop-fun-personal-title">
+        <div class="desktop-fun-card-head desktop-fun-personal-head">
+          <h2 id="desktop-fun-personal-title">⚔ Il tuo Match Center</h2>
+          <span id="desktop-fun-personal-state">Campionato</span>
         </div>
-        <div id="desktop-fun-featured-match" class="desktop-fun-featured-match">
-          <div class="desktop-fun-loading">Calcolo della sfida più cattiva…</div>
+        <div class="desktop-fun-match-tabs" id="desktop-fun-match-tabs" role="tablist" aria-label="Le tue competizioni">
+          <button type="button" class="is-active" data-desktop-fun-match-tab="league" aria-selected="true">🏆 Campionato</button>
+          <button type="button" id="desktop-fun-tab-crashout" data-desktop-fun-match-tab="crashout" aria-selected="false" hidden>💥 Crash Out</button>
+          <button type="button" id="desktop-fun-tab-highlander" data-desktop-fun-match-tab="highlander" aria-selected="false" hidden>⚔ Highlander</button>
         </div>
+        <div id="desktop-fun-personal-match" class="desktop-fun-personal-match">
+          <div class="desktop-fun-loading">Caricamento del tuo match…</div>
+        </div>
+        <div id="desktop-fun-personal-rounds" class="desktop-fun-personal-rounds" aria-label="Navigazione partite"></div>
       </section>
 
       <section class="desktop-fun-card desktop-fun-standings-card" aria-labelledby="desktop-fun-standings-title">
@@ -549,16 +555,13 @@
         </div>
       </a>
 
-      <section class="desktop-fun-card desktop-fun-chaos-card" aria-labelledby="desktop-fun-chaos-title">
+      <section class="desktop-fun-card desktop-fun-week-card" aria-labelledby="desktop-fun-match-title">
         <div class="desktop-fun-card-head">
-          <h2 id="desktop-fun-chaos-title">😎 Dalla lega</h2>
-          <span>Live</span>
+          <h2 id="desktop-fun-match-title">🔥 Match della settimana</h2>
+          <span id="desktop-fun-match-gw">Giornata</span>
         </div>
-        <div class="desktop-fun-chaos-list">
-          <a href="trade-room.html"><b>🤝 Ultima trade</b><span id="desktop-fun-latest-trade">Caricamento…</span></a>
-          <div><b>🔥 Record del momento</b><span id="desktop-fun-record">Caricamento…</span></div>
-          <a href="waiver.html"><b>⏱ Waiver</b><span id="desktop-fun-waiver">Prossima scadenza in caricamento…</span></a>
-          <a href="statistiche.html"><b>📊 Numeri della lega</b><span>Statistiche, trend e classifiche</span></a>
+        <div id="desktop-fun-featured-match" class="desktop-fun-featured-match is-compact">
+          <div class="desktop-fun-loading">Calcolo della sfida più cattiva…</div>
         </div>
       </section>
 
@@ -1053,7 +1056,7 @@ document.addEventListener("DOMContentLoaded", function () {
   <script type="module" src="home-dashboard.js?v=20261002-fun1"></script>
   <script type="module" src="home_auth.js"></script>
   <script src="mobile-nav.js?v=2"></script>
-  <script src="navbar.js"></script>
+  <script src="navbar.js?v=20261002-desktop-fun2"></script>
   <script type="module" src="admin-nav.js?v=1"></script>
   <script type="module">
   import { supabase as sb } from "./supabase.js";

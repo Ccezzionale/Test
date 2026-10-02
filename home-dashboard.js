@@ -1529,6 +1529,242 @@ function renderDesktopFunStandings(rows) {
   hostB.innerHTML = desktopFunStandingsRows(buildStandings(completedRowsFor(rows, "Conf B")).slice(0, 8));
 }
 
+
+let desktopFunLeagueSlides = [];
+let desktopFunLeagueActiveIndex = 0;
+
+function desktopFunBuildLeagueSlides(context, rows) {
+  if (!context?.team) return { slides: [], competitionCode: "Conf A", competitionLabel: "Campionato" };
+
+  const competitionCode = activeCompetitionCode(rows) || conferenceCodeFromLabel(context.team.conference);
+  const competitionLabel = conferenceLabel(competitionCode);
+  const standings = buildStandings(completedRowsFor(rows, competitionCode));
+  const currentGw = nextRoundForConference(rows, competitionCode);
+
+  const completedTeamRows = completedRowsFor(rows, competitionCode)
+    .filter(row => normalizeTeamName(row.Team) === normalizeTeamName(context.team.name))
+    .sort((a, b) => (Number(a.GW_Stagionale) || Number(a.GW) || 0) - (Number(b.GW_Stagionale) || Number(b.GW) || 0));
+
+  const previousGw = completedTeamRows.length ? Number(completedTeamRows[completedTeamRows.length - 1].GW) : null;
+  const previousMatch = completedMatchForTeamAndRound(rows, competitionCode, previousGw, context.team.name);
+  const currentFixture = fixtureForTeamAndRound(rows, competitionCode, currentGw, context.team.name);
+  const nextGw = currentGw ? currentGw + 1 : null;
+  const nextFixture = fixtureForTeamAndRound(rows, competitionCode, nextGw, context.team.name);
+
+  const slides = [];
+  if (previousMatch) slides.push({ kind: "previous", completed: true, ...previousMatch });
+  if (currentFixture && currentGw) {
+    slides.push({
+      kind: "current",
+      completed: false,
+      gw: currentGw,
+      home: currentFixture.home,
+      away: currentFixture.away,
+      ranking: matchRankingText(currentFixture, standings)
+    });
+  }
+  if (nextFixture && nextGw) {
+    slides.push({
+      kind: "next",
+      completed: false,
+      gw: nextGw,
+      home: nextFixture.home,
+      away: nextFixture.away,
+      ranking: matchRankingText(nextFixture, standings)
+    });
+  }
+
+  return { slides, competitionCode, competitionLabel };
+}
+
+function desktopFunPersonalSlideMarkup(slide, competitionCode, competitionLabel) {
+  const homeVisual = matchCarouselTeamVisual(slide, slide.home, "home");
+  const awayVisual = matchCarouselTeamVisual(slide, slide.away, "away");
+  const status = slide.kind === "previous" ? "ULTIMO RISULTATO" : slide.kind === "next" ? "PROSSIMO TURNO" : "PARTITA ATTUALE";
+  const middle = slide.completed
+    ? `<div class="desktop-fun-personal-score"><strong>${pointsToGoals(slide.homeScore)}</strong><span>–</span><strong>${pointsToGoals(slide.awayScore)}</strong></div>`
+    : `<div class="desktop-fun-personal-vs">VS</div>`;
+  const detail = slide.completed ? resultLabel(slide.result) : (slide.ranking || "Match Preview");
+  const href = matchCenterUrl(slide, competitionCode);
+
+  return `
+    <div class="desktop-fun-personal-stage">
+      <div class="desktop-fun-personal-kicker"><span>${status}</span><b>G${slide.gw}</b></div>
+      <div class="desktop-fun-personal-versus">
+        <div class="desktop-fun-personal-team">
+          <img class="${homeVisual.className}" src="${homeVisual.src}" data-fallback="${homeVisual.fallback}" alt="${homeVisual.altPrefix} ${escapeHtml(slide.home)}">
+          <strong>${escapeHtml(slide.home)}</strong>
+        </div>
+        ${middle}
+        <div class="desktop-fun-personal-team">
+          <img class="${awayVisual.className}" src="${awayVisual.src}" data-fallback="${awayVisual.fallback}" alt="${awayVisual.altPrefix} ${escapeHtml(slide.away)}">
+          <strong>${escapeHtml(slide.away)}</strong>
+        </div>
+      </div>
+      <div class="desktop-fun-personal-footer">
+        <span>${escapeHtml(competitionLabel)} · ${escapeHtml(detail)}</span>
+        <a href="${href}">${slide.completed ? "MATCH REPORT" : "APRI MATCH CENTER"} →</a>
+      </div>
+    </div>`;
+}
+
+function renderDesktopFunPersonalLeague(context, rows, requestedIndex = null) {
+  const host = document.getElementById("desktop-fun-personal-match");
+  const rounds = document.getElementById("desktop-fun-personal-rounds");
+  if (!host || !rounds) return;
+
+  const built = desktopFunBuildLeagueSlides(context, rows);
+  desktopFunLeagueSlides = built.slides;
+  if (!desktopFunLeagueSlides.length) {
+    host.innerHTML = '<div class="desktop-fun-loading">Calendario della tua squadra in aggiornamento.</div>';
+    rounds.innerHTML = "";
+    return;
+  }
+
+  const currentIndex = desktopFunLeagueSlides.findIndex(slide => slide.kind === "current");
+  desktopFunLeagueActiveIndex = requestedIndex == null
+    ? Math.max(0, currentIndex)
+    : Math.max(0, Math.min(requestedIndex, desktopFunLeagueSlides.length - 1));
+
+  const paint = index => {
+    desktopFunLeagueActiveIndex = Math.max(0, Math.min(index, desktopFunLeagueSlides.length - 1));
+    const slide = desktopFunLeagueSlides[desktopFunLeagueActiveIndex];
+    host.innerHTML = desktopFunPersonalSlideMarkup(slide, built.competitionCode, built.competitionLabel);
+    host.querySelectorAll('img[data-fallback]').forEach(image => {
+      image.addEventListener('error', () => {
+        if (image.dataset.fallback) image.src = image.dataset.fallback;
+      }, { once:true });
+    });
+    rounds.querySelectorAll('button').forEach((button, buttonIndex) => {
+      button.classList.toggle('is-active', buttonIndex === desktopFunLeagueActiveIndex);
+      button.setAttribute('aria-current', buttonIndex === desktopFunLeagueActiveIndex ? 'true' : 'false');
+    });
+  };
+
+  rounds.innerHTML = desktopFunLeagueSlides.map((slide, index) => {
+    const label = slide.kind === "previous" ? "Precedente" : slide.kind === "next" ? "Successiva" : "Attuale";
+    return `<button type="button" data-index="${index}"><small>${label}</small><strong>G${slide.gw}</strong></button>`;
+  }).join("");
+  rounds.querySelectorAll('button').forEach((button, index) => button.addEventListener('click', () => paint(index)));
+  paint(desktopFunLeagueActiveIndex);
+}
+
+function applyDesktopFunTheme(name) {
+  const body = document.body;
+  if (!body) return;
+  body.classList.remove(
+    "desktop-fun-theme-league",
+    "desktop-fun-theme-playoff",
+    "desktop-fun-theme-crashout",
+    "desktop-fun-theme-highlander"
+  );
+  const resolved = name === "league" && getHomeLeagueVisualPhase() === "playoff" ? "playoff" : name;
+  body.classList.add(`desktop-fun-theme-${resolved}`);
+
+  const state = document.getElementById("desktop-fun-personal-state");
+  if (state) {
+    state.textContent = resolved === "crashout" ? "Crash Out Cup"
+      : resolved === "highlander" ? "Highlander"
+      : resolved === "playoff" ? "Playoff"
+      : "Campionato";
+  }
+}
+
+function renderDesktopFunSpecialMatch(type) {
+  const host = document.getElementById("desktop-fun-personal-match");
+  const rounds = document.getElementById("desktop-fun-personal-rounds");
+  if (!host || !rounds) return;
+  rounds.innerHTML = "";
+
+  if (type === "crashout") {
+    const mobileTab = document.getElementById("dashboard-match-tab-crashout");
+    if (!mobileTab || mobileTab.hidden) {
+      host.innerHTML = '<div class="desktop-fun-loading">Crash Out Cup non attiva per la tua squadra.</div>';
+      return;
+    }
+    const home = document.getElementById("dashboard-crashout-home-name")?.textContent?.trim() || "Squadra A";
+    const away = document.getElementById("dashboard-crashout-away-name")?.textContent?.trim() || "Squadra B";
+    const homeLogo = document.getElementById("dashboard-crashout-home-logo")?.getAttribute("src") || findTeamLogo(home);
+    const awayLogo = document.getElementById("dashboard-crashout-away-logo")?.getAttribute("src") || findTeamLogo(away);
+    const score = document.getElementById("dashboard-crashout-score")?.textContent?.trim() || "VS";
+    const stage = document.getElementById("dashboard-crashout-stage")?.textContent?.trim() || "Crash Out Cup";
+    const badge = document.getElementById("dashboard-crashout-badge")?.textContent?.trim() || "SFIDA ATTUALE";
+    const meta = document.getElementById("dashboard-crashout-meta")?.textContent?.trim() || "Crash Out Cup";
+    const cta = document.getElementById("dashboard-crashout-cta");
+    const href = cta?.getAttribute("href") || "crashoutcup.html";
+    host.innerHTML = `
+      <div class="desktop-fun-personal-stage is-crashout-special">
+        <div class="desktop-fun-personal-kicker"><span>${escapeHtml(badge)}</span><b>${escapeHtml(stage)}</b></div>
+        <div class="desktop-fun-personal-versus">
+          <div class="desktop-fun-personal-team"><img src="${homeLogo}" alt=""><strong>${escapeHtml(home)}</strong></div>
+          <div class="desktop-fun-personal-vs">${escapeHtml(score)}</div>
+          <div class="desktop-fun-personal-team"><img src="${awayLogo}" alt=""><strong>${escapeHtml(away)}</strong></div>
+        </div>
+        <div class="desktop-fun-personal-footer"><span>${escapeHtml(meta)}</span><a href="${href}">APRI CRASH OUT →</a></div>
+      </div>`;
+    return;
+  }
+
+  const mobileTab = document.getElementById("dashboard-match-tab-highlander");
+  if (!mobileTab || mobileTab.hidden) {
+    host.innerHTML = '<div class="desktop-fun-loading">Highlander non attiva per la tua squadra.</div>';
+    return;
+  }
+  const team = document.getElementById("dashboard-highlander-team")?.textContent?.trim() || "La tua squadra";
+  const image = document.getElementById("dashboard-highlander-image")?.getAttribute("src") || findTeamShirt(team);
+  const status = document.getElementById("dashboard-highlander-status")?.textContent?.trim() || "ANCORA IN GARA";
+  const stage = document.getElementById("dashboard-highlander-stage")?.textContent?.trim() || "Arena";
+  const badge = document.getElementById("dashboard-highlander-badge")?.textContent?.trim() || "IN CORSO";
+  const survivors = document.getElementById("dashboard-highlander-survivors")?.textContent?.trim() || "–";
+  const eliminated = document.getElementById("dashboard-highlander-eliminated")?.textContent?.trim() || "–";
+  host.innerHTML = `
+    <div class="desktop-fun-highlander-focus">
+      <img src="${image}" alt="Mascotte ${escapeHtml(team)}">
+      <div>
+        <div class="desktop-fun-personal-kicker"><span>${escapeHtml(badge)}</span><b>${escapeHtml(stage)}</b></div>
+        <h3>${escapeHtml(team)}</h3>
+        <strong>${escapeHtml(status)}</strong>
+        <div class="desktop-fun-highlander-stats"><span><b>${escapeHtml(survivors)}</b> sopravvissute</span><span><b>${escapeHtml(eliminated)}</b> eliminate</span></div>
+        <a href="arena.html">VAI ALLA HIGHLANDER →</a>
+      </div>
+    </div>`;
+}
+
+function setupDesktopFunMatchTabs(context, rows) {
+  const tabs = [...document.querySelectorAll("#desktop-fun-match-tabs [data-desktop-fun-match-tab]")];
+  if (!tabs.length) return;
+
+  tabs.forEach(tab => {
+    if (tab.dataset.desktopFunBound === "1") return;
+    tab.dataset.desktopFunBound = "1";
+    tab.addEventListener("click", () => {
+      const name = tab.dataset.desktopFunMatchTab;
+      tabs.forEach(item => {
+        const active = item === tab;
+        item.classList.toggle("is-active", active);
+        item.setAttribute("aria-selected", String(active));
+      });
+      applyDesktopFunTheme(name);
+      if (name === "league") renderDesktopFunPersonalLeague(context, rows, desktopFunLeagueActiveIndex);
+      else renderDesktopFunSpecialMatch(name);
+    });
+  });
+  applyDesktopFunTheme("league");
+}
+
+function syncDesktopFunCompetitionTabs(context, rows) {
+  const pairs = [
+    ["desktop-fun-tab-crashout", "dashboard-match-tab-crashout"],
+    ["desktop-fun-tab-highlander", "dashboard-match-tab-highlander"]
+  ];
+  pairs.forEach(([desktopId, mobileId]) => {
+    const desktopTab = document.getElementById(desktopId);
+    const mobileTab = document.getElementById(mobileId);
+    if (desktopTab) desktopTab.hidden = !mobileTab || mobileTab.hidden;
+  });
+  setupDesktopFunMatchTabs(context, rows);
+}
+
 function renderDesktopFunFeaturedMatch(rows) {
   const host = document.getElementById("desktop-fun-featured-match");
   const gwLabel = document.getElementById("desktop-fun-match-gw");
@@ -1634,6 +1870,8 @@ function renderDesktopFunHeroRound(rows) {
 function renderDesktopFunHome(context, rows) {
   if (!document.querySelector(".desktop-fun-home")) return;
   renderDesktopFunHeroRound(rows);
+  renderDesktopFunPersonalLeague(context, rows);
+  setupDesktopFunMatchTabs(context, rows);
   renderDesktopFunFeaturedMatch(rows);
   renderDesktopFunStandings(rows);
   renderDesktopFunPower(rows);
@@ -1660,6 +1898,7 @@ async function initHomeDashboard() {
   renderDesktopFunHome(context, rows);
   await renderHomeCrashoutTab(context);
   await renderHomeHighlanderTab(context);
+  syncDesktopFunCompetitionTabs(context, rows);
 }
 
 document.addEventListener("DOMContentLoaded", initHomeDashboard);

@@ -10067,3 +10067,379 @@ nav.site-nav .toggle-submenu .app-alert-badge {
 @media (max-width: 900px){
   .desktop-fun-home{ display:none !important; }
 }
+
+/* =========================================================
+   HOME DESKTOP FUN V2 · Match Center personale + temi dinamici
+   ========================================================= */
+@media (min-width: 901px){
+  body.desktop-fun-theme-league{
+    --df-canvas-1:#03152f;
+    --df-canvas-2:#06295a;
+    --df-glow:rgba(31,126,255,.34);
+    --df-accent:#0a6de0;
+    --df-accent-2:#0649a5;
+    --df-accent-soft:rgba(10,109,224,.15);
+  }
+
+  body.desktop-fun-theme-playoff{
+    --df-canvas-1:#081326;
+    --df-canvas-2:#1a2842;
+    --df-glow:rgba(255,204,0,.30);
+    --df-accent:#e7aa14;
+    --df-accent-2:#a96b00;
+    --df-accent-soft:rgba(231,170,20,.16);
+  }
+
+  body.desktop-fun-theme-crashout{
+    --df-canvas-1:#180d2d;
+    --df-canvas-2:#3a123d;
+    --df-glow:rgba(255,68,113,.30);
+    --df-accent:#db2856;
+    --df-accent-2:#7623b5;
+    --df-accent-soft:rgba(219,40,86,.15);
+  }
+
+  body.desktop-fun-theme-highlander{
+    --df-canvas-1:#07141f;
+    --df-canvas-2:#12384b;
+    --df-glow:rgba(37,195,255,.25);
+    --df-accent:#178fc1;
+    --df-accent-2:#b46b18;
+    --df-accent-soft:rgba(23,143,193,.15);
+  }
+
+  body.desktop-fun-theme-league,
+  body.desktop-fun-theme-playoff,
+  body.desktop-fun-theme-crashout,
+  body.desktop-fun-theme-highlander{
+    background:
+      radial-gradient(1000px 540px at 12% 0%, var(--df-glow), transparent 63%),
+      radial-gradient(850px 500px at 88% 14%, rgba(255,204,0,.10), transparent 64%),
+      linear-gradient(180deg,var(--df-canvas-2) 0%,var(--df-canvas-1) 50%,#020a16 100%) !important;
+    background-attachment:fixed !important;
+    transition:background .38s ease;
+  }
+
+  .desktop-fun-home{
+    --df-accent:#0a6de0;
+    --df-accent-2:#0649a5;
+    --df-accent-soft:rgba(10,109,224,.15);
+  }
+  body.desktop-fun-theme-playoff .desktop-fun-home{--df-accent:#e7aa14;--df-accent-2:#a96b00;--df-accent-soft:rgba(231,170,20,.16);}
+  body.desktop-fun-theme-crashout .desktop-fun-home{--df-accent:#db2856;--df-accent-2:#7623b5;--df-accent-soft:rgba(219,40,86,.15);}
+  body.desktop-fun-theme-highlander .desktop-fun-home{--df-accent:#178fc1;--df-accent-2:#b46b18;--df-accent-soft:rgba(23,143,193,.15);}
+
+  .desktop-fun-card,
+  .desktop-fun-competitions{
+    background:linear-gradient(180deg,rgba(252,254,255,.98),rgba(238,246,255,.98));
+    border-color:rgba(108,173,255,.22);
+    box-shadow:0 16px 34px rgba(0,10,28,.24);
+  }
+
+  .desktop-fun-hero{
+    background:
+      radial-gradient(520px 320px at 72% 50%,var(--df-accent-soft),transparent 68%),
+      linear-gradient(110deg,rgba(2,19,48,.99) 0%,var(--df-canvas-2) 54%,rgba(11,73,147,.94) 100%) !important;
+    box-shadow:0 22px 50px rgba(0,0,0,.32);
+    transition:background .38s ease;
+  }
+  body.desktop-fun-theme-crashout .desktop-fun-hero{
+    background:
+      radial-gradient(520px 320px at 72% 50%,rgba(255,57,104,.18),transparent 68%),
+      linear-gradient(110deg,#130b29 0%,#40153f 54%,#6d1843 100%) !important;
+  }
+  body.desktop-fun-theme-highlander .desktop-fun-hero{
+    background:
+      radial-gradient(520px 320px at 72% 50%,rgba(35,194,255,.16),transparent 68%),
+      linear-gradient(110deg,#06111c 0%,#0f3145 54%,#183f52 100%) !important;
+  }
+  body.desktop-fun-theme-playoff .desktop-fun-hero{
+    background:
+      radial-gradient(520px 320px at 72% 50%,rgba(255,204,0,.18),transparent 68%),
+      linear-gradient(110deg,#07101f 0%,#1e2837 54%,#4c3813 100%) !important;
+  }
+
+  .desktop-fun-grid-top{grid-template-columns:1.15fr 1fr .78fr;}
+
+  /* MATCH CENTER PERSONALE */
+  .desktop-fun-personal-card{min-height:318px;}
+  .desktop-fun-personal-head{
+    background:linear-gradient(90deg,var(--df-accent),var(--df-accent-2));
+    border-bottom:0;
+    transition:background .28s ease;
+  }
+  .desktop-fun-personal-head h2,
+  .desktop-fun-personal-head > span{color:#fff !important;}
+
+  .desktop-fun-match-tabs{
+    display:flex;
+    gap:7px;
+    padding:9px 10px 0;
+    background:linear-gradient(180deg,#f8fbff,#eef5ff);
+  }
+  .desktop-fun-match-tabs button{
+    appearance:none;
+    border:1px solid rgba(13,83,155,.12);
+    border-radius:999px;
+    min-height:30px;
+    padding:0 11px;
+    background:#fff;
+    color:#55708f;
+    font:800 .62rem/1 'Segoe UI',sans-serif;
+    cursor:pointer;
+    transition:.18s ease;
+  }
+  .desktop-fun-match-tabs button:hover{transform:translateY(-1px);}
+  .desktop-fun-match-tabs button.is-active{
+    color:#fff;
+    border-color:transparent;
+    background:linear-gradient(90deg,var(--df-accent),var(--df-accent-2));
+    box-shadow:0 7px 16px var(--df-accent-soft);
+  }
+  .desktop-fun-match-tabs button[hidden]{display:none !important;}
+
+  .desktop-fun-personal-match{
+    min-height:196px;
+    padding:9px 10px 0;
+    background:linear-gradient(180deg,#eef5ff,#f9fcff);
+  }
+  .desktop-fun-personal-stage{
+    min-height:188px;
+    overflow:hidden;
+    border-radius:16px;
+    border:1px solid rgba(74,144,224,.18);
+    background:
+      radial-gradient(circle at 50% 48%,var(--df-accent-soft),transparent 28%),
+      linear-gradient(135deg,#f9fcff,#e9f3ff);
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.9);
+  }
+  .desktop-fun-personal-kicker{
+    min-height:31px;
+    padding:0 12px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+    color:#637892;
+    font-size:.57rem;
+    font-weight:950;
+    letter-spacing:.08em;
+    text-transform:uppercase;
+  }
+  .desktop-fun-personal-kicker span{color:var(--df-accent);}
+  .desktop-fun-personal-kicker b{color:#193b66;}
+
+  .desktop-fun-personal-versus{
+    min-height:112px;
+    display:grid;
+    grid-template-columns:minmax(0,1fr) 66px minmax(0,1fr);
+    gap:5px;
+    align-items:center;
+    padding:2px 10px 5px;
+  }
+  .desktop-fun-personal-team{
+    min-width:0;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    text-align:center;
+  }
+  .desktop-fun-personal-team img{
+    width:72px;
+    height:72px;
+    object-fit:contain;
+    filter:drop-shadow(0 8px 10px rgba(10,46,92,.17));
+  }
+  .desktop-fun-personal-team img.is-mascot{width:80px;height:80px;}
+  .desktop-fun-personal-team strong{
+    display:block;
+    max-width:160px;
+    margin-top:2px;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+    color:#102d56;
+    font-size:.70rem;
+    font-weight:1000;
+  }
+  .desktop-fun-personal-vs,
+  .desktop-fun-personal-score{
+    min-width:58px;
+    min-height:54px;
+    border-radius:18px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:5px;
+    background:linear-gradient(135deg,var(--df-accent),var(--df-accent-2));
+    color:#fff;
+    font-size:1.15rem;
+    font-weight:1000;
+    box-shadow:0 9px 18px var(--df-accent-soft);
+  }
+  .desktop-fun-personal-score strong{font-size:1.2rem;}
+  .desktop-fun-personal-score span{opacity:.65;}
+
+  .desktop-fun-personal-footer{
+    min-height:40px;
+    padding:6px 9px 8px 12px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:8px;
+    border-top:1px solid rgba(25,84,148,.08);
+  }
+  .desktop-fun-personal-footer span{
+    min-width:0;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+    color:#677b95;
+    font-size:.59rem;
+    font-weight:800;
+  }
+  .desktop-fun-personal-footer a,
+  .desktop-fun-highlander-focus a{
+    flex:0 0 auto;
+    min-height:30px;
+    padding:0 11px;
+    display:inline-flex;
+    align-items:center;
+    border-radius:10px;
+    color:#fff;
+    background:linear-gradient(90deg,var(--df-accent),var(--df-accent-2));
+    font-size:.58rem;
+    font-weight:1000;
+  }
+
+  .desktop-fun-personal-rounds{
+    min-height:42px;
+    padding:6px 10px 9px;
+    display:flex;
+    justify-content:center;
+    gap:7px;
+    background:#f8fbff;
+  }
+  .desktop-fun-personal-rounds:empty{display:none;}
+  .desktop-fun-personal-rounds button{
+    appearance:none;
+    min-width:68px;
+    border:1px solid rgba(18,83,151,.12);
+    border-radius:11px;
+    padding:4px 9px;
+    background:#fff;
+    color:#6e7e91;
+    cursor:pointer;
+  }
+  .desktop-fun-personal-rounds button small,
+  .desktop-fun-personal-rounds button strong{display:block;line-height:1.05;}
+  .desktop-fun-personal-rounds button small{font-size:.49rem;font-weight:750;}
+  .desktop-fun-personal-rounds button strong{margin-top:2px;font-size:.63rem;font-weight:1000;}
+  .desktop-fun-personal-rounds button.is-active{
+    color:#fff;
+    border-color:transparent;
+    background:linear-gradient(90deg,var(--df-accent),var(--df-accent-2));
+  }
+
+  .desktop-fun-highlander-focus{
+    min-height:188px;
+    display:grid;
+    grid-template-columns:42% 58%;
+    align-items:center;
+    overflow:hidden;
+    border-radius:16px;
+    background:linear-gradient(135deg,#0b2132,#173f51);
+    color:#fff;
+  }
+  .desktop-fun-highlander-focus > img{
+    width:100%;
+    height:188px;
+    object-fit:contain;
+    filter:drop-shadow(0 12px 18px rgba(0,0,0,.35));
+  }
+  .desktop-fun-highlander-focus > div{padding:14px 16px 14px 4px;}
+  .desktop-fun-highlander-focus .desktop-fun-personal-kicker{padding:0;min-height:24px;}
+  .desktop-fun-highlander-focus .desktop-fun-personal-kicker b{color:#d6e9f4;}
+  .desktop-fun-highlander-focus h3{margin:7px 0 3px;font-size:1rem;}
+  .desktop-fun-highlander-focus > div > strong{color:#7bdcff;font-size:.70rem;}
+  .desktop-fun-highlander-stats{display:flex;gap:8px;margin:12px 0;}
+  .desktop-fun-highlander-stats span{padding:6px 8px;border-radius:10px;background:rgba(255,255,255,.08);font-size:.55rem;}
+
+  /* MATCH DELLA SETTIMANA ora è secondario */
+  .desktop-fun-week-card{min-height:228px;}
+  .desktop-fun-week-card .desktop-fun-card-head{
+    background:linear-gradient(90deg,#ff3f55,#ff7135);
+    border:0;
+  }
+  .desktop-fun-week-card .desktop-fun-card-head h2,
+  .desktop-fun-week-card .desktop-fun-card-head span{color:#fff;}
+  .desktop-fun-week-card .desktop-fun-featured-match{min-height:180px;}
+  .desktop-fun-week-card .desktop-fun-versus-stage{
+    min-height:133px;
+    padding:10px 9px 4px;
+    grid-template-columns:minmax(0,1fr) 54px minmax(0,1fr);
+  }
+  .desktop-fun-week-card .desktop-fun-team img{width:61px;height:61px;}
+  .desktop-fun-week-card .desktop-fun-team strong{font-size:.68rem;max-width:125px;}
+  .desktop-fun-week-card .desktop-fun-team small{font-size:.52rem;}
+  .desktop-fun-week-card .desktop-fun-vs{width:48px;height:48px;border-radius:15px;font-size:1.02rem;}
+  .desktop-fun-week-card .desktop-fun-match-footer{padding:7px 9px 9px;}
+  .desktop-fun-week-card .desktop-fun-match-footer span{font-size:.54rem;}
+  .desktop-fun-week-card .desktop-fun-match-footer a{min-height:28px;padding:0 9px;font-size:.54rem;}
+
+  /* GAZZETTA + EVENTI su fondo blu generale */
+  .desktop-fun-gazzetta-card{box-shadow:0 16px 34px rgba(0,8,25,.30);}
+  .desktop-fun-events-card .desktop-fun-card-head{background:linear-gradient(180deg,#fafdff,#eff6ff);}
+
+  /* BANNER COMPETIZIONI: niente più blocchi tagliati a metà */
+  .desktop-fun-competitions{
+    background:linear-gradient(180deg,rgba(248,252,255,.98),rgba(231,242,255,.98));
+  }
+  .desktop-fun-competition-tile{
+    min-height:148px;
+    background:#081d3d !important;
+    border:1px solid rgba(255,255,255,.10);
+    box-shadow:0 12px 24px rgba(0,18,47,.22);
+  }
+  .desktop-fun-competition-tile::before{
+    content:"";
+    position:absolute;
+    inset:0;
+    z-index:1;
+    background:
+      radial-gradient(circle at 24% 45%,var(--tile-glow),transparent 38%),
+      linear-gradient(90deg,rgba(2,12,30,.02) 0%,rgba(2,14,35,.26) 48%,rgba(2,12,30,.90) 76%);
+  }
+  .desktop-fun-competition-tile::after{
+    background:repeating-linear-gradient(120deg,transparent 0 38px,rgba(255,255,255,.025) 39px 40px);
+    z-index:1;
+  }
+  .desktop-fun-competition-tile img{
+    left:-2%;
+    bottom:-15%;
+    width:64%;
+    height:130%;
+    object-fit:cover;
+    object-position:50% 44%;
+    opacity:.98;
+    filter:drop-shadow(0 10px 16px rgba(0,0,0,.30));
+    -webkit-mask-image:linear-gradient(90deg,#000 0%,#000 67%,transparent 100%);
+    mask-image:linear-gradient(90deg,#000 0%,#000 67%,transparent 100%);
+  }
+  .desktop-fun-competition-tile > div{width:55%;padding:20px 13px 16px 4px;}
+  .desktop-fun-competition-tile span{color:rgba(255,255,255,.72);}
+  .desktop-fun-competition-tile h3{text-shadow:0 2px 8px rgba(0,0,0,.38);}
+  .desktop-fun-competition-tile b{background:#ffcc00;color:#07244d;}
+  .desktop-fun-competition-tile.is-campionato{--tile-glow:rgba(255,204,0,.34);background:linear-gradient(135deg,#08264d,#0d3f72) !important;}
+  .desktop-fun-competition-tile.is-crashout{--tile-glow:rgba(255,57,102,.34);background:linear-gradient(135deg,#17112d,#4f163b) !important;}
+  .desktop-fun-competition-tile.is-highlander{--tile-glow:rgba(38,189,255,.28);background:linear-gradient(135deg,#071927,#163c4d) !important;}
+  .desktop-fun-competition-tile.is-allstar{--tile-glow:rgba(255,204,0,.32);background:linear-gradient(135deg,#07295a,#0a5ab2) !important;}
+
+  .desktop-fun-competitions-head h2{color:#0b2c58;}
+}
+
+@media (min-width: 901px) and (max-width: 1240px){
+  .desktop-fun-personal-card{min-height:330px;}
+  .desktop-fun-grid-top{grid-template-columns:1fr 1fr;}
+  .desktop-fun-power-card{grid-column:1 / -1;}
+}
