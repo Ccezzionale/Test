@@ -1441,6 +1441,205 @@ function renderDesktopSidebar(context, rows) {
   }
 }
 
+
+/* =========================================================
+   HOME DESKTOP FUN
+   UI desktop separata dal mobile, dati reali riusati dalla home.
+   ========================================================= */
+function desktopFunStandingsRows(standings, startIndex = 0) {
+  if (!standings.length) return '<div class="desktop-fun-loading">Classifica in attesa dei primi risultati.</div>';
+  return standings.map((row, index) => `
+    <div class="desktop-fun-table-row">
+      <span>${startIndex + index + 1}</span>
+      <img src="${findTeamLogo(row.squadra)}" alt="">
+      <strong>${escapeHtml(row.squadra)}</strong>
+      <b>${row.pt}</b>
+    </div>`).join("");
+}
+
+function desktopFunTeamPower(rows, teamName) {
+  const teamRows = rows
+    .filter(isCompletedRow)
+    .filter(row => normalizeTeamName(row.Team) === normalizeTeamName(teamName))
+    .sort((a, b) => (Number(a.GW_Stagionale) || Number(a.GW) || 0) - (Number(b.GW_Stagionale) || Number(b.GW) || 0));
+
+  const seasonPoints = teamRows.reduce((sum, row) => {
+    const result = rowResult(row);
+    return sum + (result === "V" ? 3 : result === "N" ? 1 : 0);
+  }, 0);
+  const lastFour = teamRows.slice(-4);
+  const recentPoints = lastFour.reduce((sum, row) => {
+    const result = rowResult(row);
+    return sum + (result === "V" ? 3 : result === "N" ? 1 : 0);
+  }, 0);
+  const average = teamRows.length
+    ? teamRows.reduce((sum, row) => sum + parseNumber(row.PointsFor), 0) / teamRows.length
+    : 0;
+  const form = lastFour.map(rowResult).join(" ") || "–";
+
+  // La forma recente pesa di più; media FP e punti stagionali rompono i pari merito.
+  const score = recentPoints * 1000 + average * 10 + seasonPoints;
+  return { team: teamName, score, recentPoints, average, seasonPoints, form };
+}
+
+function renderDesktopFunPower(rows) {
+  const host = document.getElementById("desktop-fun-power");
+  if (!host) return;
+
+  const ranking = squadreBase
+    .map(team => desktopFunTeamPower(rows, team.nome))
+    .filter(item => item.seasonPoints > 0 || item.average > 0)
+    .sort((a, b) => b.score - a.score || a.team.localeCompare(b.team))
+    .slice(0, 5);
+
+  host.innerHTML = ranking.length
+    ? ranking.map((item, index) => `
+      <div class="desktop-fun-power-row">
+        <span class="desktop-fun-power-rank">${index + 1}</span>
+        <img src="${findTeamLogo(item.team)}" alt="">
+        <div>
+          <strong>${escapeHtml(item.team)}</strong>
+          <small>${escapeHtml(item.form)} · media ${formatNumber(item.average)}</small>
+        </div>
+      </div>`).join("")
+    : '<div class="desktop-fun-loading">Power Ranking in attesa dei primi risultati.</div>';
+}
+
+function renderDesktopFunStandings(rows) {
+  const hostA = document.getElementById("desktop-fun-standings-a");
+  const hostB = document.getElementById("desktop-fun-standings-b");
+  if (!hostA || !hostB) return;
+
+  const activeCode = activeCompetitionCode(rows);
+  const titleA = document.querySelector(".desktop-fun-conference.is-league h3");
+  const titleB = document.querySelector(".desktop-fun-conference.is-championship h3");
+
+  if (activeCode === "Unificata") {
+    const standings = buildStandings(completedRowsFor(rows, "Unificata"));
+    if (titleA) titleA.textContent = "Round Robin · 1–8";
+    if (titleB) titleB.textContent = "Round Robin · 9–16";
+    hostA.innerHTML = desktopFunStandingsRows(standings.slice(0, 8), 0);
+    hostB.innerHTML = desktopFunStandingsRows(standings.slice(8, 16), 8);
+    return;
+  }
+
+  if (titleA) titleA.textContent = "Conference League";
+  if (titleB) titleB.textContent = "Conference Championship";
+  hostA.innerHTML = desktopFunStandingsRows(buildStandings(completedRowsFor(rows, "Conf A")).slice(0, 8));
+  hostB.innerHTML = desktopFunStandingsRows(buildStandings(completedRowsFor(rows, "Conf B")).slice(0, 8));
+}
+
+function renderDesktopFunFeaturedMatch(rows) {
+  const host = document.getElementById("desktop-fun-featured-match");
+  const gwLabel = document.getElementById("desktop-fun-match-gw");
+  if (!host) return;
+
+  const activeCode = activeCompetitionCode(rows);
+  const codes = activeCode ? [activeCode] : ["Conf A", "Conf B"];
+  const candidates = [];
+
+  codes.forEach(code => {
+    const gw = nextRoundForConference(rows, code);
+    if (!gw) return;
+    const standings = buildStandings(completedRowsFor(rows, code));
+    fixturesForRound(rows, code, gw).forEach(fixture => {
+      candidates.push({
+        code,
+        gw,
+        standings,
+        fixture,
+        score: matchupScore(fixture, standings)
+      });
+    });
+  });
+
+  const selected = candidates.sort((a, b) => b.score - a.score)[0];
+  if (!selected) {
+    host.innerHTML = '<div class="desktop-fun-loading">Calendario in aggiornamento.</div>';
+    return;
+  }
+
+  const { fixture, standings, code, gw } = selected;
+  const positionMap = new Map(standings.map((row, index) => [normalizeTeamName(row.squadra), index + 1]));
+  const homePos = positionMap.get(normalizeTeamName(fixture.home));
+  const awayPos = positionMap.get(normalizeTeamName(fixture.away));
+  const href = matchCenterUrl({ home: fixture.home, away: fixture.away, gw }, code);
+  const rankText = homePos && awayPos ? `${homePos}° contro ${awayPos}°` : "Sfida da non perdere";
+
+  if (gwLabel) gwLabel.textContent = `Giornata ${gw}`;
+  host.innerHTML = `
+    <div class="desktop-fun-versus-stage">
+      <div class="desktop-fun-team">
+        <img src="${findTeamLogo(fixture.home)}" alt="Logo ${escapeHtml(fixture.home)}">
+        <strong>${escapeHtml(fixture.home)}</strong>
+        <small>${homePos ? `${homePos}° in classifica` : ""}</small>
+      </div>
+      <div class="desktop-fun-vs">VS</div>
+      <div class="desktop-fun-team">
+        <img src="${findTeamLogo(fixture.away)}" alt="Logo ${escapeHtml(fixture.away)}">
+        <strong>${escapeHtml(fixture.away)}</strong>
+        <small>${awayPos ? `${awayPos}° in classifica` : ""}</small>
+      </div>
+    </div>
+    <div class="desktop-fun-match-footer">
+      <span>${escapeHtml(conferenceLabel(code))} · ${escapeHtml(rankText)}</span>
+      <a href="${href}">MATCH PREVIEW →</a>
+    </div>`;
+}
+
+function renderDesktopFunLive(context) {
+  const teamName = document.getElementById("desktop-fun-team-name");
+  if (teamName) teamName.textContent = context?.team?.name || "Lega degli Eroi";
+
+  const tradeSource = document.getElementById("dashboard-latest-trade");
+  const tradeTarget = document.getElementById("desktop-fun-latest-trade");
+  if (tradeTarget) tradeTarget.textContent = tradeSource?.textContent?.trim() || "Nessuna trade completata";
+
+  const recordValue = document.getElementById("dashboard-record-value")?.textContent?.trim();
+  const recordTeam = document.getElementById("dashboard-record-team")?.textContent?.trim();
+  const recordTarget = document.getElementById("desktop-fun-record");
+  if (recordTarget) recordTarget.textContent = [recordValue, recordTeam].filter(Boolean).join(" · ") || "Dati in aggiornamento";
+
+  const waiverTarget = document.getElementById("desktop-fun-waiver");
+  const eventWaiver = document.getElementById("desktop-fun-event-waiver");
+  let waiverText = "Prossimo turno da programmare";
+  if (waiverDeadline) {
+    const remaining = Math.max(0, waiverDeadline.getTime() - Date.now());
+    const totalMinutes = Math.floor(remaining / 60000);
+    const days = Math.floor(totalMinutes / 1440);
+    const hours = Math.floor((totalMinutes % 1440) / 60);
+    const minutes = totalMinutes % 60;
+    const countdown = days > 0
+      ? `${days}g ${String(hours).padStart(2, "0")}h`
+      : hours > 0
+        ? `${hours}h ${String(minutes).padStart(2, "0")}m`
+        : `${Math.max(minutes, 1)}m`;
+    waiverText = `${waiverDeadlineLabel || "Chiusura"} · ${countdown}`;
+  }
+  if (waiverTarget) waiverTarget.textContent = waiverText;
+  if (eventWaiver) eventWaiver.textContent = waiverText;
+}
+
+function renderDesktopFunHeroRound(rows) {
+  const label = document.getElementById("desktop-fun-gw");
+  if (!label) return;
+  const activeCode = activeCompetitionCode(rows);
+  const gws = activeCode
+    ? [nextRoundForConference(rows, activeCode)]
+    : [nextRoundForConference(rows, "Conf A"), nextRoundForConference(rows, "Conf B")];
+  const gw = gws.filter(Boolean).sort((a, b) => a - b)[0];
+  label.textContent = gw ? `Giornata ${gw} · Stagione 2026/27` : "Stagione 2026/27";
+}
+
+function renderDesktopFunHome(context, rows) {
+  if (!document.querySelector(".desktop-fun-home")) return;
+  renderDesktopFunHeroRound(rows);
+  renderDesktopFunFeaturedMatch(rows);
+  renderDesktopFunStandings(rows);
+  renderDesktopFunPower(rows);
+  renderDesktopFunLive(context);
+}
+
 async function initHomeDashboard() {
   reorganizeHomeLowerSections();
   setupHomeMatchTabs();
@@ -1458,6 +1657,7 @@ async function initHomeDashboard() {
   renderMatchups(rows);
   renderRecord(rows);
   renderDesktopSidebar(context, rows);
+  renderDesktopFunHome(context, rows);
   await renderHomeCrashoutTab(context);
   await renderHomeHighlanderTab(context);
 }

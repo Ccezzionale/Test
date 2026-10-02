@@ -6,7 +6,7 @@
   <title>Lega degli Eroi</title>
   
 
-  <link rel="stylesheet" href="navbar.css?v=20260930-desktop2">
+  <link rel="stylesheet" href="navbar.css?v=20261002-fun1">
 
   <!-- PWA -->
   <link rel="manifest" href="manifest.json">
@@ -473,6 +473,139 @@
 
 <main class="home-wrap home-dashboard">
 
+  <!-- =======================================================
+       HOME DESKTOP FUN · solo desktop
+       Mobile resta invariato nella sezione home-app-v2 sotto.
+       ======================================================= -->
+  <section class="desktop-fun-home" aria-label="Home desktop Lega degli Eroi">
+    <header class="desktop-fun-hero">
+      <div class="desktop-fun-hero-copy">
+        <div class="desktop-fun-kicker">LA LEGA DEGLI EROI</div>
+        <h1>Stessi amici.<br><span>Più eroi.</span></h1>
+        <p>La stagione in un colpo d'occhio: sfide, classifiche, follie e coppe.</p>
+        <div class="desktop-fun-hero-pills">
+          <span id="desktop-fun-gw">Stagione 2026/27</span>
+          <span id="desktop-fun-team-name">La tua squadra</span>
+        </div>
+      </div>
+      <div class="desktop-fun-hero-art" aria-hidden="true">
+        <div class="desktop-fun-burst"></div>
+        <img src="img/home-desktop/mascot-hero.webp" alt="">
+      </div>
+      <div class="desktop-fun-hero-sign desktop-fun-sign-left">QUI GIOCANO<br><strong>LE LEGGENDE</strong></div>
+      <div class="desktop-fun-hero-sign desktop-fun-sign-right">IL FANTACALCIO<br><strong>È UNA COSA SERIA*</strong><small>*più o meno</small></div>
+    </header>
+
+    <div class="desktop-fun-grid desktop-fun-grid-top">
+      <section class="desktop-fun-card desktop-fun-match-card" aria-labelledby="desktop-fun-match-title">
+        <div class="desktop-fun-card-head">
+          <h2 id="desktop-fun-match-title">🔥 Match della settimana</h2>
+          <span id="desktop-fun-match-gw">Giornata</span>
+        </div>
+        <div id="desktop-fun-featured-match" class="desktop-fun-featured-match">
+          <div class="desktop-fun-loading">Calcolo della sfida più cattiva…</div>
+        </div>
+      </section>
+
+      <section class="desktop-fun-card desktop-fun-standings-card" aria-labelledby="desktop-fun-standings-title">
+        <div class="desktop-fun-card-head">
+          <h2 id="desktop-fun-standings-title">👑 Classifiche</h2>
+          <a href="classifica.html">Vedi tutto →</a>
+        </div>
+        <div class="desktop-fun-conference-grid">
+          <div class="desktop-fun-conference is-league">
+            <h3>Conference League</h3>
+            <div id="desktop-fun-standings-a" class="desktop-fun-table"><div class="desktop-fun-loading">Caricamento…</div></div>
+          </div>
+          <div class="desktop-fun-conference is-championship">
+            <h3>Conference Championship</h3>
+            <div id="desktop-fun-standings-b" class="desktop-fun-table"><div class="desktop-fun-loading">Caricamento…</div></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="desktop-fun-card desktop-fun-power-card" aria-labelledby="desktop-fun-power-title">
+        <div class="desktop-fun-card-head">
+          <h2 id="desktop-fun-power-title">⚡ Power Ranking</h2>
+          <a href="statistiche.html">Statistiche →</a>
+        </div>
+        <div class="desktop-fun-power-layout">
+          <div id="desktop-fun-power" class="desktop-fun-power-list"><div class="desktop-fun-loading">Caricamento…</div></div>
+          <img src="img/home-desktop/mascot-leader.webp" alt="" aria-hidden="true">
+        </div>
+      </section>
+    </div>
+
+    <div class="desktop-fun-grid desktop-fun-grid-middle">
+      <a href="giornale.html" class="desktop-fun-card desktop-fun-gazzetta-card">
+        <div class="desktop-fun-gazzetta-art">
+          <img src="img/home-desktop/mascot-funny.webp" alt="" aria-hidden="true">
+        </div>
+        <div class="desktop-fun-gazzetta-copy">
+          <span>📰 Dalla Gazzetta</span>
+          <h2>La lega parla.<br>Qualcuno purtroppo ascolta.</h2>
+          <p>Editoriali, pagelle, polemiche e sentenze completamente non richieste.</p>
+          <strong>APRI LA GAZZETTA →</strong>
+        </div>
+      </a>
+
+      <section class="desktop-fun-card desktop-fun-chaos-card" aria-labelledby="desktop-fun-chaos-title">
+        <div class="desktop-fun-card-head">
+          <h2 id="desktop-fun-chaos-title">😎 Dalla lega</h2>
+          <span>Live</span>
+        </div>
+        <div class="desktop-fun-chaos-list">
+          <a href="trade-room.html"><b>🤝 Ultima trade</b><span id="desktop-fun-latest-trade">Caricamento…</span></a>
+          <div><b>🔥 Record del momento</b><span id="desktop-fun-record">Caricamento…</span></div>
+          <a href="waiver.html"><b>⏱ Waiver</b><span id="desktop-fun-waiver">Prossima scadenza in caricamento…</span></a>
+          <a href="statistiche.html"><b>📊 Numeri della lega</b><span>Statistiche, trend e classifiche</span></a>
+        </div>
+      </section>
+
+      <section class="desktop-fun-card desktop-fun-events-card" aria-labelledby="desktop-fun-events-title">
+        <div class="desktop-fun-card-head">
+          <h2 id="desktop-fun-events-title">📅 Prossimi eventi</h2>
+          <span>Segna, eroe</span>
+        </div>
+        <div class="desktop-fun-events-list">
+          <a href="waiver.html"><span>01</span><div><b>Waiver Wire</b><small id="desktop-fun-event-waiver">Controlla la prossima chiusura</small></div></a>
+          <a href="crashoutcup.html"><span>02</span><div><b>Crash Out Cup</b><small>Rivalry Games e fase finale</small></div></a>
+          <a href="arena.html"><span>03</span><div><b>Highlander</b><small>Ne resterà soltanto uno</small></div></a>
+          <a href="allstar.html"><span>04</span><div><b>All-Star Game</b><small>Voti, stelle e zero modestia</small></div></a>
+        </div>
+      </section>
+    </div>
+
+    <section class="desktop-fun-competitions" aria-labelledby="desktop-fun-competitions-title">
+      <div class="desktop-fun-competitions-head">
+        <div>
+          <span>🏆</span>
+          <h2 id="desktop-fun-competitions-title">Le competizioni</h2>
+          <p>Quattro modi diversi di rovinarsi il weekend.</p>
+        </div>
+        <a href="classifica.html">Scopri tutto →</a>
+      </div>
+      <div class="desktop-fun-competition-grid">
+        <a href="classifica.html" class="desktop-fun-competition-tile is-campionato">
+          <img src="img/home-desktop/mascot-trophy.webp" alt="" aria-hidden="true">
+          <div><span>La gloria più lunga</span><h3>Campionato</h3><b>VAI →</b></div>
+        </a>
+        <a href="crashoutcup.html" class="desktop-fun-competition-tile is-crashout">
+          <img src="img/home-desktop/mascot-action.webp" alt="" aria-hidden="true">
+          <div><span>Una sola partita</span><h3>Crash Out Cup</h3><b>VAI →</b></div>
+        </a>
+        <a href="arena.html" class="desktop-fun-competition-tile is-highlander">
+          <img src="img/home-desktop/mascot-determined.webp" alt="" aria-hidden="true">
+          <div><span>Un solo sopravvissuto</span><h3>Highlander</h3><b>VAI →</b></div>
+        </a>
+        <a href="allstar.html" class="desktop-fun-competition-tile is-allstar">
+          <img src="img/home-desktop/mascot-sticker.webp" alt="" aria-hidden="true">
+          <div><span>I migliori contro i migliori</span><h3>All-Star Game</h3><b>VAI →</b></div>
+        </a>
+      </div>
+    </section>
+  </section>
+
   <section class="mobile-app-hero home-app-v2" aria-label="Dashboard squadra">
     <section class="app-identity-card" aria-label="La tua squadra">
       <img id="dashboard-team-bg-logo" class="app-identity-watermark" src="icon-192.png" alt="">
@@ -917,7 +1050,7 @@ document.addEventListener("DOMContentLoaded", function () {
   })();
   </script>
 
-  <script type="module" src="home-dashboard.js?v=20260930-desktop2"></script>
+  <script type="module" src="home-dashboard.js?v=20261002-fun1"></script>
   <script type="module" src="home_auth.js"></script>
   <script src="mobile-nav.js?v=2"></script>
   <script src="navbar.js"></script>
