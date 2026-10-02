@@ -735,6 +735,7 @@ function renderRecord(rows) {
 let waiverDeadline = null;
 let waiverDeadlineLabel = "";
 let activeLeaguePhase = "";
+let homeCrashoutPlayoffActive = false;
 
 function renderWaiverCountdown() {
   const valueEl = document.getElementById("dashboard-waiver-countdown");
@@ -1204,11 +1205,15 @@ async function renderHomeCrashoutTab(context) {
       .order("match_index", { ascending:true });
     if (error) throw error;
     const rows = data || [];
+
+    // Stato globale della competizione: serve anche ai banner desktop,
+    // indipendentemente dal fatto che la squadra dell'utente sia ancora in gara.
+    const allRivalryComplete = rows.length > 0 && rows.every(row => !!row.is_played);
+    homeCrashoutPlayoffActive = allRivalryComplete;
+
     const teamKey = normalizeTeamName(context.team.name);
     const teamRows = rows.filter(row => normalizeTeamName(row.home_team) === teamKey || normalizeTeamName(row.away_team) === teamKey);
     if (!teamRows.length) return;
-
-    const allRivalryComplete = rows.length > 0 && rows.every(row => !!row.is_played);
     if (!allRivalryComplete) {
       const upcoming = teamRows.find(row => !row.is_played);
       const latest = [...teamRows].filter(row => row.is_played).sort((a,b) => Number(b.matchday)-Number(a.matchday))[0];
@@ -1220,6 +1225,7 @@ async function renderHomeCrashoutTab(context) {
     if (series) renderCrashoutHomePlayoff(series);
     // Se la squadra è eliminata, la tab sparisce automaticamente.
   } catch (error) {
+    homeCrashoutPlayoffActive = false;
     console.warn("Crash Out Cup non disponibile nella Home:", error);
   }
 }
@@ -1867,6 +1873,40 @@ function renderDesktopFunHeroRound(rows) {
   label.textContent = gw ? `Giornata ${gw} · Stagione 2026/27` : "Stagione 2026/27";
 }
 
+
+function updateDesktopFunCompetitionTiles() {
+  const leagueTile = document.querySelector(".desktop-fun-competition-tile.is-campionato");
+  const crashoutTile = document.querySelector(".desktop-fun-competition-tile.is-crashout");
+
+  if (leagueTile) {
+    const isPlayoff = getHomeLeagueVisualPhase() === "playoff";
+    leagueTile.href = isPlayoff ? "playoff.html" : "classifica.html";
+
+    const image = leagueTile.querySelector("img");
+    const kicker = leagueTile.querySelector("div > span");
+    const title = leagueTile.querySelector("h3");
+
+    if (image) {
+      image.src = isPlayoff
+        ? "img/home-desktop/mascot-playoff.webp"
+        : "img/home-desktop/mascot-trophy.webp";
+    }
+    if (kicker) kicker.textContent = isPlayoff ? "La corsa al titolo" : "La gloria più lunga";
+    if (title) title.textContent = isPlayoff ? "Playoff" : "Campionato";
+  }
+
+  if (crashoutTile) {
+    // Il banner resta identico: cambia automaticamente solo la destinazione
+    // quando tutti i Rivalry Games risultano completati.
+    crashoutTile.href = homeCrashoutPlayoffActive
+      ? "crashoutplayoff.html"
+      : "crashoutcup.html";
+
+    const kicker = crashoutTile.querySelector("div > span");
+    if (kicker) kicker.textContent = homeCrashoutPlayoffActive ? "Fase finale" : "Una sola partita";
+  }
+}
+
 function renderDesktopFunHome(context, rows) {
   if (!document.querySelector(".desktop-fun-home")) return;
   renderDesktopFunHeroRound(rows);
@@ -1897,6 +1937,11 @@ async function initHomeDashboard() {
   renderDesktopSidebar(context, rows);
   renderDesktopFunHome(context, rows);
   await renderHomeCrashoutTab(context);
+
+  // A questo punto conosciamo sia active_phase del campionato
+  // sia se i Rivalry Games della Crash Out sono terminati.
+  updateDesktopFunCompetitionTiles();
+
   await renderHomeHighlanderTab(context);
   syncDesktopFunCompetitionTabs(context, rows);
 }
