@@ -10443,3 +10443,91 @@ nav.site-nav .toggle-submenu .app-alert-badge {
   .desktop-fun-grid-top{grid-template-columns:1fr 1fr;}
   .desktop-fun-power-card{grid-column:1 / -1;}
 }
+
+
+/* =========================================================
+   HOME DESKTOP FUN V2.1 · final banner polish
+   ========================================================= */
+@media (min-width: 901px){
+  .desktop-fun-hero.desktop-fun-hero-banner{
+    min-height:0;
+    background:none;
+    border:0;
+    box-shadow:0 18px 38px rgba(1,31,69,.22);
+  }
+  .desktop-fun-hero.desktop-fun-hero-banner::before,
+  .desktop-fun-hero.desktop-fun-hero-banner::after{
+    display:none;
+  }
+  .desktop-fun-hero.desktop-fun-hero-banner > img{
+    display:block;
+    width:100%;
+    height:auto;
+    border-radius:28px;
+  }
+
+  .desktop-fun-gazzetta-card{
+    min-height:228px;
+    display:block;
+    overflow:hidden;
+    background:linear-gradient(135deg,#0a234b 0%,#071833 100%);
+    border-color:rgba(255,204,0,.16);
+  }
+  .desktop-fun-gazzetta-card::after{
+    background:linear-gradient(90deg,rgba(3,14,32,0) 0%, rgba(3,14,32,0) 48%, rgba(3,14,32,.18) 58%, rgba(3,14,32,.66) 73%, rgba(3,14,32,.92) 100%);
+  }
+  .desktop-fun-gazzetta-art{
+    position:absolute;
+    inset:0;
+    z-index:0;
+    min-height:0;
+  }
+  .desktop-fun-gazzetta-art img{
+    position:absolute;
+    inset:0;
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    object-position:center;
+    filter:none;
+  }
+  .desktop-fun-gazzetta-copy{
+    position:relative;
+    z-index:2;
+    width:min(48%, 470px);
+    min-height:228px;
+    margin-left:auto;
+    padding:24px 24px 20px 12px;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+  }
+  .desktop-fun-gazzetta-copy > span{
+    color:#ffcc00;
+    text-shadow:0 2px 12px rgba(0,0,0,.35);
+  }
+  .desktop-fun-gazzetta-copy h2{
+    color:#ffffff;
+    text-shadow:0 4px 20px rgba(0,0,0,.34);
+  }
+  .desktop-fun-gazzetta-copy p{
+    color:rgba(255,255,255,.88);
+    text-shadow:0 2px 12px rgba(0,0,0,.28);
+  }
+
+  .desktop-fun-power-layout{
+    padding:12px 128px 12px 12px;
+    overflow:hidden;
+  }
+  .desktop-fun-power-layout > img{
+    right:-4px;
+    bottom:-2px;
+    width:136px;
+    height:auto;
+    max-height:188px;
+    object-fit:contain;
+    object-position:bottom right;
+    border-radius:0;
+    filter:drop-shadow(0 16px 22px rgba(0,0,0,.18));
+  }
+}
