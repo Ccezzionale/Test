@@ -1,7 +1,8 @@
 import { supabase } from './supabase.js';
 
 const XLSX_CDN = 'https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js';
-const TABLE = 'fantacalcio_results';
+const RESULTS_TABLE = 'fantacalcio_results';
+const FIXTURES_TABLE = 'fantacalcio_fixtures';
 
 const panel = document.getElementById('results-admin-panel');
 const adminBody = document.getElementById('results-admin-body');
@@ -85,6 +86,7 @@ function findCalendarSheet(workbook) {
 function rowsFromSheet(sheet, conference) {
   const matrix = window.XLSX.utils.sheet_to_json(sheet, { header: 1, defval: null, raw: true });
   const results = [];
+  const fixtures = [];
   const seen = new Set();
 
   for (let r = 0; r < matrix.length; r++) {
@@ -114,12 +116,25 @@ function rowsFromSheet(sheet, conference) {
           continue;
         }
 
-        // Nei file Fantacalcio 0-0 significa giornata non ancora disputata.
-        if (scoreA === 0 && scoreB === 0) continue;
-
         const matchKey = `${gw}|${teamA}|${teamB}`;
         if (seen.has(matchKey)) continue;
         seen.add(matchKey);
+
+        // Il calendario completo va sempre in fantacalcio_fixtures:
+        // una sola riga per partita, anche quando non è ancora stata giocata.
+        fixtures.push({
+          conference,
+          phase: 'Regular',
+          gw,
+          home_team: teamA,
+          away_team: teamB,
+          match_date: null,
+          updated_at: new Date().toISOString()
+        });
+
+        // Compatibilità totale con la classifica attuale:
+        // gli 0-0 del file significano "non giocata" e NON entrano nei risultati.
+        if (scoreA === 0 && scoreB === 0) continue;
 
         results.push(
           {
@@ -153,31 +168,44 @@ function rowsFromSheet(sheet, conference) {
     }
   }
 
-  return results.sort((a, b) => a.gw - b.gw || a.team.localeCompare(b.team));
-}
-
-function summarize(rows) {
-  const teams = new Set(rows.map(r => r.team));
-  const gws = [...new Set(rows.map(r => r.gw))].sort((a, b) => a - b);
   return {
-    teams: teams.size,
-    matches: rows.length / 2,
-    gws,
-    maxGW: gws.length ? gws[gws.length - 1] : 0
+    results: results.sort((a, b) => a.gw - b.gw || a.team.localeCompare(b.team)),
+    fixtures: fixtures.sort((a, b) => a.gw - b.gw || a.home_team.localeCompare(b.home_team))
   };
 }
 
-function validateRows(rows, conference) {
-  if (!rows.length) throw new Error('Non trovo nessuna partita disputata nel file.');
+function summarizeParsed(results, fixtures) {
+  const fixtureTeams = new Set();
+  fixtures.forEach(row => {
+    fixtureTeams.add(row.home_team);
+    fixtureTeams.add(row.away_team);
+  });
 
-  const summary = summarize(rows);
+  const playedGws = [...new Set(results.map(r => r.gw))].sort((a, b) => a - b);
+  const calendarGws = [...new Set(fixtures.map(r => r.gw))].sort((a, b) => a - b);
+
+  return {
+    teams: fixtureTeams.size,
+    matches: results.length / 2,
+    gws: playedGws,
+    maxGW: playedGws.length ? playedGws[playedGws.length - 1] : 0,
+    calendarMatches: fixtures.length,
+    calendarGws,
+    calendarMaxGW: calendarGws.length ? calendarGws[calendarGws.length - 1] : 0
+  };
+}
+
+function validateParsed(results, fixtures, conference) {
+  if (!fixtures.length) throw new Error('Non trovo nessuna partita nel calendario del file.');
+
+  const summary = summarizeParsed(results, fixtures);
   const expectedTeams = conference === 'Unificata' ? 16 : 8;
 
   if (summary.teams > expectedTeams) {
     throw new Error(`Trovate ${summary.teams} squadre: per ${conference} me ne aspettavo al massimo ${expectedTeams}.`);
   }
 
-  if (summary.matches % 1 !== 0) {
+  if (summary.matches % 1 !== 0 || summary.calendarMatches % 1 !== 0) {
     throw new Error('Numero di partite non valido.');
   }
 
@@ -193,17 +221,28 @@ async function parseFile(file, conference) {
   const sheet = findCalendarSheet(workbook);
   if (!sheet) throw new Error('Non trovo il foglio Calendario nel file.');
 
-  const rows = rowsFromSheet(sheet, conference);
-  const summary = validateRows(rows, conference);
-  return { rows, summary, fileName: file.name };
+  const parsedRows = rowsFromSheet(sheet, conference);
+  const summary = validateParsed(parsedRows.results, parsedRows.fixtures, conference);
+  return {
+    rows: parsedRows.results,
+    fixtures: parsedRows.fixtures,
+    summary,
+    fileName: file.name
+  };
 }
 
 function summaryText(parsed) {
   const { summary } = parsed;
-  const gwText = summary.gws.length === 1
-    ? `GW ${summary.gws[0]}`
-    : `GW 1-${summary.maxGW}`;
-  return `${gwText} · ${summary.teams} squadre · ${summary.matches} partite giocate`;
+
+  const playedText = summary.maxGW > 0
+    ? `risultati fino a GW ${summary.maxGW}`
+    : 'nessun risultato ancora';
+
+  const calendarText = summary.calendarMaxGW > 0
+    ? `calendario fino a GW ${summary.calendarMaxGW}`
+    : 'calendario non disponibile';
+
+  return `${playedText} · ${calendarText} · ${summary.teams} squadre · ${summary.matches} partite giocate`;
 }
 
 async function handlePreview(input, conference, statusEl, setter) {
@@ -226,12 +265,27 @@ async function handlePreview(input, conference, statusEl, setter) {
 }
 
 async function upsertRows(rows) {
+  if (!rows?.length) return;
+
   const chunkSize = 500;
   for (let i = 0; i < rows.length; i += chunkSize) {
     const chunk = rows.slice(i, i + chunkSize);
     const { error } = await supabase
-      .from(TABLE)
+      .from(RESULTS_TABLE)
       .upsert(chunk, { onConflict: 'conference,phase,gw,team_key' });
+    if (error) throw error;
+  }
+}
+
+async function upsertFixtures(fixtures) {
+  if (!fixtures?.length) return;
+
+  const chunkSize = 500;
+  for (let i = 0; i < fixtures.length; i += chunkSize) {
+    const chunk = fixtures.slice(i, i + chunkSize);
+    const { error } = await supabase
+      .from(FIXTURES_TABLE)
+      .upsert(chunk, { onConflict: 'conference,phase,gw,home_team,away_team' });
     if (error) throw error;
   }
 }
@@ -267,19 +321,23 @@ async function importConference() {
   setSummary('Aggiornamento Conference in corso…', 'loading');
 
   try {
+    // La classifica continua a ricevere SOLO le partite disputate.
     await upsertRows([...parsedConfA.rows, ...parsedConfB.rows]);
 
-    try {
-      await sendResultsUpdatedNotification(
-        "conference",
-        Math.max(parsedConfA.summary.maxGW || 0, parsedConfB.summary.maxGW || 0)
-      );
-    } catch (notificationError) {
-      console.warn("Risultati aggiornati, ma notifica non inviata:", notificationError);
+    // Il calendario completo vive separato e non può alterare la classifica.
+    await upsertFixtures([...parsedConfA.fixtures, ...parsedConfB.fixtures]);
+
+    const latestPlayedGw = Math.max(parsedConfA.summary.maxGW || 0, parsedConfB.summary.maxGW || 0);
+    if (latestPlayedGw > 0) {
+      try {
+        await sendResultsUpdatedNotification("conference", latestPlayedGw);
+      } catch (notificationError) {
+        console.warn("Risultati aggiornati, ma notifica non inviata:", notificationError);
+      }
     }
 
     setSummary(
-      `✓ Conference aggiornate: ${parsedConfA.summary.matches + parsedConfB.summary.matches} partite totali. Ricarico la classifica…`,
+      `✓ Conference aggiornate: ${parsedConfA.summary.matches + parsedConfB.summary.matches} partite giocate · ${parsedConfA.summary.calendarMatches + parsedConfB.summary.calendarMatches} fixture in calendario. Ricarico la classifica…`,
       'ok'
     );
     window.setTimeout(() => window.location.reload(), 900);
@@ -300,15 +358,19 @@ async function importRoundRobin() {
   setSummary('Aggiornamento Round Robin in corso…', 'loading');
 
   try {
+    // Anche nel Round Robin i risultati restano separati dal calendario futuro.
     await upsertRows(parsedRR.rows);
+    await upsertFixtures(parsedRR.fixtures);
 
-    try {
-      await sendResultsUpdatedNotification("round-robin", parsedRR.summary.maxGW || 0);
-    } catch (notificationError) {
-      console.warn("Round Robin aggiornato, ma notifica non inviata:", notificationError);
+    if ((parsedRR.summary.maxGW || 0) > 0) {
+      try {
+        await sendResultsUpdatedNotification("round-robin", parsedRR.summary.maxGW);
+      } catch (notificationError) {
+        console.warn("Round Robin aggiornato, ma notifica non inviata:", notificationError);
+      }
     }
 
-    setSummary(`✓ Round Robin aggiornato: ${parsedRR.summary.matches} partite. Ricarico la classifica…`, 'ok');
+    setSummary(`✓ Round Robin aggiornato: ${parsedRR.summary.matches} partite giocate · ${parsedRR.summary.calendarMatches} fixture in calendario. Ricarico la classifica…`, 'ok');
     window.setTimeout(() => window.location.reload(), 900);
   } catch (error) {
     console.error(error);
