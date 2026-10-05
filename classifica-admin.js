@@ -101,13 +101,12 @@ function rowsFromSheet(sheet, conference) {
 
         if (isGWHeader(current[startCol])) break;
 
-        // Nel calendario Fantacalcio la prima squadra della riga è la squadra di casa.
-        const homeTeam = normalizeText(current[startCol]);
-        const homeScore = toNumber(current[startCol + 1]);
-        const awayScore = toNumber(current[startCol + 2]);
-        const awayTeam = normalizeText(current[startCol + 3]);
+        const teamA = normalizeText(current[startCol]);
+        const scoreA = toNumber(current[startCol + 1]);
+        const scoreB = toNumber(current[startCol + 2]);
+        const teamB = normalizeText(current[startCol + 3]);
 
-        const looksLikeMatch = homeTeam && awayTeam && homeScore !== null && awayScore !== null;
+        const looksLikeMatch = teamA && teamB && scoreA !== null && scoreB !== null;
         if (!looksLikeMatch) {
           const hasAnything = [current[startCol], current[startCol + 1], current[startCol + 2], current[startCol + 3]]
             .some(v => normalizeText(v) !== '');
@@ -116,9 +115,9 @@ function rowsFromSheet(sheet, conference) {
         }
 
         // Nei file Fantacalcio 0-0 significa giornata non ancora disputata.
-        if (homeScore === 0 && awayScore === 0) continue;
+        if (scoreA === 0 && scoreB === 0) continue;
 
-        const matchKey = `${gw}|${homeTeam}|${awayTeam}`;
+        const matchKey = `${gw}|${teamA}|${teamB}`;
         if (seen.has(matchKey)) continue;
         seen.add(matchKey);
 
@@ -126,29 +125,27 @@ function rowsFromSheet(sheet, conference) {
           {
             gw,
             match_date: null,
-            team: homeTeam,
-            opponent: awayTeam,
-            points_for: homeScore,
-            points_against: awayScore,
-            result: resultFor(homeScore, awayScore),
+            team: teamA,
+            opponent: teamB,
+            points_for: scoreA,
+            points_against: scoreB,
+            result: resultFor(scoreA, scoreB),
             phase: 'Regular',
             conference,
-            team_key: `${conference}::${homeTeam}`,
-            is_home: true,
+            team_key: `${conference}::${teamA}`,
             updated_at: new Date().toISOString()
           },
           {
             gw,
             match_date: null,
-            team: awayTeam,
-            opponent: homeTeam,
-            points_for: awayScore,
-            points_against: homeScore,
-            result: resultFor(awayScore, homeScore),
+            team: teamB,
+            opponent: teamA,
+            points_for: scoreB,
+            points_against: scoreA,
+            result: resultFor(scoreB, scoreA),
             phase: 'Regular',
             conference,
-            team_key: `${conference}::${awayTeam}`,
-            is_home: false,
+            team_key: `${conference}::${teamB}`,
             updated_at: new Date().toISOString()
           }
         );
@@ -239,6 +236,27 @@ async function upsertRows(rows) {
   }
 }
 
+async function sendResultsUpdatedNotification(phase, maxGw) {
+  const safePhase = String(phase || "results").toLowerCase().replace(/[^a-z0-9_-]+/g, "-");
+  const eventKey = `results-update:${safePhase}:gw${Number(maxGw || 0)}`;
+
+  const { data, error } = await supabase.functions.invoke("send-admin-notification", {
+    body: {
+      request_id: eventKey,
+      event_key: eventKey,
+      scope: "league",
+      notification_type: "competition",
+      title: "📊 I numeri non mentono. Purtroppo.",
+      message: "Classifiche, risultati e statistiche sono aggiornati. Andate a vedere chi può vantarsi e chi deve inventarsi delle scuse.",
+      url: "classifica.html"
+    }
+  });
+
+  if (error) throw error;
+  if (data?.error) throw new Error(data.error);
+  return data;
+}
+
 async function importConference() {
   if (!parsedConfA || !parsedConfB) {
     setSummary('Carica e valida entrambi i file Conference prima di aggiornare.', 'error');
@@ -250,6 +268,16 @@ async function importConference() {
 
   try {
     await upsertRows([...parsedConfA.rows, ...parsedConfB.rows]);
+
+    try {
+      await sendResultsUpdatedNotification(
+        "conference",
+        Math.max(parsedConfA.summary.maxGW || 0, parsedConfB.summary.maxGW || 0)
+      );
+    } catch (notificationError) {
+      console.warn("Risultati aggiornati, ma notifica non inviata:", notificationError);
+    }
+
     setSummary(
       `✓ Conference aggiornate: ${parsedConfA.summary.matches + parsedConfB.summary.matches} partite totali. Ricarico la classifica…`,
       'ok'
@@ -273,6 +301,13 @@ async function importRoundRobin() {
 
   try {
     await upsertRows(parsedRR.rows);
+
+    try {
+      await sendResultsUpdatedNotification("round-robin", parsedRR.summary.maxGW || 0);
+    } catch (notificationError) {
+      console.warn("Round Robin aggiornato, ma notifica non inviata:", notificationError);
+    }
+
     setSummary(`✓ Round Robin aggiornato: ${parsedRR.summary.matches} partite. Ricarico la classifica…`, 'ok');
     window.setTimeout(() => window.location.reload(), 900);
   } catch (error) {

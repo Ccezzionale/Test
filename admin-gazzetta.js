@@ -469,10 +469,42 @@ function renderEditionsList(){
   });
 }
 
+async function sendGazzettaPublishedNotification(gw){
+  const eventKey = `gazzetta:${gw}:published`;
+
+  const { data, error } = await sb.functions.invoke("send-admin-notification", {
+    body: {
+      request_id: eventKey,
+      event_key: eventKey,
+      scope: "league",
+      notification_type: "news",
+      title: "🗞️ La Gazzetta vi giudica",
+      message: `È online la nuova edizione della Gazzetta · GW ${gw}. Vediamo chi è stato massacrato questa settimana.`,
+      url: "giornale.html"
+    }
+  });
+
+  if (error) throw error;
+  if (data?.error) throw new Error(data.error);
+  return data;
+}
+
 async function saveEdition(){
   try {
     setSaveStatus("Salvataggio…");
     const payload = collectPayload();
+
+    const { data: existingEdition, error: existingEditionError } = await sb
+      .from("gazzetta_editions")
+      .select("gw, is_published")
+      .eq("gw", payload.gw)
+      .maybeSingle();
+
+    if (existingEditionError) throw existingEditionError;
+
+    const shouldNotifyPublication =
+      payload.is_published === true &&
+      existingEdition?.is_published !== true;
 
     const { data, error } = await sb
       .from("gazzetta_editions")
@@ -482,7 +514,18 @@ async function saveEdition(){
 
     if (error) throw error;
 
-    setSaveStatus("Salvata ✅", "ok");
+    if (shouldNotifyPublication) {
+      try {
+        await sendGazzettaPublishedNotification(payload.gw);
+      } catch (notificationError) {
+        console.warn("Edizione pubblicata, ma notifica Gazzetta non inviata:", notificationError);
+        setSaveStatus("Pubblicata ✅ · notifica non inviata", "error");
+      }
+    }
+
+    if (!shouldNotifyPublication || document.getElementById("saveStatus")?.textContent !== "Pubblicata ✅ · notifica non inviata") {
+      setSaveStatus("Salvata ✅", "ok");
+    }
     await loadEditions();
     fillForm(data);
     renderEditionsList();

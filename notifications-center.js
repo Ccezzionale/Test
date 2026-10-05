@@ -2,7 +2,7 @@ import { supabase } from './supabase.js';
 
 const NOTIFICATION_TABLE = 'app_notifications';
 const REFRESH_MS = 45000;
-const CENTER_VERSION = '20261005-center5';
+const CENTER_VERSION = '20261005-center6';
 
 let currentUser = null;
 let currentFilter = 'all';
@@ -357,7 +357,7 @@ function ensureUi() {
               </label>
               <label class="notification-admin-field full">
                 Titolo
-                <input id="notification-admin-title" maxlength="100" placeholder="Es. Orari waiver modificati">
+                <input id="notification-admin-title" maxlength="100" value="Parla il Commissioner" placeholder="Parla il Commissioner">
               </label>
               <label class="notification-admin-field full">
                 Messaggio
@@ -423,7 +423,7 @@ function ensureUi() {
             <select id="notification-admin-scope"><option value="league">Tutta la lega</option><option value="conference">Conference</option><option value="team">Singola squadra</option></select>
           </label>
           <label class="notification-admin-field" id="notification-admin-target-wrap" hidden>Seleziona<select id="notification-admin-target"></select></label>
-          <label class="notification-admin-field full">Titolo<input id="notification-admin-title" maxlength="100" placeholder="Es. Orari waiver modificati"></label>
+          <label class="notification-admin-field full">Titolo<input id="notification-admin-title" maxlength="100" value="Parla il Commissioner" placeholder="Parla il Commissioner"></label>
           <label class="notification-admin-field full">Messaggio<textarea id="notification-admin-message" maxlength="600" placeholder="Scrivi la comunicazione…"></textarea></label>
           <label class="notification-admin-field full">Apri pagina al click
             <select id="notification-admin-url">
