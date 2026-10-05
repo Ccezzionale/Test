@@ -2,7 +2,7 @@ import { supabase } from './supabase.js';
 
 const NOTIFICATION_TABLE = 'app_notifications';
 const REFRESH_MS = 45000;
-const CENTER_VERSION = '20261005-center4';
+const CENTER_VERSION = '20261005-center5';
 
 let currentUser = null;
 let currentFilter = 'all';
@@ -99,6 +99,16 @@ function injectCenter4Styles() {
     .notification-admin-open{width:100%;border:1px solid rgba(22,104,191,.24);border-radius:12px;padding:10px 12px;background:#eef6ff;color:#0b4f91;font-weight:900;cursor:pointer}
     .notification-admin-composer{margin:0 18px 14px;padding:14px;border:1px solid #d8e5f2;border-radius:14px;background:#f8fbff;display:none}
     .notification-admin-composer.is-open{display:block}
+    .notification-center-panel.is-admin-composer-open .notification-admin-composer{
+      flex:1 1 auto;
+      min-height:0;
+      overflow-y:auto;
+      overscroll-behavior:contain;
+      -webkit-overflow-scrolling:touch;
+    }
+    .notification-center-panel.is-admin-composer-open .notification-center-content{
+      display:none;
+    }
     .notification-admin-composer h3{margin:0 0 10px;font-size:.92rem;color:#082a54}
     .notification-admin-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
     .notification-admin-field{display:grid;gap:5px;font-size:.72rem;font-weight:850;color:#46617f}
@@ -109,7 +119,18 @@ function injectCenter4Styles() {
     .notification-admin-status{font-size:.72rem;color:#5b6f86;line-height:1.35}
     .notification-admin-send{border:0;border-radius:10px;padding:9px 13px;background:#0b5da8;color:#fff;font-weight:900;cursor:pointer;white-space:nowrap}
     .notification-admin-send:disabled{opacity:.55;cursor:wait}
-    @media(max-width:640px){.notification-admin-grid{grid-template-columns:1fr}.notification-admin-field.full{grid-column:auto}.notification-admin-actions{align-items:stretch;flex-direction:column}.notification-admin-send{width:100%}}
+    @media(max-width:640px){
+      .notification-admin-grid{grid-template-columns:1fr}
+      .notification-admin-field.full{grid-column:auto}
+      .notification-admin-actions{align-items:stretch;flex-direction:column}
+      .notification-admin-send{width:100%}
+      .notification-center-panel.is-admin-composer-open .notification-admin-entry{padding-bottom:8px}
+      .notification-center-panel.is-admin-composer-open .notification-admin-composer{
+        margin:0 10px 10px;
+        padding:14px;
+        scrollbar-width:thin;
+      }
+    }
   `;
   document.head.appendChild(style);
 }
@@ -756,6 +777,11 @@ function closePanel() {
   panelOpen = false;
   backdrop.classList.remove('is-open');
   backdrop.setAttribute('aria-hidden', 'true');
+
+  const panel = document.getElementById('notification-center-panel');
+  const composer = document.getElementById('notification-admin-composer');
+  panel?.classList.remove('is-admin-composer-open');
+  composer?.classList.remove('is-open');
   trigger?.setAttribute('aria-expanded', 'false');
   document.body.classList.remove('notification-center-open');
   trigger?.focus();
@@ -783,7 +809,19 @@ function bindUi() {
   document.getElementById('notification-push-action')?.addEventListener('click', handlePushAction);
 
   document.getElementById('notification-admin-open')?.addEventListener('click', () => {
-    document.getElementById('notification-admin-composer')?.classList.toggle('is-open');
+    const composer = document.getElementById('notification-admin-composer');
+    const panel = document.getElementById('notification-center-panel');
+    if (!composer || !panel) return;
+
+    const willOpen = !composer.classList.contains('is-open');
+    composer.classList.toggle('is-open', willOpen);
+    panel.classList.toggle('is-admin-composer-open', willOpen);
+
+    if (willOpen) {
+      requestAnimationFrame(() => {
+        composer.scrollTop = 0;
+      });
+    }
   });
 
   document.getElementById('notification-admin-scope')?.addEventListener('change', fillAdminTargetSelect);

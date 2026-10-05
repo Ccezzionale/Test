@@ -1,4 +1,4 @@
-const SW_VERSION = "20261005-center4";
+const SW_VERSION = "20261005-center5";
 
 self.addEventListener("install", (event) => {
   console.log("Service Worker installato:", SW_VERSION);
