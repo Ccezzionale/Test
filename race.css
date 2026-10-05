@@ -286,16 +286,44 @@ body{
 .form-dot.D{background:#8997a8}
 .form-dot.L{background:var(--race-red)}
 
+.next-block{
+  min-width:0;
+}
+.next-label{
+  display:block;
+  margin:0 0 6px;
+  color:#6f8196;
+  font-size:.62rem;
+  line-height:1;
+  font-weight:950;
+  letter-spacing:.12em;
+  text-align:right;
+}
 .schedule-strip{display:flex;gap:5px;justify-content:flex-end}
 .fixture-chip{
   position:relative;
-  width:42px;min-width:42px;height:54px;
+  width:44px;min-width:44px;height:62px;
   display:flex;flex-direction:column;align-items:center;justify-content:center;
-  gap:2px;
+  gap:1px;
   border:1px solid #dbe5f0;border-radius:12px;background:#f8fbff;
 }
-.fixture-chip img{width:24px;height:24px;object-fit:contain}
-.fixture-chip small{font-size:.60rem;color:var(--race-muted);font-weight:850}
+.fixture-chip b{
+  color:#61748a;
+  font-size:.58rem;
+  line-height:1;
+  font-weight:950;
+}
+.fixture-chip img{width:25px;height:25px;object-fit:contain}
+.fixture-chip small{
+  max-width:38px;
+  overflow:hidden;
+  color:var(--race-muted);
+  font-size:.53rem;
+  line-height:1;
+  font-weight:950;
+  white-space:nowrap;
+  text-overflow:ellipsis;
+}
 .fixture-chip.easy{border-bottom:4px solid var(--race-green)}
 .fixture-chip.medium{border-bottom:4px solid #dfa71e}
 .fixture-chip.hard{border-bottom:4px solid var(--race-red)}
@@ -424,8 +452,18 @@ body{
     min-height:82px;gap:7px;padding:10px 5px
   }
   .team-logo{width:40px;height:40px}
-  .schedule-strip{grid-column:1 / -1;justify-content:flex-start;padding-left:81px;margin-top:-3px}
-  .fixture-chip{width:46px;min-width:46px;height:50px}
+  .next-block{
+    grid-column:1 / -1;
+    padding-left:81px;
+    margin-top:-3px;
+  }
+  .next-label{
+    margin-bottom:6px;
+    text-align:left;
+    font-size:.60rem;
+  }
+  .schedule-strip{justify-content:flex-start}
+  .fixture-chip{width:48px;min-width:48px;height:60px}
   .road-score strong{font-size:.98rem}
   .road-summary{padding:16px}
   .road-ranking{grid-template-columns:1fr 1fr;gap:9px}

@@ -230,15 +230,21 @@ function scheduleData(fixtures,conference,team,afterGw,powers,limit=NEXT_GAMES){
   const avg=items.length?items.reduce((s,x)=>s+x.diff,0)/items.length:null;
   return {items,avg};
 }
+function shortTeamName(team){
+  const parts=canonical(team).split(/\s+/).filter(Boolean);
+  if(parts.length===1) return parts[0].slice(0,4).toUpperCase();
+  return parts.map(p=>p[0]).join('').slice(0,4).toUpperCase();
+}
 function fixtureChip(f){
   const cls=difficultyClass(f.diff);
   return `<div class="fixture-chip ${cls}" title="GW${f.gw} · ${escapeHtml(f.opponent)} · difficoltà ${f.diff.toFixed(1)}/5">
+    <b>G${Number(f.gw)}</b>
     ${logoTag(f.opponent)}
-    <small>G${Number(f.gw)}</small>
+    <small>${escapeHtml(shortTeamName(f.opponent))}</small>
   </div>`;
 }
 function emptyChip(){
-  return `<div class="fixture-chip none"><span>—</span><small>TBD</small></div>`;
+  return `<div class="fixture-chip none"><b>—</b><span>?</span><small>TBD</small></div>`;
 }
 
 function contenderMarkup(rec,index,leaderPts,fixtures,conference,lastGw,powers){
@@ -260,7 +266,10 @@ function contenderMarkup(rec,index,leaderPts,fixtures,conference,lastGw,powers){
         <span class="form-dots">${form.map(r=>`<i class="form-dot ${r}">${r}</i>`).join('')}</span>
       </div>
     </div>
-    <div class="schedule-strip">${chips.join('')}</div>
+    <div class="next-block">
+      <span class="next-label">NEXT 4</span>
+      <div class="schedule-strip">${chips.join('')}</div>
+    </div>
     <div class="road-score ${roadCls}">
       <strong>${road==null?'—':road.toFixed(1)}</strong>
       <span>Road / 5</span>
