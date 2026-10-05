@@ -1,5 +1,7 @@
 import { supabase, supabaseUrl, supabaseKey } from './supabase.js';
 
+const VAPID_PUBLIC_KEY = 'BLVVpSFZr0IUiuc4B-7eYQjFMnYvWlvHgxaaSyAo5LOvOD3wrypSJRDuVKMKucCpgMD8Sz9X7nTwFrYtCHsJWcc';
+
 function urlBase64ToUint8Array(base64String) {
   const padding = '='.repeat((4 - (base64String.length % 4)) % 4);
   const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/');
@@ -43,69 +45,240 @@ async function logoutUtente() {
   window.location.href = 'index.html';
 }
 
+async function getAccessToken() {
+  const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
+
+  if (sessionError || !sessionData?.session?.access_token) {
+    throw new Error('Sessione non valida. Fai di nuovo login.');
+  }
+
+  return sessionData.session.access_token;
+}
+
+async function callPushSubscriptionApi(payload) {
+  const accessToken = await getAccessToken();
+
+  const response = await fetch(
+    `${supabaseUrl}/functions/v1/save-push-subscription`,
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${accessToken}`,
+        'apikey': supabaseKey
+      },
+      body: JSON.stringify(payload)
+    }
+  );
+
+  let result = null;
+
+  try {
+    result = await response.json();
+  } catch (err) {
+    result = {
+      error: 'Risposta non valida dalla funzione notifiche.',
+      details: String(err)
+    };
+  }
+
+  if (!response.ok) {
+    throw new Error(result?.error || 'Errore nella gestione delle notifiche.');
+  }
+
+  return result;
+}
+
+async function salvaPushSubscription(subscription) {
+  return callPushSubscriptionApi({
+    action: 'save',
+    subscription
+  });
+}
+
+async function leggiStatoPushSubscription(endpoint) {
+  return callPushSubscriptionApi({
+    action: 'status',
+    endpoint
+  });
+}
+
+async function disattivaPushSubscriptionServer(endpoint) {
+  return callPushSubscriptionApi({
+    action: 'disable',
+    endpoint
+  });
+}
+
+async function creaPushSubscription(registration) {
+  return registration.pushManager.subscribe({
+    userVisibleOnly: true,
+    applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY),
+  });
+}
+
+async function rigeneraPushSubscription(registration, oldSubscription) {
+  if (oldSubscription) {
+    try {
+      await oldSubscription.unsubscribe();
+    } catch (err) {
+      console.warn('Impossibile rimuovere la vecchia subscription:', err);
+    }
+  }
+
+  const newSubscription = await creaPushSubscription(registration);
+  await salvaPushSubscription(newSubscription);
+
+  return newSubscription;
+}
+
+/**
+ * Controlla lo stato reale delle push.
+ *
+ * Stati principali:
+ * - active: subscription locale e server attivi
+ * - repair-needed: subscription locale presente ma server inattivo
+ * - local-missing: nessuna subscription nel browser
+ * - permission-default / permission-denied
+ *
+ * Se autoRepair=true, una subscription locale marcata inattiva sul server
+ * viene rigenerata automaticamente. Non viene invece creata una subscription
+ * dal nulla: così una disattivazione volontaria dell'utente resta rispettata.
+ */
+async function controllaStatoNotifiche({ autoRepair = false } = {}) {
+  if (!('serviceWorker' in navigator) || !('PushManager' in window) || !('Notification' in window)) {
+    return { status: 'unsupported', subscription: null };
+  }
+
+  const { data: { user }, error: userError } = await supabase.auth.getUser();
+
+  if (userError || !user) {
+    return { status: 'logged-out', subscription: null };
+  }
+
+  if (Notification.permission === 'denied') {
+    return { status: 'permission-denied', subscription: null };
+  }
+
+  if (Notification.permission !== 'granted') {
+    return { status: 'permission-default', subscription: null };
+  }
+
+  const registration = await navigator.serviceWorker.ready;
+  const subscription = await registration.pushManager.getSubscription();
+
+  if (!subscription) {
+    return { status: 'local-missing', subscription: null };
+  }
+
+  try {
+    const serverStatus = await leggiStatoPushSubscription(subscription.endpoint);
+
+    // La subscription esiste nel browser ma non ancora sul server:
+    // basta salvarla, senza rigenerarla.
+    if (!serverStatus?.found) {
+      await salvaPushSubscription(subscription);
+      return {
+        status: 'active',
+        subscription,
+        repaired: true,
+        repairType: 'registered'
+      };
+    }
+
+    if (serverStatus?.is_active === true) {
+      return { status: 'active', subscription };
+    }
+
+    // Se il browser ha ancora la subscription ma il server l'ha disattivata
+    // (tipicamente dopo un 404/410 del provider), proviamo a rigenerarla.
+    if (autoRepair) {
+      try {
+        const newSubscription = await rigeneraPushSubscription(registration, subscription);
+
+        return {
+          status: 'active',
+          subscription: newSubscription,
+          repaired: true,
+          repairType: 'regenerated'
+        };
+      } catch (repairError) {
+        console.warn('Riparazione automatica push non riuscita:', repairError);
+      }
+    }
+
+    return {
+      status: 'repair-needed',
+      subscription,
+      serverStatus
+    };
+  } catch (err) {
+    console.warn('Impossibile verificare lo stato server delle notifiche:', err);
+
+    return {
+      status: 'check-error',
+      subscription,
+      error: err
+    };
+  }
+}
+
 async function attivaNotifichePush() {
   try {
-    if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
+    if (!('serviceWorker' in navigator) || !('PushManager' in window) || !('Notification' in window)) {
       alert('Questo dispositivo non supporta le notifiche push.');
       return;
     }
 
     const { data: { user } } = await supabase.auth.getUser();
+
     if (!user) {
       alert('Utente non loggato.');
       return;
     }
 
     const permission = await Notification.requestPermission();
+
     if (permission !== 'granted') {
-      alert('Permesso notifiche negato.');
+      alert(
+        permission === 'denied'
+          ? 'Le notifiche sono bloccate nelle impostazioni del browser/dispositivo.'
+          : 'Permesso notifiche non concesso.'
+      );
+      await aggiornaBottoneNotifiche();
       return;
     }
 
     const registration = await navigator.serviceWorker.ready;
-    const VAPID_PUBLIC_KEY = 'BLVVpSFZr0IUiuc4B-7eYQjFMnYvWlvHgxaaSyAo5LOvOD3wrypSJRDuVKMKucCpgMD8Sz9X7nTwFrYtCHsJWcc';
-
     let subscription = await registration.pushManager.getSubscription();
 
     if (!subscription) {
-      subscription = await registration.pushManager.subscribe({
-        userVisibleOnly: true,
-        applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY),
-      });
-    }
+      subscription = await creaPushSubscription(registration);
+      await salvaPushSubscription(subscription);
+    } else {
+      // Se esiste già localmente, controlliamo se il server la considera valida.
+      let serverStatus = null;
 
-    const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
-
-    if (sessionError || !sessionData?.session?.access_token) {
-      alert('Sessione non valida. Fai di nuovo login.');
-      return;
-    }
-
-    const response = await fetch(
-      `${supabaseUrl}/functions/v1/save-push-subscription`,
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${sessionData.session.access_token}`,
-          'apikey': supabaseKey
-        },
-        body: JSON.stringify({ subscription })
+      try {
+        serverStatus = await leggiStatoPushSubscription(subscription.endpoint);
+      } catch (err) {
+        console.warn('Controllo stato server non riuscito, provo comunque a sincronizzare:', err);
       }
-    );
 
-    const result = await response.json();
-
-    if (!response.ok) {
-      alert(result?.error || 'Errore nel salvataggio notifiche.');
-      return;
+      if (serverStatus?.found && serverStatus?.is_active === false) {
+        subscription = await rigeneraPushSubscription(registration, subscription);
+      } else {
+        // Se è attiva o non risulta ancora registrata, la sincronizziamo.
+        await salvaPushSubscription(subscription);
+      }
     }
 
     alert('Notifiche attivate con successo.');
     await aggiornaBottoneNotifiche();
   } catch (err) {
-    console.error(err);
-    alert('Errore durante l’attivazione delle notifiche.');
+    console.error('Errore attivazione notifiche:', err);
+    alert(err?.message || 'Errore durante l’attivazione delle notifiche.');
+    await aggiornaBottoneNotifiche();
   }
 }
 
@@ -119,11 +292,21 @@ async function disattivaNotifichePush() {
       return;
     }
 
+    // Prima segniamo l'endpoint come inattivo sul server.
+    // Se questa chiamata fallisce, procediamo comunque con l'unsubscribe locale:
+    // al prossimo tentativo di invio il server eliminerà comunque l'endpoint morto.
+    try {
+      await disattivaPushSubscriptionServer(subscription.endpoint);
+    } catch (serverError) {
+      console.warn('Disattivazione server non riuscita:', serverError);
+    }
+
     await subscription.unsubscribe();
+
     alert('Notifiche disattivate.');
     await aggiornaBottoneNotifiche();
   } catch (err) {
-    console.error(err);
+    console.error('Errore disattivazione notifiche:', err);
     alert('Errore durante la disattivazione delle notifiche.');
   }
 }
@@ -184,40 +367,89 @@ async function aggiornaBadgeTrade() {
   }
 }
 
+function applicaStatoBottoneNotifiche(notifBtn, state) {
+  notifBtn.dataset.attive = 'false';
+  notifBtn.dataset.pushStatus = state.status;
+
+  switch (state.status) {
+    case 'active':
+      setButtonLabel(notifBtn, 'Disattiva notifiche');
+      notifBtn.dataset.attive = 'true';
+      notifBtn.classList.remove('warning');
+      break;
+
+    case 'repair-needed':
+    case 'check-error':
+      setButtonLabel(notifBtn, 'Ripara notifiche');
+      notifBtn.classList.add('warning');
+      break;
+
+    case 'permission-denied':
+      setButtonLabel(notifBtn, 'Notifiche bloccate');
+      notifBtn.classList.add('warning');
+      break;
+
+    case 'permission-default':
+    case 'local-missing':
+    case 'logged-out':
+    default:
+      setButtonLabel(notifBtn, 'Attiva notifiche');
+      notifBtn.classList.add('warning');
+      break;
+  }
+}
+
 async function aggiornaBottoneNotifiche() {
   const notifBtn = document.getElementById('attiva-notifiche-btn');
   if (!notifBtn) return;
 
-  if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
+  if (!('serviceWorker' in navigator) || !('PushManager' in window) || !('Notification' in window)) {
     notifBtn.style.display = 'none';
     return;
   }
 
   try {
-    const registration = await navigator.serviceWorker.ready;
-    const subscription = await registration.pushManager.getSubscription();
+    const state = await controllaStatoNotifiche({ autoRepair: false });
+    applicaStatoBottoneNotifiche(notifBtn, state);
+  } catch (err) {
+    console.error('Errore controllo stato notifiche:', err);
 
-    if (subscription) {
-      setButtonLabel(notifBtn, 'Disattiva notifiche');
-      notifBtn.dataset.attive = 'true';
-    } else {
-      setButtonLabel(notifBtn, 'Attiva notifiche');
-      notifBtn.dataset.attive = 'false';
+    setButtonLabel(notifBtn, 'Ripara notifiche');
+    notifBtn.dataset.attive = 'false';
+    notifBtn.dataset.pushStatus = 'check-error';
+    notifBtn.classList.add('warning');
+  }
+}
+
+async function sincronizzaNotifichePush() {
+  try {
+    // Non chiediamo mai il permesso automaticamente.
+    // Se è già concesso e c'è ancora una subscription locale, controlliamo
+    // che il server la consideri attiva e la ripariamo quando possibile.
+    if (!('Notification' in window) || Notification.permission !== 'granted') {
+      return;
+    }
+
+    const state = await controllaStatoNotifiche({ autoRepair: true });
+
+    if (state.repaired) {
+      console.log('✅ Push sincronizzate automaticamente:', state.repairType);
     }
   } catch (err) {
-    console.error(err);
-    setButtonLabel(notifBtn, 'Attiva notifiche');
-    notifBtn.dataset.attive = 'false';
+    // Una mancata sincronizzazione push non deve mai bloccare la home.
+    console.warn('Sincronizzazione automatica notifiche non riuscita:', err);
   }
 }
 
 window.addEventListener('DOMContentLoaded', async () => {
   const logoutBtn = document.getElementById('logout-btn');
+
   if (logoutBtn) {
     logoutBtn.addEventListener('click', logoutUtente);
   }
 
   const notifBtn = document.getElementById('attiva-notifiche-btn');
+
   if (notifBtn) {
     notifBtn.addEventListener('click', async () => {
       if (notifBtn.dataset.attive === 'true') {
@@ -228,6 +460,7 @@ window.addEventListener('DOMContentLoaded', async () => {
     });
   }
 
+  await sincronizzaNotifichePush();
   await aggiornaBottoneNotifiche();
   await aggiornaBadgeTrade();
 });
