@@ -1,9 +1,7 @@
-const SW_VERSION = "20261005-center2";
+const SW_VERSION = "20261005-center3";
 
 self.addEventListener("install", (event) => {
   console.log("Service Worker installato:", SW_VERSION);
-
-  // La nuova versione non resta in attesa dietro quella precedente.
   self.skipWaiting();
 });
 
@@ -12,9 +10,6 @@ self.addEventListener("activate", (event) => {
 
   event.waitUntil(
     (async () => {
-      // Se in futuro dovessero comparire vecchie Cache Storage create
-      // da versioni precedenti, le eliminiamo. Il worker attuale non
-      // usa cache applicative, ma così evitiamo residui futuri.
       const cacheNames = await caches.keys();
 
       await Promise.all(
@@ -23,21 +18,33 @@ self.addEventListener("activate", (event) => {
           .map((name) => caches.delete(name))
       );
 
-      // Prende immediatamente controllo delle pagine/PWA già aperte.
       await self.clients.claim();
 
-      // Comunica alle pagine che un nuovo worker è diventato attivo.
-      // La pagina può così ricaricarsi una volta e prendere JS/CSS nuovi.
       const windows = await self.clients.matchAll({
         type: "window",
         includeUncontrolled: true
       });
 
       for (const client of windows) {
-        client.postMessage({
-          type: "SW_UPDATED",
-          version: SW_VERSION
-        });
+        try {
+          const currentUrl = new URL(client.url);
+
+          if (currentUrl.searchParams.get("__appv") !== SW_VERSION) {
+            currentUrl.searchParams.set("__appv", SW_VERSION);
+
+            if ("navigate" in client) {
+              await client.navigate(currentUrl.toString());
+              continue;
+            }
+          }
+
+          client.postMessage({
+            type: "SW_UPDATED",
+            version: SW_VERSION
+          });
+        } catch (error) {
+          console.log("Impossibile aggiornare automaticamente una finestra:", String(error));
+        }
       }
     })()
   );
@@ -76,8 +83,6 @@ self.addEventListener("notificationclick", (event) => {
         includeUncontrolled: true
       });
 
-      // Se l'app è già aperta, la riutilizziamo invece di aprire
-      // l'ennesima scheda come un criceto iperattivo.
       for (const client of windows) {
         if ("focus" in client) {
           await client.focus();
@@ -85,12 +90,10 @@ self.addEventListener("notificationclick", (event) => {
           if ("navigate" in client) {
             try {
               await client.navigate(targetUrl);
+              return;
             } catch {
-              // Fallback sotto: apriamo una nuova finestra.
             }
           }
-
-          return;
         }
       }
 
