@@ -404,8 +404,10 @@ function applicaAspettoBottoneNotifiche(notifBtn, {
   badge.textContent = badgeText;
   badge.style.cssText = `
     position:absolute;
-    top:-5px;
-    right:-5px;
+    top:auto;
+    right:auto;
+    bottom:-5px;
+    left:-5px;
     width:17px;
     height:17px;
     border-radius:999px;
@@ -432,7 +434,7 @@ function applicaStatoBottoneNotifiche(notifBtn, state) {
 
   switch (state.status) {
     case 'active':
-      setButtonLabel(notifBtn, 'Disattiva notifiche');
+      setButtonLabel(notifBtn, 'Notifiche');
       notifBtn.dataset.attive = 'true';
       notifBtn.classList.remove('warning');
 
@@ -441,13 +443,13 @@ function applicaStatoBottoneNotifiche(notifBtn, state) {
         borderColor: 'rgba(74,222,128,.58)',
         badgeBackground: '#22c55e',
         badgeText: '✓',
-        title: 'Notifiche push attive'
+        title: 'Centro notifiche • Push attive'
       });
       break;
 
     case 'repair-needed':
     case 'check-error':
-      setButtonLabel(notifBtn, 'Ripara notifiche');
+      setButtonLabel(notifBtn, 'Notifiche');
       notifBtn.classList.add('warning');
 
       applicaAspettoBottoneNotifiche(notifBtn, {
@@ -455,12 +457,12 @@ function applicaStatoBottoneNotifiche(notifBtn, state) {
         borderColor: 'rgba(251,191,36,.62)',
         badgeBackground: '#f59e0b',
         badgeText: '!',
-        title: 'Le notifiche richiedono una riparazione'
+        title: 'Centro notifiche • Push da riparare'
       });
       break;
 
     case 'permission-denied':
-      setButtonLabel(notifBtn, 'Notifiche bloccate');
+      setButtonLabel(notifBtn, 'Notifiche');
       notifBtn.classList.add('warning');
 
       applicaAspettoBottoneNotifiche(notifBtn, {
@@ -468,7 +470,7 @@ function applicaStatoBottoneNotifiche(notifBtn, state) {
         borderColor: 'rgba(248,113,113,.62)',
         badgeBackground: '#ef4444',
         badgeText: '!',
-        title: 'Notifiche bloccate dal browser o dal dispositivo'
+        title: 'Centro notifiche • Push bloccate'
       });
       break;
 
@@ -476,7 +478,7 @@ function applicaStatoBottoneNotifiche(notifBtn, state) {
     case 'local-missing':
     case 'logged-out':
     default:
-      setButtonLabel(notifBtn, 'Attiva notifiche');
+      setButtonLabel(notifBtn, 'Notifiche');
       notifBtn.classList.add('warning');
 
       applicaAspettoBottoneNotifiche(notifBtn, {
@@ -484,7 +486,7 @@ function applicaStatoBottoneNotifiche(notifBtn, state) {
         borderColor: 'rgba(248,113,113,.55)',
         badgeBackground: '#ef4444',
         badgeText: '!',
-        title: 'Notifiche push non attive'
+        title: 'Centro notifiche • Push non attive'
       });
       break;
   }
@@ -505,7 +507,7 @@ async function aggiornaBottoneNotifiche() {
   } catch (err) {
     console.error('Errore controllo stato notifiche:', err);
 
-    setButtonLabel(notifBtn, 'Ripara notifiche');
+    setButtonLabel(notifBtn, 'Notifiche');
     notifBtn.dataset.attive = 'false';
     notifBtn.dataset.pushStatus = 'check-error';
     notifBtn.classList.add('warning');
@@ -515,7 +517,7 @@ async function aggiornaBottoneNotifiche() {
       borderColor: 'rgba(251,191,36,.62)',
       badgeBackground: '#f59e0b',
       badgeText: '!',
-      title: 'Le notifiche richiedono una riparazione'
+      title: 'Centro notifiche • Push da riparare'
     });
   }
 }
@@ -540,23 +542,19 @@ async function sincronizzaNotifichePush() {
   }
 }
 
+window.LegaPush = {
+  enable: attivaNotifichePush,
+  disable: disattivaNotifichePush,
+  check: controllaStatoNotifiche,
+  refreshButton: aggiornaBottoneNotifiche,
+  sync: sincronizzaNotifichePush
+};
+
 window.addEventListener('DOMContentLoaded', async () => {
   const logoutBtn = document.getElementById('logout-btn');
 
   if (logoutBtn) {
     logoutBtn.addEventListener('click', logoutUtente);
-  }
-
-  const notifBtn = document.getElementById('attiva-notifiche-btn');
-
-  if (notifBtn) {
-    notifBtn.addEventListener('click', async () => {
-      if (notifBtn.dataset.attive === 'true') {
-        await disattivaNotifichePush();
-      } else {
-        await attivaNotifichePush();
-      }
-    });
   }
 
   await sincronizzaNotifichePush();

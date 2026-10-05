@@ -140,9 +140,9 @@ document.addEventListener("DOMContentLoaded", function () {
               <span class="btn-label">Logout</span>
             </button>
 
-            <button id="attiva-notifiche-btn" type="button" class="btn-hero warning" aria-label="Attiva notifiche">
+            <button id="attiva-notifiche-btn" type="button" class="btn-hero warning" aria-label="Centro notifiche">
               <img src="icons/nav/notifications.webp" class="action-icon" alt="">
-              <span class="btn-label">Attiva notifiche</span>
+              <span class="btn-label">Notifiche</span>
             </button>
           </div>
         </div>
