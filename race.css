@@ -480,3 +480,240 @@ body{
   .conference-head h3{font-size:1.45rem}
   .conference-leader{font-size:.68rem}
 }
+
+
+/* ===== RACE V3 FIX ===== */
+.gap-pill.tie{
+  background:#e8eef6;
+  color:#3d5877;
+}
+
+/* Road Difficulty: due spotlight + lista compatta */
+#road-ranking{
+  display:block;
+}
+
+.road-featured-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:16px;
+}
+
+.road-feature-card{
+  position:relative;
+  min-height:190px;
+  padding:20px;
+  overflow:hidden;
+  border:1px solid var(--race-line);
+  border-radius:20px;
+  background:
+    radial-gradient(circle at 92% 8%,rgba(255,255,255,.7),transparent 30%),
+    linear-gradient(145deg,#fff,#f5f8fc);
+}
+
+.road-feature-card.hardest{
+  border-color:rgba(212,43,69,.38);
+  background:
+    radial-gradient(circle at 88% 15%,rgba(212,43,69,.10),transparent 34%),
+    linear-gradient(145deg,#fff,#fff7f8);
+}
+
+.road-feature-card.easiest{
+  border-color:rgba(45,185,108,.35);
+  background:
+    radial-gradient(circle at 88% 15%,rgba(45,185,108,.10),transparent 34%),
+    linear-gradient(145deg,#fff,#f5fff9);
+}
+
+.road-feature-label{
+  display:inline-flex;
+  padding:6px 9px;
+  border-radius:999px;
+  font-size:.66rem;
+  font-weight:950;
+  letter-spacing:.10em;
+}
+
+.hardest .road-feature-label{
+  color:#a91831;
+  background:#ffe7eb;
+}
+
+.easiest .road-feature-label{
+  color:#147a47;
+  background:#e5f7ed;
+}
+
+.road-feature-team{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  margin-top:18px;
+}
+
+.road-feature-team img{
+  width:54px;
+  height:54px;
+  object-fit:contain;
+}
+
+.road-feature-team strong,
+.road-feature-team span{
+  display:block;
+}
+
+.road-feature-team strong{
+  color:var(--race-navy);
+  font-size:1.05rem;
+}
+
+.road-feature-team span{
+  margin-top:3px;
+  color:var(--race-muted);
+  font-size:.75rem;
+  font-weight:850;
+}
+
+.road-feature-score{
+  position:absolute;
+  top:54px;
+  right:20px;
+  display:flex;
+  align-items:flex-end;
+  gap:4px;
+}
+
+.road-feature-score strong{
+  color:var(--race-navy);
+  font-size:2.7rem;
+  line-height:.8;
+}
+
+.hardest .road-feature-score strong{ color:var(--race-red); }
+.easiest .road-feature-score strong{ color:#13854b; }
+
+.road-feature-score span{
+  color:var(--race-muted);
+  font-size:.76rem;
+  font-weight:900;
+}
+
+.road-feature-card .road-meter{
+  margin-top:17px;
+}
+
+.road-feature-card p{
+  margin:12px 0 0;
+  color:var(--race-muted);
+  font-size:.80rem;
+  font-weight:750;
+}
+
+.road-rest{
+  margin-top:16px;
+  padding-top:16px;
+  border-top:1px solid var(--race-line);
+}
+
+.road-rest-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  margin-bottom:10px;
+}
+
+.road-rest-head span{
+  color:var(--race-navy);
+  font-size:.72rem;
+  font-weight:950;
+  letter-spacing:.10em;
+}
+
+.road-rest-head small{
+  color:var(--race-muted);
+  font-size:.72rem;
+}
+
+.road-compact-list{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:8px;
+}
+
+.road-compact-item{
+  display:grid;
+  grid-template-columns:28px 34px minmax(0,1fr) auto;
+  align-items:center;
+  gap:8px;
+  min-height:58px;
+  padding:9px 10px;
+  border:1px solid var(--race-line);
+  border-radius:14px;
+  background:#f8fbff;
+}
+
+.road-compact-rank{
+  color:#8b9aab;
+  font-size:.74rem;
+  font-weight:950;
+  text-align:center;
+}
+
+.road-compact-item img{
+  width:32px;
+  height:32px;
+  object-fit:contain;
+}
+
+.road-compact-main{
+  min-width:0;
+}
+
+.road-compact-main strong,
+.road-compact-main span{
+  display:block;
+  overflow:hidden;
+  white-space:nowrap;
+  text-overflow:ellipsis;
+}
+
+.road-compact-main strong{
+  color:var(--race-navy);
+  font-size:.78rem;
+}
+
+.road-compact-main span{
+  margin-top:2px;
+  color:var(--race-muted);
+  font-size:.64rem;
+  font-weight:800;
+}
+
+.road-compact-score{
+  color:var(--race-navy);
+  font-size:1rem;
+  font-weight:950;
+}
+
+.road-compact-score small{
+  margin-left:2px;
+  color:var(--race-muted);
+  font-size:.58rem;
+}
+
+@media(max-width:768px){
+  .road-featured-grid{
+    grid-template-columns:1fr;
+  }
+
+  .road-compact-list{
+    grid-template-columns:1fr;
+  }
+
+  .road-rest-head{
+    align-items:flex-start;
+    flex-direction:column;
+    gap:3px;
+  }
+}

@@ -8,6 +8,7 @@ const TEAM_ALIASES = {
   "wildboys 78": "Wildboys78",
   "wildboys78": "Wildboys78",
   "pokermantra": "PokerMantra",
+  "riverfilo": "Riverfilo",
   "minnesota snakes": "MinneSota Snakes"
 };
 
@@ -255,6 +256,8 @@ function contenderMarkup(rec,index,leaderPts,fixtures,conference,lastGw,powers){
   while(chips.length<NEXT_GAMES) chips.push(emptyChip());
   const road=schedule.avg;
   const roadCls=road==null?'':difficultyClass(road);
+  const gapLabel=index===0 ? 'LEADER' : (gap===0 ? 'A PARI' : `-${gap} PT`);
+  const gapClass=index===0 ? 'leader' : (gap===0 ? 'tie' : '');
   return `<div class="contender-card ${index===0?'is-leader':''}">
     <div class="contender-rank">${index+1}</div>
     ${logoTag(rec.team,'team-logo')}
@@ -262,7 +265,7 @@ function contenderMarkup(rec,index,leaderPts,fixtures,conference,lastGw,powers){
       <strong>${escapeHtml(rec.team)}</strong>
       <div class="contender-meta">
         <span>${rec.pt} PT</span>
-        <span class="gap-pill ${gap===0?'leader':''}">${gap===0?'LEADER':`-${gap} PT`}</span>
+        <span class="gap-pill ${gapClass}">${gapLabel}</span>
         <span class="form-dots">${form.map(r=>`<i class="form-dot ${r}">${r}</i>`).join('')}</span>
       </div>
     </div>
@@ -312,13 +315,79 @@ function roadCard(item,conferenceLabel){
     <div class="road-meter"><i style="width:${Math.max(0,Math.min(100,width))}%"></i></div>
   </article>`;
 }
+function featuredRoadCard(item,type){
+  if(!item) return '';
+  const isHard=type==='hard';
+  const label=isHard?'HARDEST ROAD':'EASIEST ROAD';
+  const note=isHard?'Il calendario più pesante tra le contender':'La strada più favorevole tra le contender';
+  const value=item.avg;
+  const width=value==null?0:((value-1)/4)*100;
+  return `<article class="road-feature-card ${isHard?'hardest':'easiest'}">
+    <div class="road-feature-label">${label}</div>
+    <div class="road-feature-team">
+      ${logoTag(item.team)}
+      <div>
+        <strong>${escapeHtml(item.team)}</strong>
+        <span>${escapeHtml(item.conference)}</span>
+      </div>
+    </div>
+    <div class="road-feature-score">
+      <strong>${value==null?'—':value.toFixed(1)}</strong>
+      <span>/ 5</span>
+    </div>
+    <div class="road-meter"><i style="width:${Math.max(0,Math.min(100,width))}%"></i></div>
+    <p>${note}</p>
+  </article>`;
+}
+
+function compactRoadItem(item,index){
+  const value=item.avg;
+  return `<div class="road-compact-item">
+    <span class="road-compact-rank">${index}</span>
+    ${logoTag(item.team)}
+    <div class="road-compact-main">
+      <strong>${escapeHtml(item.team)}</strong>
+      <span>${escapeHtml(item.conference)}</span>
+    </div>
+    <div class="road-compact-score">${value==null?'—':value.toFixed(1)}<small>/5</small></div>
+  </div>`;
+}
+
 function renderRoadSummary(a,b){
   const all=[
     ...a.road.map(x=>({...x,conference:'Conf. League'})),
     ...b.road.map(x=>({...x,conference:'Championship'}))
-  ].sort((x,y)=>(y.avg??-1)-(x.avg??-1));
+  ].filter(x=>x.avg!=null)
+   .sort((x,y)=>y.avg-x.avg);
+
   const host=document.getElementById('road-ranking');
-  if(host) host.innerHTML=all.map(x=>roadCard(x,x.conference)).join('');
+  if(!host) return;
+
+  if(!all.length){
+    host.innerHTML='<div class="race-state-card">Road Difficulty in attesa del calendario.</div>';
+    return;
+  }
+
+  const hardest=all[0];
+  const easiest=all[all.length-1];
+  const middle=all.filter(x=>x!==hardest && x!==easiest);
+
+  host.innerHTML=`
+    <div class="road-featured-grid">
+      ${featuredRoadCard(hardest,'hard')}
+      ${featuredRoadCard(easiest,'easy')}
+    </div>
+    ${middle.length ? `
+      <div class="road-rest">
+        <div class="road-rest-head">
+          <span>LE ALTRE STRADE</span>
+          <small>dal calendario più duro al più favorevole</small>
+        </div>
+        <div class="road-compact-list">
+          ${middle.map((x,i)=>compactRoadItem(x,i+2)).join('')}
+        </div>
+      </div>` : ''}
+  `;
 }
 
 /* -------- ROUND ROBIN -------- */
