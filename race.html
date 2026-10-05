@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Race to Playoffs - Lega degli Eroi</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,700;0,800;0,900;1,800&family=Bebas+Neue&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="navbar.css">
+  <link rel="stylesheet" href="race.css">
+</head>
+<body>
+<nav class="site-nav">
+    <div class="nav-inner">
+      <div class="nav-left">
+        <span id="hamburger" class="hamburger" aria-label="Apri menu">☰</span>
+        <a href="index.html" class="brand-home" aria-label="Home">
+          <img src="icons/nav/home.webp" alt="" class="nav-home-icon">
+        </a>
+      </div>
+
+      <ul class="navbar" id="mainMenu">
+        <li class="dropdown">
+  <a href="#" class="toggle-submenu">
+    Rose <span class="caret">▾</span>
+  </a>
+
+  <ul class="submenu">
+    <li>
+      <a href="rose.html">
+        Rose Squadre
+      </a>
+    </li>
+
+    <li>
+      <a href="franchigie.html">
+        Franchigie
+      </a>
+    </li>
+  </ul>
+</li>
+
+        <li class="dropdown">
+          <a href="#" class="toggle-submenu">
+            Draft <span class="caret">▾</span>
+          </a>
+          <ul class="submenu">
+            <li><a href="pre-draft.html"><img src="icons/nav/pre-draft.webp" class="menu-icon" alt="">Pre-Draft</a></li>
+            <li><a href="draft_championship.html"><img src="icons/nav/conf-championship.webp" class="menu-icon" alt="">Conf. Championship</a></li>
+            <li><a href="draft_conference.html"><img src="icons/nav/conf-league.webp" class="menu-icon" alt="">Conf. League</a></li>
+            <li><a href="dinamico-draft.html"><img src="icons/nav/draft-2026.webp" class="menu-icon" alt="">Draft 2027-28</a></li>
+          </ul>
+        </li>
+
+        <li class="dropdown competizioni">
+          <a href="#" class="toggle-submenu">
+            Competizioni <span class="caret">▾</span>
+          </a>
+          <ul class="submenu">
+            <li><a href="classifica.html"><img src="icons/nav/classifiche.webp" class="menu-icon" alt="">Classifiche</a></li>
+            <li><a href="race.html"><img src="icons/nav/playoff.webp" class="menu-icon" alt="">Race to Playoffs</a></li>
+            <li><a href="playoff.html"><img src="icons/nav/playoff.webp" class="menu-icon" alt="">Playoff</a></li>
+            <li><a href="arena.html"><img src="icons/nav/highlander.webp" class="menu-icon" alt="">Highlander</a></li>
+            <li><a href="crashoutcup.html"><img src="icons/nav/crashout-cup.webp" class="menu-icon" alt="">Crash Out Cup</a></li>
+            <li><a href="crashoutplayoff.html"><img src="icons/nav/crashout-playoff.webp" class="menu-icon" alt="">Crash Out Cup - Playoff</a></li>
+            <li><a href="supercoppa.html"><img src="icons/nav/supercoppa.webp" class="menu-icon" alt="">Supercoppa</a></li>
+                                    <li>
+              <a href="allstar.html">
+                <img src="icons/nav/allstar.webp" class="menu-icon" alt="">
+                All-Star Game
+              </a>
+            </li>
+            <li><a href="statistiche.html"><img src="icons/nav/statistiche.webp" class="menu-icon" alt="">Statistiche</a></li>
+          </ul>
+        </li>
+
+
+        <li><a href="waiver.html">Waiver Wire</a></li>
+
+        <li class="dropdown">
+          <a href="#" class="toggle-submenu">
+            Hall of Fame <span class="caret">▾</span>
+          </a>
+          <ul class="submenu">
+            <li><a href="medagliere.html"><img src="icons/nav/albo-oro.webp" class="menu-icon" alt="">Albo d'Oro</a></li>
+            <li><a href="albo.html"><img src="icons/nav/medagliere.webp" class="menu-icon" alt="">Medagliere</a></li>
+          </ul>
+        </li>
+
+        <li><a href="regolamento.html">Regolamento</a></li>
+      </ul>
+
+      <div class="nav-right hero-actions">
+        <a id="trade-badge" href="trade-room.html" class="btn-hero trade-badge" aria-label="Trade Room">
+          <img src="icons/nav/trade-room.webp" class="action-icon" alt="">
+          <span class="btn-label">Trade Room</span>
+        </a>
+
+        <a id="login-btn" href="login.html" class="btn-hero" style="display:none;" aria-label="Login">
+          <img src="icons/nav/login-logout.webp" class="action-icon" alt="">
+          <span class="btn-label">Login</span>
+        </a>
+
+        <button id="logout-btn" type="button" class="btn-hero" style="display:none;" aria-label="Logout">
+          <img src="icons/nav/login-logout.webp" class="action-icon" alt="">
+          <span class="btn-label">Logout</span>
+        </button>
+
+        <button id="attiva-notifiche-btn" type="button" class="btn-hero warning" aria-label="Attiva notifiche">
+          <img src="icons/nav/notifications.webp" class="action-icon" alt="">
+          <span class="btn-label">Attiva notifiche</span>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+<main class="race-page">
+  <section class="race-hero">
+    <div class="race-hero-grid"></div>
+    <div class="race-hero-glow"></div>
+    <img class="race-hero-cup" src="img/cups/campionato-cup.webp" alt="" aria-hidden="true">
+    <div class="race-hero-content">
+      <div class="race-kicker">LEGA DEGLI EROI · 2026/27</div>
+      <h1 id="race-title">RACE TO #1</h1>
+      <p id="race-subtitle">La strada verso il primo posto passa da qui.</p>
+      <div class="race-hero-meta">
+        <span id="race-phase-pill">Conference Stage</span>
+        <span id="race-week-pill">GW --</span>
+      </div>
+    </div>
+  </section>
+
+  <section id="race-loading" class="race-state-card">
+    <div class="race-loader"></div>
+    <div>
+      <strong>Sto leggendo la stagione…</strong>
+      <span>Classifica, calendario e Power Ranking. Perché una tabella sola sarebbe stata troppo semplice.</span>
+    </div>
+  </section>
+
+  <section id="conference-view" class="race-view" hidden>
+    <div class="race-intro">
+      <div>
+        <span class="section-kicker">OBIETTIVO DELLA FASE</span>
+        <h2>Road to #1</h2>
+        <p>Le prime quattro di ogni Conference, il distacco dalla vetta e la difficoltà delle prossime partite.</p>
+      </div>
+      <div class="race-legend">
+        <span><i class="difficulty-dot easy"></i> Strada favorevole</span>
+        <span><i class="difficulty-dot medium"></i> Media</span>
+        <span><i class="difficulty-dot hard"></i> Dura</span>
+      </div>
+    </div>
+
+    <div class="conference-grid">
+      <article class="conference-panel league-panel">
+        <header class="conference-head">
+          <div>
+            <span>CONF A</span>
+            <h3>Conference League</h3>
+          </div>
+          <div class="conference-leader" id="leader-a">Leader: —</div>
+        </header>
+        <div id="race-conf-a" class="contender-list"></div>
+      </article>
+
+      <article class="conference-panel championship-panel">
+        <header class="conference-head">
+          <div>
+            <span>CONF B</span>
+            <h3>Conference Championship</h3>
+          </div>
+          <div class="conference-leader" id="leader-b">Leader: —</div>
+        </header>
+        <div id="race-conf-b" class="contender-list"></div>
+      </article>
+    </div>
+
+    <section class="road-summary">
+      <div class="section-heading">
+        <span class="section-kicker">PROSSIME PARTITE</span>
+        <h2>Road Difficulty</h2>
+        <p id="road-summary-copy">Difficoltà media delle prossime quattro gare, calcolata usando lo score attuale del Power Ranking.</p>
+      </div>
+      <div id="road-ranking" class="road-ranking"></div>
+    </section>
+  </section>
+
+  <section id="transition-view" class="race-view" hidden>
+    <article class="transition-card">
+      <div class="transition-badge">CONFERENCE STAGE COMPLETE</div>
+      <h2>La prima fase è finita.</h2>
+      <p>I vincitori delle Conference sono definiti. La Race ripartirà automaticamente appena verrà caricato il calendario del Round Robin.</p>
+      <div id="conference-winners" class="winner-grid"></div>
+      <div class="calendar-waiting">
+        <span>ROUND ROBIN</span>
+        <strong>Calendario in definizione</strong>
+      </div>
+    </article>
+  </section>
+
+  <section id="roundrobin-view" class="race-view" hidden>
+    <div class="race-intro">
+      <div>
+        <span class="section-kicker">FASE UNIFICATA</span>
+        <h2 id="rr-heading">Race to Playoffs</h2>
+        <p id="rr-copy">La classifica totale conta. La linea playoff non perdona.</p>
+      </div>
+      <a class="playoff-link" href="playoff.html">Vedi Playoff Bracket →</a>
+    </div>
+
+    <div class="rr-grid">
+      <article class="playoff-race-panel">
+        <header class="panel-head">
+          <span>CLASSIFICA TOTALE</span>
+          <h3>Playoff Race</h3>
+        </header>
+        <div id="overall-race" class="overall-race"></div>
+      </article>
+
+      <article class="bubble-panel">
+        <header class="panel-head">
+          <span>ZONA PRESSIONE</span>
+          <h3>Bubble Watch</h3>
+        </header>
+        <div id="bubble-watch"></div>
+      </article>
+    </div>
+
+    <section class="road-summary">
+      <div class="section-heading">
+        <span class="section-kicker">CALENDARIO</span>
+        <h2 id="rr-schedule-title">Next 4</h2>
+        <p>Gli avversari che possono cambiare la corsa playoff.</p>
+      </div>
+      <div id="rr-road-ranking" class="road-ranking"></div>
+    </section>
+  </section>
+
+  <section id="finished-view" class="race-view" hidden>
+    <article class="transition-card finished">
+      <div class="transition-badge">REGULAR SEASON COMPLETE</div>
+      <h2>La Race è finita. Adesso si gioca davvero.</h2>
+      <p>La fase regolare è conclusa: il quadro definitivo è nella pagina Playoff.</p>
+      <a class="playoff-link big" href="playoff.html">APRI I PLAYOFF →</a>
+    </article>
+  </section>
+
+  <section id="race-error" class="race-state-card error" hidden></section>
+</main>
+
+<script src="mobile-nav.js"></script>
+<script type="module" src="race.js"></script>
+<script src="navbar.js"></script>
+</body>
+</html>
