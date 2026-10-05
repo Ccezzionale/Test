@@ -367,6 +367,65 @@ async function aggiornaBadgeTrade() {
   }
 }
 
+function getNotificationStateBadge(notifBtn) {
+  let badge = notifBtn.querySelector('.push-state-badge');
+
+  if (!badge) {
+    badge = document.createElement('span');
+    badge.className = 'push-state-badge';
+    badge.setAttribute('aria-hidden', 'true');
+    notifBtn.appendChild(badge);
+  }
+
+  return badge;
+}
+
+function applicaAspettoBottoneNotifiche(notifBtn, {
+  background,
+  borderColor,
+  badgeBackground,
+  badgeText,
+  title
+}) {
+  const badge = getNotificationStateBadge(notifBtn);
+
+  // Il navbar.css usa !important sul bottone notifiche.
+  // Usiamo inline !important per far vedere davvero lo stato corrente.
+  notifBtn.style.setProperty('position', 'relative', 'important');
+  notifBtn.style.setProperty('overflow', 'visible', 'important');
+  notifBtn.style.setProperty('background', background, 'important');
+  notifBtn.style.setProperty('border-color', borderColor, 'important');
+  notifBtn.style.setProperty(
+    'box-shadow',
+    `inset 0 1px 0 rgba(255,255,255,.10), 0 0 0 2px ${badgeBackground}22`,
+    'important'
+  );
+
+  badge.textContent = badgeText;
+  badge.style.cssText = `
+    position:absolute;
+    top:-5px;
+    right:-5px;
+    width:17px;
+    height:17px;
+    border-radius:999px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:${badgeBackground};
+    color:#fff;
+    border:2px solid #00264d;
+    box-shadow:0 2px 7px rgba(0,0,0,.28);
+    font-size:10px;
+    font-weight:1000;
+    line-height:1;
+    z-index:3;
+    pointer-events:none;
+  `;
+
+  notifBtn.title = title;
+}
+
 function applicaStatoBottoneNotifiche(notifBtn, state) {
   notifBtn.dataset.attive = 'false';
   notifBtn.dataset.pushStatus = state.status;
@@ -376,17 +435,41 @@ function applicaStatoBottoneNotifiche(notifBtn, state) {
       setButtonLabel(notifBtn, 'Disattiva notifiche');
       notifBtn.dataset.attive = 'true';
       notifBtn.classList.remove('warning');
+
+      applicaAspettoBottoneNotifiche(notifBtn, {
+        background: 'rgba(34,197,94,.22)',
+        borderColor: 'rgba(74,222,128,.58)',
+        badgeBackground: '#22c55e',
+        badgeText: '✓',
+        title: 'Notifiche push attive'
+      });
       break;
 
     case 'repair-needed':
     case 'check-error':
       setButtonLabel(notifBtn, 'Ripara notifiche');
       notifBtn.classList.add('warning');
+
+      applicaAspettoBottoneNotifiche(notifBtn, {
+        background: 'rgba(245,158,11,.24)',
+        borderColor: 'rgba(251,191,36,.62)',
+        badgeBackground: '#f59e0b',
+        badgeText: '!',
+        title: 'Le notifiche richiedono una riparazione'
+      });
       break;
 
     case 'permission-denied':
       setButtonLabel(notifBtn, 'Notifiche bloccate');
       notifBtn.classList.add('warning');
+
+      applicaAspettoBottoneNotifiche(notifBtn, {
+        background: 'rgba(239,68,68,.24)',
+        borderColor: 'rgba(248,113,113,.62)',
+        badgeBackground: '#ef4444',
+        badgeText: '!',
+        title: 'Notifiche bloccate dal browser o dal dispositivo'
+      });
       break;
 
     case 'permission-default':
@@ -395,6 +478,14 @@ function applicaStatoBottoneNotifiche(notifBtn, state) {
     default:
       setButtonLabel(notifBtn, 'Attiva notifiche');
       notifBtn.classList.add('warning');
+
+      applicaAspettoBottoneNotifiche(notifBtn, {
+        background: 'rgba(239,68,68,.20)',
+        borderColor: 'rgba(248,113,113,.55)',
+        badgeBackground: '#ef4444',
+        badgeText: '!',
+        title: 'Notifiche push non attive'
+      });
       break;
   }
 }
@@ -418,6 +509,14 @@ async function aggiornaBottoneNotifiche() {
     notifBtn.dataset.attive = 'false';
     notifBtn.dataset.pushStatus = 'check-error';
     notifBtn.classList.add('warning');
+
+    applicaAspettoBottoneNotifiche(notifBtn, {
+      background: 'rgba(245,158,11,.24)',
+      borderColor: 'rgba(251,191,36,.62)',
+      badgeBackground: '#f59e0b',
+      badgeText: '!',
+      title: 'Le notifiche richiedono una riparazione'
+    });
   }
 }
 
