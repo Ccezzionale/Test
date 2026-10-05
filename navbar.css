@@ -10602,3 +10602,166 @@ nav.site-nav .toggle-submenu .app-alert-badge {
     background: #061b38 !important;
   }
 }
+
+/* =========================================================
+   HOME DESKTOP · MATCH CENTER CON BANNER COMPETIZIONE
+   Riusa gli stessi artwork del Match Center mobile.
+   ========================================================= */
+@media (min-width: 901px){
+  /* Base comune: il box partita diventa una vera card/broadcast banner. */
+  body.desktop-fun-theme-league .desktop-fun-personal-stage,
+  body.desktop-fun-theme-playoff .desktop-fun-personal-stage,
+  body.desktop-fun-theme-crashout .desktop-fun-personal-stage{
+    position:relative;
+    isolation:isolate;
+    overflow:hidden;
+    border-color:rgba(255,255,255,.18);
+    background-color:#071b38;
+    background-repeat:no-repeat;
+    background-size:cover;
+    background-position:center right;
+    box-shadow:
+      0 12px 26px rgba(0,14,40,.20),
+      inset 0 1px 0 rgba(255,255,255,.08);
+  }
+
+  /* Overlay: lascia vedere il banner ma protegge loghi e testi. */
+  body.desktop-fun-theme-league .desktop-fun-personal-stage::before,
+  body.desktop-fun-theme-playoff .desktop-fun-personal-stage::before,
+  body.desktop-fun-theme-crashout .desktop-fun-personal-stage::before{
+    content:"";
+    position:absolute;
+    inset:0;
+    z-index:-1;
+    pointer-events:none;
+    background:
+      linear-gradient(90deg,rgba(2,18,43,.72) 0%,rgba(2,18,43,.54) 36%,rgba(2,18,43,.22) 66%,rgba(2,18,43,.34) 100%),
+      linear-gradient(180deg,rgba(2,14,34,.08),rgba(2,14,34,.34));
+  }
+
+  /* CAMPIONATO */
+  body.desktop-fun-theme-league .desktop-fun-personal-stage{
+    background-image:url("img/match-bg/campionato-bg.webp");
+    border-color:rgba(244,198,68,.50);
+  }
+
+  /* PLAYOFF */
+  body.desktop-fun-theme-playoff .desktop-fun-personal-stage{
+    background-image:url("img/match-bg/playoff-bg.webp");
+    border-color:rgba(224,187,77,.58);
+  }
+  body.desktop-fun-theme-playoff .desktop-fun-personal-stage::before{
+    background:
+      linear-gradient(90deg,rgba(1,12,35,.80) 0%,rgba(1,14,40,.58) 38%,rgba(1,15,43,.20) 67%,rgba(1,12,35,.38) 100%),
+      radial-gradient(360px 190px at 75% 40%,rgba(255,205,64,.10),transparent 68%);
+  }
+
+  /* CRASH OUT */
+  body.desktop-fun-theme-crashout .desktop-fun-personal-stage{
+    background-image:url("img/match-bg/crashout-bg.webp");
+    border-color:rgba(221,71,255,.48);
+  }
+  body.desktop-fun-theme-crashout .desktop-fun-personal-stage::before{
+    background:
+      linear-gradient(90deg,rgba(20,8,45,.76) 0%,rgba(24,8,49,.56) 38%,rgba(24,8,49,.20) 67%,rgba(18,6,41,.36) 100%),
+      radial-gradient(340px 180px at 76% 42%,rgba(240,43,255,.13),transparent 68%);
+  }
+
+  /* Testi e loghi sopra al banner. */
+  body.desktop-fun-theme-league .desktop-fun-personal-stage > *,
+  body.desktop-fun-theme-playoff .desktop-fun-personal-stage > *,
+  body.desktop-fun-theme-crashout .desktop-fun-personal-stage > *{
+    position:relative;
+    z-index:1;
+  }
+
+  body.desktop-fun-theme-league .desktop-fun-personal-team strong,
+  body.desktop-fun-theme-playoff .desktop-fun-personal-team strong,
+  body.desktop-fun-theme-crashout .desktop-fun-personal-team strong{
+    color:#fff;
+    text-shadow:0 2px 8px rgba(0,0,0,.58);
+  }
+
+  body.desktop-fun-theme-league .desktop-fun-personal-team img,
+  body.desktop-fun-theme-playoff .desktop-fun-personal-team img,
+  body.desktop-fun-theme-crashout .desktop-fun-personal-team img{
+    filter:drop-shadow(0 8px 12px rgba(0,0,0,.42));
+  }
+
+  body.desktop-fun-theme-league .desktop-fun-personal-kicker,
+  body.desktop-fun-theme-playoff .desktop-fun-personal-kicker,
+  body.desktop-fun-theme-crashout .desktop-fun-personal-kicker{
+    color:rgba(255,255,255,.78);
+    text-shadow:0 1px 5px rgba(0,0,0,.46);
+  }
+
+  body.desktop-fun-theme-league .desktop-fun-personal-kicker b,
+  body.desktop-fun-theme-playoff .desktop-fun-personal-kicker b,
+  body.desktop-fun-theme-crashout .desktop-fun-personal-kicker b{
+    color:#fff;
+  }
+
+  body.desktop-fun-theme-league .desktop-fun-personal-kicker span{
+    color:#ffd95a;
+  }
+  body.desktop-fun-theme-playoff .desktop-fun-personal-kicker span{
+    color:#ffe17a;
+  }
+  body.desktop-fun-theme-crashout .desktop-fun-personal-kicker span{
+    color:#ff8be5;
+  }
+
+  body.desktop-fun-theme-league .desktop-fun-personal-footer,
+  body.desktop-fun-theme-playoff .desktop-fun-personal-footer,
+  body.desktop-fun-theme-crashout .desktop-fun-personal-footer{
+    border-top-color:rgba(255,255,255,.15);
+    background:linear-gradient(180deg,rgba(1,12,30,.05),rgba(1,12,30,.18));
+  }
+
+  body.desktop-fun-theme-league .desktop-fun-personal-footer span,
+  body.desktop-fun-theme-playoff .desktop-fun-personal-footer span,
+  body.desktop-fun-theme-crashout .desktop-fun-personal-footer span{
+    color:rgba(255,255,255,.80);
+    text-shadow:0 1px 5px rgba(0,0,0,.42);
+  }
+
+  /* HIGHLANDER: stesso concetto, sulla sua card dedicata. */
+  body.desktop-fun-theme-highlander .desktop-fun-highlander-focus{
+    position:relative;
+    isolation:isolate;
+    border:1px solid rgba(218,168,48,.46);
+    background-image:url("img/match-bg/highlander-bg.webp");
+    background-size:cover;
+    background-position:center right;
+    background-repeat:no-repeat;
+    box-shadow:
+      0 12px 26px rgba(0,14,30,.24),
+      inset 0 1px 0 rgba(255,255,255,.07);
+  }
+
+  body.desktop-fun-theme-highlander .desktop-fun-highlander-focus::before{
+    content:"";
+    position:absolute;
+    inset:0;
+    z-index:-1;
+    pointer-events:none;
+    background:
+      linear-gradient(90deg,rgba(9,18,25,.76) 0%,rgba(9,21,29,.54) 42%,rgba(9,21,29,.22) 70%,rgba(7,16,23,.40) 100%);
+  }
+
+  body.desktop-fun-theme-highlander .desktop-fun-highlander-focus > *{
+    position:relative;
+    z-index:1;
+  }
+
+  body.desktop-fun-theme-highlander .desktop-fun-highlander-focus > img{
+    filter:drop-shadow(0 12px 18px rgba(0,0,0,.46));
+  }
+
+  body.desktop-fun-theme-highlander .desktop-fun-highlander-focus h3,
+  body.desktop-fun-theme-highlander .desktop-fun-highlander-focus .desktop-fun-personal-kicker,
+  body.desktop-fun-theme-highlander .desktop-fun-highlander-focus .desktop-fun-personal-kicker b{
+    color:#fff;
+    text-shadow:0 2px 8px rgba(0,0,0,.52);
+  }
+}
