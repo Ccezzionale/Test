@@ -998,8 +998,7 @@ async function syncRecallSlotsFromLostCalls(sourceSlot) {
       activated++;
     }
   }
-
-  console.log(`Richiami sincronizzati da chiamate lost nello slot ${recallSlot}:`, activated);
+console.log(`Richiami sincronizzati da chiamate lost nello slot ${recallSlot}:`, activated);
 
   return activated;
 }
@@ -1998,7 +1997,7 @@ async function loadTeams() {
   const { data, error } = await supabase
     .from("teams")
     .select("id, name, conference")
-    .order("name", { ascending: true });
+.order("name", { ascending: true });
 
   if (error) {
     console.error("Errore caricamento squadre:", error);
@@ -2997,7 +2996,6 @@ async function refreshCompensatorySlots(force = false) {
     compensatoryRefreshBusy = false;
   }
 }
-
 async function loadMyCompensatoryCalls() {
   if (!currentTeam || !currentSettings || !myCompensatoryCallsEl) return;
 
@@ -3998,8 +3996,7 @@ async function updateAdminCompensatoryCall(callId) {
   const reasonType = document.querySelector(
     `.admin-comp-reason-edit[data-call-id="${callId}"]`
   )?.value || "trade";
-
-  const reasonNote = document.querySelector(
+const reasonNote = document.querySelector(
     `.admin-comp-note-edit[data-call-id="${callId}"]`
   )?.value?.trim() || null;
 
@@ -4624,6 +4621,43 @@ async function isPlayerCurrentlyAvailable(playerId) {
   return Boolean(data) && !data.owner_team_id;
 }
 
+async function sendWaiverResultNotifications({ kind = "regular", slot, priorityTier = null }) {
+  if (!currentSettings || !currentUserIsAdmin || isAdminViewingAsTeam()) return;
+
+  try {
+    const payload = {
+      week: Number(currentSettings.active_week),
+      phase: currentSettings.active_phase,
+      kind,
+      slot: String(slot),
+      ...(kind === "compensatory"
+        ? { priority_tier: normalizeCompensatoryTier(priorityTier) }
+        : {})
+    };
+
+    const { data, error } = await supabase.functions.invoke(
+      "send-waiver-result-notifications",
+      { body: payload }
+    );
+
+    if (error) {
+      console.warn("Notifiche risultati waiver non inviate:", error);
+      return;
+    }
+
+    if (data?.error) {
+      console.warn("Notifiche risultati waiver non inviate:", data.error);
+      return;
+    }
+
+    console.log("📬 Risultati waiver notificati:", data);
+  } catch (error) {
+    // Le notifiche sono accessorie: un errore qui non deve mai annullare
+    // o interrompere un calcolo waiver già completato.
+    console.warn("Errore invio notifiche risultati waiver:", error);
+  }
+}
+
 async function calculateResultsForSlot(slot) {
   if (!currentSettings) return;
 
@@ -4788,6 +4822,11 @@ if (totalActivated > 0) {
 
 alert(`Risultati slot ${normalizedSlot} calcolati.`);
 
+await sendWaiverResultNotifications({
+  kind: "regular",
+  slot: normalizedSlot
+});
+
 await loadWaiverOrder();
 await loadMyOwnedPlayers();
 await loadFreeAgents();
@@ -4907,6 +4946,13 @@ async function calculateCompensatoryResults(priorityTier = "normal", slot = 1) {
   if (error) { setAdminMessage("Errore calcolo: " + error.message, true); return; }
   setAdminMessage(getCompensatoryTierLabel(tier) + " · Slot " + slot + ": elaborate " + Number(data || 0) +
     ". Il secondo slot richiede la propria chiusura; zero può indicare una fase precedente ancora da completare.");
+
+  await sendWaiverResultNotifications({
+    kind: "compensatory",
+    slot,
+    priorityTier: tier
+  });
+
   await loadInjuryReserveMonitor();
   await loadMyOwnedPlayers();
   await loadMyReplacementCandidates();
@@ -4998,7 +5044,7 @@ function toDateTimeLocalValue(dateValue) {
 }
 
 function fromDateTimeLocalValue(value) {
-  if (!value) return null;
+if (!value) return null;
 
   const date = new Date(value);
 
@@ -5998,7 +6044,7 @@ function renderWaiverTradeAssetList(container, assets, selectedKeys = new Set())
         ${weekHeading}
         <label class="waiver-trade-asset">
           <input
-            type="checkbox"
+type="checkbox"
             value="${escapeWaiverHtml(key)}"
             ${checked}
             ${disabled}

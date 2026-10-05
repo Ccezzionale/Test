@@ -1,4 +1,4 @@
-const SW_VERSION = "20261005-center3";
+const SW_VERSION = "20261005-center4";
 
 self.addEventListener("install", (event) => {
   console.log("Service Worker installato:", SW_VERSION);
@@ -47,6 +47,23 @@ self.addEventListener("activate", (event) => {
         }
       }
     })()
+  );
+});
+
+
+self.addEventListener("fetch", (event) => {
+  const request = event.request;
+  if (request.method !== "GET") return;
+
+  const url = new URL(request.url);
+  if (url.origin !== self.location.origin) return;
+
+  const freshDestinations = new Set(["document", "script", "style"]);
+  if (!freshDestinations.has(request.destination)) return;
+
+  event.respondWith(
+    fetch(new Request(request, { cache: "no-store" }))
+      .catch(() => fetch(request))
   );
 });
 

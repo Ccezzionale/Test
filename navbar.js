@@ -183,3 +183,17 @@ document.addEventListener("DOMContentLoaded", function () {
     mainMenu.classList.toggle("show");
   });
 });
+/* =========================================================
+   CENTRO NOTIFICHE GLOBALE
+   ========================================================= */
+document.addEventListener("DOMContentLoaded", function () {
+  window.setTimeout(async () => {
+    try {
+      if (window.__LEGA_NOTIFICATION_CENTER_VERSION !== "20261005-center4") {
+        await import("./notifications-center.js?v=20261005-center4");
+      }
+    } catch (error) {
+      console.warn("Centro notifiche globale non disponibile:", error);
+    }
+  }, 0);
+});

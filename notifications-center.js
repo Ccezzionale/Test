@@ -2,11 +2,16 @@ import { supabase } from './supabase.js';
 
 const NOTIFICATION_TABLE = 'app_notifications';
 const REFRESH_MS = 45000;
+const CENTER_VERSION = '20261005-center4';
 
 let currentUser = null;
 let currentFilter = 'all';
 let refreshTimer = null;
 let panelOpen = false;
+let currentProfile = null;
+let adminTeams = [];
+let adminComposerReady = false;
+let adminSendBusy = false;
 
 function escapeHtml(value) {
   return String(value ?? '')
@@ -25,6 +30,7 @@ function notificationIcon(type) {
     news: '📰',
     lineup: '📋',
     injury: '🩹',
+    admin: '📢',
     system: '🔔'
   };
 
@@ -75,10 +81,206 @@ function safeDestination(url) {
   }
 }
 
+function setNotificationButtonLabel(trigger, label = 'Notifiche') {
+  if (!trigger) return;
+  const span = trigger.querySelector('.btn-label');
+  if (span) span.textContent = label;
+  else trigger.textContent = label;
+}
+
+function injectCenter4Styles() {
+  if (document.getElementById('notification-center4-styles')) return;
+
+  const style = document.createElement('style');
+  style.id = 'notification-center4-styles';
+  style.textContent = `
+    .notification-admin-entry{padding:0 18px 12px;display:none}
+    .notification-admin-entry.is-visible{display:block}
+    .notification-admin-open{width:100%;border:1px solid rgba(22,104,191,.24);border-radius:12px;padding:10px 12px;background:#eef6ff;color:#0b4f91;font-weight:900;cursor:pointer}
+    .notification-admin-composer{margin:0 18px 14px;padding:14px;border:1px solid #d8e5f2;border-radius:14px;background:#f8fbff;display:none}
+    .notification-admin-composer.is-open{display:block}
+    .notification-admin-composer h3{margin:0 0 10px;font-size:.92rem;color:#082a54}
+    .notification-admin-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    .notification-admin-field{display:grid;gap:5px;font-size:.72rem;font-weight:850;color:#46617f}
+    .notification-admin-field.full{grid-column:1/-1}
+    .notification-admin-field input,.notification-admin-field select,.notification-admin-field textarea{width:100%;box-sizing:border-box;border:1px solid #c9d9e9;border-radius:10px;padding:9px 10px;background:#fff;color:#102b49;font:inherit;font-weight:700}
+    .notification-admin-field textarea{min-height:82px;resize:vertical}
+    .notification-admin-actions{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:10px}
+    .notification-admin-status{font-size:.72rem;color:#5b6f86;line-height:1.35}
+    .notification-admin-send{border:0;border-radius:10px;padding:9px 13px;background:#0b5da8;color:#fff;font-weight:900;cursor:pointer;white-space:nowrap}
+    .notification-admin-send:disabled{opacity:.55;cursor:wait}
+    @media(max-width:640px){.notification-admin-grid{grid-template-columns:1fr}.notification-admin-field.full{grid-column:auto}.notification-admin-actions{align-items:stretch;flex-direction:column}.notification-admin-send{width:100%}}
+  `;
+  document.head.appendChild(style);
+}
+
+async function ensurePushApi() {
+  if (window.LegaPush?.check) return window.LegaPush;
+  try {
+    await import(`./push-manager.js?v=${CENTER_VERSION}`);
+  } catch (error) {
+    console.warn('Push manager globale non disponibile:', error);
+  }
+  return window.LegaPush || null;
+}
+
+async function resolveProfile() {
+  if (currentProfile) return currentProfile;
+  const user = await resolveUser();
+  if (!user) return null;
+
+  const { data, error } = await supabase
+    .from('profiles')
+    .select('id, team_id, role')
+    .eq('id', user.id)
+    .maybeSingle();
+
+  if (error) throw error;
+  currentProfile = data || null;
+  return currentProfile;
+}
+
+async function refreshTriggerPushState() {
+  const trigger = document.getElementById('attiva-notifiche-btn');
+  if (!trigger) return;
+  setNotificationButtonLabel(trigger, 'Notifiche');
+
+  const api = await ensurePushApi();
+  if (!api?.check) return;
+
+  let badge = trigger.querySelector('.push-state-badge');
+  if (!badge) {
+    badge = document.createElement('span');
+    badge.className = 'push-state-badge';
+    badge.setAttribute('aria-hidden', 'true');
+    trigger.appendChild(badge);
+  }
+
+  try {
+    const state = await api.check({ autoRepair: false });
+    const active = state.status === 'active';
+    const repair = ['repair-needed', 'check-error'].includes(state.status);
+    badge.textContent = active ? '✓' : '!';
+    badge.style.cssText = `position:absolute;left:-5px;bottom:-5px;width:17px;height:17px;border-radius:999px;display:flex;align-items:center;justify-content:center;background:${active ? '#22c55e' : repair ? '#f59e0b' : '#ef4444'};color:#fff;border:2px solid #00264d;font-size:10px;font-weight:1000;line-height:1;z-index:3;pointer-events:none;`;
+    trigger.style.setProperty('position', 'relative', 'important');
+    trigger.style.setProperty('overflow', 'visible', 'important');
+    trigger.dataset.pushStatus = state.status;
+  } catch (error) {
+    console.warn('Stato push pulsante non disponibile:', error);
+  }
+}
+
+function adminScopeLabel(value) {
+  if (value === 'conference') return 'Conference';
+  if (value === 'team') return 'Squadra';
+  return 'Tutta la lega';
+}
+
+async function loadAdminTeams() {
+  if (adminTeams.length) return adminTeams;
+  const { data, error } = await supabase
+    .from('teams')
+    .select('id, name, conference')
+    .order('name', { ascending: true });
+  if (error) throw error;
+  adminTeams = data || [];
+  return adminTeams;
+}
+
+function fillAdminTargetSelect() {
+  const scope = document.getElementById('notification-admin-scope')?.value || 'league';
+  const wrap = document.getElementById('notification-admin-target-wrap');
+  const select = document.getElementById('notification-admin-target');
+  if (!wrap || !select) return;
+
+  if (scope === 'league') {
+    wrap.hidden = true;
+    select.innerHTML = '';
+    return;
+  }
+
+  wrap.hidden = false;
+  const values = scope === 'conference'
+    ? [...new Set(adminTeams.map(team => team.conference).filter(Boolean))].sort()
+    : adminTeams;
+
+  if (scope === 'conference') {
+    select.innerHTML = values.map(value => `<option value="${escapeHtml(value)}">${escapeHtml(value)}</option>`).join('');
+  } else {
+    select.innerHTML = values.map(team => `<option value="${escapeHtml(team.id)}">${escapeHtml(team.name)}</option>`).join('');
+  }
+}
+
+async function setupAdminComposer() {
+  const entry = document.getElementById('notification-admin-entry');
+  if (!entry || adminComposerReady) return;
+
+  try {
+    const profile = await resolveProfile();
+    if (profile?.role !== 'admin') return;
+
+    await loadAdminTeams();
+    entry.classList.add('is-visible');
+    adminComposerReady = true;
+    fillAdminTargetSelect();
+  } catch (error) {
+    console.warn('Composer admin non disponibile:', error);
+  }
+}
+
+async function sendAdminCommunication() {
+  if (adminSendBusy) return;
+
+  const scope = document.getElementById('notification-admin-scope')?.value || 'league';
+  const target = document.getElementById('notification-admin-target')?.value || '';
+  const title = document.getElementById('notification-admin-title')?.value.trim() || '';
+  const message = document.getElementById('notification-admin-message')?.value.trim() || '';
+  const url = document.getElementById('notification-admin-url')?.value || '';
+  const status = document.getElementById('notification-admin-status');
+  const sendButton = document.getElementById('notification-admin-send');
+
+  if (!title || !message) {
+    if (status) status.textContent = 'Titolo e messaggio sono obbligatori.';
+    return;
+  }
+
+  adminSendBusy = true;
+  if (sendButton) sendButton.disabled = true;
+  if (status) status.textContent = 'Invio in corso…';
+
+  try {
+    const payload = {
+      request_id: crypto.randomUUID(),
+      scope,
+      title,
+      message,
+      url: url || null,
+      ...(scope === 'conference' ? { conference: target } : {}),
+      ...(scope === 'team' ? { team_id: target } : {})
+    };
+
+    const { data, error } = await supabase.functions.invoke('send-admin-notification', { body: payload });
+    if (error) throw error;
+    if (data?.error) throw new Error(data.error);
+
+    if (status) status.textContent = `Inviata a ${data?.recipients ?? 0} account · push consegnate: ${data?.sent ?? 0}.`;
+    const messageInput = document.getElementById('notification-admin-message');
+    if (messageInput) messageInput.value = '';
+    await loadNotifications();
+  } catch (error) {
+    console.error('Invio comunicazione admin fallito:', error);
+    if (status) status.textContent = error?.message || 'Invio non riuscito.';
+  } finally {
+    adminSendBusy = false;
+    if (sendButton) sendButton.disabled = false;
+  }
+}
+
 function ensureUi() {
   const trigger = document.getElementById('attiva-notifiche-btn');
   if (!trigger) return null;
 
+  setNotificationButtonLabel(trigger, 'Notifiche');
   trigger.classList.add('notification-center-trigger');
   trigger.setAttribute('aria-haspopup', 'dialog');
   trigger.setAttribute('aria-controls', 'notification-center-panel');
@@ -113,6 +315,54 @@ function ensureUi() {
             <button type="button" class="notification-mark-all" id="notification-mark-all">Segna tutte lette</button>
           </div>
 
+          <div class="notification-admin-entry" id="notification-admin-entry">
+            <button type="button" class="notification-admin-open" id="notification-admin-open">📢 Nuova comunicazione</button>
+          </div>
+
+          <section class="notification-admin-composer" id="notification-admin-composer" aria-label="Nuova comunicazione admin">
+            <h3>Invia comunicazione</h3>
+            <div class="notification-admin-grid">
+              <label class="notification-admin-field">
+                Destinatari
+                <select id="notification-admin-scope">
+                  <option value="league">Tutta la lega</option>
+                  <option value="conference">Conference</option>
+                  <option value="team">Singola squadra</option>
+                </select>
+              </label>
+              <label class="notification-admin-field" id="notification-admin-target-wrap" hidden>
+                Seleziona
+                <select id="notification-admin-target"></select>
+              </label>
+              <label class="notification-admin-field full">
+                Titolo
+                <input id="notification-admin-title" maxlength="100" placeholder="Es. Orari waiver modificati">
+              </label>
+              <label class="notification-admin-field full">
+                Messaggio
+                <textarea id="notification-admin-message" maxlength="600" placeholder="Scrivi la comunicazione…"></textarea>
+              </label>
+              <label class="notification-admin-field full">
+                Apri pagina al click
+                <select id="notification-admin-url">
+                  <option value="">Nessuna pagina specifica</option>
+                  <option value="index.html">Home</option>
+                  <option value="waiver.html">Waiver Wire</option>
+                  <option value="trade-room.html">Trade Room</option>
+                  <option value="classifica.html">Classifiche</option>
+                  <option value="giornale.html">Giornale</option>
+                  <option value="regolamento.html">Regolamento</option>
+                  <option value="allstar.html">All Star</option>
+                  <option value="crashoutcup.html">Crash Out Cup</option>
+                </select>
+              </label>
+            </div>
+            <div class="notification-admin-actions">
+              <span class="notification-admin-status" id="notification-admin-status">La comunicazione arriverà nel Centro Notifiche e, se attive, anche via push.</span>
+              <button type="button" class="notification-admin-send" id="notification-admin-send">Invia</button>
+            </div>
+          </section>
+
           <div class="notification-center-content">
             <div class="notification-center-loading" id="notification-center-loading">Caricamento notifiche…</div>
             <div class="notification-center-list" id="notification-center-list"></div>
@@ -135,6 +385,36 @@ function ensureUi() {
           </footer>
         </aside>
       </div>
+    `);
+  }
+
+  const existingPanel = document.getElementById('notification-center-panel');
+  if (existingPanel && !document.getElementById('notification-admin-entry')) {
+    const content = existingPanel.querySelector('.notification-center-content');
+    content?.insertAdjacentHTML('beforebegin', `
+      <div class="notification-admin-entry" id="notification-admin-entry">
+        <button type="button" class="notification-admin-open" id="notification-admin-open">📢 Nuova comunicazione</button>
+      </div>
+      <section class="notification-admin-composer" id="notification-admin-composer" aria-label="Nuova comunicazione admin">
+        <h3>Invia comunicazione</h3>
+        <div class="notification-admin-grid">
+          <label class="notification-admin-field">Destinatari
+            <select id="notification-admin-scope"><option value="league">Tutta la lega</option><option value="conference">Conference</option><option value="team">Singola squadra</option></select>
+          </label>
+          <label class="notification-admin-field" id="notification-admin-target-wrap" hidden>Seleziona<select id="notification-admin-target"></select></label>
+          <label class="notification-admin-field full">Titolo<input id="notification-admin-title" maxlength="100" placeholder="Es. Orari waiver modificati"></label>
+          <label class="notification-admin-field full">Messaggio<textarea id="notification-admin-message" maxlength="600" placeholder="Scrivi la comunicazione…"></textarea></label>
+          <label class="notification-admin-field full">Apri pagina al click
+            <select id="notification-admin-url">
+              <option value="">Nessuna pagina specifica</option><option value="index.html">Home</option><option value="waiver.html">Waiver Wire</option><option value="trade-room.html">Trade Room</option><option value="classifica.html">Classifiche</option><option value="giornale.html">Giornale</option><option value="regolamento.html">Regolamento</option><option value="allstar.html">All Star</option><option value="crashoutcup.html">Crash Out Cup</option>
+            </select>
+          </label>
+        </div>
+        <div class="notification-admin-actions">
+          <span class="notification-admin-status" id="notification-admin-status">La comunicazione arriverà nel Centro Notifiche e, se attive, anche via push.</span>
+          <button type="button" class="notification-admin-send" id="notification-admin-send">Invia</button>
+        </div>
+      </section>
     `);
   }
 
@@ -269,7 +549,7 @@ async function loadNotifications() {
       list.innerHTML = rows.map(notificationRowHtml).join('');
     }
 
-    await refreshUnreadCount();
+    await Promise.all([refreshUnreadCount(), refreshTriggerPushState(), setupAdminComposer()]);
   } catch (error) {
     console.error('Errore centro notifiche:', error);
     loading.hidden = true;
@@ -383,7 +663,7 @@ async function refreshPushCard() {
 
   if (!card || !title || !note || !action) return;
 
-  const pushApi = window.LegaPush;
+  const pushApi = await ensurePushApi();
 
   if (!pushApi?.check) {
     card.className = 'notification-push-card is-off';
@@ -460,7 +740,9 @@ async function openPanel() {
 
   await Promise.all([
     loadNotifications(),
-    refreshPushCard()
+    refreshPushCard(),
+    setupAdminComposer(),
+    refreshTriggerPushState()
   ]);
 
   document.getElementById('notification-center-close')?.focus();
@@ -483,7 +765,11 @@ function bindUi() {
   const trigger = ensureUi();
   if (!trigger) return;
 
-  trigger.addEventListener('click', openPanel);
+  trigger.addEventListener('click', (event) => {
+    event.preventDefault();
+    event.stopImmediatePropagation();
+    openPanel();
+  }, { capture: true });
 
   document.getElementById('notification-center-close')?.addEventListener('click', closePanel);
 
@@ -495,6 +781,13 @@ function bindUi() {
 
   document.getElementById('notification-mark-all')?.addEventListener('click', markAllRead);
   document.getElementById('notification-push-action')?.addEventListener('click', handlePushAction);
+
+  document.getElementById('notification-admin-open')?.addEventListener('click', () => {
+    document.getElementById('notification-admin-composer')?.classList.toggle('is-open');
+  });
+
+  document.getElementById('notification-admin-scope')?.addEventListener('change', fillAdminTargetSelect);
+  document.getElementById('notification-admin-send')?.addEventListener('click', sendAdminCommunication);
 
   document.querySelectorAll('[data-notification-filter]').forEach((button) => {
     button.addEventListener('click', async () => {
@@ -550,12 +843,17 @@ function bindUi() {
 }
 
 async function init() {
+  injectCenter4Styles();
   bindUi();
 
   try {
-    await refreshUnreadCount();
+    await Promise.all([
+      refreshUnreadCount(),
+      refreshTriggerPushState(),
+      setupAdminComposer()
+    ]);
   } catch (error) {
-    console.warn('Badge notifiche non disponibile:', error);
+    console.warn('Centro notifiche iniziale non disponibile:', error);
   }
 
   refreshTimer = window.setInterval(() => {
@@ -567,6 +865,8 @@ async function init() {
 window.addEventListener('beforeunload', () => {
   if (refreshTimer) window.clearInterval(refreshTimer);
 });
+
+window.__LEGA_NOTIFICATION_CENTER_VERSION = CENTER_VERSION;
 
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', init, { once: true });
