@@ -2154,3 +2154,111 @@ body.match-center-page {
     font-size: 1.42rem !important;
   }
 }
+
+
+/* =========================================================
+   MATCH CENTER V13 · mobile fine-tuning requested by Marco
+   - Giornata/competizione all the way left under MATCH CENTER
+   - Match Preview / Pre-partita centered above the two logos / VS
+   ========================================================= */
+
+@media (max-width:760px){
+  .mc-banner{
+    position: relative !important;
+  }
+
+  .mc-hero-top{
+    display:block !important;
+    position:static !important;
+    padding:0 !important;
+  }
+
+  .mc-back{
+    position:absolute !important;
+    left:14px !important;
+    top:14px !important;
+    z-index:5 !important;
+  }
+
+  .mc-banner-copy-minimal{
+    position:absolute !important;
+    left:18px !important;
+    top:98px !important;
+    padding:0 !important;
+    width:auto !important;
+    justify-content:flex-start !important;
+    z-index:5 !important;
+  }
+
+  .mc-banner-copy-minimal #mc-subtitle{
+    margin:0 !important;
+    align-self:flex-start !important;
+    text-align:left !important;
+  }
+
+  .mc-hero-badges{
+    position:absolute !important;
+    left:50% !important;
+    top:35.5% !important;
+    transform:translateX(-50%) !important;
+    grid-column:auto !important;
+    display:flex !important;
+    flex-direction:row !important;
+    justify-content:center !important;
+    align-items:center !important;
+    gap:10px !important;
+    margin:0 !important;
+    z-index:5 !important;
+  }
+
+  .mc-mode-tag,
+  .mc-status{
+    min-height:32px !important;
+    padding:6px 11px !important;
+    font-size:.67rem !important;
+  }
+
+  .mc-matchup-strip{
+    bottom:5.8% !important;
+  }
+
+  .mc-team strong{
+    min-height:30px !important;
+  }
+
+  .mc-score{
+    padding-top:38px !important;
+  }
+}
+
+@media (max-width:390px){
+  .mc-back{
+    left:12px !important;
+    top:12px !important;
+  }
+
+  .mc-banner-copy-minimal{
+    left:14px !important;
+    top:90px !important;
+  }
+
+  .mc-hero-badges{
+    top:35% !important;
+    gap:8px !important;
+  }
+
+  .mc-mode-tag,
+  .mc-status{
+    min-height:30px !important;
+    padding:6px 10px !important;
+    font-size:.64rem !important;
+  }
+
+  .mc-matchup-strip{
+    bottom:5.2% !important;
+  }
+
+  .mc-score{
+    padding-top:34px !important;
+  }
+}
