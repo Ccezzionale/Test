@@ -1966,3 +1966,114 @@ body.match-center-page {
     padding: 5px 9px !important;
   }
 }
+
+
+/* =========================================================
+   MATCH CENTER V11 · MOBILE BANNER RATIO FIX
+   Mantiene il rapporto reale del banner verticale.
+   Niente più banner troppo alto / titolo tagliato lateralmente.
+   ========================================================= */
+
+@media (max-width:760px){
+  .mc-banner{
+    width:100% !important;
+    height:auto !important;
+    min-height:0 !important;
+    aspect-ratio:1102 / 1376 !important;
+  }
+
+  .mc-banner-art-mobile{
+    width:100% !important;
+    height:100% !important;
+    object-fit:cover !important;
+    object-position:center top !important;
+  }
+
+  .mc-banner-copy-minimal{
+    padding-top:25% !important;
+  }
+
+  .mc-banner-copy-minimal #mc-subtitle{
+    font-size:.70rem !important;
+    padding:5px 10px !important;
+  }
+
+  .mc-hero-badges{
+    margin-top:8px !important;
+  }
+
+  .mc-mode-tag,
+  .mc-status{
+    min-height:31px !important;
+    padding:6px 10px !important;
+    font-size:.66rem !important;
+  }
+
+  .mc-matchup-strip{
+    bottom:4.8% !important;
+    width:calc(100% - 34px) !important;
+  }
+
+  .mc-versus{
+    grid-template-columns:minmax(0,1fr) 60px minmax(0,1fr) !important;
+    gap:6px !important;
+  }
+
+  .mc-team img{
+    width:72px !important;
+    height:72px !important;
+    padding:6px !important;
+  }
+
+  .mc-team strong{
+    margin-top:5px !important;
+    font-size:.67rem !important;
+  }
+
+  .mc-vs-large{
+    font-size:1.72rem !important;
+  }
+
+  .mc-rank-chip{
+    margin-top:6px !important;
+    padding:5px 9px !important;
+    font-size:.60rem !important;
+  }
+}
+
+@media (max-width:390px){
+  .mc-banner{
+    aspect-ratio:1102 / 1376 !important;
+  }
+
+  .mc-banner-copy-minimal{
+    padding-top:24% !important;
+  }
+
+  .mc-banner-copy-minimal #mc-subtitle{
+    font-size:.63rem !important;
+  }
+
+  .mc-matchup-strip{
+    width:calc(100% - 24px) !important;
+    bottom:4.3% !important;
+  }
+
+  .mc-versus{
+    grid-template-columns:minmax(0,1fr) 54px minmax(0,1fr) !important;
+    gap:4px !important;
+  }
+
+  .mc-team img{
+    width:66px !important;
+    height:66px !important;
+  }
+
+  .mc-team strong{
+    font-size:.61rem !important;
+  }
+
+  .mc-vs-large{
+    font-size:1.5rem !important;
+  }
+}
