@@ -1948,3 +1948,18 @@ body{
     margin-top:2px;
   }
 }
+
+
+/* =========================================================
+   RACE V10 · LOCAL SWITCH ANCHE SOPRA CONFERENCE PULSE
+   ========================================================= */
+.pulse-mobile-tabs{
+  display:none;
+}
+
+@media(max-width:768px){
+  .pulse-mobile-tabs{
+    display:grid;
+    margin:2px 8px 9px;
+  }
+}
