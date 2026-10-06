@@ -1144,3 +1144,635 @@ body{
   .win-chance b{font-size:.62rem}
   .win-chance small{font-size:.47rem}
 }
+
+
+/* =========================================================
+   RACE V8 · MOBILE FIRST EXPERIENCE
+   Desktop invariato. Su mobile una Conference alla volta.
+   ========================================================= */
+
+.mobile-conference-tabs{
+  display:none;
+}
+
+@media(max-width:768px){
+
+  /* PAGE / HERO */
+  .race-page{
+    padding:0 10px 34px;
+    overflow-x:hidden;
+  }
+
+  .race-hero{
+    min-height:182px;
+    margin:0 -10px;
+    border-radius:0 0 26px 26px;
+  }
+
+  .race-hero-content{
+    padding:26px 16px 36px;
+  }
+
+  .race-kicker{
+    font-size:.60rem;
+    letter-spacing:.16em;
+  }
+
+  .race-hero h1{
+    max-width:78%;
+    margin-top:5px;
+    font-size:clamp(3rem,15vw,4.4rem);
+    line-height:.84;
+  }
+
+  .race-hero p{
+    display:none;
+  }
+
+  .race-hero-meta{
+    margin-top:14px;
+    gap:6px;
+  }
+
+  .race-hero-meta span{
+    padding:6px 9px;
+    font-size:.61rem;
+  }
+
+  .race-hero-cup{
+    right:-36px;
+    bottom:-22px;
+    width:178px;
+    height:178px;
+    opacity:.27;
+  }
+
+  /* INTRO */
+  .race-intro{
+    margin:16px 2px 12px;
+  }
+
+  .race-intro h2{
+    font-size:2rem;
+    line-height:.95;
+  }
+
+  .race-intro p{
+    margin-top:7px;
+    font-size:.76rem;
+    line-height:1.38;
+  }
+
+  .race-legend{
+    display:flex;
+    gap:6px;
+    margin-top:10px;
+    overflow-x:auto;
+    padding-bottom:2px;
+    scrollbar-width:none;
+  }
+
+  .race-legend::-webkit-scrollbar{display:none}
+
+  .race-legend span{
+    flex:none;
+    padding:7px 9px;
+    font-size:.61rem;
+  }
+
+  /* SWITCHER */
+  .mobile-conference-tabs{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:5px;
+    margin:12px 0 10px;
+    padding:5px;
+    border:1px solid #d7e2ee;
+    border-radius:17px;
+    background:#edf3f9;
+    box-shadow:0 7px 20px rgba(7,21,39,.06);
+  }
+
+  .mobile-conference-tabs button{
+    min-width:0;
+    min-height:48px;
+    padding:7px 8px;
+    border:0;
+    border-radius:12px;
+    color:#64768d;
+    background:transparent;
+    font:inherit;
+    font-size:.70rem;
+    font-weight:950;
+    line-height:1.08;
+    cursor:pointer;
+  }
+
+  .mobile-conference-tabs button span{
+    display:block;
+    margin-bottom:3px;
+    font-size:.52rem;
+    letter-spacing:.10em;
+    opacity:.72;
+  }
+
+  .mobile-conference-tabs button.active{
+    color:#fff;
+    background:linear-gradient(135deg,#071a30,#173d67);
+    box-shadow:0 6px 15px rgba(7,21,39,.18);
+  }
+
+  .mobile-conference-tabs button[data-mobile-conference="championship"].active{
+    background:linear-gradient(135deg,#45101e,#9b1f3b);
+  }
+
+  /* Una conference alla volta */
+  .conference-grid{
+    display:block;
+  }
+
+  .conference-panel{
+    display:none;
+    border-radius:20px;
+  }
+
+  .conference-panel.mobile-active{
+    display:block;
+  }
+
+  /* HEADER CONFERENCE */
+  .conference-head{
+    min-height:82px;
+    padding:14px 14px 13px;
+    align-items:flex-start;
+    gap:8px;
+  }
+
+  .conference-head>div:first-child{
+    min-width:0;
+  }
+
+  .conference-head>div:first-child>span{
+    font-size:.59rem;
+    letter-spacing:.11em;
+  }
+
+  .conference-head h3{
+    margin-top:5px;
+    font-size:1.55rem;
+    line-height:.94;
+  }
+
+  .conference-leader{
+    max-width:48%;
+    padding:6px 8px;
+    overflow:hidden;
+    font-size:.60rem;
+    line-height:1.1;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+  }
+
+  /* CONTENDERS: vere card mobili */
+  .contender-list{
+    padding:8px 8px 10px;
+  }
+
+  .contender-card,
+  .contender-card.is-leader{
+    display:grid;
+    grid-template-columns:34px 44px minmax(0,1fr) 54px;
+    grid-template-areas:
+      "rank logo main road"
+      "next next next next";
+    align-items:center;
+    gap:8px 7px;
+    min-height:0;
+    margin:0 0 8px;
+    padding:10px 9px 9px;
+    border:1px solid #e0e8f1;
+    border-radius:16px;
+    background:#fff;
+    box-shadow:0 5px 14px rgba(7,21,39,.045);
+  }
+
+  .contender-card.is-leader{
+    border-color:rgba(243,195,78,.70);
+    background:
+      radial-gradient(circle at 93% 8%,rgba(243,195,78,.13),transparent 30%),
+      linear-gradient(90deg,#fffaf0,#fff);
+  }
+
+  .contender-rank{
+    grid-area:rank;
+    width:32px;
+    height:32px;
+    border-radius:10px;
+    font-size:.82rem;
+  }
+
+  .contender-card>.team-logo{
+    grid-area:logo;
+    width:42px;
+    height:42px;
+  }
+
+  .contender-main{
+    grid-area:main;
+    min-width:0;
+    align-self:center;
+  }
+
+  .contender-main>strong{
+    display:block;
+    overflow:hidden;
+    font-size:.88rem;
+    line-height:1.08;
+    white-space:nowrap;
+    text-overflow:ellipsis;
+  }
+
+  .contender-meta{
+    display:flex;
+    align-items:center;
+    gap:4px;
+    margin-top:5px;
+    flex-wrap:wrap;
+  }
+
+  .standing-points{
+    font-size:.64rem;
+  }
+
+  .win-chance,
+  .race-momentum{
+    min-height:18px;
+    padding:3px 5px;
+  }
+
+  .win-chance b{font-size:.59rem}
+  .win-chance small{font-size:.43rem}
+  .race-momentum{font-size:.50rem}
+
+  .form-dots{
+    display:flex;
+    gap:2px;
+  }
+
+  .form-dot{
+    width:17px;
+    height:17px;
+    font-size:.48rem;
+  }
+
+  .road-score{
+    grid-area:road;
+    align-self:center;
+    min-width:0;
+    padding:0;
+    text-align:right;
+  }
+
+  .road-score strong{
+    display:block;
+    font-size:1.03rem;
+    line-height:1;
+  }
+
+  .road-score span{
+    display:block;
+    margin-top:3px;
+    font-size:.48rem;
+    line-height:1.05;
+  }
+
+  /* NEXT 4: quattro slot che usano tutta la larghezza */
+  .next-block{
+    grid-area:next;
+    width:100%;
+    margin-top:1px;
+    padding:8px 0 0;
+    border-top:1px solid #edf1f6;
+  }
+
+  .next-label{
+    margin:0 0 6px;
+    padding:0 1px;
+    text-align:left;
+    font-size:.54rem;
+  }
+
+  .schedule-strip{
+    display:grid;
+    grid-template-columns:repeat(4,minmax(0,1fr));
+    gap:5px;
+    width:100%;
+  }
+
+  .fixture-chip{
+    width:100%;
+    min-width:0;
+    height:58px;
+    border-radius:11px;
+  }
+
+  .fixture-chip img{
+    width:23px;
+    height:23px;
+  }
+
+  .fixture-chip b{font-size:.52rem}
+  .fixture-chip small{
+    max-width:100%;
+    font-size:.48rem;
+  }
+
+  /* CONFERENCE PULSE */
+  .conference-pulse{
+    margin:0 8px 10px;
+    border-radius:15px;
+  }
+
+  .pulse-head{
+    padding:11px 12px 10px;
+  }
+
+  .pulse-head span{
+    font-size:.56rem;
+  }
+
+  .pulse-head strong{
+    margin-top:4px;
+    font-size:.75rem;
+    line-height:1.25;
+  }
+
+  .pulse-stats{
+    grid-template-columns:1fr;
+  }
+
+  .pulse-stat{
+    display:grid;
+    grid-template-columns:92px minmax(0,1fr) auto;
+    align-items:center;
+    gap:7px;
+    min-height:42px;
+    padding:9px 11px;
+    border-right:0;
+    border-bottom:1px solid #e3ebf4;
+    box-shadow:none !important;
+  }
+
+  .pulse-stat:last-child{border-bottom:0}
+
+  .pulse-stat span{
+    font-size:.50rem;
+  }
+
+  .pulse-stat strong{
+    margin:0;
+    font-size:.70rem;
+  }
+
+  .pulse-stat small{
+    margin:0;
+    font-size:.59rem;
+    text-align:right;
+  }
+
+  .direct-clashes{
+    padding:10px 10px 11px;
+  }
+
+  .direct-clashes-title span{font-size:.55rem}
+  .direct-clashes-title small{font-size:.55rem}
+
+  .direct-clash-row{
+    grid-template-columns:28px minmax(0,1fr) 18px minmax(0,1fr);
+    gap:4px;
+    min-height:40px;
+    padding:5px 6px;
+  }
+
+  .direct-clash-gw{
+    width:27px;
+    height:24px;
+    font-size:.56rem;
+  }
+
+  .direct-clash-team img{
+    width:24px;
+    height:24px;
+  }
+
+  .direct-clash-team strong{
+    font-size:.61rem;
+  }
+
+  .direct-clash-empty{
+    font-size:.64rem;
+    line-height:1.3;
+  }
+
+  /* ROAD DIFFICULTY */
+  .road-summary{
+    margin-top:14px;
+    padding:14px 10px 10px;
+    border-radius:20px;
+  }
+
+  .section-heading h2{
+    font-size:1.8rem;
+  }
+
+  .section-heading p{
+    font-size:.72rem;
+    line-height:1.35;
+  }
+
+  .conference-road-grid{
+    display:block;
+  }
+
+  .conference-road-panel{
+    display:none;
+    border-radius:15px;
+  }
+
+  .conference-road-panel.mobile-active{
+    display:block;
+  }
+
+  .conference-road-panel>header{
+    min-height:64px;
+    padding:11px 13px;
+  }
+
+  .conference-road-panel header h3{
+    font-size:1.17rem;
+  }
+
+  .conference-road-list{
+    padding:5px 8px 8px;
+  }
+
+  .conference-road-row{
+    grid-template-columns:25px 34px minmax(0,1fr) 48px;
+    min-height:54px;
+    gap:6px;
+    padding:6px 3px;
+  }
+
+  .conference-road-row>img{
+    width:31px;
+    height:31px;
+  }
+
+  .conference-road-main>strong{
+    font-size:.70rem;
+  }
+
+  .road-edge-badge{
+    margin-left:3px;
+    padding:2px 4px;
+    font-size:.43rem;
+  }
+
+  .conference-road-score strong{
+    font-size:.92rem;
+  }
+
+  .conference-road-score span{
+    font-size:.49rem;
+  }
+
+  /* ROUND ROBIN: già pronto per quando arriverà */
+  .rr-grid{
+    display:block;
+  }
+
+  .playoff-race-panel,
+  .bubble-panel{
+    margin-bottom:12px;
+    border-radius:18px;
+  }
+
+  .panel-head{
+    min-height:72px;
+    padding:14px;
+  }
+
+  .panel-head h3{
+    font-size:1.45rem;
+  }
+
+  .overall-race{
+    padding:7px 9px 10px;
+  }
+
+  .overall-row{
+    grid-template-columns:28px 36px minmax(0,1fr) auto;
+    gap:6px;
+    padding:8px 4px;
+  }
+
+  .overall-row img{
+    width:32px;
+    height:32px;
+  }
+
+  .overall-row strong{
+    overflow:hidden;
+    font-size:.72rem;
+    white-space:nowrap;
+    text-overflow:ellipsis;
+  }
+
+  .overall-row .pts{
+    font-size:.71rem;
+  }
+
+  .overall-row .gap{
+    grid-column:3 / -1;
+    margin-top:-4px;
+    min-width:0;
+    text-align:left;
+    font-size:.58rem;
+  }
+
+  .bubble-panel #bubble-watch{
+    padding:9px;
+  }
+
+  .bubble-item{
+    padding:8px;
+    margin-bottom:6px;
+  }
+
+  .bubble-item img{
+    width:31px;
+    height:31px;
+  }
+
+  .bubble-item strong{font-size:.72rem}
+  .bubble-item span{font-size:.61rem}
+
+  /* TRANSITION / FINISHED */
+  .transition-card{
+    padding:24px 14px;
+    border-radius:20px;
+  }
+
+  .transition-card h2{
+    font-size:2rem;
+  }
+
+  .winner-card{
+    padding:12px;
+  }
+
+  .winner-card img{
+    width:46px;
+    height:46px;
+  }
+}
+
+@media(max-width:390px){
+  .race-page{padding-left:8px;padding-right:8px}
+  .race-hero{margin-left:-8px;margin-right:-8px}
+
+  .mobile-conference-tabs button{
+    font-size:.65rem;
+  }
+
+  .contender-card,
+  .contender-card.is-leader{
+    grid-template-columns:30px 40px minmax(0,1fr) 48px;
+    gap:6px;
+    padding-left:7px;
+    padding-right:7px;
+  }
+
+  .contender-rank{
+    width:29px;
+    height:29px;
+  }
+
+  .contender-card>.team-logo{
+    width:38px;
+    height:38px;
+  }
+
+  .contender-main>strong{
+    font-size:.82rem;
+  }
+
+  .form-dot{
+    width:16px;
+    height:16px;
+  }
+
+  .fixture-chip{
+    height:55px;
+  }
+}

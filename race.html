@@ -153,8 +153,19 @@
       </div>
     </div>
 
+    <div class="mobile-conference-tabs" role="tablist" aria-label="Seleziona Conference">
+      <button type="button" class="active" data-mobile-conference="league" aria-selected="true">
+        <span>CONF A</span>
+        Conference League
+      </button>
+      <button type="button" data-mobile-conference="championship" aria-selected="false">
+        <span>CONF B</span>
+        Championship
+      </button>
+    </div>
+
     <div class="conference-grid">
-      <article class="conference-panel league-panel">
+      <article class="conference-panel league-panel" data-conference-panel="league">
         <header class="conference-head">
           <div>
             <span>CONF A</span>
@@ -166,7 +177,7 @@
         <div id="conference-pulse-a" class="conference-pulse"></div>
       </article>
 
-      <article class="conference-panel championship-panel">
+      <article class="conference-panel championship-panel" data-conference-panel="championship">
         <header class="conference-head">
           <div>
             <span>CONF B</span>

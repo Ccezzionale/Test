@@ -679,6 +679,41 @@ function renderRoundRobinRoad(standings,fixtures,rows,powers){
   return remainingGws.length;
 }
 
+
+/* -------- MOBILE CONFERENCE SWITCHER -------- */
+function setMobileConference(which){
+  const selected=which==='championship'?'championship':'league';
+
+  document.querySelectorAll('[data-mobile-conference]').forEach(btn=>{
+    const active=btn.dataset.mobileConference===selected;
+    btn.classList.toggle('active',active);
+    btn.setAttribute('aria-selected',active?'true':'false');
+  });
+
+  document.querySelectorAll('[data-conference-panel]').forEach(panel=>{
+    panel.classList.toggle('mobile-active',panel.dataset.conferencePanel===selected);
+  });
+
+  document.querySelectorAll('.conference-road-panel').forEach(panel=>{
+    const isChamp=panel.classList.contains('is-championship');
+    const panelKey=isChamp?'championship':'league';
+    panel.classList.toggle('mobile-active',panelKey===selected);
+  });
+}
+
+function initMobileConferenceTabs(){
+  const tabs=[...document.querySelectorAll('[data-mobile-conference]')];
+  if(!tabs.length) return;
+
+  tabs.forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      setMobileConference(btn.dataset.mobileConference);
+    });
+  });
+
+  setMobileConference('league');
+}
+
 /* -------- PAGE STATE -------- */
 function detectState(rows,fixtures){
   const hasRRFixtures=fixtures.some(f=>clean(f.conference)==='Unificata');
@@ -752,6 +787,7 @@ async function initRace(){
       const a=renderConference('Conf A','race-conf-a','leader-a','conference-pulse-a',rows,fixtures,powers);
       const b=renderConference('Conf B','race-conf-b','leader-b','conference-pulse-b',rows,fixtures,powers);
       renderRoadSummary(a,b);
+      initMobileConferenceTabs();
     }else if(state==='transition'){
       setVisible('transition-view');
       renderTransition(rows);
