@@ -489,7 +489,6 @@ body.hall-of-fame-page {
   .hero-pill-row span { min-height: 34px; font-size: 0.84rem; }
   .overview-metrics,
   .champions-grid,
-  .trophy-showcase,
   .stat-grid { grid-template-columns: 1fr; }
   .hof-tabs { gap: 10px; }
   .hof-tab { min-height: 50px; font-size: 0.94rem; }
@@ -507,5 +506,252 @@ body.hall-of-fame-page {
   .overview-metrics,
   .hof-tabs { grid-template-columns: 1fr; }
   .metric-card { align-items: flex-start; }
-  .champions-grid { grid-template-columns: 1fr; }
+}
+
+/* ===== HALL OF FAME POLISH PASS ===== */
+
+/* I vecchi fogli Albo/Medagliere hanno regole generiche su strong e colori:
+   qui forziamo leggibilità nella tab Record. */
+.hall-of-fame-page .presence-row,
+.hall-of-fame-page .presence-row strong,
+.hall-of-fame-page .record-copy strong {
+  color: #ffffff !important;
+}
+
+.hall-of-fame-page .presence-row strong {
+  opacity: 1 !important;
+  text-shadow: 0 2px 10px rgba(0,0,0,.35);
+}
+
+/* Più profondità senza trasformare la Hall of Fame in un casinò del 2007. */
+.hall-of-fame-page .overview-bottom-grid > .overview-panel:nth-child(1) {
+  background:
+    radial-gradient(circle at 50% 10%, rgba(255, 202, 64, .11), transparent 30%),
+    linear-gradient(155deg, rgba(9, 46, 87, .96), rgba(2, 17, 36, .98));
+}
+
+.hall-of-fame-page .overview-bottom-grid > .overview-panel:nth-child(2) {
+  background:
+    radial-gradient(circle at 82% 12%, rgba(93, 162, 255, .12), transparent 28%),
+    linear-gradient(155deg, rgba(5, 38, 73, .96), rgba(2, 17, 36, .98));
+}
+
+.hall-of-fame-page .overview-bottom-grid > .overview-panel:nth-child(3) {
+  background:
+    radial-gradient(circle at 82% 12%, rgba(255, 212, 90, .11), transparent 28%),
+    linear-gradient(155deg, rgba(8, 35, 68, .96), rgba(2, 16, 34, .98));
+}
+
+/* Vetrina trofei: ora è navigazione vera verso l'Albo d'Oro. */
+.hall-of-fame-page .trophy-card-lite {
+  appearance: none;
+  width: 100%;
+  color: #fff;
+  font: inherit;
+  cursor: pointer;
+  overflow: hidden;
+  transition: transform .2s ease, border-color .2s ease, box-shadow .2s ease, background .2s ease;
+}
+
+.hall-of-fame-page .trophy-card-lite::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .2s ease;
+  background: radial-gradient(circle at 50% 42%, rgba(255, 212, 90, .16), transparent 43%);
+}
+
+.hall-of-fame-page .trophy-card-lite:hover,
+.hall-of-fame-page .trophy-card-lite:focus-visible {
+  transform: translateY(-4px);
+  border-color: rgba(255, 224, 132, .55);
+  box-shadow: 0 17px 30px rgba(0,0,0,.28), 0 0 24px rgba(255, 204, 71, .09);
+  outline: none;
+}
+
+.hall-of-fame-page .trophy-card-lite:hover::before,
+.hall-of-fame-page .trophy-card-lite:focus-visible::before {
+  opacity: 1;
+}
+
+.hall-of-fame-page .trophy-card-lite img {
+  position: relative;
+  z-index: 1;
+  transition: transform .22s ease, filter .22s ease;
+}
+
+.hall-of-fame-page .trophy-card-lite:hover img,
+.hall-of-fame-page .trophy-card-lite:focus-visible img {
+  transform: translateY(-5px) scale(1.04);
+  filter: drop-shadow(0 16px 18px rgba(0,0,0,.38)) drop-shadow(0 0 17px rgba(255,212,90,.18));
+}
+
+.hall-of-fame-page .trophy-name {
+  position: relative;
+  z-index: 1;
+  color: #fff !important;
+  font-weight: 900 !important;
+}
+
+.hall-of-fame-page .trophy-cta {
+  position: relative;
+  z-index: 1;
+  display: block;
+  margin-top: 6px;
+  color: #ffd96e;
+  font-size: .74rem;
+  font-weight: 800;
+  opacity: .72;
+  transition: opacity .18s ease, transform .18s ease;
+}
+
+.hall-of-fame-page .trophy-card-lite:hover .trophy-cta,
+.hall-of-fame-page .trophy-card-lite:focus-visible .trophy-cta {
+  opacity: 1;
+  transform: translateX(2px);
+}
+
+.hall-of-fame-page .major-badge {
+  position: absolute;
+  top: 9px;
+  right: 9px;
+  z-index: 2;
+  padding: 4px 7px;
+  border-radius: 999px;
+  color: #251500 !important;
+  background: linear-gradient(180deg, #ffedaa, #ffc22c);
+  border: 1px solid rgba(255,255,255,.45);
+  box-shadow: 0 6px 14px rgba(0,0,0,.2);
+  font-size: .58rem;
+  font-weight: 1000 !important;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+
+.hall-of-fame-page .trophy-card-lite.is-major {
+  min-height: 190px;
+  border-color: rgba(255, 212, 90, .32);
+  background:
+    radial-gradient(circle at 50% 35%, rgba(255, 208, 77, .12), transparent 45%),
+    rgba(3, 18, 36, .64);
+}
+
+.hall-of-fame-page .trophy-card-lite.is-major img {
+  max-height: 108px;
+}
+
+/* Glow appena diverso per competizione. */
+.hall-of-fame-page .trophy-theme-crashout:hover { box-shadow: 0 17px 30px rgba(0,0,0,.28), 0 0 24px rgba(196,74,255,.13); }
+.hall-of-fame-page .trophy-theme-highlander:hover { box-shadow: 0 17px 30px rgba(0,0,0,.28), 0 0 24px rgba(87,231,135,.12); }
+.hall-of-fame-page .trophy-theme-conference-league:hover { box-shadow: 0 17px 30px rgba(0,0,0,.28), 0 0 24px rgba(255,111,70,.13); }
+.hall-of-fame-page .trophy-theme-conference-championship:hover { box-shadow: 0 17px 30px rgba(0,0,0,.28), 0 0 24px rgba(92,197,255,.13); }
+.hall-of-fame-page .trophy-theme-round-robin:hover { box-shadow: 0 17px 30px rgba(0,0,0,.28), 0 0 24px rgba(66,159,255,.13); }
+.hall-of-fame-page .trophy-theme-supercoppa:hover { box-shadow: 0 17px 30px rgba(0,0,0,.28), 0 0 24px rgba(192,117,255,.13); }
+
+/* Evidenzia per un attimo la coppa raggiunta dalla Panoramica. */
+.hall-of-fame-page .blocco-competizione.hof-focus-card {
+  animation: hofFocusCard 1.8s ease;
+}
+
+@keyframes hofFocusCard {
+  0%, 100% { box-shadow: var(--shadow-card), inset 0 1px 0 rgba(255,255,255,.11); }
+  28%, 72% { box-shadow: 0 24px 60px rgba(0,0,0,.45), 0 0 0 2px rgba(255,215,105,.82), 0 0 38px rgba(255,196,43,.24); }
+}
+
+/* Le card dell'Albo diventano anchor target senza finire nascoste sotto la barra sticky. */
+.hall-of-fame-page .blocco-competizione {
+  scroll-margin-top: 150px;
+}
+
+/* Tab un po' più nette anche su desktop. */
+.hall-of-fame-page .hof-tab.is-active {
+  position: relative;
+}
+
+.hall-of-fame-page .hof-tab.is-active::after {
+  content: "";
+  position: absolute;
+  left: 18%;
+  right: 18%;
+  bottom: -1px;
+  height: 2px;
+  border-radius: 999px;
+  background: #fff1b8;
+  box-shadow: 0 0 10px rgba(255,235,165,.58);
+}
+
+@media (max-width: 760px) {
+  .hall-of-fame-page .hof-tabs-panel {
+    position: sticky;
+    top: 66px;
+    z-index: 50;
+    margin: 0 -2px 16px;
+    padding: 8px 2px;
+    background: linear-gradient(180deg, rgba(2,9,20,.97), rgba(2,9,20,.88));
+    backdrop-filter: blur(12px);
+    box-shadow: 0 10px 20px rgba(0,0,0,.18);
+  }
+
+  .hall-of-fame-page .hof-tabs {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    padding: 0 2px 4px;
+    scrollbar-width: none;
+    scroll-snap-type: x proximity;
+  }
+
+  .hall-of-fame-page .hof-tabs::-webkit-scrollbar { display: none; }
+
+  .hall-of-fame-page .hof-tab {
+    flex: 0 0 auto;
+    min-width: 126px;
+    min-height: 46px;
+    scroll-snap-align: start;
+  }
+
+  /* Ultimi campioni: carosello orizzontale, più vicino al mockup mobile. */
+  .hall-of-fame-page .champions-grid {
+    display: flex;
+    overflow-x: auto;
+    gap: 10px;
+    padding-bottom: 6px;
+    scroll-snap-type: x proximity;
+    scrollbar-width: none;
+  }
+
+  .hall-of-fame-page .champions-grid::-webkit-scrollbar { display: none; }
+
+  .hall-of-fame-page .champion-card {
+    flex: 0 0 190px;
+    scroll-snap-align: start;
+  }
+
+  /* Otto trofei, due per riga: compatto e leggibile. */
+  .hall-of-fame-page .trophy-showcase {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+
+  .hall-of-fame-page .trophy-card-lite,
+  .hall-of-fame-page .trophy-card-lite.is-major {
+    min-height: 158px;
+    padding: 13px 8px;
+  }
+
+  .hall-of-fame-page .trophy-card-lite img,
+  .hall-of-fame-page .trophy-card-lite.is-major img {
+    max-height: 82px;
+  }
+
+  .hall-of-fame-page .trophy-cta {
+    font-size: .68rem;
+  }
+}
+
+@media (max-width: 420px) {
+  .hall-of-fame-page .hof-tab { min-width: 116px; }
+  .hall-of-fame-page .trophy-card-lite,
+  .hall-of-fame-page .trophy-card-lite.is-major { min-height: 150px; }
 }
