@@ -1,0 +1,845 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hall of Fame</title>
+  <link rel="stylesheet" href="navbar.css">
+  <link rel="stylesheet" href="medagliere.css">
+  <link rel="stylesheet" href="albo.css">
+  <link rel="stylesheet" href="hall-of-fame.css">
+</head>
+<body class="hall-of-fame-page">
+  <nav class="site-nav">
+    <div class="nav-inner">
+      <div class="nav-left">
+        <span id="hamburger" class="hamburger" aria-label="Apri menu">☰</span>
+        <a href="index.html" class="brand-home" aria-label="Home">
+          <img src="icons/nav/home.webp" alt="" class="nav-home-icon">
+        </a>
+      </div>
+
+      <ul class="navbar" id="mainMenu">
+        <li class="dropdown">
+          <a href="#" class="toggle-submenu">Rose <span class="caret">▾</span></a>
+          <ul class="submenu">
+            <li><a href="rose.html">Rose Squadre</a></li>
+            <li><a href="franchigie.html">Franchigie</a></li>
+          </ul>
+        </li>
+
+        <li class="dropdown">
+          <a href="#" class="toggle-submenu">Draft <span class="caret">▾</span></a>
+          <ul class="submenu">
+            <li><a href="pre-draft.html"><img src="icons/nav/pre-draft.webp" class="menu-icon" alt="">Pre-Draft</a></li>
+            <li><a href="draft_championship.html"><img src="icons/nav/conf-championship.webp" class="menu-icon" alt="">Conf. Championship</a></li>
+            <li><a href="draft_conference.html"><img src="icons/nav/conf-league.webp" class="menu-icon" alt="">Conf. League</a></li>
+            <li><a href="dinamico-draft.html"><img src="icons/nav/draft-2026.webp" class="menu-icon" alt="">Draft 2027-28</a></li>
+          </ul>
+        </li>
+
+        <li class="dropdown competizioni">
+          <a href="#" class="toggle-submenu">Competizioni <span class="caret">▾</span></a>
+          <ul class="submenu">
+            <li><a href="classifica.html"><img src="icons/nav/classifiche.webp" class="menu-icon" alt="">Classifiche</a></li>
+            <li><a href="playoff.html"><img src="icons/nav/playoff.webp" class="menu-icon" alt="">Playoff</a></li>
+            <li><a href="arena.html"><img src="icons/nav/highlander.webp" class="menu-icon" alt="">Highlander</a></li>
+            <li><a href="crashoutcup.html"><img src="icons/nav/crashout-cup.webp" class="menu-icon" alt="">Crash Out Cup</a></li>
+            <li><a href="crashoutplayoff.html"><img src="icons/nav/crashout-playoff.webp" class="menu-icon" alt="">Crash Out Cup - Playoff</a></li>
+            <li><a href="supercoppa.html"><img src="icons/nav/supercoppa.webp" class="menu-icon" alt="">Supercoppa</a></li>
+            <li><a href="allstar.html"><img src="icons/nav/allstar.webp" class="menu-icon" alt="">All-Star Game</a></li>
+            <li><a href="statistiche.html"><img src="icons/nav/statistiche.webp" class="menu-icon" alt="">Statistiche</a></li>
+          </ul>
+        </li>
+
+        <li><a href="waiver.html">Waiver Wire</a></li>
+
+        <li class="dropdown">
+          <a href="hall-of-fame.html" class="toggle-submenu active-hof">Hall of Fame <span class="caret">▾</span></a>
+          <ul class="submenu">
+            <li><a href="#" data-tab-link="overview"><img src="icons/nav/albo-oro.webp" class="menu-icon" alt="">Panoramica</a></li>
+            <li><a href="#" data-tab-link="albo"><img src="icons/nav/albo-oro.webp" class="menu-icon" alt="">Albo d'Oro</a></li>
+            <li><a href="#" data-tab-link="medagliere"><img src="icons/nav/medagliere.webp" class="menu-icon" alt="">Medagliere</a></li>
+            <li><a href="#" data-tab-link="record"><img src="icons/nav/statistiche.webp" class="menu-icon" alt="">Record</a></li>
+          </ul>
+        </li>
+
+        <li><a href="regolamento.html">Regolamento</a></li>
+      </ul>
+
+      <div class="nav-right hero-actions">
+        <a id="trade-badge" href="trade-room.html" class="btn-hero trade-badge" aria-label="Trade Room">
+          <img src="icons/nav/trade-room.webp" class="action-icon" alt="">
+          <span class="btn-label">Trade Room</span>
+        </a>
+        <a id="login-btn" href="login.html" class="btn-hero" style="display:none;" aria-label="Login">
+          <img src="icons/nav/login-logout.webp" class="action-icon" alt="">
+          <span class="btn-label">Login</span>
+        </a>
+        <button id="logout-btn" type="button" class="btn-hero" style="display:none;" aria-label="Logout">
+          <img src="icons/nav/login-logout.webp" class="action-icon" alt="">
+          <span class="btn-label">Logout</span>
+        </button>
+        <button id="attiva-notifiche-btn" type="button" class="btn-hero warning" aria-label="Attiva notifiche">
+          <img src="icons/nav/notifications.webp" class="action-icon" alt="">
+          <span class="btn-label">Attiva notifiche</span>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <header class="hof-hero">
+    <div class="hof-hero__overlay"></div>
+    <div class="hof-hero__inner">
+      <div class="hero-kicker-hof">La storia della Lega degli Eroi</div>
+      <h1>Hall of Fame</h1>
+      <p class="hero-subtitle-hof">Campioni, rivalità, imprese e leggende del fantacalcio più eroico del multiverso.</p>
+      <div class="hero-pill-row">
+        <span>Campioni</span>
+        <span>Trofei</span>
+        <span>Medagliere</span>
+        <span>Record</span>
+      </div>
+    </div>
+  </header>
+
+  <main class="hof-page">
+    <section class="hof-tabs-panel">
+      <div class="hof-tabs" role="tablist" aria-label="Sezioni Hall of Fame">
+        <button class="hof-tab is-active" type="button" role="tab" data-tab="overview" aria-selected="true">Panoramica</button>
+        <button class="hof-tab" type="button" role="tab" data-tab="albo" aria-selected="false">Albo d'Oro</button>
+        <button class="hof-tab" type="button" role="tab" data-tab="medagliere" aria-selected="false">Medagliere</button>
+        <button class="hof-tab" type="button" role="tab" data-tab="record" aria-selected="false">Record</button>
+      </div>
+    </section>
+
+    <section class="hof-tab-panel is-active" id="tab-overview" role="tabpanel">
+      <div class="overview-metrics" id="overview-metrics"></div>
+
+      <section class="overview-panel">
+        <div class="overview-heading">
+          <div>
+            <h2>Ultimi campioni</h2>
+            <p>I vincitori più recenti delle competizioni principali.</p>
+          </div>
+        </div>
+        <div class="champions-grid" id="champions-grid"></div>
+      </section>
+
+      <div class="overview-bottom-grid">
+        <section class="overview-panel">
+          <div class="overview-heading">
+            <div>
+              <h2>Podio storico</h2>
+              <p>Le tre franchigie più vincenti nella storia della Lega.</p>
+            </div>
+          </div>
+          <div class="mini-podium" id="mini-podium"></div>
+        </section>
+
+        <section class="overview-panel">
+          <div class="overview-heading">
+            <div>
+              <h2>Vetrina dei trofei</h2>
+              <p>I trofei che definiscono la Hall of Fame.</p>
+            </div>
+          </div>
+          <div class="trophy-showcase" id="trophy-showcase"></div>
+        </section>
+
+        <section class="overview-panel">
+          <div class="overview-heading">
+            <div>
+              <h2>I record della Lega</h2>
+              <p>Numeri, imprese e piccole umiliazioni eterne.</p>
+            </div>
+          </div>
+          <div class="records-preview" id="records-preview"></div>
+        </section>
+      </div>
+    </section>
+
+    <section class="hof-tab-panel" id="tab-albo" role="tabpanel" hidden>
+      <main class="hall-container hof-embedded-hall">
+        <section class="blocchi-medagliere">
+          
+<!-- PLAYOFF -->
+<div class="blocco-competizione blocco-major blocco-playoff">
+<div class="card-heading">
+<h2>Playoff</h2>
+<span class="trophy-badge">Major Trophy</span>
+</div>
+<p class="card-desc">Solo i più forti arrivano fin qui. Una battaglia, un solo campione.</p>
+<div class="coppa-box">
+<!-- Sostituisci con la tua immagine playoff -->
+<img alt="Coppa Playoff" class="coppa-img" src="img/Playoffcup.png"/>
+</div>
+<div class="anno">
+<div class="titolo-anno" onclick="toggleAnno(this)">2025-2026</div>
+<div class="contenuto-anno">
+<ol>
+<li class="oro" data-pos="1"><img alt="Golden Knights" src="img/Golden Knights.webp"/> Golden Knights</li>
+<li class="argento" data-pos="2"><img alt="riverfilo" src="img/riverfilo.webp"/> riverfilo</li>
+<li class="bronzo" data-pos="3"><img alt="POKERMANTRA" src="img/POKERMANTRA.webp"/> POKERMANTRA</li>
+</ol>
+</div>
+</div>
+<div class="anno">
+<div class="titolo-anno" onclick="toggleAnno(this)">2024-2025</div>
+<div class="contenuto-anno">
+<ol>
+<li class="oro" data-pos="1"><img alt="Bayern Christiansen" src="img/Bayern Christiansen.webp"/> Bayern Christiansen</li>
+<li class="argento" data-pos="2"><img alt="Real Mimmo" src="img/Real Mimmo.png"/> Real Mimmo</li>
+<li class="bronzo" data-pos="3"><img alt="Ibla" src="img/Ibla.webp"/> Ibla</li>
+</ol>
+</div>
+</div>
+<div class="anno">
+<div class="titolo-anno" onclick="toggleAnno(this)">2023-2024</div>
+<div class="contenuto-anno">
+<ol>
+<li class="oro" data-pos="1"><img alt="Costantinobull" src="img/Costantinobull.png"/> Costantinobull</li>
+<li class="argento" data-pos="2"><img alt="Pollisti" src="img/Pollisti.png"/> Pollisti</li>
+<li class="bronzo" data-pos="3"><img alt="Bayern Christiansen" src="img/Bayern Christiansen.webp"/> Bayern Christiansen</li>
+</ol>
+</div>
+</div>
+<div class="anno">
+<div class="titolo-anno" onclick="toggleAnno(this)">2022-2023</div>
+<div class="contenuto-anno">
+<ol>
+<li class="oro" data-pos="1"><img alt="Pollisti" src="img/Pollisti.png"/> Pollisti</li>
+<li class="argento" data-pos="2"><img alt="I Cugini di Zampagna" src="img/I Cugini di Zampagna.png"/> I Cugini di Zampagna</li>
+<li class="bronzo" data-pos="3">Desperados / Real Mimmo</li>
+</ol>
+</div>
+</div>
+</div>
+<!-- CAMPIONATO -->
+<div class="blocco-competizione blocco-major blocco-campionato">
+<div class="card-heading">
+<h2>Campionato</h2>
+<span class="trophy-badge">Major Trophy</span>
+</div>
+<p class="card-desc">La costanza è la chiave della gloria. Una stagione, un vero campione.</p>
+<div class="coppa-box">
+<img alt="Coppa Campionato" class="coppa-img" src="img/campionatocup.webp"/>
+</div>
+<div class="anno">
+<div class="titolo-anno" onclick="toggleAnno(this)">2025-2026</div>
+<div class="contenuto-anno">
+<ol>
+<li class="oro" data-pos="1"><img alt="Golden Knights" src="img/Golden Knights.webp"/> Golden Knights</li>
+<li class="argento" data-pos="2"><img alt="Pandinicoccolosini" src="img/Pandinicoccolosini.webp"/> Pandinicoccolosini</li>
+<li class="bronzo" data-pos="3"><img alt="Fc Disoneste" src="img/FC Disoneste.webp"/> Fc Disoneste</li>
+</ol>
+</div>
+</div>
+<div class="anno">
+<div class="titolo-anno" onclick="toggleAnno(this)">2024-2025</div>
+<div class="contenuto-anno">
+<ol>
+<li class="oro" data-pos="1"><img alt="Rubinkebab" src="img/Rubinkebab.png"/> Rubinkebab</li>
+<li class="argento" data-pos="2"><img alt="Team Bartowski" src="img/Team Bartowski.webp"/> Team Bartowski</li>
+<li class="bronzo" data-pos="3"><img alt="Bayern Christiansen" src="img/Bayern Christiansen.webp"/> Bayern Christiansen</li>
+</ol>
+</div>
+</div>
+<div class="anno">
+<div class="titolo-anno" onclick="toggleAnno(this)">2023-2024</div>
+<div class="contenuto-anno">
+<ol>
+<li class="oro" data-pos="1"><img alt="Costantinobull" src="img/Costantinobull.png"/> Costantinobull</li>
+<li class="argento" data-pos="2"><img alt="Pollisti" src="img/Pollisti.png"/> Pollisti</li>
+<li class="bronzo" data-pos="3"><img alt="POKERMANTRA" src="img/POKERMANTRA.webp"/> POKERMANTRA</li>
+</ol>
+</div>
+</div>
+<div class="anno">
+<div class="titolo-anno" onclick="toggleAnno(this)">2022-2023</div>
+<div class="contenuto-anno">
+<ol>
+<li class="oro" data-pos="1"><img alt="Pollisti" src="img/Pollisti.png"/> Pollisti</li>
+<li class="argento" data-pos="2"><img alt="Desperados" src="img/Desperados.webp"/> Desperados</li>
+<li class="bronzo" data-pos="3"><img alt="I Cugini di Zampagna" src="img/I Cugini di Zampagna.png"/> I Cugini di Zampagna</li>
+</ol>
+</div>
+</div>
+</div>
+<!-- CRASH OUT CUP -->
+<div class="blocco-competizione blocco-crashout">
+<div class="card-heading"><h2>Crash Out Cup</h2></div>
+<div class="coppa-box">
+<!-- Sostituisci con la tua immagine Crash Out -->
+<img alt="Coppa Crash Out Cup" class="coppa-img" src="img/Crashoutcup.png"/>
+</div>
+<div class="anno">
+<div class="titolo-anno" onclick="toggleAnno(this)">2025-2026</div>
+<div class="contenuto-anno">
+<ol>
+<li class="oro" data-pos="1"><img alt="Golden Knights" src="img/Golden Knights.webp"/> Golden Knights</li>
+<li class="argento" data-pos="2"><img alt="Ibla" src="img/Ibla.webp"/> Ibla</li>
+</ol>
+</div>
+</div>
+</div>
+<!-- HIGHLANDER -->
+<div class="blocco-competizione blocco-epico">
+<div class="card-heading"><h2>Highlander Cup</h2></div>
+<div class="coppa-box coppa-box-highlander">
+<img alt="Coppa Highlander" class="coppa-img coppa-highlander" src="img/maglie/Higlandercup.webp"/>
+</div>
+<div class="anno">
+<div class="titolo-anno" onclick="toggleAnno(this)">2025-2026</div>
+<div class="contenuto-anno">
+<ol>
+<li class="oro" data-pos="1"><img alt="Golden Knights" src="img/Golden Knights.webp"/> Golden Knights</li>
+<li class="argento" data-pos="2"><img alt="Fc Disoneste" src="img/FC Disoneste.webp"/> Fc Disoneste</li>
+<li class="bronzo" data-pos="3"><img alt="Pandinicoccolosini" src="img/Pandinicoccolosini.webp"/> Pandinicoccolosini</li>
+</ol>
+</div>
+</div>
+<div class="anno">
+<div class="titolo-anno" onclick="toggleAnno(this)">2024-2025</div>
+<div class="contenuto-anno">
+<ol>
+<li class="oro" data-pos="1"><img alt="Team Bartowski" src="img/Team Bartowski.webp"/> Team Bartowski</li>
+<li class="argento" data-pos="2"><img alt="Rubinkebab" src="img/Rubinkebab.png"/> Rubinkebab</li>
+<li class="bronzo" data-pos="3"><img alt="Union Librino" src="img/Union Librino.png"/> Union Librino</li>
+</ol>
+</div>
+</div>
+<div class="anno">
+<div class="titolo-anno" onclick="toggleAnno(this)">2023-2024</div>
+<div class="contenuto-anno">
+<ol>
+<li class="oro" data-pos="1"><img alt="Real Mimmo" src="img/Real Mimmo.png"/> Real Mimmo</li>
+<li class="argento" data-pos="2"><img alt="Desperados" src="img/Desperados.webp"/> Desperados</li>
+<li class="bronzo" data-pos="3"><img alt="Pollisti" src="img/Pollisti.png"/> Pollisti</li>
+</ol>
+</div>
+</div>
+</div>
+<!-- CONFERENCE LEAGUE -->
+<div class="blocco-competizione blocco-conference-league">
+<div class="card-heading"><h2>Conference League</h2></div>
+<div class="coppa-box">
+<!-- Sostituisci con la tua immagine Conference League -->
+<img alt="Coppa Conference League" class="coppa-img" src="img/ConferenceLeaguecup.png"/>
+</div>
+<div class="anno">
+<div class="titolo-anno" onclick="toggleAnno(this)">2025-2026</div>
+<div class="contenuto-anno">
+<ol>
+<li class="oro" data-pos="1"><img alt="Bayern Christiansen" src="img/Bayern Christiansen.webp"/> Bayern Christiansen</li>
+<li class="argento" data-pos="2"><img alt="Minnesode Timberland" src="img/Minnesode Timberland.webp"/> Minnesode Timberland</li>
+<li class="bronzo" data-pos="3"><img alt="Desperados" src="img/Desperados.webp"/> Desperados</li>
+</ol>
+</div>
+</div>
+<div class="anno">
+<div class="titolo-anno" onclick="toggleAnno(this)">2024-2025</div>
+<div class="contenuto-anno">
+<ol>
+<li class="oro" data-pos="1"><img alt="Team Bartowski" src="img/Team Bartowski.webp"/> Team Bartowski</li>
+<li class="argento" data-pos="2"><img alt="Minnesode Timberland" src="img/Minnesode Timberland.webp"/> Minnesode Timberland</li>
+<li class="bronzo" data-pos="3"><img alt="Bayern Christiansen" src="img/Bayern Christiansen.webp"/> Bayern Christiansen</li>
+</ol>
+</div>
+</div>
+<div class="anno">
+<div class="titolo-anno" onclick="toggleAnno(this)">2023-2024</div>
+<div class="contenuto-anno">
+<ol>
+<li class="oro" data-pos="1"><img alt="MinneSota Snakes" src="img/MinneSota Snakes.webp"/> MinneSota Snakes</li>
+<li class="argento" data-pos="2"><img alt="3 Amici al Var" src="img/3 Amici al Var.png"/> 3 Amici al Var</li>
+<li class="bronzo" data-pos="3"><img alt="Team Bartowski" src="img/Team Bartowski.webp"/> Team Bartowski</li>
+</ol>
+</div>
+</div>
+</div>
+<!-- CONFERENCE CHAMPIONSHIP -->
+<div class="blocco-competizione blocco-conference-championship">
+<div class="card-heading"><h2>Conference Championship</h2></div>
+<div class="coppa-box">
+<!-- Sostituisci con la tua immagine Conference Championship -->
+<img alt="Coppa Conference Championship" class="coppa-img" src="img/ConferenceChampionshipcup.png"/>
+</div>
+<div class="anno">
+<div class="titolo-anno" onclick="toggleAnno(this)">2025-2026</div>
+<div class="contenuto-anno">
+<ol>
+<li class="oro" data-pos="1"><img alt="Golden Knights" src="img/Golden Knights.webp"/> Golden Knights</li>
+<li class="argento" data-pos="2"><img alt="Fc Disoneste" src="img/Fc Disoneste.webp"/> Fc Disoneste</li>
+<li class="bronzo" data-pos="3"><img alt="riverfilo" src="img/riverfilo.webp"/> riverfilo</li>
+</ol>
+</div>
+</div>
+<div class="anno">
+<div class="titolo-anno" onclick="toggleAnno(this)">2024-2025</div>
+<div class="contenuto-anno">
+<ol>
+<li class="oro" data-pos="1"><img alt="Rubinkebab" src="img/Rubinkebab.png"/> Rubinkebab</li>
+<li class="argento" data-pos="2"><img alt="Real Mimmo" src="img/Real Mimmo.png"/> Real Mimmo</li>
+<li class="bronzo" data-pos="3"><img alt="Giody" src="img/Giody.png"/> Giody</li>
+</ol>
+</div>
+</div>
+<div class="anno">
+<div class="titolo-anno" onclick="toggleAnno(this)">2023-2024</div>
+<div class="contenuto-anno">
+<ol>
+<li class="oro" data-pos="1"><img alt="Costantinobull" src="img/Costantinobull.png"/> Costantinobull</li>
+<li class="argento" data-pos="2"><img alt="POKERMANTRA" src="img/POKERMANTRA.webp"/> POKERMANTRA</li>
+<li class="bronzo" data-pos="3"><img alt="Real Mimmo" src="img/Real Mimmo.png"/> Real Mimmo</li>
+</ol>
+</div>
+</div>
+</div>
+<!-- ROUND ROBIN -->
+<div class="blocco-competizione blocco-round-robin">
+<div class="card-heading"><h2>Round Robin</h2></div>
+<div class="coppa-box">
+<img alt="Coppa Round Robin" class="coppa-img" src="img/Roundrobincup.png"/>
+</div>
+<div class="anno">
+<div class="titolo-anno" onclick="toggleAnno(this)">2025-2026</div>
+<div class="contenuto-anno">
+<ol>
+<li class="oro" data-pos="1"><img alt="Pandinicoccolosini" src="img/Pandinicoccolosini.webp"/> Pandinicoccolosini</li>
+<li class="argento" data-pos="2"><img alt="Rubinkebab" src="img/Rubinkebab.png"/> Rubinkebab</li>
+<li class="bronzo" data-pos="3"><img alt="MinneSota Snakes" src="img/MinneSota Snakes.webp"/> MinneSota Snakes</li>
+</ol>
+</div>
+</div>
+<div class="anno">
+<div class="titolo-anno" onclick="toggleAnno(this)">2024-2025</div>
+<div class="contenuto-anno">
+<ol>
+<li class="oro" data-pos="1"><img alt="Rubinkebab" src="img/Rubinkebab.png"/> Rubinkebab</li>
+<li class="argento" data-pos="2"><img alt="Ibla" src="img/Ibla.webp"/> Ibla</li>
+<li class="bronzo" data-pos="3"><img alt="Bayern Christiansen" src="img/Bayern Christiansen.webp"/> Bayern Christiansen</li>
+</ol>
+</div>
+</div>
+</div>
+<!-- SUPERCOPPA -->
+<div class="blocco-competizione blocco-supercoppa">
+<div class="card-heading"><h2>Supercoppa degli Eroi</h2></div>
+<div class="coppa-box">
+<!-- Sostituisci con la tua immagine Supercoppa -->
+<img alt="Coppa Supercoppa" class="coppa-img" src="img/Supercoppacup.webp"/>
+</div>
+<div class="anno">
+<div class="titolo-anno" onclick="toggleAnno(this)">2025-2026</div>
+<div class="contenuto-anno">
+<ol>
+<li class="oro" data-pos="1"><img alt="Rubinkebab" src="img/Rubinkebab.png"/> Rubinkebab</li>
+<li class="argento" data-pos="2"><img alt="Bayern Christiansen" src="img/Bayern Christiansen.webp"/> Bayern Christiansen</li>
+</ol>
+</div>
+</div>
+</div>
+
+        </section>
+      </main>
+    </section>
+
+    <section class="hof-tab-panel" id="tab-medagliere" role="tabpanel" hidden>
+      <main class="hall-wrapper hof-medagliere-wrapper">
+        <section class="podio-section hall-panel">
+          <div class="section-title">
+            <span class="section-icon">👑</span>
+            <span>Vertice del Medagliere</span>
+          </div>
+          <div class="podio" id="podio"></div>
+        </section>
+
+        <section class="tabella-section hall-panel">
+          <div class="section-title">
+            <span class="section-icon">🏅</span>
+            <span>Medagliere Storico</span>
+          </div>
+
+          <div class="table-shell">
+            <table id="medagliere">
+              <thead>
+                <tr>
+                  <th>Pos</th>
+                  <th>Squadra</th>
+                  <th>🥇 Oro</th>
+                  <th>🥈 Argento</th>
+                  <th>🥉 Bronzo</th>
+                  <th>🏆 Totale</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+            <div class="accordion" id="accordion"></div>
+          </div>
+        </section>
+      </main>
+    </section>
+
+    <section class="hof-tab-panel" id="tab-record" role="tabpanel" hidden>
+      <section class="records-layout">
+        <article class="record-panel wide-panel">
+          <div class="overview-heading">
+            <div>
+              <h2>Record principali</h2>
+              <p>I migliori (e peggiori) numeri della storia fin qui.</p>
+            </div>
+          </div>
+          <div class="record-list" id="record-list"></div>
+        </article>
+
+        <article class="record-panel">
+          <div class="overview-heading">
+            <div>
+              <h2>Hall of stats</h2>
+              <p>Una sintesi rapida della Lega.</p>
+            </div>
+          </div>
+          <div class="stat-grid" id="record-stat-grid"></div>
+        </article>
+
+        <article class="record-panel">
+          <div class="overview-heading">
+            <div>
+              <h2>Più presenti sul podio</h2>
+              <p>Somma di ori, argenti e bronzi.</p>
+            </div>
+          </div>
+          <div class="podium-presence" id="podium-presence"></div>
+        </article>
+      </section>
+    </section>
+  </main>
+
+  <script>
+    const medagliere = [
+      { squadra: "Rubinkebab", oro: 4, argento: 2, bronzo: 0 },
+      { squadra: "Costantinobull", oro: 3, argento: 0, bronzo: 0 },
+      { squadra: "Team Bartowski", oro: 2, argento: 1, bronzo: 1 },
+      { squadra: "Pollisti", oro: 2, argento: 2, bronzo: 1 },
+      { squadra: "Bayern Christiansen", oro: 2, argento: 2, bronzo: 3 },
+      { squadra: "Real Mimmo", oro: 1, argento: 2, bronzo: 2 },
+      { squadra: "MinneSota Snakes", oro: 1, argento: 0, bronzo: 1 },
+      { squadra: "Desperados", oro: 0, argento: 2, bronzo: 2 },
+      { squadra: "I Cugini di Zampagna", oro: 0, argento: 1, bronzo: 1 },
+      { squadra: "Ibla", oro: 0, argento: 2, bronzo: 1 },
+      { squadra: "PokerMantra", oro: 0, argento: 1, bronzo: 2 },
+      { squadra: "3 Amici al Var", oro: 0, argento: 1, bronzo: 0 },
+      { squadra: "Giody", oro: 0, argento: 0, bronzo: 1 },
+      { squadra: "Union Librino", oro: 0, argento: 0, bronzo: 1 },
+      { squadra: "Minnesode Timberland", oro: 0, argento: 2, bronzo: 1 },
+      { squadra: "Golden Knights", oro: 5, argento: 0, bronzo: 0 },
+      { squadra: "riverfilo", oro: 0, argento: 2, bronzo: 0 },
+      { squadra: "Pandinicoccolosini", oro: 1, argento: 1, bronzo: 1 },
+      { squadra: "Fc Disoneste", oro: 0, argento: 1, bronzo: 2 },
+    ];
+
+    const latestChampions = [
+      { competition: 'Campionato', season: '2025-2026', winner: 'Golden Knights', trophy: 'img/campionatocup.webp' },
+      { competition: 'Playoff', season: '2025-2026', winner: 'Golden Knights', trophy: 'img/Playoffcup.png' },
+      { competition: 'Conference League', season: '2025-2026', winner: 'Bayern Christiansen', trophy: 'img/ConferenceLeaguecup.png' },
+      { competition: 'Conference Championship', season: '2025-2026', winner: 'Golden Knights', trophy: 'img/ConferenceChampionshipcup.png' },
+      { competition: 'Highlander', season: '2025-2026', winner: 'Golden Knights', trophy: 'img/maglie/Higlandercup.webp' },
+      { competition: 'Supercoppa', season: '2025-2026', winner: 'Rubinkebab', trophy: 'img/Supercoppacup.webp' },
+    ];
+
+    const trophyShowcase = [
+      { name: 'Campionato', trophy: 'img/campionatocup.webp' },
+      { name: 'Playoff', trophy: 'img/Playoffcup.png' },
+      { name: 'Crash Out Cup', trophy: 'img/Crashoutcup.png' },
+      { name: 'Highlander', trophy: 'img/maglie/Higlandercup.webp' },
+      { name: 'Conference Championship', trophy: 'img/ConferenceChampionshipcup.png' },
+      { name: 'Supercoppa', trophy: 'img/Supercoppacup.webp' },
+    ];
+
+    medagliere.forEach(s => {
+      s.totale = s.oro + s.argento + s.bronzo;
+    });
+
+    medagliere.sort((a, b) => {
+      if (b.oro !== a.oro) return b.oro - a.oro;
+      if (b.argento !== a.argento) return b.argento - a.argento;
+      if (b.bronzo !== a.bronzo) return b.bronzo - a.bronzo;
+      return b.totale - a.totale;
+    });
+
+    const getLogoPath = squadra => `img/${squadra}.webp`;
+    const topWinner = medagliere[0];
+    const totalGold = medagliere.reduce((sum, team) => sum + team.oro, 0);
+    const totalSilver = medagliere.reduce((sum, team) => sum + team.argento, 0);
+    const totalBronze = medagliere.reduce((sum, team) => sum + team.bronzo, 0);
+    const totalMedals = medagliere.reduce((sum, team) => sum + team.totale, 0);
+
+    function renderOverview() {
+      const metrics = document.getElementById('overview-metrics');
+      metrics.innerHTML = `
+        <article class="metric-card">
+          <div class="metric-icon-wrap"><img src="${getLogoPath(topWinner.squadra)}" alt="${topWinner.squadra}"></div>
+          <div>
+            <span class="metric-label">Più vincente</span>
+            <strong class="metric-value">${topWinner.squadra}</strong>
+            <small>${topWinner.oro} titoli</small>
+          </div>
+        </article>
+        <article class="metric-card">
+          <div class="metric-emoji">🏆</div>
+          <div>
+            <span class="metric-label">Trofei assegnati</span>
+            <strong class="metric-value">${totalGold}</strong>
+            <small>ori nella storia della Lega</small>
+          </div>
+        </article>
+        <article class="metric-card">
+          <div class="metric-emoji">🥇</div>
+          <div>
+            <span class="metric-label">Medaglie totali</span>
+            <strong class="metric-value">${totalMedals}</strong>
+            <small>podi registrati finora</small>
+          </div>
+        </article>
+        <article class="metric-card">
+          <div class="metric-emoji">🛡️</div>
+          <div>
+            <span class="metric-label">Franchigie premiate</span>
+            <strong class="metric-value">${medagliere.length}</strong>
+            <small>squadre già entrate nella storia</small>
+          </div>
+        </article>
+      `;
+
+      const championsGrid = document.getElementById('champions-grid');
+      championsGrid.innerHTML = latestChampions.map(item => `
+        <article class="champion-card">
+          <div class="champion-trophy"><img src="${item.trophy}" alt="${item.competition}"></div>
+          <div class="champion-copy">
+            <span class="champion-competition">${item.competition}</span>
+            <span class="champion-season">${item.season}</span>
+            <div class="champion-team-wrap">
+              <img src="${getLogoPath(item.winner)}" alt="${item.winner}">
+              <strong>${item.winner}</strong>
+            </div>
+          </div>
+        </article>
+      `).join('');
+
+      const miniPodium = document.getElementById('mini-podium');
+      miniPodium.innerHTML = medagliere.slice(0, 3).map((team, index) => `
+        <article class="mini-podium-card position-${index + 1}">
+          <span class="mini-rank">#${index + 1}</span>
+          <img src="${getLogoPath(team.squadra)}" alt="${team.squadra}">
+          <strong>${team.squadra}</strong>
+          <small>${team.oro} ori · ${team.totale} podi</small>
+        </article>
+      `).join('');
+
+      const trophyGrid = document.getElementById('trophy-showcase');
+      trophyGrid.innerHTML = trophyShowcase.map(item => `
+        <article class="trophy-card-lite">
+          <img src="${item.trophy}" alt="${item.name}">
+          <span>${item.name}</span>
+        </article>
+      `).join('');
+
+      const previewRecords = [
+        { label: 'Più titoli', team: medagliere[0].squadra, value: `${medagliere[0].oro}` },
+        { label: 'Più medaglie', team: medagliere.slice().sort((a,b) => b.totale - a.totale)[0].squadra, value: `${medagliere.slice().sort((a,b) => b.totale - a.totale)[0].totale}` },
+        { label: 'Più argenti', team: medagliere.slice().sort((a,b) => b.argento - a.argento)[0].squadra, value: `${medagliere.slice().sort((a,b) => b.argento - a.argento)[0].argento}` },
+        { label: 'Più bronzi', team: medagliere.slice().sort((a,b) => b.bronzo - a.bronzo)[0].squadra, value: `${medagliere.slice().sort((a,b) => b.bronzo - a.bronzo)[0].bronzo}` },
+      ];
+      document.getElementById('records-preview').innerHTML = previewRecords.map(item => `
+        <div class="preview-record-row">
+          <div>
+            <span>${item.label}</span>
+            <strong>${item.team}</strong>
+          </div>
+          <em>${item.value}</em>
+        </div>
+      `).join('');
+    }
+
+    function renderMedaglierePage() {
+      const tbody = document.querySelector('#medagliere tbody');
+      const accordion = document.getElementById('accordion');
+      const podio = document.getElementById('podio');
+      if (!tbody || !accordion || !podio) return;
+
+      tbody.innerHTML = '';
+      accordion.innerHTML = '';
+      podio.innerHTML = '';
+
+      const podioOrder = [1, 0, 2];
+      podioOrder.forEach(index => {
+        const s = medagliere[index];
+        if (!s) return;
+        const rank = index + 1;
+        const rankClass = rank === 1 ? 'first' : rank === 2 ? 'second' : 'third';
+        const card = document.createElement('div');
+        card.className = `podio-card ${rankClass}`;
+        card.innerHTML = `
+          <div class="podio-rank">${rank}°</div>
+          <div class="podio-glow"></div>
+          <img src="${getLogoPath(s.squadra)}" alt="${s.squadra}" class="podio-logo">
+          <div class="podio-team">${s.squadra}</div>
+          <div class="podio-stats" aria-label="Medaglie vinte">
+            <span class="stat-pill oro"><span>🥇</span><strong>${s.oro}</strong></span>
+            <span class="stat-pill argento"><span>🥈</span><strong>${s.argento}</strong></span>
+            <span class="stat-pill bronzo"><span>🥉</span><strong>${s.bronzo}</strong></span>
+          </div>
+          <div class="podio-total"><span>🏆</span> Totale trofei: <strong>${s.totale}</strong></div>
+        `;
+        podio.appendChild(card);
+      });
+
+      medagliere.forEach((s, i) => {
+        const rank = i + 1;
+        const topClass = i === 0 ? 'top1' : i === 1 ? 'top2' : i === 2 ? 'top3' : '';
+        const logoPath = getLogoPath(s.squadra);
+        const tr = document.createElement('tr');
+        if (topClass) tr.classList.add(topClass);
+        tr.innerHTML = `
+          <td><span class="rank-badge ${topClass || 'rank-normal'}">${rank}</span></td>
+          <td>
+            <div class="squadra-wrapper">
+              <img src="${logoPath}" alt="${s.squadra}" class="logo-squadra">
+              <span class="nome-squadra">${s.squadra}</span>
+            </div>
+          </td>
+          <td>${s.oro}</td>
+          <td>${s.argento}</td>
+          <td>${s.bronzo}</td>
+          <td><span class="totale-pill">${s.totale}</span></td>
+        `;
+        tbody.appendChild(tr);
+
+        const acc = document.createElement('div');
+        acc.className = `accordion-item ${topClass}`.trim();
+        acc.innerHTML = `
+          <button class="accordion-header" type="button" aria-expanded="false">
+            <div class="accordion-left">
+              <span class="rank-badge ${topClass || 'rank-normal'}">${rank}</span>
+              <img src="${logoPath}" alt="${s.squadra}">
+              <div>
+                <div class="accordion-rank">Posizione #${rank}</div>
+                <div class="accordion-team">${s.squadra}</div>
+              </div>
+            </div>
+            <div class="accordion-total">🏆 ${s.totale}</div>
+          </button>
+          <div class="accordion-content">
+            <div class="mobile-stat-row"><span>🥇 Oro</span><strong>${s.oro}</strong></div>
+            <div class="mobile-stat-row"><span>🥈 Argento</span><strong>${s.argento}</strong></div>
+            <div class="mobile-stat-row"><span>🥉 Bronzo</span><strong>${s.bronzo}</strong></div>
+            <div class="mobile-stat-row total-row"><span>🏆 Totale</span><strong>${s.totale}</strong></div>
+          </div>
+        `;
+        accordion.appendChild(acc);
+      });
+
+      document.querySelectorAll('.accordion-header').forEach(header => {
+        header.addEventListener('click', () => {
+          const item = header.parentElement;
+          const isOpen = item.classList.toggle('open');
+          header.setAttribute('aria-expanded', String(isOpen));
+        });
+      });
+    }
+
+    function renderRecordTab() {
+      const recordList = document.getElementById('record-list');
+      const recordStatGrid = document.getElementById('record-stat-grid');
+      const podiumPresence = document.getElementById('podium-presence');
+      if (!recordList || !recordStatGrid || !podiumPresence) return;
+
+      const mostTotal = medagliere.slice().sort((a,b) => b.totale - a.totale)[0];
+      const mostSilver = medagliere.slice().sort((a,b) => b.argento - a.argento)[0];
+      const mostBronze = medagliere.slice().sort((a,b) => b.bronzo - a.bronzo)[0];
+      const bestWithoutGold = medagliere.filter(team => team.oro === 0).sort((a,b) => b.totale - a.totale)[0];
+
+      const records = [
+        { title: 'Più titoli', team: topWinner.squadra, value: `${topWinner.oro} ori`, icon: '👑' },
+        { title: 'Più medaglie complessive', team: mostTotal.squadra, value: `${mostTotal.totale} podi`, icon: '🏅' },
+        { title: 'Più argenti', team: mostSilver.squadra, value: `${mostSilver.argento} argenti`, icon: '🥈' },
+        { title: 'Più bronzi', team: mostBronze.squadra, value: `${mostBronze.bronzo} bronzi`, icon: '🥉' },
+        { title: 'Migliore senza ori', team: bestWithoutGold.squadra, value: `${bestWithoutGold.totale} podi senza titoli`, icon: '🔥' },
+      ];
+      recordList.innerHTML = records.map(item => `
+        <div class="record-row">
+          <div class="record-icon">${item.icon}</div>
+          <div class="record-copy">
+            <span>${item.title}</span>
+            <strong>${item.team}</strong>
+          </div>
+          <div class="record-value">${item.value}</div>
+        </div>
+      `).join('');
+
+      recordStatGrid.innerHTML = `
+        <div class="simple-stat-card"><span>Ori assegnati</span><strong>${totalGold}</strong></div>
+        <div class="simple-stat-card"><span>Argenti assegnati</span><strong>${totalSilver}</strong></div>
+        <div class="simple-stat-card"><span>Bronzi assegnati</span><strong>${totalBronze}</strong></div>
+        <div class="simple-stat-card"><span>Squadre a podio</span><strong>${medagliere.length}</strong></div>
+      `;
+
+      podiumPresence.innerHTML = medagliere.slice().sort((a,b) => b.totale - a.totale).slice(0, 8).map((team, idx) => `
+        <div class="presence-row">
+          <span class="presence-rank">#${idx + 1}</span>
+          <img src="${getLogoPath(team.squadra)}" alt="${team.squadra}">
+          <strong>${team.squadra}</strong>
+          <em>${team.totale}</em>
+        </div>
+      `).join('');
+    }
+
+    function toggleAnno(element) {
+      const anno = element.closest('.anno');
+      const isOpen = anno.classList.toggle('attivo');
+      element.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+    }
+
+    function activateTab(tabName) {
+      document.querySelectorAll('.hof-tab').forEach(btn => {
+        const active = btn.dataset.tab === tabName;
+        btn.classList.toggle('is-active', active);
+        btn.setAttribute('aria-selected', active ? 'true' : 'false');
+      });
+      document.querySelectorAll('.hof-tab-panel').forEach(panel => {
+        const active = panel.id === `tab-${tabName}`;
+        panel.classList.toggle('is-active', active);
+        panel.hidden = !active;
+      });
+      const url = new URL(window.location);
+      url.hash = tabName;
+      history.replaceState(null, '', url);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    renderOverview();
+    renderMedaglierePage();
+    renderRecordTab();
+
+    document.querySelectorAll('.hof-tab').forEach(button => {
+      button.addEventListener('click', () => activateTab(button.dataset.tab));
+    });
+
+    document.querySelectorAll('[data-tab-link]').forEach(link => {
+      link.addEventListener('click', (event) => {
+        event.preventDefault();
+        activateTab(link.dataset.tabLink);
+      });
+    });
+
+    const initialTab = window.location.hash.replace('#', '');
+    if (['overview', 'albo', 'medagliere', 'record'].includes(initialTab)) {
+      activateTab(initialTab);
+    }
+  </script>
+
+  <script src="mobile-nav.js"></script>
+  <script src="navbar.js"></script>
+</body>
+</html>
