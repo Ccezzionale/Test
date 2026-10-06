@@ -1638,3 +1638,70 @@ body.match-center-page {
     font-size:1.55rem !important;
   }
 }
+
+
+/* =========================================================
+   MATCH CENTER V8 · sposta matchup più a sinistra
+   per non coprire la mascotte del banner
+   ========================================================= */
+
+.mc-matchup-strip{
+  left: 44% !important;
+  transform: translateX(-50%) !important;
+  width: min(760px, calc(100% - 320px)) !important;
+}
+
+.mc-versus{
+  grid-template-columns: minmax(0,1fr) 92px minmax(0,1fr) !important;
+  gap: 20px !important;
+}
+
+.mc-team-home{
+  justify-self: start;
+}
+
+.mc-team-away{
+  justify-self: end;
+}
+
+.mc-team img{
+  width: clamp(90px, 8vw, 112px) !important;
+  height: clamp(90px, 8vw, 112px) !important;
+}
+
+@media (max-width: 1100px){
+  .mc-matchup-strip{
+    left: 42.5% !important;
+    width: min(700px, calc(100% - 260px)) !important;
+  }
+}
+
+@media (max-width: 900px){
+  .mc-matchup-strip{
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    width: calc(100% - 60px) !important;
+  }
+}
+
+@media (max-width:760px){
+  .mc-matchup-strip{
+    width: calc(100% - 42px) !important;
+  }
+
+  .mc-versus{
+    grid-template-columns:minmax(0,1fr) 74px minmax(0,1fr) !important;
+    gap:10px !important;
+  }
+}
+
+@media (max-width:390px){
+  .mc-matchup-strip{
+    width: calc(100% - 26px) !important;
+  }
+
+  .mc-versus{
+    grid-template-columns:minmax(0,1fr) 60px minmax(0,1fr) !important;
+    gap:6px !important;
+  }
+}
