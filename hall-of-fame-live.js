@@ -12,7 +12,8 @@ const COMPETITIONS = [
     name: 'Playoff',
     target: 'albo-playoff',
     trophy: 'img/Playoffcup.png',
-    liveSource: null
+    liveSource: 'playoff',
+    medalPlaces: 3
   },
   {
     key: 'campionato',
@@ -63,7 +64,8 @@ const COMPETITIONS = [
     name: 'Supercoppa degli Eroi',
     target: 'albo-supercoppa',
     trophy: 'img/Supercoppacup.webp',
-    liveSource: null
+    liveSource: 'supercoppa',
+    medalPlaces: 2
   }
 ];
 
@@ -71,6 +73,8 @@ const COMPETITION_MAP = new Map(COMPETITIONS.map(item => [item.key, item]));
 
 const TEAM_LOGOS = {
   '3 Amici al Var': 'img/3 Amici al Var.png',
+  'Atlético Leon': 'img/Atlético Leon.webp',
+  'Athletic Pongao': 'img/Athletic Pongao.webp',
   'Bayern Christiansen': 'img/Bayern Christiansen.webp',
   'Costantinobull': 'img/Costantinobull.png',
   'Desperados': 'img/Desperados.webp',
@@ -80,6 +84,10 @@ const TEAM_LOGOS = {
   'Golden Knights': 'img/Golden Knights.webp',
   'I Cugini di Zampagna': 'img/I Cugini di Zampagna.png',
   'Ibla': 'img/Ibla.webp',
+  'Fantaugusta': 'img/Fantaugusta.webp',
+  'Eintracht Franco 126': 'img/Eintracht Franco 126.webp',
+  'Wildboys 78': 'img/wildboys78.webp',
+  'Minnesota Snakes': 'img/MinneSota Snakes.webp',
   'MinneSota Snakes': 'img/MinneSota Snakes.webp',
   'Minnesode Timberland': 'img/Minnesode Timberland.webp',
   'POKERMANTRA': 'img/POKERMANTRA.webp',
@@ -104,7 +112,11 @@ let adminCache = {
   crashoutSeeds: [],
   crashoutScores: [],
   crashoutRivalry: [],
-  crashoutError: null
+  crashoutError: null,
+  playoffResults: [],
+  playoffError: null,
+  supercoppaState: null,
+  supercoppaError: null
 };
 
 function escapeHtml(value) {
@@ -710,6 +722,188 @@ function buildCrashoutBracket(seeds, scoreMap) {
   return [...r1, ...qf, ...sf, final];
 }
 
+function hasNumericScore(value) {
+  return value !== '' && value !== null && value !== undefined && Number.isFinite(Number(value));
+}
+
+function playoffWinner(match, scoreMap) {
+  if (!match) return null;
+  const score = scoreMap.get(match.id);
+  if (!score || !hasNumericScore(score.home) || !hasNumericScore(score.away)) return null;
+
+  const homeScore = Number(score.home);
+  const awayScore = Number(score.away);
+  if (homeScore > awayScore) return match.home;
+  if (awayScore > homeScore) return match.away;
+
+  // Wild Card e Quarti: in caso di pareggio passa il seed migliore,
+  // esattamente come nella pagina Playoff.
+  if (match.id.startsWith('WC') || match.id.startsWith('Q')) {
+    const homeSeed = Number(match.home?.seed);
+    const awaySeed = Number(match.away?.seed);
+    if (Number.isFinite(homeSeed) && Number.isFinite(awaySeed)) {
+      return homeSeed < awaySeed ? match.home : match.away;
+    }
+  }
+
+  return null;
+}
+
+function playoffLoser(match, scoreMap) {
+  const winner = playoffWinner(match, scoreMap);
+  if (!winner || !match) return null;
+  return teamKey(winner.name) === teamKey(match.home?.name) ? match.away : match.home;
+}
+
+function buildPlayoffBracket(standings, scoreMap) {
+  const seeds = standings.slice(0, 12).map((row, index) => ({
+    name: cleanTeamName(row.squadra),
+    seed: index + 1
+  }));
+  if (seeds.length < 12) return {};
+
+  const S = [null, ...seeds];
+  const P = {};
+  P.WC1 = { id:'WC1', home:S[8], away:S[9] };
+  P.WC3 = { id:'WC3', home:S[5], away:S[12] };
+  P.WC2 = { id:'WC2', home:S[7], away:S[10] };
+  P.WC4 = { id:'WC4', home:S[6], away:S[11] };
+
+  const winnerOf = code => playoffWinner(P[code], scoreMap);
+  const loserOf = code => playoffLoser(P[code], scoreMap);
+  const waiting = name => ({ name, seed:null });
+
+  P.Q1 = { id:'Q1', home:S[1], away:winnerOf('WC1') || waiting('Vincente WC1') };
+  P.Q4 = { id:'Q4', home:S[4], away:winnerOf('WC3') || waiting('Vincente WC3') };
+  P.Q2 = { id:'Q2', home:S[2], away:winnerOf('WC2') || waiting('Vincente WC2') };
+  P.Q3 = { id:'Q3', home:S[3], away:winnerOf('WC4') || waiting('Vincente WC4') };
+
+  P.S1 = { id:'S1', home:winnerOf('Q1') || waiting('Vincente Q1'), away:winnerOf('Q4') || waiting('Vincente Q4') };
+  P.S2 = { id:'S2', home:winnerOf('Q2') || waiting('Vincente Q2'), away:winnerOf('Q3') || waiting('Vincente Q3') };
+
+  P.P3 = { id:'P3', home:loserOf('S1') || waiting('Perdente S1'), away:loserOf('S2') || waiting('Perdente S2') };
+  P.F = { id:'F', home:winnerOf('S1') || waiting('Vincente S1'), away:winnerOf('S2') || waiting('Vincente S2') };
+  return P;
+}
+
+function playoffPreview(season = currentSeason()) {
+  if (adminCache.playoffError) {
+    return { standings: [], podium: [], ready: false, played: 0, fixtures: 12, note: 'Dati Playoff non disponibili' };
+  }
+
+  if (season !== currentSeason()) {
+    return { standings: [], podium: [], ready: false, played: 0, fixtures: 12, note: 'Il tabellone Playoff live è disponibile solo per la stagione corrente' };
+  }
+
+  const total = previewForSource('standings_total', season);
+  const standings = total.standings.slice(0, 12);
+  if (standings.length < 12) {
+    return { standings, podium: [], ready: false, played: 0, fixtures: 12, note: 'Classifica per i Playoff non ancora completa' };
+  }
+
+  const scoreMap = new Map((adminCache.playoffResults || []).map(row => [
+    String(row.match_code || ''),
+    { home: row.home_score, away: row.away_score }
+  ]));
+  const bracket = buildPlayoffBracket(standings, scoreMap);
+  const final = bracket.F;
+  const thirdFinal = bracket.P3;
+  const champion = playoffWinner(final, scoreMap);
+  const runnerUp = champion ? playoffLoser(final, scoreMap) : null;
+  const third = playoffWinner(thirdFinal, scoreMap);
+
+  const completedCodes = ['WC1','WC2','WC3','WC4','Q1','Q2','Q3','Q4','S1','S2','P3','F']
+    .filter(code => bracket[code] && playoffWinner(bracket[code], scoreMap)).length;
+
+  const ready = Boolean(champion?.name && runnerUp?.name && third?.name);
+  const podium = ready ? [
+    { position: 1, squadra: cleanTeamName(champion.name) },
+    { position: 2, squadra: cleanTeamName(runnerUp.name) },
+    { position: 3, squadra: cleanTeamName(third.name) }
+  ] : [];
+
+  let note = `${completedCodes} / 12 sfide concluse`;
+  if (champion?.name && runnerUp?.name && !third?.name) {
+    note = 'Finale Scudetto conclusa · manca la Finale 3° posto';
+  } else if (ready) {
+    note = 'Finale Scudetto e Finale 3° posto concluse';
+  }
+
+  return { standings, podium, ready, played: completedCodes, fixtures: 12, note };
+}
+
+function supercoppaSeasonValue(season) {
+  const start = seasonStart(season);
+  if (!start) return '';
+  return `${start}/${String(start + 1).slice(-2)}`;
+}
+
+function supercoppaScoreWinner(matchKey, teamA, teamB, state) {
+  if (!teamA || !teamB || !state?.scores) return null;
+  const score = state.scores[matchKey] || ['', ''];
+  if (!hasNumericScore(score[0]) || !hasNumericScore(score[1])) return null;
+  const a = Number(score[0]);
+  const b = Number(score[1]);
+  if (a === b) return null;
+  return a > b ? teamA : teamB;
+}
+
+function supercoppaPreview(season = currentSeason()) {
+  if (adminCache.supercoppaError) {
+    return { standings: [], podium: [], ready: false, played: 0, fixtures: 4, note: 'Dati Supercoppa non disponibili' };
+  }
+
+  const state = adminCache.supercoppaState;
+  if (!state) {
+    return { standings: [], podium: [], ready: false, played: 0, fixtures: 4, note: `Supercoppa ${supercoppaSeasonValue(season)} non ancora configurata` };
+  }
+
+  const teams = state.teams || {};
+  const draw = state.draw || {};
+  const named = key => cleanTeamName(teams[key] || '');
+  const playinA = named('conferenceLeagueChampion');
+  const playinB = named('conferenceChampionshipChampion');
+  const playinWinner = supercoppaScoreWinner('playin', playinA, playinB, state);
+
+  const candidates = {
+    leagueChampion: named('leagueChampion'),
+    crashOutChampion: named('crashOutChampion'),
+    highlanderChampion: named('highlanderChampion'),
+    playinWinner: playinWinner || ''
+  };
+
+  const semiTeam = slot => cleanTeamName(candidates[draw[slot]] || '');
+  const sf1a = semiTeam('sf1a');
+  const sf1b = semiTeam('sf1b');
+  const sf2a = semiTeam('sf2a');
+  const sf2b = semiTeam('sf2b');
+  const sf1Winner = supercoppaScoreWinner('sf1', sf1a, sf1b, state);
+  const sf2Winner = supercoppaScoreWinner('sf2', sf2a, sf2b, state);
+  const champion = supercoppaScoreWinner('final', sf1Winner, sf2Winner, state);
+  const runnerUp = champion && sf1Winner && sf2Winner
+    ? (teamKey(champion) === teamKey(sf1Winner) ? sf2Winner : sf1Winner)
+    : null;
+
+  const played = ['playin','sf1','sf2','final'].filter(key => {
+    const score = state.scores?.[key] || ['', ''];
+    return hasNumericScore(score[0]) && hasNumericScore(score[1]) && Number(score[0]) !== Number(score[1]);
+  }).length;
+  const ready = Boolean(champion && runnerUp);
+  const podium = ready ? [
+    { position: 1, squadra: cleanTeamName(champion) },
+    { position: 2, squadra: cleanTeamName(runnerUp) }
+  ] : [];
+
+  return {
+    standings: [],
+    podium,
+    ready,
+    played,
+    fixtures: 4,
+    note: ready ? 'Finale Supercoppa conclusa' : `${played} / 4 verdetti registrati`
+  };
+}
+
 function highlanderPreview() {
   if (adminCache.highlanderError) {
     return { standings: [], podium: [], ready: false, played: 0, fixtures: 15, note: 'Dati Highlander non disponibili' };
@@ -830,6 +1024,8 @@ function fixtureCount(source) {
 function previewForSource(source, season = currentSeason()) {
   if (source === 'highlander') return highlanderPreview(season);
   if (source === 'crashout') return crashoutPreview(season);
+  if (source === 'playoff') return playoffPreview(season);
+  if (source === 'supercoppa') return supercoppaPreview(season);
 
   if (source === 'standings_total') {
     const a = previewForSource('conf_a', season);
@@ -900,7 +1096,9 @@ async function loadAdminCompetitionData(season) {
     highlanderResponse,
     crashoutSeedsResponse,
     crashoutScoresResponse,
-    crashoutRivalryResponse
+    crashoutRivalryResponse,
+    playoffResponse,
+    supercoppaResponse
   ] = await Promise.all([
     supabase
       .from('fantacalcio_results')
@@ -928,7 +1126,15 @@ async function loadAdminCompetitionData(season) {
     supabase
       .from('crashout_rivalry_matches')
       .select('season, is_played')
-      .eq('season', shortSeason)
+      .eq('season', shortSeason),
+    supabase
+      .from('playoff_results')
+      .select('match_code, home_score, away_score'),
+    supabase
+      .from('supercoppa_settings')
+      .select('season, data')
+      .eq('season', supercoppaSeasonValue(season))
+      .maybeSingle()
   ]);
 
   if (resultsResponse.error) throw resultsResponse.error;
@@ -945,6 +1151,12 @@ async function loadAdminCompetitionData(season) {
   adminCache.crashoutScores = crashoutScoresResponse.error ? [] : (crashoutScoresResponse.data || []);
   adminCache.crashoutRivalry = crashoutRivalryResponse.error ? [] : (crashoutRivalryResponse.data || []);
   adminCache.crashoutError = crashoutSeedsResponse.error || crashoutScoresResponse.error || crashoutRivalryResponse.error || null;
+
+  adminCache.playoffResults = playoffResponse.error ? [] : (playoffResponse.data || []);
+  adminCache.playoffError = playoffResponse.error || null;
+
+  adminCache.supercoppaState = supercoppaResponse.error ? null : (supercoppaResponse.data?.data || null);
+  adminCache.supercoppaError = supercoppaResponse.error || null;
 }
 
 async function loadFinalizations(season) {
@@ -1046,9 +1258,13 @@ async function renderAdminPanel() {
         ? 'Verdetto calcolato automaticamente dall’ordine delle eliminazioni Highlander.'
         : cfg.liveSource === 'crashout'
           ? 'Verdetto calcolato automaticamente dalla finale della Crash Out Cup.'
-          : cfg.liveSource
-            ? 'Verdetto calcolato automaticamente dalla classifica ufficiale.'
-            : 'Il verdetto sarà collegato direttamente alla pagina della coppa.';
+          : cfg.liveSource === 'playoff'
+            ? 'Verdetto calcolato dal tabellone Playoff, inclusa la Finale 3° posto.'
+            : cfg.liveSource === 'supercoppa'
+              ? 'Verdetto calcolato automaticamente dalla finale della Supercoppa.'
+              : cfg.liveSource
+                ? 'Verdetto calcolato automaticamente dalla classifica ufficiale.'
+                : 'Il verdetto sarà collegato direttamente alla pagina della coppa.';
 
       return `
         <article class="hof-admin-card" data-admin-competition="${escapeHtml(cfg.key)}">
@@ -1104,7 +1320,15 @@ async function renderAdminPanel() {
           p_competition_key: cfg.key,
           p_competition_name: cfg.name,
           p_podium: podium,
-          p_source: cfg.liveSource === 'highlander' ? 'highlander_eliminations' : (cfg.liveSource === 'crashout' ? 'crashout_playoff_scores' : 'fantacalcio_results')
+          p_source: cfg.liveSource === 'highlander'
+            ? 'highlander_eliminations'
+            : cfg.liveSource === 'crashout'
+              ? 'crashout_playoff_scores'
+              : cfg.liveSource === 'playoff'
+                ? 'playoff_results'
+                : cfg.liveSource === 'supercoppa'
+                  ? 'supercoppa_settings'
+                  : 'fantacalcio_results'
         });
 
         if (error) {
@@ -1156,11 +1380,13 @@ async function renderAdminPanel() {
     if (adminCache.fixtureError) warnings.push('calendario classifiche non disponibile');
     if (adminCache.highlanderError) warnings.push('Highlander non disponibile');
     if (adminCache.crashoutError) warnings.push('Crash Out non disponibile');
+    if (adminCache.playoffError) warnings.push('Playoff non disponibile');
+    if (adminCache.supercoppaError) warnings.push('Supercoppa non disponibile');
 
     if (warnings.length) {
       adminMessage(`Hall of Fame attiva. Attenzione: ${warnings.join(' · ')}.`, 'error');
     } else {
-      adminMessage('Hall of Fame collegata. Conference, Round Robin, Campionato, Highlander e Crash Out possono passare automaticamente a “Pronta”.', 'ok');
+      adminMessage('Hall of Fame collegata. Tutte le competizioni possono passare automaticamente a “Pronta” quando il loro verdetto è completo.', 'ok');
     }
   } catch (error) {
     console.error('Errore Admin Hall of Fame:', error);

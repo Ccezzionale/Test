@@ -204,6 +204,7 @@ const DEFAULT_PICKS = {
   S1:  { home: "", away: "" },
   S2:  { home: "", away: "" },
 
+  P3:  { home: "", away: "" },
   F:   { home: "", away: "" },
 };
 
@@ -340,6 +341,22 @@ if (hasHomeScore && hasAwayScore) {
   return null;
 };
 
+const loserOf = (code) => {
+  const winner = winnerOf(code);
+  const match = P[code];
+  if (!winner || !match) return null;
+
+  const winnerKey = norm(winner.name);
+  const homeKey = norm(match.home?.name);
+  const loser = winnerKey === homeKey ? match.away : match.home;
+  if (!loser?.name || /vincente/i.test(loser.name)) return null;
+
+  return {
+    name: stripSeed(loser.name),
+    seed: loser.seed
+  };
+};
+
   P.Q1 = { home: { name: S[0].nome, seed: 1 }, away: winnerOf("WC1") || { name: "Vincente WC1" } };
   P.Q4 = { home: { name: S[3].nome, seed: 4 }, away: winnerOf("WC3") || { name: "Vincente WC3" } };
 
@@ -349,6 +366,7 @@ if (hasHomeScore && hasAwayScore) {
   P.S1 = { home: winnerOf("Q1") || { name: "Vincente Q1" }, away: winnerOf("Q4") || { name: "Vincente Q4" } };
   P.S2 = { home: winnerOf("Q2") || { name: "Vincente Q2" }, away: winnerOf("Q3") || { name: "Vincente Q3" } };
 
+  P.P3 = { home: loserOf("S1") || { name: "Perdente S1" }, away: loserOf("S2") || { name: "Perdente S2" } };
   P.F = { home: winnerOf("S1") || { name: "Vincente S1" }, away: winnerOf("S2") || { name: "Vincente S2" } };
 
   return P;
@@ -361,7 +379,7 @@ function aggiornaPlayoff() {
   const P = computeParticipants();
   if (!Object.keys(P).length) return;
 
-  const codes = ["WC1","WC2","WC3","WC4","Q1","Q2","Q3","Q4","S1","S2","F"];
+  const codes = ["WC1","WC2","WC3","WC4","Q1","Q2","Q3","Q4","S1","S2","P3","F"];
 
   codes.forEach(code => {
     const el = document.querySelector(`.game-card[data-series="${code}"]`);
@@ -407,14 +425,15 @@ const ADMIN_MATCH_ORDER = [
   "WC1", "WC2", "WC3", "WC4",
   "Q1", "Q2", "Q3", "Q4",
   "S1", "S2",
-  "F"
+  "P3", "F"
 ];
 
 function getAdminMatchLabel(code) {
   if (code.startsWith("WC")) return `Wild Card ${code.replace("WC", "")}`;
   if (code.startsWith("Q")) return `Quarto ${code.replace("Q", "")}`;
   if (code.startsWith("S")) return `Semifinale ${code.replace("S", "")}`;
-  if (code === "F") return "Finale";
+  if (code === "P3") return "Finale 3° posto";
+  if (code === "F") return "Finale Scudetto";
   return code;
 }
 
@@ -796,8 +815,9 @@ const MOBILE_STAGE_META = {
     ]
   },
   finale: {
-    title: "Finale",
+    title: "Finali",
     matches: [
+      { code: "P3", next: "3° posto" },
       { code: "F", next: "Campione" }
     ]
   }
