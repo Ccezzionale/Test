@@ -1438,3 +1438,203 @@ body.match-center-page {
     border-radius:18px;
   }
 }
+
+
+/* =========================================================
+   MATCH CENTER V7 · HERO FINALE
+   Loghi direttamente nel banner, nessun pannello interno.
+   ========================================================= */
+
+.mc-banner{
+  min-height: 430px;
+}
+
+/* La riga GW scende sotto il titolo già presente nell'immagine */
+.mc-banner-copy-minimal{
+  padding-top: 118px !important;
+}
+
+.mc-banner-copy-minimal #mc-subtitle{
+  min-height: 30px !important;
+  padding: 6px 11px !important;
+  background: rgba(5,27,56,.34) !important;
+  border-color: rgba(255,255,255,.13) !important;
+  box-shadow: none !important;
+  font-size: .88rem !important;
+}
+
+/* Nessuna "card" dietro il matchup */
+.mc-matchup-strip{
+  width: min(860px, calc(100% - 100px)) !important;
+  bottom: 28px !important;
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+}
+
+.mc-versus{
+  grid-template-columns: minmax(0,1fr) 110px minmax(0,1fr) !important;
+  gap: 28px !important;
+  align-items: center !important;
+}
+
+/* Plate solo dietro ogni logo */
+.mc-team img{
+  width: clamp(94px, 8.6vw, 118px) !important;
+  height: clamp(94px, 8.6vw, 118px) !important;
+  padding: 8px !important;
+  border-radius: 26px !important;
+  background:
+    radial-gradient(circle at 35% 28%,
+      rgba(255,255,255,.98) 0%,
+      rgba(248,252,255,.96) 47%,
+      rgba(220,236,253,.86) 68%,
+      rgba(137,180,226,.38) 84%,
+      rgba(255,255,255,0) 90%) !important;
+  border: 1px solid rgba(255,255,255,.23) !important;
+  box-shadow:
+    0 12px 26px rgba(0,0,0,.20),
+    inset 0 1px 7px rgba(255,255,255,.45) !important;
+}
+
+.mc-team strong{
+  margin-top: 8px !important;
+  color: #fff !important;
+  font-size: clamp(.88rem, 1.35vw, 1.08rem) !important;
+  text-shadow: 0 3px 9px rgba(0,0,0,.42) !important;
+}
+
+/* VS semplice, direttamente sul banner */
+.mc-vs-large{
+  min-width: 0 !important;
+  min-height: 0 !important;
+  padding: 0 !important;
+  border-radius: 0 !important;
+  color: #ffd152 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  font-size: clamp(2.5rem,4.5vw,3.5rem) !important;
+  font-style: italic !important;
+  text-shadow:
+    0 5px 18px rgba(242,183,30,.35),
+    0 2px 0 rgba(81,51,0,.55) !important;
+}
+
+.mc-score strong{
+  color:#fff !important;
+  text-shadow:0 4px 15px rgba(0,0,0,.35);
+}
+.mc-score strong:last-child{
+  color:#ffd152 !important;
+}
+.mc-score > span:not(.mc-vs-large){
+  color:rgba(255,255,255,.72) !important;
+}
+
+/* Classifica: piccolo pill, non protagonista */
+.mc-rank-chip{
+  margin-top: 8px !important;
+  padding: 6px 12px !important;
+  color:#fff !important;
+  background:rgba(4,23,50,.42) !important;
+  border:1px solid rgba(255,255,255,.16) !important;
+  box-shadow:none !important;
+  backdrop-filter:blur(4px);
+  font-size:.70rem !important;
+}
+
+/* Un po' più di ombra a sinistra per leggere bene titolo + GW */
+.mc-banner-overlay{
+  background:
+    linear-gradient(90deg,
+      rgba(4,18,42,.60) 0%,
+      rgba(5,26,58,.30) 35%,
+      rgba(5,28,61,.08) 62%,
+      rgba(3,14,31,.28) 100%),
+    radial-gradient(circle at 50% 12%, rgba(255,255,255,.07), transparent 26%) !important;
+}
+
+@media (max-width:760px){
+  .mc-banner{
+    min-height: 350px;
+  }
+
+  .mc-banner-copy-minimal{
+    padding-top: 88px !important;
+  }
+
+  .mc-banner-copy-minimal #mc-subtitle{
+    font-size:.70rem !important;
+    padding:5px 9px !important;
+  }
+
+  .mc-matchup-strip{
+    width: calc(100% - 42px) !important;
+    bottom: 18px !important;
+  }
+
+  .mc-versus{
+    grid-template-columns:minmax(0,1fr) 74px minmax(0,1fr) !important;
+    gap:10px !important;
+  }
+
+  .mc-team img{
+    width:72px !important;
+    height:72px !important;
+    padding:6px !important;
+    border-radius:20px !important;
+  }
+
+  .mc-team strong{
+    font-size:.68rem !important;
+    line-height:1.05 !important;
+  }
+
+  .mc-vs-large{
+    font-size:1.9rem !important;
+  }
+
+  .mc-rank-chip{
+    margin-top:6px !important;
+    padding:5px 9px !important;
+    font-size:.62rem !important;
+  }
+}
+
+@media (max-width:390px){
+  .mc-banner{
+    min-height: 330px;
+  }
+
+  .mc-banner-copy-minimal{
+    padding-top: 80px !important;
+  }
+
+  .mc-matchup-strip{
+    width: calc(100% - 26px) !important;
+    bottom: 16px !important;
+  }
+
+  .mc-versus{
+    grid-template-columns:minmax(0,1fr) 60px minmax(0,1fr) !important;
+    gap:6px !important;
+  }
+
+  .mc-team img{
+    width:64px !important;
+    height:64px !important;
+    padding:6px !important;
+    border-radius:18px !important;
+  }
+
+  .mc-team strong{
+    font-size:.62rem !important;
+  }
+
+  .mc-vs-large{
+    font-size:1.55rem !important;
+  }
+}
