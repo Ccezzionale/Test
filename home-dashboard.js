@@ -1918,7 +1918,58 @@ function renderDesktopFunHome(context, rows) {
   renderDesktopFunLive(context);
 }
 
+
+/* =========================================================
+   HOME MATCH CENTER · LOGO GLASS PLATE
+   Solo i loghi della partita ATTUALE.
+   Le mascotte di precedente/successiva restano intatte.
+   ========================================================= */
+function ensureCurrentMatchLogoPlates() {
+  if (document.getElementById("home-current-match-logo-plates")) return;
+
+  const style = document.createElement("style");
+  style.id = "home-current-match-logo-plates";
+  style.textContent = `
+    #dashboard-match-track
+    .match-carousel-slide.is-current
+    .match-carousel-team img.is-logo {
+      width: 68px !important;
+      height: 68px !important;
+      padding: 4px !important;
+      border-radius: 50% !important;
+      background:
+        radial-gradient(circle at 35% 28%,
+          rgba(255,255,255,.98) 0%,
+          rgba(248,252,255,.96) 42%,
+          rgba(220,236,253,.88) 61%,
+          rgba(137,180,226,.48) 73%,
+          rgba(255,255,255,0) 78%) !important;
+      border: 1px solid rgba(255,255,255,.30) !important;
+      box-shadow:
+        0 0 0 1px rgba(8,66,132,.10),
+        0 7px 17px rgba(0,0,0,.22),
+        inset 0 1px 8px rgba(255,255,255,.48) !important;
+      filter:
+        drop-shadow(0 7px 9px rgba(0,0,0,.28))
+        drop-shadow(0 0 5px rgba(255,255,255,.20)) !important;
+    }
+
+    @media (max-width: 390px) {
+      #dashboard-match-track
+      .match-carousel-slide.is-current
+      .match-carousel-team img.is-logo {
+        width: 62px !important;
+        height: 62px !important;
+        padding: 4px !important;
+      }
+    }
+  `;
+
+  document.head.appendChild(style);
+}
+
 async function initHomeDashboard() {
+  ensureCurrentMatchLogoPlates();
   reorganizeHomeLowerSections();
   setupHomeMatchTabs();
   const context = await loadDashboardTeam();
