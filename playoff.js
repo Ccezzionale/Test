@@ -757,13 +757,72 @@ return Array.from(table.values()).sort((a, b) => {
 
 /* =========================================
    FETCH CLASSIFICA
+   Fonte identica alla pagina Classifica: results-source.js
+   (Supabase fantacalcio_results, con CSV solo come fallback interno)
    ========================================= */
-fetch(URL_STATS_MASTER + "&nocache=" + Date.now(), { cache: "no-store" })
-  .then(res => res.text())
-  .then(async csv => {
-    const classificaTotale = buildTotalRankingFromStats(csv);
+async function loadPlayoffRankingRows() {
+  const { loadResultsRows } = await import("./results-source.js");
+  return loadResultsRows();
+}
 
-    // Playoff: prime 12 della classifica totale
+function buildTotalRankingFromRows(rawRows) {
+  const rows = removeDuplicateRows(rawRows || []);
+  const table = new Map();
+
+  rows.forEach(r => {
+    const conference = String(r.Conference || "").trim();
+    const phase = String(r.Phase || "").trim();
+
+    // Stessa base della Classifica Totale: Conference League + Championship + Round Robin.
+    if (!["Conf A", "Conf B", "Unificata"].includes(conference)) return;
+    if (phase !== "Regular") return;
+
+    const squadra = cleanTeamName(r.Team);
+    const opponent = cleanTeamName(r.Opponent);
+    const pf = parseNumber(r.PointsFor);
+    const pa = parseNumber(r.PointsAgainst);
+
+    if (!squadra || !opponent) return;
+    if (pf === 0 && pa === 0) return;
+
+    const key = teamKey(squadra);
+    if (!table.has(key)) {
+      table.set(key, {
+        nome: squadra,
+        punti: 0,
+        mp: 0,
+        gf: 0,
+        gs: 0
+      });
+    }
+
+    const rec = table.get(key);
+    const gf = pointsToGoals(pf);
+    const gs = pointsToGoals(pa);
+
+    rec.mp += pf;
+    rec.gf += gf;
+    rec.gs += gs;
+
+    if (gf > gs) rec.punti += 3;
+    else if (gf === gs) rec.punti += 1;
+  });
+
+  return Array.from(table.values()).sort((a, b) =>
+    b.punti - a.punti ||
+    b.mp - a.mp ||
+    b.gf - a.gf ||
+    a.gs - b.gs ||
+    a.nome.localeCompare(b.nome)
+  );
+}
+
+(async function initPlayoff() {
+  try {
+    const rawRows = await loadPlayoffRankingRows();
+    const classificaTotale = buildTotalRankingFromRows(rawRows);
+
+    // Playoff: prime 12 della stessa Classifica Totale mostrata in classifica.html.
     window.squadre = classificaTotale.slice(0, 12);
 
     await checkPlayoffAdmin();
@@ -776,8 +835,10 @@ fetch(URL_STATS_MASTER + "&nocache=" + Date.now(), { cache: "no-store" })
         alignLikeExcel();
       }
     });
-  })
-  .catch(err => console.error("Errore nel caricamento classifica playoff:", err));
+  } catch (err) {
+    console.error("Errore nel caricamento classifica playoff:", err);
+  }
+})();
 
 /* =========================================
    MOBILE APP VIEW
