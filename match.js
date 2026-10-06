@@ -456,13 +456,26 @@ function stakesContext(params, rows) {
   const winScenario = (team, pts, opp, oppPts) => {
     if (pts == null || oppPts == null) return `${team}: tre punti pesanti in palio.`;
     const after = pts + 3;
-    if (after > oppPts) return `${team}: con una vittoria supera ${opp} nello scontro diretto.`;
-    if (after === oppPts) return `${team}: con una vittoria aggancia ${opp} a ${after} punti.`;
-    return `${team}: con una vittoria sale a ${after} punti e riduce il distacco da ${opp}.`;
+    const currentGap = pts - oppPts;
+    const newGap = after - oppPts;
+
+    if (currentGap > 0) {
+      return `${team}: con una vittoria sale a ${after} punti e va a +${newGap} su ${opp}.`;
+    }
+
+    if (after > oppPts) {
+      return `${team}: con una vittoria sale a ${after} punti e supera ${opp} in classifica.`;
+    }
+
+    if (after === oppPts) {
+      return `${team}: con una vittoria aggancia ${opp} a ${after} punti.`;
+    }
+
+    return `${team}: con una vittoria sale a ${after} punti e si porta a -${oppPts - after} da ${opp}.`;
   };
 
   const drawText = homePts != null && awayPts != null
-    ? `Con un pareggio: ${params.home} ${homePts + 1} pt · ${params.away} ${awayPts + 1} pt.`
+    ? `Con un pareggio: ${params.home} va a ${homePts + 1} pt, ${params.away} va a ${awayPts + 1} pt.`
     : "Con un pareggio, le distanze restano sostanzialmente invariate.";
 
   return {
