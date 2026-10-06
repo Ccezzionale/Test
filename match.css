@@ -1770,3 +1770,199 @@ body.match-center-page {
     height: 98px !important;
   }
 }
+
+
+/* =========================================================
+   MATCH CENTER V10 · BANNER DEDICATO MOBILE
+   Desktop: banner landscape
+   Mobile: banner verticale dedicato
+   ========================================================= */
+
+.mc-banner-art-desktop{
+  display:block;
+}
+.mc-banner-art-mobile{
+  display:none;
+}
+
+/* Mobile-specific hero using vertical banner */
+@media (max-width:760px){
+  .mc-banner{
+    min-height: 650px !important;
+    border-radius: 28px !important;
+  }
+
+  .mc-banner-art-desktop{
+    display:none !important;
+  }
+
+  .mc-banner-art-mobile{
+    display:block !important;
+  }
+
+  .mc-banner-art{
+    object-position:center top !important;
+  }
+
+  /* darker overlay for text legibility but not too strong */
+  .mc-banner-overlay{
+    background:
+      linear-gradient(180deg,
+        rgba(4,18,42,.18) 0%,
+        rgba(4,18,42,.08) 18%,
+        rgba(4,18,42,.00) 34%,
+        rgba(4,18,42,.10) 58%,
+        rgba(4,18,42,.24) 100%) !important;
+  }
+
+  .mc-hero-top{
+    grid-template-columns: 36px 1fr !important;
+    gap: 10px !important;
+    align-items: start !important;
+    padding: 16px 14px 0 !important;
+  }
+
+  .mc-back{
+    width: 36px !important;
+    height: 36px !important;
+    border-radius: 12px !important;
+  }
+
+  .mc-banner-copy-minimal{
+    padding-top: 86px !important;
+    justify-content:center;
+  }
+
+  .mc-banner-copy-minimal #mc-subtitle{
+    font-size: .72rem !important;
+    padding: 6px 10px !important;
+    background: rgba(5,27,56,.38) !important;
+  }
+
+  /* Place badges neatly below the subtitle and above matchup */
+  .mc-hero-badges{
+    grid-column: 1 / -1;
+    display:flex !important;
+    flex-direction:row !important;
+    justify-content:center !important;
+    gap: 10px !important;
+    margin-top: 12px !important;
+  }
+
+  .mc-mode-tag,
+  .mc-status{
+    min-height: 34px !important;
+    padding: 7px 12px !important;
+    font-size: .70rem !important;
+  }
+
+  /* Matchup lives in the empty lower-center area of the mobile banner */
+  .mc-matchup-strip{
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    width: calc(100% - 38px) !important;
+    bottom: 44px !important;
+  }
+
+  .mc-versus{
+    grid-template-columns: minmax(0,1fr) 66px minmax(0,1fr) !important;
+    gap: 8px !important;
+    justify-content:center !important;
+  }
+
+  .mc-team{
+    justify-items:center !important;
+  }
+
+  .mc-team-home,
+  .mc-team-away{
+    justify-self:center !important;
+  }
+
+  .mc-team img{
+    width: 82px !important;
+    height: 82px !important;
+    padding: 7px !important;
+    border-radius: 22px !important;
+  }
+
+  .mc-team strong{
+    margin-top: 7px !important;
+    font-size: .76rem !important;
+    line-height: 1.06 !important;
+    max-width: 130px !important;
+  }
+
+  .mc-vs-large{
+    font-size: 2rem !important;
+  }
+
+  .mc-rank-chip{
+    margin-top: 10px !important;
+    font-size: .66rem !important;
+    padding: 6px 10px !important;
+  }
+}
+
+@media (max-width:390px){
+  .mc-banner{
+    min-height: 610px !important;
+    border-radius: 24px !important;
+  }
+
+  .mc-hero-top{
+    padding: 14px 12px 0 !important;
+  }
+
+  .mc-banner-copy-minimal{
+    padding-top: 78px !important;
+  }
+
+  .mc-banner-copy-minimal #mc-subtitle{
+    font-size: .66rem !important;
+    padding: 5px 9px !important;
+  }
+
+  .mc-hero-badges{
+    gap: 8px !important;
+    margin-top: 10px !important;
+  }
+
+  .mc-mode-tag,
+  .mc-status{
+    min-height: 32px !important;
+    padding: 6px 10px !important;
+    font-size: .66rem !important;
+  }
+
+  .mc-matchup-strip{
+    width: calc(100% - 26px) !important;
+    bottom: 36px !important;
+  }
+
+  .mc-versus{
+    grid-template-columns: minmax(0,1fr) 56px minmax(0,1fr) !important;
+    gap: 5px !important;
+  }
+
+  .mc-team img{
+    width: 72px !important;
+    height: 72px !important;
+    padding: 6px !important;
+    border-radius: 20px !important;
+  }
+
+  .mc-team strong{
+    font-size: .68rem !important;
+    max-width: 110px !important;
+  }
+
+  .mc-vs-large{
+    font-size: 1.7rem !important;
+  }
+
+  .mc-rank-chip{
+    font-size: .62rem !important;
+    padding: 5px 9px !important;
+  }
+}
