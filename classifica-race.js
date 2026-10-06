@@ -826,7 +826,7 @@ document.addEventListener('DOMContentLoaded',initRace);
    ========================================================= */
 function setupClassificaRaceTab(){
   const switcher=document.querySelector('.switcher');
-  const raceButton=switcher?.querySelector('[data-classifica-view="race"]');
+  const raceButton=document.querySelector('[data-classifica-view="race"]');
   const normalContainer=document.getElementById('classifica-container');
   const racePanel=document.getElementById('race-tab-panel');
   const heroBanner=document.getElementById('heroBanner');
@@ -852,6 +852,7 @@ function setupClassificaRaceTab(){
   const activateRace=({updateHash=true}={})=>{
     normalButtons.forEach(btn=>btn.classList.remove('active'));
     raceButton.classList.add('active');
+    raceButton.setAttribute('aria-pressed','true');
 
     normalContainer.hidden=true;
     racePanel.hidden=false;
@@ -873,6 +874,7 @@ function setupClassificaRaceTab(){
     racePanel.hidden=true;
     normalContainer.hidden=false;
     raceButton.classList.remove('active');
+    raceButton.setAttribute('aria-pressed','false');
     document.querySelector('.classifica-card')?.classList.remove('race-mode');
     clearRaceBanner();
 
