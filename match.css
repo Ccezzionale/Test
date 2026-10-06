@@ -1705,3 +1705,68 @@ body.match-center-page {
     gap:6px !important;
   }
 }
+
+
+/* =========================================================
+   MATCH CENTER V9 · trio logo-VS-logo più compatto a sinistra
+   ========================================================= */
+
+@media (min-width: 901px){
+  .mc-matchup-strip{
+    left: 35.5% !important;
+    transform: translateX(-50%) !important;
+    width: 600px !important;
+  }
+
+  .mc-versus{
+    grid-template-columns: 210px 92px 210px !important;
+    justify-content: start !important;
+    gap: 8px !important;
+  }
+
+  .mc-team-home{
+    justify-self: start !important;
+  }
+
+  .mc-team-away{
+    justify-self: start !important;
+  }
+
+  .mc-team{
+    justify-items: center !important;
+  }
+
+  .mc-team img{
+    width: 108px !important;
+    height: 108px !important;
+  }
+
+  .mc-team strong{
+    max-width: 210px;
+    text-align: center;
+  }
+
+  .mc-score{
+    justify-self: center !important;
+  }
+
+  .mc-vs-large{
+    font-size: 3.15rem !important;
+  }
+}
+
+@media (min-width: 901px) and (max-width: 1180px){
+  .mc-matchup-strip{
+    left: 37% !important;
+    width: 560px !important;
+  }
+
+  .mc-versus{
+    grid-template-columns: 190px 82px 190px !important;
+  }
+
+  .mc-team img{
+    width: 98px !important;
+    height: 98px !important;
+  }
+}
