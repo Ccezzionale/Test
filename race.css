@@ -717,3 +717,357 @@ body{
     gap:3px;
   }
 }
+
+
+/* =========================================================
+   RACE V4 · MOMENTUM / CONFERENCE PULSE / DIRECT CLASHES
+   ========================================================= */
+
+.race-momentum{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-height:20px;
+  padding:3px 6px;
+  border-radius:999px;
+  font-size:.59rem;
+  line-height:1;
+  font-weight:950;
+  letter-spacing:.035em;
+  white-space:nowrap;
+  border:1px solid transparent;
+}
+.race-momentum.up{
+  color:#147847;
+  background:#e8f8ef;
+  border-color:#bfe8d0;
+}
+.race-momentum.down{
+  color:#a61e35;
+  background:#ffedf0;
+  border-color:#f3cbd2;
+}
+.race-momentum.flat{
+  color:#62758b;
+  background:#eef3f8;
+  border-color:#dbe4ed;
+}
+
+.conference-pulse{
+  margin:0 16px 16px;
+  overflow:hidden;
+  border:1px solid #dce6f2;
+  border-radius:18px;
+  background:
+    radial-gradient(circle at 100% 0%,rgba(243,195,78,.09),transparent 34%),
+    #f8fbff;
+}
+.pulse-head{
+  padding:14px 16px 12px;
+  border-bottom:1px solid #e3ebf4;
+}
+.pulse-head span{
+  display:block;
+  color:var(--race-blue);
+  font-size:.65rem;
+  font-weight:950;
+  letter-spacing:.13em;
+}
+.pulse-head strong{
+  display:block;
+  margin-top:5px;
+  color:var(--race-navy);
+  font-size:.86rem;
+  line-height:1.25;
+}
+
+.pulse-stats{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  border-bottom:1px solid #e3ebf4;
+}
+.pulse-stat{
+  min-width:0;
+  padding:13px 14px;
+  border-right:1px solid #e3ebf4;
+}
+.pulse-stat:last-child{border-right:0}
+.pulse-stat span,
+.pulse-stat strong,
+.pulse-stat small{display:block}
+.pulse-stat span{
+  color:#728297;
+  font-size:.57rem;
+  line-height:1;
+  font-weight:950;
+  letter-spacing:.08em;
+}
+.pulse-stat strong{
+  margin-top:6px;
+  overflow:hidden;
+  color:var(--race-navy);
+  font-size:.78rem;
+  line-height:1.1;
+  white-space:nowrap;
+  text-overflow:ellipsis;
+}
+.pulse-stat small{
+  margin-top:4px;
+  color:var(--race-muted);
+  font-size:.66rem;
+  font-weight:850;
+}
+.pulse-stat.hard{box-shadow:inset 0 -3px 0 rgba(212,43,69,.70)}
+.pulse-stat.easy{box-shadow:inset 0 -3px 0 rgba(45,185,108,.70)}
+
+.direct-clashes{padding:13px 14px 14px}
+.direct-clashes-title{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  margin-bottom:8px;
+}
+.direct-clashes-title span{
+  color:var(--race-navy);
+  font-size:.62rem;
+  font-weight:950;
+  letter-spacing:.10em;
+}
+.direct-clashes-title small{
+  color:var(--race-muted);
+  font-size:.62rem;
+  font-weight:800;
+}
+.direct-clash-row{
+  display:grid;
+  grid-template-columns:34px minmax(0,1fr) 24px minmax(0,1fr);
+  align-items:center;
+  gap:6px;
+  min-height:42px;
+  padding:6px 8px;
+  margin-top:6px;
+  border:1px solid #dfe8f2;
+  border-radius:12px;
+  background:#fff;
+}
+.direct-clash-gw{
+  display:grid;
+  place-items:center;
+  width:30px;
+  height:26px;
+  border-radius:8px;
+  color:#fff;
+  background:var(--race-navy);
+  font-size:.63rem;
+  font-weight:950;
+}
+.direct-clash-row>b{
+  color:#9aa8b8;
+  font-size:.62rem;
+  text-align:center;
+}
+.direct-clash-team{
+  min-width:0;
+  display:flex;
+  align-items:center;
+  gap:6px;
+}
+.direct-clash-team.away{
+  flex-direction:row-reverse;
+  text-align:right;
+}
+.direct-clash-team img{
+  width:27px;
+  height:27px;
+  object-fit:contain;
+  flex:none;
+}
+.direct-clash-team strong{
+  min-width:0;
+  overflow:hidden;
+  color:var(--race-navy);
+  font-size:.69rem;
+  white-space:nowrap;
+  text-overflow:ellipsis;
+}
+.direct-clash-empty{
+  padding:9px 10px;
+  border-radius:11px;
+  color:#7b899a;
+  background:#f0f4f8;
+  font-size:.70rem;
+  font-weight:750;
+}
+
+/* Road Difficulty per Conference */
+#road-ranking{display:block}
+.conference-road-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:16px;
+}
+.conference-road-panel{
+  overflow:hidden;
+  border:1px solid #d9e4f0;
+  border-radius:18px;
+  background:#fbfdff;
+}
+.conference-road-panel>header{
+  min-height:72px;
+  padding:14px 16px;
+  display:flex;
+  align-items:end;
+  justify-content:space-between;
+  gap:12px;
+  color:#fff;
+  background:
+    radial-gradient(circle at 88% 12%,rgba(243,195,78,.18),transparent 35%),
+    linear-gradient(135deg,var(--race-navy),var(--race-navy-2));
+}
+.conference-road-panel.is-championship>header{
+  background:
+    radial-gradient(circle at 88% 12%,rgba(255,255,255,.10),transparent 35%),
+    linear-gradient(135deg,#35111c,#8e1730);
+}
+.conference-road-panel header span{
+  display:block;
+  color:var(--race-gold);
+  font-size:.59rem;
+  font-weight:950;
+  letter-spacing:.12em;
+}
+.conference-road-panel header h3{
+  margin:4px 0 0;
+  color:#fff;
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:1.35rem;
+  line-height:1;
+  text-transform:uppercase;
+}
+.conference-road-panel header small{
+  color:rgba(255,255,255,.65);
+  font-size:.62rem;
+  font-weight:800;
+  text-align:right;
+}
+.conference-road-list{padding:8px 12px 12px}
+.conference-road-row{
+  display:grid;
+  grid-template-columns:28px 38px minmax(0,1fr) 56px;
+  align-items:center;
+  gap:8px;
+  min-height:62px;
+  padding:8px 5px;
+  border-bottom:1px solid #e5edf5;
+}
+.conference-road-row:last-child{border-bottom:0}
+.conference-road-rank{
+  color:#8190a2;
+  font-size:.75rem;
+  font-weight:950;
+  text-align:center;
+}
+.conference-road-row>img{
+  width:35px;
+  height:35px;
+  object-fit:contain;
+}
+.conference-road-main{min-width:0}
+.conference-road-main>strong{
+  display:inline-block;
+  max-width:100%;
+  overflow:hidden;
+  color:var(--race-navy);
+  font-size:.78rem;
+  line-height:1.05;
+  white-space:nowrap;
+  text-overflow:ellipsis;
+  vertical-align:middle;
+}
+.road-edge-badge{
+  display:inline-flex;
+  margin-left:5px;
+  padding:3px 5px;
+  border-radius:999px;
+  font-size:.49rem;
+  line-height:1;
+  font-weight:950;
+  vertical-align:middle;
+}
+.road-edge-badge.hard{color:#a61e35;background:#ffe7eb}
+.road-edge-badge.easy{color:#147847;background:#e6f7ed}
+.conference-road-meter{
+  height:5px;
+  margin-top:6px;
+  overflow:hidden;
+  border-radius:999px;
+  background:#e4ebf3;
+}
+.conference-road-meter i{
+  display:block;
+  height:100%;
+  border-radius:inherit;
+  background:linear-gradient(90deg,var(--race-green),#e3ad25,var(--race-red));
+}
+.conference-road-score{
+  text-align:right;
+  white-space:nowrap;
+}
+.conference-road-score strong{
+  color:var(--race-navy);
+  font-size:1.05rem;
+}
+.conference-road-score span{
+  color:var(--race-muted);
+  font-size:.59rem;
+  font-weight:850;
+}
+.conference-road-row.hard .conference-road-score strong{color:var(--race-red)}
+.conference-road-row.easy .conference-road-score strong{color:#13854b}
+.conference-road-empty{
+  padding:18px;
+  color:var(--race-muted);
+  font-size:.78rem;
+}
+
+/* Vecchia versione V3 non serve più nella Conference */
+.road-featured-grid,
+.road-rest{display:none}
+
+@media(max-width:1080px){
+  .conference-road-grid{grid-template-columns:1fr}
+}
+
+@media(max-width:768px){
+  .contender-meta{
+    flex-wrap:wrap;
+  }
+  .race-momentum{
+    font-size:.56rem;
+  }
+  .conference-pulse{
+    margin:0 10px 12px;
+  }
+  .pulse-stats{
+    grid-template-columns:1fr;
+  }
+  .pulse-stat{
+    display:grid;
+    grid-template-columns:100px minmax(0,1fr) auto;
+    align-items:center;
+    gap:8px;
+    border-right:0;
+    border-bottom:1px solid #e3ebf4;
+    box-shadow:none !important;
+  }
+  .pulse-stat:last-child{border-bottom:0}
+  .pulse-stat strong,
+  .pulse-stat small{margin:0}
+  .pulse-stat small{text-align:right}
+  .direct-clash-row{
+    grid-template-columns:32px minmax(0,1fr) 20px minmax(0,1fr);
+  }
+  .conference-road-grid{grid-template-columns:1fr}
+  .conference-road-panel header small{display:none}
+}

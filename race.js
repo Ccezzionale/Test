@@ -248,7 +248,14 @@ function emptyChip(){
   return `<div class="fixture-chip none"><b>—</b><span>?</span><small>TBD</small></div>`;
 }
 
-function contenderMarkup(rec,index,leaderPts,fixtures,conference,lastGw,powers){
+function raceMomentumMarkup(delta,lastGw){
+  if(lastGw<=1) return `<span class="race-momentum flat" title="Race Momentum">RACE =</span>`;
+  if(delta>0) return `<span class="race-momentum up" title="Posizioni guadagnate rispetto alla GW precedente">RACE ↑${delta}</span>`;
+  if(delta<0) return `<span class="race-momentum down" title="Posizioni perse rispetto alla GW precedente">RACE ↓${Math.abs(delta)}</span>`;
+  return `<span class="race-momentum flat" title="Posizione invariata rispetto alla GW precedente">RACE =</span>`;
+}
+
+function contenderMarkup(rec,index,leaderPts,fixtures,conference,lastGw,powers,momentumDelta=0){
   const gap=leaderPts-rec.pt;
   const form=teamForm(rec);
   const schedule=scheduleData(fixtures,conference,rec.team,lastGw,powers);
@@ -266,6 +273,7 @@ function contenderMarkup(rec,index,leaderPts,fixtures,conference,lastGw,powers){
       <div class="contender-meta">
         <span>${rec.pt} PT</span>
         <span class="gap-pill ${gapClass}">${gapLabel}</span>
+        ${raceMomentumMarkup(momentumDelta,lastGw)}
         <span class="form-dots">${form.map(r=>`<i class="form-dot ${r}">${r}</i>`).join('')}</span>
       </div>
     </div>
@@ -280,7 +288,108 @@ function contenderMarkup(rec,index,leaderPts,fixtures,conference,lastGw,powers){
   </div>`;
 }
 
-function renderConference(code,hostId,leaderId,rows,fixtures,powers){
+function standingsThroughGw(rows,code,upToGw){
+  return buildStandings(
+    conferenceRows(rows,code).filter(r => Number(r.GW||0) <= upToGw)
+  );
+}
+
+function nextConferenceGws(fixtures,code,lastGw,count=NEXT_GAMES){
+  return [...new Set(
+    fixtures
+      .filter(f=>clean(f.conference)===code && Number(f.gw)>lastGw)
+      .map(f=>Number(f.gw))
+      .filter(Boolean)
+  )].sort((a,b)=>a-b).slice(0,count);
+}
+
+function directClashes(fixtures,code,top,lastGw){
+  const topKeys=new Set(top.map(r=>key(r.team)));
+  const gws=new Set(nextConferenceGws(fixtures,code,lastGw,NEXT_GAMES));
+  const seen=new Set();
+  return fixtures
+    .filter(f=>
+      clean(f.conference)===code &&
+      gws.has(Number(f.gw)) &&
+      topKeys.has(key(f.home_team)) &&
+      topKeys.has(key(f.away_team))
+    )
+    .filter(f=>{
+      const a=key(f.home_team), b=key(f.away_team);
+      const k=`${Number(f.gw)}|${[a,b].sort().join('|')}`;
+      if(seen.has(k)) return false;
+      seen.add(k);
+      return true;
+    })
+    .sort((a,b)=>Number(a.gw)-Number(b.gw));
+}
+
+function raceStatusText(top){
+  if(top.length<2) return 'La corsa aspetta abbastanza dati per accendersi.';
+  const gap=top[0].pt-top[1].pt;
+  const spread=top[0].pt-(top[Math.min(3,top.length-1)]?.pt ?? top[0].pt);
+  if(gap===0) return 'Vetta condivisa: qui nessuno ha ancora il diritto di rilassarsi.';
+  if(spread<=3) return `Top 4 in ${spread} punti: Conference completamente aperta.`;
+  if(gap>=6) return `${top[0].team} prova la fuga: +${gap} sulla prima inseguitrice.`;
+  if(gap<=2) return `${top[1].team} è a ${gap} ${gap===1?'punto':'punti'}: leader sotto pressione.`;
+  return `La vetta è a +${gap}, ma la corsa resta ancora viva.`;
+}
+
+function renderConferencePulse(code,pulseId,top,road,fixtures,lastGw){
+  const host=document.getElementById(pulseId);
+  if(!host || !top.length) return;
+
+  const validRoad=road.filter(x=>x.avg!=null).sort((a,b)=>b.avg-a.avg);
+  const hardest=validRoad[0];
+  const easiest=validRoad[validRoad.length-1];
+  const closest=top[1];
+  const gap=closest ? top[0].pt-closest.pt : null;
+  const clashes=directClashes(fixtures,code,top,lastGw);
+
+  const clashesMarkup=clashes.length
+    ? clashes.map(f=>`
+      <div class="direct-clash-row">
+        <span class="direct-clash-gw">G${Number(f.gw)}</span>
+        <div class="direct-clash-team">${logoTag(f.home_team)}<strong>${escapeHtml(canonical(f.home_team))}</strong></div>
+        <b>VS</b>
+        <div class="direct-clash-team away">${logoTag(f.away_team)}<strong>${escapeHtml(canonical(f.away_team))}</strong></div>
+      </div>`).join('')
+    : `<div class="direct-clash-empty">Nessuno scontro diretto tra le Top 4 nelle prossime quattro giornate.</div>`;
+
+  host.innerHTML=`
+    <div class="pulse-head">
+      <div>
+        <span>CONFERENCE PULSE</span>
+        <strong>${escapeHtml(raceStatusText(top))}</strong>
+      </div>
+    </div>
+    <div class="pulse-stats">
+      <div class="pulse-stat">
+        <span>CLOSEST CHASE</span>
+        <strong>${closest?escapeHtml(closest.team):'—'}</strong>
+        <small>${closest?(gap===0?'a pari punti':`-${gap} PT`):'—'}</small>
+      </div>
+      <div class="pulse-stat hard">
+        <span>HARDEST ROAD</span>
+        <strong>${hardest?escapeHtml(hardest.team):'—'}</strong>
+        <small>${hardest?`${hardest.avg.toFixed(1)} / 5`:'—'}</small>
+      </div>
+      <div class="pulse-stat easy">
+        <span>EASIEST ROAD</span>
+        <strong>${easiest?escapeHtml(easiest.team):'—'}</strong>
+        <small>${easiest?`${easiest.avg.toFixed(1)} / 5`:'—'}</small>
+      </div>
+    </div>
+    <div class="direct-clashes">
+      <div class="direct-clashes-title">
+        <span>DIRECT CLASHES</span>
+        <small>Top 4 · prossime ${NEXT_GAMES}</small>
+      </div>
+      ${clashesMarkup}
+    </div>`;
+}
+
+function renderConference(code,hostId,leaderId,pulseId,rows,fixtures,powers){
   const standings=buildStandings(conferenceRows(rows,code));
   const top=standings.slice(0,4);
   const host=document.getElementById(hostId);
@@ -290,104 +399,84 @@ function renderConference(code,hostId,leaderId,rows,fixtures,powers){
     host.innerHTML='<div class="race-state-card">Classifica in attesa dei primi risultati.</div>';
     return {standings,top,lastGw:0,road:[]};
   }
+
   const lastGw=maxPlayedGw(rows,code);
+  const prevStandings=lastGw>1 ? standingsThroughGw(rows,code,lastGw-1) : [];
+  const prevPos=new Map(prevStandings.map((r,i)=>[key(r.team),i+1]));
   const leaderPts=top[0].pt;
-  host.innerHTML=top.map((r,i)=>contenderMarkup(r,i,leaderPts,fixtures,code,lastGw,powers)).join('');
+
+  host.innerHTML=top.map((r,i)=>{
+    const currentPos=i+1;
+    const previous=prevPos.get(key(r.team)) ?? currentPos;
+    const delta=previous-currentPos;
+    return contenderMarkup(r,i,leaderPts,fixtures,code,lastGw,powers,delta);
+  }).join('');
+
   if(leaderEl) leaderEl.textContent=`Leader: ${top[0].team} · ${top[0].pt} pt`;
+
   const road=top.map((r,i)=>{
     const s=scheduleData(fixtures,code,r.team,lastGw,powers);
     return {team:r.team,position:i+1,avg:s.avg,items:s.items};
   });
+
+  renderConferencePulse(code,pulseId,top,road,fixtures,lastGw);
   return {standings,top,lastGw,road};
 }
-function roadCard(item,conferenceLabel){
+function conferenceRoadRow(item,index,total){
   const value=item.avg;
+  const cls=difficultyClass(value);
+  const isHard=index===0;
+  const isEasy=index===total-1 && total>1;
+  const badge=isHard
+    ? '<span class="road-edge-badge hard">HARDEST</span>'
+    : isEasy
+      ? '<span class="road-edge-badge easy">EASIEST</span>'
+      : '';
   const width=value==null?0:((value-1)/4)*100;
-  return `<article class="road-card">
-    <div class="road-card-head">
-      ${logoTag(item.team)}
-      <div><strong>${escapeHtml(item.team)}</strong><div class="gap-pill">${conferenceLabel}</div></div>
+
+  return `<div class="conference-road-row ${cls}">
+    <span class="conference-road-rank">${index+1}</span>
+    ${logoTag(item.team)}
+    <div class="conference-road-main">
+      <strong>${escapeHtml(item.team)}</strong>
+      ${badge}
+      <div class="conference-road-meter"><i style="width:${Math.max(0,Math.min(100,width))}%"></i></div>
     </div>
-    <div class="road-card-score">
-      <strong>${value==null?'—':value.toFixed(1)}</strong>
-      <span>${value==null?'Calendario incompleto':'difficoltà / 5'}</span>
-    </div>
-    <div class="road-meter"><i style="width:${Math.max(0,Math.min(100,width))}%"></i></div>
-  </article>`;
-}
-function featuredRoadCard(item,type){
-  if(!item) return '';
-  const isHard=type==='hard';
-  const label=isHard?'HARDEST ROAD':'EASIEST ROAD';
-  const note=isHard?'Il calendario più pesante tra le contender':'La strada più favorevole tra le contender';
-  const value=item.avg;
-  const width=value==null?0:((value-1)/4)*100;
-  return `<article class="road-feature-card ${isHard?'hardest':'easiest'}">
-    <div class="road-feature-label">${label}</div>
-    <div class="road-feature-team">
-      ${logoTag(item.team)}
-      <div>
-        <strong>${escapeHtml(item.team)}</strong>
-        <span>${escapeHtml(item.conference)}</span>
-      </div>
-    </div>
-    <div class="road-feature-score">
+    <div class="conference-road-score">
       <strong>${value==null?'—':value.toFixed(1)}</strong>
       <span>/ 5</span>
     </div>
-    <div class="road-meter"><i style="width:${Math.max(0,Math.min(100,width))}%"></i></div>
-    <p>${note}</p>
-  </article>`;
-}
-
-function compactRoadItem(item,index){
-  const value=item.avg;
-  return `<div class="road-compact-item">
-    <span class="road-compact-rank">${index}</span>
-    ${logoTag(item.team)}
-    <div class="road-compact-main">
-      <strong>${escapeHtml(item.team)}</strong>
-      <span>${escapeHtml(item.conference)}</span>
-    </div>
-    <div class="road-compact-score">${value==null?'—':value.toFixed(1)}<small>/5</small></div>
   </div>`;
 }
 
-function renderRoadSummary(a,b){
-  const all=[
-    ...a.road.map(x=>({...x,conference:'Conf. League'})),
-    ...b.road.map(x=>({...x,conference:'Championship'}))
-  ].filter(x=>x.avg!=null)
-   .sort((x,y)=>y.avg-x.avg);
-
-  const host=document.getElementById('road-ranking');
-  if(!host) return;
-
-  if(!all.length){
-    host.innerHTML='<div class="race-state-card">Road Difficulty in attesa del calendario.</div>';
-    return;
+function conferenceRoadBlock(title,code,items){
+  const valid=items.filter(x=>x.avg!=null).sort((a,b)=>b.avg-a.avg);
+  if(!valid.length){
+    return `<article class="conference-road-panel ${code==='Conf B'?'is-championship':''}">
+      <header><span>${code}</span><h3>${title}</h3></header>
+      <div class="conference-road-empty">Calendario non disponibile.</div>
+    </article>`;
   }
 
-  const hardest=all[0];
-  const easiest=all[all.length-1];
-  const middle=all.filter(x=>x!==hardest && x!==easiest);
-
-  host.innerHTML=`
-    <div class="road-featured-grid">
-      ${featuredRoadCard(hardest,'hard')}
-      ${featuredRoadCard(easiest,'easy')}
+  return `<article class="conference-road-panel ${code==='Conf B'?'is-championship':''}">
+    <header>
+      <div><span>${code}</span><h3>${title}</h3></div>
+      <small>dal più duro al più favorevole</small>
+    </header>
+    <div class="conference-road-list">
+      ${valid.map((item,i)=>conferenceRoadRow(item,i,valid.length)).join('')}
     </div>
-    ${middle.length ? `
-      <div class="road-rest">
-        <div class="road-rest-head">
-          <span>LE ALTRE STRADE</span>
-          <small>dal calendario più duro al più favorevole</small>
-        </div>
-        <div class="road-compact-list">
-          ${middle.map((x,i)=>compactRoadItem(x,i+2)).join('')}
-        </div>
-      </div>` : ''}
-  `;
+  </article>`;
+}
+
+function renderRoadSummary(a,b){
+  const host=document.getElementById('road-ranking');
+  if(!host) return;
+  host.innerHTML=`
+    <div class="conference-road-grid">
+      ${conferenceRoadBlock('Conference League','Conf A',a.road)}
+      ${conferenceRoadBlock('Conference Championship','Conf B',b.road)}
+    </div>`;
 }
 
 /* -------- ROUND ROBIN -------- */
@@ -512,8 +601,8 @@ async function initRace(){
 
     if(state==='conference'){
       setVisible('conference-view');
-      const a=renderConference('Conf A','race-conf-a','leader-a',rows,fixtures,powers);
-      const b=renderConference('Conf B','race-conf-b','leader-b',rows,fixtures,powers);
+      const a=renderConference('Conf A','race-conf-a','leader-a','conference-pulse-a',rows,fixtures,powers);
+      const b=renderConference('Conf B','race-conf-b','leader-b','conference-pulse-b',rows,fixtures,powers);
       renderRoadSummary(a,b);
     }else if(state==='transition'){
       setVisible('transition-view');
