@@ -1956,110 +1956,96 @@ function ensureCurrentMatchLogoPlates() {
 
     /* =========================================================
        MATCH DELLA SETTIMANA · MOBILE
-       Restyling premium con colori desktop + logo plate chiara.
+       SOLO PALETTE DESKTOP. Nessuna modifica al layout.
        ========================================================= */
-    @media (max-width: 760px) {
-      #dashboard-matchups .weekly-broadcast-card {
-        position: relative;
-        overflow: hidden;
-        border: 1px solid rgba(255,255,255,.14) !important;
-        border-radius: 24px !important;
+    @media (max-width: 900px) {
+      .home-app-v2 .league-matchup-card.weekly-broadcast-card {
+        border-color: rgba(18,83,151,.18) !important;
         background:
-          radial-gradient(circle at 50% 40%, rgba(243,195,78,.10), transparent 28%),
-          linear-gradient(180deg, #0a2443 0%, #0b2d52 58%, #08233f 100%) !important;
+          radial-gradient(circle at 50% 50%, rgba(255,190,45,.12), transparent 24%),
+          linear-gradient(135deg,#f8fbff 0%,#edf5ff 100%) !important;
         box-shadow:
-          0 14px 28px rgba(0,0,0,.22),
-          inset 0 1px 0 rgba(255,255,255,.10) !important;
+          0 10px 22px rgba(16,61,111,.12),
+          inset 0 1px 0 rgba(255,255,255,.88) !important;
       }
 
-      #dashboard-matchups .weekly-broadcast-card::before {
-        content: "";
-        position: absolute;
-        inset: 0;
+      .home-app-v2 .weekly-broadcast-card::before {
         background:
-          radial-gradient(circle at 18% 52%, rgba(255,255,255,.10), transparent 22%),
-          radial-gradient(circle at 82% 52%, rgba(255,255,255,.10), transparent 22%),
-          linear-gradient(115deg, transparent 0%, rgba(255,255,255,.05) 50%, transparent 100%);
-        pointer-events: none;
+          repeating-linear-gradient(
+            115deg,
+            transparent 0 42px,
+            rgba(11,97,190,.035) 43px 44px
+          ),
+          radial-gradient(
+            85px 85px at 50% 51%,
+            rgba(255,190,45,.13),
+            transparent 72%
+          ) !important;
       }
 
-      #dashboard-matchups .weekly-broadcast-card .league-matchup-label {
-        position: relative;
-        z-index: 1;
-        margin: 0 !important;
-        padding: 12px 14px 11px !important;
-        border-bottom: 1px solid rgba(255,255,255,.08);
-        background: linear-gradient(135deg, rgba(243,195,78,.18), rgba(243,195,78,.05)) !important;
-      }
-
-      #dashboard-matchups .weekly-broadcast-card .league-matchup-label span,
-      #dashboard-matchups .weekly-broadcast-card .league-matchup-label b {
-        color: #fff4c7 !important;
-        text-shadow: 0 1px 1px rgba(0,0,0,.22);
-      }
-
-      #dashboard-matchups .weekly-broadcast-card .league-matchup-versus {
-        position: relative;
-        z-index: 1;
-        min-height: 154px;
-        padding: 18px 12px 12px !important;
-      }
-
-      #dashboard-matchups .weekly-broadcast-card .weekly-broadcast-team {
-        color: #fff !important;
-      }
-
-      #dashboard-matchups .weekly-broadcast-card .weekly-broadcast-team img {
-        width: 68px !important;
-        height: 68px !important;
-        object-fit: contain !important;
-        padding: 4px !important;
-        border-radius: 50% !important;
+      .home-app-v2 .weekly-broadcast-card::after {
         background:
-          radial-gradient(circle at 35% 28%,
-            rgba(255,255,255,.98) 0%,
-            rgba(248,252,255,.96) 42%,
-            rgba(220,236,253,.88) 61%,
-            rgba(137,180,226,.48) 73%,
-            rgba(255,255,255,0) 78%) !important;
-        border: 1px solid rgba(255,255,255,.28) !important;
-        box-shadow:
-          0 0 0 1px rgba(8,66,132,.10),
-          0 7px 17px rgba(0,0,0,.22),
-          inset 0 1px 8px rgba(255,255,255,.48) !important;
-        filter:
-          drop-shadow(0 7px 9px rgba(0,0,0,.28))
-          drop-shadow(0 0 5px rgba(255,255,255,.16)) !important;
+          linear-gradient(
+            180deg,
+            transparent,
+            rgba(22,91,163,.18),
+            transparent
+          ) !important;
+        box-shadow: none !important;
       }
 
-      #dashboard-matchups .weekly-broadcast-card .weekly-broadcast-team strong {
+      /* Testata: stessi ingombri, colori della card desktop */
+      .home-app-v2 .weekly-broadcast-card .league-matchup-label {
+        background: linear-gradient(90deg,#ff3f55,#ff7135) !important;
+        border-radius: 10px !important;
+      }
+
+      .home-app-v2 .weekly-broadcast-card .league-matchup-label span {
         color: #ffffff !important;
-        text-shadow: 0 2px 5px rgba(0,0,0,.26);
+        text-shadow: none !important;
       }
 
-      #dashboard-matchups .weekly-broadcast-card .weekly-broadcast-team em {
-        color: #c7d8ee !important;
+      .home-app-v2 .weekly-broadcast-card .league-matchup-label b {
+        color: #ffffff !important;
+        background: rgba(255,255,255,.18) !important;
+        border: 1px solid rgba(255,255,255,.24) !important;
+        box-shadow: none !important;
       }
 
-      #dashboard-matchups .weekly-broadcast-card .weekly-broadcast-vs {
-        width: 54px !important;
-        height: 54px !important;
-        border-radius: 18px !important;
-        color: #08233f !important;
-        background: linear-gradient(180deg, #ffc928 0%, #f2b71e 100%) !important;
+      .home-app-v2 .weekly-broadcast-card .weekly-broadcast-team strong {
+        color: #102a52 !important;
+        text-shadow: none !important;
+      }
+
+      .home-app-v2 .weekly-broadcast-card .weekly-broadcast-team em {
+        color: #153f70 !important;
+        background: rgba(255,255,255,.82) !important;
+        border-color: rgba(18,83,151,.20) !important;
+        box-shadow: 0 2px 6px rgba(18,83,151,.06) !important;
+      }
+
+      .home-app-v2 .weekly-broadcast-card .weekly-broadcast-team img:not(.matchup-watermark) {
+        filter: drop-shadow(0 6px 8px rgba(9,48,94,.16)) !important;
+      }
+
+      .home-app-v2 .weekly-broadcast-card .weekly-broadcast-vs {
+        color: #102a52 !important;
+        background: linear-gradient(180deg,#ffc52f,#ffad13) !important;
+        border-radius: 13px !important;
         box-shadow:
-          0 10px 22px rgba(242,183,30,.28),
-          inset 0 1px 0 rgba(255,255,255,.46) !important;
+          0 6px 14px rgba(255,174,19,.23),
+          inset 0 1px 0 rgba(255,255,255,.40) !important;
+        text-shadow: none !important;
       }
 
-      #dashboard-matchups .weekly-broadcast-card > small {
-        position: relative;
-        z-index: 1;
-        display: block;
-        padding: 11px 14px 13px !important;
-        color: #dbe7f4 !important;
-        border-top: 1px solid rgba(255,255,255,.08);
-        background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03)) !important;
+      .home-app-v2 .weekly-broadcast-card .weekly-broadcast-vs::before,
+      .home-app-v2 .weekly-broadcast-card .weekly-broadcast-vs::after {
+        display: none !important;
+      }
+
+      .home-app-v2 .weekly-broadcast-card > small {
+        color: #647891 !important;
+        text-shadow: none !important;
       }
     }
 
@@ -2070,22 +2056,6 @@ function ensureCurrentMatchLogoPlates() {
         width: 62px !important;
         height: 62px !important;
         padding: 4px !important;
-      }
-
-      #dashboard-matchups .weekly-broadcast-card .league-matchup-versus {
-        min-height: 146px;
-        padding-left: 10px !important;
-        padding-right: 10px !important;
-      }
-
-      #dashboard-matchups .weekly-broadcast-card .weekly-broadcast-team img {
-        width: 62px !important;
-        height: 62px !important;
-      }
-
-      #dashboard-matchups .weekly-broadcast-card .weekly-broadcast-vs {
-        width: 48px !important;
-        height: 48px !important;
       }
     }
   `;
