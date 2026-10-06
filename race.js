@@ -253,7 +253,8 @@ function emptyChip(){
    Stima Monte Carlo deterministica:
    - punti attuali
    - calendario residuo
-   - Power Ranking corrente
+   - Power Ranking corrente, con influenza volutamente limitata
+   - alta varianza tipica del fantacalcio
    Nessun vantaggio casa/trasferta.
    In caso di parità finale il credito titolo viene diviso tra le squadre a pari punti.
 */
@@ -278,16 +279,27 @@ function seededRandom(seed){
 function matchProbabilities(scoreA,scoreB){
   const a=Number.isFinite(scoreA)?scoreA:50;
   const b=Number.isFinite(scoreB)?scoreB:50;
-  const delta=a-b;
+  const delta=Math.max(-60,Math.min(60,a-b));
 
-  // Pareggio leggermente più probabile tra squadre vicine.
-  const pDraw=Math.max(.16,Math.min(.27,.27-Math.abs(delta)*.0015));
+  /*
+    Fantacalcio = alta varianza.
+    Il Power Ranking deve spostare le probabilità, non decidere la partita.
+
+    Squadre pari:
+      casa 37.5% · pari 25% · trasferta 37.5%
+
+    Anche con un enorme gap di Power Ranking:
+      la squadra sfavorita mantiene circa 25% di possibilità di vittoria.
+    Questo evita odds assurde quando mancano ancora molte giornate.
+  */
+  const pDraw=Math.max(.22,Math.min(.27,.25-Math.abs(delta)*.00035));
   const decisive=1-pDraw;
 
-  // Curva logistica: il Power Ranking sposta la probabilità senza renderla mai certa.
-  const shareA=1/(1+Math.exp(-delta/18));
-  const pA=decisive*shareA;
-  const pB=decisive-pA;
+  // Massimo spostamento: circa +/- 12 punti percentuali sulla vittoria.
+  const shift=Math.max(-.12,Math.min(.12,delta*.0022));
+  const pA=Math.max(.24,Math.min(.55,decisive/2+shift));
+  const pB=1-pDraw-pA;
+
   return {pA,pDraw,pB};
 }
 function conferenceTitleOdds(rows,fixtures,code,powers,iterations=12000){
