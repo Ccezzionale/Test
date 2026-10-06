@@ -88,19 +88,11 @@
     </div>
   </nav>
 
-  <header class="hof-hero">
-    <div class="hof-hero__overlay"></div>
-    <div class="hof-hero__inner">
-      <div class="hero-kicker-hof">La storia della Lega degli Eroi</div>
-      <h1>Hall of Fame</h1>
-      <p class="hero-subtitle-hof">Campioni, rivalità, imprese e leggende del fantacalcio più eroico del multiverso.</p>
-      <div class="hero-pill-row">
-        <span>Campioni</span>
-        <span>Trofei</span>
-        <span>Medagliere</span>
-        <span>Record</span>
-      </div>
-    </div>
+  <header class="hof-hero" aria-label="Banner Hall of Fame">
+    <picture class="hof-banner-picture">
+      <source media="(max-width: 760px)" srcset="img/hall-of-fame-mobile.webp">
+      <img src="img/hall-of-fame-desktop.webp" alt="Hall of Fame - Lega degli Eroi" class="hof-banner-image">
+    </picture>
   </header>
 
   <main class="hof-page">
@@ -514,40 +506,7 @@
         </article>
       </section>
     </section>
-  
-
-    <section id="hof-admin-panel" class="hof-admin-panel" hidden aria-label="Amministrazione Hall of Fame">
-      <details class="hof-admin-details">
-        <summary>
-          <span>⚙️ Finalizza competizioni</span>
-          <small>solo Admin / Commissioner</small>
-        </summary>
-        <div class="hof-admin-body">
-          <div class="hof-admin-heading">
-            <div>
-              <span class="hof-admin-kicker">Hall of Fame automatica</span>
-              <h2>Verdetti ufficiali</h2>
-              <p>Il sistema calcola il podio dai dati della competizione. Tu devi soltanto confermare quando il verdetto è ufficiale.</p>
-            </div>
-            <label class="hof-season-field">
-              <span>Stagione</span>
-              <input id="hof-admin-season" type="text" inputmode="numeric" placeholder="2026-2027" maxlength="9" />
-            </label>
-          </div>
-
-          <div class="hof-admin-legend" aria-label="Legenda stati">
-            <span><i class="dot running"></i> In corso</span>
-            <span><i class="dot ready"></i> Pronta da finalizzare</span>
-            <span><i class="dot finalized"></i> Finalizzata</span>
-            <span><i class="dot pending"></i> Collegamento in preparazione</span>
-          </div>
-
-          <div id="hof-admin-grid" class="hof-admin-grid"></div>
-          <p id="hof-admin-message" class="hof-admin-message" aria-live="polite"></p>
-        </div>
-      </details>
-    </section>
-</main>
+  </main>
 
   <script>
     const medagliere = [
@@ -894,7 +853,6 @@
     }
   </script>
 
-  <script type="module" src="hall-of-fame-live.js"></script>
   <script src="mobile-nav.js"></script>
   <script src="navbar.js"></script>
 </body>
