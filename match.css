@@ -2077,3 +2077,80 @@ body.match-center-page {
     font-size:1.5rem !important;
   }
 }
+
+
+/* =========================================================
+   MATCH CENTER V12 · mobile: nomi sopra i loghi
+   + matchup più pulito e lontano dalla mascotte
+   ========================================================= */
+
+@media (max-width:760px){
+  .mc-matchup-strip{
+    bottom: 5.2% !important;
+    width: calc(100% - 42px) !important;
+  }
+
+  .mc-versus{
+    align-items: start !important;
+  }
+
+  .mc-team{
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+  }
+
+  .mc-team strong{
+    order: -1 !important;
+    margin-top: 0 !important;
+    margin-bottom: 8px !important;
+    min-height: 32px !important;
+    display: flex !important;
+    align-items: flex-end !important;
+    justify-content: center !important;
+    text-align: center !important;
+    font-size: .66rem !important;
+    line-height: 1.05 !important;
+    max-width: 118px !important;
+  }
+
+  .mc-team img{
+    margin-top: 0 !important;
+  }
+
+  .mc-score{
+    padding-top: 42px !important;
+    align-self: start !important;
+  }
+
+  .mc-vs-large{
+    font-size: 1.62rem !important;
+  }
+
+  .mc-rank-chip{
+    margin-top: 8px !important;
+  }
+}
+
+@media (max-width:390px){
+  .mc-matchup-strip{
+    width: calc(100% - 28px) !important;
+    bottom: 4.8% !important;
+  }
+
+  .mc-team strong{
+    min-height: 28px !important;
+    margin-bottom: 7px !important;
+    font-size: .60rem !important;
+    max-width: 104px !important;
+  }
+
+  .mc-score{
+    padding-top: 36px !important;
+  }
+
+  .mc-vs-large{
+    font-size: 1.42rem !important;
+  }
+}
