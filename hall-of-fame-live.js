@@ -26,14 +26,16 @@ const COMPETITIONS = [
     name: 'Crash Out Cup',
     target: 'albo-crash-out-cup',
     trophy: 'img/Crashoutcup.png',
-    liveSource: null
+    liveSource: 'crashout',
+    medalPlaces: 2
   },
   {
     key: 'highlander',
     name: 'Highlander',
     target: 'albo-highlander',
     trophy: 'img/maglie/Higlandercup.webp',
-    liveSource: null
+    liveSource: 'highlander',
+    medalPlaces: 3
   },
   {
     key: 'conference_league',
@@ -95,7 +97,14 @@ let liveHonours = [];
 let adminCache = {
   results: [],
   fixtures: [],
-  fixtureError: null
+  fixtureError: null,
+  teams: [],
+  highlanderEliminations: [],
+  highlanderError: null,
+  crashoutSeeds: [],
+  crashoutScores: [],
+  crashoutRivalry: [],
+  crashoutError: null
 };
 
 function escapeHtml(value) {
@@ -660,6 +669,144 @@ function competitionFilter(source) {
   return () => false;
 }
 
+function crashoutWinner(match, scoreMap) {
+  const score = scoreMap.get(match.id) || { home: 0, away: 0 };
+  if (Number(score.home) >= 3 && Number(score.home) > Number(score.away)) return match.home;
+  if (Number(score.away) >= 3 && Number(score.away) > Number(score.home)) return match.away;
+  return null;
+}
+
+function buildCrashoutBracket(seeds, scoreMap) {
+  const bySeed = Object.fromEntries(seeds.map(row => [Number(row.seed), cleanTeamName(row.team)]));
+  const mk = (id, home, away, stage) => ({ id, home: home || 'TBD', away: away || 'TBD', stage });
+
+  const r1 = [
+    mk('L1', bySeed[1], bySeed[16], 'Ottavi'),
+    mk('L2', bySeed[8], bySeed[9], 'Ottavi'),
+    mk('L3', bySeed[5], bySeed[12], 'Ottavi'),
+    mk('L4', bySeed[4], bySeed[13], 'Ottavi'),
+    mk('R1', bySeed[3], bySeed[14], 'Ottavi'),
+    mk('R2', bySeed[6], bySeed[11], 'Ottavi'),
+    mk('R3', bySeed[7], bySeed[10], 'Ottavi'),
+    mk('R4', bySeed[2], bySeed[15], 'Ottavi')
+  ];
+
+  const winners = Object.fromEntries(r1.map(match => [match.id, crashoutWinner(match, scoreMap)]));
+  const qf = [
+    mk('LSF1', winners.L1, winners.L2, 'Quarti'),
+    mk('LSF2', winners.L3, winners.L4, 'Quarti'),
+    mk('RSF1', winners.R1, winners.R2, 'Quarti'),
+    mk('RSF2', winners.R3, winners.R4, 'Quarti')
+  ];
+  qf.forEach(match => { winners[match.id] = crashoutWinner(match, scoreMap); });
+
+  const sf = [
+    mk('LCF', winners.LSF1, winners.LSF2, 'Semifinale'),
+    mk('RCF', winners.RSF1, winners.RSF2, 'Semifinale')
+  ];
+  sf.forEach(match => { winners[match.id] = crashoutWinner(match, scoreMap); });
+
+  const final = mk('F', winners.LCF, winners.RCF, 'Finale');
+  return [...r1, ...qf, ...sf, final];
+}
+
+function highlanderPreview() {
+  if (adminCache.highlanderError) {
+    return { standings: [], podium: [], ready: false, played: 0, fixtures: 15, note: 'Dati Highlander non disponibili' };
+  }
+
+  const teams = (adminCache.teams || [])
+    .map(row => cleanTeamName(row.name))
+    .filter(Boolean);
+  const eliminations = [...(adminCache.highlanderEliminations || [])]
+    .map(row => ({
+      team_name: cleanTeamName(row.team_name),
+      turno: Number(row.turno) || 0
+    }))
+    .filter(row => row.team_name && row.turno > 0)
+    .sort((a, b) => b.turno - a.turno);
+
+  const eliminatedKeys = new Set(eliminations.map(row => teamKey(row.team_name)));
+  const survivors = teams.filter(name => !eliminatedKeys.has(teamKey(name)));
+  const ready = teams.length >= 2 && eliminations.length === teams.length - 1 && survivors.length === 1;
+
+  const podium = [];
+  if (ready) {
+    podium.push({ position: 1, squadra: survivors[0] });
+    if (eliminations[0]) podium.push({ position: 2, squadra: eliminations[0].team_name });
+    if (eliminations[1]) podium.push({ position: 3, squadra: eliminations[1].team_name });
+  } else {
+    if (survivors.length === 1 && eliminations.length) {
+      podium.push({ position: 1, squadra: survivors[0] });
+      if (eliminations[0]) podium.push({ position: 2, squadra: eliminations[0].team_name });
+      if (eliminations[1]) podium.push({ position: 3, squadra: eliminations[1].team_name });
+    }
+  }
+
+  return {
+    standings: [],
+    podium,
+    ready,
+    played: eliminations.length,
+    fixtures: Math.max(0, teams.length - 1),
+    note: teams.length ? `${eliminations.length} / ${Math.max(0, teams.length - 1)} eliminazioni registrate` : 'Squadre Highlander non disponibili'
+  };
+}
+
+function crashoutPreview() {
+  if (adminCache.crashoutError) {
+    return { standings: [], podium: [], ready: false, played: 0, fixtures: 0, note: 'Dati Crash Out non disponibili' };
+  }
+
+  const seeds = (adminCache.crashoutSeeds || [])
+    .map(row => ({ seed: Number(row.seed_number), team: cleanTeamName(row.team_name) }))
+    .filter(row => row.seed >= 1 && row.seed <= 16 && row.team)
+    .sort((a, b) => a.seed - b.seed);
+
+  const scoreMap = new Map((adminCache.crashoutScores || []).map(row => [
+    String(row.series_id || ''),
+    { home: Number(row.home_score || 0), away: Number(row.away_score || 0) }
+  ]));
+
+  const allRivalryPlayed = (adminCache.crashoutRivalry || []).length > 0 &&
+    (adminCache.crashoutRivalry || []).every(row => Boolean(row.is_played));
+
+  if (seeds.length < 16) {
+    return {
+      standings: [],
+      podium: [],
+      ready: false,
+      played: (adminCache.crashoutRivalry || []).filter(row => row.is_played).length,
+      fixtures: (adminCache.crashoutRivalry || []).length,
+      note: allRivalryPlayed ? 'Rivalry Games concluse · seed playoff non ancora completi' : 'Rivalry Games ancora in corso'
+    };
+  }
+
+  const bracket = buildCrashoutBracket(seeds, scoreMap);
+  const final = bracket.find(match => match.id === 'F');
+  const winner = final ? crashoutWinner(final, scoreMap) : null;
+  const finalist = winner && final
+    ? (teamKey(final.home) === teamKey(winner) ? final.away : final.home)
+    : null;
+
+  const ready = Boolean(allRivalryPlayed && winner && finalist && winner !== 'TBD' && finalist !== 'TBD');
+  const podium = ready ? [
+    { position: 1, squadra: cleanTeamName(winner) },
+    { position: 2, squadra: cleanTeamName(finalist) }
+  ] : [];
+
+  return {
+    standings: [],
+    podium,
+    ready,
+    played: Number((scoreMap.get('F')?.home || 0)) + Number((scoreMap.get('F')?.away || 0)),
+    fixtures: 3,
+    note: ready
+      ? `Finale conclusa ${scoreMap.get('F').home}-${scoreMap.get('F').away}`
+      : (allRivalryPlayed ? 'Fase finale in corso' : 'Rivalry Games ancora in corso')
+  };
+}
+
 function uniquePlayedMatches(rows) {
   const set = new Set();
   rows.forEach(row => {
@@ -680,11 +827,14 @@ function fixtureCount(source) {
   })).length;
 }
 
-function previewForSource(source) {
+function previewForSource(source, season = currentSeason()) {
+  if (source === 'highlander') return highlanderPreview(season);
+  if (source === 'crashout') return crashoutPreview(season);
+
   if (source === 'standings_total') {
-    const a = previewForSource('conf_a');
-    const b = previewForSource('conf_b');
-    const rr = previewForSource('round_robin');
+    const a = previewForSource('conf_a', season);
+    const b = previewForSource('conf_b', season);
+    const rr = previewForSource('round_robin', season);
     const standings = mergeStandings(a.standings, b.standings, rr.standings);
     return {
       standings,
@@ -740,14 +890,45 @@ async function isCurrentUserAdmin() {
   return ['admin', 'commissioner'].includes(String(profile.role || '').toLowerCase());
 }
 
-async function loadAdminCompetitionData() {
-  const [resultsResponse, fixturesResponse] = await Promise.all([
+async function loadAdminCompetitionData(season) {
+  const shortSeason = String(seasonStart(season));
+
+  const [
+    resultsResponse,
+    fixturesResponse,
+    teamsResponse,
+    highlanderResponse,
+    crashoutSeedsResponse,
+    crashoutScoresResponse,
+    crashoutRivalryResponse
+  ] = await Promise.all([
     supabase
       .from('fantacalcio_results')
       .select('gw, team, opponent, points_for, points_against, result, phase, conference, team_key'),
     supabase
       .from('fantacalcio_fixtures')
-      .select('gw, home_team, away_team, phase, conference')
+      .select('gw, home_team, away_team, phase, conference'),
+    supabase
+      .from('teams')
+      .select('name')
+      .order('name', { ascending: true }),
+    supabase
+      .from('highlander_eliminations')
+      .select('season, turno, team_name, magic_punti')
+      .eq('season', shortSeason)
+      .order('turno', { ascending: true }),
+    supabase
+      .from('crashout_playoff_seeds')
+      .select('season, seed_number, team_name')
+      .eq('season', shortSeason)
+      .order('seed_number', { ascending: true }),
+    supabase
+      .from('crashout_playoff_scores')
+      .select('series_id, home_score, away_score'),
+    supabase
+      .from('crashout_rivalry_matches')
+      .select('season, is_played')
+      .eq('season', shortSeason)
   ]);
 
   if (resultsResponse.error) throw resultsResponse.error;
@@ -755,6 +936,15 @@ async function loadAdminCompetitionData() {
   adminCache.results = resultsResponse.data || [];
   adminCache.fixtures = fixturesResponse.error ? [] : (fixturesResponse.data || []);
   adminCache.fixtureError = fixturesResponse.error || null;
+  adminCache.teams = teamsResponse.error ? [] : (teamsResponse.data || []);
+
+  adminCache.highlanderEliminations = highlanderResponse.error ? [] : (highlanderResponse.data || []);
+  adminCache.highlanderError = highlanderResponse.error || teamsResponse.error || null;
+
+  adminCache.crashoutSeeds = crashoutSeedsResponse.error ? [] : (crashoutSeedsResponse.data || []);
+  adminCache.crashoutScores = crashoutScoresResponse.error ? [] : (crashoutScoresResponse.data || []);
+  adminCache.crashoutRivalry = crashoutRivalryResponse.error ? [] : (crashoutRivalryResponse.data || []);
+  adminCache.crashoutError = crashoutSeedsResponse.error || crashoutScoresResponse.error || crashoutRivalryResponse.error || null;
 }
 
 async function loadFinalizations(season) {
@@ -825,7 +1015,7 @@ async function renderAdminPanel() {
   adminMessage('Carico risultati e stati delle competizioni…', 'loading');
 
   try {
-    await loadAdminCompetitionData();
+    await loadAdminCompetitionData(season);
     const finalizations = await loadFinalizations(season);
 
     grid.innerHTML = COMPETITIONS.map(cfg => {
@@ -840,19 +1030,25 @@ async function renderAdminPanel() {
         podium = storedPodium(finalized);
         meta = `Verdetto registrato il ${new Date(finalized.finalized_at).toLocaleString('it-IT')}.`;
       } else if (cfg.liveSource) {
-        const preview = previewForSource(cfg.liveSource);
-        podium = preview.podium.map((team, index) => ({ ...team, position: index + 1 }));
-        ready = preview.ready && podium.length >= 3;
+        const preview = previewForSource(cfg.liveSource, season);
+        podium = preview.podium.map((team, index) => ({ ...team, position: Number(team.position || index + 1) }));
+        const requiredPlaces = Number(cfg.medalPlaces || 3);
+        ready = preview.ready && podium.length >= requiredPlaces;
         status = ready ? 'ready' : 'running';
-        meta = preview.fixtures > 0
+        meta = preview.note || (preview.fixtures > 0
           ? `${preview.played} / ${preview.fixtures} partite completate`
-          : `${preview.played} partite registrate · calendario completo non disponibile`;
+          : `${preview.played} partite registrate · calendario completo non disponibile`);
       }
 
-      const finalizeDisabled = !cfg.liveSource || !ready || finalized;
-      const sourceNote = cfg.liveSource
-        ? 'Verdetto calcolato automaticamente dalla classifica ufficiale.'
-        : 'Il verdetto sarà collegato direttamente alla pagina della coppa.';
+      const requiredPlaces = Number(cfg.medalPlaces || 3);
+      const finalizeDisabled = !cfg.liveSource || !ready || finalized || podium.length < requiredPlaces;
+      const sourceNote = cfg.liveSource === 'highlander'
+        ? 'Verdetto calcolato automaticamente dall’ordine delle eliminazioni Highlander.'
+        : cfg.liveSource === 'crashout'
+          ? 'Verdetto calcolato automaticamente dalla finale della Crash Out Cup.'
+          : cfg.liveSource
+            ? 'Verdetto calcolato automaticamente dalla classifica ufficiale.'
+            : 'Il verdetto sarà collegato direttamente alla pagina della coppa.';
 
       return `
         <article class="hof-admin-card" data-admin-competition="${escapeHtml(cfg.key)}">
@@ -882,13 +1078,14 @@ async function renderAdminPanel() {
         const key = button.dataset.finalize;
         const cfg = COMPETITION_MAP.get(key);
         if (!cfg?.liveSource) return;
-        const preview = previewForSource(cfg.liveSource);
-        const podium = preview.podium.slice(0,3).map((team,index) => ({
-          position: index + 1,
+        const preview = previewForSource(cfg.liveSource, season);
+        const requiredPlaces = Number(cfg.medalPlaces || 3);
+        const podium = preview.podium.slice(0, requiredPlaces).map((team,index) => ({
+          position: Number(team.position || index + 1),
           team_name: team.squadra
         }));
 
-        if (!preview.ready || podium.length < 3) {
+        if (!preview.ready || podium.length < requiredPlaces) {
           adminMessage(`${cfg.name}: competizione non ancora pronta da finalizzare.`, 'error');
           return;
         }
@@ -907,7 +1104,7 @@ async function renderAdminPanel() {
           p_competition_key: cfg.key,
           p_competition_name: cfg.name,
           p_podium: podium,
-          p_source: 'fantacalcio_results'
+          p_source: cfg.liveSource === 'highlander' ? 'highlander_eliminations' : (cfg.liveSource === 'crashout' ? 'crashout_playoff_scores' : 'fantacalcio_results')
         });
 
         if (error) {
@@ -955,10 +1152,15 @@ async function renderAdminPanel() {
       });
     });
 
-    if (adminCache.fixtureError) {
-      adminMessage('Hall of Fame attiva. Nota: non riesco a leggere fantacalcio_fixtures, quindi le competizioni di classifica non possono ancora passare automaticamente a “Pronta”.', 'error');
+    const warnings = [];
+    if (adminCache.fixtureError) warnings.push('calendario classifiche non disponibile');
+    if (adminCache.highlanderError) warnings.push('Highlander non disponibile');
+    if (adminCache.crashoutError) warnings.push('Crash Out non disponibile');
+
+    if (warnings.length) {
+      adminMessage(`Hall of Fame attiva. Attenzione: ${warnings.join(' · ')}.`, 'error');
     } else {
-      adminMessage('Hall of Fame collegata. Le competizioni pronte possono essere finalizzate.', 'ok');
+      adminMessage('Hall of Fame collegata. Conference, Round Robin, Campionato, Highlander e Crash Out possono passare automaticamente a “Pronta”.', 'ok');
     }
   } catch (error) {
     console.error('Errore Admin Hall of Fame:', error);
