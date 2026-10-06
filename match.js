@@ -365,6 +365,401 @@ function formMarkup(rows, team, params, includeTarget) {
   return { dots, average };
 }
 
+
+async function loadLeagueFixtures(params) {
+  if (params.source === "crashout") return [];
+
+  const { data, error } = await supabase
+    .from("fantacalcio_fixtures")
+    .select("conference, phase, gw, home_team, away_team, match_date")
+    .eq("conference", params.competition)
+    .eq("gw", params.gw)
+    .order("home_team", { ascending: true });
+
+  if (error) {
+    console.warn("Fixture Match Center non disponibili:", error);
+    return [];
+  }
+
+  return (data || []).map(row => ({
+    conference: row.conference,
+    gw: Number(row.gw),
+    home: canonicalTeamName(row.home_team),
+    away: canonicalTeamName(row.away_team),
+    date: row.match_date || ""
+  }));
+}
+
+function resultForPair(rows, competition, gw, home, away) {
+  const candidates = rows.filter(row =>
+    String(row.Conference || "").trim() === competition &&
+    Number(row.GW) === Number(gw) &&
+    pairMatches(row.Team, row.Opponent, home, away) &&
+    isCompletedRow(row)
+  );
+
+  if (!candidates.length) return null;
+
+  const direct = candidates.find(row => normalizeTeamName(row.Team) === normalizeTeamName(home)) || candidates[0];
+  const directIsHome = normalizeTeamName(direct.Team) === normalizeTeamName(home);
+
+  return {
+    pointsHome: directIsHome ? parseNumber(direct.PointsFor) : parseNumber(direct.PointsAgainst),
+    pointsAway: directIsHome ? parseNumber(direct.PointsAgainst) : parseNumber(direct.PointsFor)
+  };
+}
+
+function uniqueMatchesForGw(rows, competition, gw) {
+  const seen = new Set();
+  const matches = [];
+
+  rows
+    .filter(isCompletedRow)
+    .filter(row => String(row.Conference || "").trim() === competition && Number(row.GW) === Number(gw))
+    .forEach(row => {
+      const a = canonicalTeamName(row.Team);
+      const b = canonicalTeamName(row.Opponent);
+      const key = [normalizeTeamName(a), normalizeTeamName(b)].sort().join("|");
+      if (seen.has(key)) return;
+      seen.add(key);
+
+      const rowIsA = normalizeTeamName(row.Team) === normalizeTeamName(a);
+      matches.push({
+        teamA: a,
+        teamB: b,
+        pointsA: rowIsA ? parseNumber(row.PointsFor) : parseNumber(row.PointsAgainst),
+        pointsB: rowIsA ? parseNumber(row.PointsAgainst) : parseNumber(row.PointsFor)
+      });
+    });
+
+  return matches;
+}
+
+function stakesContext(params, rows) {
+  const before = standingSnapshot(rows, params.competition, params.gw);
+  const homePos = positionOf(before, params.home);
+  const awayPos = positionOf(before, params.away);
+  const homePts = pointsOf(before, params.home);
+  const awayPts = pointsOf(before, params.away);
+
+  const playoffCut = params.competition === "Unificata" ? 8 : 4;
+  let badge = "MATCH CONTEXT";
+
+  if (homePos && awayPos) {
+    if (homePos <= 2 && awayPos <= 2) badge = "SFIDA PER LA VETTA";
+    else if (homePos <= playoffCut && awayPos <= playoffCut) badge = params.competition === "Unificata" ? "SCONTRO PLAYOFF" : "SCONTRO DIRETTO TOP 4";
+    else if ((homePos <= playoffCut && awayPos > playoffCut) || (awayPos <= playoffCut && homePos > playoffCut)) {
+      badge = params.competition === "Unificata" ? "PLAYOFF LINE" : "ASSALTO ALLA TOP 4";
+    }
+  }
+
+  const winScenario = (team, pts, opp, oppPts) => {
+    if (pts == null || oppPts == null) return `${team}: tre punti pesanti in palio.`;
+    const after = pts + 3;
+    if (after > oppPts) return `${team}: con una vittoria supera ${opp} nello scontro diretto.`;
+    if (after === oppPts) return `${team}: con una vittoria aggancia ${opp} a ${after} punti.`;
+    return `${team}: con una vittoria sale a ${after} punti e riduce il distacco da ${opp}.`;
+  };
+
+  const drawText = homePts != null && awayPts != null
+    ? `Con un pareggio: ${params.home} ${homePts + 1} pt · ${params.away} ${awayPts + 1} pt.`
+    : "Con un pareggio, le distanze restano sostanzialmente invariate.";
+
+  return {
+    badge,
+    before,
+    homePos,
+    awayPos,
+    homePts,
+    awayPts,
+    scenarios: [
+      { icon: "▲", title: `Se vince ${params.home}`, text: winScenario(params.home, homePts, params.away, awayPts) },
+      { icon: "▲", title: `Se vince ${params.away}`, text: winScenario(params.away, awayPts, params.home, homePts) },
+      { icon: "=", title: "Se finisce pari", text: drawText }
+    ]
+  };
+}
+
+function renderStakes(params, rows, target, completed, roundComplete) {
+  const badge = document.getElementById("mc-stakes-badge");
+  const scenarios = document.getElementById("mc-stakes-scenarios");
+  const storyTitle = document.getElementById("mc-story-title");
+  const storyBody = document.getElementById("mc-story-body");
+  if (!badge || !scenarios || !storyTitle || !storyBody) return;
+
+  const ctx = stakesContext(params, rows);
+
+  if (!completed) {
+    storyTitle.textContent = "What's at stake";
+    badge.textContent = ctx.badge;
+
+    if (ctx.homePos && ctx.awayPos && ctx.homePts != null && ctx.awayPts != null) {
+      const diff = Math.abs(ctx.homePts - ctx.awayPts);
+      storyBody.textContent = `${params.home} è ${ctx.homePos}° con ${ctx.homePts} pt, ${params.away} è ${ctx.awayPos}° con ${ctx.awayPts} pt. ${diff === 0 ? "Sono a pari punti." : `Le separano ${diff} ${diff === 1 ? "punto" : "punti"}.`}`;
+    } else {
+      storyBody.textContent = "Il contesto della classifica si aggiornerà appena saranno disponibili abbastanza risultati.";
+    }
+
+    scenarios.innerHTML = ctx.scenarios.map(item => `
+      <div class="mc-stakes-row">
+        <span>${item.icon}</span>
+        <div>
+          <strong>${escapeHtml(item.title)}</strong>
+          <small>${escapeHtml(item.text)}</small>
+        </div>
+      </div>
+    `).join("");
+    return;
+  }
+
+  storyTitle.textContent = "Match impact";
+  badge.textContent = roundComplete ? "GIORNATA COMPLETA" : "RISULTATO REGISTRATO";
+
+  const result = resultFromPoints(target.pointsHome, target.pointsAway);
+  const goalsHome = pointsToGoals(target.pointsHome);
+  const goalsAway = pointsToGoals(target.pointsAway);
+
+  let opening = `La partita termina ${goalsHome} - ${goalsAway}.`;
+  if (result === "V") opening = `${params.home} supera ${params.away} ${goalsHome} - ${goalsAway}.`;
+  if (result === "P") opening = `${params.away} supera ${params.home} ${goalsAway} - ${goalsHome}.`;
+  storyBody.textContent = opening;
+
+  if (!roundComplete) {
+    scenarios.innerHTML = `
+      <div class="mc-stakes-row pending">
+        <span>…</span>
+        <div>
+          <strong>Impatto definitivo in attesa</strong>
+          <small>La classifica finale della giornata comparirà quando tutte le partite del turno saranno concluse.</small>
+        </div>
+      </div>`;
+    return;
+  }
+
+  const after = standingSnapshotThrough(rows, params.competition, params.gw);
+  const afterHome = positionOf(after, params.home);
+  const afterAway = positionOf(after, params.away);
+
+  scenarios.innerHTML = [
+    {
+      icon: "↗",
+      title: params.home,
+      text: `${ctx.homePos ? `${ctx.homePos}°` : "–"} → ${afterHome ? `${afterHome}°` : "–"}`
+    },
+    {
+      icon: "↗",
+      title: params.away,
+      text: `${ctx.awayPos ? `${ctx.awayPos}°` : "–"} → ${afterAway ? `${afterAway}°` : "–"}`
+    }
+  ].map(item => `
+    <div class="mc-stakes-row">
+      <span>${item.icon}</span>
+      <div>
+        <strong>${escapeHtml(item.title)}</strong>
+        <small>${escapeHtml(item.text)}</small>
+      </div>
+    </div>
+  `).join("");
+}
+
+function formatFixtureDate(value) {
+  if (!value) return "";
+  const d = new Date(`${value}T12:00:00`);
+  if (Number.isNaN(d.getTime())) return "";
+  return d.toLocaleDateString("it-IT", { day: "2-digit", month: "short" });
+}
+
+function renderAroundLeague(params, rows, fixtures) {
+  const host = document.getElementById("mc-around-list");
+  const title = document.getElementById("mc-around-title");
+  const subtitle = document.getElementById("mc-around-subtitle");
+  if (!host) return;
+
+  if (title) title.textContent = "Around the League";
+  if (subtitle) subtitle.textContent = `GW ${params.gw} · ${competitionLabel(params.competition)}`;
+
+  let schedule = fixtures;
+
+  // Fallback: se non abbiamo fixtures, ricaviamo le partite già giocate.
+  if (!schedule.length) {
+    const seen = new Set();
+    schedule = [];
+    rows
+      .filter(row => String(row.Conference || "").trim() === params.competition && Number(row.GW) === Number(params.gw))
+      .forEach(row => {
+        const home = canonicalTeamName(row.IsHome === false ? row.Opponent : row.Team);
+        const away = canonicalTeamName(row.IsHome === false ? row.Team : row.Opponent);
+        const key = [normalizeTeamName(home), normalizeTeamName(away)].sort().join("|");
+        if (seen.has(key)) return;
+        seen.add(key);
+        schedule.push({ home, away, date: row.Date || "" });
+      });
+  }
+
+  if (!schedule.length) {
+    host.innerHTML = '<div class="mc-empty">Calendario della giornata non disponibile.</div>';
+    return;
+  }
+
+  const before = standingSnapshot(rows, params.competition, params.gw);
+
+  host.innerHTML = schedule.map(f => {
+    const home = canonicalTeamName(f.home);
+    const away = canonicalTeamName(f.away);
+    const result = resultForPair(rows, params.competition, params.gw, home, away);
+    const current = pairMatches(home, away, params.home, params.away);
+
+    const homePos = positionOf(before, home);
+    const awayPos = positionOf(before, away);
+    const date = formatFixtureDate(f.date);
+
+    const href = `match.html?home=${encodeURIComponent(home)}&away=${encodeURIComponent(away)}&gw=${encodeURIComponent(params.gw)}&competition=${encodeURIComponent(params.competition)}&source=${encodeURIComponent(params.source || "league")}`;
+
+    const scoreMarkup = result
+      ? `<div class="mc-around-score"><strong>${pointsToGoals(result.pointsHome)} - ${pointsToGoals(result.pointsAway)}</strong><small>${formatNumber(result.pointsHome)} - ${formatNumber(result.pointsAway)} FP</small></div>`
+      : `<div class="mc-around-score upcoming"><strong>VS</strong><small>${date || "Da giocare"}</small></div>`;
+
+    const status = current ? "QUESTA PARTITA" : result ? "FINALE" : "PREVIEW";
+
+    return `
+      <article class="mc-around-match ${current ? "is-current" : ""}">
+        <div class="mc-around-team">
+          <img src="${teamLogo(home)}" alt="">
+          <strong>${escapeHtml(home)}</strong>
+          <small>${homePos ? `${homePos}°` : "–"}</small>
+        </div>
+
+        ${scoreMarkup}
+
+        <div class="mc-around-team away">
+          <img src="${teamLogo(away)}" alt="">
+          <strong>${escapeHtml(away)}</strong>
+          <small>${awayPos ? `${awayPos}°` : "–"}</small>
+        </div>
+
+        <a class="mc-around-link" href="${href}">
+          ${status}<span>›</span>
+        </a>
+      </article>`;
+  }).join("");
+}
+
+function renderWeekNumbers(params, rows, roundComplete) {
+  const host = document.getElementById("mc-week-numbers");
+  const status = document.getElementById("mc-week-status");
+  if (!host) return;
+
+  if (!roundComplete) {
+    if (status) status.textContent = "Si accende a giornata completa";
+    host.innerHTML = `
+      <div class="mc-week-pending">
+        <span>▥</span>
+        <div>
+          <strong>Recap in attesa</strong>
+          <small>Quando tutte le partite della GW saranno registrate compariranno best score, partita più equilibrata, vittoria più ampia e biggest mover.</small>
+        </div>
+      </div>`;
+    return;
+  }
+
+  if (status) status.textContent = `GW ${params.gw} completata`;
+
+  const matches = uniqueMatchesForGw(rows, params.competition, params.gw);
+  const teamRows = completedRowsFor(rows, params.competition, row => Number(row.GW) === Number(params.gw));
+
+  if (!matches.length || !teamRows.length) {
+    host.innerHTML = '<div class="mc-empty">Statistiche della giornata non disponibili.</div>';
+    return;
+  }
+
+  const best = [...teamRows].sort((a,b) => parseNumber(b.PointsFor) - parseNumber(a.PointsFor))[0];
+  const worst = [...teamRows].sort((a,b) => parseNumber(a.PointsFor) - parseNumber(b.PointsFor))[0];
+
+  const closest = [...matches].sort((a,b) =>
+    Math.abs(a.pointsA-a.pointsB) - Math.abs(b.pointsA-b.pointsB)
+  )[0];
+
+  const biggest = [...matches].sort((a,b) =>
+    Math.abs(b.pointsA-b.pointsB) - Math.abs(a.pointsA-a.pointsB)
+  )[0];
+
+  const before = standingSnapshot(rows, params.competition, params.gw);
+  const after = standingSnapshotThrough(rows, params.competition, params.gw);
+
+  const movers = after.map((rec, idx) => {
+    const beforePos = positionOf(before, rec.team);
+    const afterPos = idx + 1;
+    return {
+      team: rec.team,
+      beforePos,
+      afterPos,
+      delta: beforePos ? beforePos - afterPos : 0
+    };
+  }).sort((a,b) => b.delta-a.delta);
+
+  const mover = movers[0];
+  const biggestWinner = biggest.pointsA >= biggest.pointsB ? biggest.teamA : biggest.teamB;
+  const biggestDiff = Math.abs(biggest.pointsA - biggest.pointsB);
+
+  const cards = [
+    {
+      cls: "best",
+      icon: "★",
+      label: "Miglior punteggio",
+      value: `${formatNumber(best.PointsFor)} FP`,
+      team: canonicalTeamName(best.Team),
+      logo: teamLogo(best.Team)
+    },
+    {
+      cls: "worst",
+      icon: "☠",
+      label: "Peggior punteggio",
+      value: `${formatNumber(worst.PointsFor)} FP`,
+      team: canonicalTeamName(worst.Team),
+      logo: teamLogo(worst.Team)
+    },
+    {
+      cls: "closest",
+      icon: "≈",
+      label: "Partita più equilibrata",
+      value: `${formatNumber(closest.pointsA)} - ${formatNumber(closest.pointsB)}`,
+      team: `${closest.teamA} vs ${closest.teamB}`,
+      logo: teamLogo(closest.teamA)
+    },
+    {
+      cls: "biggest",
+      icon: "▲",
+      label: "Vittoria più ampia",
+      value: `+${formatNumber(biggestDiff)} FP`,
+      team: biggestWinner,
+      logo: teamLogo(biggestWinner)
+    },
+    {
+      cls: "mover",
+      icon: "↗",
+      label: "Maggior salto",
+      value: mover && mover.delta > 0 ? `+${mover.delta} ${mover.delta === 1 ? "posizione" : "posizioni"}` : "Nessun salto",
+      team: mover?.team || "–",
+      logo: mover ? teamLogo(mover.team) : "icon-192.png",
+      detail: mover && mover.beforePos ? `${mover.beforePos}° → ${mover.afterPos}°` : ""
+    }
+  ];
+
+  host.innerHTML = cards.map(card => `
+    <article class="mc-week-stat ${card.cls}">
+      <div class="mc-week-label"><span>${card.icon}</span>${card.label}</div>
+      <div class="mc-week-team">
+        <img src="${card.logo}" alt="">
+        <div>
+          <strong>${escapeHtml(card.value)}</strong>
+          <span>${escapeHtml(card.team)}</span>
+          ${card.detail ? `<small>${escapeHtml(card.detail)}</small>` : ""}
+        </div>
+      </div>
+    </article>
+  `).join("");
+}
+
 function renderHeader(params, target, completed) {
   document.title = `${completed ? "Match Report" : "Match Preview"} - ${params.home} vs ${params.away}`;
   document.getElementById("mc-mode").textContent = completed ? "MATCH REPORT" : "MATCH PREVIEW";
@@ -562,48 +957,7 @@ function renderForm(params, rows, completed) {
 }
 
 function renderStory(params, meetings, rows, target, completed, roundComplete) {
-  const stats = h2hStats(meetings);
-  const storyTitle = document.getElementById("mc-story-title");
-  const storyBody = document.getElementById("mc-story-body");
-
-  if (!completed) {
-    storyTitle.textContent = "Prima del match";
-    if (!stats.count) {
-      storyBody.textContent = "Nessun precedente disponibile tra le due squadre. Il confronto parte senza uno storico utilizzabile.";
-      return;
-    }
-    if (stats.homeWins === stats.awayWins) {
-      storyBody.textContent = `Precedenti in equilibrio: ${stats.homeWins} vittorie per parte${stats.draws ? ` e ${stats.draws} pareggi${stats.draws === 1 ? "o" : ""}` : ""}. Media fantapunti: ${formatNumber(stats.avgHome)} per ${params.home}, ${formatNumber(stats.avgAway)} per ${params.away}.`;
-    } else {
-      const leader = stats.homeWins > stats.awayWins ? params.home : params.away;
-      storyBody.textContent = `${leader} è avanti nei precedenti disponibili. Bilancio: ${stats.homeWins}-${stats.draws}-${stats.awayWins} dal punto di vista di ${params.home}. Media fantapunti: ${formatNumber(stats.avgHome)} - ${formatNumber(stats.avgAway)}.`;
-    }
-    return;
-  }
-
-  storyTitle.textContent = "Match story";
-  const result = resultFromPoints(target.pointsHome, target.pointsAway);
-  const goalsHome = pointsToGoals(target.pointsHome);
-  const goalsAway = pointsToGoals(target.pointsAway);
-  let opening = `La partita termina ${goalsHome} - ${goalsAway}.`;
-  if (result === "V") opening = `${params.home} supera ${params.away} ${goalsHome} - ${goalsAway}.`;
-  if (result === "P") opening = `${params.away} supera ${params.home} ${goalsAway} - ${goalsHome}.`;
-
-  let impact = "";
-  if (roundComplete) {
-    const before = standingSnapshot(rows, params.competition, params.gw);
-    const after = standingSnapshotThrough(rows, params.competition, params.gw);
-    const beforeH = positionOf(before, params.home);
-    const afterH = positionOf(after, params.home);
-    const beforeA = positionOf(before, params.away);
-    const afterA = positionOf(after, params.away);
-    const changes = [];
-    if (beforeH && afterH && beforeH !== afterH) changes.push(`${params.home}: ${beforeH}° → ${afterH}°`);
-    if (beforeA && afterA && beforeA !== afterA) changes.push(`${params.away}: ${beforeA}° → ${afterA}°`);
-    if (changes.length) impact = ` A giornata completa, l'impatto in classifica è ${changes.join("; ")}.`;
-  }
-
-  storyBody.textContent = `${opening} Dopo questo risultato, il bilancio disponibile degli scontri diretti è ${stats.homeWins}-${stats.draws}-${stats.awayWins} dal punto di vista di ${params.home}.${impact}`;
+  renderStakes(params, rows, target, completed, roundComplete);
 }
 
 
@@ -657,9 +1011,10 @@ async function initMatchCenter() {
   }
 
   try {
-    const [allRows, history] = await Promise.all([
+    const [allRows, history, fixtures] = await Promise.all([
       params.source === "crashout" ? loadCrashoutMatchRows() : loadResultsRows(),
-      historicalMeetings(params)
+      historicalMeetings(params),
+      loadLeagueFixtures(params)
     ]);
     const rows = params.source === "crashout" && params.matchId
       ? allRows
@@ -679,6 +1034,8 @@ async function initMatchCenter() {
     renderH2H(params, meetings, completed);
     renderForm(params, rows, completed);
     renderStory(params, meetings, rows, target, completed, roundComplete);
+    renderAroundLeague(params, rows, fixtures);
+    renderWeekNumbers(params, rows, roundComplete);
   } catch (error) {
     console.error("Errore Match Center:", error);
     showError(error?.message || "Errore durante il caricamento dei dati.");

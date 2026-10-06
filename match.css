@@ -420,3 +420,393 @@ body.match-center-page {
   .mc-form-row { grid-template-columns: 1fr; }
   .mc-form-average { text-align: left; display: flex; gap: 5px; align-items: baseline; }
 }
+
+
+/* =========================================================
+   MATCH CENTER V2 · WHAT'S AT STAKE / AROUND THE LEAGUE /
+   THE WEEK IN NUMBERS
+   ========================================================= */
+
+.mc-stakes-card .mc-card-body{
+  min-height:190px;
+  display:block;
+}
+
+.mc-stakes-badge{
+  display:inline-flex;
+  align-items:center;
+  min-height:27px;
+  padding:5px 10px;
+  margin-bottom:10px;
+  border-radius:999px;
+  color:#8c5800;
+  background:linear-gradient(135deg,#fff0c6,#fff8df);
+  border:1px solid rgba(242,183,30,.28);
+  font-size:.69rem;
+  line-height:1;
+  font-weight:1000;
+  letter-spacing:.045em;
+}
+
+.mc-stakes-scenarios{
+  display:grid;
+  gap:8px;
+  margin-top:14px;
+}
+
+.mc-stakes-row{
+  display:grid;
+  grid-template-columns:31px minmax(0,1fr);
+  align-items:center;
+  gap:9px;
+  padding:9px 10px;
+  border:1px solid var(--mc-line);
+  border-radius:13px;
+  background:#f8fbfe;
+}
+
+.mc-stakes-row>span{
+  width:31px;
+  height:31px;
+  display:grid;
+  place-items:center;
+  border-radius:10px;
+  color:#996800;
+  background:#fff3ca;
+  font-weight:1000;
+}
+
+.mc-stakes-row strong,
+.mc-stakes-row small{
+  display:block;
+}
+
+.mc-stakes-row strong{
+  color:var(--mc-ink);
+  font-size:.76rem;
+}
+
+.mc-stakes-row small{
+  margin-top:2px;
+  color:var(--mc-muted);
+  font-size:.69rem;
+  line-height:1.35;
+  font-weight:720;
+}
+
+.mc-stakes-row.pending{
+  background:#fff9e8;
+}
+
+/* AROUND THE LEAGUE */
+.mc-around-card{
+  margin-top:16px;
+}
+
+.mc-around-card .mc-card-body{
+  padding:12px;
+}
+
+.mc-around-list{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:10px;
+}
+
+.mc-around-match{
+  position:relative;
+  display:grid;
+  grid-template-columns:minmax(0,1fr) 82px minmax(0,1fr);
+  grid-template-areas:
+    "home score away"
+    "link link link";
+  align-items:center;
+  gap:8px;
+  overflow:hidden;
+  padding:13px 12px 10px;
+  border:1px solid var(--mc-line);
+  border-radius:17px;
+  background:
+    radial-gradient(circle at 50% 0%,rgba(11,94,175,.05),transparent 45%),
+    #fff;
+  box-shadow:0 7px 18px rgba(4,54,108,.05);
+}
+
+.mc-around-match.is-current{
+  border-color:rgba(242,183,30,.72);
+  background:
+    radial-gradient(circle at 50% 0%,rgba(242,183,30,.12),transparent 46%),
+    linear-gradient(135deg,#fffdf7,#fff);
+}
+
+.mc-around-team{
+  grid-area:home;
+  min-width:0;
+  display:grid;
+  justify-items:center;
+  gap:4px;
+  text-align:center;
+}
+
+.mc-around-team.away{
+  grid-area:away;
+}
+
+.mc-around-team img{
+  width:45px;
+  height:45px;
+  object-fit:contain;
+}
+
+.mc-around-team strong{
+  max-width:100%;
+  overflow:hidden;
+  color:var(--mc-ink);
+  font-size:.72rem;
+  line-height:1.08;
+  white-space:nowrap;
+  text-overflow:ellipsis;
+}
+
+.mc-around-team small{
+  color:var(--mc-muted);
+  font-size:.65rem;
+  font-weight:900;
+}
+
+.mc-around-score{
+  grid-area:score;
+  display:grid;
+  justify-items:center;
+  gap:3px;
+  text-align:center;
+}
+
+.mc-around-score strong{
+  color:var(--mc-navy);
+  font-size:1.1rem;
+  font-weight:1000;
+}
+
+.mc-around-score small{
+  color:var(--mc-muted);
+  font-size:.57rem;
+  line-height:1.15;
+  font-weight:800;
+}
+
+.mc-around-score.upcoming strong{
+  color:var(--mc-gold);
+  font-style:italic;
+}
+
+.mc-around-link{
+  grid-area:link;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:5px;
+  margin-top:3px;
+  padding:7px 9px;
+  border-radius:10px;
+  color:#0b5eaf;
+  background:#eef6ff;
+  font-size:.62rem;
+  font-weight:1000;
+  text-decoration:none;
+}
+
+.mc-around-match.is-current .mc-around-link{
+  color:#7c5900;
+  background:#fff3c9;
+}
+
+.mc-around-link span{
+  font-size:1rem;
+  line-height:.7;
+}
+
+/* THE WEEK IN NUMBERS */
+.mc-week-card{
+  margin-top:16px;
+}
+
+.mc-week-card .mc-card-body{
+  padding:12px;
+}
+
+.mc-week-numbers{
+  display:grid;
+  grid-template-columns:repeat(5,minmax(0,1fr));
+  gap:9px;
+}
+
+.mc-week-stat{
+  min-width:0;
+  padding:12px 11px;
+  border:1px solid var(--mc-line);
+  border-radius:16px;
+  background:#fff;
+}
+
+.mc-week-label{
+  min-height:26px;
+  display:flex;
+  align-items:center;
+  gap:5px;
+  color:#536c8b;
+  font-size:.57rem;
+  line-height:1.08;
+  font-weight:1000;
+  text-transform:uppercase;
+}
+
+.mc-week-label span{
+  color:var(--mc-gold);
+  font-size:.92rem;
+}
+
+.mc-week-team{
+  display:grid;
+  grid-template-columns:38px minmax(0,1fr);
+  align-items:center;
+  gap:8px;
+  margin-top:9px;
+}
+
+.mc-week-team img{
+  width:36px;
+  height:36px;
+  object-fit:contain;
+}
+
+.mc-week-team div{
+  min-width:0;
+}
+
+.mc-week-team strong,
+.mc-week-team span,
+.mc-week-team small{
+  display:block;
+}
+
+.mc-week-team strong{
+  overflow:hidden;
+  color:var(--mc-navy);
+  font-size:1rem;
+  line-height:1.05;
+  font-weight:1000;
+  white-space:nowrap;
+  text-overflow:ellipsis;
+}
+
+.mc-week-team span{
+  margin-top:3px;
+  overflow:hidden;
+  color:#31547c;
+  font-size:.64rem;
+  line-height:1.15;
+  font-weight:850;
+  white-space:nowrap;
+  text-overflow:ellipsis;
+}
+
+.mc-week-team small{
+  margin-top:2px;
+  color:var(--mc-muted);
+  font-size:.58rem;
+  font-weight:800;
+}
+
+.mc-week-stat.best{
+  background:linear-gradient(145deg,#fffdf6,#fff8df);
+}
+
+.mc-week-stat.worst{
+  background:linear-gradient(145deg,#fff,#fff6f7);
+}
+
+.mc-week-stat.mover{
+  background:linear-gradient(145deg,#f6fbff,#edf7ff);
+}
+
+.mc-week-pending{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:12px;
+  min-height:100px;
+  padding:18px;
+  border:1px dashed #bfd5ef;
+  border-radius:16px;
+  color:#526c8b;
+  background:#f7fbff;
+}
+
+.mc-week-pending>span{
+  color:var(--mc-blue);
+  font-size:1.8rem;
+}
+
+.mc-week-pending strong,
+.mc-week-pending small{
+  display:block;
+}
+
+.mc-week-pending strong{
+  color:var(--mc-ink);
+}
+
+.mc-week-pending small{
+  margin-top:3px;
+  max-width:620px;
+  line-height:1.4;
+}
+
+/* Mobile */
+@media(max-width:760px){
+  .mc-stakes-card .mc-card-body{
+    min-height:auto;
+  }
+
+  .mc-around-list{
+    grid-template-columns:1fr;
+  }
+
+  .mc-around-match{
+    grid-template-columns:minmax(0,1fr) 76px minmax(0,1fr);
+  }
+
+  .mc-week-numbers{
+    grid-template-columns:repeat(2,minmax(0,1fr));
+  }
+
+  .mc-week-stat.mover{
+    grid-column:1 / -1;
+  }
+}
+
+@media(max-width:390px){
+  .mc-around-match{
+    grid-template-columns:minmax(0,1fr) 66px minmax(0,1fr);
+    padding-left:8px;
+    padding-right:8px;
+  }
+
+  .mc-around-team img{
+    width:39px;
+    height:39px;
+  }
+
+  .mc-around-team strong{
+    font-size:.65rem;
+  }
+
+  .mc-week-numbers{
+    grid-template-columns:1fr;
+  }
+
+  .mc-week-stat.mover{
+    grid-column:auto;
+  }
+}

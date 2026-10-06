@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Match Center - Lega degli Eroi</title>
   <link rel="stylesheet" href="navbar.css?v=20260929-matchcenter">
-  <link rel="stylesheet" href="match.css?v=20260929-1">
+  <link rel="stylesheet" href="match.css?v=20261006-weekcenter">
   <link rel="manifest" href="manifest.json">
   <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
   <meta name="theme-color" content="#061326">
@@ -278,13 +278,15 @@
         <div class="mc-card-body" id="mc-standings-body"></div>
       </article>
 
-      <article class="mc-card mc-story-card">
+      <article class="mc-card mc-story-card mc-stakes-card">
         <header class="mc-card-head">
-          <span class="mc-card-icon">✦</span>
-          <h2 id="mc-story-title">Prima del match</h2>
+          <span class="mc-card-icon">◎</span>
+          <h2 id="mc-story-title">What's at stake</h2>
         </header>
         <div class="mc-card-body">
+          <div id="mc-stakes-badge" class="mc-stakes-badge">MATCH CONTEXT</div>
           <p id="mc-story-body" class="mc-story-text"></p>
+          <div id="mc-stakes-scenarios" class="mc-stakes-scenarios"></div>
         </div>
       </article>
     </section>
@@ -347,10 +349,32 @@
       </header>
       <div class="mc-card-body" id="mc-recent-list"></div>
     </section>
+
+    <section class="mc-card mc-around-card">
+      <header class="mc-card-head">
+        <span class="mc-card-icon">♟</span>
+        <h2 id="mc-around-title">Around the League</h2>
+        <small id="mc-around-subtitle">Giornata</small>
+      </header>
+      <div class="mc-card-body">
+        <div id="mc-around-list" class="mc-around-list"></div>
+      </div>
+    </section>
+
+    <section class="mc-card mc-week-card">
+      <header class="mc-card-head">
+        <span class="mc-card-icon">▥</span>
+        <h2>The Week in Numbers</h2>
+        <small id="mc-week-status">Si aggiorna a fine giornata</small>
+      </header>
+      <div class="mc-card-body">
+        <div id="mc-week-numbers" class="mc-week-numbers"></div>
+      </div>
+    </section>
   </div>
 </main>
 
-<script type="module" src="match.js?v=20260929-1"></script>
+<script type="module" src="match.js?v=20261006-weekcenter"></script>
 <script src="mobile-nav.js?v=2"></script>
 <script src="navbar.js"></script>
 <script type="module" src="admin-nav.js?v=1"></script>
