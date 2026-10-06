@@ -253,7 +253,7 @@ function emptyChip(){
    Stima Monte Carlo deterministica:
    - punti attuali
    - calendario residuo
-   - Power Ranking corrente, con influenza volutamente limitata
+   - forza futura = 80% rendimento Conference + 20% Power Ranking
    - alta varianza tipica del fantacalcio
    Nessun vantaggio casa/trasferta.
    In caso di parità finale il credito titolo viene diviso tra le squadre a pari punti.
@@ -279,31 +279,53 @@ function seededRandom(seed){
 function matchProbabilities(scoreA,scoreB){
   const a=Number.isFinite(scoreA)?scoreA:50;
   const b=Number.isFinite(scoreB)?scoreB:50;
-  const delta=Math.max(-60,Math.min(60,a-b));
+  const delta=Math.max(-50,Math.min(50,a-b));
 
   /*
-    Fantacalcio = alta varianza.
-    Il Power Ranking deve spostare le probabilità, non decidere la partita.
-
-    Squadre pari:
-      casa 37.5% · pari 25% · trasferta 37.5%
-
-    Anche con un enorme gap di Power Ranking:
-      la squadra sfavorita mantiene circa 25% di possibilità di vittoria.
-    Questo evita odds assurde quando mancano ancora molte giornate.
+    Alta varianza: il rating composito (80% Conference, 20% PR)
+    deve creare un vantaggio, non una sentenza.
   */
-  const pDraw=Math.max(.22,Math.min(.27,.25-Math.abs(delta)*.00035));
+  const pDraw=Math.max(.23,Math.min(.27,.25-Math.abs(delta)*.00025));
   const decisive=1-pDraw;
 
-  // Massimo spostamento: circa +/- 12 punti percentuali sulla vittoria.
-  const shift=Math.max(-.12,Math.min(.12,delta*.0022));
-  const pA=Math.max(.24,Math.min(.55,decisive/2+shift));
+  // Massimo spostamento circa +/- 9 punti percentuali sulla vittoria.
+  const shift=Math.max(-.09,Math.min(.09,delta*.0018));
+  const pA=Math.max(.285,Math.min(.465,decisive/2+shift));
   const pB=1-pDraw-pA;
 
   return {pA,pDraw,pB};
 }
+
+function conferenceStrengthMap(rows,code,powers){
+  const standings=buildStandings(conferenceRows(rows,code));
+  const map=new Map();
+
+  standings.forEach(rec=>{
+    const games=Math.max(1,Number(rec.g)||0);
+    const maxPoints=games*3;
+
+    // Rendimento reale in Conference: 0-100 sulla percentuale dei punti conquistati.
+    const tableScore=maxPoints>0 ? (rec.pt/maxPoints)*100 : 50;
+
+    // Power Ranking corrente: 0-100.
+    const powerScore=powers.get(key(rec.team))?.score ?? 50;
+
+    // Peso deciso per la Race: classifica molto più importante del PR.
+    const strength=tableScore*.80 + powerScore*.20;
+
+    map.set(key(rec.team),{
+      tableScore,
+      powerScore,
+      strength
+    });
+  });
+
+  return map;
+}
+
 function conferenceTitleOdds(rows,fixtures,code,powers,iterations=12000){
   const standings=buildStandings(conferenceRows(rows,code));
+  const strengthMap=conferenceStrengthMap(rows,code,powers);
   const lastGw=maxPlayedGw(rows,code);
   const remaining=fixtures
     .filter(f=>clean(f.conference)===code && Number(f.gw)>lastGw)
@@ -327,7 +349,7 @@ function conferenceTitleOdds(rows,fixtures,code,powers,iterations=12000){
   const seedText=[
     code,lastGw,remaining.length,
     ...teamList.map(t=>`${key(t.team)}:${t.pt}`),
-    ...teamList.map(t=>`${key(t.team)}:${(powers.get(key(t.team))?.score??50).toFixed(3)}`)
+    ...teamList.map(t=>`${key(t.team)}:${(strengthMap.get(key(t.team))?.strength??50).toFixed(3)}`)
   ].join('|');
 
   const rand=seededRandom(hashSeed(seedText));
@@ -339,8 +361,8 @@ function conferenceTitleOdds(rows,fixtures,code,powers,iterations=12000){
       const home=canonical(f.home_team);
       const away=canonical(f.away_team);
       const hk=key(home), ak=key(away);
-      const hp=powers.get(hk)?.score ?? 50;
-      const ap=powers.get(ak)?.score ?? 50;
+      const hp=strengthMap.get(hk)?.strength ?? 50;
+      const ap=strengthMap.get(ak)?.strength ?? 50;
       const {pA,pDraw}=matchProbabilities(hp,ap);
       const r=rand();
 
@@ -370,7 +392,7 @@ function winChanceMarkup(value){
   let cls='mid';
   if(pct>=45) cls='high';
   else if(pct<15) cls='low';
-  return `<span class="win-chance ${cls}" title="Probabilità stimata di vincere la Conference: punti attuali, calendario residuo e Power Ranking">
+  return `<span class="win-chance ${cls}" title="Probabilità stimata di vincere la Conference: 80% rendimento in Conference, 20% Power Ranking, più punti attuali e calendario residuo">
     <b>${pct.toFixed(0)}%</b><small>WIN</small>
   </span>`;
 }
