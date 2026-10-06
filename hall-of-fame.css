@@ -755,3 +755,205 @@ body.hall-of-fame-page {
   .hall-of-fame-page .trophy-card-lite,
   .hall-of-fame-page .trophy-card-lite.is-major { min-height: 150px; }
 }
+
+
+/* =========================================================
+   HALL OF FAME · ADMIN FINALIZZAZIONE
+   ========================================================= */
+.hof-admin-panel {
+  margin-top: 24px;
+}
+
+.hof-admin-details {
+  overflow: hidden;
+  border-radius: 22px;
+  border: 1px solid rgba(255, 212, 90, .28);
+  background: linear-gradient(155deg, rgba(7,45,86,.94), rgba(2,19,41,.98));
+  box-shadow: 0 18px 40px rgba(0,0,0,.28), inset 0 1px 0 rgba(255,255,255,.08);
+}
+
+.hof-admin-details > summary {
+  list-style: none;
+  min-height: 68px;
+  padding: 0 22px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  cursor: pointer;
+  color: #fff;
+  font-weight: 950;
+  border-bottom: 1px solid transparent;
+}
+.hof-admin-details[open] > summary { border-bottom-color: rgba(255,212,90,.18); }
+.hof-admin-details > summary::-webkit-details-marker { display:none; }
+.hof-admin-details > summary small {
+  color: #ffe39b;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  font-size: .7rem;
+}
+
+.hof-admin-body { padding: 22px; }
+.hof-admin-heading {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 18px;
+}
+.hof-admin-kicker {
+  display: block;
+  margin-bottom: 5px;
+  color: #ffe39b;
+  font-size: .72rem;
+  font-weight: 900;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+}
+.hof-admin-heading h2 { margin: 0 0 6px; color:#fff; }
+.hof-admin-heading p { margin: 0; max-width: 780px; color:#cfe0f6; line-height:1.5; }
+
+.hof-season-field {
+  flex: 0 0 150px;
+  display: grid;
+  gap: 6px;
+  color: #dce9f8;
+  font-size: .75rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+}
+.hof-season-field input {
+  width: 100%;
+  min-height: 44px;
+  padding: 0 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(255,212,90,.25);
+  background: rgba(2,14,31,.86);
+  color: #fff;
+  font: inherit;
+  font-size: .95rem;
+  font-weight: 900;
+  outline: none;
+}
+.hof-season-field input:focus { border-color: rgba(255,212,90,.7); box-shadow: 0 0 0 3px rgba(255,212,90,.08); }
+
+.hof-admin-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 18px;
+  margin: 0 0 18px;
+  padding: 12px 14px;
+  border-radius: 14px;
+  background: rgba(2,14,31,.52);
+  border: 1px solid rgba(255,255,255,.07);
+  color: #cfe0f6;
+  font-size: .82rem;
+  font-weight: 700;
+}
+.hof-admin-legend span { display:flex; align-items:center; gap:7px; }
+.hof-admin-legend .dot { width:9px; height:9px; border-radius:50%; display:inline-block; }
+.dot.running { background:#68a8ff; box-shadow:0 0 10px rgba(104,168,255,.45); }
+.dot.ready { background:#ffd45a; box-shadow:0 0 10px rgba(255,212,90,.45); }
+.dot.finalized { background:#61d895; box-shadow:0 0 10px rgba(97,216,149,.45); }
+.dot.pending { background:#9aaac0; }
+
+.hof-admin-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0,1fr));
+  gap: 14px;
+}
+.hof-admin-card {
+  position: relative;
+  overflow: hidden;
+  padding: 18px;
+  border-radius: 18px;
+  border: 1px solid rgba(255,255,255,.09);
+  background: rgba(3,18,36,.62);
+}
+.hof-admin-card::before {
+  content:"";
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  background: radial-gradient(circle at 90% 0%, rgba(255,212,90,.10), transparent 28%);
+}
+.hof-admin-card-head,
+.hof-admin-actions,
+.hof-admin-podium { position:relative; z-index:1; }
+.hof-admin-card-head {
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  gap:14px;
+  margin-bottom:14px;
+}
+.hof-admin-card h3 { margin:0 0 5px; color:#fff; font-size:1.06rem; }
+.hof-admin-card-meta { color:#aebfd3; font-size:.82rem; }
+.hof-status-pill {
+  flex:0 0 auto;
+  padding:6px 9px;
+  border-radius:999px;
+  font-size:.68rem;
+  font-weight:950;
+  text-transform:uppercase;
+  letter-spacing:.05em;
+  border:1px solid rgba(255,255,255,.10);
+}
+.hof-status-pill.running { color:#bcd8ff; background:rgba(61,132,225,.14); }
+.hof-status-pill.ready { color:#2b1a00; background:linear-gradient(180deg,#ffe58c,#ffc126); }
+.hof-status-pill.finalized { color:#eafff1; background:rgba(29,150,84,.36); border-color:rgba(97,216,149,.34); }
+.hof-status-pill.pending { color:#c0ccda; background:rgba(154,170,192,.10); }
+
+.hof-admin-podium { display:grid; gap:8px; margin-bottom:14px; }
+.hof-admin-podium-row {
+  display:grid;
+  grid-template-columns:34px 38px 1fr auto;
+  align-items:center;
+  gap:10px;
+  min-height:48px;
+  padding:7px 10px;
+  border-radius:12px;
+  background:rgba(1,11,25,.55);
+  border:1px solid rgba(255,255,255,.06);
+}
+.hof-admin-podium-row .pos { color:#ffe39b; font-weight:1000; }
+.hof-admin-podium-row img { width:38px; height:38px; object-fit:contain; }
+.hof-admin-podium-row strong { color:#fff; min-width:0; }
+.hof-admin-podium-row small { color:#9fb5cc; white-space:nowrap; }
+.hof-admin-empty { color:#aebfd3; line-height:1.45; margin:4px 0 14px; }
+
+.hof-admin-actions { display:flex; gap:9px; flex-wrap:wrap; }
+.hof-admin-btn {
+  min-height:40px;
+  padding:0 14px;
+  border-radius:11px;
+  border:1px solid rgba(255,255,255,.10);
+  cursor:pointer;
+  font-weight:900;
+}
+.hof-admin-btn.primary { color:#2a1800; background:linear-gradient(180deg,#ffe58c,#ffc126); border-color:rgba(255,226,139,.8); }
+.hof-admin-btn.secondary { color:#e9f3ff; background:rgba(255,255,255,.06); }
+.hof-admin-btn:disabled { opacity:.42; cursor:not-allowed; }
+.hof-admin-message {
+  min-height:20px;
+  margin:14px 0 0;
+  color:#cfe0f6;
+  font-weight:750;
+}
+.hof-admin-message.ok { color:#8bf0b6; }
+.hof-admin-message.error { color:#ff9cab; }
+.hof-admin-message.loading { color:#9fc9ff; }
+
+@media (max-width: 860px) {
+  .hof-admin-grid { grid-template-columns:1fr; }
+  .hof-admin-heading { align-items:stretch; flex-direction:column; }
+  .hof-season-field { flex:auto; width:min(220px,100%); }
+}
+@media (max-width: 560px) {
+  .hof-admin-body { padding:16px; }
+  .hof-admin-details > summary { padding:0 16px; align-items:flex-start; flex-direction:column; justify-content:center; gap:3px; }
+  .hof-admin-podium-row { grid-template-columns:30px 34px minmax(0,1fr); }
+  .hof-admin-podium-row small { grid-column:3; white-space:normal; }
+}
