@@ -1776,3 +1776,175 @@ body{
     height:55px;
   }
 }
+
+
+/* =========================================================
+   RACE V9 · COLOR SWAP / PULSE CHARACTER / MOBILE ROAD FIX
+   ========================================================= */
+
+/* Kicker sempre su riga propria */
+.section-kicker{
+  display:block;
+}
+
+/* SWAP COLORI:
+   Conf A / Conference League = rosso
+   Conf B / Championship = blu
+*/
+.league-panel .conference-head{
+  background:
+    radial-gradient(circle at 86% 16%,rgba(255,255,255,.10),transparent 32%),
+    linear-gradient(135deg,#35111c,#8e1730);
+}
+.championship-panel .conference-head{
+  background:
+    radial-gradient(circle at 86% 16%,rgba(243,195,78,.18),transparent 32%),
+    linear-gradient(135deg,var(--race-navy),var(--race-navy-2));
+}
+
+/* Road Difficulty panels con colori coerenti */
+.conference-road-panel>header{
+  background:
+    radial-gradient(circle at 88% 12%,rgba(255,255,255,.10),transparent 35%),
+    linear-gradient(135deg,#35111c,#8e1730);
+}
+.conference-road-panel.is-championship>header{
+  background:
+    radial-gradient(circle at 88% 12%,rgba(243,195,78,.18),transparent 35%),
+    linear-gradient(135deg,var(--race-navy),var(--race-navy-2));
+}
+
+/* Mobile tabs coerenti coi nuovi colori */
+.mobile-conference-tabs button.active{
+  color:#fff;
+  background:linear-gradient(135deg,#45101e,#9b1f3b);
+  box-shadow:0 6px 15px rgba(69,16,30,.18);
+}
+.mobile-conference-tabs button[data-mobile-conference="championship"].active{
+  background:linear-gradient(135deg,#071a30,#173d67);
+  box-shadow:0 6px 15px rgba(7,21,39,.18);
+}
+
+/* PULSE più carattere */
+.conference-pulse{
+  position:relative;
+  overflow:hidden;
+  border-width:1px;
+  box-shadow:0 10px 24px rgba(7,21,39,.07);
+}
+.conference-pulse::before{
+  content:"";
+  position:absolute;
+  inset:0 auto auto 0;
+  width:100%;
+  height:4px;
+}
+.league-panel .conference-pulse{
+  background:
+    radial-gradient(circle at 100% 0%,rgba(212,43,69,.12),transparent 32%),
+    linear-gradient(180deg,#fffafb 0%,#f8fbff 100%);
+  border-color:#ecd3d9;
+}
+.league-panel .conference-pulse::before{
+  background:linear-gradient(90deg,#d42b45,#f3c34e);
+}
+.championship-panel .conference-pulse{
+  background:
+    radial-gradient(circle at 100% 0%,rgba(21,92,164,.12),transparent 32%),
+    linear-gradient(180deg,#f8fbff 0%,#f4f8fd 100%);
+  border-color:#d7e2ee;
+}
+.championship-panel .conference-pulse::before{
+  background:linear-gradient(90deg,#155ca4,#f3c34e);
+}
+.pulse-head{
+  padding-top:16px;
+}
+.pulse-head span{
+  display:inline-flex;
+  padding:4px 8px;
+  border-radius:999px;
+  background:#edf3fa;
+}
+.league-panel .pulse-head span{
+  color:#a61e35;
+  background:#ffeaf0;
+}
+.championship-panel .pulse-head span{
+  color:#155ca4;
+  background:#eaf2fc;
+}
+.pulse-head strong{
+  font-size:.92rem;
+}
+.pulse-stat{
+  background:rgba(255,255,255,.55);
+}
+.pulse-stat.hard{
+  background:linear-gradient(180deg,#fff7f8,#fff);
+}
+.pulse-stat.easy{
+  background:linear-gradient(180deg,#f7fff9,#fff);
+}
+.direct-clashes-title span{
+  color:var(--race-navy);
+}
+.league-panel .direct-clash-gw{
+  background:linear-gradient(135deg,#3e0d18,#8e1730);
+}
+.championship-panel .direct-clash-gw{
+  background:linear-gradient(135deg,#071a30,#173d67);
+}
+
+/* Road heading / road mobile tabs */
+.road-mobile-tabs{
+  display:none;
+}
+
+@media(max-width:768px){
+  .road-summary .section-heading{
+    display:block;
+    margin-bottom:10px;
+  }
+  .road-summary .section-heading .section-kicker{
+    margin-bottom:5px;
+  }
+  .road-summary .section-heading h2{
+    display:block;
+    margin:0;
+  }
+  .road-summary .section-heading p{
+    display:block;
+    margin-top:8px;
+    max-width:none;
+  }
+
+  .road-mobile-tabs{
+    display:grid;
+    margin:0 0 10px;
+  }
+
+  /* Una road panel alla volta, legata allo switch */
+  .conference-road-panel{
+    display:none;
+  }
+  .conference-road-panel.mobile-active{
+    display:block;
+  }
+
+  /* Miglior allineamento sezione Road */
+  .road-summary{
+    padding:14px 10px 12px;
+  }
+  .conference-road-panel{
+    border-radius:16px;
+  }
+  .conference-road-panel>header{
+    align-items:flex-end;
+  }
+
+  /* Pulse mobile più vivace ma compatta */
+  .conference-pulse{
+    margin-top:2px;
+  }
+}
