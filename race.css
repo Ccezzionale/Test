@@ -1071,3 +1071,76 @@ body{
   .conference-road-grid{grid-template-columns:1fr}
   .conference-road-panel header small{display:none}
 }
+
+
+/* =========================================================
+   RACE V5 · CLEAN CONTENDER + CONFERENCE WIN %
+   ========================================================= */
+
+/* Il gap dalla vetta sparisce dalle righe: la posizione è già evidente. */
+.contender-meta{
+  flex-wrap:wrap;
+  gap:5px 6px;
+  overflow:visible;
+}
+.standing-points{
+  color:#667991;
+  font-weight:950;
+  white-space:nowrap;
+}
+
+.win-chance{
+  display:inline-flex;
+  align-items:center;
+  gap:3px;
+  min-height:20px;
+  padding:3px 6px;
+  border:1px solid #cfdbea;
+  border-radius:999px;
+  background:#eef4fb;
+  white-space:nowrap;
+}
+.win-chance b{
+  color:#173d67;
+  font-size:.65rem;
+  line-height:1;
+  font-weight:950;
+}
+.win-chance small{
+  color:#71839a;
+  font-size:.49rem;
+  line-height:1;
+  font-weight:950;
+  letter-spacing:.05em;
+}
+.win-chance.high{
+  border-color:#f0cf72;
+  background:#fff4c9;
+}
+.win-chance.high b{color:#8c6500}
+.win-chance.low{
+  border-color:#dde5ee;
+  background:#f4f7fa;
+}
+.win-chance.low b{color:#718094}
+
+/* In V5 il vecchio gap non viene più renderizzato, ma lo nascondiamo
+   comunque per evitare residui da cache aggressive del browser. */
+.gap-pill{display:none !important}
+
+@media(min-width:769px){
+  .contender-card{
+    min-height:98px;
+  }
+  .contender-main{
+    align-self:center;
+  }
+}
+
+@media(max-width:768px){
+  .win-chance{
+    padding:3px 6px;
+  }
+  .win-chance b{font-size:.62rem}
+  .win-chance small{font-size:.47rem}
+}

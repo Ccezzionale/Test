@@ -248,6 +248,121 @@ function emptyChip(){
   return `<div class="fixture-chip none"><b>—</b><span>?</span><small>TBD</small></div>`;
 }
 
+
+/* -------- CONFERENCE WIN % --------
+   Stima Monte Carlo deterministica:
+   - punti attuali
+   - calendario residuo
+   - Power Ranking corrente
+   Nessun vantaggio casa/trasferta.
+   In caso di parità finale il credito titolo viene diviso tra le squadre a pari punti.
+*/
+function hashSeed(text){
+  let h=2166136261 >>> 0;
+  for(let i=0;i<text.length;i++){
+    h ^= text.charCodeAt(i);
+    h = Math.imul(h,16777619);
+  }
+  return h >>> 0;
+}
+function seededRandom(seed){
+  let a=seed>>>0;
+  return function(){
+    a |= 0;
+    a = (a + 0x6D2B79F5) | 0;
+    let t = Math.imul(a ^ (a >>> 15), 1 | a);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+function matchProbabilities(scoreA,scoreB){
+  const a=Number.isFinite(scoreA)?scoreA:50;
+  const b=Number.isFinite(scoreB)?scoreB:50;
+  const delta=a-b;
+
+  // Pareggio leggermente più probabile tra squadre vicine.
+  const pDraw=Math.max(.16,Math.min(.27,.27-Math.abs(delta)*.0015));
+  const decisive=1-pDraw;
+
+  // Curva logistica: il Power Ranking sposta la probabilità senza renderla mai certa.
+  const shareA=1/(1+Math.exp(-delta/18));
+  const pA=decisive*shareA;
+  const pB=decisive-pA;
+  return {pA,pDraw,pB};
+}
+function conferenceTitleOdds(rows,fixtures,code,powers,iterations=12000){
+  const standings=buildStandings(conferenceRows(rows,code));
+  const lastGw=maxPlayedGw(rows,code);
+  const remaining=fixtures
+    .filter(f=>clean(f.conference)===code && Number(f.gw)>lastGw)
+    .sort((a,b)=>Number(a.gw)-Number(b.gw));
+
+  const teams=new Map();
+  standings.forEach(r=>teams.set(key(r.team),{team:r.team,pt:r.pt}));
+
+  remaining.forEach(f=>{
+    [canonical(f.home_team),canonical(f.away_team)].forEach(team=>{
+      const k=key(team);
+      if(!teams.has(k)) teams.set(k,{team,pt:0});
+    });
+  });
+
+  const teamList=[...teams.values()];
+  if(!teamList.length) return new Map();
+
+  const wins=new Map(teamList.map(t=>[key(t.team),0]));
+
+  const seedText=[
+    code,lastGw,remaining.length,
+    ...teamList.map(t=>`${key(t.team)}:${t.pt}`),
+    ...teamList.map(t=>`${key(t.team)}:${(powers.get(key(t.team))?.score??50).toFixed(3)}`)
+  ].join('|');
+
+  const rand=seededRandom(hashSeed(seedText));
+
+  for(let sim=0;sim<iterations;sim++){
+    const pts=new Map(teamList.map(t=>[key(t.team),t.pt]));
+
+    for(const f of remaining){
+      const home=canonical(f.home_team);
+      const away=canonical(f.away_team);
+      const hk=key(home), ak=key(away);
+      const hp=powers.get(hk)?.score ?? 50;
+      const ap=powers.get(ak)?.score ?? 50;
+      const {pA,pDraw}=matchProbabilities(hp,ap);
+      const r=rand();
+
+      if(r<pA){
+        pts.set(hk,(pts.get(hk)||0)+3);
+      }else if(r<pA+pDraw){
+        pts.set(hk,(pts.get(hk)||0)+1);
+        pts.set(ak,(pts.get(ak)||0)+1);
+      }else{
+        pts.set(ak,(pts.get(ak)||0)+3);
+      }
+    }
+
+    const maxPts=Math.max(...pts.values());
+    const tied=[...pts.entries()].filter(([,pt])=>pt===maxPts).map(([k])=>k);
+    const credit=1/tied.length;
+    tied.forEach(k=>wins.set(k,(wins.get(k)||0)+credit));
+  }
+
+  return new Map(
+    [...wins.entries()].map(([k,w])=>[k,(w/iterations)*100])
+  );
+}
+
+function winChanceMarkup(value){
+  const pct=Math.max(0,Math.min(100,Number(value)||0));
+  let cls='mid';
+  if(pct>=45) cls='high';
+  else if(pct<15) cls='low';
+  return `<span class="win-chance ${cls}" title="Probabilità stimata di vincere la Conference: punti attuali, calendario residuo e Power Ranking">
+    <b>${pct.toFixed(0)}%</b><small>WIN</small>
+  </span>`;
+}
+
 function raceMomentumMarkup(delta,lastGw){
   if(lastGw<=1) return `<span class="race-momentum flat" title="Race Momentum">RACE =</span>`;
   if(delta>0) return `<span class="race-momentum up" title="Posizioni guadagnate rispetto alla GW precedente">RACE ↑${delta}</span>`;
@@ -255,24 +370,22 @@ function raceMomentumMarkup(delta,lastGw){
   return `<span class="race-momentum flat" title="Posizione invariata rispetto alla GW precedente">RACE =</span>`;
 }
 
-function contenderMarkup(rec,index,leaderPts,fixtures,conference,lastGw,powers,momentumDelta=0){
-  const gap=leaderPts-rec.pt;
+function contenderMarkup(rec,index,fixtures,conference,lastGw,powers,momentumDelta=0,winChance=0){
   const form=teamForm(rec);
   const schedule=scheduleData(fixtures,conference,rec.team,lastGw,powers);
   const chips=[...schedule.items.map(fixtureChip)];
   while(chips.length<NEXT_GAMES) chips.push(emptyChip());
   const road=schedule.avg;
   const roadCls=road==null?'':difficultyClass(road);
-  const gapLabel=index===0 ? 'LEADER' : (gap===0 ? 'A PARI' : `-${gap} PT`);
-  const gapClass=index===0 ? 'leader' : (gap===0 ? 'tie' : '');
+
   return `<div class="contender-card ${index===0?'is-leader':''}">
     <div class="contender-rank">${index+1}</div>
     ${logoTag(rec.team,'team-logo')}
     <div class="contender-main">
       <strong>${escapeHtml(rec.team)}</strong>
       <div class="contender-meta">
-        <span>${rec.pt} PT</span>
-        <span class="gap-pill ${gapClass}">${gapLabel}</span>
+        <span class="standing-points">${rec.pt} PT</span>
+        ${winChanceMarkup(winChance)}
         ${raceMomentumMarkup(momentumDelta,lastGw)}
         <span class="form-dots">${form.map(r=>`<i class="form-dot ${r}">${r}</i>`).join('')}</span>
       </div>
@@ -403,13 +516,14 @@ function renderConference(code,hostId,leaderId,pulseId,rows,fixtures,powers){
   const lastGw=maxPlayedGw(rows,code);
   const prevStandings=lastGw>1 ? standingsThroughGw(rows,code,lastGw-1) : [];
   const prevPos=new Map(prevStandings.map((r,i)=>[key(r.team),i+1]));
-  const leaderPts=top[0].pt;
+  const titleOdds=conferenceTitleOdds(rows,fixtures,code,powers);
 
   host.innerHTML=top.map((r,i)=>{
     const currentPos=i+1;
     const previous=prevPos.get(key(r.team)) ?? currentPos;
     const delta=previous-currentPos;
-    return contenderMarkup(r,i,leaderPts,fixtures,code,lastGw,powers,delta);
+    const winChance=titleOdds.get(key(r.team)) ?? 0;
+    return contenderMarkup(r,i,fixtures,code,lastGw,powers,delta,winChance);
   }).join('');
 
   if(leaderEl) leaderEl.textContent=`Leader: ${top[0].team} · ${top[0].pt} pt`;
