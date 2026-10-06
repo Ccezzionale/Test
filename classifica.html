@@ -128,6 +128,7 @@
         <button>Conf. Championship</button>
         <button>Round Robin</button>
         <button>Totale</button>
+        <button type="button" data-classifica-view="race">Race</button>
       </div>
 
       <div id="classifica-container">
@@ -142,6 +143,177 @@
 
         <div id="classifica-mobile"></div>
       </div>
+
+      <section id="race-tab-panel" class="race-page race-embedded" hidden aria-label="Race">
+
+<section id="race-loading" class="race-state-card">
+    <div class="race-loader"></div>
+    <div>
+      <strong>Sto leggendo la stagione…</strong>
+      <span>Classifica, calendario e Power Ranking. Perché una tabella sola sarebbe stata troppo semplice.</span>
+    </div>
+  </section>
+
+  <section id="conference-view" class="race-view" hidden>
+    <div class="race-intro">
+      <div>
+        <span class="section-kicker">OBIETTIVO DELLA FASE</span>
+        <h2>Road to #1</h2>
+        <p>Le prime quattro di ogni Conference, la forma, le prossime partite e la probabilità stimata di vittoria. WIN %: 80% rendimento Conference, 20% Power Ranking.</p>
+      </div>
+      <div class="race-legend">
+        <span><i class="difficulty-dot easy"></i> Strada favorevole</span>
+        <span><i class="difficulty-dot medium"></i> Media</span>
+        <span><i class="difficulty-dot hard"></i> Dura</span>
+      </div>
+    </div>
+
+    <div class="mobile-conference-tabs" role="tablist" aria-label="Seleziona Conference">
+      <button type="button" class="active" data-mobile-conference="league" aria-selected="true">
+        <span>CONF A</span>
+        Conference League
+      </button>
+      <button type="button" data-mobile-conference="championship" aria-selected="false">
+        <span>CONF B</span>
+        Championship
+      </button>
+    </div>
+
+    <div class="conference-grid">
+      <article class="conference-panel league-panel" data-conference-panel="league">
+        <header class="conference-head">
+          <div>
+            <span>CONF A</span>
+            <h3>Conference League</h3>
+          </div>
+          <div class="conference-leader" id="leader-a">Leader: —</div>
+        </header>
+        <div id="race-conf-a" class="contender-list"></div>
+
+        <div class="mobile-conference-tabs pulse-mobile-tabs" role="tablist" aria-label="Seleziona Conference per Conference Pulse">
+          <button type="button" class="active" data-mobile-conference="league" aria-selected="true">
+            <span>CONF A</span>
+            Conference League
+          </button>
+          <button type="button" data-mobile-conference="championship" aria-selected="false">
+            <span>CONF B</span>
+            Championship
+          </button>
+        </div>
+
+        <div id="conference-pulse-a" class="conference-pulse"></div>
+      </article>
+
+      <article class="conference-panel championship-panel" data-conference-panel="championship">
+        <header class="conference-head">
+          <div>
+            <span>CONF B</span>
+            <h3>Conference Championship</h3>
+          </div>
+          <div class="conference-leader" id="leader-b">Leader: —</div>
+        </header>
+        <div id="race-conf-b" class="contender-list"></div>
+
+        <div class="mobile-conference-tabs pulse-mobile-tabs" role="tablist" aria-label="Seleziona Conference per Conference Pulse">
+          <button type="button" data-mobile-conference="league" aria-selected="false">
+            <span>CONF A</span>
+            Conference League
+          </button>
+          <button type="button" class="active" data-mobile-conference="championship" aria-selected="true">
+            <span>CONF B</span>
+            Championship
+          </button>
+        </div>
+
+        <div id="conference-pulse-b" class="conference-pulse"></div>
+      </article>
+    </div>
+
+    <section class="road-summary">
+      <div class="section-heading">
+        <span class="section-kicker">PROSSIME PARTITE</span>
+        <h2>Road Difficulty</h2>
+        <p id="road-summary-copy">Le quattro contender vengono confrontate solo con le rivali della propria Conference. Difficoltà basata sul Power Ranking attuale.</p>
+      </div>
+
+      <div class="mobile-conference-tabs road-mobile-tabs" role="tablist" aria-label="Seleziona Conference per Road Difficulty">
+        <button type="button" class="active" data-mobile-conference="league" aria-selected="true">
+          <span>CONF A</span>
+          Conference League
+        </button>
+        <button type="button" data-mobile-conference="championship" aria-selected="false">
+          <span>CONF B</span>
+          Championship
+        </button>
+      </div>
+
+      <div id="road-ranking" class="road-ranking"></div>
+    </section>
+  </section>
+
+  <section id="transition-view" class="race-view" hidden>
+    <article class="transition-card">
+      <div class="transition-badge">CONFERENCE STAGE COMPLETE</div>
+      <h2>La prima fase è finita.</h2>
+      <p>I vincitori delle Conference sono definiti. La Race ripartirà automaticamente appena verrà caricato il calendario del Round Robin.</p>
+      <div id="conference-winners" class="winner-grid"></div>
+      <div class="calendar-waiting">
+        <span>ROUND ROBIN</span>
+        <strong>Calendario in definizione</strong>
+      </div>
+    </article>
+  </section>
+
+  <section id="roundrobin-view" class="race-view" hidden>
+    <div class="race-intro">
+      <div>
+        <span class="section-kicker">FASE UNIFICATA</span>
+        <h2 id="rr-heading">Race to Playoffs</h2>
+        <p id="rr-copy">La classifica totale conta. La linea playoff non perdona.</p>
+      </div>
+      <a class="playoff-link" href="playoff.html">Vedi Playoff Bracket →</a>
+    </div>
+
+    <div class="rr-grid">
+      <article class="playoff-race-panel">
+        <header class="panel-head">
+          <span>CLASSIFICA TOTALE</span>
+          <h3>Playoff Race</h3>
+        </header>
+        <div id="overall-race" class="overall-race"></div>
+      </article>
+
+      <article class="bubble-panel">
+        <header class="panel-head">
+          <span>ZONA PRESSIONE</span>
+          <h3>Bubble Watch</h3>
+        </header>
+        <div id="bubble-watch"></div>
+      </article>
+    </div>
+
+    <section class="road-summary">
+      <div class="section-heading">
+        <span class="section-kicker">CALENDARIO</span>
+        <h2 id="rr-schedule-title">Next 4</h2>
+        <p>Gli avversari che possono cambiare la corsa playoff.</p>
+      </div>
+      <div id="rr-road-ranking" class="road-ranking"></div>
+    </section>
+  </section>
+
+  <section id="finished-view" class="race-view" hidden>
+    <article class="transition-card finished">
+      <div class="transition-badge">REGULAR SEASON COMPLETE</div>
+      <h2>La Race è finita. Adesso si gioca davvero.</h2>
+      <p>La fase regolare è conclusa: il quadro definitivo è nella pagina Playoff.</p>
+      <a class="playoff-link big" href="playoff.html">APRI I PLAYOFF →</a>
+    </article>
+  </section>
+
+  <section id="race-error" class="race-state-card error" hidden></section>
+      </section>
+
     </section>
 
     <section id="results-admin-panel" class="results-admin-panel" hidden>
@@ -416,6 +588,7 @@ return {
       refreshDashboard();
     });
   </script>
+  <script type="module" src="classifica-race.js"></script>
   <script type="module" src="classifica-admin.js"></script>
   <script src="mobile-nav.js"></script>
    <script src="navbar.js"></script>
