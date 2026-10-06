@@ -775,7 +775,7 @@ function renderWeekNumbers(params, rows, roundComplete) {
 
 function renderHeader(params, target, completed) {
   document.title = `${completed ? "Match Report" : "Match Preview"} - ${params.home} vs ${params.away}`;
-  document.getElementById("mc-mode").textContent = completed ? "MATCH REPORT" : "MATCH PREVIEW";
+  document.getElementById("mc-mode").textContent = completed ? "Match Report" : "Match Preview";
   document.getElementById("mc-status").textContent = completed ? "Finale" : "Pre-partita";
   document.getElementById("mc-subtitle").textContent = params.source === "crashout"
     ? `Crash Out Cup · Rivalry Games · Giornata ${target?.seasonalGw || params.gw}`

@@ -245,28 +245,41 @@
 
   <div id="mc-app" hidden>
     <section class="mc-hero">
-      <div class="mc-hero-top">
-        <a href="index.html" class="mc-back" aria-label="Torna alla Home">‹</a>
-        <div>
-          <h1 id="mc-mode">MATCH PREVIEW</h1>
-          <p id="mc-subtitle">Giornata · Competizione</p>
+      <div class="mc-banner">
+        <img class="mc-banner-art" src="img/banner-match-center.webp" alt="Banner Match Center">
+        <div class="mc-banner-overlay" aria-hidden="true"></div>
+
+        <div class="mc-hero-top">
+          <a href="index.html" class="mc-back" aria-label="Torna alla Home">‹</a>
+
+          <div class="mc-banner-copy">
+            <span class="mc-banner-kicker">Lega degli Eroi</span>
+            <h1>Match Center</h1>
+            <p id="mc-subtitle">Giornata · Competizione</p>
+          </div>
+
+          <div class="mc-hero-badges">
+            <span class="mc-mode-tag" id="mc-mode">MATCH PREVIEW</span>
+            <span class="mc-status" id="mc-status">Pre-partita</span>
+          </div>
         </div>
-        <span class="mc-status" id="mc-status">Pre-partita</span>
       </div>
 
-      <div class="mc-versus">
-        <div class="mc-team mc-team-home">
-          <img id="mc-home-logo" src="icon-192.png" alt="">
-          <strong id="mc-home-name">Squadra A</strong>
+      <div class="mc-matchup-strip">
+        <div class="mc-versus">
+          <div class="mc-team mc-team-home">
+            <img id="mc-home-logo" src="icon-192.png" alt="">
+            <strong id="mc-home-name">Squadra A</strong>
+          </div>
+          <div class="mc-score" id="mc-score"><span class="mc-vs-large">VS</span></div>
+          <div class="mc-team mc-team-away">
+            <img id="mc-away-logo" src="icon-192.png" alt="">
+            <strong id="mc-away-name">Squadra B</strong>
+          </div>
         </div>
-        <div class="mc-score" id="mc-score"><span class="mc-vs-large">VS</span></div>
-        <div class="mc-team mc-team-away">
-          <img id="mc-away-logo" src="icon-192.png" alt="">
-          <strong id="mc-away-name">Squadra B</strong>
-        </div>
-      </div>
 
-      <div class="mc-rank-chip" id="mc-rank-chip">Classifica in aggiornamento</div>
+        <div class="mc-rank-chip" id="mc-rank-chip">Classifica in aggiornamento</div>
+      </div>
     </section>
 
     <section class="mc-grid mc-grid-top">
