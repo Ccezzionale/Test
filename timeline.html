@@ -6,7 +6,7 @@
   <title>La Stagione - Lega degli Eroi</title>
 
   <link rel="stylesheet" href="navbar.css?v=20261007-bottom4">
-  <link rel="stylesheet" href="timeline.css?v=2">
+  <link rel="stylesheet" href="timeline.css?v=3">
 </head>
 
 <body class="timeline-page-body">
@@ -30,22 +30,69 @@
       </div>
 
       <ul class="navbar" id="mainMenu">
-        <li><a href="rose.html">Rose</a></li>
-        <li class="dropdown">
-          <a href="#" class="toggle-submenu">Competizioni <span class="caret">▾</span></a>
+        <li id="nav-rose-normal" class="dropdown">
+          <a href="#" class="toggle-submenu">Rose <span class="caret">▾</span></a>
           <ul class="submenu">
-            <li><a href="classifica.html">Classifiche</a></li>
-            <li><a href="playoff.html">Playoff</a></li>
-            <li><a href="crashoutcup.html">Crash Out Cup</a></li>
-            <li><a href="arena.html">Highlander</a></li>
-            <li><a href="allstar.html">All-Star Game</a></li>
+            <li><a href="rose.html">Rose Squadre</a></li>
+            <li><a href="franchigie.html">Franchigie</a></li>
           </ul>
         </li>
+
+        <li id="nav-rose-admin" class="dropdown" style="display:none;">
+          <a href="#" class="toggle-submenu">Rose <span class="caret">▾</span></a>
+          <ul class="submenu">
+            <li><a href="rose.html">Rose Squadre</a></li>
+            <li><a href="franchigie.html">Franchigie</a></li>
+            <li><a href="admin-rose.html">Admin Rose</a></li>
+            <li><a href="admin-gazzetta.html">Admin Gazzetta</a></li>
+          </ul>
+        </li>
+
+        <li class="dropdown">
+          <a href="#" class="toggle-submenu">Draft <span class="caret">▾</span></a>
+          <ul class="submenu">
+            <li><a href="pre-draft.html"><img src="icons/nav/pre-draft.webp" class="menu-icon" alt="">Pre-Draft</a></li>
+            <li><a href="draft_championship.html"><img src="icons/nav/conf-championship.webp" class="menu-icon" alt="">Conf. Championship</a></li>
+            <li><a href="draft_conference.html"><img src="icons/nav/conf-league.webp" class="menu-icon" alt="">Conf. League</a></li>
+            <li><a href="dinamico-draft.html"><img src="icons/nav/draft-2026.webp" class="menu-icon" alt="">Draft 2027-28</a></li>
+          </ul>
+        </li>
+
+        <li class="dropdown competizioni">
+          <a href="#" class="toggle-submenu">Competizioni <span class="caret">▾</span></a>
+          <ul class="submenu">
+            <li><a href="classifica.html"><img src="icons/nav/classifiche.webp" class="menu-icon" alt="">Classifiche</a></li>
+            <li><a href="playoff.html"><img src="icons/nav/playoff.webp" class="menu-icon" alt="">Playoff</a></li>
+            <li><a href="arena.html"><img src="icons/nav/highlander.webp" class="menu-icon" alt="">Highlander</a></li>
+            <li><a href="crashoutcup.html"><img src="icons/nav/crashout-cup.webp" class="menu-icon" alt="">Crash Out Cup</a></li>
+            <li><a href="crashoutplayoff.html"><img src="icons/nav/crashout-playoff.webp" class="menu-icon" alt="">Crash Out Cup - Playoff</a></li>
+            <li><a href="supercoppa.html"><img src="icons/nav/supercoppa.webp" class="menu-icon" alt="">Supercoppa</a></li>
+            <li><a href="allstar.html"><img src="icons/nav/allstar.webp" class="menu-icon" alt="">All-Star Game</a></li>
+            <li><a href="statistiche.html"><img src="icons/nav/statistiche.webp" class="menu-icon" alt="">Statistiche</a></li>
+          </ul>
+        </li>
+
         <li><a href="waiver.html">Waiver Wire</a></li>
         <li><a href="hall-of-fame.html">Hall of Fame</a></li>
+        <li><a href="regolamento.html">Regolamento</a></li>
       </ul>
 
       <div class="nav-right hero-actions">
+        <a id="trade-badge" href="trade-room.html" class="btn-hero trade-badge" aria-label="Trade Room">
+          <img src="icons/nav/trade-room.webp" class="action-icon" alt="">
+          <span class="btn-label">Trade Room</span>
+        </a>
+
+        <a id="login-btn" href="login.html" class="btn-hero" style="display:none;" aria-label="Login">
+          <img src="icons/nav/login-logout.webp" class="action-icon" alt="">
+          <span class="btn-label">Login</span>
+        </a>
+
+        <button id="logout-btn" type="button" class="btn-hero" style="display:none;" aria-label="Logout">
+          <img src="icons/nav/login-logout.webp" class="action-icon" alt="">
+          <span class="btn-label">Logout</span>
+        </button>
+
         <button id="attiva-notifiche-btn" type="button" class="btn-hero warning" aria-label="Centro notifiche">
           <img src="icons/nav/notifications.webp" class="action-icon" alt="">
           <span class="btn-label">Notifiche</span>
@@ -55,21 +102,27 @@
   </nav>
 
   <main class="timeline-app">
-
     <section class="timeline-hero">
       <div class="timeline-hero-top">
-        <a href="index.html" class="timeline-back">‹</a>
+        <a href="index.html" class="timeline-back" aria-label="Torna alla Home">‹</a>
+
+        <div class="timeline-live-state">
+          <span class="timeline-live-dot"></span>
+          <strong id="liveState">Connessione ai dati…</strong>
+        </div>
 
         <label class="timeline-season-select">
           <span>Stagione</span>
-          <select id="seasonSelect"></select>
+          <select id="seasonSelect">
+            <option value="2026/27">2026/27</option>
+          </select>
         </label>
       </div>
 
       <div class="timeline-hero-copy">
         <span class="timeline-eyebrow">Lega degli Eroi</span>
         <h1>La Stagione</h1>
-        <p>Il racconto dell'anno, giornata dopo giornata.</p>
+        <p>Il racconto dell'anno, costruito direttamente da quello che succede nella Lega.</p>
       </div>
 
       <div class="timeline-hero-mascots" aria-hidden="true">
@@ -78,28 +131,41 @@
       </div>
     </section>
 
-    <section class="timeline-summary">
+    <section class="timeline-summary" aria-label="Panoramica stagione">
       <article>
         <span>Capitolo attuale</span>
-        <strong id="currentChapter">Regular Season</strong>
+        <strong id="currentChapter">Caricamento…</strong>
       </article>
       <article>
-        <span>Eventi vissuti</span>
-        <strong id="eventCount">0</strong>
+        <span>Eventi raccontati</span>
+        <strong id="eventCount">–</strong>
       </article>
       <article>
-        <span>Prossimo grande evento</span>
-        <strong id="nextBigEvent">All-Star Game</strong>
+        <span>Prossimo capitolo</span>
+        <strong id="nextBigEvent">–</strong>
       </article>
     </section>
 
-    <section class="timeline-section">
+    <section id="timelineLoading" class="timeline-loading">
+      <span class="timeline-spinner"></span>
+      <div>
+        <strong>Sto ricostruendo la stagione…</strong>
+        <small>Risultati, mercato, coppe e drammi assortiti.</small>
+      </div>
+    </section>
+
+    <section id="timelineError" class="timeline-error" hidden>
+      <strong>La Timeline non è riuscita a caricare tutto.</strong>
+      <p id="timelineErrorText">Riprova tra poco.</p>
+    </section>
+
+    <section id="timelineContent" class="timeline-section" hidden>
       <div class="timeline-section-head">
         <h2>La storia fin qui</h2>
-        <span>2026/27</span>
+        <span id="timelineSeasonLabel">2026/27</span>
       </div>
 
-      <div id="chapterFilters" class="timeline-filters"></div>
+      <div id="chapterFilters" class="timeline-filters" aria-label="Filtra capitoli"></div>
 
       <div class="season-timeline">
         <div class="season-timeline-line"></div>
@@ -107,18 +173,94 @@
       </div>
     </section>
 
-    <section class="future-story">
+    <section id="timelineAdmin" class="timeline-admin" hidden>
+      <button type="button" id="timelineAdminToggle" class="timeline-admin-toggle">
+        <span>♛</span>
+        <div>
+          <strong>Commissioner Story Desk</strong>
+          <small>Aggiungi un momento che il database, poveretto, non può capire.</small>
+        </div>
+        <b>＋</b>
+      </button>
+
+      <div id="timelineAdminBody" class="timeline-admin-body" hidden>
+        <div id="timelineAdminSetup" class="timeline-admin-setup" hidden>
+          <strong>Serve una sola migration SQL.</strong>
+          <p>Esegui <code>timeline-events.sql</code> in Supabase e poi ricarica la pagina.</p>
+        </div>
+
+        <form id="timelineAdminForm">
+          <div class="timeline-admin-grid">
+            <label>
+              <span>Data / ora</span>
+              <input id="manualOccurredAt" type="datetime-local" required>
+            </label>
+
+            <label>
+              <span>Capitolo</span>
+              <select id="manualChapter">
+                <option value="regular">Regular Season</option>
+                <option value="rivalry">Rivalry Games</option>
+                <option value="allstar">All-Star</option>
+                <option value="push">Playoff Push</option>
+                <option value="playoff">Playoff</option>
+                <option value="finale">Finali</option>
+              </select>
+            </label>
+
+            <label>
+              <span>Badge</span>
+              <input id="manualBadge" type="text" maxlength="40" placeholder="CAPRATA">
+            </label>
+
+            <label>
+              <span>Titolo</span>
+              <input id="manualTitle" type="text" maxlength="120" placeholder="La panchina criminale" required>
+            </label>
+
+            <label class="is-wide">
+              <span>Descrizione</span>
+              <textarea id="manualDescription" rows="4" maxlength="700" placeholder="Racconta cosa è successo…" required></textarea>
+            </label>
+
+            <label>
+              <span>Link opzionale</span>
+              <input id="manualHref" type="text" maxlength="300" placeholder="match.html?...">
+            </label>
+
+            <label>
+              <span>Immagine opzionale</span>
+              <input id="manualImage" type="text" maxlength="300" placeholder="img/maglie/...webp">
+            </label>
+          </div>
+
+          <label class="timeline-admin-check">
+            <input id="manualMajor" type="checkbox">
+            <span>Evento storico / card grande</span>
+          </label>
+
+          <div class="timeline-admin-actions">
+            <button type="submit" id="timelineAdminSave">Pubblica nella Timeline</button>
+            <span id="timelineAdminStatus"></span>
+          </div>
+        </form>
+      </div>
+    </section>
+
+    <section id="futureStory" class="future-story" hidden>
       <div class="future-story-icon">✦</div>
       <div>
-        <span>Il resto deve ancora succedere</span>
-        <h2>La storia non è ancora finita.</h2>
-        <p>I prossimi capitoli si sbloccheranno con il progredire della stagione.</p>
+        <span>La stagione continua</span>
+        <h2>Il resto deve ancora essere scritto.</h2>
+        <p>Gli eventi futuri si sbloccano automaticamente quando arrivano i dati reali.</p>
       </div>
     </section>
   </main>
 
-  <script src="timeline.js?v=2"></script>
+  <script type="module" src="home_auth.js?v=20261005-center6"></script>
+  <script type="module" src="notifications-center.js?v=20261005-center6"></script>
   <script src="mobile-nav.js?v=20261007-bottom4"></script>
   <script src="navbar.js?v=20261005-center6"></script>
+  <script type="module" src="timeline.js?v=3"></script>
 </body>
 </html>
