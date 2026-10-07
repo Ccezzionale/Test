@@ -356,154 +356,39 @@ document.addEventListener("DOMContentLoaded", function () {
       <nav class="mobile-bottom-nav" aria-label="Navigazione mobile">
         <a href="index.html" class="mobile-bottom-link ${isActive("index.html")}">
           <span class="mobile-bottom-icon">
-            <img src="icons/nav/home.webp" alt="">
+            <img src="img/home/bottom-nav/home.webp" alt="">
           </span>
           <span>Home</span>
         </a>
 
         <a href="rose.html" class="mobile-bottom-link ${isActive("rose.html")}">
           <span class="mobile-bottom-icon">
-            <img src="icons/nav/rose.webp" alt="">
+            <img src="img/home/bottom-nav/rose.webp" alt="">
           </span>
           <span>Rose</span>
         </a>
 
         <a href="trade-room.html" class="mobile-bottom-link ${isActive("trade-room.html")}">
           <span class="mobile-bottom-icon">
-            <img src="icons/nav/trade-room.webp" alt="">
+            <img src="img/home/bottom-nav/mercato.webp" alt="">
           </span>
           <span>Mercato</span>
         </a>
 
         <a href="waiver.html" class="mobile-bottom-link ${isActive("waiver.html")}">
           <span class="mobile-bottom-icon">
-            <img src="icons/nav/waiver-room.webp" alt="">
+            <img src="img/home/bottom-nav/waiver.webp" alt="">
           </span>
           <span>Waiver</span>
         </a>
-
-        <button type="button" class="mobile-bottom-link mobile-more-btn" id="mobile-more-btn">
-          <span class="mobile-bottom-icon">
-            <img src="icons/nav/more.webp" alt="">
-          </span>
-          <span>Altro</span>
-        </button>
       </nav>
-
-      <div class="mobile-more-panel" id="mobile-more-panel" aria-hidden="true">
-        <div class="mobile-more-backdrop" id="mobile-more-backdrop"></div>
-
-        <div class="mobile-more-sheet">
-          <div class="mobile-more-handle"></div>
-
-          <div class="mobile-more-head">
-            <strong>Altro</strong>
-            <button type="button" id="mobile-more-close" aria-label="Chiudi menu">×</button>
-          </div>
-
-          <div class="mobile-more-grid">
-            <a href="dinamico-draft.html">
-              <span>
-                <img src="icons/nav/draft-2026.webp" alt="">
-              </span>
-              <strong>Draft 27-28</strong>
-            </a>
-
-            <a href="albo.html">
-              <span>
-                <img src="icons/nav/albo-oro.webp" alt="">
-              </span>
-              <strong>Medagliere</strong>
-            </a>
-
-            <a href="statistiche.html">
-              <span>
-                <img src="icons/nav/statistiche.webp" alt="">
-              </span>
-              <strong>Statistiche</strong>
-            </a>
-
-            <a href="regolamento.html">
-              <span>
-                <img src="icons/nav/regolamento.webp" alt="">
-              </span>
-              <strong>Regolamento</strong>
-            </a>
-
-            <a href="trade-room.html">
-              <span>
-                <img src="icons/nav/trade-room.webp" alt="">
-              </span>
-              <strong>Trade Room</strong>
-            </a>
-
-            <button type="button" id="mobile-logout-btn">
-              <span>
-                <img src="icons/nav/login-logout.webp" alt="">
-              </span>
-              <strong>Logout</strong>
-            </button>
-          </div>
-        </div>
-      </div>
     `;
 
     document.body.insertAdjacentHTML("beforeend", navHTML);
-  }
-
-  function bindMobileMorePanel() {
-    const moreBtn = document.getElementById("mobile-more-btn");
-    const panel = document.getElementById("mobile-more-panel");
-    const closeBtn = document.getElementById("mobile-more-close");
-    const backdrop = document.getElementById("mobile-more-backdrop");
-    const mobileLogoutBtn = document.getElementById("mobile-logout-btn");
-
-    function openMorePanel() {
-      if (!panel) return;
-      panel.classList.add("open");
-      panel.setAttribute("aria-hidden", "false");
-      document.body.classList.add("mobile-more-open");
-    }
-
-    function closeMorePanel() {
-      if (!panel) return;
-      panel.classList.remove("open");
-      panel.setAttribute("aria-hidden", "true");
-      document.body.classList.remove("mobile-more-open");
-    }
-
-    if (moreBtn) {
-      moreBtn.addEventListener("click", openMorePanel);
-    }
-
-    if (closeBtn) {
-      closeBtn.addEventListener("click", closeMorePanel);
-    }
-
-    if (backdrop) {
-      backdrop.addEventListener("click", closeMorePanel);
-    }
-
-    if (mobileLogoutBtn) {
-      mobileLogoutBtn.addEventListener("click", function () {
-        const desktopLogout = document.getElementById("logout-btn");
-
-        if (desktopLogout) {
-          desktopLogout.click();
-        }
-      });
-    }
-
-    document.addEventListener("keydown", function (event) {
-      if (event.key === "Escape") {
-        closeMorePanel();
-      }
-    });
   }
 
   ensureMobileTopNav();
   ensureRoseNavigationStructure();
   applyRoseNavigationAccess();
   ensureMobileBottomNav();
-  bindMobileMorePanel();
 });
