@@ -311,12 +311,20 @@ function renderLiveOverview(rows, medals) {
   if (miniPodium) {
     miniPodium.innerHTML = medals.slice(0, 3).map((team, index) => `
       <article class="mini-podium-card position-${index + 1}">
-        <span class="mini-rank">#${index + 1}</span>
-        ${logoMarkup(team.squadra)}
-        <strong>${escapeHtml(team.squadra)}</strong>
-        <small>${team.oro} ori · ${team.totale} podi</small>
+        <span class="mini-podium-shine" aria-hidden="true"></span>
+        <div class="mini-podium-head">
+          <span class="mini-rank">#${index + 1}</span>
+          ${index === 0 ? '<span class="mini-crown" aria-hidden="true">♛</span>' : ''}
+        </div>
+        <div class="mini-logo-shell">${logoMarkup(team.squadra)}</div>
+        <strong class="mini-team-name">${escapeHtml(team.squadra)}</strong>
+        <div class="mini-podium-stats">
+          <span><b>🥇 ${team.oro}</b> ori</span>
+          <span><b>🏆 ${team.totale}</b> podi</span>
+        </div>
       </article>
     `).join('');
+    applyLogoFallback(miniPodium);
   }
 
   const mostTotal = [...medals].sort((a,b) => b.totale - a.totale || b.oro - a.oro)[0];

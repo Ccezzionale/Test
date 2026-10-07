@@ -88,11 +88,19 @@
     </div>
   </nav>
 
-  <header class="hof-hero" aria-label="Banner Hall of Fame">
-    <picture class="hof-banner-picture">
-      <source media="(max-width: 760px)" srcset="img/hall-of-fame-mobile.webp">
-      <img src="img/hall-of-fame-desktop.webp" alt="Hall of Fame - Lega degli Eroi" class="hof-banner-image">
-    </picture>
+  <header class="hof-hero">
+    <div class="hof-hero__overlay"></div>
+    <div class="hof-hero__inner">
+      <div class="hero-kicker-hof">La storia della Lega degli Eroi</div>
+      <h1>Hall of Fame</h1>
+      <p class="hero-subtitle-hof">Campioni, rivalità, imprese e leggende del fantacalcio più eroico del multiverso.</p>
+      <div class="hero-pill-row">
+        <span>Campioni</span>
+        <span>Trofei</span>
+        <span>Medagliere</span>
+        <span>Record</span>
+      </div>
+    </div>
   </header>
 
   <main class="hof-page">
@@ -657,7 +665,7 @@
       const miniPodium = document.getElementById('mini-podium');
       miniPodium.innerHTML = medagliere.slice(0, 3).map((team, index) => `
         <article class="mini-podium-card position-${index + 1}">
-          <div class="mini-podium-shine" aria-hidden="true"></div>
+          <span class="mini-podium-shine" aria-hidden="true"></span>
           <div class="mini-podium-head">
             <span class="mini-rank">#${index + 1}</span>
             ${index === 0 ? '<span class="mini-crown" aria-hidden="true">♛</span>' : ''}
