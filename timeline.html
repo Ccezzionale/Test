@@ -6,7 +6,7 @@
   <title>La Stagione - Lega degli Eroi</title>
 
   <link rel="stylesheet" href="navbar.css?v=20261007-bottom4">
-  <link rel="stylesheet" href="timeline.css?v=3.2">
+  <link rel="stylesheet" href="timeline.css?v=3.3">
 </head>
 
 <body class="timeline-page-body">
@@ -102,33 +102,25 @@
   </nav>
 
   <main class="timeline-app">
-    <section class="timeline-hero">
-      <div class="timeline-hero-top">
-        <a href="index.html" class="timeline-back" aria-label="Torna alla Home">‹</a>
+    <section class="timeline-banner-hero" aria-label="Banner La Stagione">
+      <picture>
+        <source media="(max-width: 900px)" srcset="timeline-banner-mobile.png">
+        <img src="timeline-banner-desktop.png" alt="Lega degli Eroi - La Stagione">
+      </picture>
+    </section>
 
-        <div class="timeline-live-state">
-          <span class="timeline-live-dot"></span>
-          <strong id="liveState">Connessione ai dati…</strong>
-        </div>
-
-        <label class="timeline-season-select">
-          <span>Stagione</span>
-          <select id="seasonSelect">
-            <option value="2026/27">2026/27</option>
-          </select>
-        </label>
+    <section class="timeline-topbar" aria-label="Controlli timeline">
+      <div class="timeline-live-state">
+        <span class="timeline-live-dot"></span>
+        <strong id="liveState">Connessione ai dati…</strong>
       </div>
 
-      <div class="timeline-hero-copy">
-        <span class="timeline-eyebrow">Lega degli Eroi</span>
-        <h1>La Stagione</h1>
-        <p>Il racconto dell'anno, costruito direttamente da quello che succede nella Lega.</p>
-      </div>
-
-      <div class="timeline-hero-mascots" aria-hidden="true">
-        <img src="img/maglie/bartowski-mascotte.webp" alt="">
-        <img src="img/maglie/golden-mascotte.webp" alt="">
-      </div>
+      <label class="timeline-season-select">
+        <span>Stagione</span>
+        <select id="seasonSelect">
+          <option value="2026/27">2026/27</option>
+        </select>
+      </label>
     </section>
 
     <section class="timeline-summary" aria-label="Panoramica stagione">
@@ -261,6 +253,6 @@
   <script type="module" src="notifications-center.js?v=20261005-center6"></script>
   <script src="mobile-nav.js?v=20261007-bottom4"></script>
   <script src="navbar.js?v=20261005-center6"></script>
-  <script type="module" src="timeline.js?v=3.2"></script>
+  <script type="module" src="timeline.js?v=3.3"></script>
 </body>
 </html>
