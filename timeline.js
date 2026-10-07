@@ -240,10 +240,16 @@ function formatDateParts(date, fallbackLabel = "EVENTO") {
 }
 
 function eventSortValue(event) {
-  const chapterBase = (CHAPTER_ORDER[event.chapter] || 99) * 10_000_000_000_000;
+  // Ordine realmente cronologico.
+  // I capitoli NON forzano più la posizione: se un evento di settembre
+  // appartiene a "regular" e uno di ottobre a "rivalry", settembre resta prima.
+  // Gli anchor servono soltanto alle card future senza una data reale.
   const date = parseDateLike(event.occurredAt);
-  const datePart = date ? date.getTime() : (CHAPTER_ANCHORS[event.chapter]?.getTime() || 0);
-  return chapterBase + datePart + Number(event.sortBump || 0);
+  const base = date
+    ? date.getTime()
+    : (CHAPTER_ANCHORS[event.chapter]?.getTime() || Number.MAX_SAFE_INTEGER - 1_000_000);
+
+  return base + Number(event.sortBump || 0);
 }
 
 function makeEvent(raw) {
@@ -767,82 +773,90 @@ function buildTradeEvents(data) {
     assetsByProposal.get(id).push(asset);
   });
 
-  const grouped = new Map();
+  // La Timeline non deve diventare il registro notarile del mercato:
+  // raggruppiamo tutte le trade dello stesso mese in UNA sola card.
+  const groupedByMonth = new Map();
 
   (data.trades || []).forEach(trade => {
     const date = firstValidDate(trade.accepted_at, trade.updated_at, trade.created_at);
     if (!date) return;
 
-    const key = date.toISOString().slice(0, 10);
-    if (!grouped.has(key)) grouped.set(key, []);
-    grouped.get(key).push(trade);
+    const key = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`;
+
+    if (!groupedByMonth.has(key)) {
+      groupedByMonth.set(key, {
+        trades: [],
+        dates: []
+      });
+    }
+
+    groupedByMonth.get(key).trades.push(trade);
+    groupedByMonth.get(key).dates.push(date);
   });
 
-  return [...grouped.entries()]
-    .slice(-CONFIG.maxTradeEvents)
-    .map(([day, trades]) => {
-      const date = parseDateLike(day);
+  return [...groupedByMonth.entries()]
+    .sort(([a], [b]) => a.localeCompare(b))
+    .map(([monthKey, group]) => {
+      const trades = group.trades;
+      const latestDate = maxDate(group.dates);
+      const [year, monthNumber] = monthKey.split("-").map(Number);
 
-      if (trades.length > 1) {
-        const pairs = trades.slice(0, 3).map(trade => {
-          const from = teamMap.get(String(trade.from_team)) || "Squadra A";
-          const to = teamMap.get(String(trade.to_team)) || "Squadra B";
-          return `${from} ↔ ${to}`;
+      const monthLabel = new Intl.DateTimeFormat("it-IT", { month: "long" })
+        .format(new Date(year, monthNumber - 1, 1));
+
+      const activity = new Map();
+
+      trades.forEach(trade => {
+        const from = teamMap.get(String(trade.from_team)) || "Squadra A";
+        const to = teamMap.get(String(trade.to_team)) || "Squadra B";
+
+        [from, to].forEach(team => {
+          activity.set(team, (activity.get(team) || 0) + 1);
         });
+      });
 
-        return makeEvent({
-          id: `trades-${day}`,
-          chapter: "regular",
-          occurredAt: date,
-          badge: "Trade Room",
-          extra: `${trades.length} affari`,
-          title: "Mercato in fiamme",
-          text: `Giornata movimentata: ${pairs.join(" · ")}${trades.length > 3 ? " · …" : ""}.`,
-          image: "img/home/bottom-nav/mercato.webp",
-          meta: [`${trades.length} trade completate`, "HERE WE GO!"],
-          href: "trade-room.html",
-          source: "TRADE"
-        });
-      }
+      const mostActive = [...activity.entries()]
+        .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0], "it"));
 
-      const trade = trades[0];
-      const from = teamMap.get(String(trade.from_team)) || "Squadra A";
-      const to = teamMap.get(String(trade.to_team)) || "Squadra B";
-      const assets = assetsByProposal.get(String(trade.id)) || [];
+      const maxActivity = mostActive[0]?.[1] || 0;
+      const leaders = mostActive
+        .filter(([, count]) => count === maxActivity)
+        .slice(0, 2)
+        .map(([team]) => team);
 
-      const fromAssets = assets
-        .filter(asset => asset.side === "from")
-        .map(asset => asset.asset_label)
-        .filter(Boolean)
-        .slice(0, 2);
+      const assetCount = trades.reduce((sum, trade) => {
+        return sum + (assetsByProposal.get(String(trade.id)) || []).length;
+      }, 0);
 
-      const toAssets = assets
-        .filter(asset => asset.side === "to")
-        .map(asset => asset.asset_label)
-        .filter(Boolean)
-        .slice(0, 2);
+      const teamText = leaders.length
+        ? leaders.length === 1
+          ? `${leaders[0]} è la franchigia più attiva con ${maxActivity} affar${maxActivity === 1 ? "e" : "i"}.`
+          : `${leaders.join(" e ")} guidano il mercato con ${maxActivity} affari ciascuna.`
+        : "";
 
-      const detail = [
-        fromAssets.length ? `${from}: ${fromAssets.join(", ")}` : "",
-        toAssets.length ? `${to}: ${toAssets.join(", ")}` : ""
-      ].filter(Boolean).join(" · ");
+      const tradeText = trades.length === 1
+        ? `Nel mese di ${monthLabel} è stata completata 1 trade.`
+        : `Nel mese di ${monthLabel} sono state completate ${trades.length} trade.`;
 
       return makeEvent({
-        id: `trade-${trade.id}`,
+        id: `market-${monthKey}`,
         chapter: "regular",
-        occurredAt: date,
-        badge: "Trade",
-        extra: "HERE WE GO!",
-        title: `${from} ↔ ${to}`,
-        text: detail || "Scambio completato e ufficiale. Il mercato cambia gli equilibri della Lega.",
+        occurredAt: latestDate,
+        badge: "Mercato",
+        extra: "Market Report",
+        title: `Il mercato di ${monthLabel}`,
+        text: `${tradeText}${assetCount ? ` ${assetCount} asset coinvolti.` : ""}${teamText ? ` ${teamText}` : ""}`,
         image: "img/home/bottom-nav/mercato.webp",
-        meta: ["Trade completata", "Movimento ufficiale"],
+        meta: [
+          `${trades.length} trade`,
+          assetCount ? `${assetCount} asset` : "",
+          leaders.length ? `Più attive: ${leaders.join(" · ")}` : ""
+        ].filter(Boolean),
         href: "trade-room.html",
         source: "TRADE"
       });
     });
 }
-
 function buildCrashOutEvents(data) {
   const rows = data.crashRivalry || [];
   const events = [];
@@ -915,28 +929,33 @@ function buildHighlanderEvents(data) {
   const eliminations = data.highlanderElims || [];
   const events = [];
 
-  if (stateRow?.is_active || eliminations.length) {
-    events.push(makeEvent({
-      id: "highlander-start",
-      chapter: "rivalry",
-      occurredAt: firstValidDate(
-        stateRow?.updated_at,
-        minDate(eliminations.map(row => row.created_at || row.updated_at))
-      ),
-      dateLabel: "ARENA",
-      badge: "Highlander",
-      extra: "Ne resterà uno",
-      title: "L'Arena apre le porte",
-      text: eliminations.length
-        ? `La Highlander è in corso: ${eliminations.length} squadre risultano già eliminate.`
-        : "La Highlander è attiva. Una squadra alla volta verrà cancellata dall'Arena.",
-      image: "img/home/competizioni/highlander.webp",
-      meta: [`${Math.max(0, 16 - eliminations.length)} sopravvissute`, `${eliminations.length} eliminate`],
-      href: "arena.html",
-      major: true,
-      source: "HIGHLANDER"
-    }));
+  // Se l'admin ha disattivato la Highlander, per la Timeline significa
+  // semplicemente "non è ancora partita". Eventuali righe residue di test
+  // o vecchie eliminazioni non devono farla riapparire.
+  if (stateRow?.is_active !== true) {
+    return events;
   }
+
+  events.push(makeEvent({
+    id: "highlander-start",
+    chapter: "rivalry",
+    occurredAt: firstValidDate(
+      stateRow?.updated_at,
+      minDate(eliminations.map(row => row.created_at || row.updated_at))
+    ),
+    dateLabel: "ARENA",
+    badge: "Highlander",
+    extra: "Ne resterà uno",
+    title: "L'Arena apre le porte",
+    text: eliminations.length
+      ? `La Highlander è in corso: ${eliminations.length} squadre risultano già eliminate.`
+      : "La Highlander è attiva. Una squadra alla volta verrà cancellata dall'Arena.",
+    image: "img/home/competizioni/highlander.webp",
+    meta: [`${Math.max(0, 16 - eliminations.length)} sopravvissute`, `${eliminations.length} eliminate`],
+    href: "arena.html",
+    major: true,
+    source: "HIGHLANDER"
+  }));
 
   if (eliminations.length >= 12 && eliminations.length < 15) {
     events.push(makeEvent({
@@ -980,7 +999,6 @@ function buildHighlanderEvents(data) {
 
   return events;
 }
-
 function buildAllStarEvents(data) {
   const allstar = data.allStarState;
   const picks = data.allStarPicks || [];
@@ -1217,7 +1235,6 @@ function buildManualEvents(data) {
 }
 
 function addLockedFutureEvents(events) {
-  const ids = new Set(events.map(event => event.id));
   const hasSource = source => events.some(event => event.source === source && !event.locked);
   const hasChapter = chapter => events.some(event => event.chapter === chapter && !event.locked);
 
@@ -1236,21 +1253,6 @@ function addLockedFutureEvents(events) {
     }));
   }
 
-  if (!hasSource("HIGHLANDER")) {
-    events.push(makeEvent({
-      id: "locked-highlander",
-      chapter: "rivalry",
-      dateLabel: "IN ARRIVO",
-      badge: "Highlander",
-      extra: "Bloccato",
-      title: "L'Arena",
-      text: "La Highlander non è ancora iniziata.",
-      image: "img/home/competizioni/highlander.webp",
-      locked: true,
-      source: "FUTURO",
-      sortBump: 20
-    }));
-  }
 
   if (!hasSource("ALL-STAR")) {
     events.push(makeEvent({
