@@ -11651,3 +11651,64 @@ body.notification-center-open{
     font-size:.88rem !important;
   }
 }
+
+/* =========================================================
+   HOME MOBILE - ESPLORA ICON ASSETS 2026-10-07
+   Nuove icone trasparenti, leggibili a colpo d'occhio
+   ========================================================= */
+@media (max-width: 900px){
+  .home-app-v2 .explore-compact-card{
+    min-height:76px !important;
+    grid-template-columns:54px minmax(0,1fr) 17px !important;
+    gap:7px !important;
+    padding:8px 7px !important;
+  }
+
+  .home-app-v2 .explore-compact-art{
+    width:54px !important;
+    height:54px !important;
+    overflow:visible !important;
+    border-radius:0 !important;
+    background:transparent !important;
+    display:flex !important;
+    align-items:center !important;
+    justify-content:center !important;
+  }
+
+  .home-app-v2 .explore-compact-art img{
+    width:54px !important;
+    height:54px !important;
+    object-fit:contain !important;
+    object-position:center !important;
+    border-radius:0 !important;
+    filter:drop-shadow(0 4px 7px rgba(7,34,71,.20));
+  }
+
+  .home-app-v2 .explore-compact-copy strong{
+    overflow:visible !important;
+    text-overflow:clip !important;
+    white-space:normal !important;
+    word-break:normal !important;
+    font-size:.72rem !important;
+    line-height:1.06 !important;
+  }
+}
+
+@media (max-width: 390px){
+  .home-app-v2 .explore-compact-card{
+    min-height:72px !important;
+    grid-template-columns:50px minmax(0,1fr) 16px !important;
+    gap:6px !important;
+    padding:7px 6px !important;
+  }
+
+  .home-app-v2 .explore-compact-art,
+  .home-app-v2 .explore-compact-art img{
+    width:50px !important;
+    height:50px !important;
+  }
+
+  .home-app-v2 .explore-compact-copy strong{
+    font-size:.68rem !important;
+  }
+}
