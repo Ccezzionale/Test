@@ -11542,3 +11542,51 @@ body.notification-center-open{
   .home-app-v2 .explore-compact-copy strong{ font-size:.68rem; }
   .home-app-v2 .explore-compact-copy small{ font-size:.50rem; }
 }
+
+/* =========================================================
+   HOME MOBILE - COMPETIZIONI ICON ASSETS 2026-10-07
+   Icone trasparenti grandi e leggibili al posto dei mini-poster
+   ========================================================= */
+@media (max-width: 900px){
+  .home-app-v2 .competition-compact-card{
+    min-height:88px !important;
+    grid-template-columns:68px minmax(0,1fr) 20px !important;
+    gap:8px !important;
+    padding:8px 8px 8px 6px !important;
+  }
+
+  .home-app-v2 .competition-compact-art{
+    width:68px !important;
+    height:68px !important;
+    overflow:visible !important;
+    border-radius:0 !important;
+    background:transparent !important;
+    box-shadow:none !important;
+    display:flex !important;
+    align-items:center !important;
+    justify-content:center !important;
+  }
+
+  .home-app-v2 .competition-compact-art img{
+    width:68px !important;
+    height:68px !important;
+    object-fit:contain !important;
+    object-position:center !important;
+    border-radius:0 !important;
+    filter:drop-shadow(0 5px 7px rgba(7,34,71,.22));
+  }
+}
+
+@media (max-width: 390px){
+  .home-app-v2 .competition-compact-card{
+    min-height:82px !important;
+    grid-template-columns:62px minmax(0,1fr) 17px !important;
+    gap:6px !important;
+  }
+
+  .home-app-v2 .competition-compact-art,
+  .home-app-v2 .competition-compact-art img{
+    width:62px !important;
+    height:62px !important;
+  }
+}
