@@ -980,3 +980,294 @@ a.story-card:hover{
 
   .story-art img{height:98px}
 }
+
+
+/* =========================================================
+   V3.2 · MOBILE POLISH
+   Hero più compatto, summary orizzontale, timeline più snella.
+   ========================================================= */
+
+@media(max-width:900px){
+
+  /* HERO: meno spazio verticale, stessa identità */
+  .timeline-hero{
+    min-height:236px !important;
+    padding:14px 15px 18px !important;
+  }
+
+  .timeline-hero-copy{
+    width:67% !important;
+    margin-top:24px !important;
+  }
+
+  .timeline-hero h1{
+    font-size:2.28rem !important;
+    line-height:.9 !important;
+  }
+
+  .timeline-hero p{
+    margin-top:10px !important;
+    font-size:.80rem !important;
+    line-height:1.32 !important;
+    max-width:240px;
+  }
+
+  .timeline-eyebrow{
+    font-size:.67rem !important;
+    letter-spacing:.14em !important;
+  }
+
+  .timeline-hero-mascots{
+    width:41% !important;
+    height:166px !important;
+    right:0 !important;
+    bottom:-4px !important;
+  }
+
+  .timeline-hero-mascots img{
+    max-height:168px !important;
+  }
+
+  .timeline-back{
+    width:39px !important;
+    height:39px !important;
+    font-size:1.7rem !important;
+  }
+
+  .timeline-season-select select{
+    min-height:38px !important;
+    padding:0 10px !important;
+    font-size:.78rem !important;
+  }
+
+  .timeline-season-select span{
+    font-size:.58rem !important;
+  }
+
+  .timeline-live-state{
+    min-height:30px !important;
+    padding:0 9px !important;
+    font-size:.63rem !important;
+  }
+
+  /* SUMMARY: una sola card visiva a 3 colonne */
+  .timeline-summary{
+    grid-template-columns:repeat(3,minmax(0,1fr)) !important;
+    gap:0 !important;
+    padding:0 !important;
+    margin-top:12px !important;
+    overflow:hidden;
+    border-radius:18px;
+    background:rgba(255,255,255,.90);
+    border:1px solid rgba(21,55,95,.08);
+    box-shadow:var(--tl-shadow);
+  }
+
+  .timeline-summary article{
+    min-width:0;
+    min-height:72px;
+    padding:10px 8px !important;
+    display:flex !important;
+    flex-direction:column;
+    align-items:center !important;
+    justify-content:center !important;
+    gap:5px !important;
+    border:0 !important;
+    border-radius:0 !important;
+    background:transparent !important;
+    box-shadow:none !important;
+    text-align:center;
+  }
+
+  .timeline-summary article + article{
+    border-left:1px solid rgba(21,55,95,.08) !important;
+  }
+
+  .timeline-summary span{
+    font-size:.54rem !important;
+    line-height:1.12;
+    letter-spacing:.045em !important;
+  }
+
+  .timeline-summary strong{
+    margin:0 !important;
+    max-width:100%;
+    font-size:.77rem !important;
+    line-height:1.15;
+    text-align:center !important;
+    display:-webkit-box;
+    -webkit-line-clamp:2;
+    -webkit-box-orient:vertical;
+    overflow:hidden;
+  }
+
+  /* TIMELINE: meno aria morta tra un evento e l'altro */
+  .timeline-section{
+    margin-top:24px !important;
+  }
+
+  .timeline-event{
+    padding:8px 0 !important;
+    gap:10px !important;
+  }
+
+  .story-card{
+    min-height:118px !important;
+    border-radius:20px !important;
+  }
+
+  .story-card-inner{
+    grid-template-columns:78px minmax(0,1fr) !important;
+    min-height:118px !important;
+  }
+
+  .story-art{
+    padding:7px 3px 0 !important;
+  }
+
+  .story-art img{
+    height:94px !important;
+  }
+
+  .story-art .story-icon{
+    width:52px !important;
+    height:52px !important;
+    border-radius:16px !important;
+    font-size:1.4rem !important;
+  }
+
+  .story-content{
+    padding:11px 11px 12px !important;
+  }
+
+  .story-top{
+    gap:5px !important;
+    margin-bottom:5px !important;
+  }
+
+  .story-tag{
+    min-height:22px !important;
+    padding:0 7px !important;
+    font-size:.56rem !important;
+  }
+
+  .story-extra{
+    font-size:.59rem !important;
+  }
+
+  .story-source{
+    min-height:19px !important;
+    padding:0 6px !important;
+    font-size:.48rem !important;
+  }
+
+  .story-content h3{
+    font-size:.92rem !important;
+    line-height:1.03 !important;
+  }
+
+  .is-major .story-content h3{
+    font-size:1.02rem !important;
+  }
+
+  .story-content p{
+    margin-top:6px !important;
+    font-size:.70rem !important;
+    line-height:1.34 !important;
+    display:-webkit-box;
+    -webkit-line-clamp:3;
+    -webkit-box-orient:vertical;
+    overflow:hidden;
+  }
+
+  .story-meta{
+    gap:4px !important;
+    margin-top:7px !important;
+  }
+
+  .story-meta span{
+    min-height:20px !important;
+    padding:0 6px !important;
+    font-size:.54rem !important;
+  }
+
+  .story-arrow{
+    right:9px !important;
+    bottom:8px !important;
+    width:26px !important;
+    height:26px !important;
+    font-size:.95rem !important;
+  }
+
+  /* Date più compatte ma sempre leggibili */
+  .season-timeline-line{
+    left:31px !important;
+  }
+
+  .timeline-event{
+    grid-template-columns:56px minmax(0,1fr) !important;
+  }
+
+  .timeline-date{
+    padding-top:9px !important;
+  }
+
+  .timeline-date strong{
+    font-size:.62rem !important;
+  }
+
+  .timeline-date span{
+    font-size:.54rem !important;
+  }
+
+  .timeline-node{
+    top:12px !important;
+    width:16px !important;
+    height:16px !important;
+    border-width:3px !important;
+  }
+
+  /* Filtri leggermente più compatti */
+  .timeline-filter{
+    min-height:33px !important;
+    padding:0 11px !important;
+    font-size:.68rem !important;
+  }
+}
+
+@media(max-width:390px){
+  .timeline-hero{
+    min-height:224px !important;
+  }
+
+  .timeline-hero-copy{
+    width:69% !important;
+  }
+
+  .timeline-hero h1{
+    font-size:2.08rem !important;
+  }
+
+  .timeline-hero-mascots{
+    height:154px !important;
+    opacity:.82 !important;
+  }
+
+  .timeline-summary article{
+    min-height:68px !important;
+    padding-left:5px !important;
+    padding-right:5px !important;
+  }
+
+  .timeline-summary strong{
+    font-size:.71rem !important;
+  }
+
+  .story-card-inner{
+    grid-template-columns:70px minmax(0,1fr) !important;
+  }
+
+  .story-art img{
+    height:86px !important;
+  }
+}
