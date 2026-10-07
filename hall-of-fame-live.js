@@ -1214,6 +1214,35 @@ function statusLabel(type) {
   return 'In corso';
 }
 
+
+async function sendHallOfFameFinalizedNotification({ season, competitionKey, competitionName, winner }) {
+  try {
+    const safeSeason = String(season || '').trim().replace(/[^0-9A-Za-z_-]+/g, '-');
+    const safeCompetition = String(competitionKey || 'competition').trim().toLowerCase().replace(/[^a-z0-9_-]+/g, '-');
+    const eventKey = `hall-of-fame:${safeSeason}:${safeCompetition}:finalized`;
+
+    const { data, error } = await supabase.functions.invoke('send-admin-notification', {
+      body: {
+        request_id: eventKey,
+        event_key: eventKey,
+        scope: 'league',
+        notification_type: 'competition',
+        title: '🏛️ La storia è stata scritta!',
+        message: `Verdetto ufficiale per ${competitionName} ${season}: ${winner} entra nella Hall of Fame. 👑`,
+        url: 'hall-of-fame.html#albo'
+      }
+    });
+
+    if (error) throw error;
+    if (data?.error) throw new Error(data.error);
+
+    return { ok: true, data };
+  } catch (error) {
+    console.warn('Notifica Hall of Fame non inviata:', error);
+    return { ok: false, error };
+  }
+}
+
 async function renderAdminPanel() {
   const panel = document.getElementById('hof-admin-panel');
   const grid = document.getElementById('hof-admin-grid');
@@ -1346,7 +1375,19 @@ async function renderAdminPanel() {
           return;
         }
 
-        adminMessage(`✓ ${cfg.name} finalizzata. Hall of Fame aggiornata automaticamente.`, 'ok');
+        const notificationResult = await sendHallOfFameFinalizedNotification({
+          season,
+          competitionKey: cfg.key,
+          competitionName: cfg.name,
+          winner: podium[0]?.team_name || 'Il nuovo campione'
+        });
+
+        adminMessage(
+          notificationResult.ok
+            ? `✓ ${cfg.name} finalizzata. Hall of Fame aggiornata e notifica inviata alla Lega.`
+            : `✓ ${cfg.name} finalizzata. Hall of Fame aggiornata; notifica non inviata.`,
+          'ok'
+        );
         await loadLiveHallOfFame();
         await renderAdminPanel();
       });
