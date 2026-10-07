@@ -681,3 +681,24 @@ body.hall-of-fame-page {
   .hall-of-fame-page .trophy-card-lite,
   .hall-of-fame-page .trophy-card-lite.is-major { min-height: 150px; }
 }
+
+.mini-podium-card strong,
+.mini-podium-card small {
+  display: block;
+}
+
+.hall-of-fame-page .mini-podium-card strong {
+  margin-bottom: 6px;
+  color: #ffffff !important;
+  font-size: 1.15rem;
+  line-height: 1.2;
+  text-shadow: 0 2px 10px rgba(0,0,0,0.35);
+}
+
+.hall-of-fame-page .mini-podium-card small {
+  color: #dbe8f8 !important;
+}
+
+.hall-of-fame-page .mini-podium-card .mini-rank {
+  color: #ffe39b !important;
+}
