@@ -1475,3 +1475,37 @@ a.story-card:hover{
     height: auto !important;
   }
 }
+
+
+/* =========================================================
+   V3.6 · TRUE MOBILE BANNER
+   Asset mobile ricomposto 16:9: banner completo, zero crop.
+   ========================================================= */
+
+@media (max-width: 900px){
+  .timeline-banner-hero{
+    aspect-ratio: 16 / 9 !important;
+    overflow: hidden !important;
+    background: #061d3d !important;
+  }
+
+  .timeline-banner-hero picture{
+    display: block !important;
+    width: 100% !important;
+    height: 100% !important;
+  }
+
+  .timeline-banner-hero img{
+    display: block !important;
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: contain !important;
+    object-position: center center !important;
+  }
+}
+
+@media (max-width: 390px){
+  .timeline-banner-hero{
+    aspect-ratio: 16 / 9 !important;
+  }
+}
