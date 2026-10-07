@@ -1437,3 +1437,41 @@ a.story-card:hover{
     aspect-ratio: 1.5 / 1;
   }
 }
+
+
+/* =========================================================
+   V3.5 · MOBILE BANNER NO-CROP FIX
+   Su mobile il banner deve vedersi intero, senza tagliare il testo.
+   ========================================================= */
+
+@media (max-width: 900px){
+  .timeline-banner-hero{
+    aspect-ratio: auto !important;
+    overflow: hidden;
+    background: #0a3f7d;
+  }
+
+  .timeline-banner-hero picture{
+    display: block;
+    width: 100%;
+  }
+
+  .timeline-banner-hero img{
+    display: block;
+    width: 100% !important;
+    height: auto !important;
+    object-fit: contain !important;
+    object-position: center center !important;
+  }
+}
+
+@media (max-width: 520px){
+  .timeline-banner-hero{
+    border-radius: 22px;
+  }
+
+  .timeline-banner-hero img{
+    width: 100% !important;
+    height: auto !important;
+  }
+}
