@@ -1369,17 +1369,59 @@ function reorganizeHomeLowerSections() {
     cupsSection.remove();
   }
 
-  // 3) ESPLORA: Regolamento come voce permanente della lega.
+  // 3) ESPLORA:
+  // - Regolamento come voce permanente della lega.
+  // - La Stagione come nuova voce dedicata alla timeline stagionale.
   if (exploreSection) {
     const exploreTrack = exploreSection.querySelector('.explore-grid');
-    if (exploreTrack && !exploreTrack.querySelector('a[href*="regolamento"]')) {
+    if (!exploreTrack) return;
+
+    const hasCompactCards = !!exploreTrack.querySelector('.explore-compact-card');
+
+    if (!exploreTrack.querySelector('a[href*="regolamento"]')) {
       const regulationCard = document.createElement('a');
       regulationCard.href = 'regolamento.html';
-      regulationCard.className = 'home-image-card explore-card';
-      regulationCard.innerHTML = `
-        <img src="img/maglie/evidenzaregolamento.webp?v=20260915-2" alt="Regolamento" loading="lazy">
-      `;
+
+      if (hasCompactCards) {
+        regulationCard.className = 'explore-compact-card';
+        regulationCard.innerHTML = `
+          <span class="explore-compact-art"><img src="img/home/esplora/regolamento.webp" alt=""></span>
+          <span class="explore-compact-copy"><strong>Regolamento</strong><small>Regole ufficiali</small></span>
+          <span class="explore-compact-arrow" aria-hidden="true">›</span>
+        `;
+      } else {
+        regulationCard.className = 'home-image-card explore-card';
+        regulationCard.innerHTML = `
+          <img src="img/maglie/evidenzaregolamento.webp?v=20260915-2" alt="Regolamento" loading="lazy">
+        `;
+      }
+
       exploreTrack.appendChild(regulationCard);
+    }
+
+    if (!exploreTrack.querySelector('a[href="timeline.html"]')) {
+      const timelineCard = document.createElement('a');
+      timelineCard.href = 'timeline.html';
+      timelineCard.setAttribute('aria-label', 'Apri La Stagione');
+
+      if (hasCompactCards) {
+        timelineCard.className = 'explore-compact-card';
+        timelineCard.innerHTML = `
+          <span class="explore-compact-art"><img src="la-stagione-explore.webp" alt=""></span>
+          <span class="explore-compact-copy"><strong>La Stagione</strong><small>Il racconto dell'anno</small></span>
+          <span class="explore-compact-arrow" aria-hidden="true">›</span>
+        `;
+
+        const regulationCard = exploreTrack.querySelector('a[href*="regolamento"]');
+        if (regulationCard) exploreTrack.insertBefore(timelineCard, regulationCard);
+        else exploreTrack.appendChild(timelineCard);
+      } else {
+        timelineCard.className = 'home-image-card explore-card';
+        timelineCard.innerHTML = `
+          <img src="la-stagione-explore.webp" alt="La Stagione" loading="lazy" loading="lazy">
+        `;
+        exploreTrack.appendChild(timelineCard);
+      }
     }
   }
 }

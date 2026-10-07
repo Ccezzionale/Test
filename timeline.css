@@ -1403,3 +1403,37 @@ a.story-card:hover{
     padding:0 8px;
   }
 }
+
+
+/* =========================================================
+   V3.4 · MOBILE BANNER PROPORTION FIX
+   Mobile banner reso più largo e meno "lenzuolo verticale".
+   ========================================================= */
+
+.timeline-banner-hero img{
+  display:block;
+}
+
+@media (max-width: 900px){
+  .timeline-banner-hero{
+    aspect-ratio: 1.56 / 1;
+    overflow: hidden;
+  }
+
+  .timeline-banner-hero picture,
+  .timeline-banner-hero img{
+    width: 100%;
+    height: 100%;
+  }
+
+  .timeline-banner-hero img{
+    object-fit: cover;
+    object-position: center center;
+  }
+}
+
+@media (max-width: 390px){
+  .timeline-banner-hero{
+    aspect-ratio: 1.5 / 1;
+  }
+}
