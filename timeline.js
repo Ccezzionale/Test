@@ -1387,36 +1387,42 @@ function storyCardMarkup(event) {
     event.manual ? "is-manual" : ""
   ].filter(Boolean).join(" ");
 
-  const inner = `
-    <div class="story-card-inner">
-      <div class="story-art">${eventArtMarkup(event)}</div>
+  const href = event.href && !event.locked ? escapeHtml(event.href) : "";
 
-      <div class="story-content">
-        <div class="story-top">
-          <span class="story-tag">${escapeHtml(event.badge)}</span>
-          ${event.extra ? `<span class="story-extra">${escapeHtml(event.extra)}</span>` : ""}
-          <span class="story-source">${escapeHtml(event.source)}</span>
-        </div>
+  return `
+    <article class="${cardClass}" ${href ? `data-href="${href}"` : ""}>
+      <div class="story-card-inner">
+        <div class="story-art">${eventArtMarkup(event)}</div>
 
-        <h3>${escapeHtml(event.title)}</h3>
-        <p>${escapeHtml(event.text)}</p>
-
-        ${event.meta.length ? `
-          <div class="story-meta">
-            ${event.meta.map(item => `<span>${escapeHtml(item)}</span>`).join("")}
+        <div class="story-content">
+          <div class="story-top">
+            <span class="story-tag">${escapeHtml(event.badge)}</span>
+            ${event.extra ? `<span class="story-extra">${escapeHtml(event.extra)}</span>` : ""}
+            <span class="story-source">${escapeHtml(event.source)}</span>
           </div>
-        ` : ""}
+
+          <h3>${escapeHtml(event.title)}</h3>
+
+          <div class="story-description-wrap">
+            <p>${escapeHtml(event.text)}</p>
+            <button type="button" class="story-more" hidden aria-expanded="false">
+              Leggi tutto
+            </button>
+          </div>
+
+          ${event.meta.length ? `
+            <div class="story-meta">
+              ${event.meta.map(item => `<span>${escapeHtml(item)}</span>`).join("")}
+            </div>
+          ` : ""}
+        </div>
       </div>
-    </div>
 
-    ${event.href && !event.locked ? `<span class="story-arrow" aria-hidden="true">›</span>` : ""}
+      ${href ? `
+        <a class="story-arrow" href="${href}" aria-label="Apri ${escapeHtml(event.title)}">›</a>
+      ` : ""}
+    </article>
   `;
-
-  if (event.href && !event.locked) {
-    return `<a class="${cardClass}" href="${escapeHtml(event.href)}">${inner}</a>`;
-  }
-
-  return `<article class="${cardClass}">${inner}</article>`;
 }
 
 function renderFilters() {
@@ -1442,6 +1448,75 @@ function renderFilters() {
   });
 }
 
+function setupStoryExpanders() {
+  const isMobile = window.matchMedia("(max-width: 900px)").matches;
+  const cards = [...els.list.querySelectorAll(".story-card")];
+
+  cards.forEach(card => {
+    const paragraph = card.querySelector(".story-description-wrap p");
+    const moreButton = card.querySelector(".story-more");
+    const href = card.dataset.href || "";
+
+    if (!paragraph || !moreButton) return;
+
+    card.classList.remove("has-overflow", "is-expanded");
+    moreButton.hidden = true;
+    moreButton.textContent = "Leggi tutto";
+    moreButton.setAttribute("aria-expanded", "false");
+
+    if (!isMobile) {
+      if (href) {
+        card.classList.add("is-clickable");
+        card.addEventListener("click", event => {
+          if (event.target.closest("a, button")) return;
+          window.location.href = href;
+        });
+      }
+      return;
+    }
+
+    // Dopo il paint possiamo confrontare altezza visibile e altezza reale.
+    requestAnimationFrame(() => {
+      const isOverflowing = paragraph.scrollHeight > paragraph.clientHeight + 2;
+
+      if (!isOverflowing) {
+        if (href) {
+          card.classList.add("is-clickable");
+          card.addEventListener("click", event => {
+            if (event.target.closest("a, button")) return;
+            window.location.href = href;
+          });
+        }
+        return;
+      }
+
+      card.classList.add("has-overflow");
+      moreButton.hidden = false;
+
+      const toggleExpanded = () => {
+        const expanded = card.classList.toggle("is-expanded");
+        moreButton.textContent = expanded ? "Riduci" : "Leggi tutto";
+        moreButton.setAttribute("aria-expanded", String(expanded));
+      };
+
+      moreButton.addEventListener("click", event => {
+        event.preventDefault();
+        event.stopPropagation();
+        toggleExpanded();
+      });
+
+      card.addEventListener("click", event => {
+        // La freccia continua ad aprire la pagina collegata.
+        if (event.target.closest(".story-arrow")) return;
+        if (event.target.closest(".story-more")) return;
+
+        event.preventDefault();
+        toggleExpanded();
+      });
+    });
+  });
+}
+
 function renderTimeline() {
   const events = state.chapter === "all"
     ? state.events
@@ -1458,6 +1533,8 @@ function renderTimeline() {
       ${storyCardMarkup(event)}
     </article>
   `).join("");
+
+  setupStoryExpanders();
 }
 
 function renderSummary() {

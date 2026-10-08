@@ -1509,3 +1509,82 @@ a.story-card:hover{
     aspect-ratio: 16 / 9 !important;
   }
 }
+
+
+/* =========================================================
+   V3.7 · MOBILE STORY EXPANDER
+   Le descrizioni lunghe si aprono con un tap.
+   La freccia resta il link alla pagina collegata.
+   ========================================================= */
+
+.story-card.is-clickable{
+  cursor:pointer;
+}
+
+.story-description-wrap{
+  min-width:0;
+}
+
+.story-more{
+  display:none;
+  margin:6px 0 0;
+  padding:0;
+  border:0;
+  color:#176ab5;
+  background:transparent;
+  font:inherit;
+  font-size:.66rem;
+  font-weight:1000;
+  line-height:1;
+  cursor:pointer;
+}
+
+.is-major .story-more{
+  color:#ffd85a;
+}
+
+.story-arrow{
+  z-index:3;
+  text-decoration:none;
+}
+
+@media(max-width:900px){
+  .story-card.has-overflow .story-more{
+    display:inline-flex;
+    align-items:center;
+    gap:4px;
+  }
+
+  .story-card.has-overflow .story-more::after{
+    content:"⌄";
+    font-size:.8rem;
+    transform:translateY(-1px);
+  }
+
+  .story-card.has-overflow.is-expanded .story-more::after{
+    content:"⌃";
+  }
+
+  .story-card.has-overflow{
+    cursor:pointer;
+  }
+
+  .story-card.is-expanded .story-content p{
+    display:block !important;
+    overflow:visible !important;
+    -webkit-line-clamp:unset !important;
+    -webkit-box-orient:initial !important;
+  }
+
+  .story-card.is-expanded .story-content{
+    justify-content:flex-start;
+  }
+
+  .story-card.is-expanded{
+    box-shadow:0 15px 31px rgba(27,73,119,.17);
+  }
+
+  .story-card.is-expanded .story-meta{
+    margin-top:9px !important;
+  }
+}
