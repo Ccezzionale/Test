@@ -1,0 +1,674 @@
+[
+  {
+    "gw": 1,
+    "conference": "Conf A",
+    "home": "Pandinicoccolosini",
+    "away": "Ibla"
+  },
+  {
+    "gw": 1,
+    "conference": "Conf A",
+    "home": "Bayern Christiansen",
+    "away": "Team Bartowski"
+  },
+  {
+    "gw": 1,
+    "conference": "Conf A",
+    "home": "Desperados",
+    "away": "Minnesota Snakes"
+  },
+  {
+    "gw": 1,
+    "conference": "Conf A",
+    "home": "Minnesode Timberland",
+    "away": "Athletic Pongao"
+  },
+  {
+    "gw": 2,
+    "conference": "Conf A",
+    "home": "Ibla",
+    "away": "Minnesode Timberland"
+  },
+  {
+    "gw": 2,
+    "conference": "Conf A",
+    "home": "Athletic Pongao",
+    "away": "Desperados"
+  },
+  {
+    "gw": 2,
+    "conference": "Conf A",
+    "home": "Minnesota Snakes",
+    "away": "Bayern Christiansen"
+  },
+  {
+    "gw": 2,
+    "conference": "Conf A",
+    "home": "Team Bartowski",
+    "away": "Pandinicoccolosini"
+  },
+  {
+    "gw": 3,
+    "conference": "Conf A",
+    "home": "Bayern Christiansen",
+    "away": "Athletic Pongao"
+  },
+  {
+    "gw": 3,
+    "conference": "Conf A",
+    "home": "Desperados",
+    "away": "Ibla"
+  },
+  {
+    "gw": 3,
+    "conference": "Conf A",
+    "home": "Minnesode Timberland",
+    "away": "Pandinicoccolosini"
+  },
+  {
+    "gw": 3,
+    "conference": "Conf A",
+    "home": "Minnesota Snakes",
+    "away": "Team Bartowski"
+  },
+  {
+    "gw": 4,
+    "conference": "Conf A",
+    "home": "Pandinicoccolosini",
+    "away": "Desperados"
+  },
+  {
+    "gw": 4,
+    "conference": "Conf A",
+    "home": "Ibla",
+    "away": "Bayern Christiansen"
+  },
+  {
+    "gw": 4,
+    "conference": "Conf A",
+    "home": "Athletic Pongao",
+    "away": "Minnesota Snakes"
+  },
+  {
+    "gw": 4,
+    "conference": "Conf A",
+    "home": "Team Bartowski",
+    "away": "Minnesode Timberland"
+  },
+  {
+    "gw": 5,
+    "conference": "Conf A",
+    "home": "Bayern Christiansen",
+    "away": "Pandinicoccolosini"
+  },
+  {
+    "gw": 5,
+    "conference": "Conf A",
+    "home": "Desperados",
+    "away": "Minnesode Timberland"
+  },
+  {
+    "gw": 5,
+    "conference": "Conf A",
+    "home": "Athletic Pongao",
+    "away": "Team Bartowski"
+  },
+  {
+    "gw": 5,
+    "conference": "Conf A",
+    "home": "Minnesota Snakes",
+    "away": "Ibla"
+  },
+  {
+    "gw": 6,
+    "conference": "Conf A",
+    "home": "Pandinicoccolosini",
+    "away": "Minnesota Snakes"
+  },
+  {
+    "gw": 6,
+    "conference": "Conf A",
+    "home": "Ibla",
+    "away": "Athletic Pongao"
+  },
+  {
+    "gw": 6,
+    "conference": "Conf A",
+    "home": "Desperados",
+    "away": "Team Bartowski"
+  },
+  {
+    "gw": 6,
+    "conference": "Conf A",
+    "home": "Minnesode Timberland",
+    "away": "Bayern Christiansen"
+  },
+  {
+    "gw": 7,
+    "conference": "Conf A",
+    "home": "Bayern Christiansen",
+    "away": "Desperados"
+  },
+  {
+    "gw": 7,
+    "conference": "Conf A",
+    "home": "Athletic Pongao",
+    "away": "Pandinicoccolosini"
+  },
+  {
+    "gw": 7,
+    "conference": "Conf A",
+    "home": "Minnesota Snakes",
+    "away": "Minnesode Timberland"
+  },
+  {
+    "gw": 7,
+    "conference": "Conf A",
+    "home": "Team Bartowski",
+    "away": "Ibla"
+  },
+  {
+    "gw": 8,
+    "conference": "Conf A",
+    "home": "Desperados",
+    "away": "Pandinicoccolosini"
+  },
+  {
+    "gw": 8,
+    "conference": "Conf A",
+    "home": "Athletic Pongao",
+    "away": "Bayern Christiansen"
+  },
+  {
+    "gw": 8,
+    "conference": "Conf A",
+    "home": "Minnesode Timberland",
+    "away": "Ibla"
+  },
+  {
+    "gw": 8,
+    "conference": "Conf A",
+    "home": "Team Bartowski",
+    "away": "Minnesota Snakes"
+  },
+  {
+    "gw": 9,
+    "conference": "Conf A",
+    "home": "Pandinicoccolosini",
+    "away": "Athletic Pongao"
+  },
+  {
+    "gw": 9,
+    "conference": "Conf A",
+    "home": "Ibla",
+    "away": "Team Bartowski"
+  },
+  {
+    "gw": 9,
+    "conference": "Conf A",
+    "home": "Bayern Christiansen",
+    "away": "Minnesode Timberland"
+  },
+  {
+    "gw": 9,
+    "conference": "Conf A",
+    "home": "Minnesota Snakes",
+    "away": "Desperados"
+  },
+  {
+    "gw": 10,
+    "conference": "Conf A",
+    "home": "Desperados",
+    "away": "Bayern Christiansen"
+  },
+  {
+    "gw": 10,
+    "conference": "Conf A",
+    "home": "Minnesode Timberland",
+    "away": "Minnesota Snakes"
+  },
+  {
+    "gw": 10,
+    "conference": "Conf A",
+    "home": "Team Bartowski",
+    "away": "Athletic Pongao"
+  },
+  {
+    "gw": 10,
+    "conference": "Conf A",
+    "home": "Ibla",
+    "away": "Pandinicoccolosini"
+  },
+  {
+    "gw": 11,
+    "conference": "Conf A",
+    "home": "Minnesode Timberland",
+    "away": "Desperados"
+  },
+  {
+    "gw": 11,
+    "conference": "Conf A",
+    "home": "Bayern Christiansen",
+    "away": "Minnesota Snakes"
+  },
+  {
+    "gw": 11,
+    "conference": "Conf A",
+    "home": "Athletic Pongao",
+    "away": "Ibla"
+  },
+  {
+    "gw": 11,
+    "conference": "Conf A",
+    "home": "Pandinicoccolosini",
+    "away": "Team Bartowski"
+  },
+  {
+    "gw": 12,
+    "conference": "Conf A",
+    "home": "Ibla",
+    "away": "Desperados"
+  },
+  {
+    "gw": 12,
+    "conference": "Conf A",
+    "home": "Pandinicoccolosini",
+    "away": "Minnesode Timberland"
+  },
+  {
+    "gw": 12,
+    "conference": "Conf A",
+    "home": "Minnesota Snakes",
+    "away": "Athletic Pongao"
+  },
+  {
+    "gw": 12,
+    "conference": "Conf A",
+    "home": "Team Bartowski",
+    "away": "Bayern Christiansen"
+  },
+  {
+    "gw": 13,
+    "conference": "Conf A",
+    "home": "Bayern Christiansen",
+    "away": "Ibla"
+  },
+  {
+    "gw": 13,
+    "conference": "Conf A",
+    "home": "Desperados",
+    "away": "Athletic Pongao"
+  },
+  {
+    "gw": 13,
+    "conference": "Conf A",
+    "home": "Minnesode Timberland",
+    "away": "Team Bartowski"
+  },
+  {
+    "gw": 13,
+    "conference": "Conf A",
+    "home": "Minnesota Snakes",
+    "away": "Pandinicoccolosini"
+  },
+  {
+    "gw": 14,
+    "conference": "Conf A",
+    "home": "Pandinicoccolosini",
+    "away": "Bayern Christiansen"
+  },
+  {
+    "gw": 14,
+    "conference": "Conf A",
+    "home": "Ibla",
+    "away": "Minnesota Snakes"
+  },
+  {
+    "gw": 14,
+    "conference": "Conf A",
+    "home": "Athletic Pongao",
+    "away": "Minnesode Timberland"
+  },
+  {
+    "gw": 14,
+    "conference": "Conf A",
+    "home": "Team Bartowski",
+    "away": "Desperados"
+  },
+  {
+    "gw": 1,
+    "conference": "Conf B",
+    "home": "FC Disoneste",
+    "away": "Fantaugusta"
+  },
+  {
+    "gw": 1,
+    "conference": "Conf B",
+    "home": "Wildboys 78",
+    "away": "Pokermantra"
+  },
+  {
+    "gw": 1,
+    "conference": "Conf B",
+    "home": "Riverfilo",
+    "away": "Golden Knights"
+  },
+  {
+    "gw": 1,
+    "conference": "Conf B",
+    "home": "Atlético Leon",
+    "away": "Eintracht Franco 126"
+  },
+  {
+    "gw": 2,
+    "conference": "Conf B",
+    "home": "Fantaugusta",
+    "away": "Atlético Leon"
+  },
+  {
+    "gw": 2,
+    "conference": "Conf B",
+    "home": "Eintracht Franco 126",
+    "away": "Riverfilo"
+  },
+  {
+    "gw": 2,
+    "conference": "Conf B",
+    "home": "Golden Knights",
+    "away": "Wildboys 78"
+  },
+  {
+    "gw": 2,
+    "conference": "Conf B",
+    "home": "Pokermantra",
+    "away": "FC Disoneste"
+  },
+  {
+    "gw": 3,
+    "conference": "Conf B",
+    "home": "Wildboys 78",
+    "away": "Eintracht Franco 126"
+  },
+  {
+    "gw": 3,
+    "conference": "Conf B",
+    "home": "Riverfilo",
+    "away": "Fantaugusta"
+  },
+  {
+    "gw": 3,
+    "conference": "Conf B",
+    "home": "Atlético Leon",
+    "away": "FC Disoneste"
+  },
+  {
+    "gw": 3,
+    "conference": "Conf B",
+    "home": "Golden Knights",
+    "away": "Pokermantra"
+  },
+  {
+    "gw": 4,
+    "conference": "Conf B",
+    "home": "FC Disoneste",
+    "away": "Riverfilo"
+  },
+  {
+    "gw": 4,
+    "conference": "Conf B",
+    "home": "Fantaugusta",
+    "away": "Wildboys 78"
+  },
+  {
+    "gw": 4,
+    "conference": "Conf B",
+    "home": "Eintracht Franco 126",
+    "away": "Golden Knights"
+  },
+  {
+    "gw": 4,
+    "conference": "Conf B",
+    "home": "Pokermantra",
+    "away": "Atlético Leon"
+  },
+  {
+    "gw": 5,
+    "conference": "Conf B",
+    "home": "Wildboys 78",
+    "away": "FC Disoneste"
+  },
+  {
+    "gw": 5,
+    "conference": "Conf B",
+    "home": "Riverfilo",
+    "away": "Atlético Leon"
+  },
+  {
+    "gw": 5,
+    "conference": "Conf B",
+    "home": "Eintracht Franco 126",
+    "away": "Pokermantra"
+  },
+  {
+    "gw": 5,
+    "conference": "Conf B",
+    "home": "Golden Knights",
+    "away": "Fantaugusta"
+  },
+  {
+    "gw": 6,
+    "conference": "Conf B",
+    "home": "FC Disoneste",
+    "away": "Golden Knights"
+  },
+  {
+    "gw": 6,
+    "conference": "Conf B",
+    "home": "Fantaugusta",
+    "away": "Eintracht Franco 126"
+  },
+  {
+    "gw": 6,
+    "conference": "Conf B",
+    "home": "Riverfilo",
+    "away": "Pokermantra"
+  },
+  {
+    "gw": 6,
+    "conference": "Conf B",
+    "home": "Atlético Leon",
+    "away": "Wildboys 78"
+  },
+  {
+    "gw": 7,
+    "conference": "Conf B",
+    "home": "Wildboys 78",
+    "away": "Riverfilo"
+  },
+  {
+    "gw": 7,
+    "conference": "Conf B",
+    "home": "Eintracht Franco 126",
+    "away": "FC Disoneste"
+  },
+  {
+    "gw": 7,
+    "conference": "Conf B",
+    "home": "Golden Knights",
+    "away": "Atlético Leon"
+  },
+  {
+    "gw": 7,
+    "conference": "Conf B",
+    "home": "Pokermantra",
+    "away": "Fantaugusta"
+  },
+  {
+    "gw": 8,
+    "conference": "Conf B",
+    "home": "Riverfilo",
+    "away": "FC Disoneste"
+  },
+  {
+    "gw": 8,
+    "conference": "Conf B",
+    "home": "Eintracht Franco 126",
+    "away": "Wildboys 78"
+  },
+  {
+    "gw": 8,
+    "conference": "Conf B",
+    "home": "Atlético Leon",
+    "away": "Fantaugusta"
+  },
+  {
+    "gw": 8,
+    "conference": "Conf B",
+    "home": "Pokermantra",
+    "away": "Golden Knights"
+  },
+  {
+    "gw": 9,
+    "conference": "Conf B",
+    "home": "FC Disoneste",
+    "away": "Eintracht Franco 126"
+  },
+  {
+    "gw": 9,
+    "conference": "Conf B",
+    "home": "Fantaugusta",
+    "away": "Pokermantra"
+  },
+  {
+    "gw": 9,
+    "conference": "Conf B",
+    "home": "Wildboys 78",
+    "away": "Atlético Leon"
+  },
+  {
+    "gw": 9,
+    "conference": "Conf B",
+    "home": "Golden Knights",
+    "away": "Riverfilo"
+  },
+  {
+    "gw": 10,
+    "conference": "Conf B",
+    "home": "Riverfilo",
+    "away": "Wildboys 78"
+  },
+  {
+    "gw": 10,
+    "conference": "Conf B",
+    "home": "Atlético Leon",
+    "away": "Golden Knights"
+  },
+  {
+    "gw": 10,
+    "conference": "Conf B",
+    "home": "Pokermantra",
+    "away": "Eintracht Franco 126"
+  },
+  {
+    "gw": 10,
+    "conference": "Conf B",
+    "home": "Fantaugusta",
+    "away": "FC Disoneste"
+  },
+  {
+    "gw": 11,
+    "conference": "Conf B",
+    "home": "Atlético Leon",
+    "away": "Riverfilo"
+  },
+  {
+    "gw": 11,
+    "conference": "Conf B",
+    "home": "Wildboys 78",
+    "away": "Golden Knights"
+  },
+  {
+    "gw": 11,
+    "conference": "Conf B",
+    "home": "Eintracht Franco 126",
+    "away": "Fantaugusta"
+  },
+  {
+    "gw": 11,
+    "conference": "Conf B",
+    "home": "FC Disoneste",
+    "away": "Pokermantra"
+  },
+  {
+    "gw": 12,
+    "conference": "Conf B",
+    "home": "Fantaugusta",
+    "away": "Riverfilo"
+  },
+  {
+    "gw": 12,
+    "conference": "Conf B",
+    "home": "FC Disoneste",
+    "away": "Atlético Leon"
+  },
+  {
+    "gw": 12,
+    "conference": "Conf B",
+    "home": "Golden Knights",
+    "away": "Eintracht Franco 126"
+  },
+  {
+    "gw": 12,
+    "conference": "Conf B",
+    "home": "Pokermantra",
+    "away": "Wildboys 78"
+  },
+  {
+    "gw": 13,
+    "conference": "Conf B",
+    "home": "Wildboys 78",
+    "away": "Fantaugusta"
+  },
+  {
+    "gw": 13,
+    "conference": "Conf B",
+    "home": "Riverfilo",
+    "away": "Eintracht Franco 126"
+  },
+  {
+    "gw": 13,
+    "conference": "Conf B",
+    "home": "Atlético Leon",
+    "away": "Pokermantra"
+  },
+  {
+    "gw": 13,
+    "conference": "Conf B",
+    "home": "Golden Knights",
+    "away": "FC Disoneste"
+  },
+  {
+    "gw": 14,
+    "conference": "Conf B",
+    "home": "FC Disoneste",
+    "away": "Wildboys 78"
+  },
+  {
+    "gw": 14,
+    "conference": "Conf B",
+    "home": "Fantaugusta",
+    "away": "Golden Knights"
+  },
+  {
+    "gw": 14,
+    "conference": "Conf B",
+    "home": "Eintracht Franco 126",
+    "away": "Atlético Leon"
+  },
+  {
+    "gw": 14,
+    "conference": "Conf B",
+    "home": "Pokermantra",
+    "away": "Riverfilo"
+  }
+]
