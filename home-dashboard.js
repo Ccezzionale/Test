@@ -1408,7 +1408,7 @@ function reorganizeHomeLowerSections() {
         timelineCard.className = 'explore-compact-card';
         timelineCard.innerHTML = `
           <span class="explore-compact-art"><img src="la-stagione-explore.webp" alt=""></span>
-          <span class="explore-compact-copy"><strong>La Stagione</strong><small>Il racconto dell'anno</small></span>
+          <span class="explore-compact-copy"><strong>La Stagione</strong><small>The Movie</small></span>
           <span class="explore-compact-arrow" aria-hidden="true">›</span>
         `;
 
