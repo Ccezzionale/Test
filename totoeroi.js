@@ -298,11 +298,16 @@ async function saveAdminRound(){
     const wanted=$('te-admin-status').value;
     if(wanted==='homologated')throw new Error('Per omologare usa il pulsante specifico.');
     if(wanted==='open' && (!deadline || new Date(deadline).getTime()<=Date.now()))throw new Error('Per aprire la giornata serve una scadenza futura.');
-    // Riapertura straordinaria: scadenza già superata, schedine conservate,
-    // vecchi esiti cancellati e nuova data futura, il tutto in un'unica RPC.
-    if(existing && isExpired(existing) && wanted==='open'){
-      if(!['open','suspended','homologated'].includes(existing.status))
-        throw new Error('Questa giornata non può essere riaperta.');
+    // Riapertura amministrativa anche se la giornata e' stata sospesa,
+    // annullata, omologata o rimasta in bozza con scadenza passata.
+    // Una giornata aperta con scadenza futura si gestisce normalmente.
+    const needsReopen = Boolean(existing && wanted === 'open' && (
+      ['suspended', 'homologated', 'cancelled'].includes(existing.status) ||
+      (isExpired(existing) && ['open', 'draft'].includes(existing.status))
+    ));
+    if(needsReopen){
+      if(!['draft','open','suspended','homologated','cancelled'].includes(existing.status))
+        throw new Error(`Stato non gestito: ${existing.status}. Non modificare direttamente il database.`);
       if(!confirm('Riaprire la giornata '+gw+' fino a '+timeString(new Date(deadline).toISOString())+'?\n\nLe schedine già inviate resteranno salvate e potranno essere modificate. Gli esiti di prova verranno cancellati e la giornata uscirà temporaneamente dalla classifica.')){
         adminMessage('Riapertura annullata.');
         return;
