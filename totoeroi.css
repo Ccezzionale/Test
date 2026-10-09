@@ -510,3 +510,137 @@ body.te-page{
  #te-ranking .te-ranking-row > div:first-child {font-size:15px;}
  #te-ranking .te-ranking-header {font-size:10px;}
 }
+
+
+/* ================================================
+   V5 · Lega degli Eroi / light dashboard
+   Shared global navbar remains styled by navbar.css.
+   All selectors scoped to .te-page.
+   ================================================ */
+body.te-page {font-family:Inter,'Segoe UI',Arial,sans-serif!important;
+  background:radial-gradient(900px 540px at 50% -80px,#cfe7ff 0%,transparent 75%),
+   linear-gradient(160deg,#e9f4ff 0%,#f4f9ff 48%,#edf4fd 100%)!important;
+  color:#102f53!important;}
+.te-page .te-shell {width:min(1280px,calc(100% - 38px));margin:23px auto 95px;}
+.te-page .te-hero.te-hero-art{border-color:#b9dcfc;box-shadow:0 12px 24px #1b588d29;}
+.te-page .te-status-board{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:16px 0;}
+.te-page .te-status-item{min-height:99px;border:1px solid #cfe3f5;border-radius:16px;
+ background:linear-gradient(135deg,#fff,#eff7ff);box-shadow:0 6px 22px #144d7f0e;padding:15px 17px;}
+.te-page .te-status-item:before{background:linear-gradient(90deg,#165caa,#e7bd3d);height:3px;}
+.te-page .te-small{color:#2765a8;font-size:10px;letter-spacing:.11em;}
+.te-page .te-status-item b{color:#092d53!important;font-size:clamp(17px,1.9vw,23px);}
+.te-page .te-status-item small,.te-page .te-status-item em{color:#537897;}
+.te-page #te-status.te-is-open{color:#008b71!important;}
+.te-page .te-tabs{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));
+ background:#dfedfc;border:1px solid #c1dafa;gap:7px;padding:6px;box-shadow:none;margin:16px 0 22px;}
+.te-page .te-tab{color:#123f72;padding:13px 5px;line-height:1.12;font-weight:850;background:#edf6ff;
+ border:1px solid #d8e9f9;border-radius:10px;display:flex;align-items:center;justify-content:center;gap:7px;}
+.te-page .te-tab:hover:not(.is-active){background:#d3e9ff;color:#0b3b71;}
+.te-page .te-tab.is-active{background:linear-gradient(165deg,#ffe587,#ffc74a);color:#132d4b;border-color:#e8ba37;box-shadow:0 3px 7px #b7832229;}
+.te-page .te-tab-admin {color:#08437a;background:#dceaff;border-color:#a8c9ec;}
+.te-page .te-section-head h2{color:#0b315a!important;}
+.te-page .te-section-head p{color:#526e8d!important;}
+.te-page .te-progress-ring{border:3px solid #edb925;color:#ffdd61;background:#0c4383;}
+.te-page .te-card,.te-page .te-picks-card{color:#102f53!important;background:linear-gradient(150deg,#fff,#f9fcff)!important;
+ border:1px solid #cfdfef;border-radius:17px;box-shadow:0 8px 23px #1a61951a;}
+.te-page .te-card-top{color:#073767;border-bottom-color:#d9e8f6;}
+.te-page #te-team-label{color:#09396b;font-weight:900;}
+.te-page #te-draft-state{color:#a46b00;font-weight:800;}
+.te-page .te-picks-guide{color:#476d91;}
+.te-page .te-match-list{gap:7px;}
+.te-page .te-match-row,.te-page .te-match-row:nth-child(2n){min-height:79px;padding:10px 12px;
+ background:#f1f7ff!important;border:1px solid #d7e6f6;box-shadow:none;}
+.te-page .te-match-row.is-picked{background:#e9f3ff!important;border:1px solid #a9cbea;box-shadow:inset 4px 0 0 #efbd3d;}
+.te-page .te-match-index{color:#3a6388;}
+.te-page .te-match-index small,.te-page .te-team-name small{color:#6486a6;}
+.te-page .te-team strong{color:#082b53;}
+.te-page .te-team img{filter:drop-shadow(0 2px 3px #29496733);}
+.te-page .te-pick-buttons button{border:1px solid #bfd8f1;background:#e5f0ff;color:#063567;
+ box-shadow:none;min-width:44px;min-height:40px;}
+.te-page .te-pick-buttons button:hover:not(:disabled){background:#d6eaff;border-color:#7db5ef;}
+.te-page .te-pick-buttons button.is-selected{background:linear-gradient(145deg,#1769c0,#06478f);color:#fff;
+ border-color:#2265a9;box-shadow:0 3px 9px #135aa12b;}
+.te-page .te-pick-buttons button:disabled:not(.is-selected){color:#2d5380;opacity:.56;}
+.te-page .te-pick-buttons button.is-selected:disabled{opacity:1;}
+.te-page .te-primary{background:linear-gradient(165deg,#ffe783,#f4bb3c);border-color:#e4b244;color:#102d50;box-shadow:0 5px 14px #b78a2730;}
+.te-page .te-secondary{color:#0d4b88;background:#e5f1ff;border-color:#aacae6;}
+.te-page .te-info-line,.te-page .te-save-hint{color:#4a708e;}
+.te-page .te-rules p{color:#335978;border-bottom-color:#d9e9f9;}
+.te-page .te-rules strong{color:#0e4f96;}
+.te-page .te-ranking-card{padding:10px;border-color:#d2e5f5;}
+.te-page #te-ranking .te-ranking-header{background:#e4f2ff!important;color:#315d8a!important;
+ border:1px solid #c5dff7;border-radius:10px;padding:15px 18px;}
+.te-page #te-ranking .te-ranking-header>span{color:#315d8a!important;}
+.te-page #te-ranking .te-ranking-row{color:#082f59!important;background:#fff!important;border-bottom:1px solid #e3eef9;}
+.te-page #te-ranking .te-ranking-row:nth-child(even){background:#eff7ff!important;}
+.te-page #te-ranking .te-ranking-row:nth-child(2){background:linear-gradient(90deg,#fff1c5,#f7fbff 58%)!important;}
+.te-page #te-ranking .te-ranking-row>div{color:#123d68!important;}
+.te-page #te-ranking .te-ranking-row>div:first-child{color:#a56f0a!important;}
+.te-page #te-ranking .te-ranking-row strong{color:#0b355e!important;}
+.te-page .te-public-card,.te-page .te-history-card{background:#fff;color:#0e385f!important;
+ border:1px solid #cedfee;box-shadow:0 5px 17px #285e9020;}
+.te-page .te-public-header strong,.te-page .te-history-card strong{color:#0a315a;}
+.te-page .te-public-header small,.te-page .te-history-card small{color:#527394;}
+.te-page .te-public-picks span{color:#0f4275;background:#eaf3ff;border:1px solid #c2dbf4;}
+.te-page .te-public-picks span.is-correct{background:#b7f5df;color:#086044;border-color:#56caa5;opacity:1;}
+.te-page .te-public-picks span.is-wrong{color:#406083;opacity:.72;}
+.te-page .te-public-win{color:#9c690d;}
+.te-page .te-history-pill{background:#eaf4ff;border-color:#b7d5f4;color:#175289;}
+.te-page .te-history-pill.won{background:#fff2c3;color:#8e620e;border-color:#e4ba4a;}
+.te-page .te-empty{color:#456d8f;}
+/* Admin is a distinct tab, visually separated and protected by server checked role. */
+.te-page #te-panel-admin .te-section-overline{color:#1e6eb4;}
+.te-page .te-admin{margin-top:4px;color:#fff!important;background:linear-gradient(145deg,#123f71,#092849)!important;
+ border:1px solid #3572a8;}
+.te-page .te-admin h2,.te-page .te-admin h3{color:#ffe294!important;}
+.te-page .te-admin .te-muted,.te-page .te-admin p{color:#d9eafa!important;}
+.te-page .te-admin input,.te-page .te-admin select{background:#123a5e;color:#fff;}
+.te-page .te-fixture-editor,.te-page .te-result-editor{background:#10375f;}
+.te-page .te-fixture-editor input,.te-page .te-fixture-editor select{background:#17476f;color:#fff;}
+.te-page .te-admin .te-secondary{background:#174e7c;color:#fff;border-color:#407fae;}
+.te-page nav.site-nav{position:sticky;top:0;z-index:2000;}
+/* Keep global navbar responsive, avoid overlapping desktop items near tablet widths. */
+@media (min-width:901px) and (max-width:1320px){
+ body.te-page nav.site-nav .nav-inner{gap:8px!important;padding-left:10px!important;padding-right:10px!important;}
+ body.te-page nav.site-nav .navbar > li > a{padding:9px 8px!important;font-size:12px!important;}
+ body.te-page nav.site-nav .nav-right{gap:6px!important;}
+ body.te-page nav.site-nav .nav-right .btn-label{display:none!important;}
+ body.te-page nav.site-nav .btn-hero{min-width:42px!important;padding-left:6px!important;padding-right:6px!important;}
+}
+@media(max-width:900px){body.te-page{padding-bottom:110px!important;}}
+@media(max-width:740px){
+ .te-page .te-shell{width:calc(100% - 20px);margin:12px auto 140px;}
+ .te-page .te-status-board{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;}
+ .te-page .te-status-item{min-height:88px;padding:11px;border-radius:11px;}
+ .te-page .te-tabs{grid-template-columns:repeat(3,minmax(0,1fr));gap:5px;margin:12px 0 14px;}
+ .te-page .te-tab{min-height:45px;padding:9px 4px;font-size:11px;gap:4px;}
+ .te-page .te-tab-icon{font-size:14px;}
+ .te-page .te-match-row,.te-page .te-match-row:nth-child(2n){
+   grid-template-columns:1fr 1fr;grid-template-areas:'home away' 'pick pick';min-height:110px;gap:8px 6px;padding:10px;}
+ .te-page .te-pick-buttons button{min-height:44px;font-size:15px;}
+ .te-page .te-team strong{font-size:12px;}
+ .te-page .te-ranking-header,.te-page .te-ranking-row{grid-template-columns:24px minmax(0,1fr) 44px 44px 37px;gap:4px;padding:11px 5px;}
+ .te-page #te-ranking .te-ranking-header{padding:10px 5px;}
+ .te-page .te-ranking-row strong{font-size:11px;}
+ .te-page .te-public-entries,.te-page .te-history{grid-template-columns:1fr;}
+ .te-page .te-admin{padding:13px;}
+}
+@media(max-width:360px){
+ .te-page .te-tab{font-size:10px;}
+ .te-page .te-match-row,.te-page .te-match-row:nth-child(2n){padding:8px 6px;}
+}
+
+/* V5 all-light Commissioner workspace, matching the approved white panels. */
+.te-page .te-admin{background:linear-gradient(145deg,#fff,#f3f9ff)!important;border:1px solid #b9d4ed!important;color:#10395f!important;}
+.te-page .te-admin h2,.te-page .te-admin h3{color:#0c4277!important;}
+.te-page .te-admin .te-section-overline{color:#1662a8!important;}
+.te-page .te-admin .te-muted,.te-page .te-admin p{color:#4b7293!important;}
+.te-page .te-admin-form label{color:#23537b;}
+.te-page .te-admin input,.te-page .te-admin select{background:#f5faff!important;color:#113f6d!important;border-color:#bcd8ef;}
+.te-page .te-fixture-editor,.te-page .te-result-editor{background:#eaf4ff!important;border:1px solid #c9e0f5;}
+.te-page .te-fixture-editor input,.te-page .te-fixture-editor select{background:#fff!important;color:#123d6b!important;border-color:#bad7ed;}
+.te-page .te-fixture-editor small{color:#976919;}
+.te-page .te-admin .te-secondary{background:#e4f1ff;color:#125083;border-color:#afcfe9;}
+.te-page .te-admin-explain{background:#eff7ff;border-left-color:#dca92a;color:#47708c;}
+.te-page .te-admin .te-admin-head>span{color:#936209;background:#fff3ca;border-color:#dfb441;}
+.te-page .te-admin-divider{border-color:#d5e6f6;}

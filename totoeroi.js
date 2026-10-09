@@ -105,6 +105,7 @@ function renderPicks(){
   } else {showSaveMessage('Pronostici non modificabili in questo momento.');}
 }
 function switchTab(name){
+  if(name==='admin' && !isAdmin()) name='picks';
   document.querySelectorAll('[data-te-tab]').forEach(b=>b.classList.toggle('is-active',b.dataset.teTab===name));
   document.querySelectorAll('.te-panel').forEach(p=>{const active=p.id==='te-panel-'+name;p.hidden=!active;p.classList.toggle('is-active',active);});
   if(name==='entries')renderPublicEntries();
@@ -150,6 +151,9 @@ function renderHistory(){
 }
 function renderAdmin(){
   const admin=$('te-admin');admin.hidden=!isAdmin();
+  const adminTab=document.querySelector('[data-te-tab="admin"]');
+  if(adminTab){ adminTab.hidden=!isAdmin(); adminTab.style.display=isAdmin()?'':'none'; }
+  const adminPanel=$('te-panel-admin'); if(adminPanel && !isAdmin()){ adminPanel.hidden=true;adminPanel.classList.remove('is-active'); }
   if(!isAdmin())return;
   $('te-admin-week').value=String(state.gw);
   const round=state.round;
@@ -183,7 +187,7 @@ function renderAdminResults(){
       <select data-result-slot="${f.slot}"><option value="" ${!pick?'selected':''}>—</option>${['1','X','2'].map(s=>`<option value="${s}" ${pick===s?'selected':''}>${s}</option>`).join('')}</select></div>`;
   }).join('');
 }
-function adminMessage(str, bad=false){$('te-admin-message').textContent=str;$('te-admin-message').style.color=bad?'#ff9d95':'#f4da95';}
+function adminMessage(str, bad=false){$('te-admin-message').textContent=str;$('te-admin-message').style.color=bad?'#b52121':'#235681';}
 function renderAll(){renderStatus();renderPicks();renderPublicEntries();renderRanking();renderHistory();renderAdmin();}
 
 function pickRound(){

@@ -1,14 +1,13 @@
 <!DOCTYPE html>
 
 <html lang="it">
-<head>
+<head><link href="navbar.css?v=20261007-bottom4" rel="stylesheet"/>
 <meta charset="utf-8"/>
 <meta content="width=device-width,initial-scale=1" name="viewport"/>
 <meta content="#eaf3ff" name="theme-color"/>
-<title>TotoEroi · La Caccia all’8 | Area amministratori</title>
+<title>TotoEroi | Lega degli Eroi</title>
 <link href="icon-192.png" rel="icon" type="image/png"/>
-
-<link href="totoeroi.css?v=admin-esplora-v4" rel="stylesheet"/>
+<link href="totoeroi.css?v=ui-v5-20261009" rel="stylesheet"/>
 </head>
 <body class="te-page te-private-test">
 <div aria-live="polite" id="te-private-gate" role="status">
@@ -17,9 +16,181 @@
 <p id="te-gate-message">Verifica dell'accesso in corso…</p>
 </div>
 </div>
+<nav class="site-nav">
+<div class="nav-inner">
+<div class="nav-left">
+<span aria-label="Apri menu" class="hamburger" id="hamburger">☰</span>
+<button aria-label="Apri menu" class="mobile-nav-title" id="mobile-nav-title" type="button">
+<span class="mobile-nav-logo">
+<img alt="" src="icon-192.png"/>
+</span>
+<span>Lega degli Eroi</span>
+<span class="mobile-nav-caret">▾</span>
+</button>
+<a aria-label="Home" class="brand-home desktop-home-link" href="index.html">
+<img alt="" class="nav-home-icon" src="icons/nav/home.webp"/>
+</a>
+</div>
+<ul class="navbar" id="mainMenu">
+<!-- ROSE NORMALE: visibile ai non-admin -->
+<li class="dropdown" id="nav-rose-normal">
+<a class="toggle-submenu" href="#">
+    Rose <span class="caret">▾</span>
+</a>
+<ul class="submenu">
+<li>
+<a href="rose.html">
+        Rose Squadre
+      </a>
+</li>
+<li>
+<a href="franchigie.html">
+        Franchigie
+      </a>
+</li>
+</ul>
+</li>
+<!-- ROSE ADMIN: visibile solo agli admin -->
+<li class="dropdown" id="nav-rose-admin" style="display:none;">
+<a class="toggle-submenu" href="#">
+    Rose <span class="caret">▾</span>
+</a>
+<ul class="submenu">
+<li>
+<a href="rose.html">
+        Rose Squadre
+      </a>
+</li>
+<li>
+<a href="franchigie.html">
+        Franchigie
+      </a>
+</li>
+<li>
+<a href="admin-rose.html">
+        Admin Rose
+      </a>
+</li>
+<li>
+<a href="admin-gazzetta.html">
+        Admin Gazzetta
+      </a>
+</li>
+</ul>
+</li>
+<li class="dropdown">
+<a class="toggle-submenu" href="#">
+            Draft <span class="caret">▾</span>
+</a>
+<ul class="submenu">
+<li>
+<a href="pre-draft.html">
+<img alt="" class="menu-icon" src="icons/nav/pre-draft.webp"/>
+                Pre-Draft
+              </a>
+</li>
+<li>
+<a href="draft_championship.html">
+<img alt="" class="menu-icon" src="icons/nav/conf-championship.webp"/>
+                Conf. Championship
+              </a>
+</li>
+<li>
+<a href="draft_conference.html">
+<img alt="" class="menu-icon" src="icons/nav/conf-league.webp"/>
+                Conf. League
+              </a>
+</li>
+<li>
+<a href="dinamico-draft.html">
+<img alt="" class="menu-icon" src="icons/nav/draft-2026.webp"/>
+                Draft 2027-28
+              </a>
+</li>
+</ul>
+</li>
+<li class="dropdown competizioni">
+<a class="toggle-submenu" href="#">
+            Competizioni <span class="caret">▾</span>
+</a>
+<ul class="submenu">
+<li>
+<a href="classifica.html">
+<img alt="" class="menu-icon" src="icons/nav/classifiche.webp"/>
+                Classifiche
+              </a>
+</li>
+<li>
+<a href="playoff.html">
+<img alt="" class="menu-icon" src="icons/nav/playoff.webp"/>
+                Playoff
+              </a>
+</li>
+<li>
+<a href="arena.html">
+<img alt="" class="menu-icon" src="icons/nav/highlander.webp"/>
+                Highlander
+              </a>
+</li>
+<li>
+<a href="crashoutcup.html">
+<img alt="" class="menu-icon" src="icons/nav/crashout-cup.webp"/>
+                Crash Out Cup
+              </a>
+</li>
+<li>
+<a href="crashoutplayoff.html">
+<img alt="" class="menu-icon" src="icons/nav/crashout-playoff.webp"/>
+                Crash Out Cup - Playoff
+              </a>
+</li>
+<li>
+<a href="supercoppa.html">
+<img alt="" class="menu-icon" src="icons/nav/supercoppa.webp"/>
+                Supercoppa
+              </a>
+</li>
+<li>
+<a href="allstar.html">
+<img alt="" class="menu-icon" src="icons/nav/allstar.webp"/>
+                All-Star Game
+              </a>
+</li>
+<li>
+<a href="statistiche.html">
+<img alt="" class="menu-icon" src="icons/nav/statistiche.webp"/>
+                Statistiche
+              </a>
+</li>
+</ul>
+</li>
+<li><a href="waiver.html">Waiver Wire</a></li>
+<li>
+<a href="hall-of-fame.html">Hall of Fame</a>
+</li>
+<li><a href="regolamento.html">Regolamento</a></li>
+</ul>
+<div class="nav-right hero-actions">
+<a aria-label="Trade Room" class="btn-hero trade-badge" href="trade-room.html" id="trade-badge">
+<img alt="" class="action-icon" src="icons/nav/trade-room.webp"/>
+<span class="btn-label">Trade Room</span>
+</a>
+<a aria-label="Login" class="btn-hero" href="login.html" id="login-btn" style="display:none;">
+<img alt="" class="action-icon" src="icons/nav/login-logout.webp"/>
+<span class="btn-label">Login</span>
+</a>
+<button aria-label="Logout" class="btn-hero" id="logout-btn" style="display:none;" type="button">
+<img alt="" class="action-icon" src="icons/nav/login-logout.webp"/>
+<span class="btn-label">Logout</span>
+</button>
+<button aria-label="Centro notifiche" class="btn-hero warning" id="attiva-notifiche-btn" type="button">
+<img alt="" class="action-icon" src="icons/nav/notifications.webp"/>
+<span class="btn-label">Notifiche</span>
+</button>
+</div>
+</div>
+</nav><main class="te-shell">
 
-<main class="te-shell">
-<div class="te-brandbar"><a aria-label="Torna alla home della Lega degli Eroi" class="te-return" href="index.html">← Torna alla home</a><span class="te-testlabel">SOLO ADMIN · 2026/27</span></div>
 <section aria-label="TotoEroi · La Caccia all'8" class="te-hero te-hero-art">
 <picture class="te-banner">
 <source media="(max-width: 700px)" srcset="img/totoeroi/banner-mobile.webp" type="image/webp"/>
@@ -38,7 +209,7 @@
 <button class="te-tab" data-te-tab="entries" type="button"><span aria-hidden="true" class="te-tab-icon">👁️</span><span>Le schedine</span></button>
 <button class="te-tab" data-te-tab="history" type="button"><span aria-hidden="true" class="te-tab-icon">🏅</span><span>Storico</span></button>
 <button class="te-tab" data-te-tab="rules" type="button"><span aria-hidden="true" class="te-tab-icon">📜</span><span>Regolamento</span></button>
-</nav>
+<button aria-label="Pannello Admin TotoEroi" class="te-tab te-tab-admin" data-te-tab="admin" hidden="" style="display:none" type="button"><span aria-hidden="true" class="te-tab-icon">⚙️</span><span>Admin</span></button></nav>
 <div class="te-content">
 <section class="te-panel is-active" id="te-panel-picks">
 <div class="te-section-head"><div><div class="te-section-overline">IL TUO PRONOSTICO</div><h2>La tua schedina</h2><p>Seleziona 1, X o 2 per ciascuna delle otto sfide.</p></div>
@@ -53,25 +224,7 @@
 </div>
 </div>
 <div class="te-info-line">🔒 I pronostici delle altre franchigie diventano visibili soltanto dopo la chiusura ufficiale.</div>
-<section class="te-card te-admin" hidden="" id="te-admin">
-<div class="te-admin-head"><div><div class="te-section-overline">AREA RISERVATA</div><h2>Controllo Commissioner</h2><p>Programma la giornata, carica gli incontri e modifica l'orario di chiusura.</p></div><span>ADMIN</span></div>
-<div class="te-admin-form">
-<label>Giornata<select id="te-admin-week"></select></label>
-<label>Scadenza (ora del tuo dispositivo)<input id="te-admin-deadline" type="datetime-local"/></label>
-<label>Stato<select id="te-admin-status"><option value="draft">Bozza</option><option value="open">Pronostici aperti</option><option value="suspended">Sospesa</option><option value="cancelled">Annullata</option></select></label>
-<label class="te-wide">Nota (opzionale)<input id="te-admin-note" maxlength="240" placeholder="Es. turno infrasettimanale" type="text"/></label>
-</div>
-<p class="te-admin-explain">Imposta la scadenza a 5 minuti prima del primo incontro di Serie A. L'ora si può cambiare fino alla chiusura effettiva; non viene presunta dal calendario fantacalcistico.</p>
-<div class="te-admin-actions"><button class="te-secondary" id="te-preset-deadline" type="button">⏱ Preset sabato 14:55</button><button class="te-secondary" id="te-prefill" type="button">📅 Precarica 8 partite</button><button class="te-primary" id="te-admin-save-round" type="button">Salva giornata →</button></div>
-<h3 class="te-admin-mini">Incontri (modificabili soltanto in bozza)</h3>
-<div class="te-admin-fixtures" id="te-admin-fixtures"><div class="te-empty">Seleziona una giornata e premi “Precarica 8 partite”.</div></div>
-<div class="te-admin-divider"></div>
-<h3>Risultati ufficiali e omologazione</h3>
-<p class="te-muted">Dopo la scadenza, importa i risultati dal Match Center, controlla i segni e omologa. Le rettifiche ufficiali possono essere recepite in seguito.</p>
-<div class="te-admin-results" id="te-admin-results"><div class="te-empty">Prima configura una giornata.</div></div>
-<div class="te-admin-actions"><button class="te-secondary" id="te-import-results" type="button">↻ Proponi esiti da risultati</button><button class="te-secondary" id="te-save-results" type="button">Salva esiti</button><button class="te-primary" id="te-homologate" type="button">Omologa giornata</button></div>
-<div class="te-admin-feedback" id="te-admin-message" role="status"></div>
-</section>
+
 </section>
 <section class="te-panel" hidden="" id="te-panel-ranking">
 <div class="te-section-head"><div><div class="te-section-overline">LA GLORIA SI GUADAGNA</div><h2>Classifica dei Veggenti</h2><p>Un punto per ogni segno indovinato. Solo l'8/8 entra nell'albo dei vincitori.</p></div></div>
@@ -96,12 +249,26 @@
 <p class="te-muted">Riepilogo operativo del regolamento proposto dalla Lega. La versione definitiva è soggetta all'approvazione della Lega.</p>
 </div>
 </section>
+<section class="te-panel" hidden="" id="te-panel-admin"><div class="te-section-head"><div><div class="te-section-overline">AREA AMMINISTRATORI</div><h2>Gestione TotoEroi</h2><p>Programma le giornate, gestisci le scadenze e omologa gli esiti ufficiali.</p></div></div><section class="te-card te-admin" hidden="" id="te-admin">
+<div class="te-admin-head"><div><div class="te-section-overline">AREA RISERVATA</div><h2>Controllo Commissioner</h2><p>Programma la giornata, carica gli incontri e modifica l'orario di chiusura.</p></div><span>ADMIN</span></div>
+<div class="te-admin-form">
+<label>Giornata<select id="te-admin-week"></select></label>
+<label>Scadenza (ora del tuo dispositivo)<input id="te-admin-deadline" type="datetime-local"/></label>
+<label>Stato<select id="te-admin-status"><option value="draft">Bozza</option><option value="open">Pronostici aperti</option><option value="suspended">Sospesa</option><option value="cancelled">Annullata</option></select></label>
+<label class="te-wide">Nota (opzionale)<input id="te-admin-note" maxlength="240" placeholder="Es. turno infrasettimanale" type="text"/></label>
 </div>
+<p class="te-admin-explain">Imposta la scadenza a 5 minuti prima del primo incontro di Serie A. L'ora si può cambiare fino alla chiusura effettiva; non viene presunta dal calendario fantacalcistico.</p>
+<div class="te-admin-actions"><button class="te-secondary" id="te-preset-deadline" type="button">⏱ Preset sabato 14:55</button><button class="te-secondary" id="te-prefill" type="button">📅 Precarica 8 partite</button><button class="te-primary" id="te-admin-save-round" type="button">Salva giornata →</button></div>
+<h3 class="te-admin-mini">Incontri (modificabili soltanto in bozza)</h3>
+<div class="te-admin-fixtures" id="te-admin-fixtures"><div class="te-empty">Seleziona una giornata e premi “Precarica 8 partite”.</div></div>
+<div class="te-admin-divider"></div>
+<h3>Risultati ufficiali e omologazione</h3>
+<p class="te-muted">Dopo la scadenza, importa i risultati dal Match Center, controlla i segni e omologa. Le rettifiche ufficiali possono essere recepite in seguito.</p>
+<div class="te-admin-results" id="te-admin-results"><div class="te-empty">Prima configura una giornata.</div></div>
+<div class="te-admin-actions"><button class="te-secondary" id="te-import-results" type="button">↻ Proponi esiti da risultati</button><button class="te-secondary" id="te-save-results" type="button">Salva esiti</button><button class="te-primary" id="te-homologate" type="button">Omologa giornata</button></div>
+<div class="te-admin-feedback" id="te-admin-message" role="status"></div>
+</section></section></div>
 </main>
-
-
-
-
-<script src="totoeroi.js?v=admin-esplora-v4" type="module"></script>
-</body>
+<script src="totoeroi.js?v=ui-v5-20261009" type="module"></script>
+<script src="mobile-nav.js?v=20261007-bottom4"></script><script src="navbar.js?v=20261005-center6"></script><script src="admin-nav.js?v=1" type="module"></script></body>
 </html>
