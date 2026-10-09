@@ -950,3 +950,18 @@ body.te-page .te-admin .te-muted,body.te-page .te-admin p{color:#4b7090!importan
   body.te-page .te-match-row:nth-child(2n) {background:#ffffff!important;}
   body.te-page .te-match-index {border-bottom-color:#e0e8f1;}
 }
+
+
+/* ================================================================
+   V5.3 · NAVBAR MOBILE IDENTICA AL RESTO DELLA LEGA
+   Le altre pagine hanno *{box-sizing:border-box}. TotoEroi
+   lo applicava solo al contenuto .te-shell, lasciando il menu
+   in content-box (47px + padding = 67px invece di 47px).
+   La correzione riguarda esclusivamente la navbar di TotoEroi.
+   ================================================================ */
+body.te-page nav.site-nav,
+body.te-page nav.site-nav *,
+body.te-page nav.site-nav *::before,
+body.te-page nav.site-nav *::after {
+  box-sizing: border-box;
+}
