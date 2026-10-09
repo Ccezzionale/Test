@@ -2,7 +2,7 @@ import { supabase } from './supabase.js';
 
 const NOTIFICATION_TABLE = 'app_notifications';
 const REFRESH_MS = 45000;
-const CENTER_VERSION = '20261005-center6';
+const CENTER_VERSION = '20261009-swipe1';
 
 let currentUser = null;
 let currentFilter = 'all';
@@ -12,6 +12,10 @@ let currentProfile = null;
 let adminTeams = [];
 let adminComposerReady = false;
 let adminSendBusy = false;
+let activeNotificationSwipe = null;
+let suppressNotificationClickUntil = 0;
+let notificationDeletionBusy = false;
+
 
 function escapeHtml(value) {
   return String(value ?? '')
@@ -94,6 +98,21 @@ function injectCenter4Styles() {
   const style = document.createElement('style');
   style.id = 'notification-center4-styles';
   style.textContent = `
+    /* Swipe verso destra per eliminare una notifica, senza interferire con lo scroll verticale. */
+    .notification-swipe-item{position:relative;overflow:hidden;border-radius:16px;isolation:isolate}
+    .notification-swipe-background{position:absolute;inset:0;display:flex;align-items:center;justify-content:flex-start;gap:8px;padding:0 17px;background:linear-gradient(110deg,#cf2f43,#ec4b53);color:#fff;font-size:.79rem;font-weight:900;pointer-events:none;user-select:none}
+    .notification-swipe-item>.notification-row{position:relative;z-index:1;margin:0;touch-action:pan-y;user-select:none;-webkit-user-select:none;transition:background .16s ease,border-color .16s ease,transform .18s ease,opacity .18s ease;background-color:#fff}
+    .notification-swipe-item>.notification-row.is-unread{background:linear-gradient(135deg,#edf6ff 0%,#ffffff 100%)}
+    .notification-swipe-item>.notification-row.is-swiping{transition:none!important}
+    .notification-swipe-item.is-removing>.notification-row{transform:translate3d(110%,0,0)!important;opacity:0;pointer-events:none}
+    .notification-swipe-item.is-removing{transition:height .18s ease,opacity .18s ease,margin .18s ease;opacity:0}
+    .notification-swipe-item.is-restoring>.notification-row{transition:transform .18s ease,opacity .18s ease}
+    .notification-swipe-remove-btn{position:absolute;right:8px;top:50%;transform:translateY(-50%);z-index:2;width:29px;height:29px;display:flex;align-items:center;justify-content:center;border:0;border-radius:9px;color:#ae2536;background:#fff1f2;cursor:pointer;opacity:0;pointer-events:none;transition:opacity .16s ease}
+    @media(hover:hover) and (pointer:fine){.notification-swipe-item:hover .notification-swipe-remove-btn,.notification-swipe-remove-btn:focus-visible{opacity:1;pointer-events:auto}}
+    .notification-swipe-remove-btn:focus-visible{opacity:1;pointer-events:auto;outline:2px solid #dc3545;outline-offset:2px}
+    .notification-swipe-hint{padding:2px 12px 6px;color:#7d8ca1;font-size:.7rem;font-weight:650;text-align:right}
+    @media(hover:hover) and (pointer:fine){.notification-swipe-hint{display:none}}
+    @media(prefers-reduced-motion:reduce){.notification-swipe-item>.notification-row,.notification-swipe-item{transition:none!important}}
     .notification-admin-entry{padding:0 18px 12px;display:none}
     .notification-admin-entry.is-visible{display:block}
     .notification-admin-open{width:100%;border:1px solid rgba(22,104,191,.24);border-radius:12px;padding:10px 12px;background:#eef6ff;color:#0b4f91;font-weight:900;cursor:pointer}
@@ -481,7 +500,8 @@ async function refreshUnreadCount() {
     .from(NOTIFICATION_TABLE)
     .select('id', { count: 'exact', head: true })
     .eq('user_id', user.id)
-    .is('read_at', null);
+    .is('read_at', null)
+    .is('dismissed_at', null);
 
   if (error) {
     console.warn('Impossibile leggere il badge notifiche:', error);
@@ -498,22 +518,26 @@ function notificationRowHtml(row) {
   const time = formatRelativeTime(row.created_at);
 
   return `
-    <button
-      type="button"
-      class="notification-row${unread ? ' is-unread' : ''}"
-      data-notification-id="${escapeHtml(row.id)}"
-      data-notification-url="${escapeHtml(row.url || '')}"
-    >
-      <span class="notification-row-icon">${icon}</span>
-      <span class="notification-row-copy">
-        <span class="notification-row-top">
-          <strong>${escapeHtml(row.title)}</strong>
-          <small>${escapeHtml(time)}</small>
+    <div class="notification-swipe-item" data-swipe-notification-id="${escapeHtml(row.id)}">
+      <div class="notification-swipe-background" aria-hidden="true"><span>🗑️</span><span>Elimina</span></div>
+      <button
+        type="button"
+        class="notification-row${unread ? ' is-unread' : ''}"
+        data-notification-id="${escapeHtml(row.id)}"
+        data-notification-url="${escapeHtml(row.url || '')}"
+      >
+        <span class="notification-row-icon">${icon}</span>
+        <span class="notification-row-copy">
+          <span class="notification-row-top">
+            <strong>${escapeHtml(row.title)}</strong>
+            <small>${escapeHtml(time)}</small>
+          </span>
+          <span class="notification-row-body">${escapeHtml(row.body || '')}</span>
         </span>
-        <span class="notification-row-body">${escapeHtml(row.body || '')}</span>
-      </span>
-      ${unread ? '<span class="notification-unread-dot" aria-label="Non letta"></span>' : ''}
-    </button>
+        ${unread ? '<span class="notification-unread-dot" aria-label="Non letta"></span>' : ''}
+      </button>
+      <button type="button" class="notification-swipe-remove-btn" data-delete-notification-id="${escapeHtml(row.id)}" aria-label="Elimina notifica: ${escapeHtml(row.title)}" title="Elimina notifica">🗑️</button>
+    </div>
   `;
 }
 
@@ -544,6 +568,7 @@ async function loadNotifications() {
       .from(NOTIFICATION_TABLE)
       .select('id, user_id, team_id, type, title, body, url, read_at, created_at')
       .eq('user_id', user.id)
+      .is('dismissed_at', null)
       .order('created_at', { ascending: false })
       .limit(60);
 
@@ -567,7 +592,7 @@ async function loadNotifications() {
         ? 'Non ci sono notifiche da recuperare.'
         : 'Per una volta la lega ha deciso di lasciarti in pace.';
     } else {
-      list.innerHTML = rows.map(notificationRowHtml).join('');
+      list.innerHTML = '<div class="notification-swipe-hint">Scorri una notifica a destra per eliminarla</div>' + rows.map(notificationRowHtml).join('');
     }
 
     await Promise.all([refreshUnreadCount(), refreshTriggerPushState(), setupAdminComposer()]);
@@ -586,6 +611,119 @@ async function loadNotifications() {
   }
 }
 
+/** Nasconde la notifica mantenendo event_key per evitare reinvii dal cron. */
+async function deleteNotificationForCurrentUser(id, item) {
+  if (!id || !item || notificationDeletionBusy) return;
+  notificationDeletionBusy = true;
+  item.classList.add('is-removing');
+  item.classList.remove('is-restoring');
+  const row = item.querySelector('.notification-row');
+  row?.classList.remove('is-swiping');
+  if (row) row.style.transform = '';
+  try {
+    const user = await resolveUser();
+    if (!user) throw new Error('Devi accedere per eliminare le notifiche.');
+
+    // Soft-delete: lascia intatto event_key, così i cron non reinviano
+    // l'evento durante le successive esecuzioni (waiver, mercato, All-Star).
+    const { data, error } = await supabase
+      .from(NOTIFICATION_TABLE)
+      .update({ dismissed_at: new Date().toISOString() })
+      .eq('id', id)
+      .eq('user_id', user.id)
+      .is('dismissed_at', null)
+      .select('id');
+
+    if (error) throw error;
+    if (!data?.some(record => String(record.id) === String(id))) {
+      throw new Error('Notifica non aggiornata. Verifica i permessi UPDATE su app_notifications.');
+    }
+
+    item.remove();
+    const list = document.getElementById('notification-center-list');
+    const empty = document.getElementById('notification-center-empty');
+    const remaining = list?.querySelectorAll('.notification-swipe-item').length || 0;
+    if (!remaining && empty) {
+      empty.hidden = false;
+      empty.querySelector('strong').textContent = currentFilter === 'unread' ? 'Tutto letto' : 'Niente di nuovo';
+      empty.querySelector('small').textContent = 'Per una volta la lega ha deciso di lasciarti in pace.';
+      list?.querySelector('.notification-swipe-hint')?.remove();
+    }
+    await refreshUnreadCount();
+  } catch (error) {
+    console.error('Eliminazione notifica fallita:', error);
+    item.classList.remove('is-removing');
+    item.classList.add('is-restoring');
+    if (row) row.style.transform = '';
+    const message = error?.message || 'Impossibile eliminare la notifica.';
+    window.alert(message);
+  } finally {
+    notificationDeletionBusy = false;
+  }
+}
+
+/** Gesture touch: priorità allo scroll verticale, elimina solo su swipe netto verso destra. */
+function bindNotificationSwipe(list) {
+  if (!list) return;
+
+  list.addEventListener('touchstart', (event) => {
+    if (event.touches.length !== 1 || notificationDeletionBusy) return;
+    const row = event.target.closest('.notification-row');
+    if (!row || !list.contains(row)) return;
+    const item = row.closest('.notification-swipe-item');
+    if (!item) return;
+    const touch = event.touches[0];
+    activeNotificationSwipe = {
+      row, item, id: row.dataset.notificationId,
+      startX: touch.clientX, startY: touch.clientY,
+      offsetX: 0, direction: null
+    };
+  }, { passive: true });
+
+  list.addEventListener('touchmove', (event) => {
+    const swipe = activeNotificationSwipe;
+    if (!swipe || event.touches.length !== 1 || !swipe.row.isConnected) return;
+    const touch = event.touches[0];
+    const dx = touch.clientX - swipe.startX;
+    const dy = touch.clientY - swipe.startY;
+    if (!swipe.direction && Math.max(Math.abs(dx), Math.abs(dy)) > 9) {
+      swipe.direction = Math.abs(dx) > Math.abs(dy) * 1.25 ? 'horizontal' : 'vertical';
+    }
+    if (swipe.direction !== 'horizontal') return;
+    if (dx <= 0) {
+      swipe.offsetX = 0;
+      return;
+    }
+    event.preventDefault();
+    swipe.offsetX = Math.min(dx, Math.max(160, swipe.row.clientWidth * .8));
+    swipe.row.classList.add('is-swiping');
+    swipe.row.style.transform = `translate3d(${swipe.offsetX}px,0,0)`;
+  }, { passive: false });
+
+  list.addEventListener('touchend', () => {
+    const swipe = activeNotificationSwipe;
+    activeNotificationSwipe = null;
+    if (!swipe || !swipe.row.isConnected) return;
+    swipe.row.classList.remove('is-swiping');
+    swipe.row.style.transform = '';
+    if (swipe.direction === 'horizontal' && swipe.offsetX > 10) {
+      suppressNotificationClickUntil = Date.now() + 650;
+      const threshold = Math.min(110, Math.max(80, swipe.row.clientWidth * .28));
+      if (swipe.offsetX >= threshold) {
+        void deleteNotificationForCurrentUser(swipe.id, swipe.item);
+      }
+    }
+  }, { passive: true });
+
+  list.addEventListener('touchcancel', () => {
+    const swipe = activeNotificationSwipe;
+    activeNotificationSwipe = null;
+    if (!swipe) return;
+    swipe.row.classList.remove('is-swiping');
+    swipe.row.style.transform = '';
+  }, { passive: true });
+}
+
 async function markNotificationRead(id) {
   if (!id) return;
 
@@ -597,7 +735,8 @@ async function markNotificationRead(id) {
     .update({ read_at: new Date().toISOString() })
     .eq('id', id)
     .eq('user_id', user.id)
-    .is('read_at', null);
+    .is('read_at', null)
+    .is('dismissed_at', null);
 
   if (error) throw error;
 }
@@ -614,7 +753,8 @@ async function markAllRead() {
       .from(NOTIFICATION_TABLE)
       .update({ read_at: new Date().toISOString() })
       .eq('user_id', user.id)
-      .is('read_at', null);
+      .is('read_at', null)
+      .is('dismissed_at', null);
 
     if (error) throw error;
 
@@ -841,9 +981,23 @@ function bindUi() {
     });
   });
 
-  document.getElementById('notification-center-list')?.addEventListener('click', async (event) => {
+  const notificationList = document.getElementById('notification-center-list');
+  bindNotificationSwipe(notificationList);
+  notificationList?.addEventListener('click', async (event) => {
+    if (Date.now() < suppressNotificationClickUntil) {
+      event.preventDefault();
+      event.stopPropagation();
+      return;
+    }
+    const deleteButton = event.target.closest('.notification-swipe-remove-btn');
+    if (deleteButton) {
+      event.preventDefault();
+      const item = deleteButton.closest('.notification-swipe-item');
+      await deleteNotificationForCurrentUser(deleteButton.dataset.deleteNotificationId, item);
+      return;
+    }
     const row = event.target.closest('.notification-row');
-    if (!row) return;
+    if (!row || notificationDeletionBusy) return;
 
     const id = row.dataset.notificationId;
     const destination = safeDestination(row.dataset.notificationUrl);
