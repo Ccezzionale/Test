@@ -82,12 +82,12 @@ function renderPicks(){
       const pick=state.picks[String(f.slot)]||'';
       const outcome=f.result_sign || '';
       return `<article class="te-match-row ${pick?'is-picked':''}">
-        <div class="te-match-index">MATCH ${f.slot}<small>${esc(f.conference)}</small></div>
-        <div class="te-team"><img src="${esc(logo(f.home_name))}" alt="" onerror="this.src='icon-192.png';this.onerror=null"><strong>${esc(f.home_name)}</strong></div>
+        <div class="te-match-index"><span>SFIDA ${String(f.slot).padStart(2,'0')}</span><small>${esc(f.conference==='Conf A'?'Conference League':f.conference==='Conf B'?'Conference Championship':f.conference)}</small></div>
+        <div class="te-team te-home"><img src="${esc(logo(f.home_name))}" alt="" onerror="this.src='icon-192.png';this.onerror=null"><div class="te-team-name"><small>CASA</small><strong>${esc(f.home_name)}</strong></div></div>
         <div class="te-pick-buttons" role="group" aria-label="Pronostico ${esc(f.home_name)} contro ${esc(f.away_name)}">
-          ${['1','X','2'].map(sign=>`<button type="button" data-pick-slot="${f.slot}" data-pick="${sign}" aria-pressed="${String(pick===sign)}" class="${sign===pick?'is-selected':''}" ${editable?'':'disabled'}>${sign}</button>`).join('')}
+          ${['1','X','2'].map(sign=>`<button type="button" data-pick-slot="${f.slot}" data-pick="${sign}" aria-label="${sign==='1'?'Vittoria casa':sign==='X'?'Pareggio':'Vittoria trasferta'}: ${esc(f.home_name)} contro ${esc(f.away_name)}" aria-pressed="${String(pick===sign)}" class="${sign===pick?'is-selected':''}" ${editable?'':'disabled'}>${sign}</button>`).join('')}
         </div>
-        <div class="te-team te-away"><img src="${esc(logo(f.away_name))}" alt="" onerror="this.src='icon-192.png';this.onerror=null"><strong>${esc(f.away_name)}</strong></div>
+        <div class="te-team te-away"><img src="${esc(logo(f.away_name))}" alt="" onerror="this.src='icon-192.png';this.onerror=null"><div class="te-team-name"><small>TRASFERTA</small><strong>${esc(f.away_name)}</strong></div></div>
       </article>`;
     }).join('');
   }
@@ -124,7 +124,7 @@ function renderPublicEntries(){
     return `<article class="te-public-card"><div class="te-public-header"><img src="${esc(logo(entry.team_name))}" alt="" onerror="this.src='icon-192.png';this.onerror=null"><div><strong>${esc(entry.team_name)}</strong><small>${complete?`${correct}/8 corretti`:'In attesa degli esiti ufficiali'}</small></div></div>
       <div class="te-public-picks">${state.fixtures.map(f=>{
         const s=entry.picks?.[String(f.slot)]||'?';
-        return `<span title="Match ${f.slot}: ${esc(f.home_name)} - ${esc(f.away_name)}" class="${isResultKnown(f)?(s===f.result_sign?'is-correct':'is-wrong'):''}">${esc(s)}</span>`;
+        return `<span data-match="${f.slot}" title="Match ${f.slot}: ${esc(f.home_name)} - ${esc(f.away_name)}" class="${isResultKnown(f)?(s===f.result_sign?'is-correct':'is-wrong'):''}">${esc(s)}</span>`;
       }).join('')}</div>${perfect?'<div class="te-public-win">🏆 CACCIATORE DELL’8! Otto pronostici esatti.</div>':''}</article>`;
   }).join('');
 }

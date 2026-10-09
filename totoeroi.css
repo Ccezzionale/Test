@@ -117,3 +117,267 @@ body.te-private-test.te-authorized #te-private-gate { display: none !important; 
 .te-gate-card p { line-height: 1.6; color: #cfdaea; }
 .te-gate-card a { display: inline-block; margin-top: 10px; padding: 12px 20px;
   color: #051d36; background: #f9d36c; border-radius: 12px; font-weight: 800; text-decoration: none; }
+
+/* =======================================================================
+   TotoEroi · Visual refresh 2026/27 (solo questa pagina)
+   Palette Lega degli Eroi: blu #001f3f / #003366 + oro #ffcc00.
+   Nessuna regola modifica la navbar globale fuori da body.te-page.
+   ======================================================================= */
+body.te-page {
+  --te-bg:#061629;
+  --te-navy:#001f3f;
+  --te-card:#0b284a;
+  --te-card2:#0e3158;
+  --te-line:rgba(147,190,233,.22);
+  --te-gold:#ffcc00;
+  --te-gold2:#d69b28;
+  --te-muted:#b2c7df;
+  --te-white:#ffffff;
+  --te-green:#30dba0;
+  background:radial-gradient(900px 600px at 52% 0%,#0b3766 0%,transparent 72%),
+             linear-gradient(180deg,#06162a 0%,#061322 100%)!important;
+  color:#fff;
+}
+.te-page .te-shell{width:min(1220px,calc(100% - 42px));margin:23px auto 148px;overflow:visible}
+.te-page .te-shell button:focus-visible,.te-page .te-shell a:focus-visible,
+.te-page .te-shell input:focus-visible,.te-page .te-shell select:focus-visible{
+  outline:3px solid var(--te-gold);outline-offset:2px;
+}
+.te-hero{
+  min-height:252px;border-radius:22px;
+  border:1px solid rgba(255,204,0,.55);
+  background:radial-gradient(circle at 86% 45%,rgba(255,204,0,.18),transparent 27%),
+             radial-gradient(ellipse at 95% 130%,rgba(0,120,170,.3),transparent 55%),
+             repeating-linear-gradient(-22deg,transparent 0 37px,rgba(255,255,255,.019) 38px 39px),
+             linear-gradient(115deg,#001a37 8%,#003569 65%,#001e3c 100%);
+  box-shadow:0 16px 42px #0004;
+}
+.te-hero-content{padding:31px 40px;max-width:78%}
+.te-kicker{color:#d5e6fa;font-size:11px;letter-spacing:.16em;display:flex;align-items:center;gap:9px}
+.te-kicker-dot{width:8px;height:8px;flex:none;background:#ffcc00;border-radius:50%;box-shadow:0 0 0 4px #ffcc0022}
+.te-kicker-sep{color:#ffcc00;opacity:.7}
+.te-hero h1{font-size:clamp(58px,7vw,97px);margin:7px 0 -1px;line-height:1.05;letter-spacing:-.06em}
+.te-hero h1 span{color:#ffcc00;text-shadow:0 4px 26px #ffa50022}
+.te-subtitle{font-size:clamp(15px,2.1vw,23px);letter-spacing:.20em;color:#ffda64}
+.te-hero-caption{font-size:14px;font-weight:600;color:#e7f0fc;margin:14px 0 18px}
+.te-hero-tags span{padding:7px 11px;color:#fcecc0;border-color:#cfa53e77;background:#061b34a8}
+.te-eight{right:6%;transform:rotate(-5deg);width:190px}
+.te-eight span{color:#ffdd5c;font-size:218px;text-shadow:3px 5px 0 #d2961f,7px 12px 2px #63481a,0 0 36px #ffd80044}
+.te-eight small{border-color:#ffcc00;background:#092646e8;color:#ffdf82}
+
+.te-status-board{gap:12px;margin:15px 0}
+.te-status-item{background:linear-gradient(140deg,#0b2d53 0%,#071f3c 100%);border:1px solid #36638b88;border-radius:15px;min-height:100px;padding:16px 18px;box-shadow:0 7px 16px #0002;position:relative;overflow:hidden}
+.te-status-item:before{content:'';position:absolute;top:0;left:0;width:54px;height:3px;border-radius:3px;background:#ffcc00}
+.te-small,.te-section-overline{color:#ffd34e;letter-spacing:.13em}
+.te-status-item b{font-size:22px;letter-spacing:-.02em;overflow-wrap:anywhere}
+.te-status-item small{font-size:12px;color:#bdd1e4;line-height:1.45}
+.te-status-item em{color:#b6cade}
+#te-status.te-is-open{color:#40e0b0}
+
+.te-tabs{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));padding:5px;gap:5px;margin:15px 0 21px;background:#092a4c;border:1px solid #315b80;border-radius:15px;overflow:visible}
+.te-tab{display:flex;align-items:center;justify-content:center;gap:9px;min-width:0;white-space:normal;padding:13px 6px;border:1px solid transparent;border-radius:10px;color:#c8def1;font-size:13px;font-weight:800;line-height:1.2}
+.te-tab-icon{font-size:18px;line-height:1;flex:none}
+.te-tab:hover{background:#17436d}
+.te-tab.is-active{background:linear-gradient(145deg,#184977,#0c3157);color:#ffda50;border-color:#ffcc0066;box-shadow:inset 0 -3px 0 #ffcc00}
+.te-section-head{margin:13px 3px 14px}
+.te-section-head h2,.te-admin h2{font-size:clamp(22px,2.5vw,28px);letter-spacing:-.035em}
+.te-section-head p,.te-admin p{color:#b9cfe4}
+.te-progress-ring{width:63px;height:63px;background:#0b3157;border:4px solid #ffcc00;color:#ffdc69}
+.te-card{background:linear-gradient(150deg,#0b294b,#081c34);border:1px solid #31597b99;box-shadow:0 10px 25px #0002}
+.te-picks-card{padding:17px}
+.te-card-top{border-bottom:1px solid #6c9bc04d;color:#f2f7ff;gap:10px;flex-wrap:wrap;padding-bottom:12px}
+#te-team-label{font-weight:900}
+#te-draft-state{color:#ffda62;font-size:12px}
+.te-picks-guide{margin:13px 4px 5px;color:#b7cfe6;font-size:12px;line-height:1.6}
+.te-picks-guide b{color:#ffda62}
+.te-match-list{gap:10px;margin-top:10px}
+.te-match-row,.te-match-row:nth-child(2n){
+  grid-template-columns:105px minmax(0,1fr) 182px minmax(0,1fr);
+  min-height:97px;padding:12px 13px;gap:10px;
+  background:linear-gradient(110deg,#092642,#0b2b4e 55%,#082440);
+  border:1px solid #3e6c9380;border-radius:13px;
+}
+.te-match-row.is-picked{
+  border-color:#e6ba4f99;
+  background:linear-gradient(110deg,#173c5f,#0c3354 55%,#133d5e);
+  box-shadow:inset 3px 0 0 #ffcc00;
+}
+.te-match-index{font-size:11px;font-weight:1000;color:#ffe080;line-height:1.25}
+.te-match-index span{display:block}
+.te-match-index small{display:block;margin-top:5px;color:#9fbbd7;font-weight:650;line-height:1.3;font-size:10px}
+.te-team{gap:10px;min-width:0}
+.te-team img{width:41px;height:41px;flex:0 0 41px;object-fit:contain}
+.te-team-name{min-width:0;display:flex;flex-direction:column;gap:4px}
+.te-team-name small{font-size:9px;font-weight:950;letter-spacing:.16em;color:#99b7d4}
+.te-team strong{font-size:14px;line-height:1.28;overflow-wrap:anywhere;color:#fff}
+.te-away .te-team-name{align-items:flex-end;text-align:right}
+.te-pick-buttons{gap:5px}
+.te-pick-buttons button{flex:1;min-width:0;min-height:48px;border:1px solid #5b7e9f;background:#153e64;color:#e9f3fc;border-radius:10px;font-size:17px;font-weight:950;touch-action:manipulation}
+.te-pick-buttons button:hover:not(:disabled){background:#225a86}
+.te-pick-buttons button.is-selected{background:linear-gradient(145deg,#ffe585,#ffc526);border-color:#ffe990;color:#061e35;box-shadow:0 3px 15px #ffca0044}
+.te-pick-buttons button:disabled{opacity:.60}
+.te-pick-buttons button.is-selected:disabled{opacity:1}
+.te-save-row{border-top:1px solid #28527599;padding-top:17px}
+.te-save-hint{color:#bed2e6}
+.te-primary{background:linear-gradient(140deg,#ffdc66,#f9b900);color:#071c36;border-color:#ffdc61;box-shadow:0 5px 14px #ffb50025}
+.te-secondary{background:linear-gradient(145deg,#16436b,#103453);border-color:#4f7ba0;color:#f3f8fd}
+.te-info-line{color:#b5c8db;line-height:1.5}
+
+/* Commissioner e risultati */
+.te-admin{border-color:#a98e4688;background:linear-gradient(140deg,#0e3155,#071f37)}
+.te-admin h3,.te-admin-mini{color:#ffda73}
+.te-admin-explain{background:#123354;border-left-color:#ffcc00}
+.te-admin input,.te-admin select{background:#06203b;border:1px solid #4c7499}
+.te-fixture-editor{background:#072542;border:1px solid #35628988}
+.te-fixture-editor input,.te-fixture-editor select{background:#0d365c}
+.te-result-editor span{min-width:0;overflow-wrap:anywhere}
+
+/* Classifica: valori ben separati e colori coerenti */
+.te-ranking-card{padding:8px 10px}
+.te-ranking-header,.te-ranking-row{grid-template-columns:46px minmax(0,1fr) 82px 82px 76px;padding:13px 15px}
+.te-ranking-header{background:#10385e;color:#c5d7eb}
+.te-ranking-row:nth-child(2){background:linear-gradient(90deg,#57471755,transparent)}
+.te-ranking-row>div:first-child{color:#ffdd63}
+.te-ranking-row strong{min-width:0;overflow-wrap:anywhere}
+.te-ranking-row strong img{flex:0 0 34px}
+
+/* Confronto schedine: leggibili anche a 320px */
+.te-public-card,.te-history-card{background:#0b2b4c;border:1px solid #37658c8c}
+.te-public-header strong{color:#fff}
+.te-public-picks span{position:relative;background:#103b62;border-color:#426f93;font-size:17px;padding:14px 0 10px;color:#fff}
+.te-public-picks span::before{content:'M' attr(data-match);display:block;font-size:9px;letter-spacing:.02em;color:#9ab9d7;font-weight:800;margin-bottom:4px}
+.te-public-picks .is-correct{background:#0e6249;border-color:#27c694;color:#fff}
+.te-public-picks .is-correct::before{color:#c3f9e3}
+.te-public-picks .is-wrong{opacity:.65}
+.te-history-card strong{color:#fff}
+.te-history-pill.won{color:#ffdf79;border-color:#c89e44}
+
+/* Barra del sito: soltanto nella pagina TotoEroi, senza toccare navbar.css */
+@media (min-width:901px) and (max-width:1330px){
+  body.te-page nav.site-nav .nav-inner{gap:8px!important;padding-left:9px!important;padding-right:9px!important}
+  body.te-page nav.site-nav .navbar{gap:1px!important}
+  body.te-page nav.site-nav .navbar > li > a{padding-left:8px!important;padding-right:8px!important;font-size:12px!important}
+  body.te-page nav.site-nav .navbar > li:has(>a[href="hall-of-fame.html"]),
+  body.te-page nav.site-nav .navbar > li:has(>a[href="regolamento.html"]){display:none!important}
+  body.te-page nav.site-nav .nav-right{gap:5px!important;flex-shrink:0}
+  body.te-page nav.site-nav .nav-right .btn-label{display:none!important}
+  body.te-page nav.site-nav .nav-right .btn-hero{min-width:42px!important;width:42px!important;padding-left:6px!important;padding-right:6px!important}
+}
+
+/* Tablet */
+@media(max-width:950px){
+  .te-match-row,.te-match-row:nth-child(2n){grid-template-columns:80px minmax(0,1fr) 145px minmax(0,1fr);gap:8px}
+  .te-team img{width:34px;height:34px;flex-basis:34px}
+  .te-team strong{font-size:12px}
+  .te-pick-buttons button{min-height:44px}
+}
+
+/* Mobile-first adaptation: 5 tabs always visible; clear teams and 1X2 */
+@media(max-width:700px){
+  body.te-page{background:linear-gradient(180deg,#061f3c,#071a31 490px,#061427)!important}
+  .te-page .te-shell{width:calc(100% - 20px);margin:10px auto 148px}
+  .te-hero{min-height:187px;border-radius:15px;box-shadow:0 8px 20px #0003}
+  .te-hero-content{padding:18px 17px;max-width:100%}
+  .te-kicker{font-size:9px;gap:6px;letter-spacing:.09em}
+  .te-kicker-dot{width:6px;height:6px}
+  .te-hero h1{font-size:clamp(49px,13vw,71px);margin:6px 0 2px}
+  .te-subtitle{font-size:13px;letter-spacing:.11em}
+  .te-hero-caption{font-size:11px;line-height:1.45;max-width:83%;margin:11px 0}
+  .te-hero-tags{gap:5px;max-width:83%}
+  .te-hero-tags span{padding:5px 7px;font-size:9px}
+  .te-eight{opacity:.33;right:-4%;top:38px;bottom:auto;width:115px;pointer-events:none}
+  .te-eight span{font-size:139px}
+  .te-eight small{display:none}
+  .te-status-board{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;margin:9px 0}
+  .te-status-item{min-height:91px;padding:11px 12px;border-radius:11px;box-shadow:none}
+  .te-status-item b{font-size:18px;line-height:1.17;margin:7px 0 4px}
+  .te-status-item small{font-size:10px;line-height:1.3}
+  .te-status-item .te-small{font-size:9px;letter-spacing:.075em}
+  .te-tabs{grid-template-columns:repeat(6,minmax(0,1fr));gap:5px;border-radius:12px;padding:5px;margin:11px 0 17px;overflow:visible}
+  .te-tab{grid-column:span 2;flex-direction:column;gap:5px;min-height:63px;padding:9px 3px;font-size:10px;border-radius:8px}
+  .te-tab:nth-child(4),.te-tab:nth-child(5){grid-column:span 3;flex-direction:row;min-height:43px;gap:8px}
+  .te-tab-icon{font-size:18px}
+  .te-section-head{margin:12px 3px 12px;gap:10px}
+  .te-section-head h2{font-size:23px}
+  .te-section-head p{font-size:12px}
+  .te-progress-ring{width:52px;height:52px;font-size:13px;border-width:3px}
+  .te-card{border-radius:13px;padding:12px}
+  .te-picks-card{padding:10px}
+  .te-card-top{padding:8px 5px 11px;gap:5px;flex-direction:column;align-items:start}
+  #te-team-label{font-size:12px}
+  #te-draft-state{font-size:10px}
+  .te-picks-guide{font-size:11px;margin:9px 4px 8px}
+  .te-match-list{gap:9px;margin-top:8px}
+  .te-match-row,.te-match-row:nth-child(2n){
+    display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);
+    grid-template-areas:'index index' 'home away' 'pick pick';
+    min-height:0;gap:10px 8px;padding:12px 10px;
+    border-radius:12px;background:linear-gradient(110deg,#0b2e52,#092440);
+  }
+  .te-match-row.is-picked{background:linear-gradient(110deg,#104066,#0c2d4b);box-shadow:inset 3px 0 0 #ffcc00}
+  .te-match-index{grid-area:index;display:flex;align-items:center;gap:10px;padding-bottom:8px;border-bottom:1px solid #52769752;font-size:10px}
+  .te-match-index small{margin:0;font-size:10px;letter-spacing:0;color:#acc9e0}
+  .te-team{grid-area:home;display:flex;align-items:center;justify-content:flex-start;gap:7px;min-width:0}
+  .te-away{grid-area:away;flex-direction:row-reverse;justify-content:flex-start;text-align:right}
+  .te-team img{width:33px;height:33px;flex:0 0 33px}
+  .te-team-name{gap:3px;min-width:0}
+  .te-team-name small{font-size:8px;letter-spacing:.1em}
+  .te-team strong{font-size:12px;line-height:1.24;overflow-wrap:anywhere}
+  .te-pick-buttons{grid-area:pick;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}
+  .te-pick-buttons button{width:100%;min-width:0;min-height:49px;font-size:18px;border-radius:9px}
+  .te-final{grid-area:pick}
+  .te-save-row{display:flex;flex-direction:column;gap:11px;align-items:stretch;padding:14px 3px 3px;margin-top:12px}
+  .te-save-hint{font-size:12px;margin:0}
+  .te-save-row .te-primary{width:100%;min-height:51px;font-size:13px}
+  .te-info-line{font-size:11px;margin:13px 4px 20px}
+
+  /* Admin: no horizontal overflow, inputs clearly separated */
+  .te-admin{padding:13px;margin-top:18px}
+  .te-admin-head{align-items:flex-start}
+  .te-admin-head h2{font-size:21px}
+  .te-admin-head>span{padding:6px;font-size:9px}
+  .te-admin-form{grid-template-columns:minmax(0,1fr);gap:12px}
+  .te-admin-form label:nth-child(3){grid-column:auto}
+  .te-admin-actions{display:grid;grid-template-columns:minmax(0,1fr);gap:7px}
+  .te-admin-actions button{width:100%;white-space:normal;min-height:44px;font-size:12px}
+  .te-admin-mini,.te-admin h3{font-size:15px;line-height:1.35}
+  .te-fixture-editor:not(.te-result-editor){display:grid;grid-template-columns:27px minmax(0,1fr);gap:7px;padding:10px}
+  .te-fixture-editor:not(.te-result-editor)>small{grid-column:1;grid-row:1}
+  .te-fixture-editor:not(.te-result-editor)>select{grid-column:2;grid-row:1;width:100%}
+  .te-fixture-editor:not(.te-result-editor)>input[data-f-home]{grid-column:1/-1;grid-row:2}
+  .te-fixture-editor:not(.te-result-editor)>input[data-f-away]{grid-column:1/-1;grid-row:3}
+  .te-result-editor{display:grid;grid-template-columns:24px minmax(0,1fr) 70px;grid-template-rows:auto auto;gap:6px 9px;min-height:68px;padding:10px 9px}
+  .te-result-editor>small{grid-column:1;grid-row:1/3;align-self:center}
+  .te-result-editor>span:nth-of-type(1){grid-column:2;grid-row:1}
+  .te-result-editor>span:nth-of-type(2){grid-column:2;grid-row:2;color:#a5bed7}
+  .te-result-editor>select{grid-column:3;grid-row:1/3;align-self:center;min-width:0;width:100%}
+
+  /* Ranking: hide Giorn. column on phone, keep points and 8/8 */
+  .te-ranking-card{padding:5px}
+  .te-ranking-header,.te-ranking-row{grid-template-columns:25px minmax(0,1fr) 45px 45px;gap:6px;padding:12px 7px;font-size:12px}
+  .te-ranking-header{font-size:9px;letter-spacing:.015em}
+  .te-ranking-header>span:nth-child(4),.te-ranking-row>div:nth-child(4){display:none}
+  .te-ranking-row strong{font-size:11px;line-height:1.25;min-width:0;overflow-wrap:anywhere}
+  .te-ranking-row img{width:26px;height:26px;flex-basis:26px}
+  .te-ranking-row>div:first-child{font-size:15px}
+  .te-public-entries,.te-history{grid-template-columns:1fr;gap:10px}
+  .te-public-card,.te-history-card{padding:12px}
+  .te-public-header img{width:37px;height:37px}
+  .te-public-picks{grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
+  .te-public-picks span{font-size:18px;padding:8px 0 10px}
+  .te-public-picks span::before{font-size:9px;margin-bottom:3px}
+  .te-history-card strong{font-size:15px}
+  .te-history-pill{font-size:10px;padding:6px 9px}
+}
+@media(max-width:360px){
+  .te-hero h1{font-size:46px}
+  .te-hero-caption{font-size:10px}
+  .te-match-row,.te-match-row:nth-child(2n){padding:10px 8px;gap:9px 5px}
+  .te-team img{width:29px;height:29px;flex-basis:29px}
+  .te-team strong{font-size:11px}
+  .te-tab{font-size:9px}
+  .te-ranking-header,.te-ranking-row{grid-template-columns:21px minmax(0,1fr) 39px 39px;gap:4px}
+}
+@media (prefers-reduced-motion:reduce){
+  .te-page .te-shell *, .te-page .te-shell *::before, .te-page .te-shell *::after{transition-duration:.01ms!important;animation-duration:.01ms!important}
+}

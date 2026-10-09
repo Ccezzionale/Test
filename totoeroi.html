@@ -3,11 +3,11 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <meta name="theme-color" content="#061326">
+  <meta name="theme-color" content="#001f3f">
   <title>TotoEroi | Test privato</title>
   <link rel="icon" href="icon-192.png" type="image/png">
   <link rel="stylesheet" href="navbar.css?v=20261008-totoeroi1">
-  <link rel="stylesheet" href="totoeroi.css?v=private2">
+  <link rel="stylesheet" href="totoeroi.css?v=design-v2-20261009">
 </head>
 <body class="te-page te-private-test">
 <div id="te-private-gate" role="status" aria-live="polite">
@@ -233,11 +233,11 @@
   <section class="te-hero" aria-label="TotoEroi La Caccia all'8">
     <div class="te-hero-light"></div>
     <div class="te-hero-content">
-      <div class="te-kicker">⚽ LEGA DEGLI EROI · 2026/27</div>
+      <div class="te-kicker"><span class="te-kicker-dot"></span> LEGA DEGLI EROI <span class="te-kicker-sep">/</span> 2026–27</div>
       <h1>Toto<span>Eroi</span></h1>
       <p class="te-subtitle">LA CACCIA ALL'8</p>
       <p class="te-hero-caption">8 partite. 16 franchigie. Una sola missione: indovinarle tutte.</p>
-      <div class="te-hero-tags"><span>♛ Modalità gratuita</span><span>🏆 Gloria eterna</span></div>
+      <div class="te-hero-tags"><span>⚽ 8 sfide</span><span>🏆 16 franchigie</span><span>♛ Gloria eterna</span></div>
     </div>
     <div class="te-eight" aria-hidden="true"><span>8</span><small>SU 8</small></div>
   </section>
@@ -245,16 +245,16 @@
   <section class="te-status-board" aria-label="Stato TotoEroi">
     <div class="te-status-item"><div class="te-small">GIORNATA</div><b id="te-round-label">—</b><small id="te-round-phase">Regular Season</small></div>
     <div class="te-status-item"><div class="te-small">PRONOSTICI</div><b id="te-status"><span class="te-dot"></span> In configurazione</b><small id="te-deadline">In attesa dell'admin</small></div>
-    <div class="te-status-item"><div class="te-small">TEMPO RIMASTO</div><b id="te-timer">--g --h --m</b><small>Chiusura personalizzabile dall'admin</small></div>
-    <div class="te-status-item"><div class="te-small">SCHEDINE CONSEGNATE</div><b id="te-entry-count">0 <em>/ 16</em></b><small>Segrete fino alla scadenza</small></div>
+    <div class="te-status-item te-status-clock"><div class="te-small">TEMPO RIMASTO</div><b id="te-timer">--g --h --m</b><small>Chiusura personalizzabile dall'admin</small></div>
+    <div class="te-status-item te-status-entries"><div class="te-small">SCHEDINE CONSEGNATE</div><b id="te-entry-count">0 <em>/ 16</em></b><small>Segrete fino alla scadenza</small></div>
   </section>
 
   <nav class="te-tabs" aria-label="Sezioni TotoEroi">
-    <button type="button" class="te-tab is-active" data-te-tab="picks">🎯 La schedina</button>
-    <button type="button" class="te-tab" data-te-tab="ranking">📊 Classifica</button>
-    <button type="button" class="te-tab" data-te-tab="entries">👁️ Le schedine</button>
-    <button type="button" class="te-tab" data-te-tab="history">🏅 Storico</button>
-    <button type="button" class="te-tab" data-te-tab="rules">📜 Regolamento</button>
+    <button type="button" class="te-tab is-active" data-te-tab="picks"><span class="te-tab-icon" aria-hidden="true">🎯</span><span>La schedina</span></button>
+    <button type="button" class="te-tab" data-te-tab="ranking"><span class="te-tab-icon" aria-hidden="true">📊</span><span>Classifica</span></button>
+    <button type="button" class="te-tab" data-te-tab="entries"><span class="te-tab-icon" aria-hidden="true">👁️</span><span>Le schedine</span></button>
+    <button type="button" class="te-tab" data-te-tab="history"><span class="te-tab-icon" aria-hidden="true">🏅</span><span>Storico</span></button>
+    <button type="button" class="te-tab" data-te-tab="rules"><span class="te-tab-icon" aria-hidden="true">📜</span><span>Regolamento</span></button>
   </nav>
 
   <div class="te-content">
@@ -263,7 +263,7 @@
         <div class="te-progress-ring" id="te-progress">0/8</div>
       </div>
       <div class="te-card te-picks-card">
-        <div class="te-card-top"><span id="te-team-label">Accedi per partecipare</span><span id="te-draft-state">Non configurata</span></div>
+        <div class="te-card-top"><span id="te-team-label">Accedi per partecipare</span><span id="te-draft-state">Non configurata</span></div><p class="te-picks-guide">Scegli <b>1</b> (casa), <b>X</b> (pareggio) o <b>2</b> (trasferta) per ogni partita.</p>
         <div class="te-match-list" id="te-match-list"><div class="te-empty">Caricamento incontri...</div></div>
         <div class="te-save-row">
           <div class="te-save-hint" id="te-save-message">Per inviare una schedina valida servono otto pronostici.</div>
@@ -295,7 +295,7 @@
 
     <section id="te-panel-ranking" class="te-panel" hidden>
       <div class="te-section-head"><div><div class="te-section-overline">LA GLORIA SI GUADAGNA</div><h2>Classifica dei Veggenti</h2><p>Un punto per ogni segno indovinato. Solo l'8/8 entra nell'albo dei vincitori.</p></div></div>
-      <div class="te-card"><div id="te-ranking" class="te-ranking"><div class="te-empty">Caricamento...</div></div></div>
+      <div class="te-card te-ranking-card"><div id="te-ranking" class="te-ranking"><div class="te-empty">Caricamento...</div></div></div>
     </section>
 
     <section id="te-panel-entries" class="te-panel" hidden>
@@ -325,6 +325,6 @@
 <script src="mobile-nav.js?v=20261007-bottom4"></script>
 <script src="navbar.js?v=20261005-center6"></script>
 <script type="module" src="admin-nav.js?v=1"></script>
-<script type="module" src="totoeroi.js?v=private2"></script>
+<script type="module" src="totoeroi.js?v=design-v2-20261009"></script>
 </body>
 </html>
