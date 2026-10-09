@@ -792,3 +792,161 @@ body.te-page {font-family:Inter,'Segoe UI',Arial,sans-serif!important;
   body.te-page .te-team strong{font-size:13px;}
   body.te-page .te-tabs > .te-tab{font-size:10px;padding:9px 2px;}
 }
+
+
+/* =======================================================================
+   TotoEroi V5.2 | White Theme
+   SOLO STILE. Mantiene le griglie mobile V5.1, navbar e accesso admin.
+   Palette mockup: bianco #fff, blu navy #082e56, oro #f4c14a.
+   ======================================================================= */
+html:has(body.te-page) { background:#ffffff; }
+body.te-page,
+body.te-page:not(.te-private-test) {
+  background:#ffffff!important;
+  color:#102f53!important;
+}
+body.te-page .te-shell { background:transparent; }
+
+/* Quattro card riepilogative: bianco vero, non azzurro riempito. */
+body.te-page .te-status-item {
+  background:#ffffff!important;
+  border:1px solid #dce5f0;
+  box-shadow:0 5px 16px rgba(12,50,93,.07);
+}
+body.te-page .te-status-item:before {background:linear-gradient(90deg,#0a66ba,#f3c449);}
+body.te-page .te-status-item .te-small { color:#1d5e9e; }
+body.te-page .te-status-item b {color:#092d52!important;}
+body.te-page .te-status-item small,
+body.te-page .te-status-item em {color:#657e9c;}
+body.te-page #te-status.te-is-open {color:#008866!important;}
+
+/* Tab: fondo bianco, bordo sottile e stato attivo oro. */
+body.te-page .te-tabs {
+  background:#ffffff!important;
+  border:1px solid #d9e4ef;
+  box-shadow:0 3px 13px rgba(15,57,93,.06);
+}
+body.te-page .te-tabs > .te-tab {
+  background:#ffffff;
+  border:1px solid #e0e7f0;
+  color:#183e6a;
+  box-shadow:none;
+}
+body.te-page .te-tabs > .te-tab:hover:not(.is-active) {background:#f6f9fd;color:#0c4179;}
+body.te-page .te-tabs > .te-tab.is-active {
+  background:linear-gradient(155deg,#ffe386,#ffc64a);
+  border-color:#e4b33b;
+  color:#102b4f;
+  box-shadow:0 2px 7px rgba(178,128,17,.17);
+}
+body.te-page .te-tabs > .te-tab-admin:not(.is-active) {background:#ffffff;color:#1a4b7c;}
+
+/* Schede principali rigorosamente bianche, come mockup. */
+body.te-page .te-card,
+body.te-page .te-picks-card,
+body.te-page .te-ranking-card,
+body.te-page .te-rules {
+  background:#ffffff!important;
+  color:#0f345b!important;
+  border-color:#d8e3ef;
+  box-shadow:0 7px 22px rgba(16,60,95,.07);
+}
+body.te-page .te-card-top {color:#0e3761;border-bottom-color:#e3ebf4;}
+body.te-page .te-picks-guide {color:#4e6b89;}
+body.te-page .te-picks-guide b {color:#996609;}
+body.te-page .te-info-line,body.te-page .te-save-hint {color:#4d6d8a;}
+body.te-page .te-rules p {color:#355773;border-color:#e4eaf1;}
+body.te-page .te-rules strong {color:#0c4f92;}
+
+/* Otto partite: nessun fondo celeste, solo bianco + separatori leggeri. */
+body.te-page .te-match-row,
+body.te-page .te-match-row:nth-child(2n) {
+  background:#ffffff!important;
+  border:1px solid #dce5ef;
+  box-shadow:0 2px 8px rgba(11,56,97,.035);
+}
+body.te-page .te-match-row.is-picked {
+  background:#ffffff!important;
+  border:1px solid #c6d5e5;
+  box-shadow:inset 4px 0 0 #f4c044,0 2px 8px rgba(11,56,97,.045);
+}
+body.te-page .te-match-index {color:#235e9c;}
+body.te-page .te-match-index small,
+body.te-page .te-team-name small {color:#637f9f;}
+body.te-page .te-team strong {color:#0b3159;}
+body.te-page .te-pick-buttons button:not(.is-selected) {
+  background:#ffffff;
+  color:#0a3568;
+  border:1px solid #bdcfdf;
+  box-shadow:none;
+}
+body.te-page .te-pick-buttons button:hover:not(.is-selected):not(:disabled){background:#f5f8fc;border-color:#7cadd8;}
+body.te-page .te-pick-buttons button.is-selected {
+  background:linear-gradient(145deg,#1167bd,#074993);
+  color:#ffffff;
+  border:1px solid #16599c;
+  box-shadow:0 3px 9px rgba(20,83,154,.2);
+}
+body.te-page .te-primary {background:linear-gradient(155deg,#ffe58a,#f6bd36);color:#112e53;border-color:#e4b243;}
+body.te-page .te-secondary {background:#ffffff;border-color:#c5d8eb;color:#174e82;}
+
+/* Classifica e confronto schedine: bianco, blu navy, linee sottili. */
+body.te-page #te-ranking .te-ranking-header {
+  background:#f7f9fc!important;
+  color:#294f79!important;
+  border-color:#dce6f1;
+}
+body.te-page #te-ranking .te-ranking-header>span {color:#294f79!important;}
+body.te-page #te-ranking .te-ranking-row,
+body.te-page #te-ranking .te-ranking-row:nth-child(even) {
+  background:#ffffff!important;
+  border-bottom:1px solid #e7edf5;
+}
+body.te-page #te-ranking .te-ranking-row:nth-child(2) {
+  background:linear-gradient(90deg,#fff8e7,#ffffff 54%)!important;
+}
+body.te-page #te-ranking .te-ranking-row>div {color:#153b66!important;}
+body.te-page #te-ranking .te-ranking-row>div:first-child {color:#aa7711!important;}
+body.te-page #te-ranking .te-ranking-row strong {color:#10395f!important;}
+body.te-page .te-public-card,
+body.te-page .te-history-card {
+  background:#ffffff!important;
+  border:1px solid #d9e4ef;
+  color:#143a60!important;
+  box-shadow:0 4px 15px rgba(13,58,104,.065);
+}
+body.te-page .te-public-picks span:not(.is-correct):not(.is-wrong) {
+  background:#ffffff;color:#173d6b;border-color:#c9d8e9;
+}
+body.te-page .te-public-picks span.is-correct {background:#dbf8eb;color:#08694b;border-color:#94dfbe;}
+body.te-page .te-public-picks span.is-wrong {background:#ffffff;color:#657b95;border-color:#dce6ef;}
+body.te-page .te-public-picks span::before {color:#5d7c9d;}
+body.te-page .te-history-pill {background:#ffffff;color:#245884;border-color:#d2e2f0;}
+body.te-page .te-history-pill.won {background:#fff7e2;color:#8c660d;border-color:#e4c56b;}
+
+/* Area admin sullo stesso tema chiaro, senza cambiare controlli o permessi. */
+body.te-page .te-admin {background:#ffffff!important;border-color:#d8e4f0!important;color:#10395f!important;}
+body.te-page .te-admin input,
+body.te-page .te-admin select,
+body.te-page .te-fixture-editor input,
+body.te-page .te-fixture-editor select {
+  background:#ffffff!important;
+  color:#123a62!important;
+  border-color:#cbdbe9;
+}
+body.te-page .te-fixture-editor,
+body.te-page .te-result-editor {background:#ffffff!important;border-color:#dce5f0;}
+body.te-page .te-admin-explain {background:#ffffff;color:#54708c;border-left-color:#dca92a;}
+body.te-page .te-admin .te-secondary {background:#ffffff;color:#155387;border-color:#bad0e3;}
+body.te-page .te-admin .te-muted,body.te-page .te-admin p{color:#4b7090!important;}
+
+/* Anche su telefono bianco puro. NON tocca le regole responsive V5.1. */
+@media(max-width:740px){
+  html:has(body.te-page),body.te-page {background:#ffffff!important;}
+  body.te-page .te-status-item,
+  body.te-page .te-tabs,
+  body.te-page .te-card,
+  body.te-page .te-match-row,
+  body.te-page .te-match-row:nth-child(2n) {background:#ffffff!important;}
+  body.te-page .te-match-index {border-bottom-color:#e0e8f1;}
+}
