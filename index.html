@@ -882,6 +882,13 @@
           <span class="explore-compact-arrow" aria-hidden="true">›</span>
         </a>
 
+        <!-- TotoEroi: solo admin. Nascosto di default anche durante il caricamento. -->
+        <a id="explore-totoeroi-admin" href="totoeroi.html" class="explore-compact-card" hidden style="display:none" aria-label="Apri TotoEroi, La Caccia all'8">
+          <span class="explore-compact-art"><img src="img/home/esplora/totoeroi.webp" alt=""></span>
+          <span class="explore-compact-copy"><strong>TotoEroi</strong><small>La Caccia all'8</small></span>
+          <span class="explore-compact-arrow" aria-hidden="true">›</span>
+        </a>
+
         <a href="regolamento.html" class="explore-compact-card">
           <span class="explore-compact-art"><img src="img/home/esplora/regolamento.webp" alt=""></span>
           <span class="explore-compact-copy"><strong>Regolamento</strong><small>Regole ufficiali</small></span>
@@ -1149,6 +1156,22 @@ document.addEventListener("DOMContentLoaded", function () {
 
   document.addEventListener("DOMContentLoaded", setQuickDraftLinkByConference);
 </script>
+  <!-- TotoEroi: controlla server-side lo stesso privilegio delle tabelle in Supabase. -->
+  <script type="module">
+    import { supabase as totoSb } from './supabase.js';
+    (async () => {
+      const card = document.getElementById('explore-totoeroi-admin');
+      if (!card) return;
+      try {
+        const {data:authData,error:authErr} = await totoSb.auth.getUser();
+        if (authErr || !authData?.user) return;
+        const {data:allowed,error:checkErr} = await totoSb.rpc('totoeroi_is_admin');
+        if (checkErr || allowed !== true) return;
+        card.hidden = false;
+        card.style.removeProperty('display');
+      } catch(error) { console.warn('TotoEroi: autorizzazione Home non disponibile',error); }
+    })();
+  </script>
 </body>
 </html>
 

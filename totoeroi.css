@@ -494,3 +494,19 @@ body.te-page{
   .te-match-row,.te-match-row:nth-child(2n){padding:10px 7px}
   .te-pick-buttons button{min-height:43px}
 }
+
+/* V4: Classifica dei Veggenti. Valori prima ereditavano il blu della pagina chiara. */
+#te-ranking .te-ranking-header {background:#17609a!important; color:#f5fbff!important;}
+#te-ranking .te-ranking-header > span {color:#f5fbff!important; font-weight:900;}
+#te-ranking .te-ranking-row {background:#0d355c;color:#edf7ff!important;}
+#te-ranking .te-ranking-row:nth-child(even) {background:#123d69;}
+#te-ranking .te-ranking-row:nth-child(2) {background:linear-gradient(90deg,#6a562c 0%,#12406e 48%,#0d355c 100%);}
+#te-ranking .te-ranking-row > div {color:#ffffff!important; font-weight:900; font-variant-numeric:tabular-nums;}
+#te-ranking .te-ranking-row > div:first-child {color:#ffda55!important;}
+#te-ranking .te-ranking-row strong {color:#f8fcff!important;}
+#te-ranking .te-ranking-row strong img {object-fit:contain;}
+@media(max-width:700px){
+ #te-ranking .te-ranking-row > div {font-size:12px;}
+ #te-ranking .te-ranking-row > div:first-child {font-size:15px;}
+ #te-ranking .te-ranking-header {font-size:10px;}
+}

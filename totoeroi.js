@@ -2,11 +2,10 @@ import { supabase } from './supabase.js';
 import { loadResultsRows } from './results-source.js';
 
 const SEASON = '2026/27';
-// Account autorizzato all'anteprima privata, come gia' configurato nel menu admin.
-const PRIVATE_TEST_EMAIL = 'tringali0511@gmail.com';
+// Admin verificati da Supabase: stessa autorizzazione usata dalle RLS di TotoEroi.
 const $ = id => document.getElementById(id);
 const state = {
-  rounds: [], round: null, fixtures: [], teams: [], user: null, profile: null,
+  rounds: [], round: null, fixtures: [], teams: [], user: null, profile: null, adminAuthorized: false,
   resultsRows: [], fallbacks: [], picks: {}, savedPicks: {},
   publicEntries: [], leaderboard: [], adminFixtures: [], adminResults: {}, gw: 7,
   loading: false, count: 0, timer: null
@@ -28,7 +27,7 @@ function localDateTime(iso){
   const pad = n => String(n).padStart(2,'0');
   return `${date.getFullYear()}-${pad(date.getMonth()+1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
 }
-const isAdmin = () => String(state.user?.email||'').trim().toLowerCase() === PRIVATE_TEST_EMAIL;
+const isAdmin = () => state.adminAuthorized === true;
 const isExpired = r => Boolean(r?.closes_at && Date.now() >= new Date(r.closes_at).getTime());
 const isOpen = () => state.round?.status === 'open' && !isExpired(state.round);
 const isPublished = () => isExpired(state.round);
@@ -488,8 +487,11 @@ async function authorizePrivatePreview(){
       message.innerHTML = 'Accedi con il tuo account autorizzato per aprire l\'anteprima.<div><a href="login.html">Vai al login</a></div>';
       return false;
     }
-    if(String(user.email||'').trim().toLowerCase() !== PRIVATE_TEST_EMAIL){
-      message.textContent = 'Anteprima riservata al proprietario. Questo account non e\' autorizzato.';
+    // Controllo server-side: legge il ruolo da profiles e NON si basa sulla visibilità del link.
+    const {data:authorized, error:authorizationError} = await supabase.rpc('totoeroi_is_admin');
+    if(authorizationError) throw authorizationError;
+    if(authorized !== true){
+      message.textContent = 'Accesso riservato agli amministratori della Lega degli Eroi.';
       return false;
     }
     const {data:profile, error:profileError} = await supabase.from('profiles')
@@ -498,6 +500,7 @@ async function authorizePrivatePreview(){
     if(!profile){ message.textContent='Profilo non disponibile per questo account.'; return false; }
     state.user=user;
     state.profile=profile;
+    state.adminAuthorized=true;
     document.body.classList.add('te-authorized');
     return true;
   }catch(error){
