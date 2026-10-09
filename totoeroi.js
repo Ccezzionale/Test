@@ -298,7 +298,28 @@ async function saveAdminRound(){
     const wanted=$('te-admin-status').value;
     if(wanted==='homologated')throw new Error('Per omologare usa il pulsante specifico.');
     if(wanted==='open' && (!deadline || new Date(deadline).getTime()<=Date.now()))throw new Error('Per aprire la giornata serve una scadenza futura.');
-    if(existing?.closes_at && isExpired(existing)&&deadline && new Date(deadline).getTime()!==new Date(existing.closes_at).getTime())throw new Error('Non si modifica una scadenza già trascorsa.');
+    // Riapertura straordinaria: scadenza già superata, schedine conservate,
+    // vecchi esiti cancellati e nuova data futura, il tutto in un'unica RPC.
+    if(existing && isExpired(existing) && wanted==='open'){
+      if(!['open','suspended','homologated'].includes(existing.status))
+        throw new Error('Questa giornata non può essere riaperta.');
+      if(!confirm('Riaprire la giornata '+gw+' fino a '+timeString(new Date(deadline).toISOString())+'?\n\nLe schedine già inviate resteranno salvate e potranno essere modificate. Gli esiti di prova verranno cancellati e la giornata uscirà temporaneamente dalla classifica.')){
+        adminMessage('Riapertura annullata.');
+        return;
+      }
+      const {error}=await supabase.rpc('totoeroi_reopen_round',{
+        p_round_id:existing.id,
+        p_new_deadline:new Date(deadline).toISOString(),
+        p_note:$('te-admin-note').value.trim()||null
+      });
+      if(error)throw error;
+      await reloadRounds(gw);
+      adminMessage('Giornata '+gw+' riaperta fino a '+timeString(new Date(deadline).toISOString())+'. Schedine conservate, risultati azzerati.');
+      return;
+    }
+    if(existing?.closes_at && isExpired(existing) && deadline &&
+       new Date(deadline).getTime()!==new Date(existing.closes_at).getTime())
+      throw new Error('La vecchia scadenza è trascorsa. Per cambiarla, scegli "Pronostici aperti" e salva: la giornata verrà riaperta.');
     const fixtures=existing && existing.status!=='draft' ? [] : readFixtureEditor();
     const err=fixtures.length?validateEight(fixtures):'';
     if(err)throw new Error(err);
