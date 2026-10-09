@@ -381,3 +381,116 @@ body.te-page {
 @media (prefers-reduced-motion:reduce){
   .te-page .te-shell *, .te-page .te-shell *::before, .te-page .te-shell *::after{transition-duration:.01ms!important;animation-duration:.01ms!important}
 }
+
+/* ======================================================================
+   V3 · Banner Mini Titano + background Lega degli Eroi
+   SOLO TotoEroi. No global header/nav changes. Database/business logic untouched.
+   ====================================================================== */
+html:has(body.te-page){background:#f1f6ff}
+body.te-page{
+  margin:0!important;padding:0 0 60px!important;min-height:100vh;
+  background:
+    radial-gradient(740px 450px at 10% -30px,rgba(20,126,254,.18),transparent 68%),
+    radial-gradient(720px 450px at 102% 510px,rgba(54,171,241,.12),transparent 78%),
+    linear-gradient(180deg,#eaf3ff 0%,#f4f8ff 36%,#f9fbff 100%)!important;
+  color:#0c2b4b!important;
+}
+.te-page .te-shell{width:min(1220px,calc(100% - 32px));margin:20px auto 72px;}
+.te-page .te-shell *{box-sizing:border-box}
+.te-page a{text-decoration:none}
+.te-brandbar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:0 0 12px;}
+.te-return{display:inline-flex;align-items:center;gap:7px;border:1px solid #c8dbef;background:#ffffffc7;
+  border-radius:12px;padding:10px 14px;color:#143e66;font-size:13px;font-weight:850;
+  box-shadow:0 3px 12px #0b335116;transition:background .2s,transform .2s}
+.te-return:hover{background:#fff;transform:translateY(-1px)}
+.te-testlabel{color:#507291;font-size:10px;font-weight:950;letter-spacing:.12em;text-align:right}
+.te-hero.te-hero-art{display:block;min-height:0;padding:0;overflow:hidden;position:relative;
+  border:1px solid #3386d2;border-radius:23px;background:#00264d;
+  box-shadow:0 17px 35px #0a4e8940}
+.te-hero.te-hero-art:after{display:none}
+.te-banner,.te-banner img{display:block;width:100%;height:auto;}
+.te-banner img{object-fit:cover;vertical-align:middle}
+/* Cards are still navy, but lifted onto the pale-blue app background. */
+.te-status-board{margin:15px 0 13px;gap:12px}
+.te-status-item{border:1px solid #2b75b9b8;background:linear-gradient(140deg,#0b3b72,#092849 88%);
+  box-shadow:0 9px 22px #0d41752a;min-height:104px}
+.te-status-item::before{height:3px;width:43px;background:#ffcc00}
+.te-status-item b{color:#fff;font-size:clamp(18px,1.9vw,24px)}
+.te-status-item small{color:#c8e0f5}
+.te-status-item .te-small{color:#ffda67}
+.te-tabs{background:linear-gradient(180deg,#0a396d,#082e57);border:1px solid #235c93;
+  box-shadow:0 6px 18px #15477c22;padding:5px;margin:16px 0 21px;}
+.te-tab{color:#e3f0ff;font-weight:850}
+.te-tab.is-active{background:linear-gradient(135deg,#ffe16b,#f8bd28);color:#051f3c;
+  border-color:#ffe085;box-shadow:0 2px 12px #ffc82e45}
+.te-tab:hover:not(.is-active){background:#17629c;color:white}
+.te-section-overline{color:#0c69b2}
+.te-section-head h2{color:#073661!important;font-size:clamp(24px,2.5vw,31px)}
+.te-section-head p{color:#526b86!important}
+.te-progress-ring{border-color:#f1b91a;background:#0c3970;color:#ffdf6b}
+.te-card{border-color:#2b6ca2b8;background:linear-gradient(140deg,#0d3a67,#092749);
+  box-shadow:0 10px 28px #184b7b23}
+.te-card-top{color:#fff}
+.te-picks-guide{color:#d4e6f7}
+.te-match-row,.te-match-row:nth-child(2n){background:linear-gradient(112deg,#0a325b,#0b3d70 52%,#092d51);
+  border:1px solid #3775a4ad;min-height:81px;padding:9px 12px;}
+.te-match-row.is-picked{background:linear-gradient(112deg,#164a72,#0b4676 55%,#174568);
+  border-color:#eabf52a6;box-shadow:inset 4px 0 0 #ffcc00}
+.te-match-index small,.te-team-name small{color:#b7d4ed}
+.te-pick-buttons button{background:linear-gradient(145deg,#f7faff,#d9e7f8);color:#072d52;
+  border:1px solid #d4e8fa;box-shadow:0 2px 6px #00182b33;}
+.te-pick-buttons button:hover:not(:disabled){background:#fff;color:#072d52}
+.te-pick-buttons button.is-selected{background:linear-gradient(160deg,#ffe683,#ffc228);
+  border-color:#ffe585;color:#09294a;box-shadow:0 3px 12px #ffd23c36;}
+.te-pick-buttons button:disabled{opacity:.58}
+.te-pick-buttons button.is-selected:disabled{opacity:1}
+.te-primary{background:linear-gradient(160deg,#ffe480,#f6b820);border-color:#fcd259;color:#08233f;
+  box-shadow:0 5px 16px #e8ab1a2b}
+.te-secondary{background:#185283;color:#fff;border-color:#5c9ed0}
+.te-info-line{color:#355c7e}
+.te-save-hint{color:#c9dff1}
+.te-admin{border-color:#bc9d4e;background:linear-gradient(150deg,#0b3b6a,#082848)}
+.te-admin .te-section-overline{color:#ffdc74}
+.te-admin h2,.te-admin h3{color:#ffe078!important}
+.te-admin p,.te-admin .te-muted{color:#cadef0!important}
+.te-admin input,.te-admin select{background:#0c3154;color:#fff}
+.te-fixture-editor,.te-result-editor{background:#082f55}
+.te-fixture-editor input,.te-fixture-editor select{background:#15436d;color:#fff}
+.te-ranking-card{padding:9px 10px}
+.te-ranking-header{background:#125085;color:#f0f8ff}
+.te-ranking-row:nth-child(2){background:linear-gradient(90deg,#625b27aa,transparent)}
+.te-public-card,.te-history-card{background:linear-gradient(140deg,#0b3c6d,#082947);
+  border-color:#2b75b3aa;box-shadow:0 5px 16px #09375c16}
+.te-public-picks span{background:#164a7a;border-color:#508cbd}
+.te-rules{background:linear-gradient(135deg,#103d67,#092a4b)}
+.te-empty{color:#bcd2e7}
+@media(max-width:950px){
+  .te-page .te-shell{width:calc(100% - 24px)}
+}
+@media(max-width:700px){
+  body.te-page{
+    background:radial-gradient(500px 220px at 20% 0%,rgba(20,116,239,.18),transparent 72%),
+               linear-gradient(180deg,#e9f3ff 0%,#f5f8ff 42%,#fff 100%)!important;
+    padding-bottom:30px!important;
+  }
+  .te-page .te-shell{width:calc(100% - 18px);margin:10px auto 56px}
+  .te-brandbar{margin:1px 3px 9px}
+  .te-return{padding:9px 11px;font-size:11px}
+  .te-testlabel{font-size:8px;letter-spacing:.07em}
+  .te-hero.te-hero-art{min-height:0!important;border-radius:15px;box-shadow:0 10px 25px #1b619e40}
+  .te-banner img{aspect-ratio:390/219;object-fit:cover}
+  .te-status-board{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:11px 0}
+  .te-status-item{min-height:92px;padding:11px;border-radius:11px}
+  .te-tabs{margin:11px 0 15px}
+  .te-tab{color:#eaf5ff}
+  .te-tab.is-active{color:#09284a}
+  .te-match-row,.te-match-row:nth-child(2n){min-height:120px;padding:11px 10px;gap:10px 7px}
+  .te-pick-buttons button{min-height:44px;font-size:16px}
+  .te-section-head{margin:14px 3px 12px}
+  .te-section-head h2{font-size:23px}
+  .te-info-line{line-height:1.5;margin:14px 5px 24px}
+}
+@media(max-width:360px){
+  .te-match-row,.te-match-row:nth-child(2n){padding:10px 7px}
+  .te-pick-buttons button{min-height:43px}
+}
