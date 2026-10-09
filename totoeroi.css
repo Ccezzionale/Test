@@ -965,3 +965,23 @@ body.te-page nav.site-nav *::before,
 body.te-page nav.site-nav *::after {
   box-sizing: border-box;
 }
+
+
+/* ==============================================================
+   V5.4 · Banner mobile a larghezza piena, senza bande laterali.
+   Il banner mobile e' 4:3: non forzarlo a 16:9 con contain.
+   Il desktop, la navbar e il resto della pagina non cambiano.
+   ============================================================== */
+@media (max-width: 740px) {
+  body.te-page .te-banner,
+  body.te-page .te-banner img {
+    display: block;
+    width: 100%;
+  }
+  body.te-page .te-banner img {
+    height: auto !important;
+    aspect-ratio: auto !important;
+    object-fit: contain;
+    max-width: 100%;
+  }
+}
