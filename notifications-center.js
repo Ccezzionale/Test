@@ -2,7 +2,7 @@ import { supabase } from './supabase.js';
 
 const NOTIFICATION_TABLE = 'app_notifications';
 const REFRESH_MS = 45000;
-const CENTER_VERSION = '20261009-swipe1';
+const CENTER_VERSION = '20261010-center7-expand';
 
 let currentUser = null;
 let currentFilter = 'all';
@@ -113,6 +113,14 @@ function injectCenter4Styles() {
     .notification-swipe-hint{padding:2px 12px 6px;color:#7d8ca1;font-size:.7rem;font-weight:650;text-align:right}
     @media(hover:hover) and (pointer:fine){.notification-swipe-hint{display:none}}
     @media(prefers-reduced-motion:reduce){.notification-swipe-item>.notification-row,.notification-swipe-item{transition:none!important}}
+
+    /* Anteprima compatta, testo completo su richiesta. */
+    .notification-swipe-item .notification-row-body{display:-webkit-box!important;-webkit-box-orient:vertical!important;-webkit-line-clamp:2!important;line-clamp:2;overflow:hidden!important;white-space:normal!important;max-height:none!important;}
+    .notification-swipe-item.is-expanded .notification-row-body{display:block!important;-webkit-line-clamp:unset!important;line-clamp:unset!important;overflow:visible!important;max-height:none!important;white-space:normal!important;overflow-wrap:anywhere;}
+    .notification-swipe-item .notification-expand-toggle{display:none;position:relative;z-index:3;align-self:flex-start;margin:-1px 0 8px 73px;padding:3px 6px;border:0;background:transparent;color:#0864b6;font:inherit;font-size:.77rem;font-weight:850;cursor:pointer;text-align:left;touch-action:manipulation;}
+    .notification-swipe-item.has-long-body .notification-expand-toggle{display:block;}
+    .notification-swipe-item .notification-expand-toggle:focus-visible{outline:2px solid #0864b6;outline-offset:2px;border-radius:5px;}
+    @media(max-width:900px){.notification-swipe-item .notification-expand-toggle{margin-left:69px;}}
     .notification-admin-entry{padding:0 18px 12px;display:none}
     .notification-admin-entry.is-visible{display:block}
     .notification-admin-open{width:100%;border:1px solid rgba(22,104,191,.24);border-radius:12px;padding:10px 12px;background:#eef6ff;color:#0b4f91;font-weight:900;cursor:pointer}
@@ -536,9 +544,26 @@ function notificationRowHtml(row) {
         </span>
         ${unread ? '<span class="notification-unread-dot" aria-label="Non letta"></span>' : ''}
       </button>
+      <button type="button" class="notification-expand-toggle" aria-expanded="false" aria-label="Mostra il testo completo della notifica">Mostra altro</button>
       <button type="button" class="notification-swipe-remove-btn" data-delete-notification-id="${escapeHtml(row.id)}" aria-label="Elimina notifica: ${escapeHtml(row.title)}" title="Elimina notifica">🗑️</button>
     </div>
   `;
+}
+
+function updateNotificationExpandControls(list) {
+  if (!list) return;
+  for (const item of list.querySelectorAll('.notification-swipe-item')) {
+    const body = item.querySelector('.notification-row-body');
+    if (!body) continue;
+    item.classList.remove('has-long-body', 'is-expanded');
+    const button = item.querySelector('.notification-expand-toggle');
+    if (!button) continue;
+    button.textContent = 'Mostra altro';
+    button.setAttribute('aria-expanded', 'false');
+    // Se il browser ha troncato il testo, scrollHeight supera l'altezza visibile.
+    const truncated = body.scrollHeight > body.clientHeight + 2;
+    item.classList.toggle('has-long-body', truncated);
+  }
 }
 
 async function loadNotifications() {
@@ -593,6 +618,7 @@ async function loadNotifications() {
         : 'Per una volta la lega ha deciso di lasciarti in pace.';
     } else {
       list.innerHTML = '<div class="notification-swipe-hint">Scorri una notifica a destra per eliminarla</div>' + rows.map(notificationRowHtml).join('');
+      requestAnimationFrame(() => updateNotificationExpandControls(list));
     }
 
     await Promise.all([refreshUnreadCount(), refreshTriggerPushState(), setupAdminComposer()]);
@@ -987,6 +1013,18 @@ function bindUi() {
     if (Date.now() < suppressNotificationClickUntil) {
       event.preventDefault();
       event.stopPropagation();
+      return;
+    }
+    const expandButton = event.target.closest('.notification-expand-toggle');
+    if (expandButton) {
+      event.preventDefault();
+      event.stopPropagation();
+      const item = expandButton.closest('.notification-swipe-item');
+      if (!item) return;
+      const expanded = item.classList.toggle('is-expanded');
+      expandButton.textContent = expanded ? 'Mostra meno' : 'Mostra altro';
+      expandButton.setAttribute('aria-expanded', String(expanded));
+      expandButton.setAttribute('aria-label', expanded ? 'Riduci il testo della notifica' : 'Mostra il testo completo della notifica');
       return;
     }
     const deleteButton = event.target.closest('.notification-swipe-remove-btn');
