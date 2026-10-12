@@ -7,7 +7,7 @@
   <title>Playoff - Lega degli Eroi</title>
 
   <link rel="stylesheet" href="navbar.css">
-  <link rel="stylesheet" href="playoff.css?v=20261012-desktop-bg1" />
+  <link rel="stylesheet" href="playoff.css?v=20261012-fantasy-board2" />
 
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Cinzel:wght@700;800&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -188,17 +188,18 @@
   <!-- BRACKET -->
   <section class="playoff-stage">
     <div class="playoff-board">
+      <div class="playoff-fantasy-heading" aria-hidden="true"><strong>PLAYOFF</strong><span>LEGA DEGLI EROI</span></div>
 
       <!-- WILD CARD SX -->
       <div class="round-col round-col--outer">
         <h2>Wild Card</h2>
 
         <div class="round-stack round-stack--spread">
-          <div class="game-slot">
+          <div class="game-slot" data-fantasy-match="WC1">
             <div class="game-card" data-series="WC1"></div>
           </div>
 
-          <div class="game-slot">
+          <div class="game-slot" data-fantasy-match="WC3">
             <div class="game-card" data-series="WC3"></div>
           </div>
         </div>
@@ -209,11 +210,11 @@
         <h2>Quarti</h2>
 
         <div class="round-stack round-stack--spread">
-          <div class="game-slot">
+          <div class="game-slot" data-fantasy-match="Q1">
             <div class="game-card" data-series="Q1"></div>
           </div>
 
-          <div class="game-slot">
+          <div class="game-slot" data-fantasy-match="Q4">
             <div class="game-card" data-series="Q4"></div>
           </div>
         </div>
@@ -226,7 +227,7 @@
         <div class="round-stack round-stack--center">
           <div class="semi-bracket semi-bracket-left"></div>
 
-          <div class="game-slot">
+          <div class="game-slot" data-fantasy-match="S1">
             <div class="game-card game-card--semi" data-series="S1"></div>
           </div>
         </div>
@@ -239,7 +240,7 @@
         <div class="finale-stage">
           <div class="finale-glow"></div>
 
-          <div class="game-slot game-slot--finale">
+          <div class="game-slot game-slot--finale" data-fantasy-match="F">
             <div class="game-card game-card--finale" data-series="F"></div>
           </div>
 
@@ -256,7 +257,7 @@
         <div class="round-stack round-stack--center">
           <div class="semi-bracket semi-bracket-right"></div>
 
-          <div class="game-slot">
+          <div class="game-slot" data-fantasy-match="S2">
             <div class="game-card game-card--semi" data-series="S2"></div>
           </div>
         </div>
@@ -267,11 +268,11 @@
         <h2>Quarti</h2>
 
         <div class="round-stack round-stack--spread">
-          <div class="game-slot">
+          <div class="game-slot" data-fantasy-match="Q2">
             <div class="game-card" data-series="Q2"></div>
           </div>
 
-          <div class="game-slot">
+          <div class="game-slot" data-fantasy-match="Q3">
             <div class="game-card" data-series="Q3"></div>
           </div>
         </div>
@@ -282,11 +283,11 @@
         <h2>Wild Card</h2>
 
         <div class="round-stack round-stack--spread">
-          <div class="game-slot">
+          <div class="game-slot" data-fantasy-match="WC2">
             <div class="game-card" data-series="WC2"></div>
           </div>
 
-          <div class="game-slot">
+          <div class="game-slot" data-fantasy-match="WC4">
             <div class="game-card" data-series="WC4"></div>
           </div>
         </div>

@@ -1671,3 +1671,297 @@ body::after{
     color: #fff;
   }
 }
+
+
+/* =========================================================
+   PLAYOFF DESKTOP · FANTASY BOARD (CONCEPT 3)
+   Soltanto >= 901px. Mobile e gestione risultati invariati.
+   Il background e' un artwork; tutti gli incontri sono HTML
+   reali aggiornati dal playoff.js tramite data-series.
+   ========================================================= */
+@media (min-width: 901px) {
+  .playoff-hero-banner { display: none !important; }
+
+  .playoff-stage {
+    width: min(100%, 1840px) !important;
+    max-width: 1840px !important;
+    margin: 8px auto 34px !important;
+    padding: 0 10px 12px !important;
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+  }
+  .playoff-stage::before { display: none !important; }
+  .playoff-board {
+    position: relative !important;
+    display: block !important;
+    width: 100% !important;
+    min-width: 1350px !important;
+    min-height: 0 !important;
+    aspect-ratio: 1672 / 853 !important;
+    margin: 0 auto !important;
+    padding: 0 !important;
+    border: 1px solid rgba(243,195,91,.24);
+    border-radius: 16px;
+    overflow: hidden;
+    isolation: isolate;
+    background: #06142b url("img/playoff-board-fantasy.webp") center center / 100% 100% no-repeat !important;
+    box-shadow: 0 26px 65px rgba(0,0,0,.48), 0 0 30px rgba(21,108,204,.17);
+  }
+  .playoff-board::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    border: 1px solid rgba(243,195,91,.14);
+    border-radius: 15px;
+    z-index: 8;
+  }
+  .playoff-fantasy-heading {
+    position: absolute;
+    top: .15%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 36%;
+    z-index: 4;
+    text-align: center;
+    pointer-events: none;
+    text-shadow: 0 5px 10px rgba(0,0,0,.95), 0 0 24px rgba(243,195,91,.40);
+  }
+  .playoff-fantasy-heading strong {
+    display: block;
+    color: #ffe6a0;
+    font: 800 clamp(30px, 3.6vw, 58px)/1.04 'Cinzel', Georgia, serif;
+    letter-spacing: .16em;
+  }
+  .playoff-fantasy-heading span {
+    display: block;
+    color: #f6da8b;
+    font: 700 clamp(9px, 1.02vw, 16px)/1.2 'Cinzel', Georgia, serif;
+    letter-spacing: .25em;
+    margin-top: 4px;
+  }
+
+  /* Appiattiamo i vecchi contenitori grid mantenendo le card e i loro data-series. */
+  .playoff-board > .round-col,
+  .playoff-board .round-stack,
+  .playoff-board .finale-stage { display: contents !important; }
+  .playoff-board .round-col > h2,
+  .playoff-board .semi-bracket,
+  .playoff-board .finale-glow { display: none !important; }
+
+  .playoff-board .game-slot {
+    position: absolute !important;
+    z-index: 5 !important;
+    display: block !important;
+    width: 12.20% !important;
+    height: 17.20% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    transform: none !important;
+    overflow: visible;
+  }
+  /* I fili dorati sono gia' nell'immagine illustrata. */
+  .playoff-board .game-slot::before,
+  .playoff-board .game-slot::after { display: none !important; content: none !important; }
+
+  /* Wild Card sinistra */
+  .playoff-board > .round-col--outer:nth-child(2) .game-slot:first-child { left: 1.70%; top: 19.95%; }
+  .playoff-board > .round-col--outer:nth-child(2) .game-slot:last-child  { left: 1.70%; top: 63.60%; }
+  /* Quarti sinistra */
+  .playoff-board .round-col--quarter-left .game-slot:first-child       { left: 15.00%; top: 19.95%; }
+  .playoff-board .round-col--quarter-left .game-slot:last-child        { left: 15.00%; top: 63.60%; }
+  /* Semifinale sinistra */
+  .playoff-board .round-col--semi-left .game-slot                      { left: 27.30%; top: 41.90%; }
+  /* Semifinale destra */
+  .playoff-board .round-col--semi-right .game-slot                     { left: 59.05%; top: 41.90%; }
+  /* Quarti destra */
+  .playoff-board .round-col--quarter-right .game-slot:first-child      { left: 71.25%; top: 19.95%; }
+  .playoff-board .round-col--quarter-right .game-slot:last-child       { left: 71.25%; top: 63.60%; }
+  /* Wild Card destra */
+  .playoff-board > .round-col--outer:last-child .game-slot:first-child { left: 84.30%; top: 19.95%; }
+  .playoff-board > .round-col--outer:last-child .game-slot:last-child  { left: 84.30%; top: 63.60%; }
+
+  /* Card opache: coprono completamente i loghi illustrativi dell'artwork.
+     Loghi, risultati e seed visibili sono SEMPRE quelli dinamici. */
+  .playoff-board .game-card,
+  .playoff-board .game-card--semi {
+    width: 100% !important;
+    height: 100% !important;
+    min-height: 0 !important;
+    border: 1.5px solid #d7ae61 !important;
+    border-radius: 14px !important;
+    background: linear-gradient(155deg, #0b203d 0%, #081a34 54%, #06172e 100%) !important;
+    overflow: hidden !important;
+    box-shadow: inset 0 0 0 1px rgba(255,240,172,.17), 0 4px 18px rgba(0,0,0,.48) !important;
+  }
+  .playoff-board .match-row,
+  .playoff-board .game-card--semi .match-row {
+    height: 50% !important;
+    min-height: 0 !important;
+    padding: 4% 5% !important;
+    display: grid !important;
+    grid-template-columns: 23% minmax(0,1fr) 23% !important;
+    gap: 1.5% !important;
+    align-items: center !important;
+    background: rgba(4,16,35,.17);
+    border: 0 !important;
+  }
+  .playoff-board .match-row + .match-row { border-top: 1px solid rgba(248,214,152,.34) !important; }
+  .playoff-board .seed-box {
+    width: 100% !important;
+    height: auto !important;
+    aspect-ratio: 1 / 1;
+    border: 1px solid rgba(226,186,107,.50);
+    border-radius: 7px;
+    background: #10284f !important;
+    box-shadow: 0 4px 10px rgba(0,0,0,.24);
+    font-size: clamp(10px, .91vw, 16px) !important;
+  }
+  .playoff-board .team-core { min-width: 0; height: 100%; display:flex; justify-content:center; align-items:center; }
+  .playoff-board .team-logo {
+    display: block;
+    width: min(100%, 64px) !important;
+    height: min(100%, 64px) !important;
+    aspect-ratio: 1;
+    background: #f7f9ff !important;
+    border: 2px solid rgba(244,209,129,.65);
+    border-radius: 50%;
+    padding: 3px;
+    object-fit: contain;
+    filter: drop-shadow(0 3px 6px rgba(0,0,0,.4));
+  }
+  .playoff-board .score-box {
+    min-width: 0 !important;
+    width: 100% !important;
+    height: auto !important;
+    aspect-ratio: 1 / 1;
+    border: 1px solid rgba(226,186,107,.35);
+    border-radius: 8px;
+    background: #122a52 !important;
+    color: white !important;
+    font-size: clamp(11px, 1.05vw, 19px) !important;
+    box-shadow: 0 4px 10px rgba(0,0,0,.27) !important;
+  }
+  .playoff-board .match-row.placeholder .team-core::before {
+    width: min(100%, 51px) !important;
+    height: auto !important;
+    aspect-ratio: 1;
+    border: 1px solid rgba(230,237,255,.24);
+    background: rgba(167,190,224,.15) !important;
+    color: #eaf3ff !important;
+    font-size: clamp(15px, 1.6vw, 27px) !important;
+  }
+  .playoff-board .match-row.is-winner {
+    background: linear-gradient(90deg, rgba(221,174,83,.18), rgba(221,174,83,.03)) !important;
+  }
+  .playoff-board .match-row.is-winner .seed-box,
+  .playoff-board .match-row.is-winner .score-box {
+    border-color: #ebc56d !important;
+    color: #fff3c9 !important;
+    background: #1c3c63 !important;
+    box-shadow: 0 0 13px rgba(243,195,91,.3) !important;
+  }
+  .playoff-board .game-card:has(.match-row.is-winner) .match-row:not(.is-winner) { opacity: .66; }
+
+  /* Cornice centrale: resta quella fantasy nell'immagine con coppa.
+     Aggiorniamo solamente i due segnaposti delle finaliste. */
+  .playoff-board .game-slot--finale {
+    left: 40.7% !important;
+    top: 19.65% !important;
+    width: 17.75% !important;
+    height: 59.7% !important;
+  }
+  .playoff-board .game-card--finale {
+    position: relative !important;
+    width: 100% !important;
+    height: 100% !important;
+    min-height: 0 !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    background: transparent !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    overflow: visible !important;
+  }
+  .playoff-board .game-card--finale::before,
+  .playoff-board .game-card--finale::after { display: none !important; }
+  .playoff-board .game-card--finale .match-row {
+    position: absolute !important;
+    left: 5.5% !important;
+    width: 89% !important;
+    height: 16.7% !important;
+    min-height: 0 !important;
+    padding: 2% 3% !important;
+    grid-template-columns: 22% minmax(0,1fr) 24% !important;
+    border: 1px solid rgba(226,186,107,.28) !important;
+    border-radius: 10px;
+    background: linear-gradient(145deg, #0b203d, #07182f) !important;
+    z-index: 5 !important;
+  }
+  .playoff-board .game-card--finale .match-row:first-child { top: 2.4% !important; bottom: auto !important; }
+  .playoff-board .game-card--finale .match-row:last-child  { bottom: 2.6% !important; top: auto !important; }
+  .playoff-board .game-card--finale .team-logo { width: min(100%, 68px) !important; height: min(100%, 68px) !important; }
+  .playoff-board .game-card--finale .score-box { min-width: 0 !important; width: 100% !important; height: auto !important; }
+  .playoff-board .game-card--finale .seed-box { width: 100% !important; height: auto !important; }
+  .playoff-board .game-card--finale .match-row.placeholder .team-core::before { width: min(100%, 53px) !important; height:auto !important; }
+
+  .playoff-board .finale-bottom {
+    position: absolute !important;
+    display: flex !important;
+    left: 35%;
+    width: 30%;
+    top: 93%;
+    margin: 0 !important;
+    pointer-events: none;
+    z-index: 7;
+  }
+  .playoff-board .vincitore-info { width: 100%; flex-direction: row !important; justify-content:center; gap:5px; }
+  .playoff-board .logo-vincitore { height: 34px !important; width: 34px !important; padding: 2px !important; }
+  .playoff-board .champion-chip,
+  .playoff-board .nome-vincitore { font-size: clamp(10px, .84vw, 14px) !important; color: #ffdf88 !important; }
+  .playoff-board .champion-chip { padding: 4px 6px !important; }
+}
+@media (max-width: 900px) {
+  .playoff-fantasy-heading { display:none !important; }
+}
+
+
+/* === POSIZIONI DEFINITIVE DELLA BOARD FANTASY DESKTOP ===
+   Data-attributes espliciti, non dipendiamo dalla struttura DOM/nth-child.
+   Percentuali allineate ai riquadri originali dell'artwork 1672 x 853.
+   I match restano elementi dinamici del playoff.js. */
+@media (min-width: 901px) {
+  .playoff-board .game-slot[data-fantasy-match] {
+    width: 12.0% !important;
+    height: 17.55% !important;
+    position: absolute !important;
+  }
+  .playoff-board .game-slot[data-fantasy-match="WC1"] { left: 2.10% !important; top: 20.48% !important; }
+  .playoff-board .game-slot[data-fantasy-match="WC3"] { left: 2.10% !important; top: 65.04% !important; }
+  .playoff-board .game-slot[data-fantasy-match="Q1"]  { left: 15.60% !important; top: 20.48% !important; }
+  .playoff-board .game-slot[data-fantasy-match="Q4"]  { left: 15.60% !important; top: 65.04% !important; }
+  .playoff-board .game-slot[data-fantasy-match="S1"]  { left: 28.10% !important; top: 42.80% !important; }
+  .playoff-board .game-slot[data-fantasy-match="S2"]  { left: 60.20% !important; top: 42.80% !important; }
+  .playoff-board .game-slot[data-fantasy-match="Q2"]  { left: 72.90% !important; top: 20.48% !important; }
+  .playoff-board .game-slot[data-fantasy-match="Q3"]  { left: 72.90% !important; top: 65.04% !important; }
+  .playoff-board .game-slot[data-fantasy-match="WC2"] { left: 86.40% !important; top: 20.48% !important; }
+  .playoff-board .game-slot[data-fantasy-match="WC4"] { left: 86.40% !important; top: 65.04% !important; }
+
+  .playoff-board .game-slot[data-fantasy-match="F"] {
+    left: 41.14% !important;
+    top: 20.30% !important;
+    width: 17.85% !important;
+    height: 61.15% !important;
+  }
+  .playoff-board .game-card--finale .match-row:first-child {
+    top: 5.65% !important;
+    bottom: auto !important;
+    height: 15.1% !important;
+  }
+  .playoff-board .game-card--finale .match-row:last-child {
+    top: auto !important;
+    bottom: 5.65% !important;
+    height: 15.1% !important;
+  }
+}
