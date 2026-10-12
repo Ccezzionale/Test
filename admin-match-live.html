@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#061326">
+  <link rel="icon" href="icon-192.png">
+  <title>Test LIVE • Match Center • Lega degli Eroi</title>
+  <link rel="stylesheet" href="admin-match-center.css?v=20261012-live2">
+  <link rel="stylesheet" href="admin-match-live.css?v=2">
+</head>
+<body>
+  <header class="adm-nav">
+    <a href="index.html" class="adm-brand"><img src="icon-192.png" alt=""><span>Lega degli Eroi</span></a>
+    <a class="adm-back" href="admin-match-center.html">← Importazioni</a>
+  </header>
+  <main class="adm-shell">
+    <div class="adm-heading">
+      <p class="adm-kicker">MATCH CENTER 2.0 • LABORATORIO ADMIN</p>
+      <h1>Anteprima LIVE Mantra</h1>
+      <p>Simuliamo le partite usando gli Excel già importati. Non modifichiamo i voti salvati, la classifica o i risultati ufficiali.</p>
+    </div>
+    <div class="adm-access" id="live-access" role="status" aria-live="polite">Verifica dell'account amministratore…</div>
+    <div id="live-workspace" hidden>
+      <section class="adm-card">
+        <div class="adm-card-head"><span>⚙</span><h2>Carica una giornata</h2></div>
+        <form id="live-filter" class="live-filter">
+          <label>Stagione<input type="text" name="season" id="live-season" maxlength="7" value="2026/27" required></label>
+          <label>Giornata Serie A<input type="number" id="live-gw" min="1" max="50" value="6" required></label>
+          <label>Competizione<select id="live-comp">
+            <option value="Conf A">Conference League</option>
+            <option value="Conf B">Conference Championship</option>
+            <option value="Unificata">Round Robin</option>
+          </select></label>
+          <label>Giornata nel calendario<input type="number" id="live-fixture-gw" min="1" max="50" value="6" required></label>
+          <button class="live-btn" type="submit">Calcola proiezioni</button>
+        </form>
+        <div id="live-summary" class="live-summary" aria-live="polite"></div>
+      </section>
+      <section class="live-notice">
+        <strong>Anteprima riservata agli Admin.</strong> 6 temporaneo per le partite ancora senza voti; giocatori assenti e 6* considerati SV. Gli Excel non indicano quali assist siano soft/gold né gli eventuali gol vittoria/pareggio: il risultato va validato con Fantacalcio prima della pubblicazione.
+      </section>
+      <div id="live-alert" class="live-alert" role="status" aria-live="polite" hidden></div>
+      <section id="live-match-list" class="live-match-list" aria-label="Incontri della giornata"></section>
+      <section id="live-detail" aria-label="Dettaglio e simulatore" hidden></section>
+    </div>
+  </main>
+  <script type="module" src="admin-match-live.js?v=2"></script>
+</body>
+</html>

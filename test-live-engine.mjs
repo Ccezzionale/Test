@@ -1,0 +1,42 @@
+// Test sintetici eseguibili da Node 22+: node --experimental-default-type=module test-live-engine.mjs
+import assert from 'node:assert/strict';
+import {makeVoteIndex,scoreTeam,pointsToGoals,calculateRound,TACTICAL_MODULES,requiredForWin} from './match-live-engine.js';
+const dummyRoles=['Por','Dc','Dc','Dc','E','M/C','C','E','W/A','Pc','W/A'];
+const p=(team,name,role,club,index,type='starter')=>({team_name:team,opponent_name:team==='A'?'B':'A',module:'3-4-3',slot_type:type,slot_index:index,role,player_name:name,club_code:club,switch_state:'none'});
+const fa=dummyRoles.map((role,i)=>p('A','A'+(i+1),role,'INT',i+1));
+const fb=dummyRoles.map((role,i)=>p('B','B'+(i+1),role,'MIL',i+1));
+const votes=[];
+for(let i=0;i<11;i++)votes.push({player_code:i+1,player_name:'A'+(i+1),club_name:'Inter',vote_raw:'6',vote_numeric:6,status:'rated',stats:{goals_conceded: i===0?1:0}});
+for(let i=0;i<11;i++)votes.push({player_code:i+101,player_name:'B'+(i+1),club_name:'Milan',vote_raw:'6',vote_numeric:6,status:'rated',stats:{goals_conceded:i===0?1:0}});
+const index=makeVoteIndex(votes);
+const s=scoreTeam(fa,index,{fieldBonus:2});
+assert.equal(s.fieldBonus,2);
+assert.equal(s.roleMalus,0);
+assert.equal(s.baseFP,65);  // 6*11 minus one goal conceded
+assert.equal(s.total,68);   // +2 casa, +1 fattore difensivo, 65 base
+assert.equal(pointsToGoals(65.99),0);
+assert.equal(pointsToGoals(66),1);
+assert.equal(pointsToGoals(71.99),1);
+assert.equal(pointsToGoals(72),2);
+assert.equal(pointsToGoals(78),3);
+assert.equal(requiredForWin(2,70).target,78);
+assert.equal(Object.keys(TACTICAL_MODULES).length,11);
+const fi=[{home_team:'A',away_team:'B',phase:'Regular'}];
+const conf=calculateRound({gw:6,competition:'Conf A',formations:[...fa,...fb],votes,fixtures:fi});
+assert.equal(conf.matches[0].homeScore.fieldBonus,2);
+const round=calculateRound({gw:6,competition:'Unificata',formations:[...fa,...fb],votes,fixtures:fi});
+assert.equal(round.matches[0].homeScore.fieldBonus,0);
+const svVotes=votes.filter(v=>v.player_name!=='A7');
+assert.equal(scoreTeam(fa,makeVoteIndex(svVotes),{fieldBonus:2}).starters.find(p=>p.player_name==='A7').status,'sv');
+const starVotes=votes.map(v=>v.player_name==='A7'?{...v,vote_raw:'6*',status:'sv',vote_numeric:null}:v);
+assert.equal(scoreTeam(fa,makeVoteIndex(starVotes),{fieldBonus:2}).starters.find(p=>p.player_name==='A7').status,'sv');
+const partial=votes.filter(v=>v.club_name!=='Inter');
+const pending=scoreTeam(fa,makeVoteIndex(partial),{fieldBonus:2});
+assert.equal(pending.pending,11);
+assert.equal(pending.onField.every(p=>p.fantavote===6),true);
+const bonusVotes=votes.map(v=>v.player_name==='A7'?{...v,stats:{goals_scored:1}}:v);
+assert.equal(scoreTeam(fa,makeVoteIndex(bonusVotes),{fieldBonus:0}).onField.find(p=>p.player_name==='A7').fantavote,9);
+const simKey='a|a7';
+const sim=scoreTeam(fa,makeVoteIndex(partial),{fieldBonus:0,overrides:{[simKey]:{vote:7,goal:1,assist:1}}});
+assert.equal(sim.onField.find(p=>p.player_name==='A7').fantavote,11);
+console.log('14 verifiche superate: soglie, bonus campo, Round Robin, SV, 6*, 6 provvisorio, bonus, simulatore, moduli.');

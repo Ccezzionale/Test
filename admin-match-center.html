@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#061326">
 <title>Admin Match Center · Lega degli Eroi</title>
 <link rel="icon" href="icon-192.png">
-<link rel="stylesheet" href="admin-match-center.css?v=1">
+<link rel="stylesheet" href="admin-match-center.css?v=20261012-live2">
 </head>
 <body>
 <header class="adm-nav"><a href="index.html" class="adm-brand"><img src="icon-192.png" alt=""><span>Lega degli Eroi</span></a><a href="index.html" class="adm-back">← Home</a></header>
@@ -49,8 +49,12 @@
         <button class="adm-save" id="adm-save-votes" disabled>Aggiorna voti</button>
       </div>
     </section>
+    <section class="adm-live-entry" aria-label="Anteprima calcolo LIVE">
+      <div><strong>⚡ Laboratorio LIVE Mantra</strong><p>Controlla i risultati provvisori delle franchigie e prova il simulatore. Visibile solo agli amministratori.</p></div>
+      <a href="admin-match-live.html" class="adm-live-entry-link">Apri anteprima LIVE →</a>
+    </section>
     <div id="adm-feedback" class="adm-feedback" role="status" aria-live="polite"></div>
-    <aside class="adm-notice"><strong>Nota:</strong> questa prima fase importa e conserva i dati in tabelle private. Non pubblica i voti, non calcola ancora il risultato Mantra e non modifica classifiche o finalizzazioni. La visualizzazione LIVE sarà collegata dopo la verifica dei calcoli e delle condizioni d'uso dei dati.</aside>
+    <aside class="adm-notice"><strong>Nota:</strong> le importazioni sono private. Il Laboratorio LIVE ricalcola i punteggi in sola lettura, per test e confronto con Fantacalcio. Non modifica i risultati ufficiali, non pubblica voti e non rende visibile la simulazione agli utenti normali.</aside>
   </div>
 </main>
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
