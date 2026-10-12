@@ -286,6 +286,43 @@ function activeCompetitionCode(rows) {
   return roundRobinIsActive || roundRobinHasStarted ? "Unificata" : null;
 }
 
+// Account che ha generato la dashboard. Serve a evitare che una sessione
+// cambiata in un'altra scheda lasci visibili le partite del vecchio utente.
+let dashboardRenderedUserId = undefined;
+let dashboardAuthReloading = false;
+
+function reloadDashboardIfAccountChanged(userId) {
+  if (dashboardRenderedUserId === undefined || dashboardAuthReloading) return;
+  const currentUserId = userId || null;
+  if (currentUserId !== dashboardRenderedUserId) {
+    dashboardAuthReloading = true;
+    window.location.reload();
+  }
+}
+
+function watchDashboardAccount() {
+  supabase.auth.onAuthStateChange((event, session) => {
+    if (event === "SIGNED_IN" || event === "SIGNED_OUT" || event === "USER_UPDATED") {
+      reloadDashboardIfAccountChanged(session?.user?.id);
+    }
+  });
+
+  // Anche tornando su una vecchia scheda o ripristinandola dalla cache
+  // del browser, il Match Center deve corrispondere al login corrente.
+  const verifySession = async () => {
+    try {
+      const { data, error } = await supabase.auth.getUser();
+      if (!error) reloadDashboardIfAccountChanged(data?.user?.id);
+    } catch (error) {
+      console.warn("Controllo sessione Home non disponibile:", error);
+    }
+  };
+  window.addEventListener("focus", verifySession);
+  window.addEventListener("pageshow", event => {
+    if (event.persisted) verifySession();
+  });
+}
+
 async function loadDashboardTeam() {
   const logoEl = document.getElementById("dashboard-team-logo");
   const bgLogoEl = document.getElementById("dashboard-team-bg-logo");
@@ -297,6 +334,7 @@ async function loadDashboardTeam() {
   if (!logoEl || !nameEl || !conferenceEl || !roleEl) return null;
   try {
     const { data: userData, error: userError } = await supabase.auth.getUser();
+    dashboardRenderedUserId = userData?.user?.id || null;
     if (userError || !userData?.user) {
       nameEl.textContent = "Lega degli Eroi";
       coachEl.textContent = "Guest";
@@ -2179,6 +2217,7 @@ async function initHomeDashboard() {
   reorganizeHomeLowerSections();
   setupHomeMatchTabs();
   const context = await loadDashboardTeam();
+  watchDashboardAccount();
   const [rowsResult] = await Promise.allSettled([loadResultsRows(), loadWaiverCountdown(), loadLatestTrade()]);
 
   // loadWaiverCountdown() ha appena valorizzato activeLeaguePhase:
