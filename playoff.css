@@ -1650,3 +1650,24 @@ body::after{
     padding-top:0 !important;
   }
 }
+
+
+/* =========================================================
+   FIX 2026-10-12 · SFONDO PLAYOFF DESKTOP
+   Protegge lo sfondo della pagina dalle regole globali e
+   lascia completamente invariata la grafica mobile.
+   ========================================================= */
+@media (min-width: 901px) {
+  html:has(.playoff-stage) {
+    background-color: #031027 !important;
+  }
+
+  html:has(.playoff-stage) body {
+    background:
+      radial-gradient(circle at 50% 0%, rgba(255,255,255,.10), transparent 28%),
+      linear-gradient(180deg, rgba(3,16,39,.30), rgba(3,16,39,.75)),
+      #031027 url("img/champions-bg.png") center center / cover no-repeat fixed !important;
+    background-color: #031027 !important;
+    color: #fff;
+  }
+}
