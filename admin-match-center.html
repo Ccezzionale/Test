@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#061326">
+<title>Admin Match Center · Lega degli Eroi</title>
+<link rel="icon" href="icon-192.png">
+<link rel="stylesheet" href="admin-match-center.css?v=1">
+</head>
+<body>
+<header class="adm-nav"><a href="index.html" class="adm-brand"><img src="icon-192.png" alt=""><span>Lega degli Eroi</span></a><a href="index.html" class="adm-back">← Home</a></header>
+<main class="adm-shell">
+  <div class="adm-heading"><p class="adm-kicker">AMMINISTRAZIONE • MATCH CENTER</p><h1>Importazione dati</h1><p>Formazioni per competizione, voti unici per giornata. I risultati ufficiali non vengono modificati.</p></div>
+  <section class="adm-access" id="adm-access" aria-live="polite">Controllo autorizzazione amministratore…</section>
+  <div id="adm-workspace" hidden>
+    <section class="adm-settings adm-card">
+      <div class="adm-card-head"><span>⚙</span><h2>Giornata da aggiornare</h2></div>
+      <div class="adm-settings-body">
+        <label>Stagione<input id="adm-season" type="text" value="2026/27" maxlength="12" autocomplete="off"></label>
+        <label>Giornata di Serie A<input id="adm-gw" type="number" min="1" max="50" value="6"></label>
+        <p>Il numero della giornata deve coincidere con quello indicato negli Excel. I file vengono validati prima del salvataggio.</p>
+      </div>
+    </section>
+    <h2 class="adm-section-title">Formazioni</h2>
+    <p class="adm-description">Carica una volta per giornata. Puoi sostituire un file aggiornato senza duplicare le formazioni. Round Robin accetta tutte le franchigie presenti nell'export, senza un numero fisso di incontri.</p>
+    <div class="adm-competitions">
+      <section class="adm-card adm-upload" data-comp="Conf A">
+        <div class="adm-card-head"><span>⚽</span><h2>Conference League</h2><span class="adm-status" data-state="Conf A">Non importato</span></div>
+        <div class="adm-card-body"><p>Export delle formazioni della Conference League.</p><label class="adm-file-label">Seleziona Excel<input type="file" accept=".xlsx,.xls" data-file-comp="Conf A"></label><div class="adm-file-name" data-name="Conf A">Nessun file selezionato</div><div class="adm-preview" data-preview="Conf A" hidden></div><button class="adm-save" data-save-comp="Conf A" disabled>Salva formazioni</button></div>
+      </section>
+      <section class="adm-card adm-upload" data-comp="Conf B">
+        <div class="adm-card-head"><span>🏆</span><h2>Conference Championship</h2><span class="adm-status" data-state="Conf B">Non importato</span></div>
+        <div class="adm-card-body"><p>Export delle formazioni della Conference Championship.</p><label class="adm-file-label">Seleziona Excel<input type="file" accept=".xlsx,.xls" data-file-comp="Conf B"></label><div class="adm-file-name" data-name="Conf B">Nessun file selezionato</div><div class="adm-preview" data-preview="Conf B" hidden></div><button class="adm-save" data-save-comp="Conf B" disabled>Salva formazioni</button></div>
+      </section>
+      <section class="adm-card adm-upload" data-comp="Unificata">
+        <div class="adm-card-head"><span>🔄</span><h2>Round Robin</h2><span class="adm-status" data-state="Unificata">Non importato</span></div>
+        <div class="adm-card-body"><p>Importa tutte le formazioni presenti nel file, anche quando sono più numerose rispetto alle Conference.</p><label class="adm-file-label">Seleziona Excel<input type="file" accept=".xlsx,.xls" data-file-comp="Unificata"></label><div class="adm-file-name" data-name="Unificata">Nessun file selezionato</div><div class="adm-preview" data-preview="Unificata" hidden></div><button class="adm-save" data-save-comp="Unificata" disabled>Salva formazioni</button></div>
+      </section>
+    </div>
+    <h2 class="adm-section-title">Voti Redazione Napoli</h2>
+    <section class="adm-card adm-upload adm-votes">
+      <div class="adm-card-head"><span>📊</span><h2>Unico Excel per tutte le competizioni</h2><span class="adm-status" id="adm-vote-status">Non importato</span></div>
+      <div class="adm-card-body"><p>Carica il foglio “Fantacalcio”. Il sistema conserva i voti numerici e marca come SV i valori con asterisco (ad esempio 6*). Le squadre non ancora pubblicate restano in attesa.</p>
+        <label class="adm-file-label">Seleziona Excel voti<input id="adm-vote-file" type="file" accept=".xlsx,.xls"></label>
+        <div class="adm-file-name" id="adm-vote-name">Nessun file selezionato</div>
+        <div class="adm-preview" id="adm-vote-preview" hidden></div>
+        <label class="adm-check"><input id="adm-allow-reduced" type="checkbox"> Consenti di sostituire i voti con un file che contiene meno squadre della versione già caricata</label>
+        <button class="adm-save" id="adm-save-votes" disabled>Aggiorna voti</button>
+      </div>
+    </section>
+    <div id="adm-feedback" class="adm-feedback" role="status" aria-live="polite"></div>
+    <aside class="adm-notice"><strong>Nota:</strong> questa prima fase importa e conserva i dati in tabelle private. Non pubblica i voti, non calcola ancora il risultato Mantra e non modifica classifiche o finalizzazioni. La visualizzazione LIVE sarà collegata dopo la verifica dei calcoli e delle condizioni d'uso dei dati.</aside>
+  </div>
+</main>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<script type="module" src="admin-match-center.js?v=1"></script>
+</body>
+</html>
