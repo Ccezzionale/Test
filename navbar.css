@@ -7606,11 +7606,12 @@ nav.site-nav .toggle-submenu .app-alert-badge {
    Dashboard della Lega. Mobile invariato.
    ========================================================= */
 @media (min-width: 901px) {
-  html {
+  /* Home-only: non sovrascrivere gli sfondi delle pagine competizioni. */
+  html:has(.home-dashboard) {
     background: #eaf3fb;
   }
 
-  body {
+  body:has(.home-dashboard) {
     min-height: 100vh;
     color: #10213d;
     background:
@@ -9437,7 +9438,8 @@ nav.site-nav .toggle-submenu .app-alert-badge {
 .desktop-fun-home{ display:none; }
 
 @media (min-width: 901px){
-  body{
+  /* La palette desktop della Home non deve applicarsi alle coppe. */
+  body:has(.home-dashboard){
     background:
       radial-gradient(900px 420px at 10% 0%, rgba(31,123,255,.12), transparent 64%),
       radial-gradient(720px 360px at 90% 6%, rgba(255,204,0,.11), transparent 60%),
