@@ -294,7 +294,7 @@ async function sendResultsUpdatedNotification(phase, maxGw) {
   const safePhase = String(phase || "results").toLowerCase().replace(/[^a-z0-9_-]+/g, "-");
   const eventKey = `results-update:${safePhase}:gw${Number(maxGw || 0)}`;
 
-  const { data, error } = await supabase.functions.invoke("send-admin-notification", {
+  const { data, error } = await supabase.functions.invoke("quick-api", {
     body: {
       request_id: eventKey,
       event_key: eventKey,

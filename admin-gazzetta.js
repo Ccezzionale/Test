@@ -472,7 +472,7 @@ function renderEditionsList(){
 async function sendGazzettaPublishedNotification(gw){
   const eventKey = `gazzetta:${gw}:published`;
 
-  const { data, error } = await sb.functions.invoke("send-admin-notification", {
+  const { data, error } = await sb.functions.invoke("quick-api", {
     body: {
       request_id: eventKey,
       event_key: eventKey,
