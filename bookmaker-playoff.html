@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="noindex,nofollow" />
+  <title>Bookmaker degli Eroi | Laboratorio Quote</title>
+  <link rel="stylesheet" href="bookmaker-playoff.css?v=1" />
+</head>
+<body>
+  <div class="page">
+    <header class="header">
+      <a class="back" href="index.html">← Torna alla Lega</a>
+      <span class="draft-pill">LABORATORIO ADMIN · V1</span>
+    </header>
+
+    <div class="hero">
+      <div class="eyebrow">LEGA DEGLI EROI · PLAYOFFS CHALLENGE</div>
+      <h1>BOOKMAKER<br/><span>DEGLI EROI</span></h1>
+      <p>Le quote le suggerisce la matematica. L'ultima parola spetta al Commissioner.</p>
+      <div class="hero-tags"><span>Probabilità 1X2</span><span>Zero margine commerciale</span><span>Revisione manuale</span></div>
+    </div>
+
+    <div id="loading" class="notice" role="status">Controllo accesso e lettura dei risultati in corso…</div>
+    <div id="error" class="notice error" hidden role="alert"></div>
+
+    <main id="app" hidden>
+      <div class="status-strip">
+        <div><small>Stagione di riferimento</small><strong>2026/27</strong></div>
+        <div><small>Ultima giornata disponibile</small><strong id="latest-gw">—</strong></div>
+        <div><small>Fantapunteggi analizzati</small><strong id="sample-count">—</strong></div>
+        <div><small>Media di Lega (campo neutro)</small><strong id="league-mean">—</strong></div>
+      </div>
+
+      <div class="layout">
+        <section class="panel form-panel">
+          <div class="panel-kicker">STEP 01</div>
+          <h2>Prepara il confronto</h2>
+          <p class="help">Seleziona due franchigie e il turno di playoff. Nei due turni di semifinale il fattore campo +2 viene assegnato alla prima franchigia.</p>
+          <div class="field-row">
+            <label for="stage">Turno playoff</label>
+            <select id="stage">
+              <option value="ottavi">Ottavi · 4 partite</option>
+              <option value="quarti">Quarti · 4 partite</option>
+              <option value="semi_andata">Semifinale andata · 2 partite</option>
+              <option value="semi_ritorno">Semifinale ritorno · 2 partite</option>
+              <option value="finali">Finali · 2 partite</option>
+            </select>
+          </div>
+          <div class="team-row">
+            <div class="field-row"><label for="home-team">Franchigia 1</label><select id="home-team"></select></div>
+            <div class="vs">VS</div>
+            <div class="field-row"><label for="away-team">Franchigia 2</label><select id="away-team"></select></div>
+          </div>
+          <button class="btn primary" id="calculate" type="button">⚡ Genera quote</button>
+          <div id="calc-error" class="inline-error" hidden role="alert"></div>
+
+          <div id="estimate" hidden>
+            <div class="subheader"><h3>Probabilità suggerite</h3><span id="bonus-label" class="tiny-pill">Campo neutro</span></div>
+            <div class="odds-grid">
+              <div class="odds-card"><span>1</span><strong id="odd-1">—</strong><small id="prob-1">—</small></div>
+              <div class="odds-card"><span>X</span><strong id="odd-x">—</strong><small id="prob-x">—</small></div>
+              <div class="odds-card"><span>2</span><strong id="odd-2">—</strong><small id="prob-2">—</small></div>
+            </div>
+            <div id="team-evidence" class="evidence"></div>
+            <button class="btn secondary" id="add-match" type="button">+ Inserisci nel palinsesto</button>
+          </div>
+        </section>
+
+        <aside class="panel guide-panel">
+          <div class="panel-kicker">COME FUNZIONA</div>
+          <h2>Dietro le quote</h2>
+          <div class="guide-line"><span>01</span><div><strong>Forma attuale</strong><p>Fantapunti registrati nella regular season 2026/27, con più peso alle giornate recenti.</p></div></div>
+          <div class="guide-line"><span>02</span><div><strong>Memoria storica</strong><p>I match del 2025/26 hanno un peso piccolo. Le rose cambiano ogni Draft.</p></div></div>
+          <div class="guide-line"><span>03</span><div><strong>Gol fantacalcistici</strong><p>Distribuzione probabilistica dei fantapunti, convertiti in gol tramite le soglie 66, 72, 78, …</p></div></div>
+          <div class="guide-line"><span>04</span><div><strong>Quote senza ricarico</strong><p>La quota è 1 diviso la probabilità. 1, X e 2 devono coprire il 100% degli esiti.</p></div></div>
+          <div class="warning"><strong>Modello sperimentale.</strong> Stime statistiche, non certezze. Mancano ancora dati di formazione, infortuni e trasferimenti: il Commissioner deve controllare prima della pubblicazione.</div>
+        </aside>
+      </div>
+
+      <section class="panel slate-panel" id="slate-panel">
+        <div class="slate-header">
+          <div><div class="panel-kicker">STEP 02 · REVISIONE</div><h2>Palinsesto da approvare <span id="slate-count" class="count">0/4</span></h2></div>
+          <div class="slate-actions"><button class="btn ghost" id="reset-slate" type="button">Svuota</button><button class="btn primary" id="export" type="button" disabled>Esporta JSON</button></div>
+        </div>
+        <p class="help">Ciccio può correggere le <strong>probabilità</strong>, non quote scollegate tra loro. Devono sommare il 100%; le tre quote vengono aggiornate automaticamente. Ogni confronto va confermato dal Commissioner. Questo file è una bozza esportabile: <strong>non pubblica nulla su Supabase</strong>.</p>
+        <div id="slate-empty" class="empty">Nessuna partita ancora inserita. Genera le quote di un confronto per iniziare.</div>
+        <div id="slate-list" class="slate-list"></div>
+        <div id="slate-feedback" role="status" class="slate-feedback"></div>
+      </section>
+      <footer>Bookmaker degli Eroi · Primo prototipo del motore 1X2 · Nessun dato ufficiale viene modificato</footer>
+    </main>
+  </div>
+  <script type="module" src="bookmaker-playoff.js?v=1"></script>
+</body>
+</html>
