@@ -1,4 +1,94 @@
+/*
+ * Lega degli Eroi | Navigazione condivisa
+ * 14 ottobre 2026: Esplora nella barra desktop e nel menu a tendina mobile.
+ * Mantiene gli handler esistenti di login, dropdown e pannello mobile.
+ */
+
+/** Riorganizza solo i link della navigazione, senza cambiare le altre pagine. */
+function configureExploreNavigation() {
+  const mainMenu = document.getElementById("mainMenu");
+  if (!mainMenu) return;
+
+  // Alcune pagine hanno una navbar HTML più vecchia: normalizziamo tutte
+  // senza dipendere dalla versione del loro codice HTML.
+  const topLevelItems = () => Array.from(mainMenu.children).filter(el => el.tagName === "LI");
+  const directLink = li => Array.from(li.children).find(el => el.tagName === "A") || null;
+  const normalizedHref = a => {
+    if (!a) return "";
+    return (a.getAttribute("href") || "").split(/[?#]/)[0].replace(/^\.\//, "").toLowerCase();
+  };
+  const directItemForHref = href => topLevelItems().find(li => normalizedHref(directLink(li)) === href);
+  const directItemForText = name => topLevelItems().find(li => {
+    const a = directLink(li);
+    return a && a.textContent.replace(/▾/g, "").trim().toLowerCase() === name;
+  });
+
+  // Statistiche esce soltanto dal menu Competizioni, non dalla Home.
+  const competitions = topLevelItems().find(li => li.classList.contains("competizioni")) || directItemForText("competizioni");
+  if (competitions) {
+    competitions.querySelectorAll(".submenu a").forEach(a => {
+      if (normalizedHref(a) === "statistiche.html") a.closest("li")?.remove();
+    });
+  }
+
+  // Hall of Fame e Regolamento entrano in Esplora. Il loro contenuto
+  // continua a vivere nelle pagine originali, non viene cancellato.
+  for (const old of [
+    directItemForHref("hall-of-fame.html"),
+    directItemForText("hall of fame"),
+    directItemForHref("regolamento.html"),
+    directItemForText("regolamento"),
+    directItemForHref("statistiche.html")
+  ]) {
+    if (old && old.id !== "nav-explore") old.remove();
+  }
+
+  let explore = document.getElementById("nav-explore");
+  if (!explore) {
+    explore = document.createElement("li");
+    explore.id = "nav-explore";
+    explore.className = "dropdown";
+    explore.innerHTML = `
+      <a href="#" class="toggle-submenu" aria-haspopup="true" aria-expanded="false">
+        Esplora <span class="caret" aria-hidden="true">▾</span>
+      </a>
+      <ul class="submenu" aria-label="Esplora Lega degli Eroi">
+        <li><a href="totoeroi.html"><span class="nav-explore-symbol" aria-hidden="true">🎯</span><span>TotoEroi</span></a></li>
+        <li><a href="statistiche.html"><span class="nav-explore-symbol" aria-hidden="true">📊</span><span>Statistiche</span></a></li>
+        <li><a href="timeline.html"><span class="nav-explore-symbol" aria-hidden="true">🎬</span><span>Timeline Stagionale</span></a></li>
+        <li><a href="hall-of-fame.html"><span class="nav-explore-symbol" aria-hidden="true">🏆</span><span>Hall of Fame</span></a></li>
+        <li><a href="regolamento.html"><span class="nav-explore-symbol" aria-hidden="true">📜</span><span>Regolamento</span></a></li>
+      </ul>
+    `;
+  }
+
+  const waiver = directItemForHref("waiver.html") || directItemForText("waiver wire");
+  if (waiver) waiver.after(explore);
+  else if (competitions) competitions.after(explore);
+  else mainMenu.appendChild(explore);
+
+  // Migliora l'accessibilità da tastiera e mantiene le icone allineate.
+  if (!document.getElementById("nav-explore-style")) {
+    const style = document.createElement("style");
+    style.id = "nav-explore-style";
+    style.textContent = `
+      .site-nav #nav-explore .nav-explore-symbol {
+        display:inline-flex; align-items:center; justify-content:center;
+        width:24px; min-width:24px; font-size:19px; line-height:1;
+      }
+      @media (min-width:901px) {
+        .site-nav #nav-explore:focus-within > .submenu {
+          opacity:1; visibility:visible; transform:translateY(0); pointer-events:auto;
+        }
+      }
+    `;
+    document.head.appendChild(style);
+  }
+}
+
 document.addEventListener("DOMContentLoaded", function () {
+  configureExploreNavigation();
+
   const hamburger = document.getElementById("hamburger");
   const mainMenu = document.getElementById("mainMenu");
   const submenuToggles = document.querySelectorAll(".toggle-submenu");
