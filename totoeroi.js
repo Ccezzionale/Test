@@ -281,6 +281,7 @@ function validateEight(fixtures){
   return '';
 }
 async function prefillFixtures(){
+  if(!isAdmin())return;
   if(state.round && state.round.status!=='draft'){adminMessage('Gli incontri già pubblicati non possono essere modificati.',true);return;}
   state.resultsRows=await loadResultsRows();
   const preview=sourceFor(state.gw);
@@ -377,6 +378,7 @@ function suggestedResultFor(f){
   return (gf>ga) === homeSide?'1':'2';
 }
 async function importResults(){
+  if(!isAdmin())return;
   if(!state.round||!isExpired(state.round)){adminMessage('Gli esiti ufficiali si importano dopo la scadenza.',true);return;}
   let n=0;
   state.resultsRows=await loadResultsRows();
@@ -401,6 +403,7 @@ async function saveResults(){
   }catch(e){adminMessage(`Errore: ${e.message}`,true);}
 }
 async function homologate(){
+  if(!isAdmin())return;
   if(!state.round)return;
   const complete=[...document.querySelectorAll('[data-result-slot]')].every(el=>['1','X','2'].includes(el.value));
   if(!complete){adminMessage('Inserisci e salva tutti gli otto esiti prima di omologare.',true);return;}
@@ -481,40 +484,44 @@ function setupEvents(){
     }catch(e){console.warn('Aggiornamento scadenza TotoEroi',e);}
   },60000);
 }
-async function authorizePrivatePreview(){
+async function authorizeLeagueMember(){
   const message = $('te-gate-message');
   try {
     const {data, error} = await supabase.auth.getUser();
     if(error) throw error;
     const user = data?.user;
     if(!user){
-      message.innerHTML = 'Accedi con il tuo account autorizzato per aprire l\'anteprima.<div><a href="login.html">Vai al login</a></div>';
+      message.innerHTML = 'Accedi con il tuo account della Lega degli Eroi per giocare.<div><a href="login.html">Vai al login</a></div>';
       return false;
     }
-    // Controllo server-side: legge il ruolo da profiles e NON si basa sulla visibilità del link.
-    const {data:authorized, error:authorizationError} = await supabase.rpc('totoeroi_is_admin');
-    if(authorizationError) throw authorizationError;
-    if(authorized !== true){
-      message.textContent = 'Accesso riservato agli amministratori della Lega degli Eroi.';
-      return false;
-    }
+
+    // Tutti i membri della Lega possono aprire TotoEroi. Solo gli admin
+    // verificati da Supabase vedono la sezione Commissioner.
     const {data:profile, error:profileError} = await supabase.from('profiles')
       .select('team_id,role').eq('id',user.id).maybeSingle();
     if(profileError) throw profileError;
-    if(!profile){ message.textContent='Profilo non disponibile per questo account.'; return false; }
-    state.user=user;
-    state.profile=profile;
-    state.adminAuthorized=true;
+    if(!profile){
+      message.textContent = 'Non risulta un profilo della Lega collegato a questo account.';
+      return false;
+    }
+
+    state.user = user;
+    state.profile = profile;
+    const {data:authorized, error:authorizationError} = await supabase.rpc('totoeroi_is_admin');
+    if(authorizationError){
+      console.warn('TotoEroi: verifica privilegi admin non disponibile', authorizationError);
+    }
+    state.adminAuthorized = !authorizationError && authorized === true;
     document.body.classList.add('te-authorized');
     return true;
   }catch(error){
-    console.error('Accesso anteprima privata:',error);
-    message.textContent='Impossibile verificare l\'accesso. Controlla la connessione o il login.';
+    console.error('Accesso TotoEroi:',error);
+    message.textContent = 'Impossibile verificare l\'accesso. Controlla la connessione o il login.';
     return false;
   }
 }
 async function init(){
-  if(!await authorizePrivatePreview()) return;
+  if(!await authorizeLeagueMember()) return;
   setupEvents();
   $('te-admin-week').innerHTML=Array.from({length:23},(_,i)=>i+7).map(g=>`<option value="${g}">Giornata ${g}</option>`).join('');
   try{
@@ -529,7 +536,7 @@ async function init(){
     state.teams=profileTeams.data||[];
     state.resultsRows=rows||[];
     state.fallbacks=fallbacks||[];
-    if(rounds.error)throw new Error('Le tabelle TotoEroi non sono ancora state create. Esegui prima totoeroi.sql su Supabase.');
+    if(rounds.error)throw new Error('Impossibile leggere le giornate da Supabase. Verifica che le policy RLS consentano ai membri della Lega di consultarle.');
     state.rounds=rounds.data||[];
     if(state.user){
       const p=await supabase.from('profiles').select('team_id,role').eq('id',state.user.id).maybeSingle();
@@ -539,7 +546,7 @@ async function init(){
     await loadRound(pickRound());
   }catch(e){
     console.error('Avvio TotoEroi:',e);
-    $('te-match-list').innerHTML=`<div class="te-empty">${esc(e.message)}<br>La pagina grafica è pronta, ma il database deve essere configurato.</div>`;
+    $('te-match-list').innerHTML=`<div class="te-empty">${esc(e.message)}<br>Se il problema persiste, controlla i permessi Supabase delle tabelle e delle funzioni TotoEroi.</div>`;
     $('te-status').textContent='Da configurare';
     if(isAdmin())renderAdmin();
   }
