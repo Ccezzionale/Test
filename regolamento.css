@@ -884,3 +884,58 @@ td {
     transform-origin: center;
   }
 }
+
+
+/* =========================================================
+   NUOVE SEZIONI REGOLAMENTO 2026/27
+   TotoEroi + Playoffs Challenge
+   ========================================================= */
+.reg-sezione-speciale { scroll-margin-top: 94px; }
+.reg-sezione-speciale > details { border-color: rgba(212,165,26,.36); }
+.reg-sezione-speciale > details > summary { color: #06274c; }
+.reg-sezione-intro {
+  margin: 24px auto 12px;
+  padding: 20px 22px !important;
+  border-radius: 18px;
+  color: #fff;
+  background: linear-gradient(135deg,#06274c,#10518a);
+  border: 1px solid rgba(255,218,102,.32);
+}
+.reg-sezione-intro p {color: #fff; margin: 8px 0 0; font-size: .98rem; line-height: 1.65;}
+.reg-sezione-kicker {
+  display: inline-block;
+  font-size: .76rem; font-weight: 900; color: #ffdd67;
+  letter-spacing: .075em;
+}
+.reg-nuovi-articoli { padding-top: 2px !important; padding-bottom: 22px !important; }
+.reg-nuovo-articolo {
+  scroll-margin-top: 100px;
+  border-left: 4px solid rgba(12,91,151,.38);
+  background: #f8fafd;
+  border-radius: 0 14px 14px 0;
+  padding: 4px 18px 12px;
+  margin: 14px auto;
+  color: #243349;
+}
+.reg-nuovo-articolo h4 {
+  font-size: 1.06rem; line-height: 1.35;
+  margin-top: 16px; margin-bottom: 10px;
+  text-transform: none;
+}
+.reg-nuovo-articolo h5 { font-size: .99rem; margin-top: 16px; }
+.reg-nuovo-articolo p { margin: 10px 0; font-size: .96rem; line-height: 1.65; }
+.reg-nuovo-articolo ul, .reg-nuovo-articolo ol {
+  background: rgba(4,46,85,.03);
+  border-radius: 10px;
+  padding: 10px 16px 10px 32px;
+  margin: 9px 0 12px;
+}
+.reg-nuovo-articolo li {font-size: .96rem; margin-bottom: 7px; }
+.reg-nuovo-articolo li:last-child {margin-bottom: 0;}
+@media (max-width: 768px) {
+ .reg-sezione-intro {padding: 16px !important; margin-top: 16px;}
+ .reg-nuovi-articoli {padding-left: 12px !important; padding-right: 12px !important;}
+ .reg-nuovo-articolo {padding: 4px 12px 10px; margin: 12px auto;}
+ .reg-nuovo-articolo h4 {font-size: .96rem;}
+ .reg-nuovo-articolo p, .reg-nuovo-articolo li {font-size: .9rem;}
+}
