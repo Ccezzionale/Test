@@ -3,7 +3,7 @@ import {supabase} from './supabase.js';
 import {buildModel,quoteMatch,normalizeTeam} from './bookmaker-engine.js';
 import {calculateProjectedStandings} from './bookmaker-seeding.js';
 import {mountCommissionerSimulator} from './bookmaker-simulator.js';
-import {mountPlayerBookmaker} from './bookmaker-players.js';
+import {mountPlayerBookmaker} from './bookmaker-players.js?v=pc-v8-1';
 import {mountBacktestLab} from './bookmaker-backtest.js';
 const $=id=>document.getElementById(id);
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));

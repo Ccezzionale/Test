@@ -8,7 +8,7 @@
   <title>Playoffs Challenge | Lega degli Eroi</title>
   <link rel="icon" href="icon-192.png" type="image/png" />
   <link rel="stylesheet" href="navbar.css?v=20261015" />
-  <link rel="stylesheet" href="playoffs-challenge.css?v=pc-v7-1" />
+  <link rel="stylesheet" href="playoffs-challenge.css?v=pc-v8-1" />
 </head>
 <body class="pc-page">
 <nav class="site-nav">
@@ -297,18 +297,27 @@
           <h3>⚔️ Incontri del turno</h3><p>Modalità automatica: premi «Genera quote». Modalità manuale: modifica direttamente le quote 1, X e 2 nei campi sottostanti.</p><div id="pc-admin-matches"></div>
           <div class="pc-entry-actions"><button class="pc-button pc-ghost" type="button" id="pc-admin-forecast">Carica gli ottavi provvisori</button><button class="pc-button pc-primary" type="button" id="pc-admin-generate">⚡ Genera quote</button></div>
           <section class="pc-panel pc-player-bookmaker" id="pc-player-bookmaker" aria-label="Bookmaker quote calciatori">
-            <div class="pc-kicker">V6 · BOOKMAKER DEI CALCIATORI</div>
-            <div class="pc-pb-heading"><div><h3>⚽ Generatore di quote calciatori</h3><p>Cerca un giocatore, scegli un evento e confronta la quota suggerita con i dati effettivamente disponibili. Puoi sempre inserire una quota manuale.</p></div><span class="pc-small-tag">Solo Commissioner</span></div>
-            <p class="pc-pb-data-note" id="pc-player-data-note">Caricamento statistiche…</p>
+            <div class="pc-kicker">V8 · QUOTAZIONI CLASSIC</div>
+            <div class="pc-pb-heading"><div><h3>⚽ Generatore di quote calciatori</h3><p>Il valore Classic del listino determina la quota suggerita. Regola la probabilità iniziale e quanto conta la quotazione, con anteprima immediata. Puoi sempre correggere la quota manualmente.</p></div><span class="pc-small-tag">Solo Commissioner</span></div>
+            <p class="pc-pb-data-note" id="pc-player-data-note">Lettura quotazioni Classic…</p>
+            <div class="pc-pb-settings" aria-label="Parametri quote calciatori">
+              <div class="pc-pb-settings-heading"><strong>🎚️ Simulatore calciatori</strong><span>Solo parametri locali, mai quote ufficiali</span></div>
+              <div class="pc-pb-settings-grid">
+                <label for="pc-player-impact"><span>Quanto conta la quotazione Classic? <output id="pc-player-impact-value">65%</output></span><input id="pc-player-impact" type="range" min="0" max="100" step="1" value="65"/><small>0%: tutti i giocatori dello stesso ruolo hanno la stessa probabilità base. 100%: la quotazione incide maggiormente.</small></label>
+                <label for="pc-player-baseline"><span>Probabilità base del ruolo/evento <output id="pc-player-baseline-value">—</output></span><input id="pc-player-baseline" type="range" min="1" max="70" step="0.5" value="28" disabled/><small>Il valore si riferisce alla quotazione media di riferimento del ruolo, non a una media storica verificata.</small></label>
+              </div>
+              <p id="pc-player-settings-help" class="pc-pb-settings-help">Seleziona un calciatore per configurare il suo ruolo e l'evento.</p>
+              <button id="pc-player-reset" type="button" class="pc-button pc-ghost">↺ Ripristina parametri iniziali</button>
+            </div>
             <div class="pc-pb-form">
-              <div class="pc-field pc-pb-find"><label for="pc-player-search">Calciatore (nome o società)</label><input type="search" id="pc-player-search" list="pc-player-suggestions" autocomplete="off" placeholder="Inizia a scrivere il nome…" /><datalist id="pc-player-suggestions"></datalist></div>
+              <div class="pc-field pc-pb-find"><label for="pc-player-search">Calciatore (nome o società · quotazione Classic)</label><input type="search" id="pc-player-search" list="pc-player-suggestions" autocomplete="off" placeholder="Inizia a scrivere il nome…" /><datalist id="pc-player-suggestions"></datalist></div>
               <div class="pc-field"><label for="pc-player-event">Evento da pronosticare</label><select id="pc-player-event" disabled><option>Prima scegli il calciatore</option></select></div>
               <div class="pc-field"><label for="pc-player-odd">Quota proposta / corretta</label><input type="number" id="pc-player-odd" min="1.01" step="0.01" inputmode="decimal" placeholder="Es. 3.50"/></div>
             </div>
-            <div class="pc-pb-actions"><button type="button" id="pc-player-calculate" class="pc-button pc-ghost">⚡ Calcola quota</button><button type="button" id="pc-player-apply" class="pc-button pc-primary">+ Aggiungi alla bozza</button></div>
+            <div class="pc-pb-actions"><button type="button" id="pc-player-calculate" class="pc-button pc-ghost">⚡ Ricalcola quota</button><button type="button" id="pc-player-apply" class="pc-button pc-primary">+ Aggiungi alla bozza</button></div>
             <div class="pc-pb-evidence" id="pc-player-evidence"><p>Seleziona un calciatore dal listino.</p></div>
             <p class="pc-feedback" id="pc-player-quote-status" role="status"></p>
-            <p class="pc-pb-disclaimer"><strong>Attenzione:</strong> i dati importati coprono poche giornate. Gol, assist e doppiette hanno soltanto <em>stime sperimentali</em>; clean sheet e rigori parati richiedono inserimento manuale per insufficienza delle informazioni. Le quote non vengono pubblicate premendo «Aggiungi alla bozza».</p>
+            <p class="pc-pb-disclaimer"><strong>Attenzione:</strong> la quotazione Classic misura il valore fantacalcistico, non la probabilità reale di segnare o fare assist. I suggerimenti sono <em>euristici e non calibrati</em>. Gol o assist è derivato dai due eventi con un'ipotesi di indipendenza; doppietta usa un modello semplificato. Clean sheet e rigori parati rimangono manuali. Spostare i cursori non modifica alcuna quota ufficiale.</p>
           </section>
           <h3>⚽ Palinsesto eventi calciatori</h3><p>Puoi modificare manualmente qualunque quota suggerita, oppure aggiungere eventi senza passare dal bookmaker. La pubblicazione resta un'azione separata.</p>
           <div id="pc-admin-players"></div>
@@ -333,11 +342,11 @@
     </section>
 
     <section class="pc-panel pc-admin-shortcut" id="pc-admin-shortcut" hidden><div><div class="pc-kicker">AREA AMMINISTRATORI</div><h3>Bookmaker degli Eroi</h3><p>Quote automatiche 1X2, revisione manuale ed esportazione della bozza. Da qui puoi anche aprire il motore statistico V2 per analizzare le quote.</p></div><a class="pc-button pc-ghost" href="bookmaker-playoff.html">⚙️ Apri il Bookmaker</a></section>
-    <footer class="pc-footer">Playoffs Challenge · V7 laboratorio statistico · Supabase · Schedine valide soltanto nei turni ufficialmente aperti</footer>
+    <footer class="pc-footer">Playoffs Challenge · V8 quotazioni Classic · Supabase · Schedine valide soltanto nei turni ufficialmente aperti</footer>
   </div>
 </main>
-<script type="module" src="playoffs-challenge.js?v=pc-v7-1"></script>
-<script type="module" src="playoffs-challenge-live.js?v=pc-v7-1"></script>
+<script type="module" src="playoffs-challenge.js?v=pc-v8-1"></script>
+<script type="module" src="playoffs-challenge-live.js?v=pc-v8-1"></script>
 <script src="mobile-nav.js?v=20261007-bottom4"></script>
 <script src="navbar.js?v=20261015"></script>
 <script type="module" src="admin-nav.js?v=1"></script>
