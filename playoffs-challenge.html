@@ -8,7 +8,7 @@
   <title>Playoffs Challenge | Lega degli Eroi</title>
   <link rel="icon" href="icon-192.png" type="image/png" />
   <link rel="stylesheet" href="navbar.css?v=20261015" />
-  <link rel="stylesheet" href="playoffs-challenge.css?v=pc-v6-1" />
+  <link rel="stylesheet" href="playoffs-challenge.css?v=pc-v7-1" />
 </head>
 <body class="pc-page">
 <nav class="site-nav">
@@ -293,6 +293,7 @@
             <div class="pc-sim-footer"><p><strong>Nota:</strong> stagione e ultime 5 si sovrappongono volutamente. Se manca lo storico di una squadra, il peso viene ridistribuito fra i dati disponibili. Le quote calciatori non cambiano.</p>
             <button type="button" class="pc-button pc-primary" id="pc-sim-apply">✓ Applica quote simulate alla bozza</button></div>
           </section>
+
           <h3>⚔️ Incontri del turno</h3><p>Modalità automatica: premi «Genera quote». Modalità manuale: modifica direttamente le quote 1, X e 2 nei campi sottostanti.</p><div id="pc-admin-matches"></div>
           <div class="pc-entry-actions"><button class="pc-button pc-ghost" type="button" id="pc-admin-forecast">Carica gli ottavi provvisori</button><button class="pc-button pc-primary" type="button" id="pc-admin-generate">⚡ Genera quote</button></div>
           <section class="pc-panel pc-player-bookmaker" id="pc-player-bookmaker" aria-label="Bookmaker quote calciatori">
@@ -314,17 +315,29 @@
           <button class="pc-button pc-ghost" type="button" id="pc-admin-add-player">+ Aggiungi evento calciatore</button>
           <div class="pc-entry-actions"><button class="pc-button pc-ghost" type="button" id="pc-admin-save-draft">💾 Salva bozza</button><button class="pc-button pc-primary" type="button" id="pc-admin-publish">🔒 Pubblica palinsesto ufficiale</button></div>
         </div>
+          <section class="pc-panel pc-backtest-lab" id="pc-backtest-lab" aria-label="Laboratorio verifica quote 1X2">
+            <div class="pc-bt-title"><div><div class="pc-kicker">V7 · LABORATORIO STATISTICO</div><h3>🔬 Le quote funzionano davvero?</h3>
+              <p>Confronta le previsioni con gli incontri già disputati. Per ogni giornata il modello utilizza <strong>soltanto le giornate precedenti</strong>.</p></div><span class="pc-small-tag">Solo Commissioner · sola lettura</span></div>
+            <div class="pc-bt-controls"><label>Partite da valutare<select id="pc-bt-mode"><option value="neutral">Ottavi su campo neutro (rimuove +2 casa)</option><option value="actual">Regular season reale (fattore casa +2)</option></select></label>
+              <button type="button" class="pc-button pc-primary" id="pc-bt-run">🔬 Esegui confronto sui risultati</button></div>
+            <div id="pc-bt-summary" class="pc-bt-summary" aria-live="polite"></div>
+            <div id="pc-bt-calibration"></div>
+            <div id="pc-bt-models"></div>
+            <div id="pc-bt-details"></div>
+            <p id="pc-bt-feedback" class="pc-bt-feedback" role="status">Premi «Esegui confronto» per confrontare il motore originale, quattro preset e i pesi che hai scelto con i cursori qui sopra.</p>
+            <p class="pc-bt-note"><strong>Come leggere i numeri:</strong> Brier e log loss più bassi sono meglio; «segno favorito corretto» conta solo quante volte il segno più probabile coincide con il risultato. Le quote rimangono <strong>inalterate</strong>: questo laboratorio non salva, non pubblica e non sceglie i pesi al posto tuo.</p>
+          </section>
         <div id="pc-admin-grading" hidden><h3>✅ Omologazione risultati</h3><p>Gli esiti sono modificabili solo dopo la scadenza. «Annullato» assegna zero punti e attiva l'eventuale HERO PICK di riserva.</p><div id="pc-admin-outcomes"></div><button class="pc-button pc-primary" type="button" id="pc-admin-finalize">🏆 Omologa giornata e aggiorna classifica</button></div>
         <div id="pc-admin-feedback" class="pc-feedback" role="status"></div>
       </div>
     </section>
 
     <section class="pc-panel pc-admin-shortcut" id="pc-admin-shortcut" hidden><div><div class="pc-kicker">AREA AMMINISTRATORI</div><h3>Bookmaker degli Eroi</h3><p>Quote automatiche 1X2, revisione manuale ed esportazione della bozza. Da qui puoi anche aprire il motore statistico V2 per analizzare le quote.</p></div><a class="pc-button pc-ghost" href="bookmaker-playoff.html">⚙️ Apri il Bookmaker</a></section>
-    <footer class="pc-footer">Playoffs Challenge · V6 bookmaker calciatori · Supabase · Schedine valide soltanto nei turni ufficialmente aperti</footer>
+    <footer class="pc-footer">Playoffs Challenge · V7 laboratorio statistico · Supabase · Schedine valide soltanto nei turni ufficialmente aperti</footer>
   </div>
 </main>
-<script type="module" src="playoffs-challenge.js?v=pc-v6-1"></script>
-<script type="module" src="playoffs-challenge-live.js?v=pc-v6-1"></script>
+<script type="module" src="playoffs-challenge.js?v=pc-v7-1"></script>
+<script type="module" src="playoffs-challenge-live.js?v=pc-v7-1"></script>
 <script src="mobile-nav.js?v=20261007-bottom4"></script>
 <script src="navbar.js?v=20261015"></script>
 <script type="module" src="admin-nav.js?v=1"></script>

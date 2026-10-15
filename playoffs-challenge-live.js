@@ -4,6 +4,7 @@ import {buildModel,quoteMatch,normalizeTeam} from './bookmaker-engine.js';
 import {calculateProjectedStandings} from './bookmaker-seeding.js';
 import {mountCommissionerSimulator} from './bookmaker-simulator.js';
 import {mountPlayerBookmaker} from './bookmaker-players.js';
+import {mountBacktestLab} from './bookmaker-backtest.js';
 const $=id=>document.getElementById(id);
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const fmt=n=>Number(n||0).toLocaleString('it-IT',{minimumFractionDigits:2,maximumFractionDigits:2});
@@ -225,6 +226,7 @@ function bind(){
      msg('pc-admin-feedback',`✅ Quote simulate (${weights.historic}% storico · ${weights.season}% stagione · ${weights.recent5}% ultime 5) copiate nella BOZZA. Devi ancora salvarla e pubblicarla. ${round.stage==='ottavi'?'Verifica il seeding ufficiale prima di pubblicare.':''}`);
    }
  });}
+ if(S.admin){S.backtest=mountBacktestLab({getSnapshot:()=>S.modelInput,getWeights:()=>S.simulator?.getWeights()});}
  if(S.admin){S.playerBookmaker=mountPlayerBookmaker({
   supabase,
   getRound:()=>S.rounds.find(x=>x.id===Number($('pc-admin-stage').value||S.rounds[0]?.id)),
