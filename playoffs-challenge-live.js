@@ -3,6 +3,7 @@ import {supabase} from './supabase.js';
 import {buildModel,quoteMatch,normalizeTeam} from './bookmaker-engine.js';
 import {calculateProjectedStandings} from './bookmaker-seeding.js';
 import {mountCommissionerSimulator} from './bookmaker-simulator.js';
+import {mountPlayerBookmaker} from './bookmaker-players.js';
 const $=id=>document.getElementById(id);
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const fmt=n=>Number(n||0).toLocaleString('it-IT',{minimumFractionDigits:2,maximumFractionDigits:2});
@@ -11,7 +12,7 @@ const roles={P:'🧤 POR',D:'🛡️ DIF',C:'🎯 CEN',A:'⚽ ATT'};
 const eventNames={CLEAN_SHEET:'Clean sheet',PENALTY_SAVE:'Rigore parato',GOAL:'Gol',ASSIST:'Assist',GOAL_OR_ASSIST:'Gol o assist',BRACE:'Doppietta'};
 const roleEvents={P:['CLEAN_SHEET','PENALTY_SAVE'],D:['GOAL','ASSIST','CLEAN_SHEET'],C:['GOAL','ASSIST','GOAL_OR_ASSIST'],A:['GOAL','ASSIST','BRACE']};
 const S={rounds:[],events:[],entries:[],user:null,teamId:null,admin:false,active:null,model:null,projection:null,teams:[],
- picks:new Map(),hero:null,backup:null,dirty:false,adminDraft:[],adminDraftRoundId:null,busy:false,lastRoundKey:null,modelInput:null,modelUpdated:0,simulator:null};
+ picks:new Map(),hero:null,backup:null,dirty:false,adminDraft:[],adminDraftRoundId:null,busy:false,lastRoundKey:null,modelInput:null,modelUpdated:0,simulator:null,playerBookmaker:null};
 function stageData(stage){return stages.find(x=>x[0]===stage)||stages[0]}
 function openRound(r){return r?.status==='open' && new Date(r.closes_at).getTime()>Date.now()}
 function closedRound(r){return r?.status==='finalized'||(r?.status==='open' && new Date(r.closes_at).getTime()<=Date.now())}
@@ -123,7 +124,7 @@ function renderAdmin(){if(!S.admin)return;
  $('pc-admin-deadline').value=localDatetime(r.closes_at);$('pc-admin-deadline').disabled=r.status!=='draft';
  $('pc-admin-draft').hidden=r.status!=='draft';$('pc-admin-grading').hidden=r.status==='draft'||r.status==='finalized';
  if(S.adminDraftRoundId!==r.id){S.adminDraft=initialDraft(r);S.adminDraftRoundId=r.id;}
- renderAdminDraft(r);S.simulator?.refresh();
+ renderAdminDraft(r);S.simulator?.refresh();S.playerBookmaker?.refresh();
  if(r.status!=='draft')renderGrading(r);
 }
 function renderAdminDraft(r){const ms=S.adminDraft.filter(x=>x.kind==='match').sort((a,b)=>a.slot-b.slot);const ps=S.adminDraft.filter(x=>x.kind==='player');
@@ -223,6 +224,25 @@ function bind(){
      renderAdminDraft(round);
      msg('pc-admin-feedback',`✅ Quote simulate (${weights.historic}% storico · ${weights.season}% stagione · ${weights.recent5}% ultime 5) copiate nella BOZZA. Devi ancora salvarla e pubblicarla. ${round.stage==='ottavi'?'Verifica il seeding ufficiale prima di pubblicare.':''}`);
    }
+ });}
+ if(S.admin){S.playerBookmaker=mountPlayerBookmaker({
+  supabase,
+  getRound:()=>S.rounds.find(x=>x.id===Number($('pc-admin-stage').value||S.rounds[0]?.id)),
+  onApply:entry=>{
+    const r=S.rounds.find(x=>x.id===Number($('pc-admin-stage').value));
+    if(!r||r.status!=='draft')return false;
+    collectAdminDraft();
+    const existing=S.adminDraft.find(x=>x.kind==='player'&&normalizeTeam(x.player_name)===normalizeTeam(entry.player_name));
+    if(existing && existing.player_event!==entry.player_event){
+      msg('pc-admin-feedback',`${entry.player_name} è già presente con un altro evento: rimuovilo prima di cambiarlo.`,true);
+      return false;
+    }
+    if(existing){existing.qyes=entry.qyes;existing.player_role=entry.player_role;}
+    else S.adminDraft.push(entry);
+    renderAdminDraft(r);
+    msg('pc-admin-feedback',`${entry.player_name} aggiunto alla BOZZA con quota ${entry.qyes}. Salva la bozza per conservarlo.`);
+    return true;
+  }
  });}
  bind();await loadModel();await readOfficial();chooseActive();renderOfficial();await refreshLeaderboard();if(S.admin)renderAdmin();
  setInterval(()=>{if(!document.hidden)update()},90000);

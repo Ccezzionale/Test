@@ -214,3 +214,25 @@
 .pc-sim-empty{padding:20px;color:#aac9e8;line-height:1.5}
 @media(max-width:850px){.pc-sim-sliders{grid-template-columns:1fr}.pc-sim-sliders label{gap:8px}.pc-sim-sliders label>span{min-height:0}}
 @media(max-width:550px){.pc-page .pc-simulator{padding:14px}.pc-sim-top h3{font-size:1.15rem}.pc-sim-odd{padding:9px 3px}.pc-sim-odd>strong{font-size:.95rem}.pc-sim-result-head{align-items:flex-start;flex-direction:column}.pc-sim-fixture-title{flex-direction:column;align-items:flex-start}}
+
+/* ===========================================================
+   V6 · BOOKMAKER CALCIATORI · Solo Admin
+   =========================================================== */
+.pc-player-bookmaker{margin:25px 0;border:1px solid rgba(225,184,83,.34);background:linear-gradient(135deg,rgba(13,39,76,.94),rgba(18,53,94,.94));}
+.pc-pb-heading{display:flex;justify-content:space-between;align-items:start;gap:12px;flex-wrap:wrap}
+.pc-pb-heading h3{margin:.3rem 0}.pc-pb-heading p{margin:.3rem 0 1rem;line-height:1.55;opacity:.86}
+.pc-pb-data-note{font-size:.87rem;color:#e7d396;padding:9px 12px;background:rgba(255,215,0,.08);border-radius:11px;margin:9px 0 15px}
+.pc-pb-form{display:grid;grid-template-columns:minmax(240px,2fr) minmax(170px,1.4fr) minmax(110px,.75fr);gap:13px;align-items:end}
+.pc-pb-form .pc-field{min-width:0}
+.pc-pb-form input,.pc-pb-form select{width:100%;min-height:45px;min-width:0;border-radius:10px;box-sizing:border-box;padding:9px 11px;font-size:1rem;background:#fcfdff;color:#122846;border:1px solid rgba(21,44,70,.2)}
+.pc-pb-form label{display:block;font-size:.84rem;margin-bottom:7px;font-weight:750}
+.pc-pb-actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:16px}
+.pc-pb-evidence{border-radius:13px;background:rgba(0,0,0,.16);border:1px solid rgba(255,255,255,.09);padding:13px 16px;margin-top:16px;line-height:1.5}
+.pc-pb-evidence p{margin:.45rem 0;font-size:.88rem}
+.pc-pb-metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-bottom:12px}
+.pc-pb-metrics>div{padding:12px;background:rgba(255,255,255,.07);border-radius:11px;display:grid;gap:5px}
+.pc-pb-metrics small{font-size:.7rem;color:#b9c9df}.pc-pb-metrics strong{font-size:1.25rem;color:#ffdc83}
+.pc-pb-alert{padding:12px;color:#ffe6b7;line-height:1.55}
+.pc-pb-disclaimer{font-size:.83rem;line-height:1.5;opacity:.86;margin:13px 0 0}
+@media(max-width:800px){.pc-pb-form{grid-template-columns:1fr}.pc-pb-metrics{grid-template-columns:1fr 1fr 1fr}.pc-pb-metrics strong{font-size:1rem}}
+@media(max-width:410px){.pc-pb-metrics{grid-template-columns:1fr}.pc-pb-actions .pc-button{width:100%}}
