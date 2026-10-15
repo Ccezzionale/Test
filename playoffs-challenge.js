@@ -23,7 +23,7 @@ const ROUNDS = [
 ];
 
 function changeTab(tab, updateHash=true) {
-  const target = ['schedina','classifiche','calendario','regole'].includes(tab) ? tab : 'schedina';
+  const target = ['schedina','classifiche','calendario','regole','admin'].includes(tab) ? tab : 'schedina';
   state.activeTab = target;
   document.querySelectorAll('.pc-tab').forEach(button => {
     const active = button.dataset.tab === target;
@@ -87,7 +87,7 @@ function renderGames(){
     </article>`;
   }).join('');
   const picked = state.selections.size;
-  $('pc-progress').textContent = `${picked}/4`;
+  if ($('pc-official').hidden) $('pc-progress').textContent = `${picked}/4`;
   let points=0;
   for(const m of state.matchups){
     const sign=state.selections.get(m.slot);
@@ -126,9 +126,9 @@ function renderCalendar(){
 
 function renderStatus(){
   $('pc-week').textContent=`${state.projection.lastCompleted} / 29`;
-  $('pc-status').textContent=state.projection.lastCompleted >= 29 ? 'Seeding da omologare' : 'Ottavi provvisori';
+  if ($('pc-official').hidden) $('pc-status').textContent=state.projection.lastCompleted >= 29 ? 'Seeding da omologare' : 'Ottavi provvisori';
   $('pc-updated').textContent=new Date().toLocaleTimeString('it-IT',{hour:'2-digit',minute:'2-digit'});
-  $('pc-preliminary-message').innerHTML=`🔒 <strong>Simulazione, non una schedina ufficiale.</strong> Gli ottavi e le quote si basano sulle prime ${state.projection.lastCompleted} giornate complete. `+
+  if ($('pc-official').hidden) $('pc-preliminary-message').innerHTML=`🔒 <strong>Simulazione, non una schedina ufficiale.</strong> Gli ottavi e le quote si basano sulle prime ${state.projection.lastCompleted} giornate complete. `+
     (state.projection.pending?'Una giornata è in fase di caricamento: aspettiamo tutti i risultati. ':'')+
     (state.projection.unresolvedTies?'Alcuni spareggi in classifica sono ancora provvisori. ':'')+
     'Nessun pronostico viene salvato.';

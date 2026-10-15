@@ -125,3 +125,54 @@
 @media(max-width:980px){.pc-match-list{grid-template-columns:1fr}.pc-submit{flex-direction:column;align-items:stretch}.pc-submit-actions{justify-content:flex-start}}
 @media(max-width:760px){.pc-page .pc-shell{padding:17px 12px 88px}.pc-hero{grid-template-columns:1fr!important;padding:23px 20px 0!important;border-radius:20px!important}.pc-hero h1{font-size:3.1rem}.pc-trophy{position:absolute;right:12px;top:16px;opacity:.22;pointer-events:none}.pc-trophy>span{font-size:130px}.pc-trophy>strong{display:none}.pc-hero-rewards{margin:0 -20px!important;padding:14px 20px!important;gap:13px!important}.pc-hero-rewards strong{font-size:.79rem}.pc-status{grid-template-columns:repeat(2,minmax(0,1fr))}.pc-tabs{grid-template-columns:repeat(4,minmax(0,1fr));gap:4px;padding:5px}.pc-tabs .pc-tab{flex-direction:column;gap:5px;font-size:.72rem;padding:10px 3px}.pc-heading{gap:10px}.pc-marker{min-width:54px;height:54px;font-size:1.06rem}.pc-panel{padding:17px}.pc-role-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.pc-rules-grid{grid-template-columns:1fr}.pc-round{gap:10px;padding:16px}.pc-round-number{font-size:1.9rem}.pc-round-open{max-width:96px}.pc-future-ranking{align-items:flex-start}.pc-future-ranking>strong{display:none}.pc-admin-shortcut{flex-direction:column;align-items:stretch}.pc-table .pc-seed-mark{display:block;width:fit-content;margin:4px 0 0}.pc-game{padding:15px}}
 @media(max-width:380px){.pc-hero h1{font-size:2.6rem}.pc-hero-rewards{grid-template-columns:1fr}.pc-status strong{font-size:1.05rem}.pc-game-teams strong{font-size:.95rem}.pc-provisional{font-size:.54rem}.pc-odd>strong{font-size:1.19rem}.pc-odd>small{font-size:.59rem}}
+
+/* V4: schedine ufficiali e sala controllo Commissioner */
+.pc-tabs .pc-tab[hidden], .pc-tabpanel[hidden], #pc-official[hidden],#pc-demo-area[hidden],#pc-admin-draft[hidden],#pc-admin-grading[hidden],#pc-public-entries[hidden],#pc-official-ranking[hidden]{display:none!important}
+.pc-tabs:has(#pc-admin-tab:not([hidden])){grid-template-columns:repeat(5,minmax(0,1fr))}
+.pc-official{display:grid;gap:17px}
+.pc-round-toolbar{display:flex;justify-content:space-between;gap:14px;align-items:center}
+.pc-round-toolbar .pc-kicker{margin-bottom:8px}
+.pc-page select,.pc-page input{background:#091f3a;color:#f2f7ff;border:1px solid #5a7190;border-radius:10px;padding:10px 12px;max-width:100%;min-width:0;font:inherit}
+.pc-page select:focus-visible,.pc-page input:focus-visible{outline:2px solid #e8c56b;outline-offset:2px}
+.pc-round-toolbar label{font-weight:850;color:#e8c979;display:block;font-size:.8rem;margin-bottom:7px}
+.pc-choice-extras{display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap;margin-top:12px}
+.pc-choice-extras button{border:1px solid #4b6785;background:#08213f;color:#bad4ed;border-radius:9px;padding:7px 10px;cursor:pointer;font-size:.75rem}
+.pc-choice-extras button.chosen{border-color:#eec96b;color:#f8dd93;background:#dcb45e2c}
+.pc-choice-extras button:disabled{opacity:.4;cursor:default}
+.pc-player-events{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.pc-player-option{background:#102b4a;border:1px solid #3e5e82;border-radius:14px;padding:15px;display:flex;flex-direction:column;gap:12px;min-width:0}
+.pc-player-option.chosen{border-color:#e7c376;box-shadow:0 0 0 1px #dfba6333}
+.pc-player-option>div:first-child{display:flex;flex-direction:column;gap:7px}
+.pc-player-option small{color:#eac979;font-weight:800}
+.pc-player-option strong{color:#fff;font-size:1.02rem;overflow-wrap:anywhere}
+.pc-player-option span{color:#bad0e5;font-size:.86rem}
+.pc-entry-summary{display:flex;flex-direction:column;align-items:flex-start;gap:11px}
+#pc-official-count{font-size:.9rem;color:#bdd6ee}
+#pc-official-potential{font-size:1.35rem;font-weight:900;color:#f4d389}
+.pc-entry-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+.pc-feedback{color:#96d6b0;font-size:.87rem;line-height:1.5;margin:7px 0;min-height:1.2em}
+.pc-feedback-error{color:#ffaaa6}
+.pc-official-ranking{margin-bottom:16px}
+.pc-official-ranking h3{color:#fff;margin:0 0 6px}
+.pc-official-ranking p{color:#b7cbe3}
+#pc-public-entry-list label{display:block;color:#d6e5f8;margin:12px 0}
+#pc-entry-inspect-result{background:#071e39;padding:12px;border-radius:10px;color:#dbe9fa}
+#pc-entry-inspect-result p{margin:5px 0;border-bottom:1px solid #364f6b;padding:7px}
+.pc-admin-controls{display:grid;gap:12px}
+.pc-admin-controls>div>h3,.pc-admin-controls h3{color:#f3d287}
+.pc-admin-controls p{color:#b7cbe3;font-size:.86rem;line-height:1.55}
+.pc-field{display:flex;flex-direction:column;gap:7px;max-width:420px}
+.pc-field label{font-weight:800;color:#bbd1ea;font-size:.82rem}
+#pc-admin-matches{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.pc-admin-match{display:flex;flex-direction:column;gap:10px;padding:14px}
+.pc-admin-match>b{color:#f2d388}
+.pc-admin-odds{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.pc-admin-odds label{display:flex;flex-direction:column;gap:6px;color:#d6c38f;font-size:.75rem}
+.pc-admin-player{display:grid;grid-template-columns:minmax(130px,1.3fr) minmax(90px,.8fr) minmax(150px,1fr) minmax(75px,.5fr) auto;gap:8px;align-items:center;padding:12px;margin-bottom:10px}
+.pc-admin-player label{color:#d2dcf2;display:flex;flex-direction:column;gap:4px;font-size:.72rem}
+.pc-admin-player .pc-button{min-width:0}
+.pc-grading-row{display:grid;grid-template-columns:minmax(120px,1fr) auto auto;align-items:center;gap:10px;padding:12px;border-bottom:1px solid #52729255}
+.pc-grading-row strong{color:#edf3fd;font-size:.85rem}
+.pc-page button:focus-visible{outline:2px solid #f4d27e;outline-offset:3px}
+@media(max-width:900px){#pc-admin-matches,.pc-player-events{grid-template-columns:1fr}.pc-admin-player{grid-template-columns:1fr 1fr}.pc-admin-player [data-player-field="player_name"]{grid-column:1/-1}.pc-admin-player [data-remove-player]{grid-column:1/-1}}
+@media(max-width:760px){.pc-tabs:has(#pc-admin-tab:not([hidden])){grid-template-columns:repeat(5,minmax(0,1fr))}.pc-tabs .pc-tab{font-size:.63rem}.pc-tabs .pc-tab span{overflow-wrap:anywhere}.pc-round-toolbar{flex-direction:column;align-items:flex-start}.pc-grading-row{grid-template-columns:1fr 1fr}.pc-grading-row strong{grid-column:1/-1}}

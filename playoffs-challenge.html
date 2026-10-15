@@ -8,7 +8,7 @@
   <title>Playoffs Challenge | Lega degli Eroi</title>
   <link rel="icon" href="icon-192.png" type="image/png" />
   <link rel="stylesheet" href="navbar.css?v=20261015" />
-  <link rel="stylesheet" href="playoffs-challenge.css?v=pc-v3-1" />
+  <link rel="stylesheet" href="playoffs-challenge.css?v=pc-v4-1" />
 </head>
 <body class="pc-page">
 <nav class="site-nav">
@@ -214,12 +214,24 @@
       <button class="pc-tab" data-tab="classifiche" role="tab" aria-selected="false" aria-controls="pc-tab-classifiche" type="button">📊 <span>Classifiche</span></button>
       <button class="pc-tab" data-tab="calendario" role="tab" aria-selected="false" aria-controls="pc-tab-calendario" type="button">📅 <span>Calendario</span></button>
       <button class="pc-tab" data-tab="regole" role="tab" aria-selected="false" aria-controls="pc-tab-regole" type="button">📜 <span>Regole</span></button>
+      <button class="pc-tab" data-tab="admin" id="pc-admin-tab" role="tab" aria-selected="false" aria-controls="pc-tab-admin" type="button" hidden>⚙️ <span>Commissioner</span></button>
     </nav>
 
     <section class="pc-tabpanel active" id="pc-tab-schedina" role="tabpanel" aria-label="Schedina Playoffs Challenge">
-      <div class="pc-heading"><div><div class="pc-kicker">ANTEPRIMA DEL PRIMO TURNO</div><h2>La schedina degli ottavi</h2><p>Questi sono gli accoppiamenti <strong>provvisori</strong> secondo la classifica aggiornata. Seleziona un segno e prova la HERO PICK.</p></div><span class="pc-marker" id="pc-progress">0/4</span></div>
+      <div class="pc-heading"><div><div class="pc-kicker">PRONOSTICI · FIVE ROUNDS</div><h2 id="pc-schedina-title">La schedina degli ottavi</h2><p>Fino all’apertura ufficiale puoi esplorare gli ottavi provvisori e le relative quote. Quando Ciccio pubblica, puoi consegnare la schedina vera.</p></div><span class="pc-marker" id="pc-progress">0/4</span></div>
       <div class="pc-alert" id="pc-preliminary-message">🔒 <strong>Simulazione:</strong> i pronostici qui sotto non vengono salvati e non sono schedine ufficiali. La compilazione vera aprirà quando saranno pubblicati palinsesto e quote definitive.</div>
-      <div class="pc-match-list" id="pc-match-list" aria-live="polite"></div>
+      <section id="pc-official" class="pc-official" hidden>
+        <div class="pc-round-toolbar pc-panel"><div><div class="pc-kicker">SCHEDINA UFFICIALE · SUPABASE</div><label for="pc-official-stage">Seleziona il turno</label><select id="pc-official-stage"></select></div><div id="pc-official-state" class="pc-small-tag">—</div></div>
+        <div class="pc-heading compact"><div><h3>⚔️ Pronostici sulle partite</h3><p>Seleziona il risultato 1, X o 2. Le quote sono quelle pubblicate, non quelle indicative.</p></div></div>
+        <div class="pc-match-list" id="pc-official-matches"></div>
+        <div class="pc-heading"><div><h3>⚽ Pronostici sui calciatori</h3><p>Un calciatore per ruolo, più due selezioni libere nelle semifinali e nelle finali. Non puoi scegliere lo stesso calciatore due volte.</p></div></div>
+        <div id="pc-official-players" class="pc-player-events"></div>
+        <div class="pc-panel pc-entry-summary"><div id="pc-official-count">0 pronostici</div><div id="pc-official-potential">0,00 punti potenziali</div><div id="pc-official-message" class="pc-feedback" role="status"></div>
+          <div class="pc-entry-actions"><button type="button" class="pc-button pc-ghost" id="pc-official-clear">Azzera selezioni</button><button type="button" class="pc-button pc-primary" id="pc-official-save">💾 Consegna / aggiorna schedina</button></div>
+        </div>
+        <div class="pc-panel" id="pc-public-entries" hidden><h3>👀 Schedine della Lega</h3><p>Consultabili solo dopo la chiusura.</p><div id="pc-public-entry-list"></div></div>
+      </section>
+      <div id="pc-demo-area"><div class="pc-match-list" id="pc-match-list" aria-live="polite"></div>
       <div class="pc-player-preview pc-panel">
         <div class="pc-heading compact"><div><div class="pc-kicker">SEZIONE B · EVENTI SERIE A</div><h3>Pronostici sui calciatori</h3><p>Durante gli ottavi potrai scegliere quattro calciatori, uno per ruolo, con eventi quotati: POR, DIF, CEN e ATT.</p></div><span class="pc-small-tag">In preparazione</span></div>
         <div class="pc-role-grid">
@@ -230,10 +242,12 @@
         </div>
       </div>
       <div class="pc-submit pc-panel"><div><strong id="pc-demo-points">0,00 pt potenziali</strong><p id="pc-demo-hint">Scegli qualche segno per simulare la schedina. Le quote si sommano, non si moltiplicano.</p></div><div class="pc-submit-actions"><button type="button" class="pc-button pc-ghost" id="pc-clear">Azzera simulazione</button><button type="button" class="pc-button pc-primary" disabled>Consegna non ancora aperta</button></div></div>
+      </div>
     </section>
 
     <section class="pc-tabpanel" id="pc-tab-classifiche" role="tabpanel" aria-label="Classifiche Playoffs Challenge" hidden>
       <div class="pc-heading"><div><div class="pc-kicker">GRADUATORIE</div><h2>La corsa al Draft</h2><p>La classifica Challenge partirà con gli ottavi. Nel frattempo puoi vedere chi entrerebbe nel tabellone.</p></div></div>
+      <div class="pc-panel pc-official-ranking" id="pc-official-ranking" hidden><h3>🏆 Graduatoria ufficiale Playoffs Challenge</h3><p>Solo turni omologati. Parità risolte per pronostici corretti, playoff indovinati, HERO PICK e ultimo turno.</p><div class="pc-table-wrap"><table class="pc-table"><thead><tr><th>#</th><th>Franchigia</th><th>Punti</th><th>Giusti</th><th>1X2</th><th>Hero</th></tr></thead><tbody id="pc-official-leaderboard"></tbody></table></div><p id="pc-ranking-tie-note" class="pc-feedback"></p></div>
       <div class="pc-panel pc-future-ranking"><span>🏅</span><div><h3>Classifica Playoffs Challenge</h3><p>Non ancora iniziata. Dopo l'omologazione di ogni turno saranno disponibili punti totali, pronostici corretti, HERO PICK e classifiche per Conference.</p></div><strong>In attesa</strong></div>
       <div class="pc-panel"><div class="pc-heading compact"><div><div class="pc-kicker">PROIEZIONE DA REGULAR SEASON</div><h3>Seeding provvisorio</h3><p id="pc-ranking-note">I primi 12 accedono ai playoff. Gli scontri diretti non ancora risolti rendono l'ordine indicativo.</p></div></div><div class="pc-table-wrap"><table class="pc-table"><thead><tr><th>#</th><th>Franchigia</th><th>PG</th><th>Pt</th><th>FP</th></tr></thead><tbody id="pc-standings"></tbody></table></div></div>
     </section>
@@ -257,11 +271,30 @@
       <a class="pc-full-rules" href="regolamento.html#playoffs-challenge">📜 Leggi tutti i 13 articoli del regolamento →</a>
     </section>
 
-    <section class="pc-panel pc-admin-shortcut" id="pc-admin-shortcut" hidden><div><div class="pc-kicker">AREA AMMINISTRATORI</div><h3>Bookmaker degli Eroi</h3><p>Quote automatiche 1X2, revisione manuale ed esportazione della bozza. La pubblicazione ufficiale non è ancora attiva.</p></div><a class="pc-button pc-ghost" href="bookmaker-playoff.html">⚙️ Apri il Bookmaker</a></section>
-    <footer class="pc-footer">Playoffs Challenge · V3 anteprima · Dati della Lega da Supabase · Nessuna schedina o quota viene ancora salvata</footer>
+    <section class="pc-tabpanel" id="pc-tab-admin" role="tabpanel" aria-label="Gestione Commissioner" hidden>
+      <div class="pc-heading"><div><div class="pc-kicker">RISERVATO AGLI AMMINISTRATORI</div><h2>⚙️ Centro di controllo</h2><p>Prepara il palinsesto, assegna le quote, pubblica e omologa gli esiti. I turni pubblicati sono bloccati.</p></div></div>
+      <div class="pc-panel pc-admin-controls">
+        <div class="pc-field"><label for="pc-admin-stage">Turno da gestire</label><select id="pc-admin-stage"></select></div>
+        <div class="pc-field"><label for="pc-admin-deadline">Scadenza schedine (ora locale)</label><input id="pc-admin-deadline" type="datetime-local"/></div>
+        <div id="pc-admin-draft">
+          <h3>⚔️ Incontri del turno</h3><p>Modalità automatica: premi «Genera quote». Modalità manuale: modifica direttamente le quote 1, X e 2 nei campi sottostanti.</p><div id="pc-admin-matches"></div>
+          <div class="pc-entry-actions"><button class="pc-button pc-ghost" type="button" id="pc-admin-forecast">Carica gli ottavi provvisori</button><button class="pc-button pc-primary" type="button" id="pc-admin-generate">⚡ Genera quote</button></div>
+          <h3>⚽ Palinsesto eventi calciatori</h3><p>Inserisci gli eventi verificabili. Per ora le quote dei calciatori sono manuali; non saranno pubblicati valori inventati dal sistema.</p>
+          <div id="pc-admin-players"></div>
+          <button class="pc-button pc-ghost" type="button" id="pc-admin-add-player">+ Aggiungi evento calciatore</button>
+          <div class="pc-entry-actions"><button class="pc-button pc-ghost" type="button" id="pc-admin-save-draft">💾 Salva bozza</button><button class="pc-button pc-primary" type="button" id="pc-admin-publish">🔒 Pubblica palinsesto ufficiale</button></div>
+        </div>
+        <div id="pc-admin-grading" hidden><h3>✅ Omologazione risultati</h3><p>Gli esiti sono modificabili solo dopo la scadenza. «Annullato» assegna zero punti e attiva l'eventuale HERO PICK di riserva.</p><div id="pc-admin-outcomes"></div><button class="pc-button pc-primary" type="button" id="pc-admin-finalize">🏆 Omologa giornata e aggiorna classifica</button></div>
+        <div id="pc-admin-feedback" class="pc-feedback" role="status"></div>
+      </div>
+    </section>
+
+    <section class="pc-panel pc-admin-shortcut" id="pc-admin-shortcut" hidden><div><div class="pc-kicker">AREA AMMINISTRATORI</div><h3>Bookmaker degli Eroi</h3><p>Quote automatiche 1X2, revisione manuale ed esportazione della bozza. Da qui puoi anche aprire il motore statistico V2 per analizzare le quote.</p></div><a class="pc-button pc-ghost" href="bookmaker-playoff.html">⚙️ Apri il Bookmaker</a></section>
+    <footer class="pc-footer">Playoffs Challenge · V4 integrata con Supabase · Schedine valide soltanto nei turni ufficialmente aperti</footer>
   </div>
 </main>
-<script type="module" src="playoffs-challenge.js?v=pc-v3-1"></script>
+<script type="module" src="playoffs-challenge.js?v=pc-v4-1"></script>
+<script type="module" src="playoffs-challenge-live.js?v=pc-v4-1"></script>
 <script src="mobile-nav.js?v=20261007-bottom4"></script>
 <script src="navbar.js?v=20261015"></script>
 <script type="module" src="admin-nav.js?v=1"></script>
