@@ -15,3 +15,44 @@ button,input,select{font:inherit}button{cursor:pointer}button:disabled{opacity:.
 @media(max-width:520px){.hero{border-radius:18px}.hero h1{font-size:2.6rem}.header{margin-bottom:15px}.status-strip>div{padding:12px}.status-strip strong{font-size:1.1rem}.team-row{grid-template-columns:1fr}.vs{padding:0;margin:-12px 0;text-align:left}.slate-actions{width:100%}.slate-actions button{flex:1}.draft-top strong{font-size:.82rem}.draft-fields input{padding:8px 5px}.evidence{grid-template-columns:1fr}}
 
 .approve-check{display:flex;gap:10px;align-items:center;margin-top:9px;border-top:1px solid #ffffff23;padding-top:12px;font-size:.84rem;color:#e1dcb7;cursor:pointer}.approve-check input{accent-color:#e7bf63;width:18px;height:18px}
+
+/* V2 · anteprima ottavi per tutti, laboratorio di revisione solo admin */
+.hero h1 span{color:#f2ca74}
+.status-strip{grid-template-columns:repeat(4,minmax(0,1fr))}
+.match-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:15px;margin-top:18px}
+.match-card{padding:20px;border:1px solid #d1b26945;background:linear-gradient(145deg,#0e3155,#082442);border-radius:17px;box-shadow:0 12px 24px #0003;min-width:0}
+.match-card-top{display:flex;justify-content:space-between;align-items:center;gap:10px;color:#e9c67c;letter-spacing:.06em;font-size:.72rem;font-weight:900;margin-bottom:16px}
+.fixture-names{display:grid;grid-template-columns:minmax(0,1fr) 36px minmax(0,1fr);gap:7px;align-items:center;margin-bottom:18px}
+.fixture-names>div{min-width:0;display:flex;flex-direction:column;gap:6px}
+.fixture-names strong{color:#f7faff;font-size:1.08rem;line-height:1.18;overflow-wrap:anywhere}
+.fixture-names small{color:#b1c8e3;font-size:.74rem}
+.seed{font-weight:900;color:#f7ce74;font-size:.75rem}
+.versus{font-weight:950;color:#f2cc72;text-align:center;font-size:.88rem}
+.match-card .odds-card{padding:10px 6px;gap:4px}
+.match-card .odds-card>strong{font-size:1.48rem}
+.match-card .odds-card>small{font-size:.69rem}
+.manual-tag{border:1px solid #ffce82aa;background:#f8c66522;color:#ffe5a0;border-radius:999px;padding:4px 8px;font-size:.62rem;letter-spacing:0;white-space:nowrap}
+.standings-panel,.admin-panel{margin-top:18px}
+.standings-scroller{overflow-x:auto}
+.standings-table{width:100%;border-collapse:collapse;font-size:.89rem;font-variant-numeric:tabular-nums}
+.standings-table th{text-align:left;padding:12px 10px;color:#a9c1dc;font-size:.7rem;letter-spacing:.08em;text-transform:uppercase;border-bottom:1px solid #ffffff2b}
+.standings-table td{padding:11px 10px;border-bottom:1px solid #ffffff11}
+.standings-table tr.in-bracket{background:#f5ce6711}
+.standings-table tr.outside{color:#94a7c1}
+.standings-table .seed-cell{font-weight:950;color:#ecc66b}
+.admin-controls{display:flex;align-items:center;flex-wrap:wrap;gap:11px;margin:16px 0}
+.admin-controls .btn{min-height:45px}
+.mode-label{color:#c7d8ec;font-size:.8rem;font-weight:850}
+.admin-controls select{min-height:45px;padding:9px 12px;border-radius:12px;border:1px solid #6a87a7;background:#0b2646;color:#fff}
+.admin-status{color:#efc97b;font-size:.85rem;min-height:1em}
+.admin-editor{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:12px}
+.edit-card{background:#08233f;border:1px solid #6082a14e;border-radius:16px;padding:16px;min-width:0}
+.edit-top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:13px}
+.edit-top strong{font-size:.9rem;line-height:1.35}
+.edit-top strong span{color:#ddba66}
+.btn.small{padding:8px 10px;font-size:.7rem}
+.validity{color:#9be0ac;font-size:.76rem;line-height:1.4;margin:11px 0 0}
+.draft-error{color:#ffabb2;font-size:.76rem;line-height:1.4;margin:11px 0 0}
+.edit-card .draft-fields input{font-variant-numeric:tabular-nums}
+@media(max-width:920px){.match-grid,.admin-editor{grid-template-columns:1fr}}
+@media(max-width:650px){.status-strip{grid-template-columns:repeat(2,minmax(0,1fr))}.fixture-names strong{font-size:.97rem}.match-card{padding:14px}.admin-controls .btn{width:100%}.admin-controls select{flex:1}.slate-header h2{font-size:1.35rem}}
