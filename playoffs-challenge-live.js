@@ -2,6 +2,7 @@
 import {supabase} from './supabase.js';
 import {buildModel,quoteMatch,normalizeTeam} from './bookmaker-engine.js';
 import {calculateProjectedStandings} from './bookmaker-seeding.js';
+import {mountCommissionerSimulator} from './bookmaker-simulator.js';
 const $=id=>document.getElementById(id);
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const fmt=n=>Number(n||0).toLocaleString('it-IT',{minimumFractionDigits:2,maximumFractionDigits:2});
@@ -10,7 +11,7 @@ const roles={P:'🧤 POR',D:'🛡️ DIF',C:'🎯 CEN',A:'⚽ ATT'};
 const eventNames={CLEAN_SHEET:'Clean sheet',PENALTY_SAVE:'Rigore parato',GOAL:'Gol',ASSIST:'Assist',GOAL_OR_ASSIST:'Gol o assist',BRACE:'Doppietta'};
 const roleEvents={P:['CLEAN_SHEET','PENALTY_SAVE'],D:['GOAL','ASSIST','CLEAN_SHEET'],C:['GOAL','ASSIST','GOAL_OR_ASSIST'],A:['GOAL','ASSIST','BRACE']};
 const S={rounds:[],events:[],entries:[],user:null,teamId:null,admin:false,active:null,model:null,projection:null,teams:[],
- picks:new Map(),hero:null,backup:null,dirty:false,adminDraft:[],busy:false,lastRoundKey:null};
+ picks:new Map(),hero:null,backup:null,dirty:false,adminDraft:[],adminDraftRoundId:null,busy:false,lastRoundKey:null,modelInput:null,modelUpdated:0,simulator:null};
 function stageData(stage){return stages.find(x=>x[0]===stage)||stages[0]}
 function openRound(r){return r?.status==='open' && new Date(r.closes_at).getTime()>Date.now()}
 function closedRound(r){return r?.status==='finalized'||(r?.status==='open' && new Date(r.closes_at).getTime()<=Date.now())}
@@ -99,7 +100,8 @@ async function loadModel(){const [teams,results,fixtures,history]=await Promise.
  getRows('match_history','season,season_week,team_a,team_b,score_a,score_b',q=>q.eq('season','2025/26'))
  ]);S.teams=teams;S.projection=calculateProjectedStandings(teams,results);
  const accepted=results.filter(r=>Number(r.gw)<=S.projection.lastCompleted&&String(r.phase).toLowerCase()==='regular');
- S.model=buildModel({teams,results:accepted,fixtures,history});
+ S.modelInput={teams,results:accepted,fixtures,history};S.model=buildModel(S.modelInput);S.modelUpdated=Date.now();
+ if(S.simulator)S.simulator.setSnapshot({originalModel:S.model,data:S.modelInput});
 }
 function chooseActive(){const previous=S.active;
  const available=published();if(!available.length){S.active=null;return}
@@ -108,7 +110,9 @@ function chooseActive(){const previous=S.active;
  if(previous!==S.active || (S.lastRoundKey!==r.id && !S.dirty))fillOwnEntry(r);
 }
 async function update(){if(S.busy)return;
- if(S.dirty){const r=S.rounds.find(x=>x.id===S.active);if(openRound(r))return;S.dirty=false;}S.busy=true;try{await readOfficial();chooseActive();renderOfficial();await refreshLeaderboard();if(S.admin)renderAdmin();}catch(e){console.warn('Playoffs Challenge V4:',e);msg('pc-admin-feedback',e.message,true)}finally{S.busy=false;}}
+ if(S.dirty){const r=S.rounds.find(x=>x.id===S.active);if(openRound(r))return;S.dirty=false;}S.busy=true;try{await readOfficial();chooseActive();renderOfficial();await refreshLeaderboard();
+ if(S.admin && Date.now()-S.modelUpdated>5*60*1000)await loadModel();
+ if(S.admin && !$('pc-tab-admin').classList.contains('active'))renderAdmin();}catch(e){console.warn('Playoffs Challenge V4:',e);msg('pc-admin-feedback',e.message,true)}finally{S.busy=false;}}
 function initialDraft(round){let rows=roundEvents(round.id);
  if(rows.length)return rows.map(e=>({...e}));
  return Array.from({length:stageData(round.stage)[2]},(_,i)=>({kind:'match',slot:i+1,home_name:'',away_name:'',q1:'',qx:'',q2:''}));}
@@ -118,7 +122,8 @@ function renderAdmin(){if(!S.admin)return;
  $('pc-admin-stage').innerHTML=S.rounds.map(x=>`<option value="${x.id}">${esc(stageData(x.stage)[1])} · ${x.status}</option>`).join('');$('pc-admin-stage').value=r.id;
  $('pc-admin-deadline').value=localDatetime(r.closes_at);$('pc-admin-deadline').disabled=r.status!=='draft';
  $('pc-admin-draft').hidden=r.status!=='draft';$('pc-admin-grading').hidden=r.status==='draft'||r.status==='finalized';
- S.adminDraft=initialDraft(r);renderAdminDraft(r);
+ if(S.adminDraftRoundId!==r.id){S.adminDraft=initialDraft(r);S.adminDraftRoundId=r.id;}
+ renderAdminDraft(r);S.simulator?.refresh();
  if(r.status!=='draft')renderGrading(r);
 }
 function renderAdminDraft(r){const ms=S.adminDraft.filter(x=>x.kind==='match').sort((a,b)=>a.slot-b.slot);const ps=S.adminDraft.filter(x=>x.kind==='player');
@@ -129,6 +134,7 @@ function renderAdminDraft(r){const ms=S.adminDraft.filter(x=>x.kind==='match').s
  for(const [i,m] of ms.entries()){$('pc-admin-matches').querySelectorAll('[data-admin-match]')[i].querySelector('[data-field="home_name"]').value=m.home_name||'';$('pc-admin-matches').querySelectorAll('[data-admin-match]')[i].querySelector('[data-field="away_name"]').value=m.away_name||'';}
  $('pc-admin-players').innerHTML=ps.map((m,i)=>`<div class="pc-admin-player pc-panel" data-admin-player="${i}"><input placeholder="Nome calciatore" data-player-field="player_name" value="${esc(m.player_name||'')}"><select data-player-field="player_role">${Object.entries(roles).map(([code,label])=>`<option value="${code}" ${code===m.player_role?'selected':''}>${label}</option>`).join('')}</select><select data-player-field="player_event"></select><label>Quota <input type="number" min="1.01" step="0.01" data-player-field="qyes" value="${esc(m.qyes||'')}"></label><button type="button" class="pc-button pc-ghost" data-remove-player="${i}">Rimuovi</button></div>`).join('');
  for(const [i,m] of ps.entries())renderEventChoice($('pc-admin-players').querySelectorAll('[data-admin-player]')[i],m.player_role||'P',m.player_event);
+ S.simulator?.refresh();
 }
 function renderEventChoice(row,role,event){const el=row.querySelector('[data-player-field="player_event"]');el.innerHTML=(roleEvents[role]||roleEvents.P).map(x=>`<option value="${x}">${eventNames[x]}</option>`).join('');if(event&&roleEvents[role]?.includes(event))el.value=event}
 function collectAdminDraft(){const r=S.rounds.find(x=>x.id===Number($('pc-admin-stage').value));if(!r||r.status!=='draft')return;
@@ -138,10 +144,11 @@ function collectAdminDraft(){const r=S.rounds.find(x=>x.id===Number($('pc-admin-
  S.adminDraft=[...matches,...players];
 }
 async function generateOdds(){collectAdminDraft();const r=S.rounds.find(x=>x.id===Number($('pc-admin-stage').value));if(!S.model||!r)return;
+ const adjustedModel=S.simulator?.getQuoteModel()||S.model;
  for(const m of S.adminDraft.filter(x=>x.kind==='match')){if(!m.home_name||!m.away_name||normalizeTeam(m.home_name)===normalizeTeam(m.away_name))continue;
- try{const q=quoteMatch(S.model,m.home_name,m.away_name,r.stage);m.q1=q.q1;m.qx=q.qx;m.q2=q.q2}catch(err){msg('pc-admin-feedback',`Quote ${m.home_name}: ${err.message}`,true)}}renderAdminDraft(r);msg('pc-admin-feedback','Quote generate. Controllale prima della pubblicazione.');}
+ try{const q=quoteMatch(adjustedModel,m.home_name,m.away_name,r.stage);m.q1=q.q1;m.qx=q.qx;m.q2=q.q2}catch(err){msg('pc-admin-feedback',`Quote ${m.home_name}: ${err.message}`,true)}}renderAdminDraft(r);msg('pc-admin-feedback','Quote generate. Controllale prima della pubblicazione.');}
 function seedFromForecast(){collectAdminDraft();const r=S.rounds.find(x=>x.id===Number($('pc-admin-stage').value));if(!r||r.stage!=='ottavi'||!S.projection?.hasSufficientData){msg('pc-admin-feedback','Proiezione disponibile soltanto per gli ottavi.',true);return}
- S.adminDraft.filter(x=>x.kind==='match').forEach((m,i)=>{m.home_name=S.projection.fixtures[i].home.name;m.away_name=S.projection.fixtures[i].away.name;});renderAdminDraft(r);msg('pc-admin-feedback','Ottavi proiettati caricati. Prima di pubblicare, verifica il seeding UFFICIALE.');}
+ S.adminDraft.filter(x=>x.kind==='match').forEach((m,i)=>{m.home_name=S.projection.fixtures[i].home.name;m.away_name=S.projection.fixtures[i].away.name;});renderAdminDraft(r);S.simulator?.refresh();msg('pc-admin-feedback','Ottavi proiettati caricati. Prima di pubblicare, verifica il seeding UFFICIALE.');}
 async function saveAdmin(publish=false){collectAdminDraft();const r=S.rounds.find(x=>x.id===Number($('pc-admin-stage').value));if(!r||r.status!=='draft')return;
  const when=$('pc-admin-deadline').value;if(!when) return msg('pc-admin-feedback','Inserisci prima la scadenza.',true);
  const deadline=new Date(when);if(!Number.isFinite(deadline.getTime())||deadline<=Date.now())return msg('pc-admin-feedback','La scadenza deve essere futura.',true);
@@ -150,7 +157,7 @@ async function saveAdmin(publish=false){collectAdminDraft();const r=S.rounds.fin
  try{let {error}=await supabase.rpc('pc_admin_save_round',{p_round_id:r.id,p_closes_at:deadline.toISOString(),p_events:events});if(error)throw error;
  if(publish){if(!confirm('Pubblicare definitivamente quote ed eventi? Gli allenatori potranno consegnare subito. Dopo la pubblicazione NON potrai più modificare le quote.'))return;
  ({error}=await supabase.rpc('pc_admin_publish_round',{p_round_id:r.id}));if(error)throw error;}
- await readOfficial();renderAdmin();chooseActive();renderOfficial();msg('pc-admin-feedback',publish?'✅ Turno pubblicato ufficialmente!':'✅ Bozza salvata su Supabase.');
+ await readOfficial();S.adminDraftRoundId=null;renderAdmin();chooseActive();renderOfficial();msg('pc-admin-feedback',publish?'✅ Turno pubblicato ufficialmente!':'✅ Bozza salvata su Supabase.');
  }catch(error){msg('pc-admin-feedback',error.message,true)}
 }
 function renderGrading(r){const events=roundEvents(r.id);const canGrade=Date.now()>=new Date(r.closes_at).getTime();$('pc-admin-finalize').disabled=!canGrade;
@@ -174,8 +181,8 @@ function bind(){
  $('pc-official-clear').addEventListener('click',()=>{S.picks.clear();S.hero=null;S.backup=null;S.dirty=true;renderOfficial()});
  $('pc-official-save').addEventListener('click',saveEntry);
  $('pc-admin-stage').addEventListener('change',renderAdmin);
- $('pc-admin-matches').addEventListener('change',collectAdminDraft);
- $('pc-admin-matches').addEventListener('input',collectAdminDraft);
+ $('pc-admin-matches').addEventListener('change',()=>{collectAdminDraft();S.simulator?.refresh()});
+ $('pc-admin-matches').addEventListener('input',()=>{collectAdminDraft();S.simulator?.refresh()});
  $('pc-admin-players').addEventListener('change',e=>{const row=e.target.closest('[data-admin-player]');if(e.target.dataset.playerField==='player_role')renderEventChoice(row,e.target.value);collectAdminDraft()});
  $('pc-admin-players').addEventListener('input',collectAdminDraft);
  $('pc-admin-players').addEventListener('click',e=>{const btn=e.target.closest('[data-remove-player]');if(!btn)return;collectAdminDraft();const r=S.rounds.find(x=>x.id===Number($('pc-admin-stage').value));const players=S.adminDraft.filter(x=>x.kind==='player');const removed=players[Number(btn.dataset.removePlayer)];S.adminDraft=S.adminDraft.filter(x=>x!==removed);renderAdminDraft(r)});
@@ -196,6 +203,27 @@ function bind(){
  $('pc-admin-tab').hidden=!S.admin;
  if(!S.admin && location.hash==='#admin')location.hash='#schedina';
  if(S.admin){document.getElementById('pc-admin-shortcut').querySelector('p').textContent='Gestisci quote, pronostici e omologazioni dal nuovo tab Commissioner, oppure consulta il motore statistico V2.';}
+ if(S.admin){S.simulator=mountCommissionerSimulator({
+   getSnapshot:()=>S.modelInput?{originalModel:S.model,data:S.modelInput}:null,
+   getRound:()=>S.rounds.find(x=>x.id===Number($('pc-admin-stage').value||S.rounds[0]?.id)),
+   getDraftMatches:()=>{collectAdminDraft();return S.adminDraft.filter(x=>x.kind==='match')},
+   getProjectedMatches:()=>S.projection?.hasSufficientData?S.projection.fixtures.map(x=>({slot:x.slot,home_name:x.home.name,away_name:x.away.name})):[],
+   onApply:(odds,weights)=>{
+     const round=S.rounds.find(x=>x.id===Number($('pc-admin-stage').value));
+     if(!round||round.status!=='draft')return;
+     collectAdminDraft();
+     for(const item of odds){const m=S.adminDraft.find(x=>x.kind==='match'&&Number(x.slot)===Number(item.slot));
+       if(!m)continue;
+       if((!m.home_name||!m.away_name)&&round.stage==='ottavi'){
+         m.home_name=item.home_name;m.away_name=item.away_name;
+       }
+       if(normalizeTeam(m.home_name)!==normalizeTeam(item.home_name)||normalizeTeam(m.away_name)!==normalizeTeam(item.away_name))continue;
+       m.q1=item.q1;m.qx=item.qx;m.q2=item.q2;
+     }
+     renderAdminDraft(round);
+     msg('pc-admin-feedback',`✅ Quote simulate (${weights.historic}% storico · ${weights.season}% stagione · ${weights.recent5}% ultime 5) copiate nella BOZZA. Devi ancora salvarla e pubblicarla. ${round.stage==='ottavi'?'Verifica il seeding ufficiale prima di pubblicare.':''}`);
+   }
+ });}
  bind();await loadModel();await readOfficial();chooseActive();renderOfficial();await refreshLeaderboard();if(S.admin)renderAdmin();
  setInterval(()=>{if(!document.hidden)update()},90000);
  document.addEventListener('visibilitychange',()=>{if(!document.hidden)update()});

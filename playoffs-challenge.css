@@ -176,3 +176,41 @@
 .pc-page button:focus-visible{outline:2px solid #f4d27e;outline-offset:3px}
 @media(max-width:900px){#pc-admin-matches,.pc-player-events{grid-template-columns:1fr}.pc-admin-player{grid-template-columns:1fr 1fr}.pc-admin-player [data-player-field="player_name"]{grid-column:1/-1}.pc-admin-player [data-remove-player]{grid-column:1/-1}}
 @media(max-width:760px){.pc-tabs:has(#pc-admin-tab:not([hidden])){grid-template-columns:repeat(5,minmax(0,1fr))}.pc-tabs .pc-tab{font-size:.63rem}.pc-tabs .pc-tab span{overflow-wrap:anywhere}.pc-round-toolbar{flex-direction:column;align-items:flex-start}.pc-grading-row{grid-template-columns:1fr 1fr}.pc-grading-row strong{grid-column:1/-1}}
+
+/* V5: simulatore pesi, soltanto nel tab Commissioner */
+.pc-page .pc-simulator{border:1px solid #f0c96d70;background:linear-gradient(145deg,#153d68,#0b2848);padding:19px;border-radius:20px;margin:9px 0 25px;box-shadow:0 12px 30px #0002}
+.pc-sim-top{display:flex;align-items:flex-start;justify-content:space-between;gap:14px}
+.pc-sim-top h3{font-size:1.4rem;margin:4px 0 7px;color:#ffdb8e}
+.pc-sim-top p{margin:0;color:#cbdef5;line-height:1.55}
+.pc-sim-top p strong{color:#fff}
+.pc-sim-total{background:#ebc66c;color:#082745;border-radius:999px;padding:9px 13px;font-size:1.1rem;font-weight:950;white-space:nowrap}
+.pc-sim-sliders{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:13px;margin-top:20px}
+.pc-sim-sliders label{display:flex;flex-direction:column;gap:12px;background:#051d36b3;padding:14px;border:1px solid #365f88;border-radius:13px;color:#fff;font-size:.87rem;font-weight:850;min-width:0}
+.pc-sim-sliders label>span{display:flex;flex-direction:column;gap:4px;min-height:51px}
+.pc-sim-sliders small{color:#a6c4df;font-size:.72rem;font-weight:500;line-height:1.35}
+.pc-sim-sliders output{color:#fbe2a8;font-size:1.35rem;font-weight:950;font-variant-numeric:tabular-nums}
+.pc-page .pc-sim-sliders input[type=range]{width:100%;padding:0;background:transparent;border:0;accent-color:#f0c96d;cursor:pointer}
+.pc-sim-actions,.pc-sim-footer{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-top:13px}
+.pc-sim-actions span{font-size:.74rem;color:#a8c8e8}
+.pc-sim-footer p{flex:1 1 240px;color:#a9c8e4;font-size:.79rem;line-height:1.55;margin:0}
+.pc-sim-footer strong{color:#f0d69b}
+.pc-sim-warning{font-size:.81rem;line-height:1.55;color:#f4d7a0;min-height:0;margin-top:10px}
+.pc-sim-results{margin-top:15px;border:1px solid #5079a0;border-radius:14px;overflow:hidden;background:#061c36b8}
+.pc-sim-result-head{display:flex;justify-content:space-between;gap:10px;align-items:center;padding:14px 15px;border-bottom:1px solid #4b7195}
+.pc-sim-result-head strong{color:#f9df9d}
+.pc-sim-result-head span{font-size:.76rem;color:#a8cbe8}
+.pc-sim-fixture{padding:15px;border-bottom:1px solid #315173}
+.pc-sim-fixture:last-child{border-bottom:0}
+.pc-sim-fixture-title{display:flex;justify-content:space-between;gap:10px;align-items:center;margin-bottom:10px}
+.pc-sim-fixture-title strong{color:#fff;font-size:.91rem}
+.pc-sim-fixture-title small{color:#9cbfdf;font-size:.7rem}
+.pc-sim-odds-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}
+.pc-sim-odd{border:1px solid #406486;background:#0e3559;padding:10px 7px;border-radius:10px;text-align:center;min-width:0}
+.pc-sim-odd>span{display:block;color:#b5d0eb;font-weight:900;margin-bottom:4px}
+.pc-sim-odd>strong{display:block;color:#ffe2a0;font-size:1.1rem;white-space:nowrap}
+.pc-sim-odd>small{display:block;color:#c1d4ea;margin-top:4px;font-size:.67rem}
+.pc-sim-odd>em{display:block;font-size:.7rem;font-weight:850;font-style:normal;margin-top:6px;color:#b5cedf}
+.pc-sim-odd>em.increase{color:#94e6ad}.pc-sim-odd>em.decrease{color:#ffc0ac}
+.pc-sim-empty{padding:20px;color:#aac9e8;line-height:1.5}
+@media(max-width:850px){.pc-sim-sliders{grid-template-columns:1fr}.pc-sim-sliders label{gap:8px}.pc-sim-sliders label>span{min-height:0}}
+@media(max-width:550px){.pc-page .pc-simulator{padding:14px}.pc-sim-top h3{font-size:1.15rem}.pc-sim-odd{padding:9px 3px}.pc-sim-odd>strong{font-size:.95rem}.pc-sim-result-head{align-items:flex-start;flex-direction:column}.pc-sim-fixture-title{flex-direction:column;align-items:flex-start}}

@@ -90,7 +90,23 @@ function weightedSamples(rows, latestRound, decay) {
  * L'algoritmo usa fantapunti neutri: per le prime 14 GW 2026/27 sottrae il +2
  * ai valori delle franchigie in casa identificati nel calendario.
  */
-export function buildModel({ teams = [], results = [], fixtures = [], history = [] } = {}) {
+// Modalita' alternativa, ESCLUSIVAMENTE per il simulatore admin.
+// Pesi percentuali trasparenti. La chiamata buildModel() senza weights
+// continua ad usare l'algoritmo originale senza modifiche.
+export const SIMULATOR_DEFAULT_WEIGHTS = Object.freeze({ historic: 10, season: 60, recent5: 30 });
+
+export function validateSimulatorWeights(weights) {
+  const keys = ['historic', 'season', 'recent5'];
+  if (!weights || keys.some(k => !Number.isInteger(Number(weights[k])) || Number(weights[k]) < 0 || Number(weights[k]) > 100)) {
+    throw new Error('I tre pesi devono essere percentuali intere tra 0 e 100.');
+  }
+  const total = keys.reduce((sum, key) => sum + Number(weights[key]), 0);
+  if (total !== 100) throw new Error('Le percentuali devono sommare esattamente il 100%.');
+  return Object.fromEntries(keys.map(k => [k, Number(weights[k])]));
+}
+
+export function buildModel({ teams = [], results = [], fixtures = [], history = [], weights = null } = {}) {
+  const tunedWeights = weights === null ? null : validateSimulatorWeights(weights);
   const fixturesAtHome = new Set();
   for (const fixture of fixtures) {
     const gw = num(fixture.gw);
@@ -156,11 +172,28 @@ export function buildModel({ teams = [], results = [], fixtures = [], history = 
     // mentre la media di Lega fornisce 2 partite di regolarizzazione.
     const oldWeight = old.count ? Math.min(2, old.weight * 0.12) : 0;
     const neutralWeight = 2;
-    const expected = (
+    const originalExpected = (
       (recent.average ?? 0) * recent.weight +
       (old.average ?? 0) * oldWeight +
       currentMean * neutralWeight
     ) / Math.max(1e-8, recent.weight + oldWeight + neutralWeight);
+
+    // Stagione intera e ultime 5 sono due viste degli stessi dati: dichiarato
+    // in interfaccia, cosi' non si spacciano per campioni indipendenti.
+    const seasonAverage = curr.length ? mean(curr.map(r => r.points)) : null;
+    const recentFiveRows = curr.slice(-5);
+    const recentFiveAverage = recentFiveRows.length ? mean(recentFiveRows.map(r => r.points)) : null;
+    const sources = {
+      historic: old.average,
+      season: seasonAverage,
+      recent5: recentFiveAverage
+    };
+    const missingSources = tunedWeights ? Object.keys(tunedWeights).filter(k => tunedWeights[k] > 0 && !Number.isFinite(sources[k])) : [];
+    const usable = tunedWeights ? Object.keys(tunedWeights).filter(k => tunedWeights[k] > 0 && Number.isFinite(sources[k])) : [];
+    const availableWeight = usable.reduce((sum,k) => sum + (tunedWeights?.[k]||0), 0);
+    const expected = !tunedWeights ? originalExpected :
+      availableWeight > 0 ? usable.reduce((sum,k) => sum + sources[k] * tunedWeights[k], 0) / availableWeight :
+      (seasonAverage ?? recentFiveAverage ?? old.average ?? currentMean);
 
     // Varianza della franchigia regolarizzata sulla dispersione della Lega.
     const currPoints = curr.map(r => r.points);
@@ -176,6 +209,11 @@ export function buildModel({ teams = [], results = [], fixtures = [], history = 
       historyGames: hist.length,
       recentAverage: recent.average,
       historicAverage: old.average,
+      seasonAverage,
+      recentFiveAverage,
+      recentFiveGames: recentFiveRows.length,
+      missingSources,
+      availableWeight: tunedWeights ? availableWeight : null,
       expected,
       volatility,
       confidence: curr.length >= 12 ? 'alta' : curr.length >= 6 ? 'media' : 'bassa'
@@ -190,7 +228,9 @@ export function buildModel({ teams = [], results = [], fixtures = [], history = 
       latestRound: maxRound,
       leagueAverage: currentMean,
       leagueSd: baseSd,
-      deBiasedHomeScores: true
+      deBiasedHomeScores: true,
+      simulatorWeights: tunedWeights,
+      simulatorMode: Boolean(tunedWeights)
     },
     teams: teams.map(t => t.name),
     profiles

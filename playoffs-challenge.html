@@ -277,6 +277,22 @@
         <div class="pc-field"><label for="pc-admin-stage">Turno da gestire</label><select id="pc-admin-stage"></select></div>
         <div class="pc-field"><label for="pc-admin-deadline">Scadenza schedine (ora locale)</label><input id="pc-admin-deadline" type="datetime-local"/></div>
         <div id="pc-admin-draft">
+          <section class="pc-simulator" id="pc-weight-simulator" aria-label="Simulatore quote del Commissioner">
+            <div class="pc-sim-top"><div><div class="pc-kicker">LABORATORIO QUOTE 1X2</div><h3>🎚️ Simulatore dei pesi</h3>
+            <p>Modifica quanto contano i dati: le quote si aggiornano <strong>in tempo reale</strong>. Il simulatore non salva né pubblica niente.</p></div>
+            <span class="pc-sim-total" id="pc-sim-total">100%</span></div>
+            <div class="pc-sim-sliders">
+              <label for="pc-weight-historic"><span>📚 Storico 2025/26 <small>Rose della stagione precedente</small></span><output id="pc-weight-historic-value">10%</output><input id="pc-weight-historic" data-weight="historic" type="range" min="0" max="100" step="1" value="10"/></label>
+              <label for="pc-weight-season"><span>📅 Stagione 2026/27 <small>Media di tutte le giornate completate</small></span><output id="pc-weight-season-value">60%</output><input id="pc-weight-season" data-weight="season" type="range" min="0" max="100" step="1" value="60"/></label>
+              <label for="pc-weight-recent5"><span>🔥 Ultime 5 giornate <small>Forma recente nella stagione attuale</small></span><output id="pc-weight-recent5-value">30%</output><input id="pc-weight-recent5" data-weight="recent5" type="range" min="0" max="100" step="1" value="30"/></label>
+            </div>
+            <div class="pc-sim-actions"><span>Totale fisso al 100%: spostando un cursore gli altri si adattano automaticamente.</span>
+            <button type="button" class="pc-button pc-ghost" id="pc-sim-reset">↺ Ripristina 10 / 60 / 30</button></div>
+            <div class="pc-sim-warning" id="pc-sim-warning" role="status"></div>
+            <div class="pc-sim-results"><div class="pc-sim-result-head"><strong>Prima e dopo, partita per partita</strong><span>Originale V4 → Simulazione</span></div><div id="pc-sim-games"></div></div>
+            <div class="pc-sim-footer"><p><strong>Nota:</strong> stagione e ultime 5 si sovrappongono volutamente. Se manca lo storico di una squadra, il peso viene ridistribuito fra i dati disponibili. Le quote calciatori non cambiano.</p>
+            <button type="button" class="pc-button pc-primary" id="pc-sim-apply">✓ Applica quote simulate alla bozza</button></div>
+          </section>
           <h3>⚔️ Incontri del turno</h3><p>Modalità automatica: premi «Genera quote». Modalità manuale: modifica direttamente le quote 1, X e 2 nei campi sottostanti.</p><div id="pc-admin-matches"></div>
           <div class="pc-entry-actions"><button class="pc-button pc-ghost" type="button" id="pc-admin-forecast">Carica gli ottavi provvisori</button><button class="pc-button pc-primary" type="button" id="pc-admin-generate">⚡ Genera quote</button></div>
           <h3>⚽ Palinsesto eventi calciatori</h3><p>Inserisci gli eventi verificabili. Per ora le quote dei calciatori sono manuali; non saranno pubblicati valori inventati dal sistema.</p>
@@ -290,11 +306,11 @@
     </section>
 
     <section class="pc-panel pc-admin-shortcut" id="pc-admin-shortcut" hidden><div><div class="pc-kicker">AREA AMMINISTRATORI</div><h3>Bookmaker degli Eroi</h3><p>Quote automatiche 1X2, revisione manuale ed esportazione della bozza. Da qui puoi anche aprire il motore statistico V2 per analizzare le quote.</p></div><a class="pc-button pc-ghost" href="bookmaker-playoff.html">⚙️ Apri il Bookmaker</a></section>
-    <footer class="pc-footer">Playoffs Challenge · V4 integrata con Supabase · Schedine valide soltanto nei turni ufficialmente aperti</footer>
+    <footer class="pc-footer">Playoffs Challenge · V5 simulatore quote · Supabase · Schedine valide soltanto nei turni ufficialmente aperti</footer>
   </div>
 </main>
-<script type="module" src="playoffs-challenge.js?v=pc-v4-1"></script>
-<script type="module" src="playoffs-challenge-live.js?v=pc-v4-1"></script>
+<script type="module" src="playoffs-challenge.js?v=pc-v5-1"></script>
+<script type="module" src="playoffs-challenge-live.js?v=pc-v5-1"></script>
 <script src="mobile-nav.js?v=20261007-bottom4"></script>
 <script src="navbar.js?v=20261015"></script>
 <script type="module" src="admin-nav.js?v=1"></script>
