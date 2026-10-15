@@ -281,3 +281,18 @@
 .pc-pb-settings-help{color:#dce8f8;font-size:.84rem;line-height:1.55;margin:14px 0}
 .pc-pb-settings .pc-button{font-size:.86rem}
 @media(max-width:730px){.pc-pb-settings-grid{grid-template-columns:1fr}.pc-pb-settings{padding:14px}}
+
+/* V9 Archivio statistiche Fantacalcio */
+.pc-history-upload{margin:22px 0;border:1px solid rgba(101,181,210,.5);background:linear-gradient(140deg,#082b4c,#123e62)}
+.pc-history-upload h3{color:#f6d89d;margin:8px 0 10px}
+.pc-history-upload p{font-size:.87rem;line-height:1.6;color:#d4e2f3}
+.pc-history-grid{display:grid;grid-template-columns:minmax(130px,1fr) minmax(110px,.6fr) minmax(250px,1.7fr);gap:12px;align-items:end}
+.pc-history-grid label{display:grid;gap:7px;font-size:.83rem;font-weight:700;color:#e6edf8}
+.pc-history-grid select,.pc-history-grid input{width:100%;box-sizing:border-box;max-width:100%;min-height:43px;background:#f8faff;border:1px solid #a8bad0;border-radius:9px;color:#183554;padding:7px;font-size:.9rem}
+.pc-history-grid input[type=file]{padding:9px 7px}
+.pc-history-hint{font-size:.75rem!important;color:#a7c6e1!important}
+.pc-pb-history-table{max-width:100%;overflow:auto;margin:12px 0}
+.pc-pb-history-table table{border-collapse:collapse;width:100%;font-size:.82rem}
+.pc-pb-history-table td,.pc-pb-history-table th{padding:7px 11px;border-bottom:1px solid #496c8b;text-align:left;white-space:nowrap}
+.pc-pb-history-table th{color:#ffdb8d}
+@media(max-width:740px){.pc-history-grid{grid-template-columns:1fr}.pc-history-upload{padding:15px}}
