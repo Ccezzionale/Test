@@ -1,0 +1,268 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#07152b" />
+  <meta name="robots" content="noindex,nofollow" />
+  <title>Playoffs Challenge | Lega degli Eroi</title>
+  <link rel="icon" href="icon-192.png" type="image/png" />
+  <link rel="stylesheet" href="navbar.css?v=20261015" />
+  <link rel="stylesheet" href="playoffs-challenge.css?v=pc-v3-1" />
+</head>
+<body class="pc-page">
+<nav class="site-nav">
+<div class="nav-inner">
+<div class="nav-left">
+<span aria-label="Apri menu" class="hamburger" id="hamburger">☰</span>
+<button aria-label="Apri menu" class="mobile-nav-title" id="mobile-nav-title" type="button">
+<span class="mobile-nav-logo">
+<img alt="" src="icon-192.png"/>
+</span>
+<span>Lega degli Eroi</span>
+<span class="mobile-nav-caret">▾</span>
+</button>
+<a aria-label="Home" class="brand-home desktop-home-link" href="index.html">
+<img alt="" class="nav-home-icon" src="icons/nav/home.webp"/>
+</a>
+</div>
+<ul class="navbar" id="mainMenu">
+<!-- ROSE NORMALE: visibile ai non-admin -->
+<li class="dropdown" id="nav-rose-normal">
+<a class="toggle-submenu" href="#">
+    Rose <span class="caret">▾</span>
+</a>
+<ul class="submenu">
+<li>
+<a href="rose.html">
+        Rose Squadre
+      </a>
+</li>
+<li>
+<a href="franchigie.html">
+        Franchigie
+      </a>
+</li>
+</ul>
+</li>
+<!-- ROSE ADMIN: visibile solo agli admin -->
+<li class="dropdown" id="nav-rose-admin" style="display:none;">
+<a class="toggle-submenu" href="#">
+    Rose <span class="caret">▾</span>
+</a>
+<ul class="submenu">
+<li>
+<a href="rose.html">
+        Rose Squadre
+      </a>
+</li>
+<li>
+<a href="franchigie.html">
+        Franchigie
+      </a>
+</li>
+<li>
+<a href="admin-rose.html">
+        Admin Rose
+      </a>
+</li>
+<li>
+<a href="admin-gazzetta.html">
+        Admin Gazzetta
+      </a>
+</li>
+</ul>
+</li>
+<li class="dropdown">
+<a class="toggle-submenu" href="#">
+            Draft <span class="caret">▾</span>
+</a>
+<ul class="submenu">
+<li>
+<a href="pre-draft.html">
+<img alt="" class="menu-icon" src="icons/nav/pre-draft.webp"/>
+                Pre-Draft
+              </a>
+</li>
+<li>
+<a href="draft_championship.html">
+<img alt="" class="menu-icon" src="icons/nav/conf-championship.webp"/>
+                Conf. Championship
+              </a>
+</li>
+<li>
+<a href="draft_conference.html">
+<img alt="" class="menu-icon" src="icons/nav/conf-league.webp"/>
+                Conf. League
+              </a>
+</li>
+<li>
+<a href="dinamico-draft.html">
+<img alt="" class="menu-icon" src="icons/nav/draft-2026.webp"/>
+                Draft 2027-28
+              </a>
+</li>
+</ul>
+</li>
+<li class="dropdown competizioni">
+<a class="toggle-submenu" href="#">
+            Competizioni <span class="caret">▾</span>
+</a>
+<ul class="submenu">
+<li>
+<a href="classifica.html">
+<img alt="" class="menu-icon" src="icons/nav/classifiche.webp"/>
+                Classifiche
+              </a>
+</li>
+<li>
+<a href="playoff.html">
+<img alt="" class="menu-icon" src="icons/nav/playoff.webp"/>
+                Playoff
+              </a>
+</li>
+<li>
+<a href="arena.html">
+<img alt="" class="menu-icon" src="icons/nav/highlander.webp"/>
+                Highlander
+              </a>
+</li>
+<li>
+<a href="crashoutcup.html">
+<img alt="" class="menu-icon" src="icons/nav/crashout-cup.webp"/>
+                Crash Out Cup
+              </a>
+</li>
+<li>
+<a href="crashoutplayoff.html">
+<img alt="" class="menu-icon" src="icons/nav/crashout-playoff.webp"/>
+                Crash Out Cup - Playoff
+              </a>
+</li>
+<li>
+<a href="supercoppa.html">
+<img alt="" class="menu-icon" src="icons/nav/supercoppa.webp"/>
+                Supercoppa
+              </a>
+</li>
+<li>
+<a href="allstar.html">
+<img alt="" class="menu-icon" src="icons/nav/allstar.webp"/>
+                All-Star Game
+              </a>
+</li>
+<li>
+<a href="statistiche.html">
+<img alt="" class="menu-icon" src="icons/nav/statistiche.webp"/>
+                Statistiche
+              </a>
+</li>
+</ul>
+</li>
+<li><a href="waiver.html">Waiver Wire</a></li>
+<li>
+<a href="hall-of-fame.html">Hall of Fame</a>
+</li>
+<li><a href="regolamento.html">Regolamento</a></li>
+</ul>
+<div class="nav-right hero-actions">
+<a aria-label="Trade Room" class="btn-hero trade-badge" href="trade-room.html" id="trade-badge">
+<img alt="" class="action-icon" src="icons/nav/trade-room.webp"/>
+<span class="btn-label">Trade Room</span>
+</a>
+<a aria-label="Login" class="btn-hero" href="login.html" id="login-btn" style="display:none;">
+<img alt="" class="action-icon" src="icons/nav/login-logout.webp"/>
+<span class="btn-label">Login</span>
+</a>
+<button aria-label="Logout" class="btn-hero" id="logout-btn" style="display:none;" type="button">
+<img alt="" class="action-icon" src="icons/nav/login-logout.webp"/>
+<span class="btn-label">Logout</span>
+</button>
+<button aria-label="Centro notifiche" class="btn-hero warning" id="attiva-notifiche-btn" type="button">
+<img alt="" class="action-icon" src="icons/nav/notifications.webp"/>
+<span class="btn-label">Notifiche</span>
+</button>
+</div>
+</div>
+</nav>
+<main class="pc-shell">
+  <section class="pc-hero">
+    <div class="pc-hero-copy">
+      <div class="pc-eyebrow"><span class="pc-live-dot"></span> LEGA DEGLI EROI · 2026/27</div>
+      <h1>PLAYOFFS<br/><span>CHALLENGE</span></h1>
+      <p>Il campionato può finire. La caccia alle scelte Draft continua per tutte e 16 le franchigie.</p>
+      <div class="pc-hero-chips"><span>🏟️ 5 turni</span><span>🎯 Fino a 40 pronostici</span><span>⭐ HERO PICK</span></div>
+    </div>
+    <div class="pc-trophy" aria-hidden="true"><span>🏆</span><strong>ROAD TO<br/>THE DRAFT</strong></div>
+    <div class="pc-hero-rewards">
+      <div><small>VINCITORE ASSOLUTO</small><strong>Scelta extra dopo il Round 6</strong></div>
+      <div><small>MIGLIORE DELL'ALTRA CONFERENCE</small><strong>Scelta extra dopo il Round 8</strong></div>
+    </div>
+  </section>
+
+  <div id="pc-loading" class="pc-notice" role="status">Verifica accesso e aggiornamento risultati…</div>
+  <div id="pc-error" class="pc-notice pc-error" role="alert" hidden></div>
+  <div id="pc-app" hidden>
+    <section class="pc-status" aria-label="Situazione del campionato">
+      <div><small>STAGIONE</small><strong>2026/27</strong></div>
+      <div><small>REGULAR SEASON</small><strong id="pc-week">— / 29</strong></div>
+      <div><small>STATO CHALLENGE</small><strong id="pc-status">In preparazione</strong></div>
+      <div><small>ULTIMO CONTROLLO</small><strong id="pc-updated">—</strong></div>
+    </section>
+    <nav class="pc-tabs" aria-label="Sezioni Playoffs Challenge" role="tablist">
+      <button class="pc-tab active" data-tab="schedina" role="tab" aria-selected="true" aria-controls="pc-tab-schedina" type="button">🎯 <span>Schedina</span></button>
+      <button class="pc-tab" data-tab="classifiche" role="tab" aria-selected="false" aria-controls="pc-tab-classifiche" type="button">📊 <span>Classifiche</span></button>
+      <button class="pc-tab" data-tab="calendario" role="tab" aria-selected="false" aria-controls="pc-tab-calendario" type="button">📅 <span>Calendario</span></button>
+      <button class="pc-tab" data-tab="regole" role="tab" aria-selected="false" aria-controls="pc-tab-regole" type="button">📜 <span>Regole</span></button>
+    </nav>
+
+    <section class="pc-tabpanel active" id="pc-tab-schedina" role="tabpanel" aria-label="Schedina Playoffs Challenge">
+      <div class="pc-heading"><div><div class="pc-kicker">ANTEPRIMA DEL PRIMO TURNO</div><h2>La schedina degli ottavi</h2><p>Questi sono gli accoppiamenti <strong>provvisori</strong> secondo la classifica aggiornata. Seleziona un segno e prova la HERO PICK.</p></div><span class="pc-marker" id="pc-progress">0/4</span></div>
+      <div class="pc-alert" id="pc-preliminary-message">🔒 <strong>Simulazione:</strong> i pronostici qui sotto non vengono salvati e non sono schedine ufficiali. La compilazione vera aprirà quando saranno pubblicati palinsesto e quote definitive.</div>
+      <div class="pc-match-list" id="pc-match-list" aria-live="polite"></div>
+      <div class="pc-player-preview pc-panel">
+        <div class="pc-heading compact"><div><div class="pc-kicker">SEZIONE B · EVENTI SERIE A</div><h3>Pronostici sui calciatori</h3><p>Durante gli ottavi potrai scegliere quattro calciatori, uno per ruolo, con eventi quotati: POR, DIF, CEN e ATT.</p></div><span class="pc-small-tag">In preparazione</span></div>
+        <div class="pc-role-grid">
+          <div><span>🧤</span><b>POR</b><small>Clean sheet / Rigore parato</small></div>
+          <div><span>🛡️</span><b>DIF</b><small>Gol / Assist / Clean sheet</small></div>
+          <div><span>🎯</span><b>CEN</b><small>Gol / Assist / Gol o assist</small></div>
+          <div><span>⚽</span><b>ATT</b><small>Gol / Assist / Doppietta</small></div>
+        </div>
+      </div>
+      <div class="pc-submit pc-panel"><div><strong id="pc-demo-points">0,00 pt potenziali</strong><p id="pc-demo-hint">Scegli qualche segno per simulare la schedina. Le quote si sommano, non si moltiplicano.</p></div><div class="pc-submit-actions"><button type="button" class="pc-button pc-ghost" id="pc-clear">Azzera simulazione</button><button type="button" class="pc-button pc-primary" disabled>Consegna non ancora aperta</button></div></div>
+    </section>
+
+    <section class="pc-tabpanel" id="pc-tab-classifiche" role="tabpanel" aria-label="Classifiche Playoffs Challenge" hidden>
+      <div class="pc-heading"><div><div class="pc-kicker">GRADUATORIE</div><h2>La corsa al Draft</h2><p>La classifica Challenge partirà con gli ottavi. Nel frattempo puoi vedere chi entrerebbe nel tabellone.</p></div></div>
+      <div class="pc-panel pc-future-ranking"><span>🏅</span><div><h3>Classifica Playoffs Challenge</h3><p>Non ancora iniziata. Dopo l'omologazione di ogni turno saranno disponibili punti totali, pronostici corretti, HERO PICK e classifiche per Conference.</p></div><strong>In attesa</strong></div>
+      <div class="pc-panel"><div class="pc-heading compact"><div><div class="pc-kicker">PROIEZIONE DA REGULAR SEASON</div><h3>Seeding provvisorio</h3><p id="pc-ranking-note">I primi 12 accedono ai playoff. Gli scontri diretti non ancora risolti rendono l'ordine indicativo.</p></div></div><div class="pc-table-wrap"><table class="pc-table"><thead><tr><th>#</th><th>Franchigia</th><th>PG</th><th>Pt</th><th>FP</th></tr></thead><tbody id="pc-standings"></tbody></table></div></div>
+    </section>
+
+    <section class="pc-tabpanel" id="pc-tab-calendario" role="tabpanel" aria-label="Calendario Playoffs Challenge" hidden>
+      <div class="pc-heading"><div><div class="pc-kicker">CINQUE TURNI · UN'UNICA CLASSIFICA</div><h2>Calendario della Challenge</h2><p>Ogni turno segue la corrispondente giornata di Serie A. Le scadenze saranno comunicate prima dell'apertura delle schedine.</p></div></div>
+      <div class="pc-round-list" id="pc-round-list"></div>
+      <div class="pc-panel pc-calendar-bottom"><div><strong>40 pronostici massimi a franchigia</strong><p>4+4, 4+4, 2+6, 2+6, 2+6. Puoi anche consegnare una schedina incompleta, senza penalità.</p></div><span>5 × 8</span></div>
+    </section>
+
+    <section class="pc-tabpanel" id="pc-tab-regole" role="tabpanel" aria-label="Regole Playoffs Challenge" hidden>
+      <div class="pc-heading"><div><div class="pc-kicker">TUTTO IL REGOLAMENTO, MA SENZA IL CODICE CIVILE</div><h2>Come si gioca</h2><p>In poche righe. Il testo completo resta disponibile nel regolamento ufficiale della Lega.</p></div></div>
+      <div class="pc-rules-grid">
+        <article class="pc-panel"><span>🎯</span><h3>Otto pronostici per turno</h3><p>Pronostichi risultati <strong>1/X/2</strong> delle partite playoff e gli eventi di calciatori di Serie A. Le schedine possono essere incomplete.</p></article>
+        <article class="pc-panel"><span>📈</span><h3>Le quote sono punti</h3><p>Se un pronostico è corretto guadagni i punti corrispondenti alla sua quota. Se sbagli ottieni zero. I punti dei pronostici corretti si <strong>sommano</strong>.</p></article>
+        <article class="pc-panel"><span>⭐</span><h3>HERO PICK</h3><p>Puoi scegliere un pronostico speciale per turno: se corretto vale il <strong>50% di punti in più</strong>. Se sbagli, zero. Prevista una riserva per eventi annullati.</p></article>
+        <article class="pc-panel"><span>🏆</span><h3>Due premi Draft</h3><p>Il vincitore assoluto riceve una scelta dopo il <strong>Round 6</strong>. Il migliore dell'altra Conference ottiene una scelta dopo il <strong>Round 8</strong>, non protetta.</p></article>
+        <article class="pc-panel"><span>🧤</span><h3>Gli eventi dei calciatori</h3><p>Gol, assist, doppiette, clean sheet e rigori parati secondo il ruolo. I clean sheet richiedono almeno <strong>60 minuti</strong> in campo.</p></article>
+        <article class="pc-panel"><span>🔐</span><h3>Quando si chiude</h3><p>La consegna termina prima dell'inizio della prima partita di Serie A del turno. Le quote pubblicate vengono bloccate e ogni turno è omologato dagli amministratori.</p></article>
+      </div>
+      <a class="pc-full-rules" href="regolamento.html#playoffs-challenge">📜 Leggi tutti i 13 articoli del regolamento →</a>
+    </section>
+
+    <section class="pc-panel pc-admin-shortcut" id="pc-admin-shortcut" hidden><div><div class="pc-kicker">AREA AMMINISTRATORI</div><h3>Bookmaker degli Eroi</h3><p>Quote automatiche 1X2, revisione manuale ed esportazione della bozza. La pubblicazione ufficiale non è ancora attiva.</p></div><a class="pc-button pc-ghost" href="bookmaker-playoff.html">⚙️ Apri il Bookmaker</a></section>
+    <footer class="pc-footer">Playoffs Challenge · V3 anteprima · Dati della Lega da Supabase · Nessuna schedina o quota viene ancora salvata</footer>
+  </div>
+</main>
+<script type="module" src="playoffs-challenge.js?v=pc-v3-1"></script>
+<script src="mobile-nav.js?v=20261007-bottom4"></script>
+<script src="navbar.js?v=20261015"></script>
+<script type="module" src="admin-nav.js?v=1"></script>
+</body></html>
