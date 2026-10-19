@@ -297,10 +297,61 @@ async function historicalMeetings(params) {
     });
 }
 
+// Uno storico unico: una partita entra una sola volta anche se è presente
+// sia in match_history sia nei risultati della stagione corrente.
+function normalizedHistoryCompetition(meeting) {
+  const competition = String(meeting.competition || "").trim();
+  const normalized = normalizeTeamName(competition);
+  if (normalized.includes("crashout") || normalized === "coc") return "Crash Out Cup";
+  if (normalized === "confa" || normalized === "conferenceleague") return "Conf A";
+  if (normalized === "confb" || normalized === "conferencechampionship") return "Conf B";
+  if (normalized === "unificata" || normalized === "roundrobin") return "Unificata";
+  return competition;
+}
+
+function historyCompetitionLabel(meeting) {
+  const competition = normalizedHistoryCompetition(meeting);
+  const phase = String(meeting.phase || "").trim();
+  if (competition === "Crash Out Cup") {
+    return /playoff|quarti|semifinal|finale|ottavi/i.test(phase)
+      ? "Crash Out Cup · Playoff"
+      : "Crash Out Cup · Rivalry Games";
+  }
+  if (competition === "Conf A") return "Conference League";
+  if (competition === "Conf B") return "Conference Championship";
+  if (competition === "Unificata") return "Round Robin";
+  return competition || phase || "Competizione";
+}
+
+function isCrashOutHistory(meeting) {
+  return normalizedHistoryCompetition(meeting) === "Crash Out Cup";
+}
+
+function uniqueMeetings(meetings) {
+  const byKey = new Map();
+  meetings.forEach(meeting => {
+    // Non unire competizioni diverse disputate nella stessa giornata.
+    const season = String(meeting.season || "").trim().replace(/^((?:19|20)\d{2})$/, (_, year) => `${year}/${String(Number(year) + 1).slice(-2)}`);
+    const key = [
+      season,
+      normalizedHistoryCompetition(meeting),
+      Number(meeting.seasonWeek) || 0,
+      // Due match con punteggi diversi nella stessa giornata restano distinti.
+      Number(meeting.pointsHome),
+      Number(meeting.pointsAway)
+    ].join("|");
+    const previous = byKey.get(key);
+    // A parità di match usiamo la versione con casa/trasferta conosciute.
+    if (!previous || (!previous.venueKnown && meeting.venueKnown)) byKey.set(key, meeting);
+  });
+  return [...byKey.values()];
+}
+
 function sortMeetings(meetings) {
-  const seasonOrder = { "2023/24": 1, "2025/26": 2, "2026/27": 3 };
+  // Funziona anche quando aggiungiamo una nuova stagione allo storico.
+  const seasonYear = value => Number(String(value || "").match(/^(?:19|20)\d{2}/)?.[0]) || 9999;
   return [...meetings].sort((a, b) =>
-    (seasonOrder[a.season] || 99) - (seasonOrder[b.season] || 99) || a.seasonWeek - b.seasonWeek
+    seasonYear(a.season) - seasonYear(b.season) || a.seasonWeek - b.seasonWeek
   );
 }
 
@@ -843,7 +894,42 @@ function renderStandings(params, rows, target, completed, roundComplete) {
     </div>`;
 }
 
+// Le etichette sono incluse nel JS: non serve aggiornare match.css.
+function ensureHistoryCompetitionStyles() {
+  if (document.getElementById("mc-history-competition-styles")) return;
+  const style = document.createElement("style");
+  style.id = "mc-history-competition-styles";
+  style.textContent = `
+    .mc-recent-meta .mc-history-competition {
+      display:block;
+      margin-top:4px;
+      color:#65738b;
+      font-size:.59rem;
+      line-height:1.3;
+      font-weight:800;
+      overflow-wrap:anywhere;
+    }
+    .mc-recent-meta .mc-history-competition.is-crashout {
+      display:inline-block;
+      width:max-content;
+      max-width:100%;
+      padding:3px 6px;
+      border:1px solid rgba(241,41,166,.36);
+      border-radius:7px;
+      background:rgba(255,49,223,.12);
+      color:#a91278;
+      font-size:.59rem;
+      line-height:1.2;
+      font-weight:950;
+      letter-spacing:.02em;
+      box-shadow:inset 0 0 0 1px rgba(255,255,255,.25);
+    }
+  `;
+  document.head.appendChild(style);
+}
+
 function renderH2H(params, meetings, targetCompleted) {
+  ensureHistoryCompetitionStyles();
   const stats = h2hStats(meetings);
   document.getElementById("mc-h2h-home-logo").src = teamLogo(params.home);
   document.getElementById("mc-h2h-away-logo").src = teamLogo(params.away);
@@ -876,6 +962,13 @@ function renderH2H(params, meetings, targetCompleted) {
     const leftResult = resultFromPoints(leftPoints, rightPoints);
     const rightResult = leftResult === "V" ? "P" : leftResult === "P" ? "V" : "N";
     const resultClass = result => result === "V" ? "win" : result === "P" ? "loss" : "draw";
+    const isCrashOut = isCrashOutHistory(meeting);
+    const historyLabel = historyCompetitionLabel(meeting);
+    const displayLabel = isCrashOut
+      ? (historyLabel.includes("Playoff") ? "✦ COC Playoff" : "✦ COC")
+      : historyLabel === "Conference League" ? "Conf. League"
+        : historyLabel === "Conference Championship" ? "Conf. Champ."
+        : historyLabel;
     const rowTitle = meeting.venueKnown
       ? `${leftTeam} in trasferta · ${rightTeam} in casa`
       : "Casa/trasferta non disponibile nello storico";
@@ -885,6 +978,7 @@ function renderH2H(params, meetings, targetCompleted) {
         <div class="mc-recent-meta">
           <strong>${escapeHtml(meeting.season)}</strong>
           <span>Giornata ${meeting.seasonWeek}</span>
+          <span class="mc-history-competition ${isCrashOut ? "is-crashout" : ""}" title="${escapeHtml(historyLabel)}">${escapeHtml(displayLabel)}</span>
         </div>
 
         <div class="mc-recent-team mc-recent-team-left" aria-label="${escapeHtml(leftTeam)}${meeting.venueKnown ? " · trasferta" : ""}">
@@ -1024,20 +1118,26 @@ async function initMatchCenter() {
   }
 
   try {
-    const [allRows, history, fixtures] = await Promise.all([
-      params.source === "crashout" ? loadCrashoutMatchRows() : loadResultsRows(),
+    // Carichiamo sia campionato sia Crash Out Cup per gli H2H,
+    // ma usiamo SEMPRE la competizione corrente per risultato e classifica.
+    // Un problema alla fonte secondaria non deve bloccare il Match Center.
+    const primaryIsCrashout = params.source === "crashout";
+    const [rows, history, fixtures, extraHistoryRows] = await Promise.all([
+      primaryIsCrashout ? loadCrashoutMatchRows() : loadResultsRows(),
       historicalMeetings(params),
-      loadLeagueFixtures(params)
+      loadLeagueFixtures(params),
+      (primaryIsCrashout ? loadResultsRows() : loadCrashoutMatchRows())
+        .catch(error => {
+          console.warn("Storico aggiuntivo non disponibile:", error);
+          return [];
+        })
     ]);
-    const rows = params.source === "crashout" && params.matchId
-      ? allRows
-      : allRows;
 
     const target = targetMatch(rows, params);
     const completed = !!target;
     const roundComplete = completed && roundIsComplete(rows, params);
-    const currentMeetings = currentSeasonMeetings(rows, params);
-    const meetings = sortMeetings([...history, ...currentMeetings]);
+    const currentMeetings = currentSeasonMeetings([...rows, ...extraHistoryRows], params);
+    const meetings = sortMeetings(uniqueMeetings([...history, ...currentMeetings]));
 
     document.getElementById("mc-loading").style.display = "none";
     document.getElementById("mc-app").hidden = false;
