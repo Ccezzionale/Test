@@ -2394,3 +2394,43 @@ body::before{
       transparent 84%);
   }
 }
+
+
+/* ============================================================
+   CRASH OUT CUP - SEPARAZIONE LOGHI (DESKTOP, 2026-10-20)
+   Due righe indipendenti e più spazio verticale, senza ridurre
+   le dimensioni dei loghi e senza modificare il layout mobile.
+   ============================================================ */
+@media (min-width:901px) {
+  #bracket .conference .match {
+    /* Tra una sfida e la successiva c'è spazio sufficiente. */
+    height:14.4% !important;
+    padding:6px 10px !important;
+    gap:8px !important;
+    justify-content:center !important;
+  }
+
+  #bracket .conference .team {
+    /* Ciascuno dei due loghi ha la propria riga: non si schiacciano. */
+    flex:0 0 calc((100% - 8px) / 2) !important;
+    height:calc((100% - 8px) / 2) !important;
+    min-height:0 !important;
+    max-height:none !important;
+  }
+
+  #bracket .conference .team.home::after {
+    /* Divisorio delicato, sotto la prima riga e dietro ai loghi. */
+    content:"";
+    position:absolute;
+    height:1px;
+    left:10px;
+    right:10px;
+    bottom:-5px;
+    background:linear-gradient(90deg,
+      transparent,
+      rgba(32,199,255,.24) 30%,
+      rgba(255,49,223,.30) 70%,
+      transparent);
+    pointer-events:none;
+  }
+}
