@@ -398,9 +398,9 @@ async function calculateRivalrySeedsFromSupabase() {
 
   standings.sort((a, b) =>
     b.points - a.points ||
+    b.fantasyPoints - a.fantasyPoints ||
     b.gd - a.gd ||
     b.gf - a.gf ||
-    b.fantasyPoints - a.fantasyPoints ||
     initialRank(a.team) - initialRank(b.team)
   );
 

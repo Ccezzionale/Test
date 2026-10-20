@@ -1166,7 +1166,7 @@ function calculateHomeCrashoutSeeds(rows) {
     if (hg > ag) home.pts += 3; else if (hg < ag) away.pts += 3; else { home.pts += 1; away.pts += 1; }
   });
   return [...records.values()]
-    .sort((a,b) => b.pts-a.pts || (b.gf-b.ga)-(a.gf-a.ga) || b.gf-a.gf || b.fp-a.fp || a.team.localeCompare(b.team))
+    .sort((a,b) => b.pts-a.pts || b.fp-a.fp || (b.gf-b.ga)-(a.gf-a.ga) || b.gf-a.gf || a.team.localeCompare(b.team))
     .map((row,index) => ({ seed:index+1, team:row.team }));
 }
 
