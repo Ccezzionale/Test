@@ -453,23 +453,25 @@ function renderCenter() {
    RENDER DESKTOP ARENA
    ========================= */
 
+// Postazioni sulle terrazze e sui gradini del Colosseo.
+// Coordinate percentuali: restano allineate alla scena su desktop diversi.
 const DESKTOP_ARENA_POSITIONS = [
-  { x: 8,  y: 23 },
-  { x: 16, y: 37 },
-  { x: 14, y: 53 },
-  { x: 12, y: 73 },
-  { x: 24, y: 85 },
-  { x: 36, y: 88 },
-  { x: 48, y: 89 },
-  { x: 60, y: 88 },
-  { x: 72, y: 85 },
-  { x: 88, y: 73 },
-  { x: 86, y: 53 },
-  { x: 84, y: 37 },
-  { x: 92, y: 23 },
-  { x: 74, y: 14 },
-  { x: 50, y: 10 },
-  { x: 26, y: 14 }
+  { x: 7,  y: 34 },  // lato sinistro: terrazza alta
+  { x: 24, y: 24 },  // lato sinistro: balconata in pietra
+  { x: 29, y: 35 },  // lato sinistro: piattaforma centrale
+  { x: 12, y: 57 },  // lato sinistro: grande terrazza bassa
+  { x: 24, y: 57 },  // lato sinistro: grande terrazza bassa
+  { x: 18, y: 85 },  // sinistra: gradoni in primo piano
+  { x: 31, y: 85 },  // sinistra: gradoni in primo piano
+  { x: 43, y: 84 },  // sinistra: bordo della pedana centrale
+  { x: 57, y: 84 },  // destra: bordo della pedana centrale
+  { x: 69, y: 85 },  // destra: gradoni in primo piano
+  { x: 82, y: 85 },  // destra: gradoni in primo piano
+  { x: 76, y: 57 },  // destra: grande terrazza bassa
+  { x: 88, y: 57 },  // destra: grande terrazza bassa
+  { x: 71, y: 35 },  // destra: piattaforma centrale
+  { x: 76, y: 24 },  // destra: balconata in pietra
+  { x: 93, y: 34 }   // destra: terrazza alta
 ];
 
 function renderArenaTeams() {

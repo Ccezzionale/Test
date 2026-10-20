@@ -1783,3 +1783,106 @@ h1 {
     height:136px;
   }
 }
+
+
+/* =========================================================
+   HIGHLANDER DESKTOP ARENA FIX v2
+   Via i riquadri: le mascotte sono personaggi nell'arena,
+   non card. SOLO desktop.
+   ========================================================= */
+@media (min-width: 769px) {
+  .arena .squadra,
+  .arena .squadra.in-gioco,
+  .arena .squadra.eliminata,
+  .arena .squadra.eliminata.recente {
+    border: 0 !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    outline: 0 !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+
+  .arena .squadra::after,
+  .arena .squadra.in-gioco::after {
+    content: none !important;
+    display: none !important;
+    border: 0 !important;
+    box-shadow: none !important;
+  }
+
+  .arena .squadra::before {
+    /* Un'ombra d'appoggio molto tenue, niente cerchio visibile */
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 50%;
+    width: 78%;
+    height: 14px;
+    border-radius: 50%;
+    transform: translateX(-50%);
+    background: rgba(5, 4, 3, .28);
+    filter: blur(8px);
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  .arena .squadra img {
+    position: relative;
+    z-index: 1;
+    display: block;
+    width: 100% !important;
+    height: 100% !important;
+    max-width: none !important;
+    max-height: none !important;
+    object-fit: contain !important;
+    background: transparent !important;
+    filter: drop-shadow(0 9px 8px rgba(0,0,0,.55)) !important;
+  }
+
+  .arena .squadra.in-gioco img {
+    filter:
+      drop-shadow(0 10px 9px rgba(0,0,0,.55))
+      drop-shadow(0 0 5px rgba(255,201,102,.15)) !important;
+  }
+
+  .arena .squadra.eliminata img {
+    filter: grayscale(1) drop-shadow(0 8px 8px rgba(0,0,0,.45)) !important;
+  }
+
+  .arena .squadra.eliminata.recente img {
+    filter:
+      drop-shadow(0 9px 8px rgba(0,0,0,.48))
+      drop-shadow(0 0 6px rgba(255,96,56,.16)) !important;
+  }
+
+  .arena .squadra,
+  .arena .squadra.in-gioco {
+    width: clamp(58px, 7.7vw, 138px) !important;
+    height: clamp(58px, 7.7vw, 138px) !important;
+  }
+
+  .arena .squadra.in-gioco { opacity: 1; }
+  .arena .squadra.eliminata { opacity: .28; }
+  .arena .squadra.eliminata.recente { opacity: .70; }
+
+  #arena-center .eliminata-testo {
+    min-width: 0;
+    width: min(340px, 32vw);
+    max-width: 100%;
+    padding: clamp(8px, 1.1vw, 16px) clamp(10px, 1.5vw, 24px);
+  }
+
+  #arena-center .eliminata-testo .main-name {
+    font-size: clamp(1.1rem, 1.8vw, 2rem);
+  }
+
+  #arena-center .start-emblem {
+    font-size: clamp(2.75rem, 4vw, 4.5rem);
+  }
+
+  #arena-center .centro-caption {
+    font-size: clamp(.7rem, 1.03vw, 1.08rem);
+  }
+}
