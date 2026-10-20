@@ -453,19 +453,50 @@ function renderCenter() {
    RENDER DESKTOP ARENA
    ========================= */
 
+const DESKTOP_ARENA_POSITIONS = [
+  { x: 8,  y: 23 },
+  { x: 16, y: 37 },
+  { x: 14, y: 53 },
+  { x: 12, y: 73 },
+  { x: 24, y: 85 },
+  { x: 36, y: 88 },
+  { x: 48, y: 89 },
+  { x: 60, y: 88 },
+  { x: 72, y: 85 },
+  { x: 88, y: 73 },
+  { x: 86, y: 53 },
+  { x: 84, y: 37 },
+  { x: 92, y: 23 },
+  { x: 74, y: 14 },
+  { x: 50, y: 10 },
+  { x: 26, y: 14 }
+];
+
 function renderArenaTeams() {
   if (!arena) return;
 
   arena.querySelectorAll(".squadra").forEach(el => el.remove());
 
-const cx = 450;
-const cy = 450;
-const r = 350;
+  const isDesktopScene = window.matchMedia("(min-width: 769px)").matches;
+  const width = arena.clientWidth || 900;
+  const height = arena.clientHeight || 900;
 
   squadre.forEach((s, i) => {
-    const angle = (-Math.PI / 2) + (2 * Math.PI / squadre.length) * i;
-    const x = cx + r * Math.cos(angle);
-    const y = cy + r * Math.sin(angle);
+    let x;
+    let y;
+
+    if (isDesktopScene) {
+      const pos = DESKTOP_ARENA_POSITIONS[i % DESKTOP_ARENA_POSITIONS.length];
+      x = (pos.x / 100) * width;
+      y = (pos.y / 100) * height;
+    } else {
+      const cx = width / 2;
+      const cy = height / 2;
+      const r = Math.min(width, height) * 0.39;
+      const angle = (-Math.PI / 2) + (2 * Math.PI / squadre.length) * i;
+      x = cx + r * Math.cos(angle);
+      y = cy + r * Math.sin(angle);
+    }
 
     const div = document.createElement("div");
     div.className = "squadra";
@@ -478,6 +509,7 @@ const r = 350;
     div.style.left = `${x}px`;
     div.style.top = `${y}px`;
     div.title = s.nome;
+    div.setAttribute("aria-label", s.nome);
 
     const img = document.createElement("img");
     setTeamImage(img, s);
@@ -928,6 +960,10 @@ async function refreshArena() {
 
 async function initHighlanderArena() {
   await refreshArena();
+
+  window.addEventListener("resize", () => {
+    renderArenaTeams();
+  });
 
   const isAdmin = await checkIsAdmin();
 
