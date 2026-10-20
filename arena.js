@@ -453,52 +453,25 @@ function renderCenter() {
    RENDER DESKTOP ARENA
    ========================= */
 
-// Postazioni sulle terrazze e sui gradini del Colosseo.
-// Coordinate percentuali: restano allineate alla scena su desktop diversi.
-const DESKTOP_ARENA_POSITIONS = [
-  { x: 7,  y: 34 },  // lato sinistro: terrazza alta
-  { x: 24, y: 24 },  // lato sinistro: balconata in pietra
-  { x: 29, y: 35 },  // lato sinistro: piattaforma centrale
-  { x: 12, y: 57 },  // lato sinistro: grande terrazza bassa
-  { x: 24, y: 57 },  // lato sinistro: grande terrazza bassa
-  { x: 18, y: 85 },  // sinistra: gradoni in primo piano
-  { x: 31, y: 85 },  // sinistra: gradoni in primo piano
-  { x: 43, y: 84 },  // sinistra: bordo della pedana centrale
-  { x: 57, y: 84 },  // destra: bordo della pedana centrale
-  { x: 69, y: 85 },  // destra: gradoni in primo piano
-  { x: 82, y: 85 },  // destra: gradoni in primo piano
-  { x: 76, y: 57 },  // destra: grande terrazza bassa
-  { x: 88, y: 57 },  // destra: grande terrazza bassa
-  { x: 71, y: 35 },  // destra: piattaforma centrale
-  { x: 76, y: 24 },  // destra: balconata in pietra
-  { x: 93, y: 34 }   // destra: terrazza alta
-];
-
 function renderArenaTeams() {
   if (!arena) return;
 
   arena.querySelectorAll(".squadra").forEach(el => el.remove());
 
-  const isDesktopScene = window.matchMedia("(min-width: 769px)").matches;
-  const width = arena.clientWidth || 900;
-  const height = arena.clientHeight || 900;
+  // Cerchio ordinato sul desktop, con raggio proporzionale alla nuova scena panoramica.
+  // Il mobile usa la sua dashboard indipendente e conserva le coordinate originali.
+  const scenaDesktop = window.matchMedia('(min-width: 769px)').matches;
+  const width = scenaDesktop ? arena.clientWidth : 900;
+  const height = scenaDesktop ? arena.clientHeight : 900;
+  const cx = width / 2;
+  const cy = height * (scenaDesktop ? 0.515 : 0.5);
+  const rx = scenaDesktop ? width * 0.405 : 350;
+  const ry = scenaDesktop ? height * 0.355 : 350;
 
   squadre.forEach((s, i) => {
-    let x;
-    let y;
-
-    if (isDesktopScene) {
-      const pos = DESKTOP_ARENA_POSITIONS[i % DESKTOP_ARENA_POSITIONS.length];
-      x = (pos.x / 100) * width;
-      y = (pos.y / 100) * height;
-    } else {
-      const cx = width / 2;
-      const cy = height / 2;
-      const r = Math.min(width, height) * 0.39;
-      const angle = (-Math.PI / 2) + (2 * Math.PI / squadre.length) * i;
-      x = cx + r * Math.cos(angle);
-      y = cy + r * Math.sin(angle);
-    }
+    const angle = (-Math.PI / 2) + (2 * Math.PI / squadre.length) * i;
+    const x = cx + rx * Math.cos(angle);
+    const y = cy + ry * Math.sin(angle);
 
     const div = document.createElement("div");
     div.className = "squadra";
@@ -511,7 +484,6 @@ function renderArenaTeams() {
     div.style.left = `${x}px`;
     div.style.top = `${y}px`;
     div.title = s.nome;
-    div.setAttribute("aria-label", s.nome);
 
     const img = document.createElement("img");
     setTeamImage(img, s);
@@ -963,8 +935,14 @@ async function refreshArena() {
 async function initHighlanderArena() {
   await refreshArena();
 
-  window.addEventListener("resize", () => {
-    renderArenaTeams();
+  // Mantiene le 16 mascotte allineate all'anello anche ridimensionando il desktop.
+  let arenaResizeFrame = 0;
+  window.addEventListener('resize', () => {
+    if (arenaResizeFrame) window.cancelAnimationFrame(arenaResizeFrame);
+    arenaResizeFrame = window.requestAnimationFrame(() => {
+      arenaResizeFrame = 0;
+      if (squadre.length) renderArenaTeams();
+    });
   });
 
   const isAdmin = await checkIsAdmin();

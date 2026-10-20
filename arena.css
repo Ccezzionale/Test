@@ -1597,292 +1597,206 @@ h1 {
 }
 
 
-/* =========================================================
-   HIGHLANDER DESKTOP SCENIC ARENA — v1
-   Mobile untouched
-   ========================================================= */
+/* ===========================================================
+   HIGHLANDER — CERCHIO EPICO, SOLO DESKTOP (2026-10-20)
+   Mobile conservato identico; Supabase e logica eliminazioni intatti.
+   =========================================================== */
 @media (min-width: 769px) {
-  .arena-page{
-    padding: 18px 20px 44px;
+  .arena-page {
+    padding: 16px 16px 52px;
   }
 
-  .arena-shell{
-    width:min(1680px, 100%);
-    margin:0 auto 22px;
+  .arena-shell {
+    width: min(1640px, 100%);
+    margin: 0 auto 24px;
   }
 
-  .arena-glow{
-    display:none;
+  .arena-glow {
+    display: none;
   }
 
-  .arena{
-    width:100%;
-    height:auto;
-    aspect-ratio:1672 / 941;
-    border-radius:32px;
-    border:1px solid rgba(255,215,0,.18);
-    overflow:hidden;
+  .arena {
+    position: relative;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 1672 / 941;
+    margin: 0 auto;
+    overflow: hidden;
+    border: 1px solid rgba(245, 206, 123, .35);
+    border-radius: 26px;
+    isolation: isolate;
     background:
-      linear-gradient(180deg, rgba(16,11,5,.12), rgba(16,11,5,.22)),
-      url("img/highlander-arena-desktop.webp") center center / cover no-repeat;
+      linear-gradient(180deg, rgba(9, 7, 5, .18), rgba(9, 8, 7, .12) 25%, rgba(9, 7, 5, .19) 100%),
+      url('img/highlander-arena-circle.webp') center / cover no-repeat;
     box-shadow:
-      0 26px 54px rgba(0,0,0,.38),
-      0 0 0 1px rgba(255,215,0,.06),
-      inset 0 1px 0 rgba(255,255,255,.05);
+      0 25px 66px rgba(0, 0, 0, .49),
+      0 0 0 1px rgba(255, 218, 124, .10),
+      inset 0 0 45px rgba(0, 0, 0, .16);
   }
 
-  .arena::before,
-  .arena::after{
-    display:none;
-  }
-
-  #arena-center{
-    width:min(33%, 460px);
-    top:52%;
-    left:50%;
-    transform:translate(-50%, -50%);
-    z-index:12;
-  }
-
-  .eliminata-wrapper{
-    gap:14px;
-  }
-
-  .center-ring{
-    display:none;
-  }
-
-  .start-emblem{
-    font-size:4.5rem;
-    filter:drop-shadow(0 6px 14px rgba(0,0,0,.42));
-  }
-
-  .eliminata-logo{
-    width:220px;
-    height:220px;
-    filter:drop-shadow(0 14px 24px rgba(0,0,0,.45));
-  }
-
-  .eliminata-testo{
-    min-width:340px;
-    padding:16px 24px;
-    border-radius:22px;
-    background:
-      linear-gradient(180deg, rgba(10,14,22,.92), rgba(8,10,16,.88));
-    border:1px solid rgba(255,211,107,.34);
-    box-shadow:
-      0 14px 30px rgba(0,0,0,.32),
-      0 0 24px rgba(255,188,64,.10),
-      inset 0 1px 0 rgba(255,255,255,.06);
-  }
-
-  .eliminata-testo .label-top{
-    font-size:1rem;
-    letter-spacing:.8px;
-  }
-
-  .eliminata-testo .main-name{
-    font-size:2rem;
-    line-height:1.02;
-  }
-
-  .centro-caption{
-    margin-top:0;
-    font-size:1.08rem;
-    padding:8px 16px;
-    border-radius:999px;
-    background:rgba(11,12,16,.62);
-    box-shadow:0 10px 24px rgba(0,0,0,.22);
-  }
-
-  .arena .squadra{
-    width:118px;
-    height:118px;
-    border:none;
-    border-radius:0;
-    background:transparent;
-    box-shadow:none;
-    backdrop-filter:none;
-    z-index:4;
-  }
-
-  .arena .squadra::before{
-    content:"";
-    position:absolute;
-    left:50%;
-    bottom:-5px;
-    width:70%;
-    height:16px;
-    transform:translateX(-50%);
-    border-radius:50%;
-    background:radial-gradient(circle, rgba(0,0,0,.40), transparent 70%);
-    filter:blur(4px);
-    z-index:-1;
-  }
-
-  .arena .squadra::after{
-    display:none !important;
-  }
-
-  .arena .squadra img{
-    width:100%;
-    height:100%;
-    max-width:100%;
-    max-height:100%;
-    object-fit:contain;
-    filter:drop-shadow(0 10px 18px rgba(0,0,0,.34));
-  }
-
-  .arena .squadra.in-gioco{
-    width:126px;
-    height:126px;
-    z-index:9;
-    filter:none;
-  }
-
-  .arena .squadra.in-gioco img{
-    filter:drop-shadow(0 12px 18px rgba(0,0,0,.36)) drop-shadow(0 0 16px rgba(255,204,102,.18));
-  }
-
-  .squadra.eliminata{
-    opacity:.38;
-    filter:grayscale(100%) saturate(.55);
-  }
-
-  .squadra.eliminata.recente{
-    opacity:.78;
-    filter:grayscale(.2) saturate(.95);
-  }
-
-  .squadra.eliminata img{
-    filter:drop-shadow(0 10px 18px rgba(0,0,0,.40));
-  }
-
-  .squadra.eliminata.recente img{
-    filter:drop-shadow(0 12px 22px rgba(0,0,0,.40)) drop-shadow(0 0 14px rgba(255,96,56,.20));
-  }
-
-  .arena .squadra:hover{
-    transform:translate(-50%, -50%) scale(1.08);
-  }
-
-  .arena-panels{
-    width:min(1280px, 100%);
-    margin-top:14px;
-  }
-}
-
-@media (min-width: 1200px) {
-  .arena .squadra{
-    width:126px;
-    height:126px;
-  }
-
-  .arena .squadra.in-gioco{
-    width:136px;
-    height:136px;
-  }
-}
-
-
-/* =========================================================
-   HIGHLANDER DESKTOP ARENA FIX v2
-   Via i riquadri: le mascotte sono personaggi nell'arena,
-   non card. SOLO desktop.
-   ========================================================= */
-@media (min-width: 769px) {
-  .arena .squadra,
-  .arena .squadra.in-gioco,
-  .arena .squadra.eliminata,
-  .arena .squadra.eliminata.recente {
-    border: 0 !important;
-    border-radius: 0 !important;
-    background: transparent !important;
-    box-shadow: none !important;
-    outline: 0 !important;
-    backdrop-filter: none !important;
-    -webkit-backdrop-filter: none !important;
-  }
-
-  .arena .squadra::after,
-  .arena .squadra.in-gioco::after {
-    content: none !important;
-    display: none !important;
-    border: 0 !important;
-    box-shadow: none !important;
-  }
-
-  .arena .squadra::before {
-    /* Un'ombra d'appoggio molto tenue, niente cerchio visibile */
+  /* Due anelli veri del layout. Nessuna carta o mascotte disegnata nello sfondo. */
+  .arena::before {
     content: '';
     position: absolute;
-    bottom: -2px;
-    left: 50%;
-    width: 78%;
-    height: 14px;
+    z-index: 1;
+    inset: 14.5% 9.5% 12.5%;
+    border: 2px solid rgba(255, 218, 121, .65);
     border-radius: 50%;
-    transform: translateX(-50%);
-    background: rgba(5, 4, 3, .28);
-    filter: blur(8px);
-    z-index: 0;
+    background:
+      radial-gradient(ellipse, rgba(13, 7, 3, .18) 0%, transparent 65%);
+    box-shadow:
+      0 0 13px rgba(255, 187, 61, .38),
+      inset 0 0 17px rgba(255, 187, 61, .26),
+      0 0 0 8px rgba(35, 16, 5, .08);
+    pointer-events: none;
+  }
+
+  .arena::after {
+    content: '';
+    position: absolute;
+    z-index: 1;
+    inset: 23% 20% 21%;
+    border: 1px solid rgba(255, 219, 130, .25);
+    border-radius: 50%;
+    box-shadow: 0 0 22px rgba(255, 193, 89, .15);
+    pointer-events: none;
+  }
+
+  /* Mascotte ordinate su anello, con un medaglione discreto e leggibile. */
+  .arena .squadra,
+  .arena .squadra.in-gioco,
+  .arena .squadra.eliminata {
+    width: clamp(58px, 7.2vw, 116px);
+    height: clamp(58px, 7.2vw, 116px);
+    border: 1px solid rgba(242, 200, 100, .44);
+    border-radius: 50%;
+    background:
+      radial-gradient(circle at 34% 20%, rgba(255, 228, 164, .22), transparent 58%),
+      rgba(17, 12, 10, .70);
+    backdrop-filter: blur(5px);
+    box-shadow:
+      0 7px 22px rgba(0, 0, 0, .40),
+      inset 0 0 15px rgba(255, 215, 125, .07);
+    overflow: visible;
+    z-index: 5;
+  }
+
+  .arena .squadra.in-gioco {
+    border-color: rgba(255, 219, 116, .82);
+    box-shadow:
+      0 0 17px rgba(255, 191, 62, .38),
+      0 10px 24px rgba(0, 0, 0, .42),
+      inset 0 0 12px rgba(255, 212, 100, .08);
+  }
+
+  .arena .squadra.in-gioco::after {
+    content: '';
+    position: absolute;
+    inset: -4px;
+    border-radius: 50%;
+    border: 1px solid rgba(255, 223, 136, .26);
+    box-shadow: 0 0 12px rgba(255, 192, 71, .15);
     pointer-events: none;
   }
 
   .arena .squadra img {
-    position: relative;
-    z-index: 1;
-    display: block;
-    width: 100% !important;
-    height: 100% !important;
-    max-width: none !important;
-    max-height: none !important;
-    object-fit: contain !important;
-    background: transparent !important;
-    filter: drop-shadow(0 9px 8px rgba(0,0,0,.55)) !important;
+    width: 102%;
+    height: 102%;
+    max-width: none;
+    max-height: none;
+    object-fit: contain;
+    filter: drop-shadow(0 5px 9px rgba(0, 0, 0, .38));
   }
 
-  .arena .squadra.in-gioco img {
-    filter:
-      drop-shadow(0 10px 9px rgba(0,0,0,.55))
-      drop-shadow(0 0 5px rgba(255,201,102,.15)) !important;
+  .arena .squadra.eliminata {
+    opacity: .32;
+    filter: grayscale(100%);
+    border-color: rgba(175, 161, 137, .28);
+    box-shadow: 0 7px 16px rgba(0, 0, 0, .38);
   }
 
-  .arena .squadra.eliminata img {
-    filter: grayscale(1) drop-shadow(0 8px 8px rgba(0,0,0,.45)) !important;
+  .arena .squadra.eliminata.recente {
+    opacity: .79;
+    filter: grayscale(32%);
+    border-color: rgba(255, 111, 67, .85);
+    box-shadow: 0 0 22px rgba(255, 89, 46, .30), 0 7px 18px rgba(0, 0, 0, .38);
   }
 
-  .arena .squadra.eliminata.recente img {
-    filter:
-      drop-shadow(0 9px 8px rgba(0,0,0,.48))
-      drop-shadow(0 0 6px rgba(255,96,56,.16)) !important;
+  #arena-center {
+    z-index: 8;
+    top: 51.5%;
+    width: min(32%, 460px);
+    padding: 8px;
+    transform: translate(-50%, -50%);
   }
 
-  .arena .squadra,
-  .arena .squadra.in-gioco {
-    width: clamp(58px, 7.7vw, 138px) !important;
-    height: clamp(58px, 7.7vw, 138px) !important;
+  .eliminata-wrapper {
+    gap: 11px;
   }
 
-  .arena .squadra.in-gioco { opacity: 1; }
-  .arena .squadra.eliminata { opacity: .28; }
-  .arena .squadra.eliminata.recente { opacity: .70; }
+  .center-ring {
+    display: none;
+  }
 
-  #arena-center .eliminata-testo {
+  .start-emblem {
+    font-size: clamp(2.4rem, 4.6vw, 4.5rem);
+    line-height: 1;
+    filter: drop-shadow(0 5px 12px rgba(0,0,0,.65));
+  }
+
+  .eliminata-testo {
     min-width: 0;
-    width: min(340px, 32vw);
-    max-width: 100%;
-    padding: clamp(8px, 1.1vw, 16px) clamp(10px, 1.5vw, 24px);
+    width: 100%;
+    padding: 15px 16px;
+    border: 1px solid rgba(255, 213, 110, .53);
+    border-radius: 18px;
+    background: linear-gradient(180deg, rgba(15, 12, 14, .95), rgba(11, 10, 14, .89));
+    box-shadow:
+      0 18px 36px rgba(0, 0, 0, .42),
+      0 0 22px rgba(255, 193, 86, .12),
+      inset 0 1px 0 rgba(255,255,255,.07);
   }
 
-  #arena-center .eliminata-testo .main-name {
-    font-size: clamp(1.1rem, 1.8vw, 2rem);
+  .eliminata-testo .main-name {
+    font-size: clamp(1.1rem, 1.6vw, 1.8rem);
+    line-height: 1.13;
+    text-wrap: balance;
   }
 
-  #arena-center .start-emblem {
-    font-size: clamp(2.75rem, 4vw, 4.5rem);
+  .eliminata-testo .label-top {
+    font-size: clamp(.78rem, .95vw, 1rem);
   }
 
-  #arena-center .centro-caption {
-    font-size: clamp(.7rem, 1.03vw, 1.08rem);
+  .eliminata-logo {
+    width: clamp(92px, 11vw, 175px);
+    height: clamp(92px, 11vw, 175px);
+    border-radius: 18px;
   }
+
+  .centro-caption {
+    padding: 5px 13px;
+    background: rgba(13, 11, 13, .76);
+    border-radius: 50px;
+    font-size: clamp(.72rem, 1.05vw, 1rem);
+  }
+
+  .arena-panels {
+    width: min(1250px, 100%);
+    margin-top: 20px;
+  }
+}
+
+/* Compatto per desktop stretti, senza modificare la dashboard mobile. */
+@media (min-width: 769px) and (max-width: 1060px) {
+  .arena .squadra,
+  .arena .squadra.in-gioco,
+  .arena .squadra.eliminata {
+    width: clamp(54px, 6.6vw, 76px);
+    height: clamp(54px, 6.6vw, 76px);
+  }
+  #arena-center { width: 34%; }
+  .eliminata-testo { padding: 9px 10px; }
+  .eliminata-wrapper { gap: 7px; }
+  .eliminata-testo .main-name { font-size: 1.08rem; }
+  .centro-caption { font-size: .73rem; }
 }
