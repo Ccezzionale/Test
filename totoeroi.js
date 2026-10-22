@@ -7,7 +7,7 @@ const $ = id => document.getElementById(id);
 const state = {
   rounds: [], round: null, fixtures: [], teams: [], user: null, profile: null, adminAuthorized: false,
   resultsRows: [], fallbacks: [], picks: {}, savedPicks: {},
-  publicEntries: [], leaderboard: [], adminFixtures: [], adminResults: {}, gw: 7,
+  publicEntries: [], expandedEntries: new Set(), leaderboard: [], adminFixtures: [], adminResults: {}, gw: 7,
   loading: false, count: 0, timer: null, jackpot: null, jackpotError: null
 };
 const esc = x => String(x ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -195,19 +195,59 @@ function switchTab(name){
 function formatPreview(sign){return ['1','X','2'].includes(sign)?sign:'?';}
 function renderPublicEntries(){
   const el=$('te-public-entries');
-  if(!isPublished()){el.innerHTML='<div class="te-card te-empty">🔒 Le schedine saranno pubbliche dopo la scadenza.</div>';return;}
-  if(!state.publicEntries.length){el.innerHTML='<div class="te-card te-empty">Nessuna schedina inviata per questa giornata.</div>';return;}
-  el.innerHTML=state.publicEntries.map(entry=>{
-    const correct=state.fixtures.filter(f=>isResultKnown(f)&&entry.picks?.[String(f.slot)]===f.result_sign).length;
-    const complete=state.fixtures.length===8 && state.fixtures.every(isResultKnown);
-    const perfect=complete&&correct===8&&state.round?.status==='homologated';
-    return `<article class="te-public-card"><div class="te-public-header"><img src="${esc(logo(entry.team_name))}" alt="" onerror="this.src='icon-192.png';this.onerror=null"><div><strong>${esc(entry.team_name)}</strong><small>${complete?`${correct}/8 corretti`:'In attesa degli esiti ufficiali'}</small></div></div>
+  if(!isPublished()){
+    el.innerHTML='<div class="te-card te-empty">🔒 Le schedine saranno pubbliche dopo la scadenza.</div>';
+    return;
+  }
+  if(!state.publicEntries.length){
+    el.innerHTML='<div class="te-card te-empty">Nessuna schedina inviata per questa giornata.</div>';
+    return;
+  }
+
+  // Risultati e correzioni vengono mostrati soltanto dopo l'omologazione.
+  const complete=state.round?.status==='homologated' && hasEightFixtures() && state.fixtures.every(isResultKnown);
+  el.innerHTML=state.publicEntries.map((entry,index)=>{
+    const correct=complete ? state.fixtures.filter(f=>entry.picks?.[String(f.slot)]===f.result_sign).length : 0;
+    const perfect=complete && correct===8;
+    const expanded=state.expandedEntries.has(String(entry.team_id));
+    const detailId=`te-entry-matches-${state.gw}-${index}`;
+    const details=state.fixtures.map(f=>{
+      const sign=entry.picks?.[String(f.slot)] || '?';
+      const known=complete && isResultKnown(f);
+      const right=known && sign===f.result_sign;
+      return `<div class="te-entry-matchup ${known?(right?'is-correct':'is-wrong'):''}">
+        <div class="te-entry-fixture">
+          <span class="te-entry-number">M${esc(f.slot)}</span>
+          <div class="te-entry-pair">
+            <div class="te-entry-side"><img src="${esc(logo(f.home_name))}" alt="" loading="lazy" onerror="this.src='icon-192.png';this.onerror=null"><span>${esc(f.home_name)}</span></div>
+            <div class="te-entry-side"><img src="${esc(logo(f.away_name))}" alt="" loading="lazy" onerror="this.src='icon-192.png';this.onerror=null"><span>${esc(f.away_name)}</span></div>
+          </div>
+        </div>
+        <div class="te-entry-sign"><small>Pronostico</small><strong>${esc(sign)}</strong></div>
+        <div class="te-entry-outcome ${known?(right?'is-correct':'is-wrong'):''}">
+          <small>Risultato</small><strong>${known?esc(f.result_sign):'—'}</strong>
+          ${known?`<span class="te-entry-verdict">${right?'✓ Esatto':'✕ Errato'}</span>`:''}
+        </div>
+      </div>`;
+    }).join('');
+    return `<article class="te-public-card">
+      <div class="te-public-header"><img src="${esc(logo(entry.team_name))}" alt="" onerror="this.src='icon-192.png';this.onerror=null"><div><strong>${esc(entry.team_name)}</strong><small>${complete?`${correct}/8 corretti`:'In attesa degli esiti ufficiali'}</small></div></div>
       <div class="te-public-picks">${state.fixtures.map(f=>{
         const s=entry.picks?.[String(f.slot)]||'?';
-        return `<span data-match="${f.slot}" title="Match ${f.slot}: ${esc(f.home_name)} - ${esc(f.away_name)}" class="${isResultKnown(f)?(s===f.result_sign?'is-correct':'is-wrong'):''}">${esc(s)}</span>`;
-      }).join('')}</div>${perfect?'<div class="te-public-win">🏆 CACCIATORE DELL’8! Otto pronostici esatti.</div>':''}</article>`;
+        return `<span data-match="${esc(f.slot)}" title="Match ${esc(f.slot)}: ${esc(f.home_name)} - ${esc(f.away_name)}" class="${complete?(s===f.result_sign?'is-correct':'is-wrong'):''}">${esc(s)}</span>`;
+      }).join('')}</div>
+      <button class="te-entry-toggle" type="button" data-te-expand-team="${esc(entry.team_id)}" aria-expanded="${expanded}" aria-controls="${detailId}">
+        <span class="te-entry-toggle-label">${expanded?'Nascondi le 8 sfide':'Mostra le 8 sfide'}</span><span class="te-entry-chevron" aria-hidden="true">⌄</span>
+      </button>
+      <div class="te-entry-matchups" id="${detailId}" ${expanded?'':'hidden'}>
+        ${details}
+        ${complete?'<p class="te-entry-legend">✓ Pronostico corretto · ✕ Pronostico errato</p>':'<p class="te-entry-legend">I risultati appariranno dopo l’omologazione della giornata.</p>'}
+      </div>
+      ${perfect?'<div class="te-public-win">🏆 CACCIATORE DELL’8! Otto pronostici esatti.</div>':''}
+    </article>`;
   }).join('');
 }
+
 function renderRanking(){
   const data=new Map((state.leaderboard||[]).map(r=>[String(r.team_id),r]));
   const items=state.teams.map(t=>({team_id:String(t.id),team_name:t.name,
@@ -283,7 +323,7 @@ async function refreshLeaderboard(){state.leaderboard=await safeRpc('totoeroi_le
 async function loadRound(gw){
   state.gw=Number(gw);
   state.round=state.rounds.find(r=>Number(r.gw)===Number(gw))||null;
-  state.fixtures=[];state.picks={};state.savedPicks={};state.publicEntries=[];state.adminResults={};state.count=0;
+  state.fixtures=[];state.picks={};state.savedPicks={};state.publicEntries=[];state.expandedEntries.clear();state.adminResults={};state.count=0;
   if(state.round){
     const {data,error}=await supabase.from('totoeroi_fixtures').select('*').eq('round_id',state.round.id).order('slot');
     if(error){console.error('Incontri TotoEroi:',error);}
@@ -523,6 +563,19 @@ function setupEvents(){
     const btn=e.target.closest('[data-pick-slot]');if(!btn||!isOpen()||!state.profile?.team_id)return;
     state.picks[String(btn.dataset.pickSlot)]=btn.dataset.pick;
     renderPicks();
+  });
+  $('te-public-entries').addEventListener('click',e=>{
+    const button=e.target.closest('[data-te-expand-team]');
+    if(!button)return;
+    const teamId=button.dataset.teExpandTeam;
+    const panel=$(button.getAttribute('aria-controls'));
+    if(!panel)return;
+    const expanded=button.getAttribute('aria-expanded')!=='true';
+    button.setAttribute('aria-expanded',String(expanded));
+    panel.hidden=!expanded;
+    button.querySelector('.te-entry-toggle-label').textContent=expanded?'Nascondi le 8 sfide':'Mostra le 8 sfide';
+    if(expanded)state.expandedEntries.add(teamId);
+    else state.expandedEntries.delete(teamId);
   });
   $('te-save').addEventListener('click',savePicks);
   $('te-admin-week').addEventListener('change',async e=>loadRound(Number(e.target.value)));

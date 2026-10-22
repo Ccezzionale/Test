@@ -1016,9 +1016,54 @@ body.te-page .te-jackpot-exclusions button{min-height:41px;}
 }
 
 
-/* Nasconde le due righe informative sotto il jackpot */
-body.te-page #te-jackpot-note,
-body.te-page .te-jackpot-aside > small {
-    display: none !important;
+/* V5.6 · Le schedine: dettaglio delle 8 sfide espandibile, desktop e mobile. */
+body.te-page .te-entry-toggle{
+  display:flex;align-items:center;justify-content:center;gap:9px;
+  width:100%;min-height:41px;margin-top:14px;padding:10px 14px;
+  border:1px solid #bbd1e6;border-radius:11px;
+  background:#f6faff;color:#124a81;font-size:13px;font-weight:850;
+  cursor:pointer;transition:background .16s,border-color .16s;
+}
+body.te-page .te-entry-toggle:hover{background:#e9f4ff;border-color:#80b2e0;}
+body.te-page .te-entry-toggle:focus-visible{outline:3px solid #e9b941;outline-offset:2px;}
+body.te-page .te-entry-chevron{display:inline-block;font-size:19px;line-height:12px;transition:transform .15s;}
+body.te-page .te-entry-toggle[aria-expanded="true"] .te-entry-chevron{transform:rotate(180deg);}
+body.te-page .te-entry-matchups{display:grid;gap:7px;margin-top:12px;padding-top:12px;border-top:1px solid #dfe8f3;}
+body.te-page .te-entry-matchups[hidden]{display:none!important;}
+body.te-page .te-entry-matchup{
+  display:grid;grid-template-columns:minmax(0,1fr) 84px 98px;gap:9px;align-items:center;
+  border:1px solid #e1eaf3;background:#fbfdff;border-radius:11px;padding:9px 10px;
+}
+body.te-page .te-entry-matchup.is-correct{border-left:3px solid #32b78a;}
+body.te-page .te-entry-matchup.is-wrong{border-left:3px solid #cbd7e5;}
+body.te-page .te-entry-fixture{display:flex;gap:11px;align-items:flex-start;min-width:0;}
+body.te-page .te-entry-number{flex:0 0 auto;padding:5px 6px;background:#eaf3ff;border-radius:6px;color:#276296;font-size:10px;font-weight:900;}
+body.te-page .te-entry-pair{min-width:0;display:grid;gap:6px;}
+body.te-page .te-entry-side{display:flex;align-items:center;gap:7px;min-width:0;color:#143858;font-size:13px;font-weight:760;line-height:1.22;}
+body.te-page .te-entry-side img{width:25px;height:25px;flex:0 0 25px;object-fit:contain;}
+body.te-page .te-entry-side span{min-width:0;overflow-wrap:break-word;}
+body.te-page .te-entry-sign,body.te-page .te-entry-outcome{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;min-width:0;}
+body.te-page .te-entry-sign small,body.te-page .te-entry-outcome small{color:#6a849e;font-size:10px;}
+body.te-page .te-entry-sign strong{display:grid;place-items:center;width:36px;height:36px;border-radius:9px;background:#e4f0fc;color:#0d528e;font-size:17px;}
+body.te-page .te-entry-outcome strong{font-size:18px;color:#677f99;}
+body.te-page .te-entry-outcome.is-correct strong{color:#07815f;}
+body.te-page .te-entry-outcome.is-wrong strong{color:#ab5762;}
+body.te-page .te-entry-verdict{font-size:10px;font-weight:850;text-align:center;white-space:nowrap;color:#098060;}
+body.te-page .te-entry-outcome.is-wrong .te-entry-verdict{color:#a6515b;}
+body.te-page .te-entry-legend{margin:5px 2px 0;color:#607b97;font-size:11px;line-height:1.4;}
+@media(max-width:740px){
+  body.te-page .te-entry-toggle{margin-top:11px;min-height:44px;font-size:12px;}
+  body.te-page .te-entry-matchup{grid-template-columns:minmax(0,1fr) 52px 60px;gap:5px;padding:9px 6px;}
+  body.te-page .te-entry-fixture{gap:5px;}
+  body.te-page .te-entry-number{font-size:9px;padding:4px;}
+  body.te-page .te-entry-pair{gap:7px;}
+  body.te-page .te-entry-side{font-size:11px;gap:5px;}
+  body.te-page .te-entry-side img{width:21px;height:21px;flex-basis:21px;}
+  body.te-page .te-entry-sign small,body.te-page .te-entry-outcome small{font-size:8px;}
+  body.te-page .te-entry-sign strong{width:32px;height:32px;font-size:15px;}
+  body.te-page .te-entry-outcome strong{font-size:16px;}
+  body.te-page .te-entry-verdict{font-size:9px;white-space:normal;}
 }
 
+/* Nasconde le due righe informative sotto il jackpot (preferenza confermata). */
+body.te-page #te-jackpot-note,body.te-page .te-jackpot-aside > small{display:none!important;}
