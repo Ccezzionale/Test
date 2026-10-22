@@ -7,7 +7,7 @@
 <meta content="#eaf3ff" name="theme-color"/>
 <title>TotoEroi | Lega degli Eroi</title>
 <link href="icon-192.png" rel="icon" type="image/png"/>
-<link href="totoeroi.css?v=ui-v5-3-navbar-20261009" rel="stylesheet"/>
+<link href="totoeroi.css?v=jackpot-20261022" rel="stylesheet"/>
 </head>
 <body class="te-page te-private-test">
 <div aria-live="polite" id="te-private-gate" role="status">
@@ -197,6 +197,19 @@
 <img alt="TotoEroi, La Caccia all'8. Il Mini Titano della Lega degli Eroi: 8 partite, 16 franchigie, una sola missione." decoding="async" fetchpriority="high" height="326" src="img/totoeroi/banner-desktop.webp" width="1118"/>
 </picture>
 </section>
+<section class="te-jackpot-board" aria-label="Jackpot TotoEroi" aria-live="polite">
+  <div class="te-jackpot-main">
+    <div class="te-jackpot-eyebrow">🏆 LA CACCIA ALL'8 · JACKPOT ATTUALE</div>
+    <div class="te-jackpot-price" id="te-jackpot-amount">—</div>
+    <div class="te-jackpot-previous" id="te-jackpot-previous"></div>
+  </div>
+  <div class="te-jackpot-aside">
+    <div class="te-jackpot-topline"><b id="te-jackpot-week">Giornata 8 di 29</b><span>Montepremi stagionale: <strong>112 €</strong></span></div>
+    <div class="te-jackpot-track" aria-hidden="true"><div id="te-jackpot-progress"></div></div>
+    <p id="te-jackpot-note">Caricamento jackpot…</p>
+    <small>14 franchigie · 8 € ciascuna · 22 giornate (8ª–29ª) · circa +5,09 € a giornata</small>
+  </div>
+</section>
 <section aria-label="Stato TotoEroi" class="te-status-board">
 <div class="te-status-item"><div class="te-small">GIORNATA</div><b id="te-round-label">—</b><small id="te-round-phase">Regular Season</small></div>
 <div class="te-status-item"><div class="te-small">PRONOSTICI</div><b id="te-status"><span class="te-dot"></span> In configurazione</b><small id="te-deadline">In attesa dell'admin</small></div>
@@ -244,12 +257,12 @@
 <p><strong>Una schedina per squadra.</strong> Puoi risalvarla e modificarla fino alla scadenza ufficiale indicata nella pagina.</p>
 <p><strong>Chiusura.</strong> Normalmente cinque minuti prima del primo incontro di Serie A. L'admin aggiorna la scadenza per anticipi e turni infrasettimanali.</p>
 <p><strong>Trasparenza.</strong> Le schedine vengono pubblicate solo dopo la chiusura. A quel punto non si possono più modificare.</p>
-<p><strong>Il successo.</strong> Chi indovina tutti gli otto segni realizza l'8/8, obiettivo della Caccia all'8 e del jackpot. La classifica generale assegna un punto per ogni pronostico corretto.</p>
-<p><strong>Jackpot 2026/27.</strong> Il jackpot parte dalla 7ª giornata della stagione 2026/27 e riguarda le 23 giornate rimanenti, dalla 7ª alla 29ª inclusa.</p>
-<p><strong>Contributo 2026/27.</strong> Il contributo è di <strong>8 € per franchigia</strong>, proporzionato alle giornate rimanenti. È incluso nella quota annuale della Lega degli Eroi, senza un pagamento separato per ogni schedina.</p>
-<p><strong>Contributo annuo ordinario.</strong> Per una stagione completa il contributo TotoEroi è di <strong>10 € annui per franchigia</strong>, pari a <strong>160 € complessivi</strong> per le 16 franchigie, ed è incluso nella quota annuale della Lega.</p>
+<p><strong>Il successo.</strong> Chi indovina tutti gli otto segni realizza l'8/8, obiettivo della Caccia all'8. Solo le 14 franchigie aderenti concorrono al jackpot. La classifica generale assegna un punto per ogni pronostico corretto.</p>
+<p><strong>Jackpot 2026/27.</strong> Il jackpot parte dall’8ª giornata 2026/27 e prosegue fino alla 29ª: 22 giornate. Cresce progressivamente se nessuna delle franchigie aderenti indovina gli 8 segni; dopo un 8/8 omologato riparte dalla quota successiva.</p>
+<p><strong>Contributo 2026/27.</strong> Le <strong>14 franchigie aderenti</strong> contribuiscono con <strong>8 € ciascuna</strong>, per un fondo di <strong>112 €</strong>. Le altre due non contribuiscono né concorrono al jackpot. Il contributo è compreso nella quota annuale della Lega (88 € per gli aderenti e 80 € per gli esclusi).</p>
+<p><strong>Contributo annuo ordinario.</strong> Per l’edizione 2026/27 il fondo è fissato a <strong>112 €</strong>, con incremento progressivo medio di <strong>5,09 € a giornata</strong> (centrando il totale al centesimo).</p>
 <p><strong>Calendario e gestione.</strong> TotoEroi si gioca soltanto durante la regular season, fino alla giornata 29. Possibili sospensioni, riaperture e rettifiche sono gestite dall'admin.</p>
-<p class="te-muted">Il contributo e l'avvio del jackpot recepiscono le decisioni approvate dalla Lega. Le modalità specifiche di assegnazione del jackpot devono essere definite nel regolamento ufficiale.</p>
+<p class="te-muted">La ripartizione del jackpot fra più vincitori e la destinazione di un eventuale residuo a fine stagione devono ancora essere definite nel regolamento ufficiale. La quota di una giornata annullata resta nel fondo e passa alla prima giornata valida successiva.</p>
 </div>
 </section>
 <section class="te-panel" hidden="" id="te-panel-admin"><div class="te-section-head"><div><div class="te-section-overline">AREA AMMINISTRATORI</div><h2>Gestione TotoEroi</h2><p>Programma le giornate, gestisci le scadenze e omologa gli esiti ufficiali.</p></div></div><section class="te-card te-admin" hidden="" id="te-admin">
@@ -265,6 +278,13 @@
 <h3 class="te-admin-mini">Incontri (modificabili soltanto in bozza)</h3>
 <div class="te-admin-fixtures" id="te-admin-fixtures"><div class="te-empty">Seleziona una giornata e premi “Precarica 8 partite”.</div></div>
 <div class="te-admin-divider"></div>
+<h3>🏆 Jackpot e franchigie escluse</h3>
+<p class="te-muted">Indica le 2 franchigie escluse dal montepremi. Tutto il resto si calcola dai risultati omologati.</p>
+<div class="te-jackpot-exclusions"><label>Franchigia esclusa 1<select id="te-jackpot-excluded-1"><option value="">Seleziona…</option></select></label>
+<label>Franchigia esclusa 2<select id="te-jackpot-excluded-2"><option value="">Seleziona…</option></select></label>
+<button type="button" class="te-secondary" id="te-jackpot-save-exclusions">Salva esclusioni</button></div>
+<div class="te-admin-feedback" id="te-jackpot-admin-note" role="status"></div>
+<div class="te-admin-divider"></div>
 <h3>Risultati ufficiali e omologazione</h3>
 <p class="te-muted">Dopo la scadenza, importa i risultati dal Match Center, controlla i segni e omologa. Le rettifiche ufficiali possono essere recepite in seguito.</p>
 <div class="te-admin-results" id="te-admin-results"><div class="te-empty">Prima configura una giornata.</div></div>
@@ -272,6 +292,6 @@
 <div class="te-admin-feedback" id="te-admin-message" role="status"></div>
 </section></section></div>
 </main>
-<script src="totoeroi.js?v=public-jackpot-20261014" type="module"></script>
+<script src="totoeroi.js?v=jackpot-20261022" type="module"></script>
 <script src="mobile-nav.js?v=20261007-bottom4"></script><script src="navbar.js?v=20261005-center6"></script><script src="admin-nav.js?v=1" type="module"></script></body>
 </html>

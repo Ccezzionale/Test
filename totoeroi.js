@@ -8,7 +8,7 @@ const state = {
   rounds: [], round: null, fixtures: [], teams: [], user: null, profile: null, adminAuthorized: false,
   resultsRows: [], fallbacks: [], picks: {}, savedPicks: {},
   publicEntries: [], leaderboard: [], adminFixtures: [], adminResults: {}, gw: 7,
-  loading: false, count: 0, timer: null
+  loading: false, count: 0, timer: null, jackpot: null, jackpotError: null
 };
 const esc = x => String(x ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const norm = x => String(x||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]/g,'');
@@ -45,6 +45,86 @@ async function safeRpc(name,args,defaultValue){
     return data;
   }catch(e){console.warn('TotoEroi:',name,e);return defaultValue;}
 }
+const euroCents = value => value == null || !Number.isFinite(Number(value)) ? '—' :
+  (Number(value) / 100).toLocaleString('it-IT',{style:'currency',currency:'EUR'});
+
+function renderJackpot(){
+  const d=state.jackpot;
+  const amount=$('te-jackpot-amount'),note=$('te-jackpot-note'),previous=$('te-jackpot-previous');
+  if(!amount || !note || !previous)return;
+  if(!d){
+    amount.textContent='—';
+    note.textContent=state.jackpotError||'Caricamento jackpot…';
+    previous.textContent='';
+    $('te-jackpot-progress').style.width='0%';
+    return;
+  }
+  amount.textContent=euroCents(d.jackpot_cents);
+  const pct=Math.max(0,Math.min(100,100*(Number(d.jackpot_cents)||0)/11200));
+  $('te-jackpot-progress').style.width=`${pct}%`;
+  $('te-jackpot-week').textContent=d.season_ended?'Regular season conclusa':`Giornata ${d.current_gw} di 29`;
+  if(d.history_pending_configuration){
+    note.textContent='Calcolo in attesa: il Commissioner deve indicare le due franchigie escluse.';
+  }else if(!d.configured){
+    note.textContent='Importo provvisorio: da confermare le due franchigie escluse nel pannello Admin.';
+  }else if(d.season_ended){
+    note.textContent='Stagione conclusa: l’eventuale residuo sarà gestito secondo il regolamento della Lega.';
+  }else{
+    note.textContent='Si accumula senza 8/8 e riparte dalla nuova quota dopo una vincita omologata.';
+  }
+  previous.textContent=d.last_win_gw
+    ? `🏆 Ultimo 8/8: giornata ${d.last_win_gw} · ${euroCents(d.last_award_cents)} · ${d.last_winner_count} ${d.last_winner_count===1?'franchigia vincitrice':'franchigie vincitrici'}`
+    : '🎯 Nessun jackpot ancora assegnato in questa stagione.';
+}
+
+function renderJackpotAdmin(){
+  if(!isAdmin())return;
+  const a=$('te-jackpot-excluded-1'),b=$('te-jackpot-excluded-2');
+  if(!a||!b)return;
+  const teams=state.teams||[];
+  const options='<option value="">Seleziona una franchigia</option>'+teams.map(t=>
+    `<option value="${esc(t.id)}">${esc(t.name)}</option>`).join('');
+  if(a.options.length!==teams.length+1){a.innerHTML=options;b.innerHTML=options;}
+  const excluded=state.jackpot?.excluded_team_ids||[];
+  a.value=excluded[0]||'';
+  b.value=excluded[1]||'';
+  $('te-jackpot-admin-note').textContent=state.jackpot?.configured
+    ? 'Esclusioni salvate. Solo le altre 14 franchigie concorrono al jackpot.'
+    : 'Seleziona le due franchigie che non partecipano al montepremi.';
+}
+
+async function refreshJackpot(){
+  try{
+    const {data,error}=await supabase.rpc('totoeroi_jackpot_status',{p_season:SEASON});
+    if(error)throw error;
+    state.jackpot=data;
+    state.jackpotError=null;
+  }catch(e){
+    console.warn('Jackpot TotoEroi:',e);
+    state.jackpotError='Jackpot non disponibile: manca la funzione SQL su Supabase.';
+  }
+  renderJackpot();
+  renderJackpotAdmin();
+}
+
+async function saveJackpotExclusions(){
+  if(!isAdmin())return;
+  const a=$('te-jackpot-excluded-1').value,b=$('te-jackpot-excluded-2').value;
+  const feedback=$('te-jackpot-admin-note');
+  if(!a||!b||a===b){feedback.textContent='Seleziona due franchigie diverse.';return;}
+  if(!confirm('Confermi che queste due franchigie sono escluse dal jackpot? Il calcolo degli 8/8 verrà aggiornato.'))return;
+  const button=$('te-jackpot-save-exclusions');button.disabled=true;
+  try{
+    const {error}=await supabase.rpc('totoeroi_jackpot_set_exclusions',{
+      p_season:SEASON,p_team_ids:[a,b]
+    });
+    if(error)throw error;
+    await refreshJackpot();
+    feedback.textContent='✅ Esclusioni salvate. Jackpot ricalcolato automaticamente.';
+  }catch(e){feedback.textContent=`Errore: ${e.message||e}`;}
+  finally{button.disabled=false;}
+}
+
 function renderStatus(){
   const r=state.round;
   $('te-round-label').textContent=`Giornata ${state.gw}`;
@@ -168,6 +248,7 @@ function renderAdmin(){
   $('te-admin-note').value=round?.note||'';
   renderAdminFixtures();
   renderAdminResults();
+  renderJackpotAdmin();
   $('te-prefill').disabled=Boolean(round&&round.status!=='draft');
 }
 function renderAdminFixtures(){
@@ -188,7 +269,7 @@ function renderAdminResults(){
   }).join('');
 }
 function adminMessage(str, bad=false){$('te-admin-message').textContent=str;$('te-admin-message').style.color=bad?'#b52121':'#235681';}
-function renderAll(){renderStatus();renderPicks();renderPublicEntries();renderRanking();renderHistory();renderAdmin();}
+function renderAll(){renderStatus();renderPicks();renderPublicEntries();renderRanking();renderHistory();renderAdmin();renderJackpot();}
 
 function pickRound(){
   const open=state.rounds.filter(r=>r.status==='open'&&!isExpired(r)).sort((a,b)=>new Date(a.closes_at)-new Date(b.closes_at));
@@ -421,6 +502,7 @@ async function reloadRounds(gw){
   state.rounds=data||[];
   await refreshLeaderboard();
   await loadRound(gw??pickRound());
+  await refreshJackpot();
 }
 
 async function savePicks(){
@@ -457,6 +539,7 @@ function setupEvents(){
   $('te-import-results').addEventListener('click',importResults);
   $('te-save-results').addEventListener('click',saveResults);
   $('te-homologate').addEventListener('click',homologate);
+  $('te-jackpot-save-exclusions').addEventListener('click',saveJackpotExclusions);
   $('te-history').addEventListener('click',async e=>{
     const btn=e.target.closest('[data-open-gw]');if(!btn)return;
     await loadRound(Number(btn.dataset.openGw));switchTab('entries');window.scrollTo({top:0,behavior:'smooth'});
@@ -471,6 +554,7 @@ function setupEvents(){
   // Un cambio scadenza in admin e' visibile anche agli altri partecipanti
   // senza dover attendere un reload manuale.
   setInterval(async()=>{
+    await refreshJackpot();
     if(!state.round)return;
     try{
       const {data,error}=await supabase.from('totoeroi_rounds')
@@ -544,6 +628,7 @@ async function init(){
     }
     await refreshLeaderboard();
     await loadRound(pickRound());
+    await refreshJackpot();
   }catch(e){
     console.error('Avvio TotoEroi:',e);
     $('te-match-list').innerHTML=`<div class="te-empty">${esc(e.message)}<br>Se il problema persiste, controlla i permessi Supabase delle tabelle e delle funzioni TotoEroi.</div>`;

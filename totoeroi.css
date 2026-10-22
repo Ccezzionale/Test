@@ -985,3 +985,32 @@ body.te-page nav.site-nav *::after {
     max-width: 100%;
   }
 }
+
+/* V5.5: Jackpot 2026/27, coordinato al tema bianco. */
+body.te-page .te-jackpot-board{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.35fr);gap:21px;
+ align-items:center;padding:21px 26px;margin:15px 0 16px;border:1px solid #e6ca7f;border-radius:18px;
+ background:linear-gradient(115deg,#fff9eb 0%,#ffffff 57%);box-shadow:0 8px 24px #926b1314;color:#123b67;}
+body.te-page .te-jackpot-eyebrow{font-size:12px;font-weight:950;letter-spacing:.11em;color:#826017;}
+body.te-page .te-jackpot-price{font-size:clamp(42px,5vw,65px);letter-spacing:-.055em;font-weight:1000;color:#104b85;
+ font-variant-numeric:tabular-nums;line-height:1.22;margin:5px 0;}
+body.te-page .te-jackpot-previous{font-size:12px;font-weight:750;color:#5b7390;line-height:1.5;}
+body.te-page .te-jackpot-aside{min-width:0;}
+body.te-page .te-jackpot-topline{display:flex;align-items:center;justify-content:space-between;gap:8px;color:#2f5277;font-size:13px;}
+body.te-page .te-jackpot-topline b{font-size:14px;color:#0f4476;}
+body.te-page .te-jackpot-topline strong{color:#a16d0a;}
+body.te-page .te-jackpot-track{height:12px;overflow:hidden;border-radius:20px;background:#e6edf5;margin:13px 0;}
+body.te-page #te-jackpot-progress{height:100%;width:0;border-radius:20px;background:linear-gradient(90deg,#1275c4,#f0c14a);transition:width .4s ease;}
+body.te-page #te-jackpot-note{font-size:12px;color:#466786;line-height:1.55;margin:8px 0;}
+body.te-page .te-jackpot-aside>small{color:#6e849b;font-size:11px;line-height:1.5;display:block;}
+body.te-page .te-jackpot-exclusions{display:grid;grid-template-columns:1fr 1fr auto;gap:10px;align-items:end;margin:12px 0;}
+body.te-page .te-jackpot-exclusions label{display:flex;flex-direction:column;gap:7px;font-size:12px;font-weight:850;color:#2e5678;min-width:0;}
+body.te-page .te-jackpot-exclusions select{width:100%;min-width:0;}
+body.te-page .te-jackpot-exclusions button{min-height:41px;}
+@media(max-width:740px){
+ body.te-page .te-jackpot-board{grid-template-columns:minmax(0,1fr);gap:12px;padding:17px 16px;margin:11px 0;border-radius:14px;}
+ body.te-page .te-jackpot-price{font-size:49px;}
+ body.te-page .te-jackpot-eyebrow{font-size:10px;}
+ body.te-page .te-jackpot-topline{font-size:11px;flex-wrap:wrap;}
+ body.te-page .te-jackpot-exclusions{grid-template-columns:minmax(0,1fr);}
+ body.te-page .te-jackpot-exclusions button{width:100%;}
+}
