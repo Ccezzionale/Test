@@ -1014,3 +1014,11 @@ body.te-page .te-jackpot-exclusions button{min-height:41px;}
  body.te-page .te-jackpot-exclusions{grid-template-columns:minmax(0,1fr);}
  body.te-page .te-jackpot-exclusions button{width:100%;}
 }
+
+
+/* Nasconde le due righe informative sotto il jackpot */
+body.te-page #te-jackpot-note,
+body.te-page .te-jackpot-aside > small {
+    display: none !important;
+}
+
