@@ -2,6 +2,16 @@ import { supabase } from './supabase.js';
 import { loadResultsRows } from './results-source.js';
 
 const SEASON = '2026/27';
+const TOTAL_PARTICIPANTS = 14;
+// Le due franchigie non iscritte al TotoEroi 2026/27 (non escluse dalla Lega).
+const DEFAULT_TOTO_EXCLUDED_IDS = new Set([
+  'a3a9c2cd-4b59-4100-892c-e6a97d34b483', // Desperados
+  '1161809c-2cce-4a03-bee2-336ebdc6f690'  // MinneSota Snakes
+]);
+// Se le esclusioni vengono modificate nel Commissioner, prevale Supabase.
+const totoExcludedIds = () => state.jackpot?.configured && Array.isArray(state.jackpot?.excluded_team_ids)
+  ? new Set(state.jackpot.excluded_team_ids.map(String)) : DEFAULT_TOTO_EXCLUDED_IDS;
+const isTotoParticipant = teamId => Boolean(teamId) && !totoExcludedIds().has(String(teamId));
 // Admin verificati da Supabase: stessa autorizzazione usata dalle RLS di TotoEroi.
 const $ = id => document.getElementById(id);
 const state = {
@@ -99,6 +109,8 @@ async function refreshJackpot(){
     if(error)throw error;
     state.jackpot=data;
     state.jackpotError=null;
+    // Riflette subito eventuali aggiornamenti delle esclusioni nelle sezioni TotoEroi.
+    renderStatus();renderPicks();renderRanking();renderPublicEntries();
   }catch(e){
     console.warn('Jackpot TotoEroi:',e);
     state.jackpotError='Jackpot non disponibile: manca la funzione SQL su Supabase.';
@@ -133,7 +145,7 @@ function renderStatus(){
     r.status==='open' && isExpired(r) ? 'Pronostici chiusi' : statusLabels[r.status] || r.status;
   $('te-status').classList.toggle('te-is-open',isOpen());
   $('te-deadline').textContent=r?.closes_at ? `Scadenza: ${timeString(r.closes_at)}` : 'Scadenza non impostata';
-  $('te-entry-count').innerHTML=`${state.count} <em>/ 16</em>`;
+  $('te-entry-count').innerHTML=`${state.count} <em>/ ${TOTAL_PARTICIPANTS}</em>`;
   renderTimer();
 }
 function renderTimer(){
@@ -150,9 +162,11 @@ function pickedCount(){return Object.values(state.picks).filter(p=>['1','X','2']
 function showSaveMessage(message,bad=false){$('te-save-message').textContent=message;$('te-save-message').style.color=bad?'#ff9e96':'#a9bad0';}
 function renderPicks(){
   const list=$('te-match-list');
-  const editable=isOpen() && Boolean(state.profile?.team_id) && hasEightFixtures();
+  const editable=isOpen() && isTotoParticipant(state.profile?.team_id) && hasEightFixtures();
   $('te-team-label').textContent=state.profile?.team_id
-    ? `La schedina di ${state.teams.find(t=>String(t.id)===String(state.profile.team_id))?.name||'tua franchigia'}`
+    ? isTotoParticipant(state.profile.team_id)
+      ? `La schedina di ${state.teams.find(t=>String(t.id)===String(state.profile.team_id))?.name||'tua franchigia'}`
+      : 'TotoEroi · franchigia non aderente'
     : 'Accedi per partecipare';
   if (!state.round){list.innerHTML='<div class="te-empty">La giornata non è ancora stata programmata dal Commissioner.</div>';}
   else if (!state.fixtures.length){list.innerHTML='<div class="te-empty">Nessun incontro configurato per questa giornata.</div>';}
@@ -173,10 +187,14 @@ function renderPicks(){
   const count=pickedCount();
   $('te-progress').textContent=`${count}/8`;
   $('te-save').disabled=!(editable&&count===8);
-  $('te-draft-state').textContent=!state.round ? 'In attesa' :
+  $('te-draft-state').textContent=!isTotoParticipant(state.profile?.team_id) && state.profile?.team_id ? 'Non aderente' :
+    !state.round ? 'In attesa' :
     isOpen() ? (Object.keys(state.savedPicks).length?'Schedina inviata · modificabile':'Selezione in corso') :
     isExpired(state.round)?'Schedina bloccata':'Non aperta';
   if(!state.profile?.team_id){showSaveMessage('Accedi con una franchigia per inviare la schedina.');}
+  else if(!isTotoParticipant(state.profile.team_id)){
+    showSaveMessage('La tua franchigia non aderisce al TotoEroi 2026/27. Puoi consultare incontri e risultati, ma non inviare schedine.');
+  }
   else if(!state.round){showSaveMessage('Giornata non ancora configurata.');}
   else if(isOpen()){
     showSaveMessage(Object.keys(state.savedPicks).length
@@ -195,18 +213,19 @@ function switchTab(name){
 function formatPreview(sign){return ['1','X','2'].includes(sign)?sign:'?';}
 function renderPublicEntries(){
   const el=$('te-public-entries');
+  const entries=state.publicEntries.filter(entry=>isTotoParticipant(entry.team_id));
   if(!isPublished()){
     el.innerHTML='<div class="te-card te-empty">🔒 Le schedine saranno pubbliche dopo la scadenza.</div>';
     return;
   }
-  if(!state.publicEntries.length){
+  if(!entries.length){
     el.innerHTML='<div class="te-card te-empty">Nessuna schedina inviata per questa giornata.</div>';
     return;
   }
 
   // Risultati e correzioni vengono mostrati soltanto dopo l'omologazione.
   const complete=state.round?.status==='homologated' && hasEightFixtures() && state.fixtures.every(isResultKnown);
-  el.innerHTML=state.publicEntries.map((entry,index)=>{
+  el.innerHTML=entries.map((entry,index)=>{
     const correct=complete ? state.fixtures.filter(f=>entry.picks?.[String(f.slot)]===f.result_sign).length : 0;
     const perfect=complete && correct===8;
     const expanded=state.expandedEntries.has(String(entry.team_id));
@@ -249,12 +268,12 @@ function renderPublicEntries(){
 }
 
 function renderRanking(){
-  const data=new Map((state.leaderboard||[]).map(r=>[String(r.team_id),r]));
-  const items=state.teams.map(t=>({team_id:String(t.id),team_name:t.name,
+  const data=new Map((state.leaderboard||[]).filter(r=>isTotoParticipant(r.team_id)).map(r=>[String(r.team_id),r]));
+  const items=state.teams.filter(t=>isTotoParticipant(t.id)).map(t=>({team_id:String(t.id),team_name:t.name,
     points:data.get(String(t.id))?.points||0,
     rounds:data.get(String(t.id))?.rounds||0,
     perfect_eights:data.get(String(t.id))?.perfect_eights||0}));
-  (state.leaderboard||[]).forEach(r=>{if(!items.some(t=>t.team_id===String(r.team_id)))items.push(r);});
+  (state.leaderboard||[]).filter(r=>isTotoParticipant(r.team_id)).forEach(r=>{if(!items.some(t=>t.team_id===String(r.team_id)))items.push(r);});
   items.sort((a,b)=>b.points-a.points||b.perfect_eights-a.perfect_eights||a.team_name.localeCompare(b.team_name));
   if(!items.length){$('te-ranking').innerHTML='<div class="te-empty">Le classifiche appariranno dopo la prima omologazione.</div>';return;}
   $('te-ranking').innerHTML=`<div class="te-ranking-header"><span>#</span><span>Franchigia</span><span>Punti</span><span>Giorn.</span><span>8/8</span></div>${items.map((r,i)=>
@@ -546,7 +565,7 @@ async function reloadRounds(gw){
 }
 
 async function savePicks(){
-  if(!state.round||!isOpen()||pickedCount()!==8||!state.profile?.team_id)return;
+  if(!state.round||!isOpen()||pickedCount()!==8||!isTotoParticipant(state.profile?.team_id))return;
   const btn=$('te-save');btn.disabled=true;
   try{
     const {error}=await supabase.rpc('totoeroi_submit',{p_round_id:state.round.id,p_picks:state.picks});
@@ -560,7 +579,7 @@ function setupEvents(){
     const btn=e.target.closest('[data-te-tab]');if(btn)switchTab(btn.dataset.teTab);
   });
   $('te-match-list').addEventListener('click',e=>{
-    const btn=e.target.closest('[data-pick-slot]');if(!btn||!isOpen()||!state.profile?.team_id)return;
+    const btn=e.target.closest('[data-pick-slot]');if(!btn||!isOpen()||!isTotoParticipant(state.profile?.team_id))return;
     state.picks[String(btn.dataset.pickSlot)]=btn.dataset.pick;
     renderPicks();
   });
