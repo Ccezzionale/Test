@@ -6,7 +6,22 @@
 
 import { supabase } from "./supabase.js";
 
+// Consente all'HTML di riconoscere anche un errore di importazione del modulo.
+window.__allstarModuleStarted = true;
+
 const SEASON = 2027;
+const ALLSTAR_CLIENT_VERSION = "20261027-coach-diagnostics-v1";
+// Questa identificazione raggruppa solo gli eventi di una singola apertura pagina.
+const diagnosticPageInstance = typeof crypto !== "undefined" && typeof crypto.randomUUID === "function"
+  ? crypto.randomUUID()
+  : "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, (ch) => {
+      const n = Math.floor(Math.random() * 16);
+      return (ch === "x" ? n : (n & 3 | 8)).toString(16);
+    });
+let diagnosticEventCount = 0;
+let simulatedTeamId = null;
+let allstarInitialLoadOk = true;
+
 const TOTAL_PLAYERS = 46;
 const PLAYERS_PER_TEAM = 23;
 const AUTO_PICK_COUNT = 10;
@@ -130,8 +145,66 @@ const els = {
   mobileNextPick: document.getElementById("mobileNextPick"),
   mobileNextConference: document.getElementById("mobileNextConference"),
   mobileAutoPicksCard: document.getElementById("mobileAutoPicksCard"),
-  toggleAutoPicksBtn: document.getElementById("toggleAutoPicksBtn")
+  toggleAutoPicksBtn: document.getElementById("toggleAutoPicksBtn"),
+  coachPreviewSelect: document.getElementById("allstarCoachPreviewSelect"),
+  coachPreviewStart: document.getElementById("allstarCoachPreviewStart"),
+  coachPreviewStop: document.getElementById("allstarCoachPreviewStop"),
+  coachPreviewBar: document.getElementById("allstarCoachPreviewBar"),
+  coachPreviewName: document.getElementById("allstarCoachPreviewName"),
+  diagnosticsTeamFilter: document.getElementById("allstarDiagTeamFilter"),
+  diagnosticsRefresh: document.getElementById("allstarDiagRefresh"),
+  diagnosticsStatus: document.getElementById("allstarDiagStatus"),
+  diagnosticsRows: document.getElementById("allstarDiagRows")
 };
+
+// Non tracciare mai password, token, URL completi o messaggi di errore grezzi.
+function getDiagnosticCode(error) {
+  if (!error) return null;
+  const message = String(error.message || "");
+  const timeout = /^Timeout caricamento (.+)$/.exec(message);
+  const code = timeout ? `timeout_${timeout[1]}` : String(error.code || error.name || "unknown_error");
+  return code.replace(/[^a-zA-Z0-9._-]/g, "_").slice(0, 100);
+}
+
+function logAllstarDiagnostic(eventName, level = "info", error = null) {
+  if (diagnosticEventCount >= 24) return;
+  diagnosticEventCount += 1;
+  const pwa = Boolean(window.matchMedia?.("(display-mode: standalone)")?.matches || navigator.standalone === true);
+  const mobile = /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent || "");
+  const payload = {
+    season: SEASON,
+    page_instance: diagnosticPageInstance,
+    event_name: eventName,
+    level,
+    client_version: ALLSTAR_CLIENT_VERSION,
+    client_mode: pwa ? "pwa" : "browser",
+    device_class: mobile ? "mobile" : "desktop",
+    observed_week: stateLoaded ? state.activeWeek : null,
+    diagnostic_code: getDiagnosticCode(error),
+    user_id: currentUser?.id || null,
+    team_id: currentProfile?.team_id || null,
+    simulated_team_id: isAdmin && simulatedTeamId ? simulatedTeamId : null
+  };
+  // Un errore nella telemetria non deve bloccare la pagina o creare un loop.
+  try {
+    Promise.resolve(supabase.from("allstar_client_diagnostics").insert(payload))
+      .then(({ error: insertError }) => {
+        if (insertError) console.warn("All Star: diagnostica non inviata", insertError.code);
+      })
+      .catch(() => {});
+  } catch (_) { /* mai bloccare il caricamento */ }
+}
+
+function getViewingTeam() {
+  return simulatedTeamId ? (teamsById.get(simulatedTeamId) || null) : currentTeam;
+}
+
+window.addEventListener("error", (event) => {
+  logAllstarDiagnostic("js_error", "error", event.error || { name: "script_error" });
+});
+window.addEventListener("unhandledrejection", (event) => {
+  logAllstarDiagnostic("js_rejection", "error", event.reason || { name: "unhandled_rejection" });
+});
 
 init();
 
@@ -139,18 +212,27 @@ async function init() {
   bindEvents();
   setupVotePickers();
   setLoadingUI();
+  logAllstarDiagnostic("page_open");
 
   // Lo stato della votazione deve comparire anche quando login, profilo,
   // giocatori o voti sono lenti/indisponibili. Non bloccarlo dietro getSession().
-  const stateTask = loadState()
-    .then(() => renderPublicAllstarStatus())
+  const stateTask = withLoadTimeout(loadState(), 10000, "stato All Star")
+    .then(() => {
+      renderPublicAllstarStatus();
+      logAllstarDiagnostic("state_ok");
+    })
     .catch((error) => {
+      allstarInitialLoadOk = false;
+      logAllstarDiagnostic("state_error", "error", error);
       console.error("All Star: errore lettura stato:", error);
       showLoadIssue("Impossibile leggere lo stato delle votazioni. Ricarica la pagina; se il problema continua, avvisa l'amministratore.");
     });
 
   const profileTask = withLoadTimeout(loadSessionAndProfile(), 10000, "sessione utente")
+    .then(() => logAllstarDiagnostic(currentUser ? "auth_ok" : "auth_missing", currentUser ? "info" : "warning"))
     .catch((error) => {
+      allstarInitialLoadOk = false;
+      logAllstarDiagnostic("auth_error", "error", error);
       console.warn("All Star: profilo non caricato:", error);
       currentProfile = null;
       currentTeam = null;
@@ -166,14 +248,21 @@ async function init() {
   const teamResult = await withLoadTimeout(loadTeams(), 12000, "squadre")
     .then(() => true)
     .catch((error) => {
+      allstarInitialLoadOk = false;
+      logAllstarDiagnostic("teams_error", "error", error);
       console.error("All Star: errore caricamento squadre:", error);
       showLoadIssue("Non è stato possibile caricare le squadre. Ricarica la pagina per poter votare.");
       return false;
     });
 
+  // La conference e le opzioni di anteprima dipendono dalla tabella squadre.
+  if (teamResult) setupUserControls();
+
   const playerResult = await withLoadTimeout(loadPlayers(), 12000, "giocatori")
     .then(() => true)
     .catch((error) => {
+      allstarInitialLoadOk = false;
+      logAllstarDiagnostic("players_error", "error", error);
       console.error("All Star: errore caricamento giocatori:", error);
       showLoadIssue("Non è stato possibile caricare il listone dei giocatori. Ricarica la pagina per poter votare.");
       return false;
@@ -187,10 +276,14 @@ async function init() {
   ]);
 
   if (votesResult.status === "rejected") {
+    allstarInitialLoadOk = false;
+    logAllstarDiagnostic("votes_error", "error", votesResult.reason);
     console.error("All Star: errore caricamento voti:", votesResult.reason);
     showLoadIssue("Classifiche dei voti momentaneamente non disponibili. Ricarica la pagina.");
   }
   if (picksResult.status === "rejected") {
+    allstarInitialLoadOk = false;
+    logAllstarDiagnostic("picks_error", "error", picksResult.reason);
     console.error("All Star: errore caricamento draft:", picksResult.reason);
     showLoadIssue("Dati del draft momentaneamente non disponibili. Ricarica la pagina.");
   }
@@ -203,6 +296,8 @@ async function init() {
   populateFilters();
   hydrateVotePickersFromSavedVotes();
   if (stateLoaded) renderAll();
+  logAllstarDiagnostic(allstarInitialLoadOk && allstarReadyToVote ? "init_ok" : "init_partial", allstarInitialLoadOk && allstarReadyToVote ? "info" : "warning");
+  if (isAdmin) refreshAllstarDiagnostics();
 
   subscribeRealtime();
   startAutoWeekTicker();
@@ -226,7 +321,7 @@ function showLoadIssue(message) {
 
 function updateVoteSubmitAvailability() {
   const submit = els.voteForm?.querySelector('[type="submit"]');
-  if (submit) submit.disabled = !allstarReadyToVote;
+  if (submit) submit.disabled = !allstarReadyToVote || Boolean(simulatedTeamId);
 }
 
 function renderPublicAllstarStatus() {
@@ -246,6 +341,7 @@ function startAllstarStateRefresh() {
       await withLoadTimeout(loadState(), 10000, "stato All Star");
       renderAll();
     } catch (error) {
+      logAllstarDiagnostic("refresh_error", "warning", error);
       console.warn("All Star: sincronizzazione stato non riuscita:", error);
       if (!stateLoaded) showLoadIssue("Stato delle votazioni non disponibile. Controlla la connessione e ricarica la pagina.");
     }
@@ -298,6 +394,10 @@ els.clearFiltersBtn?.addEventListener("click", () => {
   els.toggleDraftBtn?.addEventListener("click", toggleDraftOpen);
   els.undoPickBtn?.addEventListener("click", undoLastPick);
   els.resetDraftBtn?.addEventListener("click", resetDraft);
+  els.coachPreviewStart?.addEventListener("click", startCoachPreview);
+  els.coachPreviewStop?.addEventListener("click", stopCoachPreview);
+  els.diagnosticsRefresh?.addEventListener("click", refreshAllstarDiagnostics);
+  els.diagnosticsTeamFilter?.addEventListener("change", refreshAllstarDiagnostics);
 }
 
 function setLoadingUI() {
@@ -367,6 +467,7 @@ async function loadTeams() {
 
   teamsById = new Map((data || []).map((team) => [team.id, team]));
   currentTeam = currentProfile?.team_id ? teamsById.get(currentProfile.team_id) : null;
+  populateAllstarAdminTeamLists();
 }
 
 async function loadState() {
@@ -592,37 +693,114 @@ function normalizeState(rawState) {
 }
 
 function setupUserControls() {
-  if (els.voterConference && currentTeam?.conference) {
-    els.voterConference.value = currentTeam.conference;
+  if (els.voterConference && getViewingTeam()?.conference) {
+    els.voterConference.value = getViewingTeam().conference;
     els.voterConference.disabled = true;
   }
 
   if (els.adminPanel) {
-    els.adminPanel.style.display = isAdmin ? "" : "none";
+    els.adminPanel.style.display = isAdmin && !simulatedTeamId ? "" : "none";
   }
 
   const adminMobileTab = document.querySelector('[data-allstar-tab="admin"]');
-  if (adminMobileTab) adminMobileTab.style.display = isAdmin ? "" : "none";
+  if (adminMobileTab) adminMobileTab.style.display = isAdmin && !simulatedTeamId ? "" : "none";
 
   const mobileTabs = document.querySelector(".mobile-allstar-tabs");
-  mobileTabs?.classList.toggle("has-admin", isAdmin);
+  mobileTabs?.classList.toggle("has-admin", isAdmin && !simulatedTeamId);
 
   // Il live apre di default sulla Conference dell'utente, ma resta sempre commutabile.
-  if (isValidConference(currentTeam?.conference)) {
-    mobileLiveConference = currentTeam.conference;
+  if (isValidConference(getViewingTeam()?.conference)) {
+    mobileLiveConference = getViewingTeam().conference;
   }
 
   if (els.demoVotesBtn) {
-    els.demoVotesBtn.style.display = isAdmin ? "" : "none";
+    els.demoVotesBtn.style.display = isAdmin && !simulatedTeamId ? "" : "none";
     els.demoVotesBtn.textContent = "Demo disattivata";
   }
 
-  if (els.resetVotesBtn) els.resetVotesBtn.style.display = isAdmin ? "" : "none";
-  if (els.adminResetVotesBtn) els.adminResetVotesBtn.style.display = isAdmin ? "" : "none";
+  if (els.resetVotesBtn) els.resetVotesBtn.style.display = isAdmin && !simulatedTeamId ? "" : "none";
+  if (els.adminResetVotesBtn) els.adminResetVotesBtn.style.display = isAdmin && !simulatedTeamId ? "" : "none";
+}
+
+function populateAllstarAdminTeamLists() {
+  if (!isAdmin) return;
+  const options = [...teamsById.values()].sort((a, b) => a.name.localeCompare(b.name, "it"));
+  const addOptions = (select, placeholder) => {
+    if (!select) return;
+    const selected = select.value;
+    select.innerHTML = `<option value="">${placeholder}</option>` + options.map(team =>
+      `<option value="${escapeAttr(team.id)}">${escapeHtml(team.name)}</option>`
+    ).join("");
+    if ([...select.options].some(option => option.value === selected)) select.value = selected;
+  };
+  addOptions(els.coachPreviewSelect, "Scegli una squadra");
+  addOptions(els.diagnosticsTeamFilter, "Tutte le squadre");
+}
+
+function startCoachPreview() {
+  if (!isAdmin) return;
+  const candidate = els.coachPreviewSelect?.value;
+  const team = candidate && teamsById.get(candidate);
+  if (!team) {
+    alert("Seleziona prima la squadra da simulare.");
+    return;
+  }
+  simulatedTeamId = team.id;
+  logAllstarDiagnostic("simulation_on");
+  refreshCoachPreview();
+  document.querySelector('[data-allstar-tab="vote"]')?.click();
+  els.coachPreviewBar?.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+function stopCoachPreview() {
+  if (!isAdmin || !simulatedTeamId) return;
+  logAllstarDiagnostic("simulation_off");
+  simulatedTeamId = null;
+  refreshCoachPreview();
+}
+
+function refreshCoachPreview() {
+  if (els.coachPreviewBar) els.coachPreviewBar.hidden = !simulatedTeamId;
+  if (els.coachPreviewName) els.coachPreviewName.textContent = getViewingTeam()?.name || "";
+  if (els.voteFeedback) els.voteFeedback.textContent = "";
+  setupUserControls();
+  hydrateVotePickersFromSavedVotes();
+  updateVoteSubmitAvailability();
+  renderAll();
+}
+
+async function refreshAllstarDiagnostics() {
+  if (!isAdmin || !els.diagnosticsRows) return;
+  if (els.diagnosticsStatus) els.diagnosticsStatus.textContent = "Caricamento diagnostica...";
+  try {
+    let query = supabase.from("allstar_client_diagnostics")
+      .select("created_at,event_name,level,client_version,client_mode,device_class,observed_week,diagnostic_code,team_id,simulated_team_id")
+      .order("created_at", { ascending: false }).limit(60);
+    if (els.diagnosticsTeamFilter?.value) query = query.eq("team_id", els.diagnosticsTeamFilter.value);
+    const { data, error } = await withLoadTimeout(query, 10000, "diagnostica");
+    if (error) throw error;
+    if (els.diagnosticsStatus) els.diagnosticsStatus.textContent = `${(data || []).length} eventi recenti. Se la sessione è assente, la squadra non è identificabile.`;
+    els.diagnosticsRows.innerHTML = (data || []).map(event => {
+      const team = teamsById.get(event.team_id)?.name || (event.team_id ? "Squadra sconosciuta" : "Sessione non identificata");
+      const stamp = new Date(event.created_at).toLocaleString("it-IT", { day:"2-digit", month:"2-digit", hour:"2-digit",minute:"2-digit" });
+      const code = event.diagnostic_code ? ` (${escapeHtml(event.diagnostic_code)})` : "";
+      return `<tr>
+        <td>${escapeHtml(stamp)}</td>
+        <td>${escapeHtml(team)}</td>
+        <td>${escapeHtml(event.client_mode)} / ${escapeHtml(event.device_class)}</td>
+        <td>${escapeHtml(event.event_name)}${code}</td>
+        <td>${escapeHtml(event.observed_week ?? "-")}</td>
+        <td>${escapeHtml(event.client_version)}</td>
+      </tr>`;
+    }).join("") || '<tr><td colspan="6">Nessun evento ancora registrato dalla nuova versione.</td></tr>';
+  } catch (error) {
+    console.warn("All Star: diagnostica non disponibile:", error);
+    if (els.diagnosticsStatus) els.diagnosticsStatus.textContent = "Impossibile leggere la diagnostica. Controlla i permessi admin o la connessione.";
+  }
 }
 
 async function startAllStarVoting() {
-  if (!isAdmin) return;
+  if (!isAdmin || simulatedTeamId) return;
 
   if (state.votingStartedAt) {
     alert("Il conteggio delle votazioni è già stato avviato. Per ripartire dalla Week 1 usa prima ‘Reset votazioni e timer’.");
@@ -811,11 +989,11 @@ function closeAllVotePickerResults() {
 
 function hydrateVotePickersFromSavedVotes() {
   VOTE_SLOT_CONFIG.forEach((config) => clearVotePicker(config.inputId));
-  if (!currentTeam?.id) return;
+  if (!getViewingTeam()?.id) return;
 
   const slotToInput = new Map(VOTE_SLOT_CONFIG.map((config) => [config.slot, config.inputId]));
   votes
-    .filter((vote) => vote.week === state.activeWeek && vote.voterTeamId === currentTeam.id)
+    .filter((vote) => vote.week === state.activeWeek && vote.voterTeamId === getViewingTeam().id)
     .forEach((vote) => {
       const inputId = slotToInput.get(vote.slot);
       if (inputId && vote.playerId) selectVotePlayer(inputId, vote.playerId, false);
@@ -824,6 +1002,11 @@ function hydrateVotePickersFromSavedVotes() {
 
 async function handleVoteSubmit(event) {
   event.preventDefault();
+
+  if (simulatedTeamId) {
+    showVoteFeedback("Modalità test: nessun voto può essere inviato. Premi Esci dalla simulazione per tornare al tuo account.", true);
+    return;
+  }
 
   if (!allstarReadyToVote) {
     showVoteFeedback("I dati del voto non sono ancora pronti. Controlla il login e ricarica la pagina.", true);
@@ -895,7 +1078,7 @@ function showVoteFeedback(message, isError = false) {
 }
 
 async function resetVotes() {
-  if (!isAdmin) return;
+  if (!isAdmin || simulatedTeamId) return;
 
   const ok = confirm(
     "Vuoi cancellare tutti i voti e azzerare il conteggio delle settimane? Dopo il reset dovrai premere ‘Inizia votazioni All Star’ per far partire la Week 1."
@@ -1181,7 +1364,7 @@ function renderAutoPickPreview(leagueTotals, champTotals) {
 }
 
 async function generateAutoPicksFromVotes() {
-  if (!isAdmin) return;
+  if (!isAdmin || simulatedTeamId) return;
 
   if (!state.firstConference) {
     alert("Prima scegli la Conference vincitrice: il draft partirà dalla Conference opposta.");
@@ -1240,7 +1423,7 @@ async function generateAutoPicksFromVotes() {
 }
 
 async function saveWinnerConferenceFromAdmin() {
-  if (!isAdmin) return;
+  if (!isAdmin || simulatedTeamId) return;
 
   const winner = els.winnerConferenceSelect?.value || "";
   if (!isValidConference(winner)) {
@@ -1344,8 +1527,8 @@ function renderMobileLiveSummary(forcedTab = null) {
   const activeTab = forcedTab || document.querySelector(".mobile-tab-btn.is-active")?.dataset.allstarTab || "vote";
   const leagueLeader = getVoteTotalsByConference(CONFERENCE_LEAGUE)[0];
   const champLeader = getVoteTotalsByConference(CONFERENCE_CHAMPIONSHIP)[0];
-  const myVoteCount = currentTeam?.id
-    ? new Set(votes.filter((vote) => vote.week === state.activeWeek && vote.voterTeamId === currentTeam.id).map((vote) => vote.slot)).size
+  const myVoteCount = getViewingTeam()?.id
+    ? new Set(votes.filter((vote) => vote.week === state.activeWeek && vote.voterTeamId === getViewingTeam().id).map((vote) => vote.slot)).size
     : 0;
 
   let kicker = "ALL STAR LIVE";
@@ -1355,7 +1538,9 @@ function renderMobileLiveSummary(forcedTab = null) {
   if (activeTab === "vote") {
     kicker = `WEEK ${state.activeWeek} · VOTAZIONE`;
     if (state.votingOpen) {
-      text = currentTeam?.id ? `Hai votato ${myVoteCount}/5 giocatori` : "Votazioni aperte";
+      text = getViewingTeam()?.id
+        ? (simulatedTeamId ? `${getViewingTeam().name}: ${myVoteCount}/5 voti questa week` : `Hai votato ${myVoteCount}/5 giocatori`)
+        : "Votazioni aperte";
       chip = myVoteCount >= 5 ? "FATTO" : "APERTA";
     } else {
       text = "Votazioni chiuse";
@@ -1429,7 +1614,7 @@ function renderHeader() {
   }
 
   if (els.openPickModalBtn) {
-    const canPick = isAdmin && state.isOpen && state.firstConference && !completed;
+    const canPick = isAdmin && !simulatedTeamId && state.isOpen && state.firstConference && !completed;
     els.openPickModalBtn.disabled = !canPick;
     if (completed) {
       els.openPickModalBtn.textContent = "Draft completato";
@@ -1561,7 +1746,7 @@ function renderPool() {
     <td>${escapeHtml(player.serieATeam)}</td>
     <td>${escapeHtml(player.quotation ?? "-")}</td>
     <td>
-      <button class="pick-btn" data-player-id="${escapeAttr(player.id)}" ${!isAdmin || !state.isOpen ? "disabled" : ""}>Scegli</button>
+      <button class="pick-btn" data-player-id="${escapeAttr(player.id)}" ${!isAdmin || simulatedTeamId || !state.isOpen ? "disabled" : ""}>Scegli</button>
     </td>
   </tr>
 `).join("");
@@ -1571,7 +1756,7 @@ function renderPool() {
 }
 
 function openPickModal() {
-  if (!isAdmin) return;
+  if (!isAdmin || simulatedTeamId) return;
 
   if (!state.firstConference) {
     alert("Prima scegli la Conference vincitrice.");
@@ -1615,7 +1800,7 @@ function renderModalPlayers() {
         <strong>${escapeHtml(player.name)}</strong>
         <small>${escapeHtml(player.role)} · ${escapeHtml(player.serieATeam)} · Q. ${escapeHtml(player.quotation ?? "-")} · ${escapeHtml(player.originTeam)}</small>
       </div>
-      <button class="pick-btn" data-modal-player-id="${escapeAttr(player.id)}" ${!isAdmin || !state.isOpen ? "disabled" : ""}>Scegli</button>
+      <button class="pick-btn" data-modal-player-id="${escapeAttr(player.id)}" ${!isAdmin || simulatedTeamId || !state.isOpen ? "disabled" : ""}>Scegli</button>
     </div>
   `).join("");
 
@@ -1628,7 +1813,7 @@ function renderModalPlayers() {
 }
 
 async function makePick(playerId) {
-  if (!isAdmin) return;
+  if (!isAdmin || simulatedTeamId) return;
 
   if (!state.isOpen) {
     alert("Il draft è chiuso.");
@@ -1683,7 +1868,7 @@ async function makePick(playerId) {
 }
 
 async function undoLastPick() {
-  if (!isAdmin) return;
+  if (!isAdmin || simulatedTeamId) return;
   const manualPicks = picks.filter((pick) => pick.pickNumber >= AUTO_PICK_COUNT + 1 && pick.source === "manual");
   const lastManual = manualPicks.sort((a, b) => b.pickNumber - a.pickNumber)[0];
 
@@ -1708,7 +1893,7 @@ async function undoLastPick() {
 }
 
 async function resetDraft() {
-  if (!isAdmin) return;
+  if (!isAdmin || simulatedTeamId) return;
 
   const ok = confirm("Vuoi davvero resettare tutto il draft All Star? I voti resteranno salvati.");
   if (!ok) return;
@@ -1744,7 +1929,7 @@ async function resetDraft() {
 }
 
 async function toggleDraftOpen() {
-  if (!isAdmin) return;
+  if (!isAdmin || simulatedTeamId) return;
 
   if (!state.firstConference) {
     alert("Prima scegli la Conference vincitrice.");

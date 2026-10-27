@@ -23,7 +23,20 @@
   <link rel="stylesheet" href="navbar.css" />
   <link rel="stylesheet" href="allstar.css?v=allstar-initfix-20261027-1" />
 
-  <script type="module" src="allstar.js?v=allstar-initfix-20261027-1" defer></script>
+  <script>
+    // Evita una Week 1 fittizia se la PWA non carica proprio il modulo JS.
+    window.setTimeout(function () {
+      if (!window.__allstarModuleStarted) {
+        var notice = document.getElementById("allstarLoadNotice");
+        if (notice) {
+          notice.hidden = false;
+          var message = notice.querySelector("[data-allstar-load-message]");
+          if (message) message.textContent = "Il codice All-Star non è stato caricato. Apri nuovamente la pagina o aggiorna la webapp.";
+        }
+      }
+    }, 15000);
+  </script>
+  <script type="module" src="allstar.js?v=coach-diagnostics-20261027-2" defer></script>
 </head>
 <body>
   <nav class="site-nav">
@@ -218,6 +231,12 @@
   </nav>
 
   <main class="allstar-page broadcast-page">
+    <section id="allstarCoachPreviewBar" hidden style="margin:14px auto;max-width:1140px;padding:14px 18px;background:#112b49;border:1px solid #709dd5;border-radius:12px;color:#e6f2ff;position:relative;z-index:30;">
+      <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:center;justify-content:space-between;">
+        <div><strong>🧪 Modalità test · Anteprima allenatore</strong><div style="font-size:13px;opacity:.85;">Stai visualizzando: <strong id="allstarCoachPreviewName"></strong>. Nessun voto o modifica admin può essere inviato.</div></div>
+        <button type="button" id="allstarCoachPreviewStop" style="padding:9px 14px;border:1px solid #a9c6ef;border-radius:9px;background:#214669;color:white;cursor:pointer;">Esci dalla simulazione</button>
+      </div>
+    </section>
     <div id="allstarLoadNotice" role="alert" hidden style="margin:12px 16px;padding:14px 18px;border:1px solid #b45309;border-radius:12px;background:#fff7ed;color:#92400e;font-size:14px;font-weight:600;">
       <span data-allstar-load-message>Caricamento All Star non riuscito. Ricarica la pagina.</span>
     </div>
@@ -650,6 +669,29 @@
       <div class="admin-body" id="adminBody">
         <div class="allstar-admin-grid">
           <article class="allstar-admin-box">
+            <h4>Test vista allenatori</h4>
+            <p>Controlla come appaiono settimana, voti e scheda di una squadra. Non effettua accesso al suo account e non riproduce la cache del suo telefono.</p>
+            <label class="admin-field"><span>Squadra da simulare</span>
+              <select id="allstarCoachPreviewSelect"><option value="">Scegli una squadra</option></select>
+            </label>
+            <button id="allstarCoachPreviewStart" class="admin-btn blue" type="button">Visualizza come allenatore</button>
+          </article>
+          <article class="allstar-admin-box">
+            <h4>Diagnostica webapp</h4>
+            <p>Le nuove aperture della pagina registrano versione, settimana, tipo di browser e problemi di caricamento. Nessun token o password viene registrato.</p>
+            <label class="admin-field"><span>Filtra per squadra</span>
+              <select id="allstarDiagTeamFilter"><option value="">Tutte le squadre</option></select>
+            </label>
+            <button id="allstarDiagRefresh" class="admin-btn blue" type="button">Aggiorna diagnostica</button>
+            <small id="allstarDiagStatus" style="display:block;margin-top:8px;">Caricamento...</small>
+            <div class="table-wrap" style="max-height:350px;overflow:auto;margin-top:12px;">
+              <table class="players-table" style="font-size:12px;min-width:650px;">
+                <thead><tr><th>Data</th><th>Squadra</th><th>Dispositivo</th><th>Evento</th><th>Week</th><th>Versione</th></tr></thead>
+                <tbody id="allstarDiagRows"><tr><td colspan="6">In attesa dei rapporti...</td></tr></tbody>
+              </table>
+            </div>
+          </article>
+          <article class="allstar-admin-box">
             <h4>Votazioni</h4>
             <p>Il conteggio parte solo quando premi “Inizia votazioni”. Per ripartire dalla Week 1 usa “Reset votazioni e timer”.</p>
             <div class="admin-status-list">
@@ -710,7 +752,7 @@
   <script>
     if ("serviceWorker" in navigator) {
       window.addEventListener("load", function () {
-        navigator.serviceWorker.register("./sw.js?v=allstar-initfix-20261027-1", { updateViaCache: "none" })
+        navigator.serviceWorker.register("./sw.js?v=coach-diagnostics-20261027-1", { updateViaCache: "none" })
           .then(function (registration) {
             registration.update();
             console.log("SW registrato e aggiornato");
