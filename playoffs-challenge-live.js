@@ -13,7 +13,7 @@ const roles={P:'🧤 POR',D:'🛡️ DIF',C:'🎯 CEN',A:'⚽ ATT'};
 const eventNames={CLEAN_SHEET:'Clean sheet',PENALTY_SAVE:'Rigore parato',GOAL:'Gol',ASSIST:'Assist',GOAL_OR_ASSIST:'Gol o assist',BRACE:'Doppietta'};
 const roleEvents={P:['CLEAN_SHEET','PENALTY_SAVE'],D:['GOAL','ASSIST','CLEAN_SHEET'],C:['GOAL','ASSIST','GOAL_OR_ASSIST'],A:['GOAL','ASSIST','BRACE']};
 const S={rounds:[],events:[],entries:[],user:null,teamId:null,admin:false,active:null,model:null,projection:null,teams:[],
- picks:new Map(),hero:null,backup:null,dirty:false,adminDraft:[],adminDraftRoundId:null,busy:false,lastRoundKey:null,modelInput:null,modelUpdated:0,simulator:null,playerBookmaker:null};
+ picks:new Map(),hero:null,backup:null,dirty:false,adminDraft:[],adminDraftRoundId:null,busy:false,lastRoundKey:null,modelInput:null,modelUpdated:0,simulator:null,playerBookmaker:null,leaderboardRows:[]};
 function stageData(stage){return stages.find(x=>x[0]===stage)||stages[0]}
 function openRound(r){return r?.status==='open' && new Date(r.closes_at).getTime()>Date.now()}
 function closedRound(r){return r?.status==='finalized'||(r?.status==='open' && new Date(r.closes_at).getTime()<=Date.now())}
@@ -83,15 +83,19 @@ async function saveEntry(){const r=S.rounds.find(x=>x.id===S.active);if(!openRou
  S.dirty=false;await readOfficial();fillOwnEntry(r);renderOfficial();msg('pc-official-message','✅ Schedina registrata su Supabase. Puoi modificarla fino alla scadenza.');
  }catch(error){msg('pc-official-message',error.message,true)}finally{$('pc-official-save').disabled=!openRound(r)}
 }
-function renderLeaderboard(rows){const official=S.rounds.some(r=>r.status==='finalized');$('pc-official-ranking').hidden=!official;
+function renderLeaderboard(rows){
+ S.leaderboardRows=rows;
+ const official=S.rounds.some(r=>r.status==='finalized');$('pc-official-ranking').hidden=!official;
  if(!official)return;
+ const filter=$('pc-ranking-filter')?.value||'all';
+ const selected=filter==='all'?rows:rows.filter(r=>r.conference===filter);
  let lastRank=1,hasTies=false;
- $('pc-official-leaderboard').innerHTML=rows.map((r,i)=>{
-  const prev=rows[i-1];const tied=prev&&['points','correct_picks','correct_matches','hero_hits','last_round_points'].every(k=>Number(prev[k])===Number(r[k]));
+ $('pc-official-leaderboard').innerHTML=selected.map((r,i)=>{
+  const prev=selected[i-1];const tied=prev&&['points','correct_picks','correct_matches','hero_hits','last_round_points'].every(k=>Number(prev[k])===Number(r[k]));
   if(!tied)lastRank=i+1;else hasTies=true;
   return `<tr><td>${tied?'=':''}${lastRank}</td><td>${esc(r.team_name)}</td><td><strong>${fmt(r.points)}</strong></td><td>${r.correct_picks}</td><td>${r.correct_matches}</td><td>${r.hero_hits}</td></tr>`;
  }).join('');
- $('pc-ranking-tie-note').textContent=hasTies?'Parità perfetta dopo tutti i criteri numerici: serve il sorteggio ufficiale del Commissioner.':'';
+ $('pc-ranking-tie-note').textContent=hasTies?'Parità dopo tutti i criteri numerici: per questa graduatoria servirà il sorteggio ufficiale del Commissioner.':'';
  document.querySelector('.pc-future-ranking').hidden=true;
 }
 async function refreshLeaderboard(){const {data,error}=await supabase.rpc('pc_leaderboard',{p_season:'2026/27'});if(error)throw error;renderLeaderboard(data||[])}
@@ -123,7 +127,7 @@ function renderAdmin(){if(!S.admin)return;
  const selected=Number($('pc-admin-stage').value||S.rounds[0]?.id);const r=S.rounds.find(x=>x.id===selected)||S.rounds[0];if(!r)return;
  $('pc-admin-stage').innerHTML=S.rounds.map(x=>`<option value="${x.id}">${esc(stageData(x.stage)[1])} · ${x.status}</option>`).join('');$('pc-admin-stage').value=r.id;
  $('pc-admin-deadline').value=localDatetime(r.closes_at);$('pc-admin-deadline').disabled=r.status!=='draft';
- $('pc-admin-draft').hidden=r.status!=='draft';$('pc-admin-grading').hidden=r.status==='draft'||r.status==='finalized';
+ $('pc-admin-draft').hidden=r.status!=='draft';$('pc-admin-grading').hidden=r.status==='draft';
  if(S.adminDraftRoundId!==r.id){S.adminDraft=initialDraft(r);S.adminDraftRoundId=r.id;}
  renderAdminDraft(r);S.simulator?.refresh();S.playerBookmaker?.refresh();
  if(r.status!=='draft')renderGrading(r);
@@ -162,11 +166,54 @@ async function saveAdmin(publish=false){collectAdminDraft();const r=S.rounds.fin
  await readOfficial();S.adminDraftRoundId=null;renderAdmin();chooseActive();renderOfficial();msg('pc-admin-feedback',publish?'✅ Turno pubblicato ufficialmente!':'✅ Bozza salvata su Supabase.');
  }catch(error){msg('pc-admin-feedback',error.message,true)}
 }
-function renderGrading(r){const events=roundEvents(r.id);const canGrade=Date.now()>=new Date(r.closes_at).getTime();$('pc-admin-finalize').disabled=!canGrade;
+function renderGrading(r){
+ const events=roundEvents(r.id);
+ const canGrade=r.status==='open' && Date.now()>=new Date(r.closes_at).getTime();
+ const finalized=r.status==='finalized';
+ $('pc-admin-finalize').hidden=finalized;
+ $('pc-admin-finalize').disabled=!canGrade;
+ $('pc-admin-outcomes').hidden=finalized;
+ $('pc-admin-corrections').hidden=!finalized;
+ if(finalized){
+  $('pc-admin-correction-items').innerHTML=events.map(ev=>{
+   const title=ev.kind==='match'?`${ev.home_name} vs ${ev.away_name}`:`${ev.player_name}: ${eventNames[ev.player_event]}`;
+   const opts=ev.kind==='match'?[['1','1'],['X','X'],['2','2'],['VOID','Annullato']]:[['YES','Avvenuto'],['NO','Non avvenuto'],['VOID','Annullato']];
+   return `<div class="pc-correction-row" data-correction-row="${ev.id}"><strong>${esc(title)}</strong><small>Esito omologato: ${esc(ev.result_sign)}</small><label>Nuovo esito <select data-correction-value>${opts.map(([v,label])=>`<option value="${v}" ${ev.result_sign===v?'selected':''}>${label}</option>`).join('')}</select></label><label>Motivazione della rettifica <input data-correction-reason maxlength="500" placeholder="Es. assist rettificato dal sito ufficiale" /></label><button type="button" class="pc-button pc-ghost" data-correction-save="${ev.id}">Salva rettifica</button></div>`;
+  }).join('');
+  loadCorrectionLog(r.id);
+  return;
+ }
  $('pc-admin-outcomes').innerHTML=events.map(ev=>{const title=ev.kind==='match'?`${ev.home_name} vs ${ev.away_name}`:`${ev.player_name}: ${eventNames[ev.player_event]}`;
  const options=ev.kind==='match'?[['1','1'],['X','X'],['2','2'],['VOID','Annullato']]:[['YES','Avvenuto'],['NO','Non avvenuto'],['VOID','Annullato']];
  return `<div class="pc-grading-row"><strong>${esc(title)}</strong><select data-grade-id="${ev.id}" ${canGrade?'':'disabled'}><option value="">Da verificare</option>${options.map(([value,label])=>`<option value="${value}" ${ev.result_sign===value?'selected':''}>${label}</option>`).join('')}</select><button type="button" data-grade-save="${ev.id}" class="pc-button pc-ghost" ${canGrade?'':'disabled'}>Salva esito</button></div>`}).join('');
  if(!canGrade)msg('pc-admin-feedback',`Potrai inserire gli esiti dopo la scadenza: ${new Date(r.closes_at).toLocaleString('it-IT')}`);
+}
+async function loadCorrectionLog(roundId){
+ const target=$('pc-admin-correction-log');if(!target)return;
+ target.textContent='Caricamento storico…';
+ const {data,error}=await supabase.from('pc_result_corrections').select('event_id,old_result,new_result,reason,corrected_at').eq('round_id',roundId).order('corrected_at',{ascending:false}).limit(100);
+ if(Number($('pc-admin-stage').value)!==Number(roundId))return;
+ if(error){target.textContent=`Impossibile leggere lo storico: ${error.message}`;return;}
+ const events=new Map(roundEvents(roundId).map(e=>[Number(e.id),e]));
+ target.innerHTML=data?.length?data.map(row=>{
+  const ev=events.get(Number(row.event_id));const name=ev?.kind==='match'?`${ev.home_name} vs ${ev.away_name}`:(ev?`${ev.player_name} · ${eventNames[ev.player_event]}`:`Evento ${row.event_id}`);
+  return `<p class="pc-correction-history"><strong>${esc(name)}</strong> · ${esc(row.old_result)} → ${esc(row.new_result)}<small>${new Date(row.corrected_at).toLocaleString('it-IT')} · ${esc(row.reason)}</small></p>`;
+ }).join(''):'Nessuna rettifica effettuata.';
+}
+async function correctResult(id){
+ const row=$(`[data-correction-row="${id}"]`);if(!row)return;
+ const next=row.querySelector('[data-correction-value]')?.value;
+ const reason=row.querySelector('[data-correction-reason]')?.value.trim()||'';
+ const old=S.events.find(e=>Number(e.id)===Number(id));
+ if(!old||next===old.result_sign)return msg('pc-admin-feedback','Seleziona un esito diverso da quello già omologato.',true);
+ if(reason.length<10||reason.length>500)return msg('pc-admin-feedback','Scrivi una motivazione di almeno 10 caratteri (massimo 500).',true);
+ if(!confirm(`Correggere definitivamente ${old.result_sign} → ${next}? La classifica sarà aggiornata immediatamente. Motivazione: ${reason}`))return;
+ const btn=row.querySelector('[data-correction-save]');btn.disabled=true;
+ try{
+  const {error}=await supabase.rpc('pc_admin_correct_result',{p_event_id:id,p_new_result:next,p_reason:reason});if(error)throw error;
+  await readOfficial();const round=S.rounds.find(r=>r.id===Number($('pc-admin-stage').value));if(round)renderGrading(round);
+  await refreshLeaderboard();renderOfficial();msg('pc-admin-feedback','✅ Rettifica registrata nello storico. Classifica ricalcolata.');
+ }catch(e){msg('pc-admin-feedback',e.message,true)}finally{if(btn.isConnected)btn.disabled=false;}
 }
 async function setGrade(id){const v=$(`[data-grade-id="${id}"]`)?.value||null;const {error}=await supabase.rpc('pc_admin_set_result',{p_event_id:id,p_result:v});if(error)return msg('pc-admin-feedback',error.message,true);
  await readOfficial();renderGrading(S.rounds.find(r=>r.id===Number($('pc-admin-stage').value)));msg('pc-admin-feedback','✅ Esito salvato.')}
@@ -195,6 +242,8 @@ function bind(){
  $('pc-admin-publish').addEventListener('click',()=>saveAdmin(true));
  $('pc-admin-outcomes').addEventListener('click',e=>{const btn=e.target.closest('[data-grade-save]');if(btn)setGrade(Number(btn.dataset.gradeSave))});
  $('pc-admin-finalize').addEventListener('click',finalize);
+ $('pc-ranking-filter').addEventListener('change',()=>renderLeaderboard(S.leaderboardRows));
+ $('pc-admin-corrections').addEventListener('click',e=>{const btn=e.target.closest('[data-correction-save]');if(btn)correctResult(Number(btn.dataset.correctionSave));});
  window.addEventListener('hashchange',()=>{if(location.hash==='#admin'&&!S.admin)location.hash='#schedina'});
 }
 (async function init(){try{

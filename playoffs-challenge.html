@@ -8,7 +8,7 @@
   <title>Playoffs Challenge | Lega degli Eroi</title>
   <link rel="icon" href="icon-192.png" type="image/png" />
   <link rel="stylesheet" href="navbar.css?v=20261015" />
-  <link rel="stylesheet" href="playoffs-challenge.css?v=pc-v9-1" />
+  <link rel="stylesheet" href="playoffs-challenge.css?v=pc-v9-2" />
 </head>
 <body class="pc-page">
 <nav class="site-nav">
@@ -247,7 +247,7 @@
 
     <section class="pc-tabpanel" id="pc-tab-classifiche" role="tabpanel" aria-label="Classifiche Playoffs Challenge" hidden>
       <div class="pc-heading"><div><div class="pc-kicker">GRADUATORIE</div><h2>La corsa al Draft</h2><p>La classifica Challenge partirà con gli ottavi. Nel frattempo puoi vedere chi entrerebbe nel tabellone.</p></div></div>
-      <div class="pc-panel pc-official-ranking" id="pc-official-ranking" hidden><h3>🏆 Graduatoria ufficiale Playoffs Challenge</h3><p>Solo turni omologati. Parità risolte per pronostici corretti, playoff indovinati, HERO PICK e ultimo turno.</p><div class="pc-table-wrap"><table class="pc-table"><thead><tr><th>#</th><th>Franchigia</th><th>Punti</th><th>Giusti</th><th>1X2</th><th>Hero</th></tr></thead><tbody id="pc-official-leaderboard"></tbody></table></div><p id="pc-ranking-tie-note" class="pc-feedback"></p></div>
+      <div class="pc-panel pc-official-ranking" id="pc-official-ranking" hidden><h3>🏆 Graduatoria ufficiale Playoffs Challenge</h3><p>Solo turni omologati. Parità risolte per pronostici corretti, playoff indovinati, HERO PICK e ultimo turno.</p><label class="pc-rank-filter-label" for="pc-ranking-filter">Classifica <select id="pc-ranking-filter"><option value="all">Generale · 16 franchigie</option><option value="Conference League">Conference League</option><option value="Conference Championship">Conference Championship</option></select></label><div class="pc-table-wrap"><table class="pc-table"><thead><tr><th>#</th><th>Franchigia</th><th>Punti</th><th>Giusti</th><th>1X2</th><th>Hero</th></tr></thead><tbody id="pc-official-leaderboard"></tbody></table></div><p id="pc-ranking-tie-note" class="pc-feedback"></p></div>
       <div class="pc-panel pc-future-ranking"><span>🏅</span><div><h3>Classifica Playoffs Challenge</h3><p>Non ancora iniziata. Dopo l'omologazione di ogni turno saranno disponibili punti totali, pronostici corretti, HERO PICK e classifiche per Conference.</p></div><strong>In attesa</strong></div>
       <div class="pc-panel"><div class="pc-heading compact"><div><div class="pc-kicker">PROIEZIONE DA REGULAR SEASON</div><h3>Seeding provvisorio</h3><p id="pc-ranking-note">I primi 12 accedono ai playoff. Gli scontri diretti non ancora risolti rendono l'ordine indicativo.</p></div></div><div class="pc-table-wrap"><table class="pc-table"><thead><tr><th>#</th><th>Franchigia</th><th>PG</th><th>Pt</th><th>FP</th></tr></thead><tbody id="pc-standings"></tbody></table></div></div>
     </section>
@@ -349,7 +349,7 @@
             <p id="pc-bt-feedback" class="pc-bt-feedback" role="status">Premi «Esegui confronto» per confrontare il motore originale, quattro preset e i pesi che hai scelto con i cursori qui sopra.</p>
             <p class="pc-bt-note"><strong>Come leggere i numeri:</strong> Brier e log loss più bassi sono meglio; «segno favorito corretto» conta solo quante volte il segno più probabile coincide con il risultato. Le quote rimangono <strong>inalterate</strong>: questo laboratorio non salva, non pubblica e non sceglie i pesi al posto tuo.</p>
           </section>
-        <div id="pc-admin-grading" hidden><h3>✅ Omologazione risultati</h3><p>Gli esiti sono modificabili solo dopo la scadenza. «Annullato» assegna zero punti e attiva l'eventuale HERO PICK di riserva.</p><div id="pc-admin-outcomes"></div><button class="pc-button pc-primary" type="button" id="pc-admin-finalize">🏆 Omologa giornata e aggiorna classifica</button></div>
+        <div id="pc-admin-grading" hidden><h3>✅ Omologazione risultati</h3><p>Gli esiti sono modificabili solo dopo la scadenza. «Annullato» assegna zero punti e attiva l'eventuale HERO PICK di riserva.</p><div id="pc-admin-outcomes"></div><button class="pc-button pc-primary" type="button" id="pc-admin-finalize">🏆 Omologa giornata e aggiorna classifica</button><div id="pc-admin-corrections" hidden><h3>✏️ Rettifiche dopo l’omologazione</h3><p>La correzione modifica subito la classifica ed è registrata con motivazione, autore, data ed esito precedente. Non cambia le quote e non riapre le schedine.</p><div id="pc-admin-correction-items"></div><h4>Storico delle rettifiche</h4><div id="pc-admin-correction-log" aria-live="polite"></div></div></div>
         <div id="pc-admin-feedback" class="pc-feedback" role="status"></div>
       </div>
     </section>
@@ -360,7 +360,7 @@
 </main>
 <script defer src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
 <script type="module" src="playoffs-challenge.js?v=pc-v9-1"></script>
-<script type="module" src="playoffs-challenge-live.js?v=pc-v9-1-assistfix"></script>
+<script type="module" src="playoffs-challenge-live.js?v=pc-v9-2-audit"></script>
 <script src="mobile-nav.js?v=20261007-bottom4"></script>
 <script src="navbar.js?v=20261015"></script>
 <script type="module" src="admin-nav.js?v=1"></script>
