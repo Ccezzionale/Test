@@ -61,16 +61,23 @@ export function estimateHistoricalEvent(player,event,model,settings={}){
  const priorA=split.reduce((s,x)=>s+model.roleRates[x.role].a*x.weight,0);
  const priorStrength=clamp(Number(settings.priorStrength)||15,5,60);
  const priceImpact=clamp(Number(settings.sensitivity??40),0,100)/100;
- let totalW=0,effN=0,rateG=0,rateA=0,seasonEvidence=[];
+ let totalW=0,effN=0,rateG=0,rateA=0,weightedAssists=0,seasonEvidence=[];
  for(const [season,weight] of Object.entries(HIST_WEIGHTS)){
   const r=data[season],pv=Number(r?.appearances??r?.pv)||0;
   if(!r||pv<=0)continue;
   totalW+=weight;effN+=weight*pv;
   rateG+=weight*(Math.max(0,Number(r.goals??r.gf)||0)/pv);
-  rateA+=weight*(Math.max(0,Number(r.assists??r.ass)||0)/pv);
+  // Per gli assist pesa EVENTI e PRESENZE, non le medie stagionali a pari peso.
+  // Un assist in 3 presenze non deve dominare 30+ gare della stagione precedente.
+  weightedAssists+=weight*Math.max(0,Number(r.assists??r.ass)||0);
   seasonEvidence.push({season,pv,goals:Number(r.goals??r.gf)||0,assists:Number(r.assists??r.ass)||0});
  }
- if(totalW>0){rateG/=totalW;rateA/=totalW;effN/=totalW;}
+ if(totalW>0){
+  rateG/=totalW; // Manteniamo il calcolo gol della V9 invariato.
+  const weightedAppearances=effN;
+  rateA=weightedAppearances>0?weightedAssists/weightedAppearances:0;
+  effN/=totalW;
+ }
  const trust=effN/(effN+priorStrength);
  let lambdaG=trust*rateG+(1-trust)*priorG;
  let lambdaA=trust*rateA+(1-trust)*priorA;
@@ -89,5 +96,5 @@ export function estimateHistoricalEvent(player,event,model,settings={}){
  p=clamp(p,.002,.92);
  return {supported:true,probability:p,odd:round2(1/p),confidence:effN>=20?'storico medio':effN>=7?'storico limitato':'prior Mantra',
    mantras,roleComponents:split,priorG,priorA,trust,effN,seasonEvidence,lambdaG,lambdaA,factor,
-   reason:'Media storica Mantra + rendimento del calciatore (pesi 15/35/50 e regolarizzazione) + lieve correzione Classic. Stima per presenza, non include la probabilita’ che giochi.'};
+   reason:'Media storica Mantra + rendimento del calciatore (pesi 15/35/50). Per gli assist i pesi si applicano a presenze e assist, così una stagione con poche partite non domina. Regolarizzazione + lieve correzione Classic. Stima per presenza, non include la probabilita’ che giochi.'};
 }

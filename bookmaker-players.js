@@ -1,4 +1,4 @@
-import {createPlayerHistoryModel,estimateHistoricalEvent} from './bookmaker-player-history.js';
+import {createPlayerHistoryModel,estimateHistoricalEvent} from './bookmaker-player-history.js?v=pc-v9-1-assistfix';
 import {mountPlayerHistoryImport} from './bookmaker-player-import.js';
 /* Lega degli Eroi · Playoffs Challenge V9
  * Bookmaker calciatori basato su quotazioni CLASSIC correnti.
@@ -186,7 +186,7 @@ export function mountPlayerBookmaker({supabase,onApply,getRound}){
     lastEstimate=result;
     odd.value=result.supported?result.odd.toFixed(2):'';
     drawEstimate();
-    note(result.supported?`Quota ${fmt(result.odd)} suggerita dalla quotazione Classic ${fmt(chosen.quotation)}. Puoi correggerla o aggiungerla alla bozza.`:`${result.why} Inserisci una quota manuale.`,!result.supported);
+    note(result.supported?`Quota ${fmt(result.odd)} suggerita da ${result.seasonEvidence?'statistiche storiche e ruoli Mantra':'quotazione Classic'}. Puoi correggerla o aggiungerla alla bozza.`:`${result.why||result.reason||'Stima non disponibile.'} Inserisci una quota manuale.`,!result.supported);
   }
   function setPlayer(){
     const next=byLabel.get(search.value.trim())||null;
