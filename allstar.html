@@ -21,9 +21,9 @@
   <meta name="apple-mobile-web-app-title" content="Lega Eroi">
 
   <link rel="stylesheet" href="navbar.css" />
-  <link rel="stylesheet" href="allstar.css?v=festival-stars-v2-20260916" />
+  <link rel="stylesheet" href="allstar.css?v=allstar-initfix-20261027-1" />
 
-  <script type="module" src="allstar.js?v=festival-stars-v2-20260916" defer></script>
+  <script type="module" src="allstar.js?v=allstar-initfix-20261027-1" defer></script>
 </head>
 <body>
   <nav class="site-nav">
@@ -218,6 +218,9 @@
   </nav>
 
   <main class="allstar-page broadcast-page">
+    <div id="allstarLoadNotice" role="alert" hidden style="margin:12px 16px;padding:14px 18px;border:1px solid #b45309;border-radius:12px;background:#fff7ed;color:#92400e;font-size:14px;font-weight:600;">
+      <span data-allstar-load-message>Caricamento All Star non riuscito. Ricarica la pagina.</span>
+    </div>
     <!-- HERO BROADCAST -->
     <section class="allstar-hero broadcast-hero">
       <div class="broadcast-livebar">
@@ -231,7 +234,7 @@
 
       <div class="broadcast-status-pill">
         <span class="badge-pulse"></span>
-        <span id="draftStatusLabel">Votazioni aperte</span>
+        <span id="draftStatusLabel">Caricamento...</span>
       </div>
 
       <div class="broadcast-hero-grid">
@@ -265,17 +268,17 @@
       <button type="button" class="mobile-tab-btn is-active" data-allstar-tab="vote"><span aria-hidden="true">⭐</span><b>Vota</b></button>
       <button type="button" class="mobile-tab-btn" data-allstar-tab="draft"><span aria-hidden="true">🎯</span><b>Draft</b></button>
       <button type="button" class="mobile-tab-btn" data-allstar-tab="pool"><span aria-hidden="true">👥</span><b>Pool</b></button>
-      <button type="button" class="mobile-tab-btn" data-allstar-tab="admin"><span aria-hidden="true">⚙️</span><b>Admin</b></button>
+      <button type="button" class="mobile-tab-btn" data-allstar-tab="admin" style="display:none"><span aria-hidden="true">⚙️</span><b>Admin</b></button>
     </nav>
 
     <!-- MOBILE LIVE SUMMARY: sempre visibile, cambia con la tab -->
     <section class="mobile-live-summary" id="mobileLiveSummary" aria-live="polite">
       <span class="mobile-live-dot"></span>
       <div>
-        <small id="mobileLiveKicker">WEEK 1</small>
-        <strong id="mobileLiveText">Votazione All Star</strong>
+        <small id="mobileLiveKicker">ALL STAR GAME</small>
+        <strong id="mobileLiveText">Sincronizzazione votazioni...</strong>
       </div>
-      <span class="mobile-live-chip" id="mobileLiveChip">LIVE</span>
+      <span class="mobile-live-chip" id="mobileLiveChip">ATTESA</span>
     </section>
 
     <!-- INFO STRIP -->
@@ -292,7 +295,7 @@
         <span class="info-icon">📅</span>
         <div>
           <strong>Settimana attiva</strong>
-          <small id="activeWeekInfo">Week 1</small>
+          <small id="activeWeekInfo">Caricamento...</small>
         </div>
       </article>
     </section>
@@ -304,7 +307,7 @@
           <small>🔥 LIVE VOTAZIONI</small>
           <strong id="mobileLiveTop5Title">Top 5 Conference League</strong>
         </div>
-        <span id="mobileLiveTop5Week">Week 1</span>
+        <span id="mobileLiveTop5Week">...</span>
       </div>
 
       <div class="mobile-live-conference-switch" role="tablist" aria-label="Scegli Conference live">
@@ -333,7 +336,7 @@
             <h3>Vota le Stelle</h3>
             <p>Scegli cinque giocatori dalla lista ufficiale Fantacalcio.</p>
           </div>
-          <span class="vote-week-pill" id="voteWeekPill">Week 1</span>
+          <span class="vote-week-pill" id="voteWeekPill">...</span>
         </div>
 
         <form id="voteForm" class="vote-form">
@@ -431,9 +434,9 @@
           </div>
 
           <div class="broadcast-vote-footer">
-            <button type="submit" class="primary-call-btn vote-submit-btn">Invia il tuo voto</button>
+            <button type="submit" class="primary-call-btn vote-submit-btn" disabled>Invia il tuo voto</button>
             <div class="vote-countdown">
-              <small id="voteCountdownLabel">Week 1 · chiude domenica 23:59</small>
+              <small id="voteCountdownLabel">Caricamento orario...</small>
               <strong id="voteCountdownValue">--</strong>
             </div>
           </div>
@@ -638,7 +641,7 @@
     </section>
 
     <!-- ADMIN -->
-    <section id="adminPanel" class="admin-panel broadcast-admin" data-mobile-section="admin">
+    <section id="adminPanel" class="admin-panel broadcast-admin" data-mobile-section="admin" style="display:none">
       <button class="admin-toggle" id="adminToggle">
         <span>⚙️ Area Lega / Amministrazione</span>
         <span id="adminChevron">⌄</span>
@@ -707,7 +710,7 @@
   <script>
     if ("serviceWorker" in navigator) {
       window.addEventListener("load", function () {
-        navigator.serviceWorker.register("./sw.js?v=week-picker-20260829-1", { updateViaCache: "none" })
+        navigator.serviceWorker.register("./sw.js?v=allstar-initfix-20261027-1", { updateViaCache: "none" })
           .then(function (registration) {
             registration.update();
             console.log("SW registrato e aggiornato");

@@ -35,6 +35,8 @@ let allPlayersById = new Map();
 let playerIdAliasMap = new Map();
 let teamsById = new Map();
 let state = defaultState();
+let stateLoaded = false;
+let allstarReadyToVote = false;
 let picks = [];
 let votes = [];
 let mobileLiveConference = CONFERENCE_LEAGUE;
@@ -135,22 +137,119 @@ init();
 
 async function init() {
   bindEvents();
+  setupVotePickers();
   setLoadingUI();
 
-  try {
-    await loadSessionAndProfile();
-    await loadAllData();
-    setupUserControls();
-    populateFilters();
-    setupVotePickers();
-    hydrateVotePickersFromSavedVotes();
-    renderAll();
-    subscribeRealtime();
-    startAutoWeekTicker();
-  } catch (error) {
-    console.error("Errore init All Star:", error);
-    showVoteFeedback("Errore caricamento All Star. Controlla login, tabelle Supabase o console.", true);
+  // Lo stato della votazione deve comparire anche quando login, profilo,
+  // giocatori o voti sono lenti/indisponibili. Non bloccarlo dietro getSession().
+  const stateTask = loadState()
+    .then(() => renderPublicAllstarStatus())
+    .catch((error) => {
+      console.error("All Star: errore lettura stato:", error);
+      showLoadIssue("Impossibile leggere lo stato delle votazioni. Ricarica la pagina; se il problema continua, avvisa l'amministratore.");
+    });
+
+  const profileTask = withLoadTimeout(loadSessionAndProfile(), 10000, "sessione utente")
+    .catch((error) => {
+      console.warn("All Star: profilo non caricato:", error);
+      currentProfile = null;
+      currentTeam = null;
+      isAdmin = false;
+      showLoadIssue("Non è stato possibile verificare il tuo login. Le votazioni sono visibili, ma per inviare i voti potrebbe essere necessario rientrare nell'app.");
+    });
+
+  await Promise.all([stateTask, profileTask]);
+  setupUserControls();
+
+  // Carichiamo separatamente i dati non essenziali: un errore su una tabella
+  // non deve più lasciare per sempre Week 1 / Votazioni chiuse.
+  const teamResult = await withLoadTimeout(loadTeams(), 12000, "squadre")
+    .then(() => true)
+    .catch((error) => {
+      console.error("All Star: errore caricamento squadre:", error);
+      showLoadIssue("Non è stato possibile caricare le squadre. Ricarica la pagina per poter votare.");
+      return false;
+    });
+
+  const playerResult = await withLoadTimeout(loadPlayers(), 12000, "giocatori")
+    .then(() => true)
+    .catch((error) => {
+      console.error("All Star: errore caricamento giocatori:", error);
+      showLoadIssue("Non è stato possibile caricare il listone dei giocatori. Ricarica la pagina per poter votare.");
+      return false;
+    });
+
+  // Prima players, poi votes/picks: gli ID dei giocatori salvati hanno bisogno
+  // della mappa del listone per ricostruire nomi e classifiche.
+  const [votesResult, picksResult] = await Promise.allSettled([
+    withLoadTimeout(loadVotes(), 12000, "voti"),
+    withLoadTimeout(loadPicks(), 12000, "pick")
+  ]);
+
+  if (votesResult.status === "rejected") {
+    console.error("All Star: errore caricamento voti:", votesResult.reason);
+    showLoadIssue("Classifiche dei voti momentaneamente non disponibili. Ricarica la pagina.");
   }
+  if (picksResult.status === "rejected") {
+    console.error("All Star: errore caricamento draft:", picksResult.reason);
+    showLoadIssue("Dati del draft momentaneamente non disponibili. Ricarica la pagina.");
+  }
+
+  allstarReadyToVote = Boolean(
+    stateLoaded && teamResult && playerResult &&
+    votesResult.status === "fulfilled" && currentTeam?.id
+  );
+  updateVoteSubmitAvailability();
+  populateFilters();
+  hydrateVotePickersFromSavedVotes();
+  if (stateLoaded) renderAll();
+
+  subscribeRealtime();
+  startAutoWeekTicker();
+  startAllstarStateRefresh();
+}
+
+function withLoadTimeout(promise, milliseconds, label) {
+  return Promise.race([
+    promise,
+    new Promise((_, reject) => setTimeout(() => reject(new Error(`Timeout caricamento ${label}`)), milliseconds))
+  ]);
+}
+
+function showLoadIssue(message) {
+  const notice = document.getElementById("allstarLoadNotice");
+  if (!notice) return;
+  notice.hidden = false;
+  const text = notice.querySelector("[data-allstar-load-message]");
+  if (text) text.textContent = message;
+}
+
+function updateVoteSubmitAvailability() {
+  const submit = els.voteForm?.querySelector('[type="submit"]');
+  if (submit) submit.disabled = !allstarReadyToVote;
+}
+
+function renderPublicAllstarStatus() {
+  if (!stateLoaded) return;
+  setText(els.draftStatusLabel, getAllStarStatusLabel());
+  setText(els.activeWeekInfo, `Week ${state.activeWeek}`);
+  setText(els.voteWeekPill, `Week ${state.activeWeek}`);
+  setText(els.mobileLiveTop5Week, `Week ${state.activeWeek}`);
+  renderMobileLiveSummary();
+  updateVoteCountdown();
+}
+
+function startAllstarStateRefresh() {
+  // Poll leggero di sicurezza se la connessione Realtime cade sul telefono.
+  setInterval(async () => {
+    try {
+      await withLoadTimeout(loadState(), 10000, "stato All Star");
+      renderAll();
+    } catch (error) {
+      console.warn("All Star: sincronizzazione stato non riuscita:", error);
+      if (!stateLoaded) showLoadIssue("Stato delle votazioni non disponibile. Controlla la connessione e ricarica la pagina.");
+    }
+  }, 90000);
 }
 
 function bindEvents() {
@@ -203,8 +302,18 @@ els.clearFiltersBtn?.addEventListener("click", () => {
 
 function setLoadingUI() {
   if (els.playersTbody) els.playersTbody.innerHTML = `<tr><td colspan="7">Caricamento dati All Star...</td></tr>`;
-  if (els.draftStatusLabel) els.draftStatusLabel.textContent = "Caricamento";
+  setText(els.draftStatusLabel, "Caricamento...");
+  setText(els.activeWeekInfo, "Caricamento...");
+  setText(els.voteWeekPill, "...");
+  setText(els.mobileLiveTop5Week, "...");
+  setText(els.mobileLiveKicker, "ALL STAR GAME");
+  setText(els.mobileLiveText, "Sincronizzazione votazioni...");
+  setText(els.mobileLiveChip, "ATTESA");
+  if (els.adminPanel) els.adminPanel.style.display = "none";
+  const adminTab = document.querySelector('[data-allstar-tab="admin"]');
+  if (adminTab) adminTab.style.display = "none";
   if (els.openPickModalBtn) els.openPickModalBtn.disabled = true;
+  updateVoteSubmitAvailability();
 }
 
 async function loadSessionAndProfile() {
@@ -268,7 +377,9 @@ async function loadState() {
     .maybeSingle();
 
   if (error) throw error;
+  if (!data) throw new Error("Stato All Star non restituito da Supabase: controllare sessione e permessi RLS.");
   state = normalizeState(data);
+  stateLoaded = true;
 }
 
 async function loadPlayers() {
@@ -713,6 +824,11 @@ function hydrateVotePickersFromSavedVotes() {
 
 async function handleVoteSubmit(event) {
   event.preventDefault();
+
+  if (!allstarReadyToVote) {
+    showVoteFeedback("I dati del voto non sono ancora pronti. Controlla il login e ricarica la pagina.", true);
+    return;
+  }
 
   if (!canVoteNow()) {
     showVoteFeedback(getVotingClosedMessage(), true);
@@ -1218,6 +1334,12 @@ function renderMobileDraftFlow() {
 
 function renderMobileLiveSummary(forcedTab = null) {
   if (!els.mobileLiveSummary) return;
+  if (!stateLoaded) {
+    setText(els.mobileLiveKicker, "ALL STAR GAME");
+    setText(els.mobileLiveText, "Sincronizzazione votazioni...");
+    setText(els.mobileLiveChip, "ATTESA");
+    return;
+  }
 
   const activeTab = forcedTab || document.querySelector(".mobile-tab-btn.is-active")?.dataset.allstarTab || "vote";
   const leagueLeader = getVoteTotalsByConference(CONFERENCE_LEAGUE)[0];
@@ -1646,8 +1768,11 @@ async function updateState(patch) {
 }
 
 async function refreshAndRender() {
-  await Promise.all([loadState(), loadVotes(), loadPicks()]);
-  renderAll();
+  const results = await Promise.allSettled([loadState(), loadVotes(), loadPicks()]);
+  for (const result of results) {
+    if (result.status === "rejected") console.warn("All Star: aggiornamento parziale:", result.reason);
+  }
+  if (stateLoaded) renderAll();
 }
 
 function startAutoWeekTicker() {
