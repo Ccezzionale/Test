@@ -184,7 +184,7 @@ window.addEventListener('hashchange',()=>changeTab(location.hash.slice(1),false)
     if(error || !user) throw new Error('Per accedere alla Playoffs Challenge devi effettuare il login alla Lega.');
     const {data:admin,error:adminError}=await supabase.rpc('totoeroi_is_admin');
     state.isAdmin=!adminError && admin===true;
-    $('pc-admin-shortcut').hidden=!state.isAdmin;
+    // La V9.4 integra il Commissioner in un'unica scheda; nessuna scorciatoia esterna da mostrare.
     await refresh();
     setInterval(()=>refresh(true),UPDATE_INTERVAL);
     document.addEventListener('visibilitychange',()=>{if(!document.hidden)refresh(true);});
