@@ -1,4 +1,4 @@
-const SW_VERSION = "20261005-center6";
+const SW_VERSION = "20261027-allstar-pwa-recover1";
 
 self.addEventListener("install", (event) => {
   console.log("Service Worker installato:", SW_VERSION);
@@ -29,7 +29,10 @@ self.addEventListener("activate", (event) => {
         try {
           const currentUrl = new URL(client.url);
 
-          if (currentUrl.searchParams.get("__appv") !== SW_VERSION) {
+          // Ricarica solo l’All-Star durante l’aggiornamento, evitando
+          // di interrompere le altre pagine mentre l’utente le utilizza.
+          const onAllstarPage = /\/allstar\.html$/i.test(currentUrl.pathname);
+          if (onAllstarPage && currentUrl.searchParams.get("__appv") !== SW_VERSION) {
             currentUrl.searchParams.set("__appv", SW_VERSION);
 
             if ("navigate" in client) {
