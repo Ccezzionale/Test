@@ -91,7 +91,7 @@ export function estimatePlayerEvent(player,event,settings=DEFAULT_PLAYER_SETTING
     baseGoal:cfg.baseline[player.role].GOAL,baseAssist:cfg.baseline[player.role].ASSIST,
     derived:Boolean(e.derived),confidence:'euristica',why:derivation};
 }
-async function loadRoster(supabase){
+export async function loadRoster(supabase){
   const pageSize=700,items=[];
   for(let offset=0;offset<30000;offset+=pageSize){
     const {data,error}=await supabase.from('players')
@@ -240,5 +240,24 @@ export function mountPlayerBookmaker({supabase,onApply,getRound}){
   }
   mountPlayerHistoryImport({supabase,onImported:reloadHistory});
   showSettings();drawEstimate();load();
-  return {refresh(){root.hidden=getRound?.()?.status!=='draft'}};
+  return {
+    refresh(){root.hidden=getRound?.()?.status!=='draft'},
+    catalogue(manual={}){
+      if(!roster.length)throw new Error('Il listino calciatori non è ancora stato caricato.');
+      if(!history?.hasHistoricalSeasons)throw new Error('Archivio Mantra incompleto: importa prima i due Excel storici.');
+      const out=[];let supported=0,editorial=0;
+      for(const player of roster){
+        for(const eventSpec of (PLAYER_EVENTS[player.role]||[])){
+          let q;
+          const m=estimateHistoricalEvent(player,eventSpec.key,history,settings);
+          if(m.supported){q=m.odd;supported++;}
+          else if(m.manual){q=Number(manual[`${player.role}:${eventSpec.key}`]);editorial++;}
+          else continue;
+          if(!Number.isFinite(q)||q<1.01||q>10000)throw new Error('Quota editoriale mancante/non valida per '+player.role+':'+eventSpec.key);
+          out.push({code:Number(player.code),role:player.role,ev:eventSpec.key,q:Number(q.toFixed(2))});
+        }
+      }
+      return {rows:out,supported,editorial,players:roster.length};
+    }
+  };
 }

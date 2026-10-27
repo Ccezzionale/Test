@@ -3,7 +3,8 @@ import {supabase} from './supabase.js';
 import {buildModel,quoteMatch,normalizeTeam} from './bookmaker-engine.js';
 import {calculateProjectedStandings} from './bookmaker-seeding.js';
 import {mountCommissionerSimulator} from './bookmaker-simulator.js';
-import {mountPlayerBookmaker} from './bookmaker-players.js?v=pc-v9-1-assistfix';
+import {mountPlayerBookmaker} from './bookmaker-players.js?v=pc-v9-3';
+import {mountDemoPlayerPicker} from './pc-player-picker.js?v=pc-v9-3';
 import {mountBacktestLab} from './bookmaker-backtest.js';
 const $=id=>document.getElementById(id);
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -13,16 +14,20 @@ const roles={P:'🧤 POR',D:'🛡️ DIF',C:'🎯 CEN',A:'⚽ ATT'};
 const eventNames={CLEAN_SHEET:'Clean sheet',PENALTY_SAVE:'Rigore parato',GOAL:'Gol',ASSIST:'Assist',GOAL_OR_ASSIST:'Gol o assist',BRACE:'Doppietta'};
 const roleEvents={P:['CLEAN_SHEET','PENALTY_SAVE'],D:['GOAL','ASSIST','CLEAN_SHEET'],C:['GOAL','ASSIST','GOAL_OR_ASSIST'],A:['GOAL','ASSIST','BRACE']};
 const S={rounds:[],events:[],entries:[],user:null,teamId:null,admin:false,active:null,model:null,projection:null,teams:[],
- picks:new Map(),hero:null,backup:null,dirty:false,adminDraft:[],adminDraftRoundId:null,busy:false,lastRoundKey:null,modelInput:null,modelUpdated:0,simulator:null,playerBookmaker:null,leaderboardRows:[]};
+ picks:new Map(),hero:null,backup:null,dirty:false,adminDraft:[],adminDraftRoundId:null,busy:false,lastRoundKey:null,modelInput:null,modelUpdated:0,simulator:null,playerBookmaker:null,leaderboardRows:[],playerRole:'P',playerSearch:'',playerEvent:'ALL'};
 function stageData(stage){return stages.find(x=>x[0]===stage)||stages[0]}
 function openRound(r){return r?.status==='open' && new Date(r.closes_at).getTime()>Date.now()}
 function closedRound(r){return r?.status==='finalized'||(r?.status==='open' && new Date(r.closes_at).getTime()<=Date.now())}
 function msg(id,message,isError=false){let el=$(id);if(!el)return;el.textContent=message;el.classList.toggle('pc-feedback-error',!!isError)}
 function quoteOf(e,sign){return Number(sign==='1'?e.q1:sign==='X'?e.qx:sign==='2'?e.q2:e.qyes)}
 async function getRows(table,fields,cb=q=>q){let {data,error}=await cb(supabase.from(table).select(fields).limit(1000));if(error)throw new Error(`${table}: ${error.message}`);return data||[]}
+async function getAllRows(table,fields){const out=[],size=600;for(let start=0;start<10000;start+=size){
+ const {data,error}=await supabase.from(table).select(fields).order('id').range(start,start+size-1);
+ if(error)throw new Error(table+': '+error.message);out.push(...(data||[]));if(!data||data.length<size)break;
+}return out;}
 async function readOfficial(){const [rounds,events,entries]=await Promise.all([
  getRows('pc_rounds','*',q=>q.eq('season','2026/27').order('gw')),
- getRows('pc_events','*',q=>q.order('id')),
+ getAllRows('pc_events','*'),
  getRows('pc_entries','round_id,team_id,picks,hero_event_id,backup_event_id,updated_at',q=>q.order('updated_at',{ascending:false}))
 ]);S.rounds=rounds;S.events=events;S.entries=entries}
 function roundEvents(id){return S.events.filter(e=>Number(e.round_id)===Number(id))}
@@ -46,10 +51,33 @@ function renderOfficial(){const available=published();const current=S.active&&S.
   const selected=S.picks.get(Number(ev.id));const choices=['1','X','2'].map(x=>`<button class="pc-odd ${selected===x?'selected':''}" type="button" data-official-pick="${ev.id}" data-sign="${x}" ${editable?'':'disabled'} aria-pressed="${selected===x}"><span>${x}</span><strong>${fmt(quoteOf(ev,x))}</strong></button>`).join('');
   return `<article class="pc-game"><div class="pc-game-top"><span>PARTITA ${ev.slot}</span><span class="pc-provisional">QUOTE UFFICIALI</span></div><div class="pc-game-teams"><div><strong>${esc(ev.home_name)}</strong></div><span class="pc-vs">VS</span><div><strong>${esc(ev.away_name)}</strong></div></div><div class="pc-odds">${choices}</div>${heroControls(ev,editable)}</article>`
  }).join('');
- $('pc-official-players').innerHTML=player.map(ev=>{
- const checked=S.picks.has(Number(ev.id));return `<div class="pc-player-option ${checked?'chosen':''}"><div><small>${esc(roles[ev.player_role])}</small><strong>${esc(ev.player_name)}</strong><span>${esc(eventNames[ev.player_event])}</span></div><button class="pc-button ${checked?'pc-primary':'pc-ghost'}" type="button" data-official-player="${ev.id}" ${editable?'':'disabled'}>${checked?'✓ Scelto':'+ Seleziona'} · ${fmt(ev.qyes)}</button>${heroControls(ev,editable)}</div>`}).join('');
+ renderPlayerPicker(current,player,editable);
  renderSummary(current,e);
  renderPublicEntries(current,e);
+}
+
+function playerCard(ev,editable){
+ const checked=S.picks.has(Number(ev.id));
+ return `<div class="pc-player-option ${checked?'chosen':''}"><div><small>${esc(roles[ev.player_role])}</small><strong>${esc(ev.player_name)}</strong><span>${esc(eventNames[ev.player_event])}</span></div><button class="pc-button ${checked?'pc-primary':'pc-ghost'}" type="button" data-official-player="${ev.id}" ${editable?'':'disabled'}>${checked?'✓ Scelto':'+ Seleziona'} · ${fmt(ev.qyes)}</button>${heroControls(ev,editable)}</div>`;
+}
+function renderPlayerPicker(round,player,editable){
+ const labels=Object.entries(roles);
+ $('pc-official-role-picker').innerHTML=labels.map(([key,label])=>{
+  const n=player.filter(x=>x.player_role===key).length;
+  const chosen=player.filter(x=>x.player_role===key&&S.picks.has(Number(x.id))).length;
+  return `<button type="button" class="pc-role-choice ${S.playerRole===key?'active':''}" data-picker-role="${key}" aria-pressed="${S.playerRole===key}"><strong>${label}</strong><small>${chosen} scelti · ${n} quote</small></button>`;
+ }).join('');
+ const event=$('pc-official-player-event'),prev=S.playerEvent;
+ event.innerHTML=`<option value="ALL">Tutti gli eventi</option>`+(roleEvents[S.playerRole]||[]).map(x=>`<option value="${x}">${esc(eventNames[x])}</option>`).join('');
+ event.value=roleEvents[S.playerRole]?.includes(prev)?prev:'ALL';S.playerEvent=event.value;
+ const q=S.playerSearch.toLocaleLowerCase('it');
+ const filtered=player.filter(x=>x.player_role===S.playerRole&&(S.playerEvent==='ALL'||x.player_event===S.playerEvent)&&(!q||`${x.player_name} ${x.player_event}`.toLocaleLowerCase('it').includes(q)));
+ const size=36,display=filtered.slice(0,size);
+ $('pc-official-player-info').textContent=`${filtered.length} quote ufficiali disponibili per ${roles[S.playerRole]}. ${filtered.length>size?'Mostro le prime '+size+': cerca il nome per restringere.':''} ${editable?'Puoi aggiungere un evento alla schedina.':'Turno chiuso: le quote restano consultabili.'}`;
+ $('pc-official-players').innerHTML=display.length?display.map(x=>playerCard(x,editable)).join(''):'Nessun evento pubblicato per questo ruolo o questa ricerca.';
+ const selected=player.filter(x=>S.picks.has(Number(x.id)));
+ $('pc-official-player-selected').innerHTML=selected.length?selected.map(x=>`<div class="pc-picker-chip"><span><b>${esc(roles[x.player_role])}</b> · ${esc(x.player_name)} · ${esc(eventNames[x.player_event])} <strong>${fmt(x.qyes)}</strong></span><button type="button" class="pc-button pc-ghost" data-official-player="${x.id}" ${editable?'':'disabled'}>Rimuovi</button></div>`).join(''):'<p>Nessun calciatore ancora selezionato.</p>';
+ $('pc-official-player-search').value=S.playerSearch;
 }
 function heroControls(ev,editable){const has=S.picks.has(Number(ev.id));return `<div class="pc-choice-extras"><button type="button" data-official-hero="${ev.id}" class="${S.hero===Number(ev.id)?'chosen':''}" ${has&&editable?'':'disabled'}>⭐ ${S.hero===Number(ev.id)?'HERO PICK':'Hero'}</button><button type="button" data-official-backup="${ev.id}" class="${S.backup===Number(ev.id)?'chosen':''}" ${has&&editable?'':'disabled'}>🛡️ ${S.backup===Number(ev.id)?'Riserva scelta':'Riserva'}</button></div>`}
 function renderSummary(round,events){const matches=events.filter(x=>x.kind==='match'&&S.picks.has(Number(x.id))).length,players=events.filter(x=>x.kind==='player'&&S.picks.has(Number(x.id))).length;
@@ -119,7 +147,7 @@ async function update(){if(S.busy)return;
  if(S.dirty){const r=S.rounds.find(x=>x.id===S.active);if(openRound(r))return;S.dirty=false;}S.busy=true;try{await readOfficial();chooseActive();renderOfficial();await refreshLeaderboard();
  if(S.admin && Date.now()-S.modelUpdated>5*60*1000)await loadModel();
  if(S.admin && !$('pc-tab-admin').classList.contains('active'))renderAdmin();}catch(e){console.warn('Playoffs Challenge V4:',e);msg('pc-admin-feedback',e.message,true)}finally{S.busy=false;}}
-function initialDraft(round){let rows=roundEvents(round.id);
+function initialDraft(round){let rows=roundEvents(round.id).filter(x=>!x.is_catalog);
  if(rows.length)return rows.map(e=>({...e}));
  return Array.from({length:stageData(round.stage)[2]},(_,i)=>({kind:'match',slot:i+1,home_name:'',away_name:'',q1:'',qx:'',q2:''}));}
 function localDatetime(iso){if(!iso)return '';const d=new Date(iso);const offset=d.getTimezoneOffset()*60000;return new Date(d-offset).toISOString().slice(0,16)}
@@ -130,6 +158,7 @@ function renderAdmin(){if(!S.admin)return;
  $('pc-admin-draft').hidden=r.status!=='draft';$('pc-admin-grading').hidden=r.status==='draft';
  if(S.adminDraftRoundId!==r.id){S.adminDraft=initialDraft(r);S.adminDraftRoundId=r.id;}
  renderAdminDraft(r);S.simulator?.refresh();S.playerBookmaker?.refresh();
+ const count=roundEvents(r.id).filter(x=>x.is_catalog).length;const summary=$('pc-cat-status');if(summary)summary.textContent=count?`✅ ${count} eventi nel catalogo del turno. Le quote restano provvisorie finché non pubblichi.`:'Nessun catalogo ancora preparato. Le scelte ufficiali saranno limitate agli eventi che inserisci manualmente.';
  if(r.status!=='draft')renderGrading(r);
 }
 function renderAdminDraft(r){const ms=S.adminDraft.filter(x=>x.kind==='match').sort((a,b)=>a.slot-b.slot);const ps=S.adminDraft.filter(x=>x.kind==='player');
@@ -149,6 +178,26 @@ function collectAdminDraft(){const r=S.rounds.find(x=>x.id===Number($('pc-admin-
  const players=[...$('pc-admin-players').querySelectorAll('[data-admin-player]')].map(row=>{const x={kind:'player'};for(const key of ['player_name','player_role','player_event','qyes'])x[key]=row.querySelector(`[data-player-field="${key}"]`).value;return x});
  S.adminDraft=[...matches,...players];
 }
+async function prepareFullCatalog(){
+ const r=S.rounds.find(x=>x.id===Number($('pc-admin-stage').value));
+ if(!r||r.status!=='draft')return msg('pc-cat-status','Catalogo modificabile solo in bozza.',true);
+ if(!$('pc-cat-ack').checked)return msg('pc-cat-status','Devi prima confermare di aver controllato le quote editoriali per i clean sheet e i rigori parati.',true);
+ const manual={'P:CLEAN_SHEET':Number($('pc-cat-p-cs').value),'P:PENALTY_SAVE':Number($('pc-cat-p-pen').value),'D:CLEAN_SHEET':Number($('pc-cat-d-cs').value)};
+ if(Object.values(manual).some(x=>!Number.isFinite(x)||x<1.01||x>10000))return msg('pc-cat-status','Inserisci tre quote editoriali valide (almeno 1,01).',true);
+ let catalog;
+ try{catalog=S.playerBookmaker?.catalogue(manual);if(!catalog)throw new Error('Bookmaker non ancora disponibile.');}
+ catch(e){return msg('pc-cat-status',e.message,true)}
+ const existing=roundEvents(r.id).filter(x=>x.is_catalog).length;
+ if(!confirm(`Generare ${catalog.rows.length} quote da ${catalog.players} calciatori (di cui ${catalog.editorial} EDITORIALI da controllare)? ${existing?'Il catalogo precedente verrà sostituito.':''} Saranno solo in BOZZA e dovrai pubblicarle manualmente.`))return;
+ const button=$('pc-cat-generate');button.disabled=true;
+ msg('pc-cat-status',`Salvataggio di ${catalog.rows.length} quote in Supabase…`);
+ try{
+  const {data,error}=await supabase.rpc('pc_admin_replace_player_catalog',{p_round_id:r.id,p_rows:catalog.rows});
+  if(error)throw error;
+  await readOfficial();
+  msg('pc-cat-status',`✅ ${data} quote in BOZZA salvate (${catalog.supported} statistiche, ${catalog.editorial} editoriali). Dopo la pubblicazione tutti gli allenatori potranno cercare i calciatori.`);
+ }catch(e){msg('pc-cat-status',e.message,true)}finally{button.disabled=false;}
+}
 async function generateOdds(){collectAdminDraft();const r=S.rounds.find(x=>x.id===Number($('pc-admin-stage').value));if(!S.model||!r)return;
  const adjustedModel=S.simulator?.getQuoteModel()||S.model;
  for(const m of S.adminDraft.filter(x=>x.kind==='match')){if(!m.home_name||!m.away_name||normalizeTeam(m.home_name)===normalizeTeam(m.away_name))continue;
@@ -167,7 +216,8 @@ async function saveAdmin(publish=false){collectAdminDraft();const r=S.rounds.fin
  }catch(error){msg('pc-admin-feedback',error.message,true)}
 }
 function renderGrading(r){
- const events=roundEvents(r.id);
+ const selected=new Set(S.entries.filter(e=>Number(e.round_id)===Number(r.id)).flatMap(e=>(e.picks||[]).map(p=>Number(p.event_id))));
+ const events=roundEvents(r.id).filter(ev=>ev.kind==='match'||selected.has(Number(ev.id)));
  const canGrade=r.status==='open' && Date.now()>=new Date(r.closes_at).getTime();
  const finalized=r.status==='finalized';
  $('pc-admin-finalize').hidden=finalized;
@@ -227,6 +277,10 @@ function bind(){
  const h=e.target.closest('[data-official-hero]');if(h){const id=Number(h.dataset.officialHero);if(!S.picks.has(id))return;S.hero=S.hero===id?null:id;if(S.backup===id)S.backup=null;S.dirty=true;renderOfficial();return}
  const b=e.target.closest('[data-official-backup]');if(b){const id=Number(b.dataset.officialBackup);if(!S.picks.has(id))return;S.backup=S.backup===id?null:id;if(S.hero===id)S.hero=null;S.dirty=true;renderOfficial();}
  });
+ $('pc-official-role-picker').addEventListener('click',e=>{const b=e.target.closest('[data-picker-role]');if(!b)return;S.playerRole=b.dataset.pickerRole;S.playerEvent='ALL';S.playerSearch='';renderOfficial();});
+ $('pc-official-player-search').addEventListener('input',e=>{S.playerSearch=e.target.value;const r=S.rounds.find(x=>x.id===S.active);if(r)renderPlayerPicker(r,roundEvents(r.id).filter(x=>x.kind==='player'),openRound(r));$('pc-official-player-search').focus();});
+ $('pc-official-player-event').addEventListener('change',e=>{S.playerEvent=e.target.value;renderOfficial();});
+ $('pc-cat-generate').addEventListener('click',prepareFullCatalog);
  $('pc-official-clear').addEventListener('click',()=>{S.picks.clear();S.hero=null;S.backup=null;S.dirty=true;renderOfficial()});
  $('pc-official-save').addEventListener('click',saveEntry);
  $('pc-admin-stage').addEventListener('change',renderAdmin);
@@ -295,6 +349,7 @@ function bind(){
     return true;
   }
  });}
+ mountDemoPlayerPicker(supabase);
  bind();await loadModel();await readOfficial();chooseActive();renderOfficial();await refreshLeaderboard();if(S.admin)renderAdmin();
  setInterval(()=>{if(!document.hidden)update()},90000);
  document.addEventListener('visibilitychange',()=>{if(!document.hidden)update()});

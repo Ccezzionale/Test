@@ -8,7 +8,7 @@
   <title>Playoffs Challenge | Lega degli Eroi</title>
   <link rel="icon" href="icon-192.png" type="image/png" />
   <link rel="stylesheet" href="navbar.css?v=20261015" />
-  <link rel="stylesheet" href="playoffs-challenge.css?v=pc-v9-2" />
+  <link rel="stylesheet" href="playoffs-challenge.css?v=pc-v9-3" />
 </head>
 <body class="pc-page">
 <nav class="site-nav">
@@ -225,7 +225,17 @@
         <div class="pc-heading compact"><div><h3>⚔️ Pronostici sulle partite</h3><p>Seleziona il risultato 1, X o 2. Le quote sono quelle pubblicate, non quelle indicative.</p></div></div>
         <div class="pc-match-list" id="pc-official-matches"></div>
         <div class="pc-heading"><div><h3>⚽ Pronostici sui calciatori</h3><p>Un calciatore per ruolo, più due selezioni libere nelle semifinali e nelle finali. Non puoi scegliere lo stesso calciatore due volte.</p></div></div>
-        <div id="pc-official-players" class="pc-player-events"></div>
+        <div class="pc-picker-shell pc-panel">
+          <p>Seleziona il ruolo, cerca il calciatore e scegli l'evento. <strong>Le quote sono quelle congelate dal Commissioner.</strong> Puoi selezionare fino a quattro calciatori agli ottavi/quarti, sei nei turni successivi.</p>
+          <div class="pc-role-picker" id="pc-official-role-picker" role="group" aria-label="Scegli ruolo"></div>
+          <div class="pc-picker-fields">
+            <label>Cerca per nome o squadra<input type="search" id="pc-official-player-search" placeholder="Cerca nel catalogo ufficiale…" autocomplete="off"/></label>
+            <label>Evento<select id="pc-official-player-event"></select></label>
+          </div>
+          <p class="pc-picker-info" id="pc-official-player-info"></p>
+          <div class="pc-picker-selected" id="pc-official-player-selected"></div>
+          <div id="pc-official-players" class="pc-player-events"></div>
+        </div>
         <div class="pc-panel pc-entry-summary"><div id="pc-official-count">0 pronostici</div><div id="pc-official-potential">0,00 punti potenziali</div><div id="pc-official-message" class="pc-feedback" role="status"></div>
           <div class="pc-entry-actions"><button type="button" class="pc-button pc-ghost" id="pc-official-clear">Azzera selezioni</button><button type="button" class="pc-button pc-primary" id="pc-official-save">💾 Consegna / aggiorna schedina</button></div>
         </div>
@@ -234,12 +244,16 @@
       <div id="pc-demo-area"><div class="pc-match-list" id="pc-match-list" aria-live="polite"></div>
       <div class="pc-player-preview pc-panel">
         <div class="pc-heading compact"><div><div class="pc-kicker">SEZIONE B · EVENTI SERIE A</div><h3>Pronostici sui calciatori</h3><p>Durante gli ottavi potrai scegliere quattro calciatori, uno per ruolo, con eventi quotati: POR, DIF, CEN e ATT.</p></div><span class="pc-small-tag">In preparazione</span></div>
-        <div class="pc-role-grid">
-          <div><span>🧤</span><b>POR</b><small>Clean sheet / Rigore parato</small></div>
-          <div><span>🛡️</span><b>DIF</b><small>Gol / Assist / Clean sheet</small></div>
-          <div><span>🎯</span><b>CEN</b><small>Gol / Assist / Gol o assist</small></div>
-          <div><span>⚽</span><b>ATT</b><small>Gol / Assist / Doppietta</small></div>
+        <p class="pc-picker-disclaimer">🔎 <strong>Prova interattiva:</strong> puoi scegliere i calciatori del listino e il tipo di evento, ma qui non vengono salvati pronostici e non sono ancora disponibili quote ufficiali.</p>
+        <div class="pc-role-picker" id="pc-demo-role-picker" role="group" aria-label="Seleziona ruolo per la simulazione"></div>
+        <div class="pc-picker-fields">
+          <label>Cerca calciatore<input id="pc-demo-player-search" type="search" placeholder="Nome o squadra…" autocomplete="off"/></label>
+          <label>Calciatore<select id="pc-demo-player-select"></select></label>
+          <label>Pronostico<select id="pc-demo-player-event"></select></label>
+          <button type="button" id="pc-demo-player-add" class="pc-button pc-primary">+ Aggiungi alla prova</button>
         </div>
+        <p class="pc-feedback" id="pc-demo-player-feedback" role="status">Caricamento listino giocatori…</p>
+        <div id="pc-demo-player-selected" class="pc-picker-selected"></div>
       </div>
       <div class="pc-submit pc-panel"><div><strong id="pc-demo-points">0,00 pt potenziali</strong><p id="pc-demo-hint">Scegli qualche segno per simulare la schedina. Le quote si sommano, non si moltiplicano.</p></div><div class="pc-submit-actions"><button type="button" class="pc-button pc-ghost" id="pc-clear">Azzera simulazione</button><button type="button" class="pc-button pc-primary" disabled>Consegna non ancora aperta</button></div></div>
       </div>
@@ -332,7 +346,22 @@
             <p class="pc-feedback" id="pc-player-quote-status" role="status"></p>
             <p class="pc-pb-disclaimer"><strong>Attenzione:</strong> i dati sono cumulativi e la probabilità è stimata <strong>per presenza</strong>, senza conoscere la titolarità della prossima partita. La conversione gol/assist usa ipotesi di Poisson: una doppietta non è direttamente osservabile da un totale stagionale. Clean sheet e rigori parati rimangono manuali. Nessuna modifica automatica alle quote ufficiali.</p>
           </section>
-          <h3>⚽ Palinsesto eventi calciatori</h3><p>Puoi modificare manualmente qualunque quota suggerita, oppure aggiungere eventi senza passare dal bookmaker. La pubblicazione resta un'azione separata.</p>
+          <section class="pc-panel pc-catalogue-admin" id="pc-catalogue-admin" aria-label="Catalogo ufficiale calciatori">
+            <div class="pc-kicker">V9.3 · MERCATO COMPLETO DEI CALCIATORI</div>
+            <h3>📚 Prepara il catalogo completo di quote</h3>
+            <p>Genera in blocco gli eventi per tutti i giocatori dal Bookmaker V9.1. I calciatori potranno essere cercati liberamente nelle schedine. <strong>Il catalogo è una BOZZA</strong> finché non pubblichi il turno.</p>
+            <p>⚠️ Clean sheet e rigori parati non sono stimabili dallo storico. I tre valori seguenti sono <strong>quote editoriali comuni, NON calcoli statistici</strong>: il Commissioner deve controllarli prima della pubblicazione.</p>
+            <div class="pc-catalogue-manual">
+              <label>POR · Clean sheet <input id="pc-cat-p-cs" type="number" min="1.01" max="10000" step="0.01" value="3.50" /></label>
+              <label>POR · Rigore parato <input id="pc-cat-p-pen" type="number" min="1.01" max="10000" step="0.01" value="30.00" /></label>
+              <label>DIF · Clean sheet <input id="pc-cat-d-cs" type="number" min="1.01" max="10000" step="0.01" value="4.00" /></label>
+            </div>
+            <label class="pc-cat-check"><input type="checkbox" id="pc-cat-ack" /> Ho verificato le quote editoriali e capisco che sono uguali per tutti i giocatori del relativo gruppo.</label>
+            <div class="pc-entry-actions"><button type="button" class="pc-button pc-primary" id="pc-cat-generate">📚 Genera e salva catalogo completo nella BOZZA</button></div>
+            <p class="pc-feedback" id="pc-cat-status" role="status">Nessun catalogo ufficiale ancora generato per questo turno.</p>
+            <p class="pc-history-hint">Il catalogo è salvato in Supabase solo dopo questo pulsante, ma diventa pubblico solo quando premi «Pubblica palinsesto ufficiale». Se modifichi i pesi del modello, rigenera il catalogo PRIMA di pubblicare.</p>
+          </section>
+          <h3>⚽ Eventi speciali aggiunti manualmente</h3><p>Puoi modificare manualmente qualunque quota suggerita, oppure aggiungere eventi senza passare dal bookmaker. La pubblicazione resta un'azione separata.</p>
           <div id="pc-admin-players"></div>
           <button class="pc-button pc-ghost" type="button" id="pc-admin-add-player">+ Aggiungi evento calciatore</button>
           <div class="pc-entry-actions"><button class="pc-button pc-ghost" type="button" id="pc-admin-save-draft">💾 Salva bozza</button><button class="pc-button pc-primary" type="button" id="pc-admin-publish">🔒 Pubblica palinsesto ufficiale</button></div>
@@ -359,8 +388,8 @@
   </div>
 </main>
 <script defer src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
-<script type="module" src="playoffs-challenge.js?v=pc-v9-1"></script>
-<script type="module" src="playoffs-challenge-live.js?v=pc-v9-2-audit"></script>
+<script type="module" src="playoffs-challenge.js?v=pc-v9-3"></script>
+<script type="module" src="playoffs-challenge-live.js?v=pc-v9-3-player-picker"></script>
 <script src="mobile-nav.js?v=20261007-bottom4"></script>
 <script src="navbar.js?v=20261015"></script>
 <script type="module" src="admin-nav.js?v=1"></script>

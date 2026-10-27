@@ -311,3 +311,26 @@
 .pc-correction-history small{display:block;margin-top:5px;color:#c1d4e6}
 @media(max-width:990px){.pc-correction-row{grid-template-columns:1fr 1fr}.pc-correction-row strong{grid-column:1/-1}.pc-correction-row label:last-of-type{grid-column:1/-1}}
 @media(max-width:520px){.pc-correction-row{grid-template-columns:1fr}.pc-correction-row strong,.pc-correction-row label:last-of-type{grid-column:auto}}
+
+/* V9.3 · selezione per ruolo e catalogo ufficiale */
+.pc-role-picker{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:15px 0}
+.pc-role-choice{display:grid;gap:5px;text-align:left;background:#081d35;border:1px solid #315276;border-radius:12px;color:#e8f3ff;min-height:81px;cursor:pointer;padding:11px 13px;transition:border-color .12s ease,background .12s ease}
+.pc-role-choice strong{font-size:.9rem;color:#ffdf98}.pc-role-choice small{font-size:.74rem;color:#abc7e3}
+.pc-role-choice.active,.pc-role-choice[aria-pressed="true"]{background:#1c4164;border-color:#ffd17a;box-shadow:0 0 0 1px #ffd17a66}
+.pc-picker-shell{margin:12px 0 22px}.pc-picker-shell>p{margin:0;color:#bad2ea;font-size:.86rem;line-height:1.5}
+.pc-picker-fields{display:grid;grid-template-columns:1.1fr 1.25fr 1fr auto;gap:10px;align-items:end;margin:13px 0}
+.pc-picker-shell .pc-picker-fields{grid-template-columns:minmax(180px,1.25fr) minmax(140px,1fr)}
+.pc-picker-fields label{display:grid;gap:7px;font-size:.81rem;color:#cee1f6;font-weight:700}
+.pc-picker-fields input,.pc-picker-fields select,.pc-catalogue-manual input{min-width:0;max-width:100%;width:100%;box-sizing:border-box;background:#f8faff;color:#112c49;border:1px solid #869fbf;border-radius:9px;padding:10px;min-height:42px}
+.pc-picker-selected{display:grid;gap:7px;margin:12px 0}
+.pc-picker-chip{display:flex;gap:9px;align-items:center;justify-content:space-between;flex-wrap:wrap;border:1px solid #496a8f;background:#143656;border-radius:10px;padding:10px 12px;color:#eef7ff;font-size:.84rem}
+.pc-picker-info,.pc-picker-disclaimer{font-size:.82rem;color:#bcd4ed;line-height:1.6}
+.pc-player-events{max-height:670px;overflow-y:auto;overscroll-behavior:contain}
+.pc-catalogue-admin{margin:18px 0;background:#102f51;border:1px solid #6d8da97d}
+.pc-catalogue-admin h3{margin:.5rem 0;color:#ffdd9c}.pc-catalogue-admin p{color:#c0d5eb;line-height:1.55;font-size:.85rem}
+.pc-catalogue-manual{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:12px 0}
+.pc-catalogue-manual label{display:grid;gap:6px;font-size:.79rem;font-weight:700;color:#dce8f7}
+.pc-cat-check{display:flex;align-items:flex-start;gap:8px;color:#f3dbac;font-size:.8rem;line-height:1.5;margin:15px 0}
+.pc-cat-check input{margin-top:2px;accent-color:#ffd07e}
+@media(max-width:810px){.pc-picker-fields,.pc-catalogue-manual{grid-template-columns:1fr 1fr}.pc-picker-fields .pc-button{grid-column:1/-1}}
+@media(max-width:580px){.pc-role-picker{grid-template-columns:repeat(2,minmax(0,1fr))}.pc-picker-fields,.pc-picker-shell .pc-picker-fields,.pc-catalogue-manual{grid-template-columns:1fr}.pc-picker-fields .pc-button{grid-column:auto}}
