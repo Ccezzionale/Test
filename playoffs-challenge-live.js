@@ -158,6 +158,18 @@ function renderAdminGuide(r){
    `Stato: ${status}. Gli allenatori NON possono ancora consegnare schedine per questo turno.`:
    r.status==='open'?`Stato: ${status}. Le quote sono bloccate. Termine consegna: ${new Date(r.closes_at).toLocaleString('it-IT')}.`:
    'Stato: omologato. Le classifiche sono ufficiali; eventuali correzioni richiedono una motivazione.';
+ const unpublishBox=$('pc-unpublish-panel');
+ if(unpublishBox){
+   const isPublished=r.status==='open';
+   const entryCount=S.entries.filter(e=>Number(e.round_id)===Number(r.id)).length;
+   unpublishBox.hidden=!isPublished;
+   if(isPublished){
+     $('pc-unpublish-count').textContent=entryCount
+       ? `${entryCount} schedine già consegnate: NON puoi tornare in bozza senza gestire prima i pronostici ricevuti.`
+       : 'Nessuna schedina consegnata: puoi ritirare questa pubblicazione senza perdere partite e quote.';
+     $('pc-admin-unpublish').disabled=entryCount>0;
+   }
+ }
  const label=(n,value,ok=false)=>{
    const node=$(`pc-guide-state-${n}`);if(!node)return;
    node.textContent=value;node.classList.toggle('pc-step-done',ok);
@@ -224,6 +236,24 @@ async function prepareFullCatalog(){
   await readOfficial();
   msg('pc-cat-status',`✅ ${data} quote in BOZZA salvate (${catalog.supported} statistiche, ${catalog.editorial} editoriali). Dopo la pubblicazione tutti gli allenatori potranno cercare i calciatori.`);renderAdminGuide(r);
  }catch(e){msg('pc-cat-status',e.message,true)}finally{button.disabled=false;}
+}
+async function unpublishRound(){
+ const id=Number($('pc-admin-stage').value);
+ const r=S.rounds.find(x=>Number(x.id)===id);
+ if(!r||r.status!=='open')return msg('pc-admin-feedback','Questa giornata non è pubblicata.',true);
+ const submitted=S.entries.filter(e=>Number(e.round_id)===id).length;
+ if(submitted)return msg('pc-admin-feedback',`Operazione bloccata: ci sono già ${submitted} schedine consegnate.`,true);
+ if(!confirm(`RITIRARE la pubblicazione di ${stageData(r.stage)[1]}?\n\nLe schedine si chiuderanno subito e il turno tornerà in bozza. Partite, calciatori e quote NON verranno cancellati.\n\nConsentito soltanto se nessuno ha già consegnato pronostici.`))return;
+ const btn=$('pc-admin-unpublish');btn.disabled=true;
+ try{
+   const {error}=await supabase.rpc('pc_admin_unpublish_round',{p_round_id:id});
+   if(error)throw error;
+   await readOfficial();S.adminDraftRoundId=null;
+   chooseActive();renderOfficial();renderAdmin();
+   msg('pc-admin-feedback','✅ Pubblicazione ritirata. La giornata è di nuovo in bozza: puoi modificare quote e partite ai passaggi 02–05. Gli eventi già preparati sono rimasti salvati.');
+ }catch(e){msg('pc-admin-feedback',`Impossibile tornare in bozza: ${e.message}`,true);
+   await readOfficial().catch(()=>{});renderAdmin();
+ }finally{btn.disabled=false;renderAdminGuide(S.rounds.find(x=>Number(x.id)===id));}
 }
 async function generateOdds(){collectAdminDraft();const r=S.rounds.find(x=>x.id===Number($('pc-admin-stage').value));if(!S.model||!r)return;
  if(document.querySelector('input[name="pc-sim-mode"]:checked')?.value==='custom'&&!S.simulator?.getWeights())return msg('pc-admin-feedback','Correggi prima i tre pesi personalizzati: devono sommare esattamente il 100%.',true);
@@ -329,6 +359,7 @@ function bind(){
  $('pc-admin-generate').addEventListener('click',generateOdds);
  $('pc-admin-save-draft').addEventListener('click',()=>saveAdmin(false));
  $('pc-admin-publish').addEventListener('click',()=>saveAdmin(true));
+ $('pc-admin-unpublish').addEventListener('click',unpublishRound);
  $('pc-admin-outcomes').addEventListener('click',e=>{const btn=e.target.closest('[data-grade-save]');if(btn)setGrade(Number(btn.dataset.gradeSave))});
  $('pc-admin-finalize').addEventListener('click',finalize);
  $('pc-ranking-filter').addEventListener('change',()=>renderLeaderboard(S.leaderboardRows));

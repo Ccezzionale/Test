@@ -291,6 +291,11 @@
         <div class="pc-admin-intro" role="note"><strong>Come funziona in breve</strong><p>① Scegli il turno → ② Inserisci le partite → ③ Controlla le quote → ④ Prepara i calciatori → ⑤ Imposta la scadenza e pubblica → ⑥ Dopo le partite inserisci gli esiti e omologa.</p><p><strong>Salva bozza</strong> conserva il lavoro ma NON apre le schedine. <strong>Pubblica</strong> apre la gara e blocca le quote: usa quel pulsante solo quando tutto è definitivo.</p></div>
         <section class="pc-admin-step" id="pc-guide-step1"><header><span class="pc-step-num">01</span><div><h3>Scegli la giornata</h3><p>Ogni turno ha un palinsesto distinto. Inizia dagli ottavi.</p></div><span id="pc-guide-state-1" class="pc-step-badge">Pronto</span></header>
           <div class="pc-field"><label for="pc-admin-stage">Turno da gestire</label><select id="pc-admin-stage"></select></div><p id="pc-guide-round-status" class="pc-step-note">Caricamento stato…</p>
+          <div id="pc-unpublish-panel" class="pc-step-note" hidden>
+            <p><strong>🔓 Vuoi correggere un turno già pubblicato?</strong> Se nessun allenatore ha consegnato una schedina, puoi ritirare la pubblicazione, conservare le partite e tutte le quote, e tornare ai passaggi 02–05.</p>
+            <p id="pc-unpublish-count"></p>
+            <button class="pc-button pc-ghost" type="button" id="pc-admin-unpublish">↩ Ritira pubblicazione e torna in bozza</button>
+          </div>
         </section>
         <div id="pc-admin-draft">
           <section class="pc-admin-step" id="pc-guide-step2"><header><span class="pc-step-num">02</span><div><h3>Inserisci le partite</h3><p>Controlla le franchigie e il loro ordine. Il seeding provvisorio degli ottavi è un suggerimento, non il tabellone definitivo.</p></div><span id="pc-guide-state-2" class="pc-step-badge">Da fare</span></header>
@@ -400,12 +405,12 @@
       </div>
     </section>
 
-    <footer class="pc-footer">Playoffs Challenge · V9.4 guida Commissioner · Supabase · Schedine valide soltanto nei turni ufficialmente aperti</footer>
+    <footer class="pc-footer">Playoffs Challenge · V9.4.2 guida Commissioner · Supabase · Schedine valide soltanto nei turni ufficialmente aperti</footer>
   </div>
 </main>
 <script defer src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
 <script type="module" src="playoffs-challenge.js?v=pc-v9-4-1"></script>
-<script type="module" src="playoffs-challenge-live.js?v=pc-v9-4-admin"></script>
+<script type="module" src="playoffs-challenge-live.js?v=pc-v9-4-2"></script>
 <script src="mobile-nav.js?v=20261007-bottom4"></script>
 <script src="navbar.js?v=20261015"></script>
 <script type="module" src="admin-nav.js?v=1"></script>
