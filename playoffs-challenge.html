@@ -8,7 +8,7 @@
   <title>Playoffs Challenge | Lega degli Eroi</title>
   <link rel="icon" href="icon-192.png" type="image/png" />
   <link rel="stylesheet" href="navbar.css?v=20261015" />
-  <link rel="stylesheet" href="playoffs-challenge.css?v=pc-v9-3" />
+  <link rel="stylesheet" href="playoffs-challenge.css?v=pc-v9-4-admin" />
 </head>
 <body class="pc-page">
 <nav class="site-nav">
@@ -286,43 +286,60 @@
     </section>
 
     <section class="pc-tabpanel" id="pc-tab-admin" role="tabpanel" aria-label="Gestione Commissioner" hidden>
-      <div class="pc-heading"><div><div class="pc-kicker">RISERVATO AGLI AMMINISTRATORI</div><h2>⚙️ Centro di controllo</h2><p>Prepara il palinsesto, assegna le quote, pubblica e omologa gli esiti. I turni pubblicati sono bloccati.</p></div></div>
+      <div class="pc-heading"><div><div class="pc-kicker">SOLO ADMIN · GUIDA PRATICA</div><h2>⚙️ Prepara la Playoffs Challenge</h2><p>Segui i passaggi nell'ordine. Ogni turno si prepara separatamente. Le quote rimangono invisibili agli allenatori finché non premi <strong>Pubblica</strong>.</p></div></div>
       <div class="pc-panel pc-admin-controls">
-        <div class="pc-field"><label for="pc-admin-stage">Turno da gestire</label><select id="pc-admin-stage"></select></div>
-        <div class="pc-field"><label for="pc-admin-deadline">Scadenza schedine (ora locale)</label><input id="pc-admin-deadline" type="datetime-local"/></div>
+        <div class="pc-admin-intro" role="note"><strong>Come funziona in breve</strong><p>① Scegli il turno → ② Inserisci le partite → ③ Controlla le quote → ④ Prepara i calciatori → ⑤ Imposta la scadenza e pubblica → ⑥ Dopo le partite inserisci gli esiti e omologa.</p><p><strong>Salva bozza</strong> conserva il lavoro ma NON apre le schedine. <strong>Pubblica</strong> apre la gara e blocca le quote: usa quel pulsante solo quando tutto è definitivo.</p></div>
+        <section class="pc-admin-step" id="pc-guide-step1"><header><span class="pc-step-num">01</span><div><h3>Scegli la giornata</h3><p>Ogni turno ha un palinsesto distinto. Inizia dagli ottavi.</p></div><span id="pc-guide-state-1" class="pc-step-badge">Pronto</span></header>
+          <div class="pc-field"><label for="pc-admin-stage">Turno da gestire</label><select id="pc-admin-stage"></select></div><p id="pc-guide-round-status" class="pc-step-note">Caricamento stato…</p>
+        </section>
         <div id="pc-admin-draft">
+          <section class="pc-admin-step" id="pc-guide-step2"><header><span class="pc-step-num">02</span><div><h3>Inserisci le partite</h3><p>Controlla le franchigie e il loro ordine. Il seeding provvisorio degli ottavi è un suggerimento, non il tabellone definitivo.</p></div><span id="pc-guide-state-2" class="pc-step-badge">Da fare</span></header>
+          <p><strong>Puoi cambiare qualsiasi quota direttamente nei campi 1, X e 2.</strong> Se preferisci il calcolo automatico premi «Genera quote». Prima controlla sempre che le squadre siano giuste.</p><div id="pc-admin-matches"></div>
+          <div class="pc-entry-actions"><button class="pc-button pc-ghost" type="button" id="pc-admin-forecast">Carica gli ottavi provvisori</button><button class="pc-button pc-primary" type="button" id="pc-admin-generate">⚡ Genera quote</button></div>
+
+          </section>
+          <section class="pc-admin-step" id="pc-guide-step3"><header><span class="pc-step-num">03</span><div><h3>Controlla le quote 1 / X / 2</h3><p>Parti dal motore attuale. Puoi sperimentare altri pesi oppure scrivere manualmente le quote nelle caselle delle partite del passaggio 02.</p></div><span id="pc-guide-state-3" class="pc-step-badge">Da verificare</span></header>
           <section class="pc-simulator" id="pc-weight-simulator" aria-label="Simulatore quote del Commissioner">
-            <div class="pc-sim-top"><div><div class="pc-kicker">LABORATORIO QUOTE 1X2</div><h3>🎚️ Simulatore dei pesi</h3>
-            <p>Modifica quanto contano i dati: le quote si aggiornano <strong>in tempo reale</strong>. Il simulatore non salva né pubblica niente.</p></div>
-            <span class="pc-sim-total" id="pc-sim-total">100%</span></div>
-            <div class="pc-sim-sliders">
-              <label for="pc-weight-historic"><span>📚 Storico 2025/26 <small>Rose della stagione precedente</small></span><output id="pc-weight-historic-value">10%</output><input id="pc-weight-historic" data-weight="historic" type="range" min="0" max="100" step="1" value="10"/></label>
-              <label for="pc-weight-season"><span>📅 Stagione 2026/27 <small>Media di tutte le giornate completate</small></span><output id="pc-weight-season-value">60%</output><input id="pc-weight-season" data-weight="season" type="range" min="0" max="100" step="1" value="60"/></label>
-              <label for="pc-weight-recent5"><span>🔥 Ultime 5 giornate <small>Forma recente nella stagione attuale</small></span><output id="pc-weight-recent5-value">30%</output><input id="pc-weight-recent5" data-weight="recent5" type="range" min="0" max="100" step="1" value="30"/></label>
+            <div class="pc-sim-top"><div><div class="pc-kicker">QUOTE DELLE PARTITE</div><h3>🎚️ Scegli come calcolare le quote</h3>
+              <p><strong>All'apertura usiamo lo stesso motore standard dell'app.</strong> I pesi percentuali sono una simulazione alternativa: applicali solo se preferisci il risultato.</p></div><span class="pc-sim-total" id="pc-sim-total">STANDARD</span></div>
+            <div class="pc-sim-modes" role="radiogroup" aria-label="Metodo di calcolo delle quote">
+              <label><input type="radio" name="pc-sim-mode" value="standard" checked/> <span><strong>✓ Motore attuale</strong><small>Quello già utilizzato dal Bookmaker: forma recente, storico leggero e media Lega. Non ha pesi 10/60/30 fissi.</small></span></label>
+              <label><input type="radio" name="pc-sim-mode" value="custom"/> <span><strong>Pesi personalizzati</strong><small>Scegli tu le percentuali per confrontare e, se vuoi, applicare quote diverse.</small></span></label>
             </div>
-            <div class="pc-sim-actions"><span>Totale fisso al 100%: spostando un cursore gli altri si adattano automaticamente.</span>
-            <button type="button" class="pc-button pc-ghost" id="pc-sim-reset">↺ Ripristina 10 / 60 / 30</button></div>
+            <div class="pc-sim-custom" id="pc-sim-custom" hidden>
+              <div class="pc-sim-sliders">
+                <label for="pc-weight-historic"><span>📚 Storico 2025/26 <small>Rose dell'anno scorso</small></span><div class="pc-sim-number"><input id="pc-weight-historic" data-weight="historic" type="number" inputmode="numeric" min="0" max="100" step="1" value="10"/><span>%</span></div></label>
+                <label for="pc-weight-season"><span>📅 Stagione attuale <small>Tutte le giornate completate</small></span><div class="pc-sim-number"><input id="pc-weight-season" data-weight="season" type="number" inputmode="numeric" min="0" max="100" step="1" value="60"/><span>%</span></div></label>
+                <label for="pc-weight-recent5"><span>🔥 Ultime 5 giornate <small>Forma recente (già inclusa nella stagione)</small></span><div class="pc-sim-number"><input id="pc-weight-recent5" data-weight="recent5" type="number" inputmode="numeric" min="0" max="100" step="1" value="30"/><span>%</span></div></label>
+              </div>
+              <div class="pc-sim-actions"><span>Scrivi i tre valori liberamente: <strong>nessuna percentuale si sposta da sola</strong>. L'anteprima si aggiorna quando la somma è 100%.</span><button type="button" class="pc-button pc-ghost" id="pc-sim-reset">↺ Ripristina 10 / 60 / 30</button></div>
+              <p id="pc-sim-input-feedback" class="pc-feedback" role="status"></p>
+            </div>
             <div class="pc-sim-warning" id="pc-sim-warning" role="status"></div>
-            <div class="pc-sim-results"><div class="pc-sim-result-head"><strong>Prima e dopo, partita per partita</strong><span>Originale V4 → Simulazione</span></div><div id="pc-sim-games"></div></div>
-            <div class="pc-sim-footer"><p><strong>Nota:</strong> stagione e ultime 5 si sovrappongono volutamente. Se manca lo storico di una squadra, il peso viene ridistribuito fra i dati disponibili. Le quote calciatori non cambiano.</p>
-            <button type="button" class="pc-button pc-primary" id="pc-sim-apply">✓ Applica quote simulate alla bozza</button></div>
+            <div class="pc-sim-results"><div class="pc-sim-result-head"><strong>Prima e dopo, partita per partita</strong><span>Quota attuale → Quota scelta</span></div><div id="pc-sim-games"></div></div>
+            <div class="pc-sim-footer"><p><strong>Nota:</strong> stagione e ultime cinque giornate contengono parte degli stessi risultati. Se manca lo storico di una squadra, il peso viene ridistribuito fra i dati disponibili. Le quote calciatori non cambiano.</p>
+            <button type="button" class="pc-button pc-primary" id="pc-sim-apply">✓ Copia queste quote nelle partite qui sotto</button></div>
           </section>
 
-          <h3>⚔️ Incontri del turno</h3><p>Modalità automatica: premi «Genera quote». Modalità manuale: modifica direttamente le quote 1, X e 2 nei campi sottostanti.</p><div id="pc-admin-matches"></div>
-          <div class="pc-entry-actions"><button class="pc-button pc-ghost" type="button" id="pc-admin-forecast">Carica gli ottavi provvisori</button><button class="pc-button pc-primary" type="button" id="pc-admin-generate">⚡ Genera quote</button></div>
-          <section class="pc-panel pc-history-upload" id="pc-history-upload" aria-label="Archivio statistiche Fantacalcio">
-            <div class="pc-kicker">V9 · TRE STAGIONI DI DATI</div>
-            <h3>📊 Importazione statistiche calciatori</h3>
-            <p>Carica i file ufficiali <strong>Statistiche Fantacalcio</strong> in formato Excel, foglio <strong>Tutti</strong>. La prima volta importa 2024/25 e 2025/26 (fine stagione, GW38), poi il 2026/27 (GW6). Le prossime settimane carica solo il file aggiornato della stagione 2026/27 con la sua giornata. L'archivio conserva le fotografie precedenti.</p>
-            <div class="pc-history-grid">
-              <label>Stagione<select id="pc-history-season"><option value="2024/25">2024/25 · completa</option><option value="2025/26">2025/26 · completa</option><option value="2026/27" selected>2026/27 · in corso</option></select></label>
-              <label>Giornata del file<input id="pc-history-gw" type="number" min="1" max="38" step="1" value="6"/></label>
-              <label>Excel Fantacalcio<input id="pc-history-file" type="file" accept=".xlsx,.xls"/></label>
-            </div>
-            <div class="pc-entry-actions"><button id="pc-history-import" class="pc-button pc-primary" type="button">📥 Importa e aggiorna archivio</button></div>
-            <p id="pc-history-feedback" class="pc-feedback" role="status">Nessun file caricato in questa sessione.</p>
-            <p class="pc-history-hint">Accesso solo Admin. L'importazione modifica esclusivamente lo storico statistiche V9, <strong>mai le schedine, le quote già pubblicate o i risultati della Lega</strong>. Per leggere Excel serve una connessione Internet alla libreria SheetJS.</p>
           </section>
+          <section class="pc-admin-step" id="pc-guide-step4"><header><span class="pc-step-num">04</span><div><h3>Prepara le quote dei calciatori</h3><p>È questo che permetterà agli allenatori di cercare POR, DIF, CEN e ATT. Genera una volta il catalogo, controlla gli eventi editoriali e salvalo in bozza.</p></div><span id="pc-guide-state-4" class="pc-step-badge">Da fare</span></header>
+          <section class="pc-panel pc-catalogue-admin" id="pc-catalogue-admin" aria-label="Catalogo ufficiale calciatori">
+            <div class="pc-kicker">V9.3 · MERCATO COMPLETO DEI CALCIATORI</div>
+            <h3>📚 Prepara il catalogo completo di quote</h3>
+            <p>Genera in blocco gli eventi per tutti i giocatori dal Bookmaker V9.1. I calciatori potranno essere cercati liberamente nelle schedine. <strong>Il catalogo è una BOZZA</strong> finché non pubblichi il turno.</p>
+            <p>⚠️ Clean sheet e rigori parati non sono stimabili dallo storico. I tre valori seguenti sono <strong>quote editoriali comuni, NON calcoli statistici</strong>: il Commissioner deve controllarli prima della pubblicazione.</p>
+            <div class="pc-catalogue-manual">
+              <label>POR · Clean sheet <input id="pc-cat-p-cs" type="number" min="1.01" max="10000" step="0.01" value="3.50" /></label>
+              <label>POR · Rigore parato <input id="pc-cat-p-pen" type="number" min="1.01" max="10000" step="0.01" value="30.00" /></label>
+              <label>DIF · Clean sheet <input id="pc-cat-d-cs" type="number" min="1.01" max="10000" step="0.01" value="4.00" /></label>
+            </div>
+            <label class="pc-cat-check"><input type="checkbox" id="pc-cat-ack" /> Ho verificato le quote editoriali e capisco che sono uguali per tutti i giocatori del relativo gruppo.</label>
+            <div class="pc-entry-actions"><button type="button" class="pc-button pc-primary" id="pc-cat-generate">📚 Genera e salva catalogo completo nella BOZZA</button></div>
+            <p class="pc-feedback" id="pc-cat-status" role="status">Nessun catalogo ufficiale ancora generato per questo turno.</p>
+            <p class="pc-history-hint">Il catalogo è salvato in Supabase solo dopo questo pulsante, ma diventa pubblico solo quando premi «Pubblica palinsesto ufficiale». Se modifichi i pesi del modello, rigenera il catalogo PRIMA di pubblicare.</p>
+          </section>
+
+            <details class="pc-admin-extra" id="pc-admin-advanced-players"><summary>Opzioni avanzate: calcola una quota singola o aggiungi eventi manuali</summary><p>Di norma non serve: il catalogo completo genera già le quote disponibili per tutti i calciatori.</p>
           <section class="pc-panel pc-player-bookmaker" id="pc-player-bookmaker" aria-label="Bookmaker quote calciatori">
             <div class="pc-kicker">V9 · STORICO 2024-2027 E MANTRA</div>
             <div class="pc-pb-heading"><div><h3>⚽ Generatore di quote calciatori</h3><p>Il motore usa gol, assist e presenze delle ultime tre stagioni, con una media diversa per ogni ruolo Mantra (M, C, T, Pc e gli altri). I nuovi calciatori partono dalla media del ruolo. La quotazione Classic resta una correzione: puoi sempre modificare manualmente la quota.</p></div><span class="pc-small-tag">Solo Commissioner</span></div>
@@ -346,50 +363,49 @@
             <p class="pc-feedback" id="pc-player-quote-status" role="status"></p>
             <p class="pc-pb-disclaimer"><strong>Attenzione:</strong> i dati sono cumulativi e la probabilità è stimata <strong>per presenza</strong>, senza conoscere la titolarità della prossima partita. La conversione gol/assist usa ipotesi di Poisson: una doppietta non è direttamente osservabile da un totale stagionale. Clean sheet e rigori parati rimangono manuali. Nessuna modifica automatica alle quote ufficiali.</p>
           </section>
-          <section class="pc-panel pc-catalogue-admin" id="pc-catalogue-admin" aria-label="Catalogo ufficiale calciatori">
-            <div class="pc-kicker">V9.3 · MERCATO COMPLETO DEI CALCIATORI</div>
-            <h3>📚 Prepara il catalogo completo di quote</h3>
-            <p>Genera in blocco gli eventi per tutti i giocatori dal Bookmaker V9.1. I calciatori potranno essere cercati liberamente nelle schedine. <strong>Il catalogo è una BOZZA</strong> finché non pubblichi il turno.</p>
-            <p>⚠️ Clean sheet e rigori parati non sono stimabili dallo storico. I tre valori seguenti sono <strong>quote editoriali comuni, NON calcoli statistici</strong>: il Commissioner deve controllarli prima della pubblicazione.</p>
-            <div class="pc-catalogue-manual">
-              <label>POR · Clean sheet <input id="pc-cat-p-cs" type="number" min="1.01" max="10000" step="0.01" value="3.50" /></label>
-              <label>POR · Rigore parato <input id="pc-cat-p-pen" type="number" min="1.01" max="10000" step="0.01" value="30.00" /></label>
-              <label>DIF · Clean sheet <input id="pc-cat-d-cs" type="number" min="1.01" max="10000" step="0.01" value="4.00" /></label>
-            </div>
-            <label class="pc-cat-check"><input type="checkbox" id="pc-cat-ack" /> Ho verificato le quote editoriali e capisco che sono uguali per tutti i giocatori del relativo gruppo.</label>
-            <div class="pc-entry-actions"><button type="button" class="pc-button pc-primary" id="pc-cat-generate">📚 Genera e salva catalogo completo nella BOZZA</button></div>
-            <p class="pc-feedback" id="pc-cat-status" role="status">Nessun catalogo ufficiale ancora generato per questo turno.</p>
-            <p class="pc-history-hint">Il catalogo è salvato in Supabase solo dopo questo pulsante, ma diventa pubblico solo quando premi «Pubblica palinsesto ufficiale». Se modifichi i pesi del modello, rigenera il catalogo PRIMA di pubblicare.</p>
-          </section>
           <h3>⚽ Eventi speciali aggiunti manualmente</h3><p>Puoi modificare manualmente qualunque quota suggerita, oppure aggiungere eventi senza passare dal bookmaker. La pubblicazione resta un'azione separata.</p>
           <div id="pc-admin-players"></div>
           <button class="pc-button pc-ghost" type="button" id="pc-admin-add-player">+ Aggiungi evento calciatore</button>
-          <div class="pc-entry-actions"><button class="pc-button pc-ghost" type="button" id="pc-admin-save-draft">💾 Salva bozza</button><button class="pc-button pc-primary" type="button" id="pc-admin-publish">🔒 Pubblica palinsesto ufficiale</button></div>
-        </div>
-          <section class="pc-panel pc-backtest-lab" id="pc-backtest-lab" aria-label="Laboratorio verifica quote 1X2">
-            <div class="pc-bt-title"><div><div class="pc-kicker">V7 · LABORATORIO STATISTICO</div><h3>🔬 Le quote funzionano davvero?</h3>
-              <p>Confronta le previsioni con gli incontri già disputati. Per ogni giornata il modello utilizza <strong>soltanto le giornate precedenti</strong>.</p></div><span class="pc-small-tag">Solo Commissioner · sola lettura</span></div>
-            <div class="pc-bt-controls"><label>Partite da valutare<select id="pc-bt-mode"><option value="neutral">Ottavi su campo neutro (rimuove +2 casa)</option><option value="actual">Regular season reale (fattore casa +2)</option></select></label>
-              <button type="button" class="pc-button pc-primary" id="pc-bt-run">🔬 Esegui confronto sui risultati</button></div>
-            <div id="pc-bt-summary" class="pc-bt-summary" aria-live="polite"></div>
-            <div id="pc-bt-calibration"></div>
-            <div id="pc-bt-models"></div>
-            <div id="pc-bt-details"></div>
-            <p id="pc-bt-feedback" class="pc-bt-feedback" role="status">Premi «Esegui confronto» per confrontare il motore originale, quattro preset e i pesi che hai scelto con i cursori qui sopra.</p>
-            <p class="pc-bt-note"><strong>Come leggere i numeri:</strong> Brier e log loss più bassi sono meglio; «segno favorito corretto» conta solo quante volte il segno più probabile coincide con il risultato. Le quote rimangono <strong>inalterate</strong>: questo laboratorio non salva, non pubblica e non sceglie i pesi al posto tuo.</p>
+          
+
+            </details>
           </section>
+          <section class="pc-admin-step pc-final-step" id="pc-guide-step5"><header><span class="pc-step-num">05</span><div><h3>Salva e apri la giornata</h3><p>Prima salva la bozza, poi imposta la deadline e pubblica soltanto quando sei sicuro di tutto.</p></div><span id="pc-guide-state-5" class="pc-step-badge">Non pubblicata</span></header>
+            <div class="pc-field"><label for="pc-admin-deadline">Scadenza per consegnare le schedine (ora locale)</label><input id="pc-admin-deadline" type="datetime-local"/><small>Va impostata prima del primo calcio d'inizio di Serie A della giornata. Non serve per salvare una semplice bozza.</small></div>
+            <div class="pc-entry-actions"><button class="pc-button pc-ghost" type="button" id="pc-admin-save-draft">💾 Salva bozza (non pubblica)</button><button class="pc-button pc-primary" type="button" id="pc-admin-publish">🔒 Pubblica e apri le schedine</button></div>
+            <p class="pc-step-note">Prima di pubblicare: verifica partite e seeding ufficiali, quote 1X2, catalogo calciatori, eventi editoriali e scadenza. Dopo la pubblicazione le quote restano bloccate.</p>
+          </section>
+          <details class="pc-admin-extra" id="pc-history-advanced"><summary>📊 Manutenzione facoltativa: aggiorna l'Excel delle statistiche</summary><p>Non è un passaggio quotidiano: importa il file 2026/27 aggiornato quando lo hai disponibile. Le due stagioni precedenti sono già salvate.</p>
+          <section class="pc-panel pc-history-upload" id="pc-history-upload" aria-label="Archivio statistiche Fantacalcio">
+            <div class="pc-kicker">V9 · TRE STAGIONI DI DATI</div>
+            <h3>📊 Importazione statistiche calciatori</h3>
+            <p>Carica i file ufficiali <strong>Statistiche Fantacalcio</strong> in formato Excel, foglio <strong>Tutti</strong>. Le stagioni 2024/25 e 2025/26 sono già importate: non serve ricaricarle. Aggiorna soltanto il file 2026/27 con la giornata corretta. Le prossime settimane carica solo il file aggiornato della stagione 2026/27 con la sua giornata. L'archivio conserva le fotografie precedenti.</p>
+            <div class="pc-history-grid">
+              <label>Stagione<select id="pc-history-season"><option value="2024/25">2024/25 · completa</option><option value="2025/26">2025/26 · completa</option><option value="2026/27" selected>2026/27 · in corso</option></select></label>
+              <label>Giornata del file<input id="pc-history-gw" type="number" min="1" max="38" step="1" value="6"/></label>
+              <label>Excel Fantacalcio<input id="pc-history-file" type="file" accept=".xlsx,.xls"/></label>
+            </div>
+            <div class="pc-entry-actions"><button id="pc-history-import" class="pc-button pc-primary" type="button">📥 Importa e aggiorna archivio</button></div>
+            <p id="pc-history-feedback" class="pc-feedback" role="status">Nessun file caricato in questa sessione.</p>
+            <p class="pc-history-hint">Accesso solo Admin. L'importazione modifica esclusivamente lo storico statistiche V9, <strong>mai le schedine, le quote già pubblicate o i risultati della Lega</strong>. Per leggere Excel serve una connessione Internet alla libreria SheetJS.</p>
+          </section>
+
+          </details>
+        </div>
+        <section class="pc-admin-step pc-grade-step" id="pc-guide-step6"><header><span class="pc-step-num">06</span><div><h3>Dopo la scadenza: controlla e omologa</h3><p>Quando le partite sono finite, inserisci il segno di ogni incontro e gli esiti dei calciatori pronosticati. Dopo l'omologazione, se sbagli, puoi registrare una rettifica motivata.</p></div><span id="pc-guide-state-6" class="pc-step-badge">In attesa</span></header>
         <div id="pc-admin-grading" hidden><h3>✅ Omologazione risultati</h3><p>Gli esiti sono modificabili solo dopo la scadenza. «Annullato» assegna zero punti e attiva l'eventuale HERO PICK di riserva.</p><div id="pc-admin-outcomes"></div><button class="pc-button pc-primary" type="button" id="pc-admin-finalize">🏆 Omologa giornata e aggiorna classifica</button><div id="pc-admin-corrections" hidden><h3>✏️ Rettifiche dopo l’omologazione</h3><p>La correzione modifica subito la classifica ed è registrata con motivazione, autore, data ed esito precedente. Non cambia le quote e non riapre le schedine.</p><div id="pc-admin-correction-items"></div><h4>Storico delle rettifiche</h4><div id="pc-admin-correction-log" aria-live="polite"></div></div></div>
+
+        </section>
         <div id="pc-admin-feedback" class="pc-feedback" role="status"></div>
       </div>
     </section>
 
-    <section class="pc-panel pc-admin-shortcut" id="pc-admin-shortcut" hidden><div><div class="pc-kicker">AREA AMMINISTRATORI</div><h3>Bookmaker degli Eroi</h3><p>Quote automatiche 1X2, revisione manuale ed esportazione della bozza. Da qui puoi anche aprire il motore statistico V2 per analizzare le quote.</p></div><a class="pc-button pc-ghost" href="bookmaker-playoff.html">⚙️ Apri il Bookmaker</a></section>
-    <footer class="pc-footer">Playoffs Challenge · V9 statistiche storiche Mantra · Supabase · Schedine valide soltanto nei turni ufficialmente aperti</footer>
+    <footer class="pc-footer">Playoffs Challenge · V9.4 guida Commissioner · Supabase · Schedine valide soltanto nei turni ufficialmente aperti</footer>
   </div>
 </main>
 <script defer src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
 <script type="module" src="playoffs-challenge.js?v=pc-v9-3"></script>
-<script type="module" src="playoffs-challenge-live.js?v=pc-v9-3-player-picker"></script>
+<script type="module" src="playoffs-challenge-live.js?v=pc-v9-4-admin"></script>
 <script src="mobile-nav.js?v=20261007-bottom4"></script>
 <script src="navbar.js?v=20261015"></script>
 <script type="module" src="admin-nav.js?v=1"></script>

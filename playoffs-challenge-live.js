@@ -2,10 +2,9 @@
 import {supabase} from './supabase.js';
 import {buildModel,quoteMatch,normalizeTeam} from './bookmaker-engine.js';
 import {calculateProjectedStandings} from './bookmaker-seeding.js';
-import {mountCommissionerSimulator} from './bookmaker-simulator.js';
+import {mountCommissionerSimulator} from './bookmaker-simulator.js?v=pc-v9-4-admin';
 import {mountPlayerBookmaker} from './bookmaker-players.js?v=pc-v9-3';
 import {mountDemoPlayerPicker} from './pc-player-picker.js?v=pc-v9-3';
-import {mountBacktestLab} from './bookmaker-backtest.js';
 const $=id=>document.getElementById(id);
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const fmt=n=>Number(n||0).toLocaleString('it-IT',{minimumFractionDigits:2,maximumFractionDigits:2});
@@ -151,13 +150,41 @@ function initialDraft(round){let rows=roundEvents(round.id).filter(x=>!x.is_cata
  if(rows.length)return rows.map(e=>({...e}));
  return Array.from({length:stageData(round.stage)[2]},(_,i)=>({kind:'match',slot:i+1,home_name:'',away_name:'',q1:'',qx:'',q2:''}));}
 function localDatetime(iso){if(!iso)return '';const d=new Date(iso);const offset=d.getTimezoneOffset()*60000;return new Date(d-offset).toISOString().slice(0,16)}
+function renderAdminGuide(r){
+ if(!r||!S.admin)return;
+ const status={draft:'In preparazione',open:'Pubblicato',finalized:'Omologato'}[r.status]||r.status;
+ const roundNote=$('pc-guide-round-status');
+ if(roundNote)roundNote.textContent=r.status==='draft'?
+   `Stato: ${status}. Gli allenatori NON possono ancora consegnare schedine per questo turno.`:
+   r.status==='open'?`Stato: ${status}. Le quote sono bloccate. Termine consegna: ${new Date(r.closes_at).toLocaleString('it-IT')}.`:
+   'Stato: omologato. Le classifiche sono ufficiali; eventuali correzioni richiedono una motivazione.';
+ const label=(n,value,ok=false)=>{
+   const node=$(`pc-guide-state-${n}`);if(!node)return;
+   node.textContent=value;node.classList.toggle('pc-step-done',ok);
+ };
+ label(1,status,true);
+ const selected=S.adminDraft.filter(x=>x.kind==='match');
+ const needed=stageData(r.stage)[2];
+ const named=selected.filter(x=>x.home_name&&x.away_name&&normalizeTeam(x.home_name)!==normalizeTeam(x.away_name)).length;
+ const quoted=selected.filter(x=>x.home_name&&x.away_name&&['q1','qx','q2'].every(key=>Number(x[key])>=1.01)).length;
+ label(2,`${named}/${needed} partite`,named===needed);
+ label(3,quoted===needed?'Quote presenti':`${quoted}/${needed} quote complete`,quoted===needed);
+ const catalog=roundEvents(r.id).filter(x=>x.is_catalog).length;
+ const manualRoles=new Set(S.adminDraft.filter(x=>x.kind==='player'&&x.player_name&&Number(x.qyes)>=1.01).map(x=>x.player_role)).size;
+ label(4,catalog?`${catalog} eventi pronti`:(manualRoles===4?'4 ruoli manuali':'Catalogo mancante'),catalog>0||manualRoles===4);
+ label(5,r.status==='draft'?(r.closes_at?'Bozza salvata':'Non pubblicata'):'Pubblicato',r.status!=='draft');
+ const gradingStatus=r.status==='finalized'?'Omologato':r.status==='open'?(closedRound(r)?'Pronto per gli esiti':'In attesa della scadenza'):'In attesa';
+ label(6,gradingStatus,r.status==='finalized');
+ const publish=$('pc-admin-publish');
+ if(publish)publish.disabled=r.status!=='draft'||named!==needed||quoted!==needed||(!catalog&&manualRoles!==4)||!$('pc-admin-deadline').value;
+}
 function renderAdmin(){if(!S.admin)return;
  const selected=Number($('pc-admin-stage').value||S.rounds[0]?.id);const r=S.rounds.find(x=>x.id===selected)||S.rounds[0];if(!r)return;
  $('pc-admin-stage').innerHTML=S.rounds.map(x=>`<option value="${x.id}">${esc(stageData(x.stage)[1])} · ${x.status}</option>`).join('');$('pc-admin-stage').value=r.id;
  $('pc-admin-deadline').value=localDatetime(r.closes_at);$('pc-admin-deadline').disabled=r.status!=='draft';
  $('pc-admin-draft').hidden=r.status!=='draft';$('pc-admin-grading').hidden=r.status==='draft';
  if(S.adminDraftRoundId!==r.id){S.adminDraft=initialDraft(r);S.adminDraftRoundId=r.id;}
- renderAdminDraft(r);S.simulator?.refresh();S.playerBookmaker?.refresh();
+ renderAdminDraft(r);S.simulator?.refresh();S.playerBookmaker?.refresh();renderAdminGuide(r);
  const count=roundEvents(r.id).filter(x=>x.is_catalog).length;const summary=$('pc-cat-status');if(summary)summary.textContent=count?`✅ ${count} eventi nel catalogo del turno. Le quote restano provvisorie finché non pubblichi.`:'Nessun catalogo ancora preparato. Le scelte ufficiali saranno limitate agli eventi che inserisci manualmente.';
  if(r.status!=='draft')renderGrading(r);
 }
@@ -169,7 +196,7 @@ function renderAdminDraft(r){const ms=S.adminDraft.filter(x=>x.kind==='match').s
  for(const [i,m] of ms.entries()){$('pc-admin-matches').querySelectorAll('[data-admin-match]')[i].querySelector('[data-field="home_name"]').value=m.home_name||'';$('pc-admin-matches').querySelectorAll('[data-admin-match]')[i].querySelector('[data-field="away_name"]').value=m.away_name||'';}
  $('pc-admin-players').innerHTML=ps.map((m,i)=>`<div class="pc-admin-player pc-panel" data-admin-player="${i}"><input placeholder="Nome calciatore" data-player-field="player_name" value="${esc(m.player_name||'')}"><select data-player-field="player_role">${Object.entries(roles).map(([code,label])=>`<option value="${code}" ${code===m.player_role?'selected':''}>${label}</option>`).join('')}</select><select data-player-field="player_event"></select><label>Quota <input type="number" min="1.01" step="0.01" data-player-field="qyes" value="${esc(m.qyes||'')}"></label><button type="button" class="pc-button pc-ghost" data-remove-player="${i}">Rimuovi</button></div>`).join('');
  for(const [i,m] of ps.entries())renderEventChoice($('pc-admin-players').querySelectorAll('[data-admin-player]')[i],m.player_role||'P',m.player_event);
- S.simulator?.refresh();
+ S.simulator?.refresh();renderAdminGuide(r);
 }
 function renderEventChoice(row,role,event){const el=row.querySelector('[data-player-field="player_event"]');el.innerHTML=(roleEvents[role]||roleEvents.P).map(x=>`<option value="${x}">${eventNames[x]}</option>`).join('');if(event&&roleEvents[role]?.includes(event))el.value=event}
 function collectAdminDraft(){const r=S.rounds.find(x=>x.id===Number($('pc-admin-stage').value));if(!r||r.status!=='draft')return;
@@ -195,21 +222,28 @@ async function prepareFullCatalog(){
   const {data,error}=await supabase.rpc('pc_admin_replace_player_catalog',{p_round_id:r.id,p_rows:catalog.rows});
   if(error)throw error;
   await readOfficial();
-  msg('pc-cat-status',`✅ ${data} quote in BOZZA salvate (${catalog.supported} statistiche, ${catalog.editorial} editoriali). Dopo la pubblicazione tutti gli allenatori potranno cercare i calciatori.`);
+  msg('pc-cat-status',`✅ ${data} quote in BOZZA salvate (${catalog.supported} statistiche, ${catalog.editorial} editoriali). Dopo la pubblicazione tutti gli allenatori potranno cercare i calciatori.`);renderAdminGuide(r);
  }catch(e){msg('pc-cat-status',e.message,true)}finally{button.disabled=false;}
 }
 async function generateOdds(){collectAdminDraft();const r=S.rounds.find(x=>x.id===Number($('pc-admin-stage').value));if(!S.model||!r)return;
+ if(document.querySelector('input[name="pc-sim-mode"]:checked')?.value==='custom'&&!S.simulator?.getWeights())return msg('pc-admin-feedback','Correggi prima i tre pesi personalizzati: devono sommare esattamente il 100%.',true);
  const adjustedModel=S.simulator?.getQuoteModel()||S.model;
  for(const m of S.adminDraft.filter(x=>x.kind==='match')){if(!m.home_name||!m.away_name||normalizeTeam(m.home_name)===normalizeTeam(m.away_name))continue;
  try{const q=quoteMatch(adjustedModel,m.home_name,m.away_name,r.stage);m.q1=q.q1;m.qx=q.qx;m.q2=q.q2}catch(err){msg('pc-admin-feedback',`Quote ${m.home_name}: ${err.message}`,true)}}renderAdminDraft(r);msg('pc-admin-feedback','Quote generate. Controllale prima della pubblicazione.');}
 function seedFromForecast(){collectAdminDraft();const r=S.rounds.find(x=>x.id===Number($('pc-admin-stage').value));if(!r||r.stage!=='ottavi'||!S.projection?.hasSufficientData){msg('pc-admin-feedback','Proiezione disponibile soltanto per gli ottavi.',true);return}
  S.adminDraft.filter(x=>x.kind==='match').forEach((m,i)=>{m.home_name=S.projection.fixtures[i].home.name;m.away_name=S.projection.fixtures[i].away.name;});renderAdminDraft(r);S.simulator?.refresh();msg('pc-admin-feedback','Ottavi proiettati caricati. Prima di pubblicare, verifica il seeding UFFICIALE.');}
 async function saveAdmin(publish=false){collectAdminDraft();const r=S.rounds.find(x=>x.id===Number($('pc-admin-stage').value));if(!r||r.status!=='draft')return;
- const when=$('pc-admin-deadline').value;if(!when) return msg('pc-admin-feedback','Inserisci prima la scadenza.',true);
- const deadline=new Date(when);if(!Number.isFinite(deadline.getTime())||deadline<=Date.now())return msg('pc-admin-feedback','La scadenza deve essere futura.',true);
+ const when=$('pc-admin-deadline').value.trim();
+ if(publish&&!when)return msg('pc-admin-feedback','Prima di pubblicare inserisci la scadenza della giornata.',true);
+ const deadline=when?new Date(when):null;
+ if(deadline&&(!Number.isFinite(deadline.getTime())||deadline<=Date.now()))return msg('pc-admin-feedback','La scadenza deve essere futura.',true);
+ if(publish){const catalogCount=roundEvents(r.id).filter(x=>x.is_catalog).length;
+    const rolesCovered=new Set(S.adminDraft.filter(x=>x.kind==='player').map(x=>x.player_role)).size;
+    if(!catalogCount&&rolesCovered<4)return msg('pc-admin-feedback','Prepara prima il catalogo completo dei calciatori al passo 04. In alternativa servono eventi validi per tutti e quattro i ruoli.',true);
+ }
  let events=S.adminDraft.map(m=>m.kind==='match'?{kind:'match',slot:Number(m.slot),home_name:m.home_name,away_name:m.away_name,q1:Number(m.q1),qx:Number(m.qx),q2:Number(m.q2)}:{kind:'player',player_name:m.player_name,player_role:m.player_role,player_event:m.player_event,qyes:Number(m.qyes)});
  if(events.some(m=>m.kind==='match'&&(!m.home_name||!m.away_name||m.home_name===m.away_name||[m.q1,m.qx,m.q2].some(x=>x<=1)))||events.some(m=>m.kind==='player'&&(!m.player_name||m.qyes<=1)))return msg('pc-admin-feedback','Controlla che tutte le partite e le quote siano compilate.',true);
- try{let {error}=await supabase.rpc('pc_admin_save_round',{p_round_id:r.id,p_closes_at:deadline.toISOString(),p_events:events});if(error)throw error;
+ try{let {error}=await supabase.rpc('pc_admin_save_round',{p_round_id:r.id,p_closes_at:deadline?deadline.toISOString():null,p_events:events});if(error)throw error;
  if(publish){if(!confirm('Pubblicare definitivamente quote ed eventi? Gli allenatori potranno consegnare subito. Dopo la pubblicazione NON potrai più modificare le quote.'))return;
  ({error}=await supabase.rpc('pc_admin_publish_round',{p_round_id:r.id}));if(error)throw error;}
  await readOfficial();S.adminDraftRoundId=null;renderAdmin();chooseActive();renderOfficial();msg('pc-admin-feedback',publish?'✅ Turno pubblicato ufficialmente!':'✅ Bozza salvata su Supabase.');
@@ -284,10 +318,11 @@ function bind(){
  $('pc-official-clear').addEventListener('click',()=>{S.picks.clear();S.hero=null;S.backup=null;S.dirty=true;renderOfficial()});
  $('pc-official-save').addEventListener('click',saveEntry);
  $('pc-admin-stage').addEventListener('change',renderAdmin);
- $('pc-admin-matches').addEventListener('change',()=>{collectAdminDraft();S.simulator?.refresh()});
- $('pc-admin-matches').addEventListener('input',()=>{collectAdminDraft();S.simulator?.refresh()});
+ $('pc-admin-deadline').addEventListener('input',()=>renderAdminGuide(S.rounds.find(r=>r.id===Number($('pc-admin-stage').value))));
+ $('pc-admin-matches').addEventListener('change',()=>{collectAdminDraft();S.simulator?.refresh();renderAdminGuide(S.rounds.find(r=>r.id===Number($('pc-admin-stage').value))) });
+ $('pc-admin-matches').addEventListener('input',()=>{collectAdminDraft();S.simulator?.refresh();renderAdminGuide(S.rounds.find(r=>r.id===Number($('pc-admin-stage').value))) });
  $('pc-admin-players').addEventListener('change',e=>{const row=e.target.closest('[data-admin-player]');if(e.target.dataset.playerField==='player_role')renderEventChoice(row,e.target.value);collectAdminDraft()});
- $('pc-admin-players').addEventListener('input',collectAdminDraft);
+ $('pc-admin-players').addEventListener('input',()=>{collectAdminDraft();renderAdminGuide(S.rounds.find(r=>r.id===Number($('pc-admin-stage').value)))});
  $('pc-admin-players').addEventListener('click',e=>{const btn=e.target.closest('[data-remove-player]');if(!btn)return;collectAdminDraft();const r=S.rounds.find(x=>x.id===Number($('pc-admin-stage').value));const players=S.adminDraft.filter(x=>x.kind==='player');const removed=players[Number(btn.dataset.removePlayer)];S.adminDraft=S.adminDraft.filter(x=>x!==removed);renderAdminDraft(r)});
  $('pc-admin-add-player').addEventListener('click',()=>{collectAdminDraft();S.adminDraft.push({kind:'player',player_name:'',player_role:'P',player_event:'CLEAN_SHEET',qyes:''});renderAdminDraft(S.rounds.find(x=>x.id===Number($('pc-admin-stage').value)))});
  $('pc-admin-forecast').addEventListener('click',seedFromForecast);
@@ -307,8 +342,7 @@ function bind(){
  S.teamId=profile.data?.team_id||null;S.admin=role.data===true&&!role.error;
  $('pc-admin-tab').hidden=!S.admin;
  if(!S.admin && location.hash==='#admin')location.hash='#schedina';
- if(S.admin){document.getElementById('pc-admin-shortcut').querySelector('p').textContent='Gestisci quote, pronostici e omologazioni dal nuovo tab Commissioner, oppure consulta il motore statistico V2.';}
- if(S.admin){S.simulator=mountCommissionerSimulator({
+  if(S.admin){S.simulator=mountCommissionerSimulator({
    getSnapshot:()=>S.modelInput?{originalModel:S.model,data:S.modelInput}:null,
    getRound:()=>S.rounds.find(x=>x.id===Number($('pc-admin-stage').value||S.rounds[0]?.id)),
    getDraftMatches:()=>{collectAdminDraft();return S.adminDraft.filter(x=>x.kind==='match')},
@@ -326,10 +360,9 @@ function bind(){
        m.q1=item.q1;m.qx=item.qx;m.q2=item.q2;
      }
      renderAdminDraft(round);
-     msg('pc-admin-feedback',`✅ Quote simulate (${weights.historic}% storico · ${weights.season}% stagione · ${weights.recent5}% ultime 5) copiate nella BOZZA. Devi ancora salvarla e pubblicarla. ${round.stage==='ottavi'?'Verifica il seeding ufficiale prima di pubblicare.':''}`);
+     msg('pc-admin-feedback',`✅ Quote ${weights.mode==='standard'?'del motore attuale':`con pesi ${weights.historic}/${weights.season}/${weights.recent5}`} copiate nelle partite. Puoi ancora cambiarle a mano. Salva la bozza prima di uscire: non è pubblicata.`);renderAdminGuide(round);
    }
  });}
- if(S.admin){S.backtest=mountBacktestLab({getSnapshot:()=>S.modelInput,getWeights:()=>S.simulator?.getWeights()});}
  if(S.admin){S.playerBookmaker=mountPlayerBookmaker({
   supabase,
   getRound:()=>S.rounds.find(x=>x.id===Number($('pc-admin-stage').value||S.rounds[0]?.id)),

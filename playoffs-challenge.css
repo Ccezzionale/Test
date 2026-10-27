@@ -334,3 +334,46 @@
 .pc-cat-check input{margin-top:2px;accent-color:#ffd07e}
 @media(max-width:810px){.pc-picker-fields,.pc-catalogue-manual{grid-template-columns:1fr 1fr}.pc-picker-fields .pc-button{grid-column:1/-1}}
 @media(max-width:580px){.pc-role-picker{grid-template-columns:repeat(2,minmax(0,1fr))}.pc-picker-fields,.pc-picker-shell .pc-picker-fields,.pc-catalogue-manual{grid-template-columns:1fr}.pc-picker-fields .pc-button{grid-column:auto}}
+
+/* V9.4 · Una sola guida Commissioner. Mantiene intatte le altre pagine. */
+.pc-page .pc-admin-controls{gap:16px}
+.pc-page .pc-admin-intro{background:linear-gradient(128deg,#153e66,#0e2947);border:1px solid #63819f;border-radius:17px;padding:21px 23px;color:#e7f1fd}
+.pc-admin-intro strong{color:#ffe0a0;font-size:1.09rem}
+.pc-admin-intro p{font-size:.87rem;line-height:1.65;margin:8px 0 0;color:#c9daec}
+.pc-page .pc-admin-step{background:#102b49;border:1px solid #3d5e81;border-radius:17px;padding:20px 21px;margin:2px 0 16px}
+.pc-admin-step>header{display:flex;align-items:flex-start;gap:12px;margin:0 0 16px}
+.pc-admin-step>header>div{flex:1;min-width:0}
+.pc-admin-step>header h3{margin:2px 0 5px;font-size:1.18rem;color:#f7da9b}
+.pc-admin-step>header p{margin:0;font-size:.83rem;line-height:1.5;color:#bdd1e8}
+.pc-step-num{min-width:37px;height:37px;border-radius:12px;background:#e7c57d;color:#122b48;display:grid;place-items:center;font-weight:950;font-size:.95rem;flex:none}
+.pc-step-badge{margin-left:auto;white-space:nowrap;color:#f9dfaf;background:#1f4363;border:1px solid #6b8aa8;border-radius:999px;padding:7px 10px;font-size:.72rem;font-weight:850}
+.pc-step-badge.pc-step-done{background:#163d35;border-color:#5bba90;color:#bdffdb}
+.pc-step-note{font-size:.83rem;color:#c8d9ed;background:#0c233b;padding:12px 14px;border-left:3px solid #d1ab61;border-radius:7px;line-height:1.55}
+.pc-admin-step .pc-field{max-width:740px}
+.pc-admin-step .pc-field>small{display:block;line-height:1.4;font-size:.75rem;color:#b4c9df;margin-top:6px}
+.pc-admin-step .pc-entry-actions{flex-wrap:wrap;justify-content:flex-start}
+.pc-page .pc-admin-step .pc-simulator{margin:10px 0 0;box-shadow:none;border-color:#496d93}
+.pc-page .pc-sim-modes{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:15px 0 5px}
+.pc-sim-modes label{display:flex;align-items:flex-start;gap:10px;cursor:pointer;border:1px solid #597899;border-radius:13px;padding:13px;background:#071f37;min-width:0}
+.pc-sim-modes label:has(input:checked){border-color:#f1c769;background:#193e63;box-shadow:inset 0 0 0 1px #f1c76980}
+.pc-sim-modes label input{margin:3px 0 0;width:17px;height:17px;accent-color:#efd180;flex:none}
+.pc-sim-modes label span{display:grid;gap:5px;color:#fff}
+.pc-sim-modes label strong{font-size:.85rem;color:#ffdfaa}
+.pc-sim-modes label small{font-size:.73rem;color:#bed4ec;line-height:1.4}
+.pc-sim-number{display:flex;align-items:center;gap:6px;max-width:170px}
+.pc-page .pc-sim-number input[type=number]{background:#f6f9fd;color:#152c47;border:2px solid #d1bb81;border-radius:10px;font-weight:900;font-size:1.22rem;padding:9px;min-height:44px;width:100%;max-width:130px;box-sizing:border-box;font-variant-numeric:tabular-nums}
+.pc-sim-number span{font-size:1.04rem;color:#f5dbac;font-weight:900}
+.pc-sim-custom{margin-top:18px}
+.pc-sim-invalid{background:#7e3638!important;color:#fff!important}
+.pc-page #pc-sim-input-feedback{padding:9px 11px;margin:12px 0 0;font-size:.83rem}
+.pc-page .pc-admin-extra{margin:12px 0;border:1px dashed #6081a1;border-radius:13px;background:#0c233c;padding:0 15px 15px}
+.pc-admin-extra summary{cursor:pointer;padding:16px 0;color:#ffdb9b;font-weight:850;font-size:.9rem;line-height:1.5}
+.pc-admin-extra>p{color:#b8cce4;margin:4px 0 14px;font-size:.81rem}
+.pc-admin-extra .pc-panel{margin-top:12px}
+.pc-admin-extra h3{margin-top:10px}
+.pc-admin-step .pc-admin-match{background:#0d2039;border-color:#3b5b7c}
+.pc-admin-step .pc-admin-match .pc-admin-odds{width:100%}
+.pc-final-step{border-color:#c7a565!important;background:linear-gradient(155deg,#16375a,#0e2b49)!important}
+.pc-grade-step{border-style:dashed!important}
+.pc-page #pc-admin-publish:disabled{opacity:.45;cursor:not-allowed}
+@media(max-width:720px){.pc-page .pc-admin-step{padding:14px}.pc-page .pc-sim-modes{grid-template-columns:1fr}.pc-step-badge{white-space:normal;text-align:center;max-width:110px}.pc-admin-step>header{gap:8px}.pc-step-num{min-width:30px;height:30px;font-size:.83rem}.pc-page .pc-admin-intro{padding:15px}}
