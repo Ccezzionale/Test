@@ -299,8 +299,11 @@
         </section>
         <div id="pc-admin-draft">
           <section class="pc-admin-step" id="pc-guide-step2"><header><span class="pc-step-num">02</span><div><h3>Inserisci le partite</h3><p>Controlla le franchigie e il loro ordine. Il seeding provvisorio degli ottavi è un suggerimento, non il tabellone definitivo.</p></div><span id="pc-guide-state-2" class="pc-step-badge">Da fare</span></header>
-          <p><strong>Puoi cambiare qualsiasi quota direttamente nei campi 1, X e 2.</strong> Se preferisci il calcolo automatico premi «Genera quote». Prima controlla sempre che le squadre siano giuste.</p><div id="pc-admin-matches"></div>
-          <div class="pc-entry-actions"><button class="pc-button pc-ghost" type="button" id="pc-admin-forecast">Carica gli ottavi provvisori</button><button class="pc-button pc-primary" type="button" id="pc-admin-generate">⚡ Genera quote</button></div>
+          <p><strong>Vuoi impostare una quota a mano?</strong> Scrivila nei campi 1, X e 2, poi premi <strong>«💾 Salva quote in bozza»</strong> qui sotto. <strong>Non devi premere «Genera»</strong>: quello serve per il calcolo automatico.</p>
+          <p>Le tre quote sono indipendenti: mentre le modifichi non spostiamo nessun numero. L'indicatore sotto ogni partita ti aiuta a mantenere le probabilità complessive vicine al 100%.</p>
+          <div id="pc-admin-matches"></div>
+          <div class="pc-entry-actions"><button class="pc-button pc-ghost" type="button" id="pc-admin-forecast">Carica gli ottavi provvisori</button><button class="pc-button pc-ghost" type="button" id="pc-admin-generate" title="Compila solo le partite senza quote">⚡ Genera quote mancanti</button><button class="pc-button pc-ghost" type="button" id="pc-admin-regenerate" title="Sostituisce le quote già scritte, dopo conferma">↻ Ricalcola tutte</button><button class="pc-button pc-primary" type="button" id="pc-admin-save-matches">💾 Salva quote in bozza</button></div>
+          <p class="pc-feedback" role="note"><strong>Promemoria:</strong> «Salva» conserva le modifiche su Supabase, ma non apre la giornata. «Ricalcola tutte» sovrascrive le quote attuali soltanto dopo la tua conferma.</p>
 
           </section>
           <section class="pc-admin-step" id="pc-guide-step3"><header><span class="pc-step-num">03</span><div><h3>Controlla le quote 1 / X / 2</h3><p>Parti dal motore attuale. Puoi sperimentare altri pesi oppure scrivere manualmente le quote nelle caselle delle partite del passaggio 02.</p></div><span id="pc-guide-state-3" class="pc-step-badge">Da verificare</span></header>
@@ -410,7 +413,7 @@
 </main>
 <script defer src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
 <script type="module" src="playoffs-challenge.js?v=pc-v9-4-1"></script>
-<script type="module" src="playoffs-challenge-live.js?v=pc-v9-4-2"></script>
+<script type="module" src="playoffs-challenge-live.js?v=pc-v9-4-3-manual"></script>
 <script src="mobile-nav.js?v=20261007-bottom4"></script>
 <script src="navbar.js?v=20261015"></script>
 <script type="module" src="admin-nav.js?v=1"></script>
