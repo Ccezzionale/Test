@@ -3,7 +3,7 @@ import {supabase} from './supabase.js';
 import {buildModel,quoteMatch,normalizeTeam} from './bookmaker-engine.js';
 import {calculateProjectedStandings} from './bookmaker-seeding.js';
 import {mountCommissionerSimulator} from './bookmaker-simulator.js?v=pc-v9-4-4-one-save';
-import {mountPlayerBookmaker} from './bookmaker-players.js?v=pc-v9-3';
+import {mountPlayerBookmaker} from './bookmaker-players.js?v=pc-v9-5-keepers';
 import {mountDemoPlayerPicker} from './pc-player-picker.js?v=pc-v9-3';
 const $=id=>document.getElementById(id);
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -13,7 +13,7 @@ const roles={P:'🧤 POR',D:'🛡️ DIF',C:'🎯 CEN',A:'⚽ ATT'};
 const eventNames={CLEAN_SHEET:'Clean sheet',PENALTY_SAVE:'Rigore parato',GOAL:'Gol',ASSIST:'Assist',GOAL_OR_ASSIST:'Gol o assist',BRACE:'Doppietta'};
 const roleEvents={P:['CLEAN_SHEET','PENALTY_SAVE'],D:['GOAL','ASSIST','CLEAN_SHEET'],C:['GOAL','ASSIST','GOAL_OR_ASSIST'],A:['GOAL','ASSIST','BRACE']};
 const S={rounds:[],events:[],entries:[],user:null,teamId:null,admin:false,active:null,model:null,projection:null,teams:[],
- picks:new Map(),hero:null,backup:null,dirty:false,adminDraft:[],adminDraftRoundId:null,busy:false,lastRoundKey:null,modelInput:null,modelUpdated:0,simulator:null,playerBookmaker:null,leaderboardRows:[],playerRole:'P',playerSearch:'',playerEvent:'ALL'};
+ picks:new Map(),hero:null,backup:null,dirty:false,adminDraft:[],adminDraftRoundId:null,busy:false,lastRoundKey:null,modelInput:null,modelUpdated:0,simulator:null,playerBookmaker:null,leaderboardRows:[],playerRole:'P',playerSearch:'',playerEvent:'ALL',pcCatalogRoundId:null,pcCatalogPreview:null,pcCatalogSource:'',pcCatalogEdited:new Set()};
 function stageData(stage){return stages.find(x=>x[0]===stage)||stages[0]}
 function openRound(r){return r?.status==='open' && new Date(r.closes_at).getTime()>Date.now()}
 function closedRound(r){return r?.status==='finalized'||(r?.status==='open' && new Date(r.closes_at).getTime()<=Date.now())}
@@ -197,7 +197,8 @@ function renderAdmin(){if(!S.admin)return;
  $('pc-admin-draft').hidden=r.status!=='draft';$('pc-admin-grading').hidden=r.status==='draft';
  if(S.adminDraftRoundId!==r.id){S.adminDraft=initialDraft(r);S.adminDraftRoundId=r.id;}
  renderAdminDraft(r);S.simulator?.refresh();S.playerBookmaker?.refresh();renderAdminGuide(r);
- const count=roundEvents(r.id).filter(x=>x.is_catalog).length;const summary=$('pc-cat-status');if(summary)summary.textContent=count?`✅ ${count} eventi nel catalogo del turno. Le quote restano provvisorie finché non pubblichi.`:'Nessun catalogo ancora preparato. Le scelte ufficiali saranno limitate agli eventi che inserisci manualmente.';
+ loadCatalogForRound(r);syncCatalogueFilter();
+ const count=roundEvents(r.id).filter(x=>x.is_catalog).length;const summary=$('pc-cat-status');if(summary)summary.textContent=count?`✅ ${count} quote già salvate nel catalogo. Puoi modificare e confermare le quote qui sotto oppure ricalcolarle.`:'Premi «Calcola le quote suggerite» per preparare il catalogo. Non verrà salvato automaticamente.';
  if(r.status!=='draft')renderGrading(r);
 }
 function renderAdminDraft(r){const ms=S.adminDraft.filter(x=>x.kind==='match').sort((a,b)=>a.slot-b.slot);const ps=S.adminDraft.filter(x=>x.kind==='player');
@@ -235,25 +236,79 @@ function collectAdminDraft(){const r=S.rounds.find(x=>x.id===Number($('pc-admin-
  const players=[...$('pc-admin-players').querySelectorAll('[data-admin-player]')].map(row=>{const x={kind:'player'};for(const key of ['player_name','player_role','player_event','qyes'])x[key]=row.querySelector(`[data-player-field="${key}"]`).value;return x});
  S.adminDraft=[...matches,...players];
 }
-async function prepareFullCatalog(){
+// Passaggio 03: l'anteprima NON scrive sul database. Solo il pulsante
+// «Conferma e salva» sostituisce il catalogo del turno in Supabase.
+function catalogueKey(row){return Number(row.code)+':'+row.ev}
+function loadCatalogForRound(r){
+ if(S.pcCatalogRoundId===r.id)return;
+ S.pcCatalogRoundId=r.id;S.pcCatalogEdited=new Set();
+ const stored=roundEvents(r.id).filter(x=>x.kind==='player'&&x.is_catalog);
+ S.pcCatalogPreview=stored.length?stored.map(x=>({code:Number(x.player_code),role:x.player_role,ev:x.player_event,q:Number(x.qyes),name:x.player_name,club:''})):null;
+ S.pcCatalogSource=stored.length?'saved':'';
+ msg('pc-cat-save-status',stored.length?`✅ ${stored.length} quote già salvate per questo turno. Puoi cambiarle qui sotto e confermare di nuovo.`:'Non hai ancora salvato un catalogo per questa giornata.');
+}
+function drawCatalogue(){
+ const preview=S.pcCatalogPreview,view=$('pc-cat-list'),overview=$('pc-cat-overview');
+ if(!view||!overview)return;
+ const save=$('pc-cat-save');
+ if(!preview?.length){view.innerHTML='<p class="pc-cat-empty">Premi «Calcola le quote suggerite» nella parte A: qui vedrai tutti i giocatori e le quote modificabili.</p>';overview.textContent='Catalogo non ancora preparato. La generazione non salva né pubblica nulla.';save.disabled=true;return}
+ const role=$('pc-cat-role').value||'P',ev=$('pc-cat-event').value||'ALL',q=$('pc-cat-search').value.trim().toLocaleLowerCase('it');
+ const players=S.playerBookmaker?.roster?.()||[];
+ const byCode=new Map(players.map(p=>[Number(p.code),p]));
+ let filtered=preview.filter(x=>x.role===role &&(ev==='ALL'||x.ev===ev) && (!q||`${x.name||byCode.get(x.code)?.name||''} ${x.club||byCode.get(x.code)?.club||''} ${x.ev}`.toLocaleLowerCase('it').includes(q)));
+ const max=60,shown=filtered.slice(0,max);
+ overview.textContent=`${preview.length} quote nel catalogo · ${filtered.length} risultati per ${roles[role]}${filtered.length>max?` (prime ${max}: usa la ricerca)`:''} · ${S.pcCatalogEdited.size} modificate manualmente. ${S.pcCatalogSource==='saved'?'Quote attualmente salvate.':'ANTEPRIMA NON ANCORA SALVATA.'}`;
+ view.innerHTML=shown.length?`<table class="pc-cat-table"><thead><tr><th>Calciatore</th><th>Evento</th><th>Metodo</th><th>Quota</th></tr></thead><tbody>${shown.map(x=>{
+   const player=byCode.get(x.code),name=x.name||player?.name||`Codice ${x.code}`,club=x.club||player?.club||'';
+   const manual=x.role==='D'&&x.ev==='CLEAN_SHEET';
+   return `<tr><td><strong>${esc(name)}</strong><small>${esc(club)}</small></td><td>${esc(eventNames[x.ev]||x.ev)}</td><td class="pc-cat-source">${manual?'✎ Editoriale':'⚡ Statistica'}</td><td><input type="number" inputmode="decimal" min="1.01" max="10000" step="0.01" value="${esc(Number(x.q).toFixed(2))}" data-cat-code="${x.code}" data-cat-event="${esc(x.ev)}" class="${S.pcCatalogEdited.has(catalogueKey(x))?'pc-cat-edited':''}" aria-label="Quota ${esc(name)} ${esc(eventNames[x.ev]||x.ev)}"/></td></tr>`;
+  }).join('')}</tbody></table>`:'<p class="pc-cat-empty">Nessun calciatore per questa ricerca. Prova un altro ruolo o un altro nome.</p>';
+ save.disabled=false;
+}
+function syncCatalogueFilter(){
+ const role=$('pc-cat-role').value,choices=roleEvents[role]||[];
+ const e=$('pc-cat-event'),old=e.value;
+ e.innerHTML='<option value="ALL">Tutti gli eventi</option>'+choices.map(x=>`<option value="${x}">${esc(eventNames[x])}</option>`).join('');
+ e.value=choices.includes(old)?old:'ALL';drawCatalogue();
+}
+function prepareFullCatalog(){
  const r=S.rounds.find(x=>x.id===Number($('pc-admin-stage').value));
- if(!r||r.status!=='draft')return msg('pc-cat-status','Catalogo modificabile solo in bozza.',true);
- if(!$('pc-cat-ack').checked)return msg('pc-cat-status','Devi prima confermare di aver controllato le quote editoriali per i clean sheet e i rigori parati.',true);
- const manual={'P:CLEAN_SHEET':Number($('pc-cat-p-cs').value),'P:PENALTY_SAVE':Number($('pc-cat-p-pen').value),'D:CLEAN_SHEET':Number($('pc-cat-d-cs').value)};
- if(Object.values(manual).some(x=>!Number.isFinite(x)||x<1.01||x>10000))return msg('pc-cat-status','Inserisci tre quote editoriali valide (almeno 1,01).',true);
- let catalog;
- try{catalog=S.playerBookmaker?.catalogue(manual);if(!catalog)throw new Error('Bookmaker non ancora disponibile.');}
- catch(e){return msg('pc-cat-status',e.message,true)}
- const existing=roundEvents(r.id).filter(x=>x.is_catalog).length;
- if(!confirm(`Generare ${catalog.rows.length} quote da ${catalog.players} calciatori (di cui ${catalog.editorial} EDITORIALI da controllare)? ${existing?'Il catalogo precedente verrà sostituito.':''} Saranno solo in BOZZA e dovrai pubblicarle manualmente.`))return;
- const button=$('pc-cat-generate');button.disabled=true;
- msg('pc-cat-status',`Salvataggio di ${catalog.rows.length} quote in Supabase…`);
+ if(!r||r.status!=='draft')return msg('pc-cat-status','Puoi modificare le quote soltanto in bozza.',true);
+ if(S.pcCatalogRoundId===r.id&&S.pcCatalogEdited.size&&S.pcCatalogPreview?.length&&!confirm('Hai quote calciatori modificate ma NON SALVATE. Ricalcolare cancellerà queste correzioni locali. Vuoi continuare?'))return;
+ const d=$('pc-cat-d-cs'),val=d.value.trim()===''?NaN:Number(d.value);
+ if(!Number.isFinite(val)||val<1.01||val>10000)return msg('pc-cat-status','Inserisci una quota iniziale DIF clean sheet fra 1,01 e 10000.',true);
  try{
-  const {data,error}=await supabase.rpc('pc_admin_replace_player_catalog',{p_round_id:r.id,p_rows:catalog.rows});
-  if(error)throw error;
-  await readOfficial();
-  msg('pc-cat-status',`✅ ${data} quote in BOZZA salvate (${catalog.supported} statistiche, ${catalog.editorial} editoriali). Dopo la pubblicazione tutti gli allenatori potranno cercare i calciatori.`);renderAdminGuide(r);
- }catch(e){msg('pc-cat-status',e.message,true)}finally{button.disabled=false;}
+   const c=S.playerBookmaker?.catalogue({'D:CLEAN_SHEET':val});
+   if(!c?.rows?.length)throw Error('Bookmaker non pronto: attendi il caricamento dell’archivio statistiche e riprova.');
+   const byCode=new Map(S.playerBookmaker.roster().map(x=>[Number(x.code),x]));
+   S.pcCatalogPreview=c.rows.map(x=>({...x,name:byCode.get(x.code)?.name||'',club:byCode.get(x.code)?.club||''}));
+   S.pcCatalogEdited=new Set();S.pcCatalogSource='generated';S.pcCatalogRoundId=r.id;
+   $('pc-cat-role').value='P';$('pc-cat-search').value='';syncCatalogueFilter();
+   msg('pc-cat-status',`✅ Calcolate ${c.rows.length} quote per ${c.players} calciatori, inclusi clean sheet e rigori parati personalizzati per ogni portiere. ${c.editorial} quote clean sheet DIF sono editoriali. Controlla sotto e premi «Conferma e salva».`);
+   msg('pc-cat-save-status','⚠️ Quote calcolate ma NON ANCORA SALVATE. Controllale e premi il pulsante di conferma.');
+ }catch(e){msg('pc-cat-status',e.message||'Calcolo non disponibile',true)}
+}
+async function saveFullCatalog(){
+ const r=S.rounds.find(x=>x.id===Number($('pc-admin-stage').value));
+ if(!r||r.status!=='draft')return msg('pc-cat-save-status','Solo le giornate in bozza sono modificabili.',true);
+ if(S.pcCatalogRoundId!==r.id||!S.pcCatalogPreview?.length)return msg('pc-cat-save-status','Prima calcola le quote suggerite.',true);
+ const rows=S.pcCatalogPreview.map(x=>({code:Number(x.code),role:x.role,ev:x.ev,q:Number(x.q)}));
+ const invalid=rows.find(x=>!Number.isInteger(x.code)||x.code<1||!roleEvents[x.role]?.includes(x.ev)||!Number.isFinite(x.q)||x.q<1.01||x.q>10000);
+ if(invalid)return msg('pc-cat-save-status','C’è una quota non valida. Inserisci un valore tra 1,01 e 10000.',true);
+ const existing=roundEvents(r.id).filter(x=>x.is_catalog).length;
+ if(existing && !confirm(`Confermi di SOSTITUIRE le ${existing} quote del catalogo già salvato con queste ${rows.length} quote? Le quote delle partite 1/X/2 NON cambieranno. Il turno resterà in bozza.`))return;
+ const btn=$('pc-cat-save');btn.disabled=true;
+ msg('pc-cat-save-status',`Salvataggio di ${rows.length} quote in Supabase…`);
+ try{
+   const {data,error}=await supabase.rpc('pc_admin_replace_player_catalog',{p_round_id:r.id,p_rows:rows});
+   if(error)throw error;
+   await readOfficial();
+   const count=roundEvents(r.id).filter(x=>x.is_catalog).length;
+   if(count!==rows.length)throw Error(`Verifica salvataggio: attese ${rows.length} quote, trovate ${count}.`);
+   S.pcCatalogSource='saved';S.pcCatalogEdited=new Set();drawCatalogue();renderAdminGuide(r);
+   msg('pc-cat-save-status',`✅ SALVATE ${count} quote per ${stageData(r.stage)[1]} su Supabase. Le quote delle partite NON sono cambiate. Le schedine restano chiuse finché non pubblichi al passo 04.`);
+   msg('pc-cat-status',`✅ Catalogo aggiornato: ${count} quote ufficiali in BOZZA.`);
+ }catch(e){msg('pc-cat-save-status','Salvataggio fallito: '+e.message,true)}finally{btn.disabled=false}
 }
 async function unpublishRound(){
  const id=Number($('pc-admin-stage').value);
@@ -340,6 +395,7 @@ async function saveAdmin(publish=false){collectAdminDraft();const r=S.rounds.fin
  if(publish&&!when){msg('pc-admin-feedback','Prima di pubblicare inserisci la scadenza della giornata.',true);return false;}
  const deadline=when?new Date(when):null;
  if(deadline&&(!Number.isFinite(deadline.getTime())||deadline<=Date.now())){msg('pc-admin-feedback','La scadenza deve essere futura.',true);return false;}
+ if(publish&&S.pcCatalogRoundId===r.id&&S.pcCatalogPreview?.length&&S.pcCatalogSource!=='saved'){msg('pc-admin-feedback','Hai quote calciatori nuove o modificate NON SALVATE. Torna al passaggio 03 e premi «Conferma e salva le quote dei calciatori» prima di pubblicare.',true);return false;}
  if(publish){const catalogCount=roundEvents(r.id).filter(x=>x.is_catalog).length;
     const rolesCovered=new Set(S.adminDraft.filter(x=>x.kind==='player').map(x=>x.player_role)).size;
     if(!catalogCount&&rolesCovered<4){msg('pc-admin-feedback','Prepara prima il catalogo completo dei calciatori al passo 03. In alternativa servono eventi validi per tutti e quattro i ruoli.',true);return false;}
@@ -418,6 +474,18 @@ function bind(){
  $('pc-official-player-search').addEventListener('input',e=>{S.playerSearch=e.target.value;const r=S.rounds.find(x=>x.id===S.active);if(r)renderPlayerPicker(r,roundEvents(r.id).filter(x=>x.kind==='player'),openRound(r));$('pc-official-player-search').focus();});
  $('pc-official-player-event').addEventListener('change',e=>{S.playerEvent=e.target.value;renderOfficial();});
  $('pc-cat-generate').addEventListener('click',prepareFullCatalog);
+ $('pc-cat-save').addEventListener('click',saveFullCatalog);
+ $('pc-cat-role').addEventListener('change',syncCatalogueFilter);
+ $('pc-cat-event').addEventListener('change',drawCatalogue);
+ $('pc-cat-search').addEventListener('input',drawCatalogue);
+ $('pc-cat-list').addEventListener('input',e=>{
+   const input=e.target.closest('[data-cat-code][data-cat-event]');if(!input||!S.pcCatalogPreview)return;
+   const code=Number(input.dataset.catCode),ev=input.dataset.catEvent,entry=S.pcCatalogPreview.find(x=>Number(x.code)===code&&x.ev===ev);if(!entry)return;
+   entry.q=input.value.trim()===''?NaN:Number(input.value);S.pcCatalogEdited.add(catalogueKey(entry));S.pcCatalogSource='modified';
+   input.classList.add('pc-cat-edited');
+   msg('pc-cat-save-status','✎ Quote modificate, NON ancora salvate. Premi «Conferma e salva le quote dei calciatori».');
+   const ov=$('pc-cat-overview');if(ov)ov.textContent=`${S.pcCatalogPreview.length} quote · ${S.pcCatalogEdited.size} modificate manualmente · MODIFICHE NON SALVATE.`;
+ });
  $('pc-official-clear').addEventListener('click',()=>{S.picks.clear();S.hero=null;S.backup=null;S.dirty=true;renderOfficial()});
  $('pc-official-save').addEventListener('click',saveEntry);
  $('pc-admin-stage').addEventListener('change',()=>{msg('pc-admin-quote-feedback','Scegli le quote per questo turno e premi Conferma e salva.');renderAdmin();});

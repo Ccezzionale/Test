@@ -393,3 +393,31 @@
 .pc-page .pc-admin-match [data-odds-check]{color:#b4cee5!important}
 .pc-page .pc-admin-match [data-odds-check].pc-feedback-error{color:#b4cee5!important}
 @media(max-width:880px){.pc-page .pc-odds-wizard .pc-sim-modes{grid-template-columns:1fr}}
+/* V9.5 · Commissioner, passo 03: unico percorso per il catalogo quote. */
+.pc-catalogue-admin{background:#102f51;border-color:#7490ae70;display:grid;gap:12px}
+.pc-catalogue-admin .pc-cat-lead{font-size:.95rem;color:#e7f2fd;margin:4px 0 10px}
+.pc-catalogue-admin .pc-quote-section-title{margin:12px 0 5px}
+.pc-cat-explainer{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 4px}
+.pc-cat-explainer span{background:#173e66;border:1px solid #426d98;border-radius:10px;padding:8px 10px;font-size:.8rem;font-weight:700;color:#e1efff}
+.pc-cat-editorial{border:1px solid #476887;border-radius:11px;padding:12px 14px;background:#153659}
+.pc-cat-editorial summary{color:#f2ddac;cursor:pointer;font-size:.82rem;font-weight:700}
+.pc-cat-editorial p{margin:7px 0}
+.pc-cat-editorial label{display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap;color:#eaf4ff;font-size:.82rem}
+.pc-cat-editorial input{max-width:120px;width:100%;min-height:42px;background:#f8faff;color:#112c49;border-radius:7px;border:1px solid #7892aa;padding:8px}
+.pc-cat-controls{display:grid;grid-template-columns:1fr 1.25fr 2fr;gap:10px}
+.pc-cat-controls label{display:grid;gap:6px;color:#dbeaf8;font-size:.8rem;font-weight:700}
+.pc-cat-controls input,.pc-cat-controls select{width:100%;min-width:0;min-height:44px;background:#f8faff;color:#162d48;border:1px solid #8ba6c4;border-radius:9px;padding:10px}
+.pc-catalogue-admin .pc-cat-overview{margin:0;color:#e9f0fc;font-weight:700;font-size:.86rem}
+.pc-cat-table-wrap{max-height:510px;overflow:auto;border:1px solid #375b82;border-radius:12px;background:#0a2440}
+.pc-cat-table{width:100%;border-collapse:collapse;font-size:.8rem;color:#e5eef7}
+.pc-cat-table th{position:sticky;top:0;background:#1a446e;text-align:left;padding:12px 10px;color:#dff0ff;z-index:1}
+.pc-cat-table td{padding:9px 10px;border-bottom:1px solid #284662;vertical-align:middle}
+.pc-cat-table td small{display:block;color:#a9c5dd;font-size:.72rem;margin-top:3px}
+.pc-cat-table td.pc-cat-source{font-size:.75rem;color:#bfd5ef}
+.pc-cat-table input{width:105px;max-width:100%;background:#fff;color:#122740;font-weight:800;border:1px solid #7195b7;border-radius:8px;padding:9px;font-size:.87rem}
+.pc-cat-table input.pc-cat-edited{border:2px solid #ffc977;background:#fff3d8}
+.pc-cat-empty{margin:0;padding:22px;color:#c6daf0;text-align:center}
+.pc-catalogue-admin .pc-quote-confirm{margin-top:6px}
+.pc-cat-dirty{color:#ffdea5}
+@media(max-width:760px){.pc-cat-controls{grid-template-columns:repeat(2,minmax(0,1fr))}.pc-cat-controls label:last-child{grid-column:1/-1}}
+@media(max-width:560px){.pc-cat-controls{grid-template-columns:1fr}.pc-cat-controls label:last-child{grid-column:auto}.pc-cat-table th:nth-child(3),.pc-cat-table td:nth-child(3){display:none}.pc-cat-table td,.pc-cat-table th{padding:9px 6px}}

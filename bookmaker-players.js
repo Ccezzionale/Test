@@ -1,5 +1,6 @@
 import {createPlayerHistoryModel,estimateHistoricalEvent} from './bookmaker-player-history.js?v=pc-v9-1-assistfix';
 import {mountPlayerHistoryImport} from './bookmaker-player-import.js';
+import {createGoalkeeperModel,estimateGoalkeeperEvent} from './bookmaker-goalkeeper.js?v=pc-v9-5';
 /* Lega degli Eroi · Playoffs Challenge V9
  * Bookmaker calciatori basato su quotazioni CLASSIC correnti.
  * Calibrazione EDITORIALE, non probabilita' di mercato o storico validato.
@@ -8,8 +9,8 @@ import {mountPlayerHistoryImport} from './bookmaker-player-import.js';
  */
 export const PLAYER_EVENTS = {
   P: [
-    {key:'CLEAN_SHEET',title:'Clean sheet',manual:true,reason:'Per applicare la regola servono almeno 60 minuti giocati e assenza di reti subite durante la permanenza in campo.'},
-    {key:'PENALTY_SAVE',title:'Rigore parato',manual:true,reason:'La quotazione Classic non permette di stimare ragionevolmente la probabilità di un rigore parato.'}
+    {key:'CLEAN_SHEET',title:'Clean sheet'},
+    {key:'PENALTY_SAVE',title:'Rigore parato'}
   ],
   D: [
     {key:'GOAL',title:'Segna almeno un gol'},
@@ -127,14 +128,16 @@ async function loadHistoricalSnapshots(supabase){
     const gw=latest[0].gw;
     for(let start=0;start<1500;start+=800){
       const {data,error}=await supabase.from('pc_player_snapshots')
-       .select('season,gw,player_code,role_classic,role_mantra,appearances,goals,assists')
+       .select('season,gw,player_code,role_classic,role_mantra,appearances,goals,assists,goals_conceded,penalties_saved')
        .eq('season',season).eq('gw',gw).order('player_code').range(start,start+799);
       if(error)throw new Error('Archivio statistiche: '+error.message);
       results.push(...(data||[]));
       if(!data||data.length<800)break;
     }
   }
-  return createPlayerHistoryModel(results);
+  const h=createPlayerHistoryModel(results);
+  h.keeperModel=createGoalkeeperModel(results);
+  return h;
 }
 
 export function mountPlayerBookmaker({supabase,onApply,getRound}){
@@ -160,6 +163,10 @@ export function mountPlayerBookmaker({supabase,onApply,getRound}){
       `Stima sulla base del ruolo Mantra (${mantra}), dello storico personale 2024-2027 e della quotazione Classic. La forza della media Mantra controlla quanto prudentemente rientriamo verso i dati del ruolo.`:
       'Importa prima i file 2024/25 e 2025/26 per attivare il modello storico Mantra. Fino ad allora resta attiva la stima V8 basata sulla quotazione Classic.';
   }
+  function getEventEstimate(player,ev){
+    if(player.role==='P')return history?.keeperModel?estimateGoalkeeperEvent(player,ev,history.keeperModel):{supported:false,manual:true,reason:'Storico portieri non disponibile: attendi il caricamento.'};
+    return history?.hasHistoricalSeasons?estimateHistoricalEvent(player,ev,history,settings):estimatePlayerEvent(player,ev,settings);
+  }
   function drawEstimate(){
     const box=$('pc-player-evidence');
     if(!chosen){box.innerHTML='<p>Seleziona un calciatore dal listino.</p>';return}
@@ -168,6 +175,11 @@ export function mountPlayerBookmaker({supabase,onApply,getRound}){
     if(!lastEstimate){box.innerHTML='<p>La quota sarà suggerita dalla quotazione Classic aggiornata; il Commissioner potrà correggerla.</p>';return}
     if(!lastEstimate.supported){box.innerHTML=`<div class="pc-pb-alert">⚠️ <strong>Quota manuale.</strong> ${esc(lastEstimate.why)}</div>`;return}
     const a=lastEstimate;
+    if(a.goalkeeperEvidence){
+      const k=a.goalkeeperEvidence;
+      box.innerHTML=`<div class="pc-pb-metrics"><div><small>Probabilità di giocare</small><strong>${fmt(k.pPlay*100)}%</strong></div><div><small>Probabilità evento</small><strong>${fmt(a.probability*100)}%</strong></div><div><small>Quota suggerita</small><strong>${fmt(a.odd)}</strong></div></div><p><strong>${esc(chosen.name)}</strong> · ${esc(a.confidence)} · ${esc(a.reason)}</p><p>Stagione attuale: ${k.currentApps} presenze, ${k.currentGoals} gol subiti, ${k.currentSaves} rigori parati. Peso stagione corrente clean sheet: ${fmt(k.seasonWeight*100)}%.</p>`;
+      return;
+    }
     if(a.seasonEvidence){
       const entries=a.seasonEvidence.map(x=>`<tr><td>${esc(x.season)}</td><td>${x.pv}</td><td>${x.goals}</td><td>${x.assists}</td></tr>`).join('');
       const roleValues=a.roleComponents.map(x=>`${esc(x.role)} ${(x.weight*100).toFixed(0)}%`).join(' + ');
@@ -182,7 +194,7 @@ export function mountPlayerBookmaker({supabase,onApply,getRound}){
   }
   function recompute(){
     if(!chosen)return;
-    const result=history?.hasHistoricalSeasons?estimateHistoricalEvent(chosen,event.value,history,settings):estimatePlayerEvent(chosen,event.value,settings);
+    const result=getEventEstimate(chosen,event.value);
     lastEstimate=result;
     odd.value=result.supported?result.odd.toFixed(2):'';
     drawEstimate();
@@ -242,6 +254,9 @@ export function mountPlayerBookmaker({supabase,onApply,getRound}){
   showSettings();drawEstimate();load();
   return {
     refresh(){root.hidden=getRound?.()?.status!=='draft'},
+    roster(){return roster.map(p=>({...p}))},
+    isReady(){return roster.length>0&&Boolean(history?.hasHistoricalSeasons)},
+    keeperEstimate(code,event){const p=roster.find(x=>Number(x.code)===Number(code));return p?.role==='P'?getEventEstimate(p,event):null},
     catalogue(manual={}){
       if(!roster.length)throw new Error('Il listino calciatori non è ancora stato caricato.');
       if(!history?.hasHistoricalSeasons)throw new Error('Archivio Mantra incompleto: importa prima i due Excel storici.');
@@ -249,7 +264,7 @@ export function mountPlayerBookmaker({supabase,onApply,getRound}){
       for(const player of roster){
         for(const eventSpec of (PLAYER_EVENTS[player.role]||[])){
           let q;
-          const m=estimateHistoricalEvent(player,eventSpec.key,history,settings);
+          const m=getEventEstimate(player,eventSpec.key);
           if(m.supported){q=m.odd;supported++;}
           else if(m.manual){q=Number(manual[`${player.role}:${eventSpec.key}`]);editorial++;}
           else continue;
