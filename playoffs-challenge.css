@@ -377,3 +377,19 @@
 .pc-grade-step{border-style:dashed!important}
 .pc-page #pc-admin-publish:disabled{opacity:.45;cursor:not-allowed}
 @media(max-width:720px){.pc-page .pc-admin-step{padding:14px}.pc-page .pc-sim-modes{grid-template-columns:1fr}.pc-step-badge{white-space:normal;text-align:center;max-width:110px}.pc-admin-step>header{gap:8px}.pc-step-num{min-width:30px;height:30px;font-size:.83rem}.pc-page .pc-admin-intro{padding:15px}}
+
+/* V9.4.4 – il Commissioner usa un unico flusso di conferma quote */
+.pc-odds-wizard .pc-quote-section-title{display:flex;align-items:flex-start;gap:12px;margin:22px 0 12px;padding-top:14px;border-top:1px solid #496988}
+.pc-odds-wizard .pc-quote-section-title:first-of-type{margin-top:9px;padding-top:0;border:0}
+.pc-quote-section-title>span{display:grid;place-items:center;flex:none;width:29px;height:29px;border-radius:9px;background:#e6c479;color:#09223b;font-weight:950}
+.pc-quote-section-title strong{display:block;color:#ffe0a7;font-size:1rem}
+.pc-quote-section-title p{color:#c2d7ee;font-size:.84rem;line-height:1.5;margin:4px 0 0}
+.pc-page .pc-odds-wizard .pc-sim-modes{grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.pc-quote-confirm{background:#092a47;border:1px solid #e2b960;border-radius:15px;padding:16px;display:flex;gap:14px;align-items:center;flex-wrap:wrap}
+.pc-quote-confirm .pc-button{flex:0 1 auto;min-height:48px}
+.pc-quote-confirm p{margin:0;flex:1 1 240px;color:#d2e7f9;line-height:1.5;font-size:.9rem}
+.pc-sim-manual-note{padding:16px;background:#0e3451;color:#e7f1fc;border-radius:12px;line-height:1.65;border-left:4px solid #e2b960}
+.pc-sim-manual-note strong{color:#ffe2a7}
+.pc-page .pc-admin-match [data-odds-check]{color:#b4cee5!important}
+.pc-page .pc-admin-match [data-odds-check].pc-feedback-error{color:#b4cee5!important}
+@media(max-width:880px){.pc-page .pc-odds-wizard .pc-sim-modes{grid-template-columns:1fr}}

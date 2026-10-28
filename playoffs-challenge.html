@@ -8,9 +8,7 @@
   <title>Playoffs Challenge | Lega degli Eroi</title>
   <link rel="icon" href="icon-192.png" type="image/png" />
   <link rel="stylesheet" href="navbar.css?v=20261015" />
-  <link rel="stylesheet" href="playoffs-challenge.css?v=pc-v9-4-admin" />
-<meta name="lega-app-build" content="v20261028-ef9f76dc3f25">
-<script defer src="./app-updates.js?bootstrap=v20261028-ef9f76dc3f25" data-eroi-update="1"></script>
+  <link rel="stylesheet" href="playoffs-challenge.css?v=pc-v9-4-4-admin" />
 </head>
 <body class="pc-page">
 <nav class="site-nav">
@@ -290,7 +288,7 @@
     <section class="pc-tabpanel" id="pc-tab-admin" role="tabpanel" aria-label="Gestione Commissioner" hidden>
       <div class="pc-heading"><div><div class="pc-kicker">SOLO ADMIN · GUIDA PRATICA</div><h2>⚙️ Prepara la Playoffs Challenge</h2><p>Segui i passaggi nell'ordine. Ogni turno si prepara separatamente. Le quote rimangono invisibili agli allenatori finché non premi <strong>Pubblica</strong>.</p></div></div>
       <div class="pc-panel pc-admin-controls">
-        <div class="pc-admin-intro" role="note"><strong>Come funziona in breve</strong><p>① Scegli il turno → ② Inserisci le partite → ③ Controlla le quote → ④ Prepara i calciatori → ⑤ Imposta la scadenza e pubblica → ⑥ Dopo le partite inserisci gli esiti e omologa.</p><p><strong>Salva bozza</strong> conserva il lavoro ma NON apre le schedine. <strong>Pubblica</strong> apre la gara e blocca le quote: usa quel pulsante solo quando tutto è definitivo.</p></div>
+        <div class="pc-admin-intro" role="note"><strong>Come funziona in breve</strong><p>① Scegli il turno → ② Controlla le partite, scegli le quote e CONFERMA per salvarle → ③ Prepara i calciatori → ④ Imposta la scadenza e pubblica → ⑤ Dopo le partite inserisci gli esiti e omologa.</p><p><strong>Conferma e salva queste quote</strong> registra subito le partite e le quote in bozza. <strong>Salva bozza</strong> conserva anche gli altri eventi ma NON apre le schedine. <strong>Pubblica</strong> apre la gara e blocca le quote: usa quel pulsante solo quando tutto è definitivo.</p></div>
         <section class="pc-admin-step" id="pc-guide-step1"><header><span class="pc-step-num">01</span><div><h3>Scegli la giornata</h3><p>Ogni turno ha un palinsesto distinto. Inizia dagli ottavi.</p></div><span id="pc-guide-state-1" class="pc-step-badge">Pronto</span></header>
           <div class="pc-field"><label for="pc-admin-stage">Turno da gestire</label><select id="pc-admin-stage"></select></div><p id="pc-guide-round-status" class="pc-step-note">Caricamento stato…</p>
           <div id="pc-unpublish-panel" class="pc-step-note" hidden>
@@ -300,39 +298,36 @@
           </div>
         </section>
         <div id="pc-admin-draft">
-          <section class="pc-admin-step" id="pc-guide-step2"><header><span class="pc-step-num">02</span><div><h3>Inserisci le partite</h3><p>Controlla le franchigie e il loro ordine. Il seeding provvisorio degli ottavi è un suggerimento, non il tabellone definitivo.</p></div><span id="pc-guide-state-2" class="pc-step-badge">Da fare</span></header>
-          <p><strong>Vuoi impostare una quota a mano?</strong> Scrivila nei campi 1, X e 2, poi premi <strong>«💾 Salva quote in bozza»</strong> qui sotto. <strong>Non devi premere «Genera»</strong>: quello serve per il calcolo automatico.</p>
-          <p>Le tre quote sono indipendenti: mentre le modifichi non spostiamo nessun numero. L'indicatore sotto ogni partita ti aiuta a mantenere le probabilità complessive vicine al 100%.</p>
-          <div id="pc-admin-matches"></div>
-          <div class="pc-entry-actions"><button class="pc-button pc-ghost" type="button" id="pc-admin-forecast">Carica gli ottavi provvisori</button><button class="pc-button pc-ghost" type="button" id="pc-admin-generate" title="Compila solo le partite senza quote">⚡ Genera quote mancanti</button><button class="pc-button pc-ghost" type="button" id="pc-admin-regenerate" title="Sostituisce le quote già scritte, dopo conferma">↻ Ricalcola tutte</button><button class="pc-button pc-primary" type="button" id="pc-admin-save-matches">💾 Salva quote in bozza</button></div>
-          <p class="pc-feedback" role="note"><strong>Promemoria:</strong> «Salva» conserva le modifiche su Supabase, ma non apre la giornata. «Ricalcola tutte» sovrascrive le quote attuali soltanto dopo la tua conferma.</p>
-
-          </section>
-          <section class="pc-admin-step" id="pc-guide-step3"><header><span class="pc-step-num">03</span><div><h3>Controlla le quote 1 / X / 2</h3><p>Parti dal motore attuale. Puoi sperimentare altri pesi oppure scrivere manualmente le quote nelle caselle delle partite del passaggio 02.</p></div><span id="pc-guide-state-3" class="pc-step-badge">Da verificare</span></header>
-          <section class="pc-simulator" id="pc-weight-simulator" aria-label="Simulatore quote del Commissioner">
-            <div class="pc-sim-top"><div><div class="pc-kicker">QUOTE DELLE PARTITE</div><h3>🎚️ Scegli come calcolare le quote</h3>
-              <p><strong>All'apertura usiamo lo stesso motore standard dell'app.</strong> I pesi percentuali sono una simulazione alternativa: applicali solo se preferisci il risultato.</p></div><span class="pc-sim-total" id="pc-sim-total">STANDARD</span></div>
-            <div class="pc-sim-modes" role="radiogroup" aria-label="Metodo di calcolo delle quote">
-              <label><input type="radio" name="pc-sim-mode" value="standard" checked/> <span><strong>✓ Motore attuale</strong><small>Quello già utilizzato dal Bookmaker: forma recente, storico leggero e media Lega. Non ha pesi 10/60/30 fissi.</small></span></label>
-              <label><input type="radio" name="pc-sim-mode" value="custom"/> <span><strong>Pesi personalizzati</strong><small>Scegli tu le percentuali per confrontare e, se vuoi, applicare quote diverse.</small></span></label>
-            </div>
-            <div class="pc-sim-custom" id="pc-sim-custom" hidden>
-              <div class="pc-sim-sliders">
-                <label for="pc-weight-historic"><span>📚 Storico 2025/26 <small>Rose dell'anno scorso</small></span><div class="pc-sim-number"><input id="pc-weight-historic" data-weight="historic" type="number" inputmode="numeric" min="0" max="100" step="1" value="10"/><span>%</span></div></label>
-                <label for="pc-weight-season"><span>📅 Stagione attuale <small>Tutte le giornate completate</small></span><div class="pc-sim-number"><input id="pc-weight-season" data-weight="season" type="number" inputmode="numeric" min="0" max="100" step="1" value="60"/><span>%</span></div></label>
-                <label for="pc-weight-recent5"><span>🔥 Ultime 5 giornate <small>Forma recente (già inclusa nella stagione)</small></span><div class="pc-sim-number"><input id="pc-weight-recent5" data-weight="recent5" type="number" inputmode="numeric" min="0" max="100" step="1" value="30"/><span>%</span></div></label>
+          <section class="pc-admin-step pc-odds-wizard" id="pc-guide-step2">
+            <header><span class="pc-step-num">02</span><div><h3>Partite e quote 1 / X / 2</h3><p>Prima controlla le squadre. Poi scegli come vuoi le quote e premi un solo pulsante per confermarle e salvarle.</p></div><span id="pc-guide-state-2" class="pc-step-badge">Da fare</span></header>
+            <div class="pc-quote-section-title"><span>A</span><div><strong>Controlla le quattro partite</strong><p>Verifica squadre e ordine. Puoi modificare a mano i numeri 1, X e 2: saranno utilizzati solo scegliendo «Quote manuali» qui sotto.</p></div></div>
+            <div id="pc-admin-matches"></div>
+            <div class="pc-entry-actions"><button class="pc-button pc-ghost" type="button" id="pc-admin-forecast">Carica gli ottavi provvisori</button></div>
+            <div class="pc-quote-section-title"><span>B</span><div><strong>Scegli quali quote usare</strong><p>Di norma è sufficiente confermare le quote del motore attuale. Le altre opzioni servono soltanto quando vuoi modificarle.</p></div></div>
+            <section class="pc-simulator" id="pc-weight-simulator" aria-label="Scelta delle quote del Commissioner">
+              <div class="pc-sim-top"><div><div class="pc-kicker">UNA SCELTA, UN SALVATAGGIO</div><h3>Quali quote vuoi utilizzare?</h3></div><span class="pc-sim-total" id="pc-sim-total">STANDARD</span></div>
+              <div class="pc-sim-modes" role="radiogroup" aria-label="Metodo di scelta delle quote">
+                <label><input type="radio" name="pc-sim-mode" value="standard" checked/> <span><strong>✓ Quote attuali (consigliato)</strong><small>Usa il motore che già adottiamo. Guarda i valori proposti qui sotto e confermali.</small></span></label>
+                <label><input type="radio" name="pc-sim-mode" value="manual"/> <span><strong>✎ Quote manuali</strong><small>Scrivi liberamente 1, X e 2 nei campi delle partite. Non devono sommare 100%.</small></span></label>
+                <label><input type="radio" name="pc-sim-mode" value="custom"/> <span><strong>⚙️ Modifica i pesi del motore</strong><small>Inserisci tre percentuali indipendenti. Confronta le quote e poi conferma.</small></span></label>
               </div>
-              <div class="pc-sim-actions"><span>Scrivi i tre valori liberamente: <strong>nessuna percentuale si sposta da sola</strong>. L'anteprima si aggiorna quando la somma è 100%.</span><button type="button" class="pc-button pc-ghost" id="pc-sim-reset">↺ Ripristina 10 / 60 / 30</button></div>
-              <p id="pc-sim-input-feedback" class="pc-feedback" role="status"></p>
-            </div>
-            <div class="pc-sim-warning" id="pc-sim-warning" role="status"></div>
-            <div class="pc-sim-results"><div class="pc-sim-result-head"><strong>Prima e dopo, partita per partita</strong><span>Quota attuale → Quota scelta</span></div><div id="pc-sim-games"></div></div>
-            <div class="pc-sim-footer"><p><strong>Nota:</strong> stagione e ultime cinque giornate contengono parte degli stessi risultati. Se manca lo storico di una squadra, il peso viene ridistribuito fra i dati disponibili. Le quote calciatori non cambiano.</p>
-            <button type="button" class="pc-button pc-primary" id="pc-sim-apply">✓ Copia queste quote nelle partite qui sotto</button></div>
+              <div class="pc-sim-custom" id="pc-sim-custom" hidden>
+                <div class="pc-sim-sliders">
+                  <label for="pc-weight-historic"><span>📚 Storico 2025/26</span><div class="pc-sim-number"><input id="pc-weight-historic" data-weight="historic" type="number" inputmode="numeric" min="0" max="100" step="1" value="10"/><span>%</span></div></label>
+                  <label for="pc-weight-season"><span>📅 Stagione attuale</span><div class="pc-sim-number"><input id="pc-weight-season" data-weight="season" type="number" inputmode="numeric" min="0" max="100" step="1" value="60"/><span>%</span></div></label>
+                  <label for="pc-weight-recent5"><span>🔥 Ultime 5 giornate</span><div class="pc-sim-number"><input id="pc-weight-recent5" data-weight="recent5" type="number" inputmode="numeric" min="0" max="100" step="1" value="30"/><span>%</span></div></label>
+                </div>
+                <div class="pc-sim-actions"><span>I campi sono indipendenti. Quando sommano 100%, puoi confermare le quote ottenute.</span><button type="button" class="pc-button pc-ghost" id="pc-sim-reset">↺ Ripristina 10 / 60 / 30</button></div>
+                <p id="pc-sim-input-feedback" class="pc-feedback" role="status"></p>
+              </div>
+              <div class="pc-sim-warning" id="pc-sim-warning" role="status"></div>
+              <div class="pc-sim-results"><div class="pc-sim-result-head"><strong>Anteprima delle quattro partite</strong><span>Quote proposte dal motore</span></div><div id="pc-sim-games"></div></div>
+              <p class="pc-sim-manual-note" id="pc-sim-manual-note" hidden>✎ <strong>Hai scelto le quote manuali.</strong> Torna ai campi delle partite sopra, inserisci 1, X e 2 a piacere e conferma qui sotto. Il totale implicito è solo informativo. Le quote potrebbero discostarsi dalla regola delle probabilità senza margine: controllale prima di pubblicare.</p>
+            </section>
+            <div class="pc-quote-section-title"><span>C</span><div><strong>Conferma e salva le quote scelte</strong><p>Questo pulsante salva davvero le quattro partite su Supabase, in bozza. Non apre ancora i pronostici.</p></div></div>
+            <div class="pc-quote-confirm"><button class="pc-button pc-primary" type="button" id="pc-admin-confirm-odds">✓ Conferma e salva queste quote</button><p id="pc-admin-quote-feedback" role="status" aria-live="polite">Nessuna modifica salvata in questa sessione.</p></div>
           </section>
-
-          </section>
-          <section class="pc-admin-step" id="pc-guide-step4"><header><span class="pc-step-num">04</span><div><h3>Prepara le quote dei calciatori</h3><p>È questo che permetterà agli allenatori di cercare POR, DIF, CEN e ATT. Genera una volta il catalogo, controlla gli eventi editoriali e salvalo in bozza.</p></div><span id="pc-guide-state-4" class="pc-step-badge">Da fare</span></header>
+          <section class="pc-admin-step" id="pc-guide-step4"><header><span class="pc-step-num">03</span><div><h3>Prepara le quote dei calciatori</h3><p>È questo che permetterà agli allenatori di cercare POR, DIF, CEN e ATT. Genera una volta il catalogo, controlla gli eventi editoriali e salvalo in bozza.</p></div><span id="pc-guide-state-4" class="pc-step-badge">Da fare</span></header>
           <section class="pc-panel pc-catalogue-admin" id="pc-catalogue-admin" aria-label="Catalogo ufficiale calciatori">
             <div class="pc-kicker">V9.3 · MERCATO COMPLETO DEI CALCIATORI</div>
             <h3>📚 Prepara il catalogo completo di quote</h3>
@@ -380,7 +375,7 @@
 
             </details>
           </section>
-          <section class="pc-admin-step pc-final-step" id="pc-guide-step5"><header><span class="pc-step-num">05</span><div><h3>Salva e apri la giornata</h3><p>Prima salva la bozza, poi imposta la deadline e pubblica soltanto quando sei sicuro di tutto.</p></div><span id="pc-guide-state-5" class="pc-step-badge">Non pubblicata</span></header>
+          <section class="pc-admin-step pc-final-step" id="pc-guide-step5"><header><span class="pc-step-num">04</span><div><h3>Salva e apri la giornata</h3><p>Prima salva la bozza, poi imposta la deadline e pubblica soltanto quando sei sicuro di tutto.</p></div><span id="pc-guide-state-5" class="pc-step-badge">Non pubblicata</span></header>
             <div class="pc-field"><label for="pc-admin-deadline">Scadenza per consegnare le schedine (ora locale)</label><input id="pc-admin-deadline" type="datetime-local"/><small>Va impostata prima del primo calcio d'inizio di Serie A della giornata. Non serve per salvare una semplice bozza.</small></div>
             <div class="pc-entry-actions"><button class="pc-button pc-ghost" type="button" id="pc-admin-save-draft">💾 Salva bozza (non pubblica)</button><button class="pc-button pc-primary" type="button" id="pc-admin-publish">🔒 Pubblica e apri le schedine</button></div>
             <p class="pc-step-note">Prima di pubblicare: verifica partite e seeding ufficiali, quote 1X2, catalogo calciatori, eventi editoriali e scadenza. Dopo la pubblicazione le quote restano bloccate.</p>
@@ -402,7 +397,7 @@
 
           </details>
         </div>
-        <section class="pc-admin-step pc-grade-step" id="pc-guide-step6"><header><span class="pc-step-num">06</span><div><h3>Dopo la scadenza: controlla e omologa</h3><p>Quando le partite sono finite, inserisci il segno di ogni incontro e gli esiti dei calciatori pronosticati. Dopo l'omologazione, se sbagli, puoi registrare una rettifica motivata.</p></div><span id="pc-guide-state-6" class="pc-step-badge">In attesa</span></header>
+        <section class="pc-admin-step pc-grade-step" id="pc-guide-step6"><header><span class="pc-step-num">05</span><div><h3>Dopo la scadenza: controlla e omologa</h3><p>Quando le partite sono finite, inserisci il segno di ogni incontro e gli esiti dei calciatori pronosticati. Dopo l'omologazione, se sbagli, puoi registrare una rettifica motivata.</p></div><span id="pc-guide-state-6" class="pc-step-badge">In attesa</span></header>
         <div id="pc-admin-grading" hidden><h3>✅ Omologazione risultati</h3><p>Gli esiti sono modificabili solo dopo la scadenza. «Annullato» assegna zero punti e attiva l'eventuale HERO PICK di riserva.</p><div id="pc-admin-outcomes"></div><button class="pc-button pc-primary" type="button" id="pc-admin-finalize">🏆 Omologa giornata e aggiorna classifica</button><div id="pc-admin-corrections" hidden><h3>✏️ Rettifiche dopo l’omologazione</h3><p>La correzione modifica subito la classifica ed è registrata con motivazione, autore, data ed esito precedente. Non cambia le quote e non riapre le schedine.</p><div id="pc-admin-correction-items"></div><h4>Storico delle rettifiche</h4><div id="pc-admin-correction-log" aria-live="polite"></div></div></div>
 
         </section>
@@ -415,7 +410,7 @@
 </main>
 <script defer src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
 <script type="module" src="playoffs-challenge.js?v=pc-v9-4-1"></script>
-<script type="module" src="playoffs-challenge-live.js?v=pc-v9-4-3-manual"></script>
+<script type="module" src="playoffs-challenge-live.js?v=pc-v9-4-4-one-save"></script>
 <script src="mobile-nav.js?v=20261007-bottom4"></script>
 <script src="navbar.js?v=20261015"></script>
 <script type="module" src="admin-nav.js?v=1"></script>

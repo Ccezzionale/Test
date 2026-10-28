@@ -43,19 +43,23 @@ export function mountCommissionerSimulator({getSnapshot,getRound,getDraftMatches
     const sum=FIELDS.reduce((total,k)=>total+draft[k],0);
     return {valid:sum===100,raw:draft,sum,message:sum===100?'✓ Le percentuali sommano il 100%.':`Totale ${sum}%: modifica i numeri fino ad arrivare al 100%. Nessun campo verrà spostato automaticamente.`};
   }
-  function clear(message){rows=[];el('pc-sim-games').innerHTML=`<p class="pc-sim-empty">${esc(message)}</p>`;el('pc-sim-apply').disabled=true;}
+  function clear(message){rows=[];el('pc-sim-games').innerHTML=`<p class="pc-sim-empty">${esc(message)}</p>`;}
   function render(){
     const custom=mode==='custom';
+    const manual=mode==='manual';
     el('pc-sim-custom').hidden=!custom;
+    el('pc-sim-manual-note').hidden=!manual;
+    el('pc-weight-simulator').querySelector('.pc-sim-results').hidden=manual;
     for(const radio of document.querySelectorAll('input[name="pc-sim-mode"]'))radio.checked=radio.value===mode;
     const state=readFields();
-    el('pc-sim-total').textContent=custom?(state.sum===null?'DA COMPLETARE':`${state.sum}%`):'STANDARD';
+    el('pc-sim-total').textContent=manual?'MANUALE':custom?(state.sum===null?'DA COMPLETARE':`${state.sum}%`):'STANDARD';
     el('pc-sim-total').classList.toggle('pc-sim-invalid',custom&&!state.valid);
     el('pc-sim-input-feedback').textContent=custom?state.message:'';
     el('pc-sim-input-feedback').classList.toggle('pc-feedback-error',custom&&!state.valid);
     const round=getRound();
     if(!round||round.status!=='draft'){shell.hidden=true;return;}
     shell.hidden=false;
+    if(manual){rows=[];el('pc-sim-warning').textContent='Scrivi le quote nelle quattro partite qui sopra. Il pulsante finale salverà esattamente i valori digitati.';return;}
     if(custom&&!state.valid){clear('Completa i tre pesi fino al 100% per vedere le nuove quote. Le quote della bozza restano intatte.');return;}
     if(custom){weights={...state.raw};try{window.localStorage.setItem(STORAGE_KEY,JSON.stringify(weights));}catch(_){}}
     const source=snapshot||getSnapshot();
@@ -88,8 +92,6 @@ export function mountCommissionerSimulator({getSnapshot,getRound,getDraftMatches
       }).join('');
       return `<article class="pc-sim-fixture"><div class="pc-sim-fixture-title"><strong>${esc(match.home)} vs ${esc(match.away)}</strong><small>Partita ${match.slot}</small></div><div class="pc-sim-odds-grid">${cells}</div></article>`;
     }).join('');
-    el('pc-sim-apply').disabled=!rows.length||rows.some(r=>r.error);
-    el('pc-sim-apply').textContent=custom?'✓ Copia le quote personalizzate nelle partite':'✓ Copia le quote del motore attuale nelle partite';
     let help=custom?'Simulazione alternativa con le percentuali inserite.':'Stai vedendo esattamente il modello 1X2 standard già utilizzato dall’app; non equivale al preset 10/60/30.';
     help+=` Dati disponibili fino alla giornata ${source.originalModel.metadata.latestRound}. Nessuna quota viene pubblicata automaticamente.`;
     if(fallback.size)help+=` Dati mancanti, pesi ridistribuiti: ${[...fallback].join('; ')}.`;
@@ -102,19 +104,15 @@ export function mountCommissionerSimulator({getSnapshot,getRound,getDraftMatches
     for(const key of FIELDS)el(`pc-weight-${key}`).value=String(weights[key]);
     render();
   });
-  el('pc-sim-apply').addEventListener('click',()=>{
-    if(!rows.length||rows.some(r=>r.error))return;
-    const state=readFields();
-    if(mode==='custom'&&!state.valid)return;
-    onApply(rows.map(r=>({slot:r.slot,home_name:r.home,away_name:r.away_name,q1:r.current.q1,qx:r.current.qx,q2:r.current.q2})),
-      mode==='custom'?{...weights,mode:'custom'}:{mode:'standard'});
-  });
   render();
   return {
     refresh:render,
+    getMode(){return mode;},
+    getProposedOdds(){render();if(mode==='manual')return null;return rows.length&&rows.every(r=>!r.error&&r.current)?rows.map(r=>({slot:r.slot,home_name:r.home,away_name:r.away,q1:r.current.q1,qx:r.current.qx,q2:r.current.q2})):null;},
     setSnapshot(value){snapshot=value;render();},
     getWeights(){return mode==='custom'&&readFields().valid?{...weights}:null;},
     getQuoteModel(){const source=snapshot||getSnapshot();if(!source)return null;
+      if(mode==='manual')return null;
       if(mode==='standard')return source.originalModel;
       const state=readFields();return state.valid?buildModel({...source.data,weights:state.raw}):null;}
   };
