@@ -1,125 +1,83 @@
-const SW_VERSION = "20261027-allstar-pwa-recover1";
+/* LEGA DEGLI EROI - Unico Service Worker per TUTTE le pagine.
+ * Il comando prepara_sito.py sostituisce il segnaposto con la release reale.
+ */
+const SW_VERSION = "v20261028-ef9f76dc3f25";
+const APP_CACHE_PREFIX = "lega-eroi-";
 
 self.addEventListener("install", (event) => {
-  console.log("Service Worker installato:", SW_VERSION);
-  self.skipWaiting();
+  event.waitUntil(self.skipWaiting());
 });
 
 self.addEventListener("activate", (event) => {
-  console.log("Service Worker attivo:", SW_VERSION);
-
-  event.waitUntil(
-    (async () => {
-      const cacheNames = await caches.keys();
-
-      await Promise.all(
-        cacheNames
-          .filter((name) => name.startsWith("lega-eroi-") && name !== `lega-eroi-${SW_VERSION}`)
-          .map((name) => caches.delete(name))
-      );
-
-      await self.clients.claim();
-
-      const windows = await self.clients.matchAll({
-        type: "window",
-        includeUncontrolled: true
-      });
-
-      for (const client of windows) {
-        try {
-          const currentUrl = new URL(client.url);
-
-          // Ricarica solo l’All-Star durante l’aggiornamento, evitando
-          // di interrompere le altre pagine mentre l’utente le utilizza.
-          const onAllstarPage = /\/allstar\.html$/i.test(currentUrl.pathname);
-          if (onAllstarPage && currentUrl.searchParams.get("__appv") !== SW_VERSION) {
-            currentUrl.searchParams.set("__appv", SW_VERSION);
-
-            if ("navigate" in client) {
-              await client.navigate(currentUrl.toString());
-              continue;
-            }
-          }
-
-          client.postMessage({
-            type: "SW_UPDATED",
-            version: SW_VERSION
-          });
-        } catch (error) {
-          console.log("Impossibile aggiornare automaticamente una finestra:", String(error));
-        }
-      }
-    })()
-  );
+  event.waitUntil((async () => {
+    const names = await caches.keys();
+    await Promise.all(names.filter(n => n.startsWith(APP_CACHE_PREFIX)).map(n => caches.delete(n)));
+    await self.clients.claim();
+    const pages = await self.clients.matchAll({ type: "window", includeUncontrolled: true });
+    for (const page of pages) {
+      page.postMessage({ type: "SW_UPDATED", version: SW_VERSION });
+    }
+  })());
 });
 
+self.addEventListener("message", (event) => {
+  if (event.data && event.data.type === "GET_SW_VERSION") {
+    const channel = event.ports && event.ports[0];
+    if (channel) channel.postMessage({ version: SW_VERSION });
+    else if (event.source) event.source.postMessage({ type: "SW_VERSION", version: SW_VERSION });
+  }
+});
 
 self.addEventListener("fetch", (event) => {
   const request = event.request;
   if (request.method !== "GET") return;
-
   const url = new URL(request.url);
   if (url.origin !== self.location.origin) return;
+  // Non toccare le fetch verso Supabase, servizi di pagamento o domini esterni.
+  // Le risorse essenziali non devono mai provenire da una cache obsoleta.
+  const essential = request.mode === "navigate" ||
+    ["document", "script", "style", "worker", "sharedworker", "manifest", "image", "font"].includes(request.destination) ||
+    /\.(?:json|webmanifest)$/i.test(url.pathname);
+  if (!essential) return;
 
-  const freshDestinations = new Set(["document", "script", "style"]);
-  if (!freshDestinations.has(request.destination)) return;
-
-  event.respondWith(
-    fetch(new Request(request, { cache: "no-store" }))
-      .catch(() => fetch(request))
-  );
+  event.respondWith((async () => {
+    try {
+      return await fetch(new Request(request, { cache: "no-store" }));
+    } catch (error) {
+      if (request.mode === "navigate") {
+        const html = '<!doctype html><html lang="it"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Connessione necessaria</title></head><body style="font:16px system-ui;background:#071e34;color:white;padding:28px;max-width:600px;margin:auto"><h1>Connessione non disponibile</h1><p>Per evitare di mostrare dati o pagine non aggiornati, la Lega degli Eroi necessita della connessione Internet.</p><button style="padding:12px 20px;border-radius:10px;border:0;font:inherit" onclick="location.reload()">Riprova</button></body></html>';
+        return new Response(html, { status: 503, headers: { "Content-Type": "text/html; charset=utf-8", "Cache-Control": "no-store" } });
+      }
+      return Response.error();
+    }
+  })());
 });
 
+// Notifiche push: volutamente identiche a quelle già usate dalla Lega.
 self.addEventListener("push", (event) => {
   let data = {};
-
-  try {
-    data = event.data ? event.data.json() : {};
-  } catch {
-    data = {};
-  }
-
-  event.waitUntil(
-    self.registration.showNotification(data.title || "Lega degli Eroi", {
-      body: data.body || "È il tuo turno",
-      icon: "/Test/icon-192.png",
-      badge: "/Test/icon-192.png",
-      data: {
-        url: data.url || "/Test/"
-      }
-    })
-  );
+  try { data = event.data ? event.data.json() : {}; } catch { data = {}; }
+  event.waitUntil(self.registration.showNotification(data.title || "Lega degli Eroi", {
+    body: data.body || "È il tuo turno",
+    icon: "/Test/icon-192.png",
+    badge: "/Test/icon-192.png",
+    data: { url: data.url || "/Test/" }
+  }));
 });
 
 self.addEventListener("notificationclick", (event) => {
   event.notification.close();
-
   const targetUrl = event.notification?.data?.url || "/Test/";
-
-  event.waitUntil(
-    (async () => {
-      const windows = await clients.matchAll({
-        type: "window",
-        includeUncontrolled: true
-      });
-
-      for (const client of windows) {
-        if ("focus" in client) {
-          await client.focus();
-
-          if ("navigate" in client) {
-            try {
-              await client.navigate(targetUrl);
-              return;
-            } catch {
-            }
-          }
+  event.waitUntil((async () => {
+    const windows = await self.clients.matchAll({ type: "window", includeUncontrolled: true });
+    for (const client of windows) {
+      if ("focus" in client) {
+        await client.focus();
+        if ("navigate" in client) {
+          try { await client.navigate(targetUrl); return; } catch (_) { /* fallback */ }
         }
       }
-
-      if (clients.openWindow) {
-        await clients.openWindow(targetUrl);
-      }
-    })()
-  );
+    }
+    if (self.clients.openWindow) await self.clients.openWindow(targetUrl);
+  })());
 });

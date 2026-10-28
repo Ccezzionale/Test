@@ -37,6 +37,8 @@
     }, 15000);
   </script>
   <script type="module" src="allstar.js?v=coach-diagnostics-20261027-2" defer></script>
+<meta name="lega-app-build" content="v20261028-ef9f76dc3f25">
+<script defer src="./app-updates.js?bootstrap=v20261028-ef9f76dc3f25" data-eroi-update="1"></script>
 </head>
 <body>
   <nav class="site-nav">
@@ -752,7 +754,7 @@
   <script>
     if ("serviceWorker" in navigator) {
       window.addEventListener("load", function () {
-        navigator.serviceWorker.register("./sw.js?v=coach-diagnostics-20261027-1", { updateViaCache: "none" })
+        navigator.serviceWorker.register("./sw.js", { updateViaCache: "none" })
           .then(function (registration) {
             registration.update();
             console.log("SW registrato e aggiornato");

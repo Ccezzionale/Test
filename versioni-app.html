@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#061326">
+  <title>Versioni webapp | Lega degli Eroi</title>
+  <style>
+    :root { color-scheme:dark; font-family:system-ui,-apple-system,'Segoe UI',sans-serif; background:#061326;color:#edf4ff }
+    * { box-sizing:border-box } body {margin:0} main{max-width:1120px;margin:0 auto;padding:26px 18px 70px}
+    a{color:#96ccff} a:hover{text-decoration:none} .eyebrow{font-size:12px;text-transform:uppercase;letter-spacing:.15em;color:#a6bdd4}
+    h1{font-size:clamp(25px,4vw,35px);margin:8px 0} h2{font-size:19px;margin:0} p{color:#bed0e0;line-height:1.55}
+    .head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap}
+    .btn{font:600 14px system-ui;border:1px solid #7791aa;border-radius:10px;background:#12324d;color:#fff;padding:10px 15px;cursor:pointer}
+    .btn:hover{background:#1d4564}.stat{display:flex;gap:12px;flex-wrap:wrap;margin:24px 0}.stat>div{flex:1;min-width:170px;border:1px solid #2c4c6d;border-radius:14px;padding:15px;background:#0c233b}
+    .stat small{display:block;color:#adc0d4}.stat strong{display:block;font-size:22px;margin-top:5px}.controls{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:20px 0}
+    input,select{font:14px system-ui;border:1px solid #58738f;color:#fff;background:#102940;border-radius:8px;padding:10px 12px}
+    input{flex:2;min-width:210px}select{flex:1;min-width:180px}.list{border:1px solid #2c4c6d;border-radius:14px;overflow:auto;background:#0c233b}
+    table{border-collapse:collapse;width:100%;min-width:850px;font-size:13px}th,td{text-align:left;padding:13px 12px;border-bottom:1px solid #1f3c57;vertical-align:top}th{background:#112e49;color:#afc7db;font-weight:600}
+    tr:last-child td{border-bottom:0}.pill{display:inline-block;padding:4px 8px;border-radius:100px;font-size:12px;font-weight:650;background:#344b60;color:#ecf2f8;white-space:nowrap}
+    .pill.ok{background:#133f34;color:#89ebc1}.pill.warn{background:#573a18;color:#ffdb95}.pill.missing{background:#3c2b3a;color:#ffc1c9}
+    .muted{color:#9eb5ca;font-size:12px}.err{padding:15px;background:#48252b;border:1px solid #ae5967;border-radius:10px;color:#ffe3e5}
+    code{font-size:12px;background:#142c44;padding:3px 5px;border-radius:5px}footer{margin-top:20px;color:#99aec2;font-size:12px}
+  </style>
+  <meta name="lega-app-build" content="v20261028-ef9f76dc3f25">
+<script defer src="./app-updates.js?bootstrap=v20261028-ef9f76dc3f25" data-eroi-update="1"></script>
+</head>
+<body>
+  <main>
+    <div class="head">
+      <div><div class="eyebrow">Lega degli Eroi · Solo amministratori</div><h1>Versioni dei dispositivi</h1>
+      <p>Qui vedi la versione effettivamente dichiarata dai dispositivi che hanno eseguito il nuovo controllo. Gli utenti che non hanno inviato dati compaiono come «Mai verificato».</p></div>
+      <div><a href="index.html">Torna alla Lega</a><p><button id="refresh" class="btn">Aggiorna rapporti</button></p></div>
+    </div>
+    <section class="stat" aria-label="Statistiche">
+      <div><small>Versione pubblicata</small><strong id="release">...</strong></div>
+      <div><small>Dispositivi aggiornati (ultime 48h)</small><strong id="updated">-</strong></div>
+      <div><small>Da aggiornare / mai verificati</small><strong id="pending">-</strong></div>
+    </section>
+    <div id="error" hidden></div>
+    <div class="controls"><input id="search" type="search" placeholder="Cerca squadra o allenatore..." aria-label="Cerca">
+      <select id="filter" aria-label="Filtra stato"><option value="all">Tutti</option><option value="attention">Da controllare</option><option value="current">Solo aggiornati</option></select></div>
+    <div class="list"><table><thead><tr><th>Squadra / account</th><th>Stato</th><th>Versione</th><th>Dispositivo</th><th>Ultimo accesso rilevato</th><th>Ultima pagina</th></tr></thead>
+      <tbody id="rows"><tr><td colspan="6">Caricamento...</td></tr></tbody></table></div>
+    <footer>Le sessioni/browser molto vecchi potrebbero non inviare nessun rapporto. «Mai verificato» non dimostra che siano offline: significa che questo sistema non li ha ancora rilevati. Per gli allenatori senza rapporto dalla PWA, viene mostrata una riga «Webapp non verificata» anche se il PC ha comunicato correttamente. Dati accessibili solo ad admin/commissioner.</footer>
+  </main>
+  <script type="module">
+    import { supabase } from "./supabase.js";
+    const $ = id => document.getElementById(id);
+    let report = [], current = "";
+    function td(tr,text) { const cell=document.createElement("td");cell.textContent=text ?? "-";tr.appendChild(cell);return cell; }
+    function age(value) { if(!value) return "Nessuna comunicazione";return new Date(value).toLocaleString("it-IT",{day:"2-digit",month:"2-digit",year:"numeric",hour:"2-digit",minute:"2-digit"}); }
+    function rowStatus(row) {
+      if(!row.app_build) return [row.client_mode==="pwa"?"Webapp non verificata":"Mai verificato","missing"];
+      if(row.app_build !== current) return ["Versione precedente","warn"];
+      if(row.client_mode === "pwa" && !row.sw_version) return ["Service Worker non verificato","warn"];
+      if(row.sw_version && row.sw_version !== current) return ["Service Worker vecchio","warn"];
+      if(!row.last_seen || Date.now()-new Date(row.last_seen).getTime() > 48*60*60*1000) return ["Non verificato di recente","warn"];
+      return ["Aggiornato","ok"];
+    }
+    function render(){
+      let updated=0,pending=0;
+      for(const x of report){if(rowStatus(x)[1]==="ok")updated++;else pending++;}
+      $("updated").textContent=String(updated);$("pending").textContent=String(pending);
+      const text=$("search").value.trim().toLowerCase(), filter=$("filter").value;
+      const list=report.filter(r=>{
+        const status=rowStatus(r)[1];
+        if(filter==="attention"&&status==="ok")return false;
+        if(filter==="current"&&status!=="ok")return false;
+        return !text || `${r.team_name||""} ${r.account_email||""}`.toLowerCase().includes(text);
+      });
+      $("rows").replaceChildren();
+      if(!list.length){const tr=document.createElement("tr");td(tr,"Nessun risultato").colSpan=6;$("rows").append(tr);return;}
+      for(const r of list){
+        const tr=document.createElement("tr");const first=td(tr,r.team_name||"Nessuna squadra");
+        const sm=document.createElement("div");sm.className="muted";sm.textContent=r.account_email||"";first.append(sm);
+        const st=td(tr,"");const pill=document.createElement("span");pill.className="pill "+rowStatus(r)[1];pill.textContent=rowStatus(r)[0];st.append(pill);
+        const ver=td(tr,r.app_build||"Mai comunicata");ver.style.maxWidth="210px";ver.style.overflowWrap="anywhere";
+        td(tr,r.client_mode==="pwa"?"Webapp installata":r.client_mode==="browser"?"Browser":r.client_mode||"Sconosciuto");
+        td(tr,age(r.last_seen));td(tr,r.page_path||"-");$("rows").append(tr);
+      }
+    }
+    async function load(){
+      $("refresh").disabled=true;$("error").hidden=true;
+      try{
+        const response=await fetch("app-version.json?_check="+Date.now(),{cache:"no-store"});
+        if(!response.ok)throw new Error("Impossibile leggere versione pubblicata");
+        current=(await response.json()).version;
+        $("release").textContent=current;
+        const {data,error}=await supabase.rpc("admin_app_versions");
+        if(error)throw error;
+        const returned=data||[];
+        const groups=new Map();
+        for(const item of returned){
+          const list=groups.get(item.user_id)||[];list.push(item);groups.set(item.user_id,list);
+        }
+        report=[];
+        for(const group of groups.values()){
+          const known=group.filter(r=>r.device_id);
+          report.push(...known);
+          if(!known.some(r=>r.client_mode==="pwa")){
+            report.push({...group[0],device_id:null,app_build:null,sw_version:null,
+              client_mode:"pwa",page_path:null,last_seen:null});
+          }
+        }
+        render();
+      }catch(error){$("error").hidden=false;$("error").className="err";$("error").textContent="Non riesco a leggere i rapporti: "+(error?.message||error);$("rows").replaceChildren();}
+      finally{$("refresh").disabled=false;}
+    }
+    $("refresh").addEventListener("click",load);$("search").addEventListener("input",render);$("filter").addEventListener("change",render);
+    load();
+  </script>
+</body>
+</html>
