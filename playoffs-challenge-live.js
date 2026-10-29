@@ -261,9 +261,10 @@ function drawCatalogue(){
    save.disabled=true;return;
  }
  const allowed=new Set(players.map(p=>Number(p.code)));
- const beforeRole=preview.length;preview=preview.filter(x=>!(x.role==='D'&&x.ev==='CLEAN_SHEET'));S.pcCatalogPreview=preview;
- if(preview.length<beforeRole){S.pcCatalogSource='filtered';S.pcCatalogRemoved+=beforeRole-preview.length;}
- const beforeRole=preview.length;preview=preview.filter(x=>!(x.role==='D'&&x.ev==='CLEAN_SHEET'));S.pcCatalogPreview=preview;
+ // Per i difensori sono ammessi SOLO gol e assist: escludi ogni evento precedente.
+ const beforeRole=preview.length;
+ preview=preview.filter(x=>x.role!=='D'||['GOAL','ASSIST'].includes(x.ev));
+ S.pcCatalogPreview=preview;
  if(preview.length<beforeRole){S.pcCatalogSource='filtered';S.pcCatalogRemoved+=beforeRole-preview.length;}
  const obsolete=preview.filter(x=>!allowed.has(Number(x.code)));
  if(obsolete.length){
