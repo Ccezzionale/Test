@@ -5,7 +5,7 @@ import {calculateProjectedStandings} from './bookmaker-seeding.js';
 import {mountCommissionerSimulator} from './bookmaker-simulator.js?v=pc-v9-4-4-one-save';
 import {mountPlayerBookmaker} from './bookmaker-players.js?v=pc-v9-6-solo-gol-assist';
 import {mountDemoPlayerPicker} from './pc-player-picker.js?v=pc-v9-6';
-import {parseFantacalcioVotes,predictPlayerResult} from './pc-votes-import.js?v=pc-v9-6';
+// Il parser Excel viene caricato solo durante l'import: un file assente non puo' nascondere il Commissioner.
 const $=id=>document.getElementById(id);
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const fmt=n=>Number(n||0).toLocaleString('it-IT',{minimumFractionDigits:2,maximumFractionDigits:2});
@@ -496,6 +496,17 @@ async function loadGradesFromExcel(){
  if(!globalThis.XLSX?.read)return msg('pc-votes-feedback','Lettore Excel non caricato. Serve Internet per la libreria SheetJS.',true);
  const button=$('pc-votes-import');button.disabled=true;
  try{
+   // Import dinamico: la schermata Admin funziona anche se il file nuovo non è ancora sul server.
+   let parser;
+   try {
+     parser=await import('./pc-votes-import.js?v=pc-v9-6-1-excel');
+   } catch(err) {
+     throw new Error('Il lettore dei voti non è disponibile: carica nella root anche pc-votes-import.js (presente nello ZIP), poi aggiorna la pagina. Dettaglio: '+(err?.message||err));
+   }
+   if(typeof parser.parseFantacalcioVotes!=='function'||typeof parser.predictPlayerResult!=='function') {
+     throw new Error('Il file pc-votes-import.js non è quello aggiornato: sostituiscilo con quello della V9.6.1.');
+   }
+   const {parseFantacalcioVotes,predictPlayerResult}=parser;
    const bytes=await file.arrayBuffer();
    const workbook=globalThis.XLSX.read(bytes,{type:'array',cellDates:false,cellFormula:false});
    const data=parseFantacalcioVotes(workbook);
