@@ -8,7 +8,7 @@
   <title>Playoffs Challenge | Lega degli Eroi</title>
   <link rel="icon" href="icon-192.png" type="image/png" />
   <link rel="stylesheet" href="navbar.css?v=20261015" />
-  <link rel="stylesheet" href="playoffs-challenge.css?v=pc-v9-8-2-banner-responsive" />
+  <link rel="stylesheet" href="playoffs-challenge.css?v=pc-v9-8-3-commissioner-banner-responsive" />
 </head>
 <body class="pc-page">
 <nav class="site-nav">
@@ -222,6 +222,7 @@
         <div class="pc-round-toolbar pc-panel"><div><div class="pc-kicker">TURNO UFFICIALE</div><label for="pc-official-stage">Turno</label><select id="pc-official-stage"></select></div><div id="pc-official-state" class="pc-small-tag">—</div></div>
         <div class="pc-heading compact"><div><h3>⚔️ Pronostici sulle partite</h3><p>Seleziona il risultato 1, X o 2. Le quote sono quelle pubblicate, non quelle indicative.</p></div></div>
         <div class="pc-match-list" id="pc-official-matches"></div>
+        <p class="pc-hero-backup-help"><strong>⭐ Hero</strong> +50% se indovinato. <strong>🛡️ Riserva</strong> diventa Hero solo se quello principale viene annullato, mai se sbagli.</p>
         <div class="pc-heading"><div><h3>⚽ Pronostici sui calciatori</h3><p>Un calciatore per ruolo, più due selezioni libere nelle semifinali e nelle finali. Non puoi scegliere lo stesso calciatore due volte.</p></div></div>
         <div class="pc-picker-shell pc-panel">
           <p>Seleziona il ruolo, cerca il calciatore e scegli l'evento. <strong>Le quote sono quelle congelate dal Commissioner.</strong> Puoi selezionare fino a quattro calciatori agli ottavi/quarti, sei nei turni successivi.</p>
@@ -286,7 +287,7 @@
     <section class="pc-tabpanel" id="pc-tab-admin" role="tabpanel" aria-label="Gestione Commissioner" hidden>
       <div class="pc-heading"><div><div class="pc-kicker">SOLO ADMIN · GUIDA PRATICA</div><h2>⚙️ Prepara la Playoffs Challenge</h2><p>Segui i passaggi nell'ordine. Ogni turno si prepara separatamente. Le quote rimangono invisibili agli allenatori finché non premi <strong>Pubblica</strong>.</p></div></div>
       <div class="pc-panel pc-admin-controls">
-        <div class="pc-admin-intro" role="note"><strong>Come funziona in breve</strong><p>① Scegli il turno → ② Conferma e salva le quote delle partite → ③ Conferma e salva le quote dei calciatori → ④ Pubblica → ⑤ Carica l’Excel dei voti, controlla gli esiti e omologa.</p><p><strong>Conferma e salva queste quote</strong> registra subito le partite e le quote in bozza. <strong>Salva bozza</strong> conserva anche gli altri eventi ma NON apre le schedine. <strong>Pubblica</strong> apre la gara e blocca le quote: usa quel pulsante solo quando tutto è definitivo.</p></div>
+        <details class="pc-admin-intro pc-admin-help" role="note"><summary>📋 Guida rapida <span>Come funziona e cosa salvano i pulsanti</span></summary><div><p>① Scegli il turno → ② Conferma e salva le quote delle partite → ③ Conferma e salva le quote dei calciatori → ④ Pubblica → ⑤ Carica l’Excel dei voti, controlla gli esiti e omologa.</p><p><strong>Conferma e salva</strong> registra le quote in bozza. <strong>Salva bozza</strong> conserva il lavoro ma NON apre le schedine. <strong>Pubblica</strong> apre i pronostici e blocca le quote. Premi Pubblica solo quando tutto è definitivo.</p></div></details>
         <section class="pc-admin-step" id="pc-guide-step1"><header><span class="pc-step-num">01</span><div><h3>Scegli la giornata</h3><p>Ogni turno ha un palinsesto distinto. Inizia dagli ottavi.</p></div><span id="pc-guide-state-1" class="pc-step-badge">Pronto</span></header>
           <div class="pc-field"><label for="pc-admin-stage">Turno da gestire</label><select id="pc-admin-stage"></select></div><p id="pc-guide-round-status" class="pc-step-note">Caricamento stato…</p>
           <div id="pc-unpublish-panel" class="pc-step-note" hidden>
