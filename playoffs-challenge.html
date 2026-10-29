@@ -8,7 +8,7 @@
   <title>Playoffs Challenge | Lega degli Eroi</title>
   <link rel="icon" href="icon-192.png" type="image/png" />
   <link rel="stylesheet" href="navbar.css?v=20261015" />
-  <link rel="stylesheet" href="playoffs-challenge.css?v=pc-v9-8-1-calendar-rules-table" />
+  <link rel="stylesheet" href="playoffs-challenge.css?v=pc-v9-8-2-banner-responsive" />
 </head>
 <body class="pc-page">
 <nav class="site-nav">
@@ -186,18 +186,16 @@
 </div>
 </nav>
 <main class="pc-shell">
-  <section class="pc-hero">
-    <div class="pc-hero-copy">
-      <div class="pc-eyebrow"><span class="pc-live-dot"></span> LEGA DEGLI EROI · 2026/27</div>
-      <h1>PLAYOFFS<br/><span>CHALLENGE</span></h1>
-      <p>Il campionato può finire. La caccia alle scelte Draft continua per tutte e 16 le franchigie.</p>
-      <div class="pc-hero-chips"><span>🏟️ 5 turni</span><span>🎯 Fino a 40 pronostici</span><span>⭐ HERO PICK</span></div>
-    </div>
-    <div class="pc-trophy" aria-hidden="true"><span>🏆</span><strong>ROAD TO<br/>THE DRAFT</strong></div>
-    <div class="pc-hero-rewards">
-      <div><small>VINCITORE ASSOLUTO</small><strong>Scelta extra dopo il Round 6</strong></div>
-      <div><small>MIGLIORE DELL'ALTRA CONFERENCE</small><strong>Scelta extra dopo il Round 8</strong></div>
-    </div>
+  <!-- Banner responsive: versione mobile e desktop ottimizzate separatamente. -->
+  <section class="pc-hero pc-hero-art" aria-label="Presentazione Playoffs Challenge">
+    <h1 class="pc-banner-sr-only">Playoffs Challenge</h1>
+    <picture class="pc-banner-picture">
+      <source media="(max-width: 760px)" srcset="img/playoffs-challenge/banner-mobile.webp?v=982">
+      <img class="pc-banner-img"
+           src="img/playoffs-challenge/banner-desktop.webp?v=982"
+           alt="Lega degli Eroi 2026/27. Playoffs Challenge: 5 turni, fino a 40 pronostici e Hero Pick. Vincitore assoluto: scelta extra dopo il Round 6. Migliore dell'altra Conference: scelta extra dopo il Round 8."
+           width="1643" height="379" loading="eager" decoding="async" fetchpriority="high">
+    </picture>
   </section>
 
   <div id="pc-loading" class="pc-notice" role="status">Verifica accesso e aggiornamento risultati…</div>
