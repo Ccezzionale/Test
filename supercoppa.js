@@ -210,6 +210,8 @@ async function saveState() {
   }
 
   function getWinnerFromTeams(matchKey, teamA, teamB) {
+    // Un risultato non qualifica un segnaposto o due volte la stessa squadra.
+    if (!teamA || !teamB || teamA.isPlaceholder || teamB.isPlaceholder || teamA.name === teamB.name) return null;
     var rawA = scoreValue(matchKey, 0);
     var rawB = scoreValue(matchKey, 1);
     if (rawA === "" || rawB === "") return null;
@@ -285,6 +287,7 @@ async function saveState() {
     renderSemis();
     renderFinal();
     renderChampion();
+    updateStageProgress();
     refreshDrawSelects();
     syncAdminInputs();
   }
@@ -313,8 +316,11 @@ async function saveState() {
     var card = document.getElementById("playin-card");
     if (!card) return;
     var teams = getPlayinTeams();
+    var winner = getPlayinWinner();
     card.innerHTML = renderMatchRows("playin", teams[0], teams[1]) +
-      '<div class="match-note">★ Il vincitore avanza al sorteggio delle semifinali.</div>';
+      '<div class="match-note">' +
+      (winner && winner !== "tie" ? '✦ Qualificato: <strong>' + escapeHtml(winner.name) + '</strong>' :
+      '✦ La vincente completa il quartetto delle semifinaliste') + '</div>';
   }
 
   function renderDraw() {
@@ -352,7 +358,21 @@ async function saveState() {
     var card = document.getElementById("final-card");
     if (!card) return;
     var teams = getFinalTeams();
-    card.innerHTML = renderMatchRows("final", teams[0], teams[1]);
+    var winner = getFinalWinner();
+    card.innerHTML = '<div class="final-duel">' +
+      renderFinalContender(teams[0], "final", 0, winner) +
+      '<span class="final-versus">VS</span>' +
+      renderFinalContender(teams[1], "final", 1, winner) +
+      '</div>';
+  }
+
+  function renderFinalContender(team, matchKey, index, winner) {
+    var isWinner = winner && winner !== "tie" && winner.name === team.name;
+    return '<div class="final-contender' + (isWinner ? ' is-winner' : '') + '">' +
+      renderLargeLogo(team) +
+      '<strong>' + escapeHtml(team.isPlaceholder ? 'Da definire' : team.name) + '</strong>' +
+      renderScore(matchKey, index) +
+      '</div>';
   }
 
   function renderChampion() {
@@ -361,7 +381,7 @@ async function saveState() {
     var winner = getFinalWinner();
 
     if (!winner || winner === "tie") {
-      box.innerHTML = '<div class="champion-placeholder"><span>🏆</span><strong>In attesa del campione</strong></div>';
+      box.innerHTML = '<div class="champion-placeholder"><span class="champion-shield">?</span><strong>Trono in attesa</strong></div>';
       return;
     }
 
@@ -371,9 +391,12 @@ async function saveState() {
   }
 
   function renderMatchRows(matchKey, teamA, teamB) {
-    return '<div class="match-row">' + renderTeamBlock(teamA) + renderScore(matchKey, 0) + '</div>' +
+    var winner = getWinnerFromTeams(matchKey, teamA, teamB);
+    var leftWin = winner && winner !== 'tie' && winner.name === teamA.name;
+    var rightWin = winner && winner !== 'tie' && winner.name === teamB.name;
+    return '<div class="match-row' + (leftWin ? ' is-winner' : '') + '">' + renderTeamBlock(teamA) + renderScore(matchKey, 0) + '</div>' +
       '<div class="vs-line">VS</div>' +
-      '<div class="match-row">' + renderTeamBlock(teamB) + renderScore(matchKey, 1) + '</div>';
+      '<div class="match-row' + (rightWin ? ' is-winner' : '') + '">' + renderTeamBlock(teamB) + renderScore(matchKey, 1) + '</div>';
   }
 
   function renderTeamBlock(team) {
@@ -399,6 +422,44 @@ async function saveState() {
       return '<span class="logo-wrap"><img src="' + escapeAttr(team.logo) + '" alt="' + escapeAttr(team.name) + '"></span>';
     }
     return '<span class="logo-wrap placeholder-logo">' + escapeHtml(team.icon || "?") + '</span>';
+  }
+
+  function updateStageProgress() {
+    var playinTeams = getPlayinTeams();
+    var playinWinner = getPlayinWinner();
+    var participantsKnown = playinTeams.every(function (t) { return !t.isPlaceholder; });
+    var candidates = getDrawCandidates();
+    var readyCandidates = candidates.every(function (t) { return !t.isPlaceholder; });
+    var selectedKeys = ["sf1a", "sf1b", "sf2a", "sf2b"].map(function (k) { return state.draw[k]; });
+    var uniqueDraw = selectedKeys.every(Boolean) && new Set(selectedKeys).size === 4;
+    var drawComplete = readyCandidates && uniqueDraw;
+    var sf1 = getSemiWinner("sf1");
+    var sf2 = getSemiWinner("sf2");
+    var semisComplete = sf1 && sf1 !== "tie" && sf2 && sf2 !== "tie";
+    var finalistTeams = getFinalTeams();
+    var finalistsReady = finalistTeams.every(function (t) { return !t.isPlaceholder; });
+    var champion = getFinalWinner();
+
+    setStageState("playin-stage", playinWinner && playinWinner !== "tie" ? "complete" : participantsKnown ? "active" : "waiting");
+    setStageState("draw-stage", drawComplete ? "complete" : readyCandidates ? "active" : "waiting");
+    setStageState("semis-stage", semisComplete ? "complete" : drawComplete ? "active" : "waiting");
+    setStageState("final-stage", champion && champion !== "tie" ? "complete" : finalistsReady ? "active" : "waiting");
+    setStageState("champion-stage", champion && champion !== "tie" ? "complete" : "waiting");
+
+    setStatusText("playin-status", playinWinner && playinWinner !== "tie" ? "✓ Qualificazione decisa" : "La vincente entra nel sorteggio");
+    setStatusText("draw-status", drawComplete ? "✓ Accoppiamenti definiti" : "Quattro squadre, due semifinali");
+    setStatusText("semis-status", semisComplete ? "✓ Finaliste qualificate" : drawComplete ? "Sfide definite" : "In attesa del sorteggio");
+    setStatusText("final-status", champion && champion !== "tie" ? "✓ Finale conclusa" : finalistsReady ? "Il titolo si decide qui" : "In attesa delle finaliste");
+  }
+
+  function setStageState(id, phase) {
+    var el = document.getElementById(id);
+    if (el) el.setAttribute("data-phase", phase);
+  }
+
+  function setStatusText(id, value) {
+    var el = document.getElementById(id);
+    if (el) el.textContent = value;
   }
 
   function setupAdmin() {

@@ -1,574 +1,428 @@
+/* SUPERCOPPA DEGLI EROI — ARENA EDITION | Desktop-first, layout adattivo
+   Solo presentazione: i risultati e il sorteggio restano gestiti da supercoppa.js / Supabase. */
 :root{
-  --bg:#061a31;
-  --bg2:#0b2a49;
-  --cream:#fff7e7;
-  --cream2:#f5ead4;
-  --gold:#d8b44a;
-  --gold2:#f4d779;
-  --ink:#071d35;
-  --muted:#687385;
-  --blue:#09223d;
-  --line:rgba(216,180,74,.32);
-  --shadow:0 18px 42px rgba(0,0,0,.28);
+  --sc-void:#050f1f;
+  --sc-navy:#07192d;
+  --sc-panel:#081b31;
+  --sc-slate:#142b42;
+  --sc-gold:#c99c47;
+  --sc-gold-hi:#f6d98d;
+  --sc-gold-dim:rgba(214,165,77,.46);
+  --sc-ivory:#fff3dc;
+  --sc-silver:#a9bac9;
+  --sc-shadow:0 17px 35px rgba(0,0,0,.48);
 }
-
 *{box-sizing:border-box}
 html{scroll-behavior:smooth}
 body{
   margin:0;
-  font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  color:#fff;
   min-height:100vh;
+  overflow-x:hidden;
+  color:var(--sc-ivory);
+  font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;
   background:
-    radial-gradient(circle at 50% 0%, rgba(244,215,121,.18), transparent 28%),
-    radial-gradient(circle at 12% 20%, rgba(255,255,255,.08), transparent 18%),
-    linear-gradient(180deg, rgba(6,26,49,.92), rgba(6,26,49,.78)),
-    url("img/sfondocrash.jpg") center/cover fixed no-repeat;
+    linear-gradient(180deg,rgba(2,12,27,.33) 0%,rgba(3,14,29,.68) 36%,rgba(2,10,23,.93) 96%),
+    url('img/supercoppa-arena.webp') center 100px/cover fixed no-repeat,
+    #061529;
 }
-
-.supercup-hero{
-  position:relative;
-  padding:44px 18px 28px;
-  text-align:center;
-  overflow:hidden;
-}
-.supercup-hero::before{
+body::before{
+  position:fixed;
   content:"";
-  position:absolute;
-  right:9%;
-  top:6px;
-  width:220px;
-  height:220px;
-  background:url("img/Supercoppacup.png") center/contain no-repeat;
-  opacity:.14;
-  filter:drop-shadow(0 0 28px rgba(216,180,74,.25));
   pointer-events:none;
+  inset:0;
+  z-index:0;
+  background:radial-gradient(ellipse 90% 56% at 50% 25%,transparent 48%,rgba(0,5,13,.37) 100%);
 }
-.hero-crown{
-  width:64px;
-  height:34px;
-  margin:0 auto 4px;
-  color:var(--gold2);
-  font-size:2.2rem;
-  line-height:1;
-  text-shadow:0 8px 26px rgba(0,0,0,.35);
-}
-.supercup-hero h1{
-  margin:0;
-  font-family:Georgia, 'Times New Roman', serif;
-  font-size:clamp(2.35rem, 6vw, 5rem);
-  line-height:.95;
-  text-transform:uppercase;
-  letter-spacing:1px;
-  color:var(--gold2);
-  text-shadow:0 3px 0 rgba(0,0,0,.22), 0 16px 36px rgba(0,0,0,.35);
-}
-.supercup-hero p{
-  margin:12px 0 0;
-  font-family:Georgia, 'Times New Roman', serif;
-  font-size:clamp(1rem, 2vw, 1.45rem);
-  color:rgba(255,255,255,.9);
-}
-
-.supercup-main{
-  max-width:1320px;
-  margin:0 auto 70px;
-  padding:0 18px 44px;
-}
-.stage{position:relative;margin-top:20px}
-.stage-title,
-.champion-title{
+body>*{position:relative}
+/* Banner originale della Lega: rimane il punto di ingresso nella competizione. */
+.supercup-hero-banner{
   position:relative;
-  z-index:1;
-  width:fit-content;
-  margin:0 auto 10px;
-  padding:0 16px;
-  color:var(--gold2);
-  font-size:.92rem;
-  font-weight:900;
-  text-transform:uppercase;
-  letter-spacing:2px;
+  width:min(1550px,calc(100% - 34px));
+  margin:20px auto 0;
   text-align:center;
 }
-.stage-title span{color:rgba(255,255,255,.78);font-weight:700;letter-spacing:1.8px}
-
-.participants-grid{
-  display:grid;
-  grid-template-columns:repeat(5, minmax(0,1fr));
-  gap:12px;
-}
-.participant-card,
-.draw-item,
-.match-card,
-.admin-panel{
-  border:1px solid var(--line);
-  box-shadow:var(--shadow);
-}
-.participant-card{
-  min-height:80px;
-  display:flex;
-  align-items:center;
-  gap:14px;
-  padding:14px 16px;
-  border-radius:18px;
-  background:linear-gradient(180deg, rgba(255,249,235,.98), rgba(245,234,212,.96));
-  color:var(--ink);
-}
-.participant-copy{min-width:0}
-.participant-card .participant-competition{display:block;font-size:.76rem;font-weight:900;color:#1b2b40;line-height:1.15;text-transform:uppercase;letter-spacing:.2px}
-.participant-card strong{display:block;margin-top:3px;font-size:.95rem;line-height:1.1;color:var(--ink)}
-.participant-card em{display:block;margin-top:4px;font-style:normal;font-size:.72rem;line-height:1.12;color:var(--muted);font-weight:800}
-
-.supercup-flow{
-  display:grid;
-  grid-template-columns:1fr 1.42fr;
-  gap:18px;
-  align-items:stretch;
-}
-.playin-stage,
-.draw-stage{
-  padding:0;
-  border:1px solid rgba(216,180,74,.2);
-  border-radius:22px;
-  background:rgba(3,17,34,.28);
-  box-shadow:inset 0 0 0 1px rgba(255,255,255,.04);
-}
-.wide-card{height:calc(100% - 30px)}
-
-.match-card{
-  position:relative;
-  padding:16px;
-  border-radius:20px;
-  background:linear-gradient(180deg, rgba(255,249,235,.98), rgba(245,234,212,.96));
-  color:var(--ink);
-  overflow:hidden;
-}
-.match-card::before{
-  content:"";
-  position:absolute;
-  inset:0 0 auto 0;
-  height:4px;
-  background:linear-gradient(90deg, transparent, var(--gold2), transparent);
-}
-.match-kicker{
-  position:absolute;
-  top:-1px;
-  left:50%;
-  transform:translateX(-50%);
-  padding:5px 16px;
-  border-radius:0 0 999px 999px;
-  background:#fff6dc;
-  border:1px solid rgba(216,180,74,.42);
-  border-top:0;
-  font-size:.72rem;
-  font-weight:900;
-  letter-spacing:1.5px;
-  text-transform:uppercase;
-}
-.match-row{
-  display:grid;
-  grid-template-columns:1fr 58px;
-  gap:14px;
-  align-items:center;
-  min-height:82px;
-}
-.team-block{display:flex;align-items:center;gap:14px;min-width:0}
-.team-copy{min-width:0}
-.team-copy strong{
-  display:block;
-  font-size:1.03rem;
-  line-height:1.08;
-  text-transform:uppercase;
-  color:var(--ink);
-}
-.team-copy span{
-  display:block;
-  margin-top:4px;
-  font-size:.82rem;
-  line-height:1.2;
-  color:var(--muted);
-}
-.logo-wrap,
-.mini-logo{
-  flex:0 0 auto;
-  display:grid;
-  place-items:center;
-  border-radius:50%;
-  background:radial-gradient(circle at 30% 20%, #fff, #efe4ce 72%);
-  border:1px solid rgba(216,180,74,.26);
-  box-shadow:inset 0 0 0 2px rgba(255,255,255,.72), 0 8px 18px rgba(0,0,0,.16);
-  overflow:hidden;
-}
-.logo-wrap{width:76px;height:76px;font-size:1.3rem;color:var(--gold)}
-.mini-logo{width:48px;height:48px;font-size:1.25rem;color:var(--gold)}
-.logo-wrap img,.mini-logo img{width:100%;height:100%;object-fit:contain;display:block}
-.placeholder-logo{background:radial-gradient(circle at 30% 20%, #163858, #071d35 75%);color:var(--gold2)}
-.score-box{
-  width:56px;
-  min-height:46px;
-  display:grid;
-  place-items:center;
-  border-radius:12px;
-  background:linear-gradient(180deg, #c91521, #97101a);
-  border:2px solid #7c0a13;
-  color:#fff;
-  font-size:1.25rem;
-  font-weight:950;
-  box-shadow:0 10px 18px rgba(151,16,26,.24);
-}
-.score-box:empty::after{content:"";width:22px;height:18px;border:1px solid rgba(255,255,255,.34);border-radius:4px;opacity:.8}
-.vs-line{
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  gap:12px;
-  margin:2px 0;
-  color:#768091;
-  font-weight:950;
-  letter-spacing:1.2px;
-}
-.vs-line::before,.vs-line::after{
-  content:"";
-  height:1px;
-  flex:1;
-  max-width:95px;
-  background:linear-gradient(90deg, transparent, rgba(7,29,53,.2), transparent);
-}
-.match-note{
-  margin-top:10px;
-  padding-top:10px;
-  border-top:1px solid rgba(7,29,53,.1);
-  color:#354258;
-  font-size:.86rem;
-  text-align:center;
-  font-weight:700;
-}
-
-.draw-board{
-  min-height:220px;
-  padding:28px 24px 20px;
-  display:grid;
-  grid-template-columns:1fr 190px 1fr;
-  gap:20px;
-  align-items:center;
-}
-.draw-column{display:flex;flex-direction:column;gap:14px}
-.draw-item{
-  display:flex;
-  align-items:center;
-  gap:12px;
-  padding:12px 14px;
-  border-radius:16px;
-  background:linear-gradient(180deg, rgba(255,249,235,.98), rgba(245,234,212,.95));
-  color:var(--ink);
-}
-.draw-item strong{display:block;font-size:.96rem;line-height:1.05;text-transform:uppercase}
-.draw-item span:not(.mini-logo){display:block;margin-top:4px;color:var(--muted);font-size:.78rem;font-weight:700}
-.draw-bowl{
-  position:relative;
-  min-height:190px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-}
-
-.sorteggio-img{
-  width:260px;
-  max-width:100%;
+.supercup-banner-img{
+  width:100%;
+  max-height:295px;
   height:auto;
   display:block;
-  object-fit:contain;
-  filter:
-    drop-shadow(0 16px 24px rgba(0,0,0,.35))
-    drop-shadow(0 0 18px rgba(80,150,255,.18));
+  object-fit:cover;
+  object-position:center;
+  border-radius:22px;
+  border:1px solid rgba(233,186,94,.3);
+  box-shadow:0 22px 52px rgba(0,0,0,.42),0 0 32px rgba(239,176,78,.12);
 }
-
-.semis-grid{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:18px;
+.supercup-main{
+  width:min(1620px,calc(100% - 34px));
+  max-width:none;
   position:relative;
+  isolation:isolate;
+  margin:20px auto 55px;
+  padding:0 16px 40px;
 }
-.semi-card{padding-top:28px}
-.final-stage{max-width:760px;margin-left:auto;margin-right:auto}
-.final-card{box-shadow:0 20px 46px rgba(0,0,0,.34), 0 0 0 1px rgba(244,215,121,.18)}
-
-.champion-stage{margin-top:28px;text-align:center}
-.champion-card{
-  max-width:780px;
-  margin:0 auto;
-  min-height:156px;
-  border-radius:24px;
-  display:grid;
-  grid-template-columns:90px 1fr 90px;
-  align-items:center;
-  background:radial-gradient(circle at 50% 0%, #ffeaa0, #d8b44a 58%, #a77b22);
-  border:1px solid rgba(255,242,185,.5);
-  box-shadow:0 20px 46px rgba(0,0,0,.34);
-  color:#5b3c08;
-  overflow:hidden;
+.supercup-main::before{
+  content:"";
+  position:absolute;
+  z-index:-1;
+  inset:52px 0 80px;
+  background:linear-gradient(180deg,rgba(4,18,36,.76),rgba(4,18,36,.64) 65%,rgba(4,18,36,.74));
+  border:1px solid rgba(218,168,78,.19);
+  border-radius:23px;
+  box-shadow:0 34px 75px rgba(0,0,0,.36),inset 0 0 80px rgba(0,0,0,.24);
 }
-.laurel{font-family:Georgia,serif;font-size:5rem;opacity:.45;color:#fff0ad}
-.champion-content{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;min-height:130px}
-.champion-placeholder span{display:block;font-size:3rem;margin-bottom:2px}
-.champion-placeholder strong{font-family:Georgia,serif;font-size:1.55rem;color:#6b470b}
-.champion-content .logo-wrap{width:94px;height:94px;background:#fff5d9}
-.champion-name{font-size:1.75rem;font-weight:950;text-transform:uppercase;color:#5b3c08;line-height:1}
-.champion-sub{font-weight:800;color:#6f4c12}
-.supercup-motto{margin:12px 0 0;color:var(--gold2);font-size:.75rem;letter-spacing:2px;text-transform:uppercase;font-weight:800}
-
-.admin-panel{
-  margin-top:36px;
-  padding:22px;
-  border-radius:24px;
-  background:linear-gradient(180deg, rgba(8,31,57,.96), rgba(4,18,35,.96));
-  color:#fff;
+.arena-heading{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:14px;margin:15px 0 19px;}
+.arena-heading-label{
+  font:700 clamp(.73rem,1.25vw,.96rem)/1.2 Georgia,'Times New Roman',serif;
+  color:#ffe7a4;
+  text-shadow:0 2px 12px rgba(0,0,0,.7);
+  letter-spacing:2.4px;
+  text-align:center;
 }
-.admin-head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;border-bottom:1px solid rgba(255,255,255,.1);padding-bottom:16px;margin-bottom:18px}
-.admin-head h2{margin:0;color:var(--gold2);text-transform:uppercase;letter-spacing:1px}
-.admin-head p{margin:6px 0 0;color:rgba(255,255,255,.72)}
-.admin-reset{
-  border:1px solid rgba(255,255,255,.18);
-  border-radius:12px;
-  padding:10px 16px;
-  background:rgba(255,255,255,.08);
-  color:#fff;
-  font-weight:900;
-  cursor:pointer;
-}
-.admin-block{margin-top:18px}
-.admin-block h3{margin:0 0 12px;color:var(--gold2)}
-.admin-grid,.admin-scores-grid{
-  display:grid;
-  grid-template-columns:repeat(4, minmax(0,1fr));
-  gap:12px;
-}
-#admin-team-selectors{grid-template-columns:repeat(5, minmax(0,1fr))}
-.admin-participant-field{display:flex;flex-direction:column;gap:10px;padding:12px;border:1px solid rgba(216,180,74,.18);border-radius:16px;background:rgba(255,255,255,.045)}
-.admin-panel label{display:flex;flex-direction:column;gap:6px;color:rgba(255,255,255,.78);font-weight:800;font-size:.82rem}
-.admin-panel select,.admin-panel input{
-  width:100%;
-  border:1px solid rgba(216,180,74,.34);
-  border-radius:12px;
-  background:rgba(255,255,255,.94);
-  color:#061a31;
-  min-height:42px;
-  padding:8px 10px;
-  font-weight:800;
-  outline:none;
-}
-.admin-panel input:focus,.admin-panel select:focus{box-shadow:0 0 0 3px rgba(216,180,74,.18)}
-
-@media (max-width:1100px){
-  .participants-grid{grid-template-columns:repeat(2, minmax(0,1fr))}
-  .supercup-flow{grid-template-columns:1fr}
-  .draw-board{grid-template-columns:1fr;gap:12px}
-  .draw-bowl{height:130px;order:2}
-  #draw-left{order:1}.draw-column#draw-right{order:3}
-  .admin-grid,.admin-scores-grid,#admin-team-selectors{grid-template-columns:repeat(2,minmax(0,1fr))}
-}
-@media (max-width:760px){
-  .supercup-main{padding:0 10px 34px}
-  .supercup-hero{padding-top:28px}
-  .supercup-hero::before{right:-26px;width:150px;height:150px}
-  .participants-grid,.semis-grid,.admin-grid,.admin-scores-grid,#admin-team-selectors{grid-template-columns:1fr}
-  .match-row{grid-template-columns:1fr 50px;min-height:72px;gap:8px}
-  .logo-wrap{width:58px;height:58px}
-  .mini-logo{width:42px;height:42px}
-  .team-copy strong{font-size:.9rem}
-  .team-copy span{font-size:.74rem}
-  .score-box{width:50px;min-height:40px;font-size:1.05rem}
-  .champion-card{grid-template-columns:40px 1fr 40px;border-radius:20px}
-  .laurel{font-size:2.6rem}
-  .admin-head{flex-direction:column}
-}
-
-@media (max-width:900px){
-  nav.site-nav{position:static !important;top:auto !important}
-  nav.site-nav,nav.site-nav *,nav.site-nav *::before,nav.site-nav *::after{box-sizing:border-box}
-  nav.site-nav #mainMenu.navbar > li > a{width:100% !important;display:flex !important;align-items:center !important;justify-content:space-between !important;gap:12px !important;padding:11px 13px !important;overflow:visible !important}
-  nav.site-nav #mainMenu.navbar > li > a .caret{display:none !important}
-  nav.site-nav #mainMenu.navbar > li > a.toggle-submenu::after{content:"▾";position:static !important;left:auto !important;right:auto !important;bottom:auto !important;height:auto !important;background:none !important;transform:none !important;opacity:1 !important;margin-left:auto;flex:0 0 auto;display:inline-block;color:#fff;font-size:.8rem;line-height:1}
-}
-
-.admin-slot-title{
-  min-height:34px;
+.arena-heading-line{width:clamp(16px,6vw,90px);height:1px;background:linear-gradient(90deg,transparent,#d2a651 70%,transparent)}
+.arena-season{padding:7px 11px;border:1px solid rgba(223,178,91,.34);border-radius:50px;font-size:.61rem;color:#ddbe79;letter-spacing:1.4px;font-weight:900;background:rgba(3,12,28,.75)}
+.stage{position:relative;min-width:0}
+.stage-title,.champion-title{
   display:flex;
+  justify-content:center;
   align-items:center;
-  color:var(--gold2);
-  font-weight:950;
+  gap:7px;
+  white-space:normal;
+  min-height:31px;
+  margin:0 auto 12px;
+  width:100%;
+  padding:5px 6px 8px;
+  color:var(--sc-gold-hi);
   text-transform:uppercase;
-  letter-spacing:.6px;
-  font-size:.78rem;
+  letter-spacing:1.1px;
+  font-weight:900;
+  font-size:clamp(.65rem,.85vw,.86rem);
   line-height:1.15;
-  padding-bottom:4px;
-  border-bottom:1px solid rgba(216,180,74,.16);
+  text-align:center;
+  border-bottom:1px solid rgba(216,171,85,.44);
+  text-shadow:0 2px 10px rgba(0,0,0,.68);
 }
-
-/* FIX BACKGROUND MOBILE SUPERCOPPA DOPO NAVBAR MOBILE */
-@media (max-width: 768px){
-
-  html,
-  body{
-    background-color:#061a31 !important;
-  }
-
-  body{
-    background:
-      radial-gradient(circle at 50% 0%, rgba(244,215,121,.20), transparent 30%),
-      radial-gradient(circle at 12% 20%, rgba(255,255,255,.08), transparent 18%),
-      linear-gradient(180deg, rgba(6,26,49,.94), rgba(6,26,49,.86)),
-      url("img/sfondocrash.jpg") center top / cover no-repeat scroll !important;
-    min-height:100vh;
-    overflow-x:hidden;
-  }
-
-  .supercup-main,
-  .supercup-hero{
-    background:transparent !important;
-  }
-
-  .supercup-main{
-    padding-bottom:130px !important;
-  }
+.stage-number{font-family:Georgia,serif;color:#fff6d0;font-size:1.12em;font-weight:900}
+.participants-stage{
+  margin:0 auto 17px;
+  padding:13px 14px 15px;
+  border:1px solid rgba(227,172,79,.62);
+  border-radius:17px;
+  background:linear-gradient(180deg,rgba(4,18,34,.87),rgba(7,24,42,.94));
+  box-shadow:var(--sc-shadow),inset 0 1px 0 rgba(255,221,147,.1);
 }
-
-/* ADMIN SUPERCOPPA A TENDINA */
-.admin-panel-collapsible{
-  padding:0 !important;
-  overflow:hidden;
+.participants-stage .stage-title{
+  position:relative;
+  width:min(460px,90%);
+  margin:-26px auto 14px;
+  padding:7px 22px;
+  min-height:35px;
+  background:#071729;
+  border:1px solid rgba(215,167,75,.63);
+  border-radius:0 0 14px 14px;
+  box-shadow:0 6px 18px rgba(0,0,0,.35);
 }
-
-.admin-panel-collapsible details{
-  width:100%;
+.participants-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px}
+.participant-card{
+  min-width:0;min-height:112px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:7px;
+  padding:11px 8px 10px;
+  position:relative;
+  background:linear-gradient(135deg,#fff8e9,#eadbbd 85%);
+  color:#0b2035;
+  border-radius:12px;
+  border:1px solid #e5c680;
+  text-align:center;
+  box-shadow:inset 0 1px rgba(255,255,255,.9),0 9px 19px rgba(0,0,0,.28);
 }
-
-.admin-summary{
-  list-style:none;
-  cursor:pointer;
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:14px;
-  padding:18px 20px;
-  border-radius:24px;
-  background:
-    radial-gradient(circle at 0% 0%, rgba(244,215,121,.16), transparent 36%),
-    linear-gradient(180deg, rgba(8,31,57,.98), rgba(4,18,35,.98));
-  color:#fff;
-  border:1px solid rgba(216,180,74,.34);
+.participant-card::before{position:absolute;content:"";inset:4px;border:1px solid rgba(151,111,42,.2);border-radius:9px;pointer-events:none}
+.participant-card .mini-logo{width:47px;height:47px;box-shadow:0 5px 12px rgba(0,0,0,.15)}
+.participant-copy{min-width:0;max-width:100%;display:flex;flex-direction:column;gap:2px;align-items:center}
+.participant-competition{text-transform:uppercase;font-size:clamp(.53rem,.65vw,.72rem);font-weight:900;letter-spacing:.3px;line-height:1.12;color:#304058}
+.participant-copy strong{font-size:clamp(.74rem,.85vw,.96rem);font-weight:900;line-height:1.12;overflow-wrap:anywhere;color:#071c33}
+.participant-copy em{font-style:normal;font-size:.67rem;line-height:1.15;color:#686c75;font-weight:700}
+/* Il percorso è un'unica passerella: la larghezza delle tappe rispecchia la loro importanza. */
+.supercup-journey{
+  display:grid;
+  grid-template-columns:minmax(0,1.03fr) minmax(0,1.02fr) minmax(0,1.42fr) minmax(0,1fr) minmax(0,1.03fr);
+  gap:12px;
+  align-items:stretch;
+  position:relative;
+  padding:8px 0 14px;
 }
-
-.admin-summary::-webkit-details-marker{
-  display:none;
-}
-
-.admin-summary span{
+.journey-stage{
+  min-width:0;
+  min-height:420px;
   display:flex;
   flex-direction:column;
-  gap:4px;
+  padding:11px 9px 12px;
+  background:linear-gradient(180deg,rgba(5,20,39,.96),rgba(4,15,29,.92));
+  border:1px solid rgba(226,172,75,.64);
+  border-radius:14px;
+  box-shadow:0 18px 32px rgba(0,0,0,.37),inset 0 0 0 1px rgba(255,220,149,.05);
 }
-
-.admin-summary strong{
-  color:var(--gold2);
-  text-transform:uppercase;
-  letter-spacing:1px;
-  font-size:1.05rem;
+.journey-stage::before{
+  content:"";position:absolute;inset:5px;pointer-events:none;border:1px solid rgba(250,213,148,.12);border-radius:10px;
 }
-
-.admin-summary small{
-  color:rgba(255,255,255,.72);
-  font-weight:700;
+.journey-stage:not(:last-child)::after{
+  content:"";
+  position:absolute;
+  top:52%;right:-16px;
+  width:0;height:0;
+  border-top:12px solid transparent;
+  border-bottom:12px solid transparent;
+  border-left:16px solid #ffd27c;
+  filter:drop-shadow(0 0 9px #d59a37);
+  z-index:5;
 }
-
-.admin-summary em{
-  font-style:normal;
-  padding:8px 12px;
-  border-radius:999px;
-  background:rgba(255,255,255,.10);
-  border:1px solid rgba(255,255,255,.16);
-  color:#fff7d1;
-  font-weight:900;
-  font-size:.82rem;
+.stage-inner{position:relative;z-index:1;min-height:0;display:flex;flex:1;flex-direction:column;justify-content:center;gap:7px}
+.stage-footnote,.draw-status{
+  margin:auto 0 4px;
+  color:#dfcfae;
+  letter-spacing:.4px;
+  font-size:clamp(.61rem,.75vw,.72rem);
+  font-weight:800;
+  text-align:center;
+  line-height:1.3;
 }
-
-.admin-panel-collapsible details[open] .admin-summary{
-  border-bottom-left-radius:0;
-  border-bottom-right-radius:0;
+.journey-stage[data-phase="complete"]{border-color:rgba(247,206,120,.95);box-shadow:0 18px 38px rgba(0,0,0,.38),0 0 14px rgba(235,181,68,.18)}
+.journey-stage[data-phase="complete"] .stage-title{color:#fff0b9}
+.journey-stage[data-phase="active"]{background:linear-gradient(180deg,rgba(8,31,56,.98),rgba(4,16,32,.94));border-color:rgba(249,213,137,.8)}
+.journey-stage[data-phase="waiting"]{border-color:rgba(188,145,75,.37)}
+.journey-stage[data-phase="waiting"] .stage-title{color:#cbb27c}
+.match-card{
+  min-width:0;
+  position:relative;
+  color:var(--sc-ivory);
+  background:linear-gradient(135deg,rgba(7,27,48,.93),rgba(4,15,29,.95));
+  border-radius:11px;
+  border:1px solid rgba(217,164,74,.48);
+  padding:10px 8px;
+  box-shadow:inset 0 1px 0 rgba(255,231,175,.06),0 10px 23px rgba(0,0,0,.2);
 }
-
-.admin-panel-collapsible details[open] .admin-summary em{
-  font-size:0;
+.match-card[data-winner="0"],.match-card[data-winner="1"]{border-color:rgba(247,209,117,.8)}
+.match-row{
+  min-width:0;
+  display:grid;
+  grid-template-columns:minmax(0,1fr) 35px;
+  align-items:center;
+  gap:5px;
+  min-height:62px;
 }
-
-.admin-panel-collapsible details[open] .admin-summary em::after{
-  content:"Chiudi";
-  font-size:.82rem;
+.match-row.is-winner .team-copy strong{color:#ffe4a2}
+.match-row.is-winner .logo-wrap{border-color:#f8cf72;box-shadow:0 0 0 2px rgba(244,207,119,.18),0 0 12px rgba(232,181,62,.26)}
+.team-block{display:flex;min-width:0;align-items:center;gap:6px}
+.team-copy{min-width:0;flex:1}
+.team-copy strong{display:block;line-height:1.12;font-size:clamp(.68rem,.79vw,.82rem);font-weight:850;color:#fff4dd;overflow-wrap:anywhere}
+.team-copy span{display:block;font-size:clamp(.58rem,.67vw,.66rem);line-height:1.23;color:#a5b8ca;margin-top:4px;overflow-wrap:anywhere}
+.logo-wrap,.mini-logo{
+  display:grid;place-items:center;flex:0 0 auto;
+  border-radius:50%;
+  background:radial-gradient(circle at 30% 25%,#fff8ec,#e3d4b5 85%);
+  border:1px solid rgba(243,199,116,.58);
+  overflow:hidden;
 }
-
-.admin-panel-content{
-  padding:22px;
-  background:linear-gradient(180deg, rgba(8,31,57,.96), rgba(4,18,35,.96));
+.logo-wrap{width:39px;height:39px;font-size:1rem;color:var(--sc-gold-hi)}
+.mini-logo{width:27px;height:27px;font-size:.87rem;color:var(--sc-gold-hi)}
+.logo-wrap img,.mini-logo img{display:block;width:100%;height:100%;object-fit:contain}
+.placeholder-logo{background:radial-gradient(circle at 40% 20%,#1a425f,#08213a 80%);color:var(--sc-gold-hi)}
+.score-box{
+  display:grid;place-items:center;
+  width:35px;height:40px;
+  border:1px solid rgba(242,190,95,.68);
+  background:linear-gradient(180deg,rgba(33,48,57,.9),rgba(8,24,40,.95));
+  border-radius:7px;
+  color:#ffdf99;
+  font-size:1.2rem;font-weight:950;line-height:1;
+  font-variant-numeric:tabular-nums;
 }
-
-@media (max-width:768px){
-  .admin-summary{
-    padding:16px;
-    border-radius:20px;
+.score-box:empty::after{content:'–';color:#8493a0;font-size:1rem}
+.vs-line{display:flex;align-items:center;justify-content:center;gap:6px;color:#e4be76;font:900 .73rem Georgia,serif;letter-spacing:1px;margin:2px 0}
+.vs-line::before,.vs-line::after{content:"";height:1px;width:25%;background:linear-gradient(90deg,transparent,rgba(246,203,113,.36),transparent)}
+.match-note{font-size:.67rem;text-align:center;color:#b8d0d0;line-height:1.32;margin-top:8px;padding-top:8px;border-top:1px solid rgba(229,180,82,.2)}
+/* Urna al centro e quattro possibili semifinalisti, senza nascondere i nomi. */
+.draw-board{display:flex;flex-direction:column;align-items:stretch;gap:7px}
+.draw-bowl{order:-1;display:flex;align-items:center;justify-content:center;height:158px;position:relative}
+.draw-bowl::before{content:"";position:absolute;width:140px;height:42px;bottom:6px;border-radius:50%;background:rgba(229,161,64,.2);filter:blur(21px)}
+.sorteggio-img{position:relative;max-width:100%;width:172px;height:152px;object-fit:contain;filter:drop-shadow(0 10px 16px rgba(0,0,0,.65)) drop-shadow(0 0 10px rgba(98,155,243,.28))}
+.draw-column{display:grid;grid-template-columns:1fr;gap:6px}
+.draw-item{
+  display:flex;align-items:center;gap:6px;min-width:0;
+  padding:5px 6px;
+  background:rgba(12,38,62,.81);
+  border-radius:7px;border:1px solid rgba(215,161,77,.34);
+  color:#fff4df;
+}
+.draw-item>div{min-width:0}
+.draw-item strong{font-size:clamp(.58rem,.7vw,.73rem);line-height:1.12;display:block;overflow-wrap:anywhere}
+.draw-item span:not(.mini-logo){display:block;font-size:.57rem;line-height:1.12;color:#aabbc9;margin-top:2px;overflow-wrap:anywhere}
+.draw-status{margin-top:4px;padding:8px 4px;border-top:1px solid rgba(217,166,82,.21)}
+.semis-grid{display:flex;flex-direction:column;justify-content:center;gap:13px;flex:1}
+.semi-card{padding:18px 9px 9px;min-width:0}
+.match-kicker{
+  position:absolute;top:-1px;left:50%;transform:translateX(-50%);
+  padding:4px 9px 5px;
+  max-width:94%;width:max-content;
+  white-space:nowrap;
+  border:1px solid rgba(221,177,99,.55);border-top:0;
+  border-radius:0 0 8px 8px;
+  font-weight:900;text-transform:uppercase;letter-spacing:.7px;
+  font-size:.59rem;color:#fbe5a6;
+  background:linear-gradient(180deg,#19334d,#102740);
+}
+.bracket-stage .stage-inner{justify-content:flex-start}
+.final-stage .stage-inner{justify-content:center;align-items:stretch}
+.final-crown{text-align:center;color:#ebbc66;font-family:Georgia,serif;font-size:2.5rem;line-height:1;margin:-8px 0 10px;text-shadow:0 0 18px rgba(230,170,68,.45)}
+.final-card{padding:16px 9px;border-color:rgba(248,207,119,.7);background:radial-gradient(circle at 50% 0%,rgba(46,62,67,.4),transparent 70%),rgba(5,21,40,.88)}
+.final-duel{display:grid;grid-template-columns:minmax(0,1fr) 25px minmax(0,1fr);gap:4px;align-items:start}
+.final-contender{min-width:0;text-align:center;display:flex;flex-direction:column;align-items:center;gap:7px}
+.final-contender .logo-wrap{width:65px;height:65px;margin-bottom:4px;background:radial-gradient(circle at 30% 20%,#fff5dd,#dec899)}
+.final-contender strong{font-size:clamp(.65rem,.78vw,.79rem);line-height:1.15;min-height:29px;overflow-wrap:anywhere;color:#fff3d9}
+.final-contender .score-box{width:55px;height:43px;font-size:1.3rem}
+.final-contender.is-winner .logo-wrap{box-shadow:0 0 0 2px rgba(238,185,84,.6),0 0 23px rgba(243,186,72,.3)}
+.final-contender.is-winner strong{color:#ffe69e}
+.final-versus{font-family:Georgia,serif;font-weight:900;font-size:.77rem;color:#f4ca80;align-self:center;text-align:center;margin-top:18px}
+.champion-stage .stage-inner{align-items:stretch}
+.champion-card{
+  position:relative;
+  min-height:315px;
+  flex:1;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  overflow:hidden;
+  border:1px solid rgba(236,176,73,.48);
+  border-radius:12px;
+  color:#fce9b3;
+  background:radial-gradient(ellipse at center 45%,rgba(152,106,31,.16),transparent 64%),linear-gradient(180deg,#101e2a,#040f20);
+  box-shadow:inset 0 0 55px rgba(0,0,0,.47),0 10px 25px rgba(0,0,0,.32);
+}
+.champion-card::after{content:"";position:absolute;inset:auto 12px 17px;height:2px;background:linear-gradient(90deg,transparent,#dcab52,transparent)}
+.champion-rays{position:absolute;width:240px;height:240px;max-width:100%;border-radius:50%;background:repeating-conic-gradient(from 0deg,rgba(248,186,77,.16) 0deg,transparent 10deg,transparent 22deg);mask-image:radial-gradient(circle,transparent 12%,black 45%,transparent 70%);opacity:.6}
+.champion-laurel{position:relative;font:4.3rem Georgia,serif;color:#b68c49;opacity:.94;text-shadow:0 0 25px rgba(231,174,60,.3);line-height:1.1}
+.champion-content{z-index:1;position:relative;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:7px;max-width:100%;min-height:158px;padding:4px 8px 10px;text-align:center}
+.champion-placeholder{display:flex;flex-direction:column;align-items:center;gap:7px}
+.champion-placeholder .champion-shield{display:grid;place-items:center;font:bold 3.1rem Georgia,serif;width:103px;height:116px;color:#ffe7a8;text-shadow:0 1px 14px rgba(247,191,80,.7);background:linear-gradient(150deg,#1b3143,#061729);clip-path:polygon(50% 0%,96% 19%,91% 75%,50% 100%,9% 75%,4% 19%);border-radius:24px;filter:drop-shadow(0 6px 13px rgba(215,165,60,.3))}
+.champion-placeholder strong{color:#ffe9a9;font-size:.76rem;letter-spacing:1.1px;text-transform:uppercase;line-height:1.25}
+.champion-content .logo-wrap{height:100px;width:100px;border:2px solid #edc77a;background:#fff5d8;box-shadow:0 0 30px rgba(224,162,59,.25)}
+.champion-name{max-width:100%;overflow-wrap:anywhere;text-align:center;color:#ffe4a0;font-weight:950;text-transform:uppercase;font-size:clamp(.87rem,1vw,1.14rem);line-height:1.12}
+.champion-sub{text-align:center;color:#c2cdd6;font-size:.66rem;font-weight:800}
+.champion-year{position:relative;font-size:.59rem;color:#efc782;letter-spacing:1.25px;text-align:center;font-weight:900;margin:2px 0 14px}
+.supercup-motto{text-align:center;color:#f9d78e;font-size:.72rem;letter-spacing:3px;font-weight:900;margin:20px 0 35px;text-shadow:0 0 14px rgba(226,177,68,.3)}
+/* Administration — stessi nomi e input, pannello richiudibile. */
+.admin-panel{margin:0 auto 25px;max-width:1400px;border:1px solid rgba(216,168,83,.48);border-radius:17px;background:rgba(6,22,42,.96);box-shadow:var(--sc-shadow);overflow:hidden}
+.admin-panel details{width:100%}
+.admin-summary{list-style:none;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:17px 20px;background:linear-gradient(120deg,#0d2b47,#071a30);color:#fff4df}
+.admin-summary::-webkit-details-marker{display:none}
+.admin-summary span{display:flex;flex-direction:column;gap:4px}
+.admin-summary strong{font-size:.96rem;letter-spacing:1px;font-weight:900;color:#ffd78b;text-transform:uppercase}
+.admin-summary small{color:#aebac8;font-weight:700}
+.admin-summary em{font-style:normal;padding:7px 13px;border:1px solid rgba(232,185,93,.4);border-radius:20px;color:#f5d997;font-size:.8rem;font-weight:900}
+.admin-panel details[open] .admin-summary em{font-size:0}
+.admin-panel details[open] .admin-summary em::after{content:"Chiudi";font-size:.8rem}
+.admin-panel-content{padding:20px;background:linear-gradient(180deg,rgba(9,32,58,.98),rgba(5,17,34,.98))}
+.admin-head{display:flex;justify-content:space-between;align-items:flex-start;gap:20px;padding-bottom:16px;border-bottom:1px solid rgba(234,184,89,.22)}
+.admin-head h2{margin:0;color:#f6d38a;letter-spacing:1px;font-size:1.17rem;text-transform:uppercase}
+.admin-head p{margin:7px 0 0;font-size:.84rem;color:#b9c7d5;line-height:1.45}
+.admin-reset{padding:9px 14px;cursor:pointer;border:1px solid rgba(222,170,85,.42);color:#fff0cd;border-radius:10px;background:#1d3248;font-weight:800}
+.admin-block{margin-top:20px}
+.admin-block h3{color:#f3d38d;margin:0 0 12px;font-size:.99rem}
+.admin-grid,.admin-scores-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+#admin-team-selectors{grid-template-columns:repeat(5,minmax(0,1fr))}
+.admin-participant-field{padding:11px;border-radius:12px;border:1px solid rgba(218,171,84,.24);background:rgba(255,255,255,.04);display:flex;flex-direction:column;gap:10px}
+.admin-slot-title{min-height:30px;font-size:.73rem;font-weight:950;color:#f1d08d;text-transform:uppercase;line-height:1.15;letter-spacing:.45px;padding-bottom:6px;border-bottom:1px solid rgba(216,180,74,.19)}
+.admin-panel label{display:flex;flex-direction:column;gap:5px;font-weight:800;font-size:.75rem;color:#d0d9e2}
+.admin-panel input,.admin-panel select{width:100%;min-width:0;min-height:41px;padding:7px 9px;background:#fff7e9;border:1px solid #a98c57;border-radius:8px;color:#071d34;font-family:inherit;font-weight:700;font-size:.82rem}
+.admin-panel input:focus,.admin-panel select:focus{outline:2px solid #e9c77f;outline-offset:2px}
+@media(max-width:1360px){
+  .supercup-journey{gap:8px;grid-template-columns:minmax(0,1.01fr) minmax(0,.98fr) minmax(0,1.4fr) minmax(0,1.01fr) minmax(0,.99fr)}
+  .journey-stage{padding:10px 7px}
+  .journey-stage:not(:last-child)::after{right:-12px;border-top-width:9px;border-bottom-width:9px;border-left-width:12px}
+  .team-copy span{font-size:.57rem}
+  .logo-wrap{width:34px;height:34px}
+  .match-row{grid-template-columns:minmax(0,1fr) 32px}
+  .score-box{width:32px}
+  .stage-title{letter-spacing:.5px}
+}
+@media(max-width:1150px){
+  .supercup-journey{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:12px}
+  .journey-stage{grid-column:span 2;min-height:370px}
+  .bracket-stage{grid-column:span 2}
+  .final-stage,.champion-stage{grid-column:span 3;min-height:295px}
+  .journey-stage::after{display:none}
+  .team-copy strong{font-size:.82rem}
+  .draw-column{grid-template-columns:1fr 1fr}
+  .draw-bowl{height:125px}
+  .draw-board .draw-item{min-height:48px}
+  .champion-card{min-height:270px}
+  .admin-grid,#admin-team-selectors{grid-template-columns:repeat(3,minmax(0,1fr))}
+}
+@media(max-width:760px){
+  body{background:linear-gradient(180deg,rgba(2,12,27,.59),rgba(3,14,29,.88)),url('img/supercoppa-arena.webp') center top/auto 100vh scroll no-repeat,#061529!important}
+  nav.site-nav{position:static!important;top:auto!important}
+  .supercup-hero-banner{width:100%;margin:10px auto 0;padding:0 10px}
+  .supercup-banner-img{height:130px;object-fit:cover;border-radius:16px}
+  .supercup-main{width:100%;padding:0 10px 125px;margin:15px auto 0}
+  .supercup-main::before{inset:49px 4px 110px;border-radius:12px}
+  .arena-heading{margin:13px 0 20px;gap:7px}
+  .arena-heading-label{letter-spacing:1px;font-size:.65rem}
+  .arena-heading-line{width:14px}
+  .arena-season{font-size:.52rem;padding:5px 9px}
+  .participants-stage{padding:11px 9px 10px}
+  .participants-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+  .participant-card{min-height:105px}
+  .participant-card:last-child:nth-child(odd){grid-column:1/-1;min-height:90px;flex-direction:row}
+  .participant-copy strong{font-size:.82rem}
+  .participant-competition{font-size:.61rem}
+  .participants-stage .stage-title{width:80%}
+  .supercup-journey{display:flex;flex-direction:column;gap:12px}
+  .journey-stage{min-height:0;padding:10px 12px 15px}
+  .journey-stage::after{display:none}
+  .journey-stage .stage-inner{min-height:160px}
+  .stage-title{font-size:.82rem}
+  .match-row{grid-template-columns:minmax(0,1fr) 44px;min-height:62px}
+  .match-card{padding:12px 10px}
+  .logo-wrap{width:47px;height:47px}
+  .mini-logo{width:33px;height:33px}
+  .team-copy strong{font-size:.9rem}
+  .team-copy span{font-size:.71rem}
+  .score-box{width:44px;height:43px}
+  .draw-column{grid-template-columns:1fr 1fr}
+  .draw-item strong{font-size:.69rem}
+  .draw-bowl{height:150px}
+  .sorteggio-img{width:195px;height:148px}
+  .semis-grid{gap:10px}
+  .final-duel{grid-template-columns:minmax(0,1fr) 34px minmax(0,1fr)}
+  .final-contender .logo-wrap{height:72px;width:72px}
+  .champion-card{min-height:260px}
+  .admin-grid,.admin-scores-grid,#admin-team-selectors{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .admin-panel-content{padding:15px 11px}
+  .admin-head{flex-direction:column}
+  .supercup-motto{letter-spacing:1.5px;font-size:.63rem}
+}
+@media(max-width:430px){
+  .admin-grid,.admin-scores-grid,#admin-team-selectors{grid-template-columns:1fr}
+  .draw-item{padding:6px 4px}
+  .draw-item .mini-logo{width:26px;height:26px}
+  .team-copy strong{font-size:.82rem}
+}
+@media(prefers-reduced-motion:no-preference){
+  .participant-card,.match-card,.journey-stage{transition:border-color .2s ease,box-shadow .2s ease}
+  .participant-card:hover{box-shadow:0 6px 20px rgba(221,175,86,.17)}
+}
+/* Compatibilità con il menu mobile già presente nell'app. */
+@media(max-width:900px){
+  nav.site-nav{position:static!important;top:auto!important}
+  nav.site-nav,nav.site-nav *,nav.site-nav *::before,nav.site-nav *::after{box-sizing:border-box}
+  nav.site-nav #mainMenu.navbar > li > a{
+    width:100%!important;display:flex!important;align-items:center!important;
+    justify-content:space-between!important;gap:12px!important;
+    padding:11px 13px!important;overflow:visible!important;
   }
-
-  .admin-summary strong{
-    font-size:.98rem;
-  }
-
-  .admin-summary small{
-    font-size:.78rem;
-  }
-
-  .admin-panel-content{
-    padding:16px 14px 20px;
+  nav.site-nav #mainMenu.navbar > li > a .caret{display:none!important}
+  nav.site-nav #mainMenu.navbar > li > a.toggle-submenu::after{
+    content:"▾";position:static!important;left:auto!important;right:auto!important;
+    bottom:auto!important;height:auto!important;background:none!important;transform:none!important;
+    opacity:1!important;margin-left:auto;flex:0 0 auto;display:inline-block;color:#fff;
+    font-size:.8rem;line-height:1;
   }
 }
-
-/* =========================================================
-   SUPERCOPPA HERO BANNER
-   ========================================================= */
-
-.supercup-hero-banner {
-  width: min(1500px, calc(100% - 48px));
-  margin: 24px auto 26px;
-  padding: 0;
-  overflow: visible;
-}
-
-.supercup-banner-img {
-  display: block;
-  width: 100%;
-  height: auto;
-  border-radius: 26px;
-  object-fit: cover;
-  box-shadow:
-    0 24px 54px rgba(0, 0, 0, .34),
-    0 0 28px rgba(244, 215, 121, .16);
-}
-
-/* Evita che rimanga la vecchia coppa fantasma della hero */
-.supercup-hero-banner::before {
-  display: none !important;
-}
-
-/* Mobile */
-@media (max-width: 768px) {
-  .supercup-hero-banner {
-    width: 100%;
-    margin: 12px auto 18px;
-    padding: 0 12px;
-  }
-
-  .supercup-banner-img {
-    height: 138px;
-    border-radius: 20px;
-    object-fit: cover;
-    object-position: center;
-  }
-}
+.champion-card::after{bottom:6px}

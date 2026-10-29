@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Lega degli Eroi - Supercoppa</title>
   <link rel="stylesheet" href="navbar.css" />
-  <link rel="stylesheet" href="supercoppa.css" />
+  <link rel="stylesheet" href="supercoppa.css?v=arena-20261029" />
 <meta name="lega-app-build" content="v20261028-ef9f76dc3f25">
 <script defer src="./app-updates.js?bootstrap=v20261028-ef9f76dc3f25" data-eroi-update="1"></script>
 </head>
@@ -103,104 +103,126 @@
 </header>
 
   <main class="supercup-main">
-    <section class="stage participants-stage">
-      <div class="stage-title">1 · Partecipanti</div>
+    <div class="arena-heading" aria-label="Il cammino verso la Supercoppa">
+      <span class="arena-heading-line"></span>
+      <span class="arena-heading-label">✦ &nbsp; CINQUE PERCORSI. UN SOLO CAMPIONE. &nbsp; ✦</span>
+      <span class="arena-heading-line"></span>
+      <span class="arena-season">STAGIONE 2026/27</span>
+    </div>
+
+    <section class="stage participants-stage" aria-label="Partecipanti alla Supercoppa">
+      <div class="stage-title"><span class="stage-number">01</span> I CINQUE CONTENDENTI</div>
       <div id="participants-grid" class="participants-grid"></div>
     </section>
 
-    <section class="supercup-flow">
-      <article class="stage playin-stage">
-        <div class="stage-title">2 · Play-in Conference</div>
-        <div id="playin-card" class="match-card wide-card"></div>
-      </article>
-
-      <article class="stage draw-stage">
-        <div class="stage-title">3 · Sorteggio semifinali</div>
-        <div class="draw-board">
-          <div id="draw-left" class="draw-column"></div>
-<div class="draw-bowl" aria-hidden="true">
-  <img src="img/sorteggio.webp" alt="" class="sorteggio-img">
-</div>
-          <div id="draw-right" class="draw-column"></div>
+    <div class="supercup-journey" aria-label="Percorso della Supercoppa">
+      <article class="stage journey-stage playin-stage" id="playin-stage">
+        <div class="stage-title"><span class="stage-number">02</span> PLAY-IN CONFERENCE</div>
+        <div class="stage-inner">
+          <div id="playin-card" class="match-card wide-card"></div>
+          <p class="stage-footnote" id="playin-status">Vincente al sorteggio</p>
         </div>
       </article>
-    </section>
 
-    <section class="stage bracket-stage">
-      <div class="stage-title">4 · Semifinali <span>in attesa di sorteggio</span></div>
-      <div class="semis-grid">
-        <div id="sf1-card" class="match-card semi-card"></div>
-        <div id="sf2-card" class="match-card semi-card"></div>
-      </div>
-    </section>
-
-    <section class="stage final-stage">
-      <div class="stage-title">5 · Finale Supercoppa</div>
-      <div id="final-card" class="match-card final-card"></div>
-    </section>
-
-    <section id="champion-stage" class="champion-stage">
-      <div class="champion-title">6 · Campione Supercoppa</div>
-      <div class="champion-card">
-        <div class="laurel">‹</div>
-        <div id="champion-content" class="champion-content"></div>
-        <div class="laurel">›</div>
-      </div>
-      <p class="supercup-motto">Solo una corona. Solo un eroe.</p>
-    </section>
-
-<section id="supercoppa-admin" class="admin-panel admin-panel-collapsible">
-  <details>
-    <summary class="admin-summary">
-      <span>
-        <strong>Admin Supercoppa</strong>
-        <small>Partecipanti, risultati e sorteggio</small>
-      </span>
-      <em>Apri</em>
-    </summary>
-
-    <div class="admin-panel-content">
-      <div class="admin-head">
-        <div>
-          <h2>Admin Supercoppa</h2>
-          <p>Seleziona le squadre dal menu, inserisci i risultati e decidi il sorteggio delle semifinali.</p>
+      <article class="stage journey-stage draw-stage" id="draw-stage">
+        <div class="stage-title"><span class="stage-number">03</span> SORTEGGIO</div>
+        <div class="stage-inner">
+          <div class="draw-board">
+            <div id="draw-left" class="draw-column"></div>
+            <div class="draw-bowl" aria-hidden="true">
+              <img src="img/sorteggio.webp" alt="" class="sorteggio-img" />
+            </div>
+            <div id="draw-right" class="draw-column"></div>
+          </div>
+          <div class="draw-status" id="draw-status">Quattro posti per le semifinali</div>
         </div>
-        <button id="reset-supercoppa" type="button" class="admin-reset">Reset</button>
-      </div>
+      </article>
 
-      <div class="admin-block">
-        <h3>Partecipanti</h3>
-        <div id="admin-team-selectors" class="admin-grid"></div>
-      </div>
-
-      <div class="admin-block">
-        <h3>Risultati</h3>
-        <div class="admin-scores-grid">
-          <label>Play-in A <input type="number" min="0" inputmode="numeric" data-score="playin-0" /></label>
-          <label>Play-in B <input type="number" min="0" inputmode="numeric" data-score="playin-1" /></label>
-          <label>Semifinale 1 A <input type="number" min="0" inputmode="numeric" data-score="sf1-0" /></label>
-          <label>Semifinale 1 B <input type="number" min="0" inputmode="numeric" data-score="sf1-1" /></label>
-          <label>Semifinale 2 A <input type="number" min="0" inputmode="numeric" data-score="sf2-0" /></label>
-          <label>Semifinale 2 B <input type="number" min="0" inputmode="numeric" data-score="sf2-1" /></label>
-          <label>Finale A <input type="number" min="0" inputmode="numeric" data-score="final-0" /></label>
-          <label>Finale B <input type="number" min="0" inputmode="numeric" data-score="final-1" /></label>
+      <section class="stage journey-stage bracket-stage" id="semis-stage">
+        <div class="stage-title"><span class="stage-number">04</span> SEMIFINALI</div>
+        <div class="stage-inner">
+          <div class="semis-grid">
+            <div id="sf1-card" class="match-card semi-card"></div>
+            <div id="sf2-card" class="match-card semi-card"></div>
+          </div>
+          <p class="stage-footnote" id="semis-status">In attesa del sorteggio</p>
         </div>
-      </div>
+      </section>
 
-      <div class="admin-block">
-        <h3>Sorteggio semifinali</h3>
-        <div class="admin-grid draw-select-grid">
-          <label>Semifinale 1 - Squadra A <select data-draw="sf1a"></select></label>
-          <label>Semifinale 1 - Squadra B <select data-draw="sf1b"></select></label>
-          <label>Semifinale 2 - Squadra A <select data-draw="sf2a"></select></label>
-          <label>Semifinale 2 - Squadra B <select data-draw="sf2b"></select></label>
+      <section class="stage journey-stage final-stage" id="final-stage">
+        <div class="stage-title"><span class="stage-number">05</span> LA GRANDE FINALE</div>
+        <div class="stage-inner">
+          <div class="final-crown" aria-hidden="true">♛</div>
+          <div id="final-card" class="match-card final-card"></div>
+          <p class="stage-footnote" id="final-status">Un ultimo duello</p>
         </div>
+      </section>
+
+      <section id="champion-stage" class="stage journey-stage champion-stage">
+        <div class="stage-title"><span class="stage-number">06</span> IL SUPERCAMPIONE</div>
+        <div class="stage-inner">
+          <div class="champion-card">
+            <div class="champion-rays" aria-hidden="true"></div>
+            <div class="champion-laurel" aria-hidden="true">❦</div>
+            <div id="champion-content" class="champion-content" aria-live="polite"></div>
+            <span class="champion-year">SUPERCOPPA 2026/27</span>
+          </div>
+        </div>
+      </section>
     </div>
-  </details>
-</section>
-</main>
+
+    <p class="supercup-motto">♛ &nbsp; SOLO UNA CORONA. SOLO UN EROE. &nbsp; ♛</p>
+
+    <section id="supercoppa-admin" class="admin-panel admin-panel-collapsible">
+      <details>
+        <summary class="admin-summary">
+          <span>
+            <strong>Admin Supercoppa</strong>
+            <small>Partecipanti, risultati e sorteggio</small>
+          </span>
+          <em>Apri</em>
+        </summary>
+        <div class="admin-panel-content">
+          <div class="admin-head">
+            <div>
+              <h2>Admin Supercoppa</h2>
+              <p>Gestisci le squadre partecipanti, i risultati e gli accoppiamenti delle semifinali.</p>
+            </div>
+            <button id="reset-supercoppa" type="button" class="admin-reset">Reset</button>
+          </div>
+          <div class="admin-block">
+            <h3>Partecipanti</h3>
+            <div id="admin-team-selectors" class="admin-grid"></div>
+          </div>
+          <div class="admin-block">
+            <h3>Risultati</h3>
+            <div class="admin-scores-grid">
+              <label>Play-in A <input type="number" min="0" inputmode="numeric" data-score="playin-0" /></label>
+              <label>Play-in B <input type="number" min="0" inputmode="numeric" data-score="playin-1" /></label>
+              <label>Semifinale 1 A <input type="number" min="0" inputmode="numeric" data-score="sf1-0" /></label>
+              <label>Semifinale 1 B <input type="number" min="0" inputmode="numeric" data-score="sf1-1" /></label>
+              <label>Semifinale 2 A <input type="number" min="0" inputmode="numeric" data-score="sf2-0" /></label>
+              <label>Semifinale 2 B <input type="number" min="0" inputmode="numeric" data-score="sf2-1" /></label>
+              <label>Finale A <input type="number" min="0" inputmode="numeric" data-score="final-0" /></label>
+              <label>Finale B <input type="number" min="0" inputmode="numeric" data-score="final-1" /></label>
+            </div>
+          </div>
+          <div class="admin-block">
+            <h3>Sorteggio semifinali</h3>
+            <div class="admin-grid draw-select-grid">
+              <label>Semifinale 1 - Squadra A <select data-draw="sf1a"></select></label>
+              <label>Semifinale 1 - Squadra B <select data-draw="sf1b"></select></label>
+              <label>Semifinale 2 - Squadra A <select data-draw="sf2a"></select></label>
+              <label>Semifinale 2 - Squadra B <select data-draw="sf2b"></select></label>
+            </div>
+          </div>
+        </div>
+      </details>
+    </section>
+  </main>
+
 <script src="mobile-nav.js"></script>
-<script type="module" src="supercoppa.js"></script>
+<script type="module" src="supercoppa.js?v=arena-20261029"></script>
 <script src="navbar.js"></script>
 </body>
 </html>
