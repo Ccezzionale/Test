@@ -14,7 +14,7 @@ const roles={P:'🧤 POR',D:'🛡️ DIF',C:'🎯 CEN',A:'⚽ ATT'};
 const eventNames={CLEAN_SHEET:'Clean sheet',PENALTY_SAVE:'Rigore parato',GOAL:'Gol',ASSIST:'Assist',GOAL_OR_ASSIST:'Gol o assist',BRACE:'Doppietta'};
 const roleEvents={P:['CLEAN_SHEET','PENALTY_SAVE'],D:['GOAL','ASSIST'],C:['GOAL','ASSIST','GOAL_OR_ASSIST'],A:['GOAL','ASSIST','BRACE']};
 const S={rounds:[],events:[],entries:[],user:null,teamId:null,admin:false,active:null,model:null,projection:null,teams:[],
- picks:new Map(),hero:null,backup:null,dirty:false,adminDraft:[],adminDraftRoundId:null,busy:false,lastRoundKey:null,modelInput:null,modelUpdated:0,simulator:null,playerBookmaker:null,leaderboardRows:[],playerRole:'P',playerSearch:'',playerEvent:'ALL',pcCatalogRoundId:null,pcCatalogPreview:null,pcCatalogSource:'',pcCatalogEdited:new Set(),pcCatalogRemoved:0,gradePreview:new Map(),gradeFile:null,gradeRoundId:null};
+ picks:new Map(),hero:null,backup:null,dirty:false,adminDraft:[],adminDraftRoundId:null,busy:false,lastRoundKey:null,modelInput:null,modelUpdated:0,simulator:null,playerBookmaker:null,leaderboardRows:[],playerRole:'P',playerSearch:'',playerEvent:'ALL',pcCatalogRoundId:null,pcCatalogPreview:null,pcCatalogSource:'',pcCatalogEdited:new Set(),pcCatalogRemoved:0,pcCatSort:'none',gradePreview:new Map(),gradeFile:null,gradeRoundId:null};
 function stageData(stage){return stages.find(x=>x[0]===stage)||stages[0]}
 function openRound(r){return r?.status==='open' && new Date(r.closes_at).getTime()>Date.now()}
 function closedRound(r){return r?.status==='finalized'||(r?.status==='open' && new Date(r.closes_at).getTime()<=Date.now())}
@@ -249,6 +249,18 @@ function loadCatalogForRound(r){
  S.pcCatalogSource=stored.length?'saved':'';
  msg('pc-cat-save-status',stored.length?`✅ ${stored.length} quote già salvate per questo turno. Puoi cambiarle qui sotto e confermare di nuovo.`:'Non hai ancora salvato un catalogo per questa giornata.');
 }
+// Ordina numericamente l'intero elenco prima di mostrare le prime righe.
+// Non modifica le quote, la bozza né i dati conservati in Supabase.
+function sortCatalogueByQuota(rows, direction){
+ if(direction!=='asc' && direction!=='desc')return rows;
+ const factor=direction==='asc'?1:-1;
+ return [...rows].sort((a,b)=>{
+   const aq=Number(a.q),bq=Number(b.q);
+   const aValid=Number.isFinite(aq),bValid=Number.isFinite(bq);
+   if(!aValid||!bValid)return aValid?-1:bValid?1:0;
+   return factor*(aq-bq)||String(a.name||'').localeCompare(String(b.name||''),'it')||String(a.ev||'').localeCompare(String(b.ev||''),'it');
+ });
+}
 function drawCatalogue(){
  let preview=S.pcCatalogPreview,view=$('pc-cat-list'),overview=$('pc-cat-overview');
  if(!view||!overview)return;
@@ -277,9 +289,10 @@ function drawCatalogue(){
  const role=$('pc-cat-role').value||'P',ev=$('pc-cat-event').value||'ALL',q=$('pc-cat-search').value.trim().toLocaleLowerCase('it');
  const byCode=new Map(players.map(p=>[Number(p.code),p]));
  let filtered=preview.filter(x=>x.role===role &&(ev==='ALL'||x.ev===ev) && (!q||`${byCode.get(x.code)?.name||x.name||''} ${byCode.get(x.code)?.club||x.club||''} ${x.ev}`.toLocaleLowerCase('it').includes(q)));
+ filtered=sortCatalogueByQuota(filtered,S.pcCatSort);
  const max=60,shown=filtered.slice(0,max);
  overview.textContent=`${preview.length} quote nel catalogo · ${filtered.length} risultati per ${roles[role]}${filtered.length>max?` (prime ${max}: usa la ricerca)`:''} · ${S.pcCatalogEdited.size} modificate manualmente. ${S.pcCatalogSource==='saved'?'Quote attualmente salvate.':S.pcCatalogSource==='filtered'?'LISTONE DA CONFERMARE: rimosse le quote dei giocatori fuori stagione.':'ANTEPRIMA NON ANCORA SALVATA.'}`;
- view.innerHTML=shown.length?`<table class="pc-cat-table"><thead><tr><th>Calciatore</th><th>Evento</th><th>Metodo</th><th>Quota</th></tr></thead><tbody>${shown.map(x=>{
+ view.innerHTML=shown.length?`<table class="pc-cat-table"><thead><tr><th>Calciatore</th><th>Evento</th><th>Metodo</th><th aria-sort="${S.pcCatSort==='asc'?'ascending':S.pcCatSort==='desc'?'descending':'none'}"><button type="button" class="pc-cat-sort-button ${S.pcCatSort!=='none'?'pc-cat-sort-active':''}" data-cat-sort="quota" title="Ordina le quote in ordine crescente o decrescente" aria-label="${S.pcCatSort==='asc'?'Ordina per quota decrescente':'Ordina per quota crescente'}">Quota <span aria-hidden="true">${S.pcCatSort==='asc'?'↑':S.pcCatSort==='desc'?'↓':'↕'}</span></button></th></tr></thead><tbody>${shown.map(x=>{
    const player=byCode.get(x.code),name=player?.name||x.name||`Codice ${x.code}`,club=player?.club||x.club||'';
    const manual=false;
    return `<tr><td><strong>${esc(name)}</strong><small>${esc(club)}</small></td><td>${esc(eventNames[x.ev]||x.ev)}</td><td class="pc-cat-source">${manual?'✎ Editoriale':'⚡ Statistica'}</td><td><input type="number" inputmode="decimal" min="1.01" max="10000" step="0.01" value="${esc(Number(x.q).toFixed(2))}" data-cat-code="${x.code}" data-cat-event="${esc(x.ev)}" class="${S.pcCatalogEdited.has(catalogueKey(x))?'pc-cat-edited':''}" aria-label="Quota ${esc(name)} ${esc(eventNames[x.ev]||x.ev)}"/></td></tr>`;
@@ -570,6 +583,12 @@ function bind(){
  $('pc-cat-role').addEventListener('change',syncCatalogueFilter);
  $('pc-cat-event').addEventListener('change',drawCatalogue);
  $('pc-cat-search').addEventListener('input',drawCatalogue);
+ $('pc-cat-list').addEventListener('click',e=>{
+   const button=e.target.closest('[data-cat-sort="quota"]');
+   if(!button)return;
+   S.pcCatSort=S.pcCatSort==='asc'?'desc':'asc';
+   drawCatalogue();
+ });
  $('pc-cat-list').addEventListener('input',e=>{
    const input=e.target.closest('[data-cat-code][data-cat-event]');if(!input||!S.pcCatalogPreview)return;
    const code=Number(input.dataset.catCode),ev=input.dataset.catEvent,entry=S.pcCatalogPreview.find(x=>Number(x.code)===code&&x.ev===ev);if(!entry)return;
