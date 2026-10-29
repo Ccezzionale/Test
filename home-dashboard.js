@@ -2212,11 +2212,23 @@ function ensureCurrentMatchLogoPlates() {
   document.head.appendChild(style);
 }
 
+// Playoffs Challenge · Tessera Esplora riservata agli Admin.
+// Lo stato iniziale e' nascosto nell'HTML: nessun flash per gli allenatori.
+function syncPlayoffsChallengeHomeTile(context) {
+  const tile = document.getElementById('explore-playoffs-challenge');
+  if (!tile) return;
+  const isAdmin = context?.role === 'admin';
+  tile.hidden = !isAdmin;
+  if (isAdmin) tile.style.removeProperty('display');
+  else tile.style.setProperty('display', 'none', 'important');
+}
+
 async function initHomeDashboard() {
   ensureCurrentMatchLogoPlates();
   reorganizeHomeLowerSections();
   setupHomeMatchTabs();
   const context = await loadDashboardTeam();
+  syncPlayoffsChallengeHomeTile(context);
   watchDashboardAccount();
   const [rowsResult] = await Promise.allSettled([loadResultsRows(), loadWaiverCountdown(), loadLatestTrade()]);
 
