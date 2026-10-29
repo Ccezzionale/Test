@@ -1,5 +1,5 @@
 /* Playoffs Challenge V9.3 - demo interattiva. Nessuna chiamata di scrittura. */
-import {loadRoster,PLAYER_EVENTS} from './bookmaker-players.js?v=pc-v9-3';
+import {loadRoster,PLAYER_EVENTS} from './bookmaker-players.js?v=pc-v9-6-solo-gol-assist';
 const $=id=>document.getElementById(id);
 const esc=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const labels={P:'🧤 POR',D:'🛡️ DIF',C:'🎯 CEN',A:'⚽ ATT'};

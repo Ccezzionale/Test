@@ -421,3 +421,14 @@
 .pc-cat-dirty{color:#ffdea5}
 @media(max-width:760px){.pc-cat-controls{grid-template-columns:repeat(2,minmax(0,1fr))}.pc-cat-controls label:last-child{grid-column:1/-1}}
 @media(max-width:560px){.pc-cat-controls{grid-template-columns:1fr}.pc-cat-controls label:last-child{grid-column:auto}.pc-cat-table th:nth-child(3),.pc-cat-table td:nth-child(3){display:none}.pc-cat-table td,.pc-cat-table th{padding:9px 6px}}
+
+/* V9.6 · import voti e omologazione guidata */
+.pc-votes-panel{margin:16px 0;background:linear-gradient(145deg,#0c2338,#122e46);border:1px solid #d3ae6655;border-radius:14px;padding:18px}
+.pc-votes-panel .pc-field{margin:12px 0}
+.pc-votes-panel input[type=file]{display:block;width:100%;max-width:100%;padding:12px;background:#091b2e;color:#e4edf9;border:1px solid #5f7b98;border-radius:10px;margin-top:7px}
+.pc-votes-panel .pc-feedback{margin:12px 0;line-height:1.6;white-space:pre-wrap}
+.pc-votes-confirm{margin:15px 0 20px}
+.pc-grading-row>div{min-width:0;display:flex;flex-direction:column;gap:5px}
+.pc-grading-row>div small{display:block;color:#bed1e6;font-size:.77rem;line-height:1.45}
+.pc-grading-row select{min-width:160px}
+@media(max-width:760px){.pc-grading-row{grid-template-columns:minmax(0,1fr);align-items:stretch}.pc-grading-row>div{grid-column:1/-1}.pc-grading-row strong{grid-column:auto}.pc-grading-row select{width:100%}.pc-votes-panel{padding:12px}}

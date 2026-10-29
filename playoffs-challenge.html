@@ -279,7 +279,7 @@
         <article class="pc-panel"><span>📈</span><h3>Le quote sono punti</h3><p>Se un pronostico è corretto guadagni i punti corrispondenti alla sua quota. Se sbagli ottieni zero. I punti dei pronostici corretti si <strong>sommano</strong>.</p></article>
         <article class="pc-panel"><span>⭐</span><h3>HERO PICK</h3><p>Puoi scegliere un pronostico speciale per turno: se corretto vale il <strong>50% di punti in più</strong>. Se sbagli, zero. Prevista una riserva per eventi annullati.</p></article>
         <article class="pc-panel"><span>🏆</span><h3>Due premi Draft</h3><p>Il vincitore assoluto riceve una scelta dopo il <strong>Round 6</strong>. Il migliore dell'altra Conference ottiene una scelta dopo il <strong>Round 8</strong>, non protetta.</p></article>
-        <article class="pc-panel"><span>🧤</span><h3>Gli eventi dei calciatori</h3><p>Gol, assist, doppiette, clean sheet e rigori parati secondo il ruolo. I clean sheet richiedono almeno <strong>60 minuti</strong> in campo.</p></article>
+        <article class="pc-panel"><span>🧤</span><h3>Gli eventi dei calciatori</h3><p>Gol e assist per i difensori, eventi specifici per gli altri ruoli. Per il clean sheet del portiere adottiamo la convenzione dei 90 minuti, con verifica finale del Commissioner.</p></article>
         <article class="pc-panel"><span>🔐</span><h3>Quando si chiude</h3><p>La consegna termina prima dell'inizio della prima partita di Serie A del turno. Le quote pubblicate vengono bloccate e ogni turno è omologato dagli amministratori.</p></article>
       </div>
       <a class="pc-full-rules" href="regolamento.html#playoffs-challenge">📜 Leggi tutti i 13 articoli del regolamento →</a>
@@ -288,7 +288,7 @@
     <section class="pc-tabpanel" id="pc-tab-admin" role="tabpanel" aria-label="Gestione Commissioner" hidden>
       <div class="pc-heading"><div><div class="pc-kicker">SOLO ADMIN · GUIDA PRATICA</div><h2>⚙️ Prepara la Playoffs Challenge</h2><p>Segui i passaggi nell'ordine. Ogni turno si prepara separatamente. Le quote rimangono invisibili agli allenatori finché non premi <strong>Pubblica</strong>.</p></div></div>
       <div class="pc-panel pc-admin-controls">
-        <div class="pc-admin-intro" role="note"><strong>Come funziona in breve</strong><p>① Scegli il turno → ② Controlla le partite, scegli le quote e CONFERMA per salvarle → ③ Calcola, controlla e SALVA le quote dei calciatori → ④ Imposta la scadenza e pubblica → ⑤ Dopo le partite inserisci gli esiti e omologa.</p><p><strong>Conferma e salva queste quote</strong> registra subito le partite e le quote in bozza. <strong>Salva bozza</strong> conserva anche gli altri eventi ma NON apre le schedine. <strong>Pubblica</strong> apre la gara e blocca le quote: usa quel pulsante solo quando tutto è definitivo.</p></div>
+        <div class="pc-admin-intro" role="note"><strong>Come funziona in breve</strong><p>① Scegli il turno → ② Conferma e salva le quote delle partite → ③ Conferma e salva le quote dei calciatori → ④ Pubblica → ⑤ Carica l’Excel dei voti, controlla gli esiti e omologa.</p><p><strong>Conferma e salva queste quote</strong> registra subito le partite e le quote in bozza. <strong>Salva bozza</strong> conserva anche gli altri eventi ma NON apre le schedine. <strong>Pubblica</strong> apre la gara e blocca le quote: usa quel pulsante solo quando tutto è definitivo.</p></div>
         <section class="pc-admin-step" id="pc-guide-step1"><header><span class="pc-step-num">01</span><div><h3>Scegli la giornata</h3><p>Ogni turno ha un palinsesto distinto. Inizia dagli ottavi.</p></div><span id="pc-guide-state-1" class="pc-step-badge">Pronto</span></header>
           <div class="pc-field"><label for="pc-admin-stage">Turno da gestire</label><select id="pc-admin-stage"></select></div><p id="pc-guide-round-status" class="pc-step-note">Caricamento stato…</p>
           <div id="pc-unpublish-panel" class="pc-step-note" hidden>
@@ -331,8 +331,8 @@
           <section class="pc-panel pc-catalogue-admin" id="pc-catalogue-admin" aria-label="Quote calciatori">
             <p class="pc-cat-lead">Bastano tre operazioni: <strong>calcola le quote</strong>, <strong>controlla o correggi</strong>, <strong>conferma e salva</strong>. Il turno resta in bozza finché non lo pubblichi.</p>
             <div class="pc-quote-section-title"><span>A</span><div><strong>Calcola le quote suggerite</strong><p>Gol, assist, doppiette e le due quote dei portieri vengono calcolati dallo storico. Per il clean sheet dei portieri conta soprattutto la stagione attuale, con peso crescente in base alle presenze. I rigori parati utilizzano tutte e tre le stagioni e una correzione prudente.</p></div></div>
-            <div class="pc-cat-explainer"><span>🧤 Clean sheet POR: automatico</span><span>🥅 Rigore parato POR: automatico</span><span>⚽ Gol e assist: automatici</span></div>
-            <details class="pc-cat-editorial"><summary>Solo se vuoi: cambia la quota iniziale del clean sheet DIF</summary><p>Per i difensori non disponiamo dei minuti e dei gol subiti durante la loro presenza in campo. La quota di partenza resta editoriale, ma puoi correggerla per ciascun giocatore nella tabella.</p><label>DIF · Clean sheet, quota iniziale <input id="pc-cat-d-cs" type="number" min="1.01" max="10000" step="0.01" value="4.00" /></label></details>
+            <div class="pc-cat-explainer"><span>🧤 Clean sheet POR: automatico</span><span>🥅 Rigore parato POR: automatico</span><span>⚽ Difensori: solo gol e assist</span></div>
+
             <div class="pc-entry-actions"><button type="button" class="pc-button pc-ghost" id="pc-cat-generate">⚡ Calcola le quote suggerite</button></div>
             <p class="pc-feedback" id="pc-cat-status" role="status" aria-live="polite">Lettura del catalogo…</p>
             <div class="pc-quote-section-title"><span>B</span><div><strong>Controlla e modifica, se vuoi</strong><p>Cerca un calciatore, scegli il ruolo e correggi soltanto le quote che non ti convincono. Le correzioni restano in memoria finché non salvi.</p></div></div>
@@ -343,7 +343,7 @@
             </div>
             <p class="pc-cat-overview" id="pc-cat-overview" aria-live="polite">Premi «Calcola le quote suggerite» per preparare il catalogo.</p>
             <div class="pc-cat-table-wrap" id="pc-cat-list" aria-label="Anteprima quote calciatori"></div>
-            <p class="pc-history-hint">Le quote sono stime per la prossima partita, non certezze. Per i portieri le presenze approssimano la disponibilità, mentre i minuti e gli avversari effettivi non sono nei file. Il clean sheet richiede almeno 60 minuti effettivi.</p>
+            <p class="pc-history-hint">Le quote sono stime per la prossima partita, non certezze. Per i portieri le presenze approssimano la disponibilità, mentre i minuti e gli avversari effettivi non sono nei file. Per la verifica dei risultati dei portieri adotteremo la convenzione dei 90 minuti, con correzioni facoltative.</p>
             <div class="pc-quote-section-title"><span>C</span><div><strong>Conferma e salva le quote dei calciatori</strong><p>Salva davvero l'intero catalogo su Supabase. Non apre ancora la giornata: pubblicherai soltanto dal passaggio 04.</p></div></div>
             <div class="pc-quote-confirm"><button type="button" class="pc-button pc-primary" id="pc-cat-save" disabled>✓ Conferma e salva le quote dei calciatori</button><p id="pc-cat-save-status" role="status" aria-live="polite">Nessuna modifica confermata in questa sessione.</p></div>
           </section>
@@ -370,7 +370,7 @@
             <div class="pc-pb-actions"><button type="button" id="pc-player-calculate" class="pc-button pc-ghost">⚡ Ricalcola quota</button><button type="button" id="pc-player-apply" class="pc-button pc-primary">+ Aggiungi alla bozza</button></div>
             <div class="pc-pb-evidence" id="pc-player-evidence"><p>Seleziona un calciatore dal listino.</p></div>
             <p class="pc-feedback" id="pc-player-quote-status" role="status"></p>
-            <p class="pc-pb-disclaimer"><strong>Attenzione:</strong> i dati sono cumulativi e la probabilità è stimata <strong>per presenza</strong>, senza conoscere la titolarità della prossima partita. La conversione gol/assist usa ipotesi di Poisson: una doppietta non è direttamente osservabile da un totale stagionale. Clean sheet e rigori parati dei portieri sono stimati automaticamente da presenze, gol subiti e rigori parati. Il clean sheet DIF resta editoriale. Nessuna modifica automatica alle quote ufficiali.</p>
+            <p class="pc-pb-disclaimer"><strong>Attenzione:</strong> i dati sono cumulativi e la probabilità è stimata <strong>per presenza</strong>, senza conoscere la titolarità della prossima partita. La conversione gol/assist usa ipotesi di Poisson: una doppietta non è direttamente osservabile da un totale stagionale. Clean sheet e rigori parati dei portieri sono stimati automaticamente da presenze, gol subiti e rigori parati. Per i difensori sono disponibili solo gol e assist. Nessuna modifica automatica alle quote ufficiali.</p>
           </section>
           <h3>⚽ Eventi speciali aggiunti manualmente</h3><p>Puoi modificare manualmente qualunque quota suggerita, oppure aggiungere eventi senza passare dal bookmaker. La pubblicazione resta un'azione separata.</p>
           <div id="pc-admin-players"></div>
@@ -402,19 +402,29 @@
           </details>
         </div>
         <section class="pc-admin-step pc-grade-step" id="pc-guide-step6"><header><span class="pc-step-num">05</span><div><h3>Dopo la scadenza: controlla e omologa</h3><p>Quando le partite sono finite, inserisci il segno di ogni incontro e gli esiti dei calciatori pronosticati. Dopo l'omologazione, se sbagli, puoi registrare una rettifica motivata.</p></div><span id="pc-guide-state-6" class="pc-step-badge">In attesa</span></header>
-        <div id="pc-admin-grading" hidden><h3>✅ Omologazione risultati</h3><p>Gli esiti sono modificabili solo dopo la scadenza. «Annullato» assegna zero punti e attiva l'eventuale HERO PICK di riserva.</p><div id="pc-admin-outcomes"></div><button class="pc-button pc-primary" type="button" id="pc-admin-finalize">🏆 Omologa giornata e aggiorna classifica</button><div id="pc-admin-corrections" hidden><h3>✏️ Rettifiche dopo l’omologazione</h3><p>La correzione modifica subito la classifica ed è registrata con motivazione, autore, data ed esito precedente. Non cambia le quote e non riapre le schedine.</p><div id="pc-admin-correction-items"></div><h4>Storico delle rettifiche</h4><div id="pc-admin-correction-log" aria-live="polite"></div></div></div>
+        <div id="pc-admin-grading" hidden><h3>✅ Omologazione risultati</h3>
+          <p>Gli esiti sono modificabili solo dopo la scadenza. «Annullato» assegna zero punti e attiva l’eventuale HERO PICK di riserva.</p>
+          <div class="pc-votes-panel pc-panel" id="pc-votes-panel">
+            <div class="pc-quote-section-title"><span>A</span><div><strong>Carica i voti Fantacalcio</strong><p>Scarica il file Excel COMPLETO della giornata, con 20 squadre. Il file viene letto sul tuo dispositivo, senza pubblicarlo nell'app.</p></div></div>
+            <div class="pc-field"><label for="pc-votes-file">Excel ufficiale dei voti della giornata<input id="pc-votes-file" type="file" accept=".xlsx,.xls"/></label></div>
+            <div class="pc-entry-actions"><button id="pc-votes-import" class="pc-button pc-ghost" type="button">📥 Leggi e prepara i risultati</button></div>
+            <p class="pc-feedback" id="pc-votes-feedback" role="status" aria-live="polite">Scegli il file Excel della giornata indicata sopra. L'app controllerà le 20 squadre e il numero di giornata.</p>
+            <div class="pc-quote-section-title"><span>B</span><div><strong>Controlla e correggi</strong><p>Gol, assist, doppiette e rigori parati sono letti dal file. Un portiere presente è considerato in campo per 90 minuti: puoi correggere il suo esito. Seleziona manualmente anche 1, X o 2 per le sfide fantacalcio.</p></div></div>
+          </div>
+          <div id="pc-admin-outcomes"></div>
+          <div class="pc-quote-confirm pc-votes-confirm"><button id="pc-votes-save" class="pc-button pc-primary" type="button" disabled>✓ Conferma e salva tutti gli esiti</button><p>Prima salva gli esiti proposti. Poi omologa definitivamente con il pulsante seguente.</p></div><button class="pc-button pc-primary" type="button" id="pc-admin-finalize">🏆 Omologa giornata e aggiorna classifica</button><div id="pc-admin-corrections" hidden><h3>✏️ Rettifiche dopo l’omologazione</h3><p>La correzione modifica subito la classifica ed è registrata con motivazione, autore, data ed esito precedente. Non cambia le quote e non riapre le schedine.</p><div id="pc-admin-correction-items"></div><h4>Storico delle rettifiche</h4><div id="pc-admin-correction-log" aria-live="polite"></div></div></div>
 
         </section>
         <div id="pc-admin-feedback" class="pc-feedback" role="status"></div>
       </div>
     </section>
 
-    <footer class="pc-footer">Playoffs Challenge · V9.5 guida Commissioner · Supabase · Schedine valide soltanto nei turni ufficialmente aperti</footer>
+    <footer class="pc-footer">Playoffs Challenge · V9.6 risultati Excel · Supabase · Schedine valide soltanto nei turni ufficialmente aperti</footer>
   </div>
 </main>
 <script defer src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
 <script type="module" src="playoffs-challenge.js?v=pc-v9-4-1"></script>
-<script type="module" src="playoffs-challenge-live.js?v=pc-v9-5-keepers"></script>
+<script type="module" src="playoffs-challenge-live.js?v=pc-v9-6-risultati"></script>
 <script src="mobile-nav.js?v=20261007-bottom4"></script>
 <script src="navbar.js?v=20261015"></script>
 <script type="module" src="admin-nav.js?v=1"></script>

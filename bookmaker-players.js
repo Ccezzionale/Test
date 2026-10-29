@@ -14,8 +14,7 @@ export const PLAYER_EVENTS = {
   ],
   D: [
     {key:'GOAL',title:'Segna almeno un gol'},
-    {key:'ASSIST',title:'Fa almeno un assist'},
-    {key:'CLEAN_SHEET',title:'Clean sheet',manual:true,reason:'Servono minuti giocati e reti subite mentre il calciatore è in campo.'}
+    {key:'ASSIST',title:'Fa almeno un assist'}
   ],
   C: [
     {key:'GOAL',title:'Segna almeno un gol'},
@@ -93,15 +92,13 @@ export function estimatePlayerEvent(player,event,settings=DEFAULT_PLAYER_SETTING
     derived:Boolean(e.derived),confidence:'euristica',why:derivation};
 }
 export async function loadRoster(supabase){
-  const pageSize=700,items=[];
-  for(let offset=0;offset<30000;offset+=pageSize){
-    const {data,error}=await supabase.from('players')
-      .select('external_id,name,role_classic,role_mantra,serie_a_team,quotation_classic,updated_at')
-      .range(offset,offset+pageSize-1);
-    if(error)throw new Error('Listino players: '+error.message);
-    items.push(...(data||[]));
-    if(!data||data.length<pageSize)break;
-  }
+  // Il listone 2026/27 e' la sorgente dei calciatori ammessi. Gli archivi
+  // 2024/25 e 2025/26 servono SOLO al calcolo delle probabilita'.
+  // La RPC espone il listone corrente anche agli allenatori, senza dare
+  // accesso diretto agli archivi statistici protetti dell'admin.
+  const {data:items,error}=await supabase.rpc('pc_current_season_roster');
+  if(error)throw new Error('Listone 2026/27: '+error.message);
+  if(!Array.isArray(items)||!items.length)throw new Error('Listone 2026/27 vuoto. Importa il file statistiche aggiornato.');
   const uniq=new Map();
   for(const x of items){
     const code=String(x.external_id||'').trim(),role=String(x.role_classic||'').trim();
@@ -140,7 +137,7 @@ async function loadHistoricalSnapshots(supabase){
   return h;
 }
 
-export function mountPlayerBookmaker({supabase,onApply,getRound}){
+export function mountPlayerBookmaker({supabase,onApply,getRound,onRosterLoaded}){
   const root=$('pc-player-bookmaker');
   if(!root)return {refresh(){}};
   let roster=[],byLabel=new Map(),chosen=null,lastEstimate=null,history=null;
@@ -236,7 +233,8 @@ export function mountPlayerBookmaker({supabase,onApply,getRound}){
       byLabel=new Map(roster.map(x=>[nameLabel(x),x]));
       list.innerHTML=roster.map(x=>`<option value="${esc(nameLabel(x))}"></option>`).join('');
       const priced=roster.filter(x=>x.quotation!==null).length;
-      $('pc-player-data-note').textContent=`Listino Classic aggiornato · ${roster.length} calciatori unici, ${priced} con quotazione valida. Caricamento dello storico…`;
+      $('pc-player-data-note').textContent=`Listone 2026/27 · ${roster.length} calciatori attuali, ${priced} con quotazione valida. Caricamento dello storico…`;
+      onRosterLoaded?.();
       note('Lettura delle tre stagioni storiche…');
       await reloadHistory();
       note('Seleziona un calciatore: la stima sarà per ruolo Mantra e rendimento storico.');

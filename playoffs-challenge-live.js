@@ -3,17 +3,18 @@ import {supabase} from './supabase.js';
 import {buildModel,quoteMatch,normalizeTeam} from './bookmaker-engine.js';
 import {calculateProjectedStandings} from './bookmaker-seeding.js';
 import {mountCommissionerSimulator} from './bookmaker-simulator.js?v=pc-v9-4-4-one-save';
-import {mountPlayerBookmaker} from './bookmaker-players.js?v=pc-v9-5-keepers';
-import {mountDemoPlayerPicker} from './pc-player-picker.js?v=pc-v9-3';
+import {mountPlayerBookmaker} from './bookmaker-players.js?v=pc-v9-6-solo-gol-assist';
+import {mountDemoPlayerPicker} from './pc-player-picker.js?v=pc-v9-6';
+import {parseFantacalcioVotes,predictPlayerResult} from './pc-votes-import.js?v=pc-v9-6';
 const $=id=>document.getElementById(id);
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const fmt=n=>Number(n||0).toLocaleString('it-IT',{minimumFractionDigits:2,maximumFractionDigits:2});
 const stages=[['ottavi','Ottavi · G30',4,4],['quarti','Quarti · G31',4,4],['semi_andata','Semifinali andata · G32',2,6],['semi_ritorno','Semifinali ritorno · G33',2,6],['finali','Finali · G34',2,6]];
 const roles={P:'🧤 POR',D:'🛡️ DIF',C:'🎯 CEN',A:'⚽ ATT'};
 const eventNames={CLEAN_SHEET:'Clean sheet',PENALTY_SAVE:'Rigore parato',GOAL:'Gol',ASSIST:'Assist',GOAL_OR_ASSIST:'Gol o assist',BRACE:'Doppietta'};
-const roleEvents={P:['CLEAN_SHEET','PENALTY_SAVE'],D:['GOAL','ASSIST','CLEAN_SHEET'],C:['GOAL','ASSIST','GOAL_OR_ASSIST'],A:['GOAL','ASSIST','BRACE']};
+const roleEvents={P:['CLEAN_SHEET','PENALTY_SAVE'],D:['GOAL','ASSIST'],C:['GOAL','ASSIST','GOAL_OR_ASSIST'],A:['GOAL','ASSIST','BRACE']};
 const S={rounds:[],events:[],entries:[],user:null,teamId:null,admin:false,active:null,model:null,projection:null,teams:[],
- picks:new Map(),hero:null,backup:null,dirty:false,adminDraft:[],adminDraftRoundId:null,busy:false,lastRoundKey:null,modelInput:null,modelUpdated:0,simulator:null,playerBookmaker:null,leaderboardRows:[],playerRole:'P',playerSearch:'',playerEvent:'ALL',pcCatalogRoundId:null,pcCatalogPreview:null,pcCatalogSource:'',pcCatalogEdited:new Set()};
+ picks:new Map(),hero:null,backup:null,dirty:false,adminDraft:[],adminDraftRoundId:null,busy:false,lastRoundKey:null,modelInput:null,modelUpdated:0,simulator:null,playerBookmaker:null,leaderboardRows:[],playerRole:'P',playerSearch:'',playerEvent:'ALL',pcCatalogRoundId:null,pcCatalogPreview:null,pcCatalogSource:'',pcCatalogEdited:new Set(),pcCatalogRemoved:0,gradePreview:new Map(),gradeFile:null,gradeRoundId:null};
 function stageData(stage){return stages.find(x=>x[0]===stage)||stages[0]}
 function openRound(r){return r?.status==='open' && new Date(r.closes_at).getTime()>Date.now()}
 function closedRound(r){return r?.status==='finalized'||(r?.status==='open' && new Date(r.closes_at).getTime()<=Date.now())}
@@ -182,13 +183,14 @@ function renderAdminGuide(r){
  label(2,`${named}/${needed} partite`,named===needed);
  label(3,quoted===needed?'Quote presenti':`${quoted}/${needed} quote complete`,quoted===needed);
  const catalog=roundEvents(r.id).filter(x=>x.is_catalog).length;
+ const needRosterFix=S.pcCatalogRoundId===r.id && S.pcCatalogSource==='filtered';
  const manualRoles=new Set(S.adminDraft.filter(x=>x.kind==='player'&&x.player_name&&Number(x.qyes)>=1.01).map(x=>x.player_role)).size;
- label(4,catalog?`${catalog} eventi pronti`:(manualRoles===4?'4 ruoli manuali':'Catalogo mancante'),catalog>0||manualRoles===4);
+ label(4,needRosterFix?'Aggiorna catalogo 2026/27':(catalog?`${catalog} eventi pronti`:(manualRoles===4?'4 ruoli manuali':'Catalogo mancante')),!needRosterFix&&(catalog>0||manualRoles===4));
  label(5,r.status==='draft'?(r.closes_at?'Bozza salvata':'Non pubblicata'):'Pubblicato',r.status!=='draft');
  const gradingStatus=r.status==='finalized'?'Omologato':r.status==='open'?(closedRound(r)?'Pronto per gli esiti':'In attesa della scadenza'):'In attesa';
  label(6,gradingStatus,r.status==='finalized');
  const publish=$('pc-admin-publish');
- if(publish)publish.disabled=r.status!=='draft'||named!==needed||quoted!==needed||(!catalog&&manualRoles!==4)||!$('pc-admin-deadline').value;
+ if(publish)publish.disabled=r.status!=='draft'||named!==needed||quoted!==needed||needRosterFix||(!catalog&&manualRoles!==4)||!$('pc-admin-deadline').value;
 }
 function renderAdmin(){if(!S.admin)return;
  const selected=Number($('pc-admin-stage').value||S.rounds[0]?.id);const r=S.rounds.find(x=>x.id===selected)||S.rounds[0];if(!r)return;
@@ -198,7 +200,7 @@ function renderAdmin(){if(!S.admin)return;
  if(S.adminDraftRoundId!==r.id){S.adminDraft=initialDraft(r);S.adminDraftRoundId=r.id;}
  renderAdminDraft(r);S.simulator?.refresh();S.playerBookmaker?.refresh();renderAdminGuide(r);
  loadCatalogForRound(r);syncCatalogueFilter();
- const count=roundEvents(r.id).filter(x=>x.is_catalog).length;const summary=$('pc-cat-status');if(summary)summary.textContent=count?`✅ ${count} quote già salvate nel catalogo. Puoi modificare e confermare le quote qui sotto oppure ricalcolarle.`:'Premi «Calcola le quote suggerite» per preparare il catalogo. Non verrà salvato automaticamente.';
+ const count=roundEvents(r.id).filter(x=>x.is_catalog).length;const summary=$('pc-cat-status');if(summary)summary.textContent=S.pcCatalogSource==='filtered'?`⚠️ Il catalogo contiene giocatori fuori dal listone 2026/27. Ricalcola oppure conferma e salva la lista ripulita.`:count?`✅ ${count} quote già salvate nel catalogo. Puoi modificare e confermare le quote qui sotto oppure ricalcolarle.`:'Premi «Calcola le quote suggerite» per preparare il catalogo. Non verrà salvato automaticamente.';
  if(r.status!=='draft')renderGrading(r);
 }
 function renderAdminDraft(r){const ms=S.adminDraft.filter(x=>x.kind==='match').sort((a,b)=>a.slot-b.slot);const ps=S.adminDraft.filter(x=>x.kind==='player');
@@ -241,26 +243,44 @@ function collectAdminDraft(){const r=S.rounds.find(x=>x.id===Number($('pc-admin-
 function catalogueKey(row){return Number(row.code)+':'+row.ev}
 function loadCatalogForRound(r){
  if(S.pcCatalogRoundId===r.id)return;
- S.pcCatalogRoundId=r.id;S.pcCatalogEdited=new Set();
+ S.pcCatalogRoundId=r.id;S.pcCatalogEdited=new Set();S.pcCatalogRemoved=0;
  const stored=roundEvents(r.id).filter(x=>x.kind==='player'&&x.is_catalog);
  S.pcCatalogPreview=stored.length?stored.map(x=>({code:Number(x.player_code),role:x.player_role,ev:x.player_event,q:Number(x.qyes),name:x.player_name,club:''})):null;
  S.pcCatalogSource=stored.length?'saved':'';
  msg('pc-cat-save-status',stored.length?`✅ ${stored.length} quote già salvate per questo turno. Puoi cambiarle qui sotto e confermare di nuovo.`:'Non hai ancora salvato un catalogo per questa giornata.');
 }
 function drawCatalogue(){
- const preview=S.pcCatalogPreview,view=$('pc-cat-list'),overview=$('pc-cat-overview');
+ let preview=S.pcCatalogPreview,view=$('pc-cat-list'),overview=$('pc-cat-overview');
  if(!view||!overview)return;
  const save=$('pc-cat-save');
  if(!preview?.length){view.innerHTML='<p class="pc-cat-empty">Premi «Calcola le quote suggerite» nella parte A: qui vedrai tutti i giocatori e le quote modificabili.</p>';overview.textContent='Catalogo non ancora preparato. La generazione non salva né pubblica nulla.';save.disabled=true;return}
- const role=$('pc-cat-role').value||'P',ev=$('pc-cat-event').value||'ALL',q=$('pc-cat-search').value.trim().toLocaleLowerCase('it');
  const players=S.playerBookmaker?.roster?.()||[];
+ if(!players.length){
+   view.innerHTML='<p class="pc-cat-empty">Caricamento del listone 2026/27…</p>';
+   overview.textContent='Attendi il caricamento del listone attuale: non mostriamo giocatori delle vecchie stagioni.';
+   save.disabled=true;return;
+ }
+ const allowed=new Set(players.map(p=>Number(p.code)));
+ const beforeRole=preview.length;preview=preview.filter(x=>!(x.role==='D'&&x.ev==='CLEAN_SHEET'));S.pcCatalogPreview=preview;
+ if(preview.length<beforeRole){S.pcCatalogSource='filtered';S.pcCatalogRemoved+=beforeRole-preview.length;}
+ const beforeRole=preview.length;preview=preview.filter(x=>!(x.role==='D'&&x.ev==='CLEAN_SHEET'));S.pcCatalogPreview=preview;
+ if(preview.length<beforeRole){S.pcCatalogSource='filtered';S.pcCatalogRemoved+=beforeRole-preview.length;}
+ const obsolete=preview.filter(x=>!allowed.has(Number(x.code)));
+ if(obsolete.length){
+   S.pcCatalogPreview=preview.filter(x=>allowed.has(Number(x.code)));
+   S.pcCatalogRemoved+=obsolete.length;
+   S.pcCatalogSource='filtered';preview=S.pcCatalogPreview;
+   renderAdminGuide(S.rounds.find(r=>r.id===Number($('pc-admin-stage').value)));
+   msg('pc-cat-save-status',`⚠️ Escluse dall’anteprima ${S.pcCatalogRemoved} quote di giocatori non presenti nel listone 2026/27. Non sono ancora state cancellate dal database: premi «Conferma e salva» per aggiornare il catalogo, oppure «Calcola» per rigenerarlo completamente.`);
+ }
+ const role=$('pc-cat-role').value||'P',ev=$('pc-cat-event').value||'ALL',q=$('pc-cat-search').value.trim().toLocaleLowerCase('it');
  const byCode=new Map(players.map(p=>[Number(p.code),p]));
- let filtered=preview.filter(x=>x.role===role &&(ev==='ALL'||x.ev===ev) && (!q||`${x.name||byCode.get(x.code)?.name||''} ${x.club||byCode.get(x.code)?.club||''} ${x.ev}`.toLocaleLowerCase('it').includes(q)));
+ let filtered=preview.filter(x=>x.role===role &&(ev==='ALL'||x.ev===ev) && (!q||`${byCode.get(x.code)?.name||x.name||''} ${byCode.get(x.code)?.club||x.club||''} ${x.ev}`.toLocaleLowerCase('it').includes(q)));
  const max=60,shown=filtered.slice(0,max);
- overview.textContent=`${preview.length} quote nel catalogo · ${filtered.length} risultati per ${roles[role]}${filtered.length>max?` (prime ${max}: usa la ricerca)`:''} · ${S.pcCatalogEdited.size} modificate manualmente. ${S.pcCatalogSource==='saved'?'Quote attualmente salvate.':'ANTEPRIMA NON ANCORA SALVATA.'}`;
+ overview.textContent=`${preview.length} quote nel catalogo · ${filtered.length} risultati per ${roles[role]}${filtered.length>max?` (prime ${max}: usa la ricerca)`:''} · ${S.pcCatalogEdited.size} modificate manualmente. ${S.pcCatalogSource==='saved'?'Quote attualmente salvate.':S.pcCatalogSource==='filtered'?'LISTONE DA CONFERMARE: rimosse le quote dei giocatori fuori stagione.':'ANTEPRIMA NON ANCORA SALVATA.'}`;
  view.innerHTML=shown.length?`<table class="pc-cat-table"><thead><tr><th>Calciatore</th><th>Evento</th><th>Metodo</th><th>Quota</th></tr></thead><tbody>${shown.map(x=>{
-   const player=byCode.get(x.code),name=x.name||player?.name||`Codice ${x.code}`,club=x.club||player?.club||'';
-   const manual=x.role==='D'&&x.ev==='CLEAN_SHEET';
+   const player=byCode.get(x.code),name=player?.name||x.name||`Codice ${x.code}`,club=player?.club||x.club||'';
+   const manual=false;
    return `<tr><td><strong>${esc(name)}</strong><small>${esc(club)}</small></td><td>${esc(eventNames[x.ev]||x.ev)}</td><td class="pc-cat-source">${manual?'✎ Editoriale':'⚡ Statistica'}</td><td><input type="number" inputmode="decimal" min="1.01" max="10000" step="0.01" value="${esc(Number(x.q).toFixed(2))}" data-cat-code="${x.code}" data-cat-event="${esc(x.ev)}" class="${S.pcCatalogEdited.has(catalogueKey(x))?'pc-cat-edited':''}" aria-label="Quota ${esc(name)} ${esc(eventNames[x.ev]||x.ev)}"/></td></tr>`;
   }).join('')}</tbody></table>`:'<p class="pc-cat-empty">Nessun calciatore per questa ricerca. Prova un altro ruolo o un altro nome.</p>';
  save.disabled=false;
@@ -275,16 +295,15 @@ function prepareFullCatalog(){
  const r=S.rounds.find(x=>x.id===Number($('pc-admin-stage').value));
  if(!r||r.status!=='draft')return msg('pc-cat-status','Puoi modificare le quote soltanto in bozza.',true);
  if(S.pcCatalogRoundId===r.id&&S.pcCatalogEdited.size&&S.pcCatalogPreview?.length&&!confirm('Hai quote calciatori modificate ma NON SALVATE. Ricalcolare cancellerà queste correzioni locali. Vuoi continuare?'))return;
- const d=$('pc-cat-d-cs'),val=d.value.trim()===''?NaN:Number(d.value);
- if(!Number.isFinite(val)||val<1.01||val>10000)return msg('pc-cat-status','Inserisci una quota iniziale DIF clean sheet fra 1,01 e 10000.',true);
+
  try{
-   const c=S.playerBookmaker?.catalogue({'D:CLEAN_SHEET':val});
+   const c=S.playerBookmaker?.catalogue();
    if(!c?.rows?.length)throw Error('Bookmaker non pronto: attendi il caricamento dell’archivio statistiche e riprova.');
    const byCode=new Map(S.playerBookmaker.roster().map(x=>[Number(x.code),x]));
    S.pcCatalogPreview=c.rows.map(x=>({...x,name:byCode.get(x.code)?.name||'',club:byCode.get(x.code)?.club||''}));
-   S.pcCatalogEdited=new Set();S.pcCatalogSource='generated';S.pcCatalogRoundId=r.id;
+   S.pcCatalogEdited=new Set();S.pcCatalogSource='generated';S.pcCatalogRoundId=r.id;S.pcCatalogRemoved=0;
    $('pc-cat-role').value='P';$('pc-cat-search').value='';syncCatalogueFilter();
-   msg('pc-cat-status',`✅ Calcolate ${c.rows.length} quote per ${c.players} calciatori, inclusi clean sheet e rigori parati personalizzati per ogni portiere. ${c.editorial} quote clean sheet DIF sono editoriali. Controlla sotto e premi «Conferma e salva».`);
+   msg('pc-cat-status',`✅ Calcolate ${c.rows.length} quote per ${c.players} calciatori, inclusi clean sheet e rigori parati personalizzati per ogni portiere. Per i difensori sono disponibili soltanto gol e assist. Controlla sotto e premi «Conferma e salva».`);
    msg('pc-cat-save-status','⚠️ Quote calcolate ma NON ANCORA SALVATE. Controllale e premi il pulsante di conferma.');
  }catch(e){msg('pc-cat-status',e.message||'Calcolo non disponibile',true)}
 }
@@ -292,7 +311,10 @@ async function saveFullCatalog(){
  const r=S.rounds.find(x=>x.id===Number($('pc-admin-stage').value));
  if(!r||r.status!=='draft')return msg('pc-cat-save-status','Solo le giornate in bozza sono modificabili.',true);
  if(S.pcCatalogRoundId!==r.id||!S.pcCatalogPreview?.length)return msg('pc-cat-save-status','Prima calcola le quote suggerite.',true);
- const rows=S.pcCatalogPreview.map(x=>({code:Number(x.code),role:x.role,ev:x.ev,q:Number(x.q)}));
+ const allowedCodes=new Set((S.playerBookmaker?.roster?.()||[]).map(x=>Number(x.code)));
+ if(!allowedCodes.size)return msg('pc-cat-save-status','Il listone 2026/27 non è ancora pronto.',true);
+ if(S.pcCatalogPreview.some(x=>!allowedCodes.has(Number(x.code))))return msg('pc-cat-save-status','Ci sono calciatori fuori dal listone 2026/27: attendi il filtro e riprova.',true);
+ const rows=S.pcCatalogPreview.filter(x=>!(x.role==='D'&&x.ev==='CLEAN_SHEET')).map(x=>({code:Number(x.code),role:x.role,ev:x.ev,q:Number(x.q)}));
  const invalid=rows.find(x=>!Number.isInteger(x.code)||x.code<1||!roleEvents[x.role]?.includes(x.ev)||!Number.isFinite(x.q)||x.q<1.01||x.q>10000);
  if(invalid)return msg('pc-cat-save-status','C’è una quota non valida. Inserisci un valore tra 1,01 e 10000.',true);
  const existing=roundEvents(r.id).filter(x=>x.is_catalog).length;
@@ -305,7 +327,7 @@ async function saveFullCatalog(){
    await readOfficial();
    const count=roundEvents(r.id).filter(x=>x.is_catalog).length;
    if(count!==rows.length)throw Error(`Verifica salvataggio: attese ${rows.length} quote, trovate ${count}.`);
-   S.pcCatalogSource='saved';S.pcCatalogEdited=new Set();drawCatalogue();renderAdminGuide(r);
+   S.pcCatalogSource='saved';S.pcCatalogEdited=new Set();S.pcCatalogRemoved=0;drawCatalogue();renderAdminGuide(r);
    msg('pc-cat-save-status',`✅ SALVATE ${count} quote per ${stageData(r.stage)[1]} su Supabase. Le quote delle partite NON sono cambiate. Le schedine restano chiuse finché non pubblichi al passo 04.`);
    msg('pc-cat-status',`✅ Catalogo aggiornato: ${count} quote ufficiali in BOZZA.`);
  }catch(e){msg('pc-cat-save-status','Salvataggio fallito: '+e.message,true)}finally{btn.disabled=false}
@@ -411,12 +433,16 @@ async function saveAdmin(publish=false){collectAdminDraft();const r=S.rounds.fin
 function renderGrading(r){
  const selected=new Set(S.entries.filter(e=>Number(e.round_id)===Number(r.id)).flatMap(e=>(e.picks||[]).map(p=>Number(p.event_id))));
  const events=roundEvents(r.id).filter(ev=>ev.kind==='match'||selected.has(Number(ev.id)));
+ if(S.gradeRoundId!==Number(r.id)){S.gradePreview.clear();S.gradeFile=null;S.gradeRoundId=Number(r.id);}
  const canGrade=r.status==='open' && Date.now()>=new Date(r.closes_at).getTime();
  const finalized=r.status==='finalized';
  $('pc-admin-finalize').hidden=finalized;
  $('pc-admin-finalize').disabled=!canGrade;
  $('pc-admin-outcomes').hidden=finalized;
  $('pc-admin-corrections').hidden=!finalized;
+ $('pc-votes-panel').hidden=finalized;
+ $('pc-votes-import').disabled=!canGrade;
+ $('pc-votes-save').disabled=!canGrade||!S.gradeFile;
  if(finalized){
   $('pc-admin-correction-items').innerHTML=events.map(ev=>{
    const title=ev.kind==='match'?`${ev.home_name} vs ${ev.away_name}`:`${ev.player_name}: ${eventNames[ev.player_event]}`;
@@ -428,7 +454,9 @@ function renderGrading(r){
  }
  $('pc-admin-outcomes').innerHTML=events.map(ev=>{const title=ev.kind==='match'?`${ev.home_name} vs ${ev.away_name}`:`${ev.player_name}: ${eventNames[ev.player_event]}`;
  const options=ev.kind==='match'?[['1','1'],['X','X'],['2','2'],['VOID','Annullato']]:[['YES','Avvenuto'],['NO','Non avvenuto'],['VOID','Annullato']];
- return `<div class="pc-grading-row"><strong>${esc(title)}</strong><select data-grade-id="${ev.id}" ${canGrade?'':'disabled'}><option value="">Da verificare</option>${options.map(([value,label])=>`<option value="${value}" ${ev.result_sign===value?'selected':''}>${label}</option>`).join('')}</select><button type="button" data-grade-save="${ev.id}" class="pc-button pc-ghost" ${canGrade?'':'disabled'}>Salva esito</button></div>`}).join('');
+ const chosen=S.gradePreview.has(Number(ev.id))?S.gradePreview.get(Number(ev.id)):ev.result_sign;
+ const note=S.gradePreview.get(Number(ev.id))!==undefined&&S.gradeFile?S.gradeFile.reasons.get(Number(ev.id)):'';
+ return `<div class="pc-grading-row"><div><strong>${esc(title)}</strong>${note?`<small>${esc(note)}</small>`:''}</div><select data-grade-id="${ev.id}" ${canGrade?'':'disabled'}><option value="">Da verificare</option>${options.map(([value,label])=>`<option value="${value}" ${chosen===value?'selected':''}>${label}</option>`).join('')}</select>${S.gradeFile?'':`<button type="button" data-grade-save="${ev.id}" class="pc-button pc-ghost" ${canGrade?'':'disabled'}>Salva esito</button>`}</div>`}).join('');
  if(!canGrade)msg('pc-admin-feedback',`Potrai inserire gli esiti dopo la scadenza: ${new Date(r.closes_at).toLocaleString('it-IT')}`);
 }
 async function loadCorrectionLog(roundId){
@@ -459,7 +487,59 @@ async function correctResult(id){
  }catch(e){msg('pc-admin-feedback',e.message,true)}finally{if(btn.isConnected)btn.disabled=false;}
 }
 async function setGrade(id){const v=$(`[data-grade-id="${id}"]`)?.value||null;const {error}=await supabase.rpc('pc_admin_set_result',{p_event_id:id,p_result:v});if(error)return msg('pc-admin-feedback',error.message,true);
- await readOfficial();renderGrading(S.rounds.find(r=>r.id===Number($('pc-admin-stage').value)));msg('pc-admin-feedback','✅ Esito salvato.')}
+ S.gradePreview.delete(Number(id));await readOfficial();renderGrading(S.rounds.find(r=>r.id===Number($('pc-admin-stage').value)));msg('pc-admin-feedback','✅ Esito salvato.')}
+async function loadGradesFromExcel(){
+ const round=S.rounds.find(x=>Number(x.id)===Number($('pc-admin-stage').value));
+ const file=$('pc-votes-file')?.files?.[0];
+ if(!file)return msg('pc-votes-feedback','Seleziona prima un file Excel dei voti Fantacalcio.',true);
+ if(!round||round.status!=='open'||!closedRound(round))return msg('pc-votes-feedback','Importazione esiti possibile solo dopo la scadenza del turno pubblicato.',true);
+ if(!globalThis.XLSX?.read)return msg('pc-votes-feedback','Lettore Excel non caricato. Serve Internet per la libreria SheetJS.',true);
+ const button=$('pc-votes-import');button.disabled=true;
+ try{
+   const bytes=await file.arrayBuffer();
+   const workbook=globalThis.XLSX.read(bytes,{type:'array',cellDates:false,cellFormula:false});
+   const data=parseFantacalcioVotes(workbook);
+   if(data.week!==Number(round.gw))throw Error(`Questo file è della giornata ${data.week}, ma ${stageData(round.stage)[1]} richiede la giornata ${round.gw}. Nessun risultato è stato modificato.`);
+   const selected=new Set(S.entries.filter(e=>Number(e.round_id)===Number(round.id)).flatMap(e=>(e.picks||[]).map(p=>Number(p.event_id))));
+   const predictions=roundEvents(round.id).filter(ev=>ev.kind==='player'&&selected.has(Number(ev.id)));
+   const reasons=new Map();let yes=0,no=0,unresolved=0;
+   // Discard older Excel previews, but preserve any match choices the admin has entered.
+   const existingMatches=new Map([...S.gradePreview].filter(([id])=>roundEvents(round.id).some(ev=>ev.kind==='match'&&Number(ev.id)===id)));
+   S.gradePreview=existingMatches;
+   for(const ev of predictions){const outcome=predictPlayerResult(ev,data);
+     if(outcome.result==='YES')yes++;
+     else if(outcome.result==='NO')no++;
+     else unresolved++;
+     S.gradePreview.set(Number(ev.id),outcome.result);reasons.set(Number(ev.id),outcome.reason);
+   }
+   S.gradeFile={roundId:Number(round.id),week:data.week,file:file.name,reasons,players:data.playerCount};
+   renderGrading(round);
+   msg('pc-votes-feedback',`✅ ${file.name} verificato: 20 squadre, ${data.playerCount} giocatori, ${predictions.length} pronostici individuali. Proposti ${yes} SÌ, ${no} NO${unresolved?', '+unresolved+' da verificare':''}. Puoi correggere qualsiasi esito qui sotto. NON ancora salvati. Inserisci anche i segni 1/X/2 e premi «Conferma e salva tutti gli esiti».`);
+ }catch(e){S.gradeFile=null;S.gradePreview.clear();msg('pc-votes-feedback','❌ '+e.message,true);
+ }finally{button.disabled=false;}
+}
+async function saveAllGrades(){
+ const round=S.rounds.find(x=>Number(x.id)===Number($('pc-admin-stage').value));
+ if(!S.gradeFile||!round||S.gradeFile.roundId!==Number(round.id))return msg('pc-votes-feedback','Prima carica il file Excel completo della giornata selezionata.',true);
+ if(!closedRound(round)||round.status!=='open')return msg('pc-votes-feedback','Gli esiti sono salvabili solo dopo la scadenza.',true);
+ const choices=[...$('pc-admin-outcomes').querySelectorAll('[data-grade-id]')].map(select=>({id:Number(select.dataset.gradeId),result:select.value||null}));
+ const matchMissing=choices.filter(x=>roundEvents(round.id).some(e=>e.id===x.id&&e.kind==='match')&&!x.result);
+ const unanswered=choices.filter(x=>!x.result);
+ if(matchMissing.length)return msg('pc-votes-feedback',`Mancano ${matchMissing.length} risultati 1/X/2. Sceglili prima di confermare.`,true);
+ if(unanswered.length)return msg('pc-votes-feedback',`Ci sono ${unanswered.length} eventi ancora «Da verificare». Correggili prima di confermare.`,true);
+ if(!choices.length)return msg('pc-votes-feedback','Nessun pronostico da salvare per questo turno.',true);
+ if(!confirm(`Salvare su Supabase ${choices.length} esiti per ${stageData(round.stage)[1]}?\nI valori mostrati nei menu saranno registrati, ma la classifica diventerà ufficiale solo dopo l’omologazione.`))return;
+ const btn=$('pc-votes-save');btn.disabled=true;
+ try{
+   const {data,error}=await supabase.rpc('pc_admin_save_results_batch',{p_round_id:round.id,p_results:choices.map(x=>({event_id:x.id,result:x.result}))});
+   if(error)throw error;
+   await readOfficial();
+   S.gradeFile=null;S.gradePreview.clear();
+   renderGrading(S.rounds.find(x=>Number(x.id)===Number(round.id)));
+   msg('pc-votes-feedback',`✅ ${data??choices.length} esiti SALVATI su Supabase. Controlla i risultati e premi «Omologa giornata» quando sei sicuro.`);
+ }catch(e){msg('pc-votes-feedback','❌ Salvataggio non riuscito: '+e.message,true);
+ }finally{btn.disabled=false;}
+}
 async function finalize(){const r=S.rounds.find(x=>x.id===Number($('pc-admin-stage').value));if(!confirm('Omologare definitivamente la giornata e aggiornare la classifica?'))return;
  const {error}=await supabase.rpc('pc_admin_finalize_round',{p_round_id:r.id});if(error)return msg('pc-admin-feedback',error.message,true);
  await update();msg('pc-admin-feedback','🏆 Giornata omologata. La classifica ufficiale è aggiornata.');}
@@ -488,7 +568,7 @@ function bind(){
  });
  $('pc-official-clear').addEventListener('click',()=>{S.picks.clear();S.hero=null;S.backup=null;S.dirty=true;renderOfficial()});
  $('pc-official-save').addEventListener('click',saveEntry);
- $('pc-admin-stage').addEventListener('change',()=>{msg('pc-admin-quote-feedback','Scegli le quote per questo turno e premi Conferma e salva.');renderAdmin();});
+ $('pc-admin-stage').addEventListener('change',()=>{S.gradePreview.clear();S.gradeFile=null;S.gradeRoundId=null;msg('pc-votes-feedback','Carica il file Excel completo del turno selezionato.');msg('pc-admin-quote-feedback','Scegli le quote per questo turno e premi Conferma e salva.');renderAdmin();});
  $('pc-admin-deadline').addEventListener('input',()=>renderAdminGuide(S.rounds.find(r=>r.id===Number($('pc-admin-stage').value))));
  $('pc-admin-matches').addEventListener('change',()=>{msg('pc-admin-quote-feedback','✎ Hai modificato le partite o le quote. Premi «Conferma e salva queste quote».');collectAdminDraft();S.simulator?.refresh();renderAdminGuide(S.rounds.find(r=>r.id===Number($('pc-admin-stage').value))) });
  $('pc-admin-matches').addEventListener('input',()=>{msg('pc-admin-quote-feedback','✎ Modifiche non ancora salvate. Premi «Conferma e salva queste quote».');collectAdminDraft();updateOddsBalanceRows();S.simulator?.refresh();renderAdminGuide(S.rounds.find(r=>r.id===Number($('pc-admin-stage').value))) });
@@ -504,6 +584,9 @@ function bind(){
  $('pc-admin-publish').addEventListener('click',()=>saveAdmin(true));
  $('pc-admin-unpublish').addEventListener('click',unpublishRound);
  $('pc-admin-outcomes').addEventListener('click',e=>{const btn=e.target.closest('[data-grade-save]');if(btn)setGrade(Number(btn.dataset.gradeSave))});
+ $('pc-admin-outcomes').addEventListener('change',e=>{const id=Number(e.target.dataset.gradeId);if(id)S.gradePreview.set(id,e.target.value||null);});
+ $('pc-votes-import').addEventListener('click',loadGradesFromExcel);
+ $('pc-votes-save').addEventListener('click',saveAllGrades);
  $('pc-admin-finalize').addEventListener('click',finalize);
  $('pc-ranking-filter').addEventListener('change',()=>renderLeaderboard(S.leaderboardRows));
  $('pc-admin-corrections').addEventListener('click',e=>{const btn=e.target.closest('[data-correction-save]');if(btn)correctResult(Number(btn.dataset.correctionSave));});
@@ -539,6 +622,7 @@ function bind(){
  });}
  if(S.admin){S.playerBookmaker=mountPlayerBookmaker({
   supabase,
+  onRosterLoaded:()=>{const r=S.rounds.find(x=>x.id===Number($('pc-admin-stage').value));if(r&&S.pcCatalogRoundId===r.id){drawCatalogue();renderAdminGuide(r);}},
   getRound:()=>S.rounds.find(x=>x.id===Number($('pc-admin-stage').value||S.rounds[0]?.id)),
   onApply:entry=>{
     const r=S.rounds.find(x=>x.id===Number($('pc-admin-stage').value));
