@@ -3,12 +3,12 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="theme-color" content="#07152b" />
+  <meta name="theme-color" content="#f2f5fa" />
   <meta name="robots" content="noindex,nofollow" />
   <title>Playoffs Challenge | Lega degli Eroi</title>
   <link rel="icon" href="icon-192.png" type="image/png" />
   <link rel="stylesheet" href="navbar.css?v=20261015" />
-  <link rel="stylesheet" href="playoffs-challenge.css?v=pc-v9-6-3-quote-sort" />
+  <link rel="stylesheet" href="playoffs-challenge.css?v=pc-v9-7-sports-light" />
 </head>
 <body class="pc-page">
 <nav class="site-nav">
@@ -420,12 +420,28 @@
       </div>
     </section>
 
-    <footer class="pc-footer">Playoffs Challenge · V9.6.1 Admin fix · Supabase · Schedine valide soltanto nei turni ufficialmente aperti</footer>
+    <footer class="pc-footer">Playoffs Challenge · V9.7 Sports Light · Supabase · Schedine valide soltanto nei turni ufficialmente aperti</footer>
   </div>
+
+  <aside id="pc-mobile-slip" class="pc-mobile-slip" aria-label="Riepilogo schedina" hidden>
+    <div id="pc-mobile-slip-sheet" class="pc-mobile-slip-sheet" hidden>
+      <h3>🎯 La tua schedina</h3>
+      <p id="pc-mobile-slip-note">Controlla le tue scelte prima di consegnare.</p>
+      <ul class="pc-mobile-slip-picks" id="pc-mobile-slip-picks"></ul>
+      <button type="button" class="pc-mobile-slip-jump" id="pc-mobile-slip-jump">Vai al riepilogo e alla consegna</button>
+    </div>
+    <button type="button" id="pc-mobile-slip-trigger" class="pc-mobile-slip-trigger" aria-controls="pc-mobile-slip-sheet" aria-expanded="false">
+      <span class="pc-mobile-slip-icon" aria-hidden="true">⚽</span>
+      <span class="pc-mobile-slip-summary"><strong>La tua schedina</strong><small id="pc-mobile-slip-subtitle">Controlla le scelte</small></span>
+      <span class="pc-mobile-slip-count" id="pc-mobile-slip-count">0/8</span>
+      <span class="pc-mobile-slip-arrow" aria-hidden="true">⌃</span>
+    </button>
+  </aside>
 </main>
 <script defer src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
 <script type="module" src="playoffs-challenge.js?v=pc-v9-4-1"></script>
 <script type="module" src="playoffs-challenge-live.js?v=pc-v9-6-3-quote-sort"></script>
+<script defer src="pc-mobile-slip.js?v=pc-v9-7-sports-light"></script>
 <script src="mobile-nav.js?v=20261007-bottom4"></script>
 <script src="navbar.js?v=20261015"></script>
 <script type="module" src="admin-nav.js?v=1"></script>

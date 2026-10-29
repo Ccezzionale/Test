@@ -439,3 +439,265 @@
 .pc-cat-sort-button:hover,.pc-cat-sort-button:focus-visible{background:#2b5e89;outline:2px solid #ffd16d;outline-offset:2px}
 .pc-cat-sort-button span{font-size:1.1rem;line-height:1;color:#ffd16d}
 .pc-cat-sort-button.pc-cat-sort-active{color:#ffe39e}
+
+
+/* ===================================================================
+   V9.7 · SPORT / MATCH CENTER · LIGHT THEME
+   Soltanto presentazione: nessuna logica bookmaker/Commissioner cambia.
+   =================================================================== */
+:root{color-scheme:light}
+.pc-page{--pc-bg:#f2f5fa;--pc-white:#fff;--pc-navy:#103765;--pc-text:#193451;--pc-muted:#62758b;--pc-line:#dce5ee;--pc-gold:#f1c869;--pc-pale:#f9fbfe;background:linear-gradient(180deg,#eaf1f9 0%,var(--pc-bg) 270px,var(--pc-bg) 100%);color:var(--pc-text);color-scheme:light}
+.pc-page .pc-shell{max-width:1235px;padding-top:22px}
+/* Header: compact, sporty blue like the Match Center. */
+.pc-page .pc-hero{background:radial-gradient(circle at 82% 4%,#315e93 0%,transparent 42%),linear-gradient(128deg,#103d7a 0%,#082b5a 82%);border:0;border-radius:21px;box-shadow:0 15px 34px #1d406120;padding:25px 31px 0;grid-template-columns:minmax(0,1.4fr) minmax(130px,.35fr)}
+.pc-page .pc-hero:after{opacity:.35}
+.pc-page .pc-hero h1{font-size:clamp(2.65rem,5.5vw,4rem);line-height:.98;margin:12px 0 12px;letter-spacing:-.05em}
+.pc-page .pc-hero-copy>p{font-size:.94rem;line-height:1.5;max-width:620px;margin-bottom:15px;color:#d9e8fa}
+.pc-page .pc-trophy>span{font-size:clamp(65px,9vw,108px);filter:drop-shadow(0 12px 16px #0004)}
+.pc-page .pc-trophy>strong{font-size:.66rem;letter-spacing:.18em}
+.pc-page .pc-hero-chips{gap:7px;margin:0 0 22px}
+.pc-page .pc-hero-chips span{font-size:.7rem;padding:6px 9px}
+.pc-page .pc-hero-rewards{margin:0 -31px;padding:14px 31px;background:#051c3c80;gap:14px}
+.pc-page .pc-hero-rewards strong{font-size:.84rem}
+.pc-page .pc-hero-rewards small{font-size:.65rem}
+/* Fixtures/status/navigation */
+.pc-page .pc-status{gap:9px;margin:16px 0}
+.pc-page .pc-status>div{background:#fff;border:1px solid var(--pc-line);box-shadow:0 3px 10px #14345b07;border-radius:12px;padding:12px 14px}
+.pc-page .pc-status small{color:var(--pc-muted);font-size:.63rem;margin-bottom:4px}
+.pc-page .pc-status strong{color:var(--pc-navy);font-size:1.05rem}
+.pc-page .pc-tabs,.pc-page .pc-tabs:has(#pc-admin-tab:not([hidden])){background:white;border:1px solid var(--pc-line);padding:6px;gap:6px;border-radius:14px;box-shadow:0 4px 14px #16395b09}
+.pc-page .pc-tabs .pc-tab{color:#5d7290;font-size:.83rem;padding:12px 9px;border-radius:9px}
+.pc-page .pc-tabs .pc-tab.active{background:var(--pc-navy);color:#fff;box-shadow:0 5px 12px #163a6330}
+.pc-page .pc-tabs .pc-tab:hover:not(.active){background:#edf3fa;color:#183f76}
+.pc-page .pc-heading{margin:20px 0 13px}
+.pc-page .pc-heading h2,.pc-page .pc-heading h3{color:var(--pc-navy)}
+.pc-page .pc-heading p{color:var(--pc-muted)}
+.pc-page .pc-heading p strong{color:var(--pc-text)}
+.pc-page .pc-kicker{color:#967127}
+.pc-page .pc-marker{min-width:60px;height:60px;background:#fff9e8;color:#a06f13;border:2px solid #e7c979}
+.pc-page .pc-panel,.pc-page .pc-game{background:#fff;border:1px solid var(--pc-line);box-shadow:0 5px 17px #16395b0a;border-radius:15px;color:var(--pc-text)}
+.pc-page .pc-notice{background:#edf4fd;color:#2f537d;border:1px solid #cbdbee}
+.pc-page .pc-notice.pc-error{background:#fff1f0;color:#993938;border-color:#e1b6b6}
+.pc-page .pc-alert{background:#fff8e7;color:#785619;border:1px solid #efdca8}
+.pc-page .pc-small-tag{background:#fff8e8;color:#966b1e;border-color:#ecd29b}
+/* Match Center-style game cards: quick and scannable. */
+.pc-page .pc-match-list{gap:12px}
+.pc-page .pc-game{padding:16px 18px}
+.pc-page .pc-game-top{color:#537298;font-size:.67rem;margin-bottom:12px}
+.pc-page .pc-provisional{color:#6e86a1;background:#f3f7fc;border-color:#d9e6f3;padding:5px 8px}
+.pc-page .pc-game-teams{margin-bottom:12px;grid-template-columns:minmax(0,1fr) 24px minmax(0,1fr);gap:6px}
+.pc-page .pc-game-teams>div>em{color:#ad8535}
+.pc-page .pc-game-teams strong{color:#183754;font-size:1rem;font-weight:850}
+.pc-page .pc-game-teams small{color:#6c849e}
+.pc-page .pc-vs{color:#a0afc1;font-size:.7rem}
+.pc-page .pc-odds{gap:7px}
+.pc-page button.pc-odd{background:#f3f6fa;border:1px solid #dce5ef;border-radius:9px;min-height:62px;color:#1c3e65;padding:7px 4px;gap:3px}
+.pc-page .pc-odd>span{color:#687f9a;font-size:.71rem}
+.pc-page .pc-odd>strong{color:#173a65;font-size:1.17rem}
+.pc-page .pc-odd>small{color:#687e97}
+.pc-page button.pc-odd.selected{background:#f8d77d;border:1px solid #d9ab40;box-shadow:0 0 0 2px #e5bd5242;color:#173a62}
+.pc-page button.pc-odd.selected>span,.pc-page button.pc-odd.selected>strong,.pc-page button.pc-odd.selected>small{color:#17335a}
+.pc-page button.pc-odd:hover{border-color:#c79b3e;background:#fff9e8}
+.pc-page .pc-game-bottom{color:#607a93;border-top-color:#e6edf6;padding-top:10px;margin-top:12px}
+.pc-page .pc-game-bottom b{color:#9a762d}
+.pc-page button.pc-hero-pick,.pc-page .pc-choice-extras button{background:#f5f8fc;color:#526f8c;border-color:#dce5ee}
+.pc-page button.pc-hero-pick.active,.pc-page .pc-choice-extras button.chosen{color:#7c5616;background:#fff2c9;border-color:#e3ba54}
+.pc-page .pc-role-grid>div{background:#f8fafd;border:1px solid var(--pc-line)}
+.pc-page .pc-role-grid b{color:#244875}
+.pc-page .pc-role-grid small{color:var(--pc-muted)}
+.pc-page .pc-submit{background:#fff}
+.pc-page .pc-submit strong{color:#1a457a}
+.pc-page .pc-submit p{color:var(--pc-muted)}
+.pc-page .pc-button.pc-primary{background:#f1c867;color:#193453;border:1px solid #e6bc57}
+.pc-page .pc-button.pc-primary:hover:not(:disabled){background:#f7d88b}
+.pc-page .pc-button.pc-ghost{background:#eff4fa;border-color:#d5e0ec;color:#21456f}
+.pc-page .pc-button.pc-ghost:hover{background:#dfeaf6}
+.pc-page .pc-feedback{color:#276c56}
+.pc-page .pc-feedback.pc-feedback-error,.pc-page .pc-feedback-error{color:#ad3b37}
+.pc-page .pc-future-ranking h3,.pc-page .pc-official-ranking h3{color:var(--pc-navy)}
+.pc-page .pc-future-ranking p,.pc-page .pc-official-ranking p{color:var(--pc-muted)}
+.pc-page .pc-future-ranking>strong{color:#9b792f}
+.pc-page .pc-table th{color:#4f6783;background:#f7f9fc;border-bottom-color:#dce5ef}
+.pc-page .pc-table td{color:#24405e;border-bottom-color:#e4ebf3}
+.pc-page .pc-table tbody tr.pc-qualified{background:#fff9eb}
+.pc-page .pc-table tbody tr.pc-promoted{background:#edf7f4}
+.pc-page .pc-table tbody tr td:first-child b{color:#bb8c2f}
+.pc-page .pc-table .pc-seed-mark{color:#59738d;border-color:#d3e1ed}
+.pc-page .pc-round-number{color:#c89c40}
+.pc-page .pc-admin-shortcut{background:#eaf2fc;border-color:#cddced}
+.pc-page .pc-admin-shortcut h3{color:var(--pc-navy)}
+.pc-page .pc-admin-shortcut p{color:var(--pc-muted)}
+.pc-page .pc-footer{color:#8495a6}
+/* Official player picker */
+.pc-page .pc-role-choice{background:#f5f8fc;color:#264c76;border:1px solid #d8e3ef;min-height:71px}
+.pc-page .pc-role-choice strong{color:#28517f}
+.pc-page .pc-role-choice small{color:#6a7f96}
+.pc-page .pc-role-choice.active,.pc-page .pc-role-choice[aria-pressed="true"]{background:#fff3d1;border-color:#dcb04f;box-shadow:0 0 0 1px #e2b84f5c}
+.pc-page .pc-picker-shell>p,.pc-page .pc-picker-info,.pc-page .pc-picker-disclaimer{color:var(--pc-muted)}
+.pc-page .pc-picker-fields label{color:#4c6681}
+.pc-page .pc-player-option{background:#fff;border:1px solid var(--pc-line)}
+.pc-page .pc-player-option.chosen{background:#fffaf0;border-color:#e1b75d}
+.pc-page .pc-player-option small{color:#9a7628}
+.pc-page .pc-player-option strong{color:#1d4169}
+.pc-page .pc-player-option span{color:var(--pc-muted)}
+.pc-page .pc-picker-chip{background:#eef5fc;border:1px solid #cedeea;color:#254469}
+.pc-page .pc-entry-summary{background:linear-gradient(130deg,#edf5ff,#fff);border-color:#d2e0ee}
+.pc-page #pc-official-count{color:#5e7894}
+.pc-page #pc-official-potential{color:#204b7e}
+.pc-page #pc-public-entry-list label{color:#355471}
+.pc-page #pc-entry-inspect-result{background:#f5f8fc;color:#25415f}
+.pc-page #pc-entry-inspect-result p{border-bottom-color:#dee6ef}
+.pc-page select,.pc-page input,.pc-page textarea{background:#fff;color:#1b3858;border:1px solid #cbd8e6;border-radius:9px}
+.pc-page input::placeholder{color:#8495a8}
+.pc-page .pc-round-toolbar label{color:#30517c}
+/* Commissioner: bright steps, predictable hierarchy and accessible contrasts. */
+.pc-page .pc-admin-intro{background:#eaf3fd;border-color:#cbddeF;color:#21446d}
+.pc-page .pc-admin-intro strong,.pc-page .pc-admin-step>header h3,.pc-page .pc-admin-controls h3{color:#1b4b7d}
+.pc-page .pc-admin-intro p,.pc-page .pc-admin-step>header p,.pc-page .pc-admin-controls p{color:#526e88}
+.pc-page .pc-admin-step,.pc-page .pc-final-step{background:#fff!important;border:1px solid #d8e4f0!important;box-shadow:0 6px 20px #1b43620a}
+.pc-page .pc-step-badge{background:#edf3fa;border-color:#d6e1ed;color:#486b8e}
+.pc-page .pc-step-badge.pc-step-done{background:#e1f5e9;border-color:#9ed8b8;color:#216444}
+.pc-page .pc-step-note{background:#f2f6fc;color:#3c5673;border-left-color:#debb64}
+.pc-page .pc-field label,.pc-page .pc-admin-step .pc-field>small,.pc-page .pc-admin-player label{color:#405c79}
+.pc-page .pc-admin-step .pc-admin-match{background:#f8fafc;border-color:#d9e4ef}
+.pc-page .pc-admin-step .pc-admin-match>b,.pc-page .pc-admin-odds label{color:#32547c}
+.pc-page .pc-admin-match [data-odds-check],.pc-page .pc-admin-match [data-odds-check].pc-feedback-error{color:#607a94!important}
+.pc-page .pc-admin-extra{background:#f8fafc;border-color:#c6d5e6}
+.pc-page .pc-admin-extra summary{color:#29527f}
+.pc-page .pc-admin-extra>p{color:#59738b}
+.pc-page .pc-sim-modes label{background:#f7faff;border-color:#d6e2ee}
+.pc-page .pc-sim-modes label:has(input:checked){background:#fff5da;border-color:#ddbb69;box-shadow:inset 0 0 0 1px #f3d88a}
+.pc-page .pc-sim-modes label span{color:#31516e}
+.pc-page .pc-sim-modes label strong{color:#224875}
+.pc-page .pc-sim-modes label small{color:#667d93}
+.pc-page .pc-quote-section-title strong{color:#204c7d}
+.pc-page .pc-quote-section-title p{color:#5a748e}
+.pc-page .pc-odds-wizard .pc-quote-section-title{border-top-color:#e2eaf3}
+.pc-page .pc-quote-confirm{background:#f2f7fc;border-color:#d8e2ed}
+.pc-page .pc-quote-confirm p{color:#47647f}
+.pc-page .pc-sim-manual-note{background:#edf5fd;color:#3c5a7a;border-left-color:#dcb456}
+.pc-page .pc-sim-manual-note strong{color:#244b79}
+.pc-page .pc-sim-number span{color:#795923}
+.pc-page .pc-catalogue-admin{background:#fff;border-color:#d7e2ed}
+.pc-page .pc-catalogue-admin h3,.pc-page .pc-catalogue-admin .pc-cat-lead{color:#254875}
+.pc-page .pc-catalogue-admin p,.pc-page .pc-catalogue-admin .pc-cat-overview{color:#567089}
+.pc-page .pc-cat-explainer span{background:#edf4fc;border-color:#d5e2f0;color:#355879}
+.pc-page .pc-cat-editorial{background:#f7f9fd;border-color:#d9e3ee}
+.pc-page .pc-cat-editorial summary,.pc-page .pc-cat-editorial label{color:#3a5875}
+.pc-page .pc-cat-controls label,.pc-page .pc-catalogue-manual label{color:#425f7c}
+.pc-page .pc-cat-table-wrap{background:#fff;border-color:#d3e0eb}
+.pc-page .pc-cat-table{color:#24415d}
+.pc-page .pc-cat-table th{background:#eaf1f9;color:#1e4675}
+.pc-page .pc-cat-table td{border-bottom-color:#e2e9f1}
+.pc-page .pc-cat-table td small,.pc-page .pc-cat-table td.pc-cat-source{color:#60758a}
+.pc-page .pc-cat-empty{color:#637f99}
+.pc-page .pc-cat-dirty{color:#94681a}
+.pc-page .pc-votes-panel{background:#f7fafc;border-color:#d9e4ee}
+.pc-page .pc-votes-panel input[type=file]{background:#fff;color:#1d4169;border-color:#cbdcec}
+.pc-page .pc-grading-row{border-bottom-color:#e1eaf2}
+.pc-page .pc-grading-row strong,.pc-page .pc-correction-row strong{color:#1f4166}
+.pc-page .pc-grading-row small,.pc-page .pc-correction-row small,.pc-page .pc-correction-row label{color:#607a93}
+.pc-page .pc-correction-history{background:#eef4fb;color:#24466c}
+.pc-page .pc-correction-history small{color:#657a90}
+.pc-page .pc-correction-row input,.pc-page .pc-correction-row select{background:#fff;color:#193c60;border-color:#cbd9e7}
+/* The advanced bookmaker and simulation are allowed to retain dark thematic subpanels
+   to preserve metric contrast, while their container remains part of a light page. */
+.pc-page .pc-player-bookmaker{background:#f4f8fd;border-color:#d5e0ec;color:#244366}
+.pc-page .pc-pb-heading p,.pc-page .pc-pb-disclaimer{color:#627991}
+.pc-page .pc-pb-data-note{color:#7b622a;background:#fff4d7}
+.pc-page .pc-pb-evidence{background:#eaf2fb;border-color:#dbe5ed;color:#254668}
+.pc-page .pc-pb-metrics>div{background:#eaf2fa}
+.pc-page .pc-pb-metrics small{color:#59718a}
+.pc-page .pc-pb-metrics strong{color:#214879}
+.pc-page .pc-player-bookmaker label{color:#385879}
+/* MOBILE: sporty compact fixtures, horizontal tabs, bottom slip above existing app navbar */
+@media(max-width:760px){
+ .pc-page .pc-shell{padding:10px 11px 158px}
+ .pc-page .pc-hero{grid-template-columns:1fr!important;padding:19px 18px 0!important;border-radius:16px!important}
+ .pc-page .pc-hero h1{font-size:2.45rem!important;line-height:.99;margin:13px 0 10px}
+ .pc-page .pc-eyebrow{font-size:.63rem}
+ .pc-page .pc-hero-copy>p{font-size:.82rem;margin:0 0 12px}
+ .pc-page .pc-hero-chips{gap:5px;margin:0 0 15px}
+ .pc-page .pc-hero-chips span{font-size:.61rem;padding:6px 7px}
+ .pc-page .pc-trophy{right:5px;top:5px;opacity:.2}
+ .pc-page .pc-hero-rewards{margin:0 -18px!important;padding:12px 18px!important;gap:12px!important}
+ .pc-page .pc-hero-rewards small{font-size:.59rem}
+ .pc-page .pc-hero-rewards strong{font-size:.7rem}
+ .pc-page .pc-status{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;margin:12px 0}
+ .pc-page .pc-status>div{padding:10px 11px;border-radius:10px}
+ .pc-page .pc-status strong{font-size:.87rem}
+ .pc-page .pc-tabs,.pc-page .pc-tabs:has(#pc-admin-tab:not([hidden])){display:flex;gap:4px;overflow-x:auto;overscroll-behavior-x:contain;scroll-snap-type:x proximity;padding:5px;scrollbar-width:none;grid-template-columns:none!important}
+ .pc-page .pc-tabs::-webkit-scrollbar{display:none}
+ .pc-page .pc-tabs .pc-tab{flex-direction:row;flex:0 0 auto;gap:5px;padding:11px 13px;white-space:nowrap;font-size:.73rem;scroll-snap-align:start}
+ .pc-page .pc-tabs .pc-tab span{overflow-wrap:normal}
+ .pc-page .pc-heading{margin:16px 0 11px;gap:8px}
+ .pc-page .pc-heading h2{font-size:1.4rem}
+ .pc-page .pc-heading h3{font-size:1.12rem}
+ .pc-page .pc-heading p{font-size:.81rem}
+ .pc-page .pc-marker{width:51px;height:51px;min-width:51px;font-size:.95rem}
+ .pc-page .pc-panel{padding:15px}
+ .pc-page .pc-match-list{grid-template-columns:1fr;gap:8px}
+ .pc-page .pc-game{padding:13px 14px;border-radius:12px}
+ .pc-page .pc-game-top{margin-bottom:9px}
+ .pc-page .pc-game-teams{margin-bottom:10px}
+ .pc-page .pc-game-teams strong{font-size:.9rem}
+ .pc-page button.pc-odd{min-height:54px;padding:6px 2px}
+ .pc-page .pc-odd>strong{font-size:1.03rem}
+ .pc-page .pc-odds{gap:6px}
+ .pc-page .pc-player-events{grid-template-columns:1fr;max-height:480px}
+ .pc-page .pc-player-option{padding:12px}
+ .pc-page .pc-role-picker{gap:7px;grid-template-columns:repeat(2,minmax(0,1fr))}
+ .pc-page .pc-role-choice{padding:10px;min-height:65px}
+ .pc-page .pc-admin-step{padding:15px!important;border-radius:13px}
+ .pc-page .pc-admin-step>header h3{font-size:1.04rem}
+ .pc-page .pc-admin-intro{padding:15px}
+ .pc-page .pc-cat-table{font-size:.72rem}
+}
+@media(max-width:390px){.pc-page .pc-hero h1{font-size:2.1rem!important}.pc-page .pc-tabs .pc-tab{padding:10px 9px}.pc-page .pc-hero-rewards{grid-template-columns:1fr}.pc-page .pc-game-teams strong{font-size:.84rem}}
+/* Mobile slip is interactive only if the visual controller loads. */
+.pc-mobile-slip{display:none}
+@media(max-width:760px){
+ .pc-page .pc-mobile-slip{display:block;position:fixed;z-index:97;left:10px;right:10px;bottom:calc(69px + env(safe-area-inset-bottom));font-family:inherit}
+ .pc-page .pc-mobile-slip-trigger{display:flex;align-items:center;gap:11px;width:100%;border:1px solid #d6ab4e;background:#fff;border-radius:14px;box-shadow:0 8px 28px #13375b30;padding:10px 11px;text-align:left;color:#173b65;cursor:pointer;min-height:59px}
+ .pc-page .pc-mobile-slip-icon{height:37px;width:37px;border-radius:11px;display:grid;place-items:center;background:#103d78;color:#f7d17b;font-size:1.24rem;flex:none}
+ .pc-page .pc-mobile-slip-summary{display:grid;gap:2px;flex:1;min-width:0}
+ .pc-page .pc-mobile-slip-summary strong{font-size:.84rem}
+ .pc-page .pc-mobile-slip-summary small{color:#688198;font-size:.7rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+ .pc-page .pc-mobile-slip-count{background:#f7df9d;color:#45361a;padding:6px 9px;font-size:.75rem;border-radius:50px;font-weight:900}
+ .pc-page .pc-mobile-slip-arrow{font-size:1.1rem;color:#7b8da1}
+ .pc-page .pc-mobile-slip-sheet{background:#fff;border:1px solid #d9e4ee;border-radius:16px;box-shadow:0 15px 30px #0d315233;margin-bottom:8px;padding:14px;max-height:min(56vh,460px);overflow:auto}
+ .pc-page .pc-mobile-slip-sheet h3{color:#173f70;font-size:1.02rem;margin:0 0 5px}
+ .pc-page .pc-mobile-slip-sheet p{color:#657d95;font-size:.78rem;line-height:1.4;margin:6px 0 11px}
+ .pc-page .pc-mobile-slip-picks{margin:0 0 11px;padding:0;list-style:none;display:grid;gap:7px}
+ .pc-page .pc-mobile-slip-picks li{background:#f5f8fc;border:1px solid #e2eaf3;border-radius:9px;padding:9px 10px;display:flex;justify-content:space-between;gap:7px;font-size:.79rem;color:#23446c}
+ .pc-page .pc-mobile-slip-picks strong{flex:none;color:#946f23}
+ .pc-page .pc-mobile-slip-jump{background:#f1c867;border:0;border-radius:9px;color:#1b3b63;padding:11px 14px;width:100%;font-weight:900;font-size:.84rem;cursor:pointer}
+}
+@media(min-width:761px){.pc-page .pc-mobile-slip{display:none!important}}
+/* Light-state polish for previously hardcoded advanced controls. */
+.pc-page .pc-cat-sort-help{color:#5c758d}
+.pc-page .pc-cat-sort-button{color:#254b75}
+.pc-page .pc-cat-sort-button:hover,.pc-page .pc-cat-sort-button:focus-visible{background:#e0edfa;outline-color:#e4bd61}
+.pc-page .pc-cat-sort-button span{color:#987224}
+.pc-page .pc-cat-sort-button.pc-cat-sort-active{color:#a06f15}
+.pc-page .pc-cat-check{color:#3e6182}
+.pc-page .pc-simulator .pc-sim-top h3{color:#ffdb8e}
+.pc-page .pc-simulator .pc-sim-top p,.pc-page .pc-simulator .pc-sim-footer p{color:#cbdff4}
+.pc-page .pc-simulator .pc-sim-results strong,.pc-page .pc-simulator .pc-sim-fixture-title strong{color:#f7e6bc}
+.pc-page .pc-simulator .pc-sim-modes label strong{color:#244875}
+.pc-page .pc-simulator .pc-sim-modes label span{color:#31516e}
+.pc-page .pc-simulator .pc-sim-modes label small{color:#667d93}
+.pc-page .pc-simulator .pc-sim-number span{color:#e6c77b}
+.pc-page .pc-sim-result-head strong,.pc-page .pc-sim-result-head span{color:#f4deb0}
+.pc-page .pc-player-bookmaker .pc-pb-heading h3{color:#204b7e}
+.pc-page .pc-backtest-lab{background:#edf4fb;border-color:#d3e3ef;color:#234469}
+.pc-page .pc-backtest-lab h3,.pc-page .pc-backtest-lab p,.pc-page .pc-backtest-lab label{color:#345678}
+.pc-page .pc-bt-metric{background:#fff;border-color:#d8e3ef}
+.pc-page .pc-bt-metric small{color:#597891}
+.pc-page .pc-bt-metric strong{color:#214878}
+.pc-page .pc-bt-table th{background:#e2ecf7;color:#24517b}
+.pc-page .pc-bt-table td{color:#345777;border-bottom-color:#dfe8f1}
+.pc-page .pc-bt-feedback{background:#f5f9fd;color:#355773}
+.pc-page .pc-bt-note{color:#647e97}
+.pc-page #pc-bt-details details{background:#fff;border-color:#d4e2ef}
+.pc-page #pc-bt-details summary{color:#305a82}
