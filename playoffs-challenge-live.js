@@ -46,7 +46,7 @@ function renderOfficial(){const available=published();const current=S.active&&S.
  $('pc-official-state').textContent=current.status==='finalized'?'🏆 Omologato':editable?'🟢 Schedina aperta':'🔒 Schedina chiusa';
  $('pc-official-save').disabled=!editable||!S.teamId;
  $('pc-official-clear').disabled=!editable;
- $('pc-preliminary-message').innerHTML=`<strong>Palinsesto ufficiale ${esc(stageData(current.stage)[1])}.</strong> ${current.status==='finalized'?'Turno omologato.':`Scadenza: ${new Date(current.closes_at).toLocaleString('it-IT')}. ${editable?'Puoi aggiornare la schedina fino alla chiusura.':'Niente ulteriori modifiche.'}`}`;
+ $('pc-preliminary-message').innerHTML=current.status==='finalized'?'<strong>🏆 Turno omologato.</strong> Risultati ufficiali disponibili.':`<strong>⏳ Consegna entro ${new Date(current.closes_at).toLocaleString('it-IT')}.</strong> ${editable?'Puoi modificare le tue scelte fino alla chiusura.':'La scadenza è passata: schedina non più modificabile.'}`;
  $('pc-official-matches').innerHTML=match.map(ev=>{
   const selected=S.picks.get(Number(ev.id));const choices=['1','X','2'].map(x=>`<button class="pc-odd ${selected===x?'selected':''}" type="button" data-official-pick="${ev.id}" data-sign="${x}" ${editable?'':'disabled'} aria-pressed="${selected===x}"><span>${x}</span><strong>${fmt(quoteOf(ev,x))}</strong></button>`).join('');
   return `<article class="pc-game"><div class="pc-game-top"><span>PARTITA ${ev.slot}</span><span class="pc-provisional">QUOTE UFFICIALI</span></div><div class="pc-game-teams"><div><strong>${esc(ev.home_name)}</strong></div><span class="pc-vs">VS</span><div><strong>${esc(ev.away_name)}</strong></div></div><div class="pc-odds">${choices}</div>${heroControls(ev,editable)}</article>`

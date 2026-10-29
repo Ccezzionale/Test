@@ -701,3 +701,144 @@
 .pc-page .pc-bt-note{color:#647e97}
 .pc-page #pc-bt-details details{background:#fff;border-color:#d4e2ef}
 .pc-page #pc-bt-details summary{color:#305a82}
+
+
+/* =============================================================
+   V9.8 · MOBILE PREMIUM · LEGA DEGLI EROI
+   Presentation only. Selection, Commissioner, data and scores intact.
+   ============================================================= */
+.pc-page {
+  --pc-bg:#f8f6f0;
+  --pc-white:#fffefa;
+  --pc-pale:#faf7f0;
+  --pc-line:#e7dfd1;
+  --pc-navy:#123a69;
+  --pc-text:#19324e;
+  --pc-muted:#6e7984;
+  --pc-gold:#eac36f;
+  background:radial-gradient(830px 460px at 100% -100px,#f2e6d0 0%,transparent 76%),
+             linear-gradient(180deg,#f5f5f1 0%,#faf8f4 62%,#f7f4ef 100%);
+}
+.pc-page .pc-panel:not(.pc-simulator), .pc-page .pc-game {
+  border-color:#e9e2d7;
+  box-shadow:0 6px 26px rgba(24,47,72,.052);
+}
+.pc-page .pc-tabs {border-color:#e9e0d3;box-shadow:0 7px 19px rgba(18,41,75,.06)}
+.pc-page .pc-tabs .pc-tab.active {background:linear-gradient(132deg,#174b84,#10335f);color:#fff;box-shadow:0 5px 15px #173b7025}
+.pc-page .pc-alert {background:linear-gradient(120deg,#fffaf0,#fff6e4);border:1px solid #eed9a8;color:#785821}
+.pc-page .pc-game {border-radius:18px;background:linear-gradient(145deg,#fff,#fffdf8)}
+.pc-page button.pc-odd {transition:transform .12s ease,box-shadow .12s ease,background .12s ease,border-color .12s ease}
+.pc-page button.pc-odd.selected {background:linear-gradient(160deg,#f6d991,#edc05f);border-color:#cba04c;box-shadow:0 2px 0 #b38535,0 6px 16px #bd963b22}
+.pc-page button.pc-odd:active {transform:scale(.97)}
+.pc-page .pc-player-option {background:linear-gradient(145deg,#fff,#fffdf9);border-color:#e9e1d7}
+.pc-page .pc-player-option.chosen {background:linear-gradient(125deg,#fffaf0,#fff5e1);border-color:#d9b364}
+.pc-page .pc-picker-chip {background:#fffbf3;border-color:#ead9b4}
+.pc-page .pc-role-choice {background:#fffdf8;border-color:#e7dfd2}
+.pc-page .pc-role-choice.active {background:#fff2d5;border-color:#d5aa4e}
+.pc-page .pc-player-option small {color:#ac812f}
+.pc-page .pc-provisional {background:#f9f6ee;color:#947a51;border-color:#ede0ca}
+.pc-page .pc-round-toolbar {border-color:#e9e1d5}
+
+@media(max-width:760px) {
+  /* Premium mobile canvas, readable and spacious without dead air. */
+  .pc-page .pc-shell {padding:9px 10px calc(210px + env(safe-area-inset-bottom))}
+  .pc-page .pc-hero {border-radius:17px!important;padding:17px 17px 0!important;box-shadow:0 9px 23px #162e5122}
+  .pc-page .pc-hero h1 {font-size:2.18rem!important;margin:10px 0 8px;line-height:1.02}
+  .pc-page .pc-hero-copy>p {font-size:.75rem;line-height:1.4;margin-bottom:10px}
+  .pc-page .pc-hero-chips {gap:5px;margin-bottom:12px}
+  .pc-page .pc-hero-chips span {padding:5px 7px;font-size:.61rem}
+  .pc-page .pc-hero-rewards {margin:0 -17px!important;padding:9px 17px!important;gap:8px!important}
+  .pc-page .pc-hero-rewards small {font-size:.54rem}
+  .pc-page .pc-hero-rewards strong {font-size:.66rem;line-height:1.2}
+  .pc-page .pc-status {display:none}
+  .pc-page .pc-tabs,.pc-page .pc-tabs:has(#pc-admin-tab:not([hidden])) {margin:12px 0 12px;background:#fffefa;border-radius:13px;padding:5px;gap:3px}
+  .pc-page .pc-tabs .pc-tab {padding:9px 12px;font-size:.73rem;border-radius:9px}
+
+  /* Remove technical boilerplate above live coupon; keep deadline and turn choice. */
+  .pc-page #pc-tab-schedina>.pc-heading {margin:12px 1px 8px;gap:9px}
+  .pc-page #pc-tab-schedina>.pc-heading .pc-kicker {display:none}
+  .pc-page #pc-tab-schedina>.pc-heading h2 {font-size:1.36rem;line-height:1.22;margin:0;font-weight:900;letter-spacing:-.03em}
+  .pc-page #pc-tab-schedina>.pc-heading p {font-size:.76rem;line-height:1.42;margin:4px 0 0}
+  .pc-page #pc-tab-schedina:has(#pc-official:not([hidden]))>.pc-heading p {display:none}
+  .pc-page #pc-tab-schedina>.pc-heading .pc-marker {min-width:48px;width:48px;height:36px;border-radius:25px;font-size:.79rem;border:1px solid #e3c781;background:#fff7df}
+  .pc-page #pc-tab-schedina>.pc-alert {padding:10px 12px;border-radius:11px;font-size:.77rem;line-height:1.45;margin:8px 0 12px;box-shadow:none}
+  .pc-page #pc-tab-schedina:has(#pc-official:not([hidden])) .pc-round-toolbar.pc-panel {
+    display:flex;flex-direction:row;align-items:center;justify-content:space-between;gap:8px;
+    background:transparent;border:0;box-shadow:none;padding:0 2px;margin:0 0 13px;
+  }
+  .pc-page .pc-round-toolbar .pc-kicker {display:none}
+  .pc-page .pc-round-toolbar label {margin:0 0 3px;color:#80652e;font-size:.67rem}
+  .pc-page .pc-round-toolbar select {min-height:35px;height:35px;max-width:175px;padding:5px 27px 5px 10px;font-size:.82rem;border-radius:9px;background:#fffdfa;border-color:#e0d2b7}
+  .pc-page .pc-round-toolbar #pc-official-state {padding:6px 9px;font-size:.69rem;border-radius:22px;white-space:normal;text-align:right}
+
+  /* Match list: compact luxury segmented odds, as in chosen concept C. */
+  .pc-page .pc-match-list {gap:9px}
+  .pc-page .pc-game {border-radius:16px;padding:12px 12px 11px;box-shadow:0 5px 17px #18324f0b;position:relative;overflow:hidden}
+  .pc-page .pc-game:before {content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:linear-gradient(#efc968,#d3a34a);opacity:.65}
+  .pc-page .pc-game-top {margin-bottom:8px;letter-spacing:.11em;font-size:.61rem;color:#9d7736}
+  .pc-page .pc-game-top .pc-provisional {font-size:.59rem;padding:3px 7px;letter-spacing:.025em}
+  .pc-page .pc-game-teams {grid-template-columns:minmax(0,1fr) 18px minmax(0,1fr);margin-bottom:9px;gap:5px;align-items:center}
+  .pc-page .pc-game-teams strong {font-size:.83rem;line-height:1.21;letter-spacing:-.015em;color:#153859}
+  .pc-page .pc-vs {font-size:.57rem;color:#b49a6e;letter-spacing:.02em}
+  .pc-page .pc-odds {gap:6px}
+  .pc-page button.pc-odd {min-height:39px;height:40px;padding:5px 3px;gap:5px;border-radius:9px;flex-direction:row;background:#f9f6ef;border-color:#e9e2d7}
+  .pc-page .pc-odd>span {font-size:.76rem;font-weight:850;color:#847454}
+  .pc-page .pc-odd>strong {font-size:.95rem;font-weight:950;color:#153b67}
+  .pc-page button.pc-odd.selected>span,.pc-page button.pc-odd.selected>strong {color:#193854}
+  .pc-page .pc-choice-extras {margin-top:7px;gap:6px}
+  .pc-page .pc-choice-extras button {padding:5px 8px;border-radius:8px;font-size:.64rem;background:#fffcf5;border-color:#eadfce;color:#8d7254;min-height:28px}
+  .pc-page .pc-game-bottom {margin-top:8px;padding-top:7px;font-size:.68rem}
+  .pc-page .pc-heading {margin:15px 2px 9px;gap:7px}
+  .pc-page .pc-heading h3 {font-size:1.01rem;letter-spacing:-.015em}
+  .pc-page #pc-official>.pc-heading.compact p,.pc-page #pc-official>.pc-heading:not(.compact) p {display:none}
+
+  /* Player selector: compact role tabs and one-row mini odds cards. */
+  .pc-page .pc-picker-shell {background:transparent;border:0;box-shadow:none;padding:0;margin:7px 0 12px}
+  .pc-page .pc-picker-shell>p {display:none}
+  .pc-page .pc-role-picker {grid-template-columns:repeat(4,minmax(0,1fr));gap:5px;margin:7px 0 9px}
+  .pc-page .pc-role-choice {min-height:48px;border-radius:10px;padding:7px 5px;text-align:center;justify-items:center;gap:3px}
+  .pc-page .pc-role-choice strong {font-size:.72rem;letter-spacing:-.02em}
+  .pc-page .pc-role-choice small {font-size:.59rem;line-height:1.1}
+  .pc-page .pc-picker-shell .pc-picker-fields {grid-template-columns:minmax(0,1fr) minmax(105px,.72fr);gap:7px;margin:8px 0}
+  .pc-page .pc-picker-fields label {font-size:.66rem;color:#8b714f;gap:4px}
+  .pc-page .pc-picker-fields input,.pc-page .pc-picker-fields select {min-height:37px;height:39px;padding:7px 10px;background:#fffefa;border-color:#e5dccd;font-size:.79rem}
+  .pc-page .pc-picker-info {font-size:.68rem;line-height:1.34;margin:8px 0}
+  .pc-page .pc-picker-selected {margin:7px 0;gap:5px}
+  .pc-page .pc-picker-chip {padding:7px 9px;border-radius:10px;font-size:.72rem;gap:5px}
+  .pc-page .pc-picker-chip .pc-button {padding:6px 8px;font-size:.69rem}
+  .pc-page #pc-official-players {max-height:450px;overflow-y:auto;gap:7px;padding:1px 2px 6px;scrollbar-color:#d8c8a7 #f9f6ef;scrollbar-width:thin}
+  .pc-page #pc-official-players .pc-player-option {display:grid;grid-template-columns:minmax(0,1fr) minmax(107px,auto);gap:4px 9px;align-items:center;padding:10px 10px 9px;border-radius:12px;box-shadow:0 2px 10px #153b6710}
+  .pc-page #pc-official-players .pc-player-option>div:first-child {display:grid;gap:2px;min-width:0}
+  .pc-page #pc-official-players .pc-player-option small {font-size:.64rem;line-height:1.1}
+  .pc-page #pc-official-players .pc-player-option strong {font-size:.87rem;line-height:1.2;color:#163653}
+  .pc-page #pc-official-players .pc-player-option span {font-size:.7rem;color:#866f53;line-height:1.3}
+  .pc-page #pc-official-players .pc-player-option>.pc-button {min-width:106px;max-width:124px;padding:8px 7px;font-size:.72rem;min-height:37px;border-radius:10px;justify-self:end;line-height:1.15;white-space:normal;box-shadow:none}
+  .pc-page #pc-official-players .pc-player-option:not(.chosen)>.pc-button.pc-ghost {background:#fff8e6;border-color:#e8d2a6;color:#7d5920}
+  .pc-page #pc-official-players .pc-player-option.chosen>.pc-button {background:linear-gradient(135deg,#f4d48a,#edbc5c);color:#183c5e}
+  .pc-page #pc-official-players .pc-player-option .pc-choice-extras {grid-column:1/-1;margin-top:3px;gap:5px}
+  .pc-page #pc-official-players .pc-player-option:not(.chosen) .pc-choice-extras {display:none}
+  .pc-page .pc-entry-summary {background:linear-gradient(120deg,#fffaf0,#fffefa);border-color:#e9ddc8}
+  .pc-page #pc-official-count,.pc-page #pc-official-potential {color:#234866}
+
+  /* Floating summary lifted clearly above the app's existing mobile navbar. */
+  .pc-page .pc-mobile-slip {left:14px;right:14px;bottom:calc(114px + env(safe-area-inset-bottom));z-index:97;filter:drop-shadow(0 9px 18px #0f2f4a25)}
+  .pc-page .pc-mobile-slip-trigger {background:linear-gradient(105deg,rgba(255,255,255,.98),rgba(255,249,235,.98));border:1px solid #e0bc70;border-radius:17px;min-height:53px;padding:7px 10px;box-shadow:0 4px 16px #29405e1b}
+  .pc-page .pc-mobile-slip-icon {width:34px;height:34px;border-radius:10px;background:#143b70;color:#f8d17b;font-size:1.06rem}
+  .pc-page .pc-mobile-slip-summary strong {font-size:.79rem;color:#163a64}
+  .pc-page .pc-mobile-slip-summary small {font-size:.65rem;color:#7d827e}
+  .pc-page .pc-mobile-slip-count {background:#f5db9c;color:#614514;border:1px solid #e9c87a;padding:5px 9px;font-size:.7rem}
+  .pc-page .pc-mobile-slip-sheet {background:#fffdfa;border:1px solid #e6d5b7;border-radius:16px;margin-bottom:10px;max-height:min(47vh,390px);box-shadow:0 15px 40px #17375233}
+  .pc-page .pc-mobile-slip-picks li {background:#fdf9ef;border-color:#e9dfc9;color:#214669}
+  .pc-page .pc-mobile-slip-jump {background:linear-gradient(120deg,#f4d48d,#e9b55a);color:#14365e}
+  .pc-page .pc-footer {font-size:.65rem;color:#8c8479}
+}
+@media(max-width:375px){
+  .pc-page .pc-game-teams strong {font-size:.78rem}
+  .pc-page .pc-odd>strong {font-size:.88rem}
+  .pc-page #pc-official-players .pc-player-option {grid-template-columns:minmax(0,1fr) 101px;gap:5px}
+  .pc-page #pc-official-players .pc-player-option>.pc-button {min-width:98px;max-width:106px;font-size:.68rem}
+  .pc-page .pc-mobile-slip {left:10px;right:10px}
+}
+@media(prefers-reduced-motion:reduce){
+  .pc-page button.pc-odd {transition:none}
+}
