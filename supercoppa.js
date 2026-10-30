@@ -210,17 +210,24 @@ async function saveState() {
   }
 
   function getWinnerFromTeams(matchKey, teamA, teamB) {
-    // Un risultato non qualifica un segnaposto o due volte la stessa squadra.
-    if (!teamA || !teamB || teamA.isPlaceholder || teamB.isPlaceholder || teamA.name === teamB.name) return null;
+    // Una squadra non puo' giocare contro se stessa.
+    if (!teamA || !teamB || teamA.name === teamB.name) return null;
     var rawA = scoreValue(matchKey, 0);
     var rawB = scoreValue(matchKey, 1);
     if (rawA === "" || rawB === "") return null;
 
     var a = Number(rawA);
     var b = Number(rawB);
-    if (Number.isNaN(a) || Number.isNaN(b)) return null;
+    if (!Number.isFinite(a) || !Number.isFinite(b) || a < 0 || b < 0) return null;
     if (a === b) return "tie";
-    return a > b ? teamA : teamB;
+
+    var winner = a > b ? teamA : teamB;
+    var loser = a > b ? teamB : teamA;
+    // Nel solo play-in e' valido un vincitore gia' noto anche se il
+    // rappresentante avversario non e' stato ancora selezionato nell'admin.
+    // Le semifinali e la finale richiedono invece due squadre definite.
+    if (winner.isPlaceholder || (loser.isPlaceholder && matchKey !== "playin")) return null;
+    return winner;
   }
 
   function getPlayinTeams() {
