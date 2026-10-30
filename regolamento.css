@@ -946,3 +946,56 @@ td {
     padding-bottom: calc(128px + env(safe-area-inset-bottom));
   }
 }
+
+/* ============================================================
+   REGOLAMENTO - NAVBAR MOBILE 2026-10-30 (fix v2)
+   La barra alta ora ha il bottone/titolo previsto da navbar.js.
+   Alziamo la bottom nav per non tagliarla sugli smartphone.
+   Nessun effetto su desktop o altre pagine.
+   ============================================================ */
+@media (max-width: 900px) {
+  body.regolamento-page nav.site-nav .mobile-nav-title {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    min-width: 0 !important;
+    cursor: pointer;
+  }
+
+  body.regolamento-page nav.site-nav .nav-left {
+    min-width: 0 !important;
+  }
+
+  body.regolamento-page .mobile-bottom-nav {
+    position: fixed !important;
+    top: auto !important;
+    bottom: calc(26px + env(safe-area-inset-bottom, 0px)) !important;
+    left: 12px !important;
+    right: 12px !important;
+    z-index: 1400 !important;
+    box-sizing: border-box !important;
+    height: 76px !important;
+    transform: none !important;
+    overflow: visible !important;
+  }
+
+  body.regolamento-page .mobile-bottom-nav .mobile-bottom-link {
+    box-sizing: border-box !important;
+    height: 60px !important;
+  }
+
+  body.regolamento-page > .wrapper {
+    padding-bottom: calc(155px + env(safe-area-inset-bottom, 0px)) !important;
+  }
+}
+
+@media (max-width: 390px) {
+  body.regolamento-page .mobile-bottom-nav {
+    left: 8px !important;
+    right: 8px !important;
+    height: 72px !important;
+  }
+  body.regolamento-page .mobile-bottom-nav .mobile-bottom-link {
+    height: 58px !important;
+  }
+}
