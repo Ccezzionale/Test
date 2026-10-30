@@ -10,7 +10,7 @@ import { supabase } from "./supabase.js";
 window.__allstarModuleStarted = true;
 
 const SEASON = 2027;
-const ALLSTAR_CLIENT_VERSION = "20261027-coach-diagnostics-v1";
+const ALLSTAR_CLIENT_VERSION = "20261030-allstar-chibi-final-v2";
 // Questa identificazione raggruppa solo gli eventi di una singola apertura pagina.
 const diagnosticPageInstance = typeof crypto !== "undefined" && typeof crypto.randomUUID === "function"
   ? crypto.randomUUID()
@@ -25,6 +25,32 @@ let allstarInitialLoadOk = true;
 const TOTAL_PLAYERS = 46;
 const PLAYERS_PER_TEAM = 23;
 const AUTO_PICK_COUNT = 10;
+
+
+const ALLSTAR_MASCOT_ASSETS = {
+  generic: "assets/allstar-mascots/generic.webp",
+  malen: "assets/allstar-mascots/malen.webp",
+  lautaro: "assets/allstar-mascots/lautaro.webp",
+  mctominay: "assets/allstar-mascots/mctominay.webp",
+  calhanoglu: "assets/allstar-mascots/calhanoglu.webp",
+  nicopaz: "assets/allstar-mascots/nicopaz.webp",
+  debruyne: "assets/allstar-mascots/debruyne.webp",
+  raimondo: "assets/allstar-mascots/raimondo.webp",
+  rabiot: "assets/allstar-mascots/rabiot.webp?v=allstar-final-v2",
+  dimarco: "assets/allstar-mascots/dimarco.webp?v=allstar-final-v2"
+};
+
+const ALLSTAR_PLAYER_MASCOTS = [
+  { tokens: ["malen"], asset: ALLSTAR_MASCOT_ASSETS.malen, title: "Malen" },
+  { tokens: ["lautaro", "martinez l", "martinez"], asset: ALLSTAR_MASCOT_ASSETS.lautaro, title: "Lautaro Martinez" },
+  { tokens: ["mctominay"], asset: ALLSTAR_MASCOT_ASSETS.mctominay, title: "McTominay" },
+  { tokens: ["calhanoglu", "çalhanoğlu"], asset: ALLSTAR_MASCOT_ASSETS.calhanoglu, title: "Calhanoglu" },
+  { tokens: ["nico paz", "paz n", "paz"], asset: ALLSTAR_MASCOT_ASSETS.nicopaz, title: "Nico Paz" },
+  { tokens: ["de bruyne", "debruyne"], asset: ALLSTAR_MASCOT_ASSETS.debruyne, title: "De Bruyne" },
+  { tokens: ["raimondo"], asset: ALLSTAR_MASCOT_ASSETS.raimondo, title: "Raimondo" },
+  { tokens: ["rabiot"], asset: ALLSTAR_MASCOT_ASSETS.rabiot, title: "Rabiot" },
+  { tokens: ["dimarco", "di marco"], asset: ALLSTAR_MASCOT_ASSETS.dimarco, title: "Dimarco" }
+];
 const ALLSTAR_TIME_ZONE = "Europe/Brussels";
 const DAY_MS = 24 * 60 * 60 * 1000;
 const WEEK_MS = 7 * DAY_MS;
@@ -195,6 +221,74 @@ function logAllstarDiagnostic(eventName, level = "info", error = null) {
   } catch (_) { /* mai bloccare il caricamento */ }
 }
 
+
+function getMascotEntryForPlayer(player) {
+  if (!player?.name) return null;
+  const key = normalizeTextKey(player.name).replace(/[.]/g, "").trim();
+  const club = normalizeTextKey(player.serieATeam);
+
+  // Distinguiamo i nomi abbreviati del listone: Martinez L. e Paz N.
+  // Evita di assegnare il personaggio a un omonimo della stessa Serie A.
+  if ((key === "martinez l" || key === "lautaro martinez" || key === "martinez lautaro" || key === "lautaro") && club === "inter") {
+    return ALLSTAR_PLAYER_MASCOTS.find((entry) => entry.title === "Lautaro Martinez");
+  }
+  if ((key === "paz n" || key === "nico paz" || key === "paz nico") && club === "como") {
+    return ALLSTAR_PLAYER_MASCOTS.find((entry) => entry.title === "Nico Paz");
+  }
+
+  const simpleKeys = [
+    ["malen", "Malen"], ["mctominay", "McTominay"],
+    ["calhanoglu", "Calhanoglu"], ["de bruyne", "De Bruyne"],
+    ["debruyne", "De Bruyne"], ["raimondo", "Raimondo"],
+    ["rabiot", "Rabiot"], ["dimarco", "Dimarco"],
+    ["di marco", "Dimarco"]
+  ];
+  const hit = simpleKeys.find(([token]) => key === token || key.startsWith(token + " ") || key.endsWith(" " + token));
+  return hit ? ALLSTAR_PLAYER_MASCOTS.find((entry) => entry.title === hit[1]) : null;
+}
+
+function getMascotAssetForPlayer(player) {
+  return getMascotEntryForPlayer(player)?.asset || ALLSTAR_MASCOT_ASSETS.generic;
+}
+
+function getMascotTitleForPlayer(player) {
+  return getMascotEntryForPlayer(player)?.title || player?.name || "Eroe All-Star";
+}
+
+function getPlayerInitials(player) {
+  const name = String(player?.name || "Eroe").trim();
+  const parts = name.split(/\s+/).filter(Boolean);
+  return (parts[0]?.[0] || "E") + (parts[1]?.[0] || "");
+}
+
+function renderMascotAvatar(player, extraClass = "") {
+  const src = getMascotAssetForPlayer(player);
+  const title = getMascotTitleForPlayer(player);
+  return `<span class="allstar-avatar ${extraClass}"><img src="${escapeAttr(src)}" alt="${escapeAttr(title)}" loading="lazy"><span class="allstar-avatar-glow"></span></span>`;
+}
+
+function updateVoteSlotHero(targetId) {
+  const root = document.querySelector(`[data-vote-hero="${targetId}"]`);
+  const input = document.getElementById(targetId);
+  if (!root || !input) return;
+  const media = root.querySelector('.vote-slot-hero-media');
+  const copy = root.querySelector('.vote-slot-hero-copy');
+  const player = players.find((item) => String(item.id) === String(input.value));
+  if (!player) {
+    root.classList.remove('is-selected');
+    if (media) media.innerHTML = '<span class="vote-slot-hero-empty">★</span>';
+    if (copy) copy.innerHTML = '<strong>Nessun eroe selezionato</strong><small>Seleziona un giocatore per vedere la sua mascotte All-Star.</small>';
+    return;
+  }
+  root.classList.add('is-selected');
+  if (media) media.innerHTML = `<img src="${escapeAttr(getMascotAssetForPlayer(player))}" alt="${escapeAttr(getMascotTitleForPlayer(player))}" loading="lazy">`;
+  if (copy) copy.innerHTML = `<strong>${escapeHtml(player.name)}</strong><small>${escapeHtml(player.role)} · ${escapeHtml(player.serieATeam)} · Q. ${escapeHtml(player.quotation ?? '-')}</small>`;
+}
+
+function updateAllVoteSlotHeroes() {
+  VOTE_SLOT_CONFIG.forEach((config) => updateVoteSlotHero(config.inputId));
+}
+
 function getViewingTeam() {
   return simulatedTeamId ? (teamsById.get(simulatedTeamId) || null) : currentTeam;
 }
@@ -211,6 +305,7 @@ init();
 async function init() {
   bindEvents();
   setupVotePickers();
+  updateAllVoteSlotHeroes();
   setLoadingUI();
   logAllstarDiagnostic("page_open");
 
@@ -852,6 +947,7 @@ function setupVotePickers() {
       if (hidden?.value) {
         hidden.value = "";
         picker?.classList.remove("is-selected");
+  updateVoteSlotHero(targetId);
       }
 
       renderVotePickerResults(targetId, input.value);
@@ -946,6 +1042,7 @@ function selectVotePlayer(targetId, playerId, focusNext = false) {
   hidden.value = player.id;
   input.value = player.name;
   picker?.classList.add("is-selected");
+  updateVoteSlotHero(targetId);
   if (metaEl) metaEl.textContent = `${player.role} · ${player.serieATeam} · Q. ${player.quotation ?? "-"}`;
   if (resultsEl) {
     resultsEl.innerHTML = "";
@@ -972,6 +1069,7 @@ function clearVotePicker(targetId, focusInput = false) {
   if (hidden) hidden.value = "";
   if (input) input.value = "";
   picker?.classList.remove("is-selected");
+  updateVoteSlotHero(targetId);
   if (metaEl) metaEl.textContent = "Scrivi almeno 2 lettere: nome, ruolo o squadra Serie A.";
   if (resultsEl) {
     resultsEl.innerHTML = "";
@@ -989,6 +1087,7 @@ function closeAllVotePickerResults() {
 
 function hydrateVotePickersFromSavedVotes() {
   VOTE_SLOT_CONFIG.forEach((config) => clearVotePicker(config.inputId));
+  updateAllVoteSlotHeroes();
   if (!getViewingTeam()?.id) return;
 
   const slotToInput = new Map(VOTE_SLOT_CONFIG.map((config) => [config.slot, config.inputId]));
@@ -998,6 +1097,7 @@ function hydrateVotePickersFromSavedVotes() {
       const inputId = slotToInput.get(vote.slot);
       if (inputId && vote.playerId) selectVotePlayer(inputId, vote.playerId, false);
     });
+  updateAllVoteSlotHeroes();
 }
 
 async function handleVoteSubmit(event) {
@@ -1217,8 +1317,9 @@ function renderMobileVoteTop5() {
     const calls = callsByPlayer.get(entry.playerId) || 0;
 
     return `
-      <div class="mobile-live-top5-row">
+      <div class="mobile-live-top5-row is-rich">
         <span class="mobile-live-top5-pos">${index + 1}</span>
+        ${renderMascotAvatar(entry.player, "mobile")}
         <span class="mobile-live-top5-player">
           <strong>${escapeHtml(entry.player.name)}</strong>
           <small>${escapeHtml(entry.player.role)} · ${escapeHtml(entry.player.serieATeam)} · ${calls} ${calls === 1 ? "chiamata" : "chiamate"}</small>
@@ -1267,8 +1368,9 @@ function renderConferenceRanking(container, totals, conference) {
   container.innerHTML = top.map((entry, index) => {
     const pos = index + 1;
     return `
-      <div class="ranking-row auto-zone">
+      <div class="ranking-row auto-zone is-rich">
         <span class="ranking-pos">${pos}</span>
+        ${renderMascotAvatar(entry.player)}
         <span class="ranking-player">
           <strong>${escapeHtml(entry.player.name)}</strong>
           <small>${escapeHtml(entry.player.role)} · ${escapeHtml(entry.player.serieATeam)} · ${escapeHtml(entry.player.originTeam)} · Q. ${escapeHtml(entry.player.quotation)}</small>

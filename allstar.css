@@ -5996,3 +5996,142 @@ body {
     -webkit-text-fill-color: #14264a !important;
   }
 }
+
+
+/* === All-Star mascots restyle 2026-10-30 === */
+.allstar-avatar {
+  position: relative;
+  width: 58px;
+  height: 58px;
+  min-width: 58px;
+  border-radius: 18px;
+  overflow: hidden;
+  background: radial-gradient(circle at 30% 20%, rgba(42,116,255,.45), rgba(4,12,36,.95));
+  border: 1px solid rgba(112,168,255,.35);
+  box-shadow: 0 10px 26px rgba(0,0,0,.35), inset 0 0 18px rgba(64,156,255,.28);
+}
+.allstar-avatar.mobile { width: 52px; height: 52px; min-width: 52px; border-radius: 16px; }
+.allstar-avatar img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.allstar-avatar-glow {
+  position: absolute; inset: auto 0 0 0; height: 40%;
+  background: linear-gradient(180deg, transparent, rgba(10,18,44,.92));
+  pointer-events: none;
+}
+.ranking-row.is-rich,
+.mobile-live-top5-row.is-rich {
+  display: grid !important;
+  grid-template-columns: 44px 58px minmax(0,1fr) auto auto;
+  align-items: center;
+  gap: 12px;
+}
+.mobile-live-top5-row.is-rich { grid-template-columns: 36px 52px minmax(0,1fr) auto; }
+.ranking-row.is-rich .ranking-player,
+.mobile-live-top5-row.is-rich .mobile-live-top5-player { min-width: 0; }
+.ranking-row.is-rich .ranking-player strong,
+.mobile-live-top5-row.is-rich .mobile-live-top5-player strong { display:block; font-size: 1.02rem; }
+.ranking-row.is-rich .ranking-player small,
+.mobile-live-top5-row.is-rich .mobile-live-top5-player small {
+  display:block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.vote-slot-hero {
+  margin: 10px 0 14px;
+  display: grid;
+  grid-template-columns: 92px minmax(0,1fr);
+  gap: 12px;
+  align-items: center;
+  padding: 10px 12px;
+  border-radius: 18px;
+  background: linear-gradient(135deg, rgba(8,17,42,.9), rgba(12,28,64,.78));
+  border: 1px solid rgba(94,156,255,.18);
+  box-shadow: inset 0 0 18px rgba(45,121,255,.12);
+}
+.vote-slot-hero-media {
+  width: 92px; height: 92px; border-radius: 22px; overflow: hidden;
+  background: radial-gradient(circle at 30% 20%, rgba(42,116,255,.35), rgba(4,12,36,.95));
+  border: 1px solid rgba(112,168,255,.32);
+  display:flex; align-items:center; justify-content:center;
+}
+.vote-slot-hero-media img { width:100%; height:100%; object-fit:cover; display:block; }
+.vote-slot-hero-copy { min-width:0; }
+.vote-slot-hero-copy strong { display:block; font-size:1rem; color:#f7fbff; }
+.vote-slot-hero-copy small { display:block; margin-top:4px; color:#aebfdd !important; line-height:1.35; }
+.vote-slot-hero-empty { font-size:2rem; color:#ffd86a; text-shadow:0 0 16px rgba(255,203,74,.45); }
+.vote-slot-hero.is-selected {
+  border-color: rgba(255,208,88,.26);
+  box-shadow: 0 16px 34px rgba(0,0,0,.28), inset 0 0 22px rgba(255,196,64,.08);
+}
+.vote-slot {
+  background: linear-gradient(180deg, rgba(12,22,48,.92), rgba(9,18,38,.82)) !important;
+  border: 1px solid rgba(82,130,230,.14) !important;
+  border-radius: 22px !important;
+  padding: 14px 14px 16px !important;
+}
+.vote-slot strong { color:#fff !important; letter-spacing:.02em; }
+.vote-slot-copy small { color:#a4b5d1 !important; }
+.vote-player-searchbox {
+  border-radius: 16px !important;
+  background: rgba(255,255,255,.03) !important;
+  border: 1px solid rgba(113,146,220,.18) !important;
+}
+.vote-player-input { font-weight: 700; }
+.mobile-vote-live-board,
+.vote-card.vote-form-card,
+.ranking-card,
+.broadcast-status-card,
+.draft-info-strip .info-card {
+  background: linear-gradient(180deg, rgba(8,18,43,.96), rgba(5,11,28,.92)) !important;
+  border: 1px solid rgba(73,129,241,.18) !important;
+  box-shadow: 0 18px 40px rgba(2,8,20,.32), inset 0 0 26px rgba(41,107,236,.08);
+}
+.mobile-live-top5-row,
+.ranking-row {
+  border-radius: 18px !important;
+  background: linear-gradient(135deg, rgba(11,22,51,.9), rgba(9,18,39,.72)) !important;
+  border: 1px solid rgba(84,137,236,.12) !important;
+}
+.ranking-card h4,
+.vote-card h3,
+.mobile-live-board-head strong { letter-spacing: .02em; }
+.section-head.compact h3 { font-size: 1.9rem; text-transform: uppercase; }
+.vote-week-pill {
+  background: linear-gradient(135deg, #ffd159, #ffb31a) !important;
+  color: #251300 !important;
+  border: none !important;
+  box-shadow: 0 10px 26px rgba(255,196,70,.24);
+}
+@media (max-width: 860px) {
+  .ranking-row.is-rich { grid-template-columns: 36px 52px minmax(0,1fr) auto; }
+  .ranking-row.is-rich .auto-badge { display: none !important; }
+  .vote-slot-hero { grid-template-columns: 82px minmax(0,1fr); }
+  .vote-slot-hero-media { width: 82px; height: 82px; border-radius: 20px; }
+  .broadcast-main-grid { gap: 14px !important; }
+}
+@media (max-width: 640px) {
+  .mobile-vote-live-board,
+  .vote-card.vote-form-card,
+  .ranking-card { border-radius: 22px !important; }
+  .section-head.compact h3 { font-size: 1.65rem; }
+  .vote-card.vote-form-card { padding: 14px !important; }
+  .vote-slot { padding: 12px !important; border-radius: 20px !important; }
+  .vote-slot-hero { grid-template-columns: 72px minmax(0,1fr); gap: 10px; padding: 10px; }
+  .vote-slot-hero-media { width: 72px; height: 72px; border-radius: 18px; }
+  .vote-slot-hero-copy strong { font-size: .98rem; }
+  .ranking-row.is-rich { grid-template-columns: 32px 48px minmax(0,1fr) auto; gap: 10px; }
+  .mobile-live-top5-row.is-rich { grid-template-columns: 30px 48px minmax(0,1fr) auto; gap: 10px; }
+  .allstar-avatar { width: 48px; height: 48px; min-width: 48px; border-radius: 15px; }
+  .allstar-avatar.mobile { width: 48px; height: 48px; min-width: 48px; }
+  .ranking-row.is-rich .ranking-player strong,
+  .mobile-live-top5-row.is-rich .mobile-live-top5-player strong { font-size: .98rem; }
+}
+
+
+/* FIX layout responsive per cards mascotte: hero + campo voto a larghezza piena */
+@media (max-width: 860px) {
+  .vote-slot-hero, .vote-player-picker { grid-column: 1 / -1; min-width: 0; }
+  .vote-slot-hero { margin: 0; }
+  .vote-player-picker { margin-top: 0; }
+}
+@media (min-width: 861px) {
+  .vote-slot-hero { grid-column: 3; grid-row: 1; }
+  .vote-player-picker { grid-column: 1 / -1; }
+}
