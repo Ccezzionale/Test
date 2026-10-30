@@ -6362,3 +6362,45 @@ body {
   }
   .broadcast-vote-center .vote-feedback { color: #83ecb3 !important; }
 }
+
+
+/* === ALL STAR | FIX CONTRASTO RISULTATI RICERCA GIOCATORI | 2026-10-30 ===
+   I nomi erano bianchi su bianco: la ricerca funzionava, ma sembrava vuota.
+   Questo intervento non cambia logica di selezione o invio voti. */
+.vote-card.vote-form-card .vote-player-results {
+  background: #f7faff !important;
+  border: 1px solid #b8c9e4 !important;
+  box-shadow: 0 12px 30px rgba(2, 15, 42, .22) !important;
+}
+.vote-card.vote-form-card .vote-player-results .vote-player-result {
+  color: #122647 !important;
+  background: #ffffff !important;
+  border: 1px solid #e0e8f5 !important;
+}
+.vote-card.vote-form-card .vote-player-results .vote-player-result strong {
+  color: #122647 !important;
+  -webkit-text-fill-color: #122647 !important;
+  opacity: 1 !important;
+  font-weight: 900 !important;
+}
+.vote-card.vote-form-card .vote-player-results .vote-player-result small {
+  color: #526986 !important;
+  -webkit-text-fill-color: #526986 !important;
+  opacity: 1 !important;
+}
+.vote-card.vote-form-card .vote-player-results .vote-player-result em {
+  color: #2659a7 !important;
+  -webkit-text-fill-color: #2659a7 !important;
+  opacity: 1 !important;
+}
+.vote-card.vote-form-card .vote-player-results .vote-player-result:hover,
+.vote-card.vote-form-card .vote-player-results .vote-player-result:focus-visible {
+  background: #e6f0ff !important;
+  border-color: #87b5fa !important;
+  outline: 2px solid #4789ea;
+  outline-offset: -2px;
+}
+.vote-card.vote-form-card .vote-player-results .vote-player-no-results {
+  color: #526986 !important;
+  -webkit-text-fill-color: #526986 !important;
+}
