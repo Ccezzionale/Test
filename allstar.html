@@ -21,7 +21,7 @@
   <meta name="apple-mobile-web-app-title" content="Lega Eroi">
 
   <link rel="stylesheet" href="navbar.css" />
-  <link rel="stylesheet" href="allstar.css?v=allstar-top10-20261030-v5" />
+  <link rel="stylesheet" href="allstar.css?v=allstar-desktop-weekly-20261030-v1" />
 
   <script>
     // Evita una Week 1 fittizia se la PWA non carica proprio il modulo JS.
@@ -36,7 +36,7 @@
       }
     }, 15000);
   </script>
-  <script type="module" src="allstar.js?v=allstar-top10-20261030-v5" defer></script>
+  <script type="module" src="allstar.js?v=allstar-desktop-weekly-20261030-v1" defer></script>
 <meta name="lega-app-build" content="v20261028-ef9f76dc3f25">
 <script defer src="./app-updates.js?bootstrap=v20261028-ef9f76dc3f25" data-eroi-update="1"></script>
 </head>
@@ -232,7 +232,7 @@
     </div>
   </nav>
 
-  <main class="allstar-page broadcast-page">
+  <main class="allstar-page broadcast-page" data-desktop-tab="vote">
     <section id="allstarCoachPreviewBar" hidden style="margin:14px auto;max-width:1140px;padding:14px 18px;background:#112b49;border:1px solid #709dd5;border-radius:12px;color:#e6f2ff;position:relative;z-index:30;">
       <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:center;justify-content:space-between;">
         <div><strong>🧪 Modalità test · Anteprima allenatore</strong><div style="font-size:13px;opacity:.85;">Stai visualizzando: <strong id="allstarCoachPreviewName"></strong>. Nessun voto o modifica admin può essere inviato.</div></div>
@@ -283,6 +283,21 @@
         </aside>
       </div>
     </section>
+
+    <!-- ALL-STAR DESKTOP: arena con sezioni e stato live -->
+    <nav class="desktop-allstar-tabs" aria-label="Sezioni All Star desktop">
+      <div class="desktop-as-nav-actions">
+        <button type="button" class="desktop-as-tab is-active" data-desktop-allstar-tab="vote" aria-pressed="true"><span aria-hidden="true">★</span> Vota</button>
+        <button type="button" class="desktop-as-tab" data-desktop-allstar-tab="draft" aria-pressed="false"><span aria-hidden="true">◎</span> Draft</button>
+        <button type="button" class="desktop-as-tab" data-desktop-allstar-tab="pool" aria-pressed="false"><span aria-hidden="true">◈</span> Pool</button>
+        <button type="button" class="desktop-as-tab desktop-as-admin-tab" data-desktop-allstar-tab="admin" aria-pressed="false" hidden><span aria-hidden="true">⚙</span> Admin</button>
+      </div>
+      <div class="desktop-as-live-status" aria-live="polite">
+        <div class="desktop-as-status-week"><span class="desktop-as-live-pulse"></span><small>SETTIMANA ATTIVA</small><strong id="desktopAllstarWeek">...</strong></div>
+        <div class="desktop-as-status-count"><small>LA TUA VOTAZIONE</small><strong id="desktopAllstarVoteStatus">Caricamento...</strong></div>
+        <div class="desktop-as-status-deadline"><small id="desktopAllstarCountdownLabel">Chiusura voti</small><strong id="desktopAllstarCountdown">--</strong></div>
+      </div>
+    </nav>
 
     <!-- MOBILE TABS -->
     <nav class="mobile-allstar-tabs" aria-label="Navigazione All Star Game">
@@ -476,6 +491,36 @@
         <p class="ranking-subtitle">Voti espressi dalle squadre della Conference League</p>
         <div id="leagueVoteRankingList" class="ranking-list"></div>
       </article>
+    </section>
+
+    <!-- ALL-STAR DESKTOP: storico settimanale, punti della singola week -->
+    <section class="desktop-weekly-leaders" id="desktopWeeklyLeaders" aria-labelledby="desktopWeeklyTitle">
+      <div class="desktop-weekly-head">
+        <div class="desktop-weekly-heading">
+          <span class="desktop-weekly-heading-icon" aria-hidden="true">★</span>
+          <div>
+            <small>ALL-STAR ARCHIVE · VOTI DELLA SINGOLA SETTIMANA</small>
+            <h2 id="desktopWeeklyTitle">Weekly Leaders</h2>
+            <p>Le cinque stelle più votate in ogni Conference, settimana per settimana.</p>
+          </div>
+        </div>
+        <div class="desktop-weekly-controls" aria-label="Seleziona settimana dello storico">
+          <button type="button" id="desktopWeekPrevious" aria-label="Settimana precedente">‹</button>
+          <label for="desktopWeekSelect">WEEK</label>
+          <select id="desktopWeekSelect" aria-label="Settimana da visualizzare"><option value="">Caricamento...</option></select>
+          <button type="button" id="desktopWeekNext" aria-label="Settimana successiva">›</button>
+        </div>
+      </div>
+      <div class="desktop-weekly-grid">
+        <article class="desktop-weekly-conference league" aria-label="Top cinque settimanale Conference League">
+          <div class="desktop-weekly-conf-head"><span class="desktop-weekly-conf-crest">CL</span><div><small>TEAM RED</small><h3>Conference League</h3></div><span class="desktop-weekly-conf-week" data-weekly-week>Week</span></div>
+          <div id="desktopWeeklyLeague" class="desktop-weekly-list" aria-live="polite"><p class="desktop-weekly-empty">Caricamento dei voti...</p></div>
+        </article>
+        <article class="desktop-weekly-conference championship" aria-label="Top cinque settimanale Conference Championship">
+          <div class="desktop-weekly-conf-head"><span class="desktop-weekly-conf-crest">CC</span><div><small>TEAM BLUE</small><h3>Conference Championship</h3></div><span class="desktop-weekly-conf-week" data-weekly-week>Week</span></div>
+          <div id="desktopWeeklyChampionship" class="desktop-weekly-list" aria-live="polite"><p class="desktop-weekly-empty">Caricamento dei voti...</p></div>
+        </article>
+      </div>
     </section>
 
     <!-- RANKINGS MOBILE / TAB FALLBACK -->

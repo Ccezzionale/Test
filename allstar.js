@@ -10,7 +10,7 @@ import { supabase } from "./supabase.js";
 window.__allstarModuleStarted = true;
 
 const SEASON = 2027;
-const ALLSTAR_CLIENT_VERSION = "20261030-top10-mascots-v5";
+const ALLSTAR_CLIENT_VERSION = "20261030-desktop-weekly-v1";
 // Questa identificazione raggruppa solo gli eventi di una singola apertura pagina.
 const diagnosticPageInstance = typeof crypto !== "undefined" && typeof crypto.randomUUID === "function"
   ? crypto.randomUUID()
@@ -81,6 +81,9 @@ let allstarReadyToVote = false;
 let picks = [];
 let votes = [];
 let mobileLiveConference = CONFERENCE_LEAGUE;
+let desktopActiveTab = "vote";
+let desktopWeeklySelectedWeek = null;
+
 // Memorizza l'espansione separatamente per League e Championship, anche durante i refresh live.
 const expandedVoteRankings = new Set();
 
@@ -182,7 +185,17 @@ const els = {
   diagnosticsTeamFilter: document.getElementById("allstarDiagTeamFilter"),
   diagnosticsRefresh: document.getElementById("allstarDiagRefresh"),
   diagnosticsStatus: document.getElementById("allstarDiagStatus"),
-  diagnosticsRows: document.getElementById("allstarDiagRows")
+  diagnosticsRows: document.getElementById("allstarDiagRows"),
+  desktopAllstarWeek: document.getElementById("desktopAllstarWeek"),
+  desktopAllstarVoteStatus: document.getElementById("desktopAllstarVoteStatus"),
+  desktopAllstarCountdownLabel: document.getElementById("desktopAllstarCountdownLabel"),
+  desktopAllstarCountdown: document.getElementById("desktopAllstarCountdown"),
+  desktopWeeklyLeaders: document.getElementById("desktopWeeklyLeaders"),
+  desktopWeekPrevious: document.getElementById("desktopWeekPrevious"),
+  desktopWeekSelect: document.getElementById("desktopWeekSelect"),
+  desktopWeekNext: document.getElementById("desktopWeekNext"),
+  desktopWeeklyLeague: document.getElementById("desktopWeeklyLeague"),
+  desktopWeeklyChampionship: document.getElementById("desktopWeeklyChampionship")
 };
 
 // Non tracciare mai password, token, URL completi o messaggi di errore grezzi.
@@ -307,6 +320,7 @@ init();
 async function init() {
   bindEvents();
   setupVotePickers();
+  setupDesktopAllstarTabs();
   updateAllVoteSlotHeroes();
   setLoadingUI();
   logAllstarDiagnostic("page_open");
@@ -429,6 +443,7 @@ function renderPublicAllstarStatus() {
   setText(els.mobileLiveTop5Week, `Week ${state.activeWeek}`);
   renderMobileLiveSummary();
   updateVoteCountdown();
+  updateDesktopAllstarStatus();
 }
 
 function startAllstarStateRefresh() {
@@ -626,13 +641,22 @@ async function loadPlayers() {
 }
 
 async function loadVotes() {
-  const { data, error } = await supabase
-    .from("allstar_votes")
-    .select("id, season, week, voter_team_id, voter_conference, player_id, points, slot, created_at, updated_at")
-    .eq("season", SEASON);
-
-  if (error) throw error;
-  votes = (data || []).map(normalizeVote);
+  // Supabase restituisce massimo 1000 record per richiesta per default.
+  // Per lo storico completo della stagione carichiamo pagine da 1000 con ordine stabile.
+  const pageSize = 1000;
+  const allRows = [];
+  for (let offset = 0; offset < 50000; offset += pageSize) {
+    const { data, error } = await supabase
+      .from("allstar_votes")
+      .select("id, season, week, voter_team_id, voter_conference, player_id, points, slot, created_at, updated_at")
+      .eq("season", SEASON)
+      .order("id", { ascending: true })
+      .range(offset, offset + pageSize - 1);
+    if (error) throw error;
+    allRows.push(...(data || []));
+    if ((data || []).length < pageSize) break;
+  }
+  votes = allRows.map(normalizeVote);
 }
 
 async function loadPicks() {
@@ -816,6 +840,12 @@ function setupUserControls() {
 
   const adminMobileTab = document.querySelector('[data-allstar-tab="admin"]');
   if (adminMobileTab) adminMobileTab.style.display = isAdmin && !simulatedTeamId ? "" : "none";
+
+  const desktopAdminTab = document.querySelector('[data-desktop-allstar-tab="admin"]');
+  if (desktopAdminTab) desktopAdminTab.hidden = !(isAdmin && !simulatedTeamId);
+  if (desktopActiveTab === "admin" && !(isAdmin && !simulatedTeamId)) {
+    activateDesktopAllstarTab("vote");
+  }
 
   const mobileTabs = document.querySelector(".mobile-allstar-tabs");
   mobileTabs?.classList.toggle("has-admin", isAdmin && !simulatedTeamId);
@@ -1289,6 +1319,8 @@ function renderVotesArea() {
   renderConferenceRanking(els.leagueVoteRankingList, leagueTotals, CONFERENCE_LEAGUE);
   renderConferenceRanking(els.champVoteRankingList, champTotals, CONFERENCE_CHAMPIONSHIP);
   renderAutoPickPreview(leagueTotals, champTotals);
+  renderDesktopWeeklyLeaders();
+  updateDesktopAllstarStatus();
 }
 
 // Dal 6° al 10°: solamente posizione, nome e punti, niente mascotte.
@@ -1315,6 +1347,108 @@ function renderAllstarRankingExtras(ranking, conference) {
       <span>${expanded ? "Mostra meno" : "Mostra altro"}</span>
       <small>${expanded ? "▴" : `6°–${finalPosition}° ▾`}</small>
     </button>`;
+}
+
+// DESKTOP ARENA: navigazione, stato della votazione e archivio Weekly Leaders.
+// Le classifiche principali rimangono cumulative; qui sommiamo SOLO i voti della Week selezionata.
+function setupDesktopAllstarTabs() {
+  document.querySelectorAll("[data-desktop-allstar-tab]").forEach((button) => {
+    button.addEventListener("click", () => activateDesktopAllstarTab(button.dataset.desktopAllstarTab));
+  });
+  els.desktopWeekPrevious?.addEventListener("click", () => selectDesktopWeeklyWeek((desktopWeeklySelectedWeek ?? state.activeWeek) - 1));
+  els.desktopWeekNext?.addEventListener("click", () => selectDesktopWeeklyWeek((desktopWeeklySelectedWeek ?? state.activeWeek) + 1));
+  els.desktopWeekSelect?.addEventListener("change", () => selectDesktopWeeklyWeek(Number(els.desktopWeekSelect.value)));
+}
+
+function activateDesktopAllstarTab(tab) {
+  if (!["vote", "draft", "pool", "admin"].includes(tab)) return;
+  if (tab === "admin" && !(isAdmin && !simulatedTeamId)) return;
+  desktopActiveTab = tab;
+  const page = document.querySelector(".allstar-page");
+  if (page) page.dataset.desktopTab = tab;
+  document.querySelectorAll("[data-desktop-allstar-tab]").forEach((button) => {
+    const active = button.dataset.desktopAllstarTab === tab;
+    button.classList.toggle("is-active", active);
+    button.setAttribute("aria-pressed", String(active));
+  });
+}
+
+function updateDesktopAllstarStatus() {
+  setText(els.desktopAllstarWeek, stateLoaded ? `Week ${state.activeWeek}` : "Caricamento...");
+  const team = getViewingTeam();
+  if (!stateLoaded) {
+    setText(els.desktopAllstarVoteStatus, "Sincronizzazione...");
+    return;
+  }
+  if (!team?.id) {
+    setText(els.desktopAllstarVoteStatus, state.votingOpen ? "Votazioni aperte" : "Votazioni chiuse");
+    return;
+  }
+  const count = new Set(votes.filter((vote) => vote.week === state.activeWeek && vote.voterTeamId === team.id).map((vote) => vote.slot)).size;
+  setText(els.desktopAllstarVoteStatus, state.votingOpen ? `${count}/5 voti ${count === 5 ? "✓" : ""}` : "Votazioni chiuse");
+}
+
+function getWeeklyArchiveLastWeek() {
+  return Math.max(1, stateLoaded ? state.activeWeek : 1,
+    ...votes.map((vote) => Number(vote.week)).filter((num) => Number.isInteger(num) && num >= 1 && num <= 53));
+}
+
+function selectDesktopWeeklyWeek(value) {
+  const maxWeek = getWeeklyArchiveLastWeek();
+  if (!Number.isInteger(value) || value < 1 || value > maxWeek) return;
+  desktopWeeklySelectedWeek = value;
+  renderDesktopWeeklyLeaders();
+}
+
+function getWeeklyVoteLeaders(conference, week) {
+  const byPlayer = new Map();
+  votes.filter((vote) => vote.voterConference === conference && Number(vote.week) === week)
+    .forEach((vote) => {
+      const player = vote.player || getPlayerForStoredId(vote.playerId);
+      if (!player) return;
+      const key = getCanonicalPlayerId(vote.playerId) || vote.playerId;
+      if (!byPlayer.has(key)) byPlayer.set(key, { player, points: 0, calls: 0 });
+      const row = byPlayer.get(key);
+      row.points += Number(vote.points || 0);
+      row.calls += 1;
+    });
+  return [...byPlayer.values()]
+    .sort((a, b) => b.points - a.points || a.player.name.localeCompare(b.player.name, "it"))
+    .slice(0, 5);
+}
+
+function renderDesktopWeeklyLeaders() {
+  if (!els.desktopWeeklyLeaders || !stateLoaded) return;
+  const maxWeek = getWeeklyArchiveLastWeek();
+  // Al primo caricamento mostriamo la week attuale; la scelta manuale resta stabile.
+  if (desktopWeeklySelectedWeek === null || desktopWeeklySelectedWeek > maxWeek) desktopWeeklySelectedWeek = Math.min(state.activeWeek, maxWeek);
+  const week = desktopWeeklySelectedWeek;
+  if (els.desktopWeekSelect) {
+    const options = [...els.desktopWeekSelect.options];
+    if (options.length !== maxWeek || options[0]?.value !== "1") {
+      els.desktopWeekSelect.innerHTML = Array.from({ length: maxWeek }, (_, i) => `<option value="${i + 1}">Week ${i + 1}</option>`).join("");
+    }
+    els.desktopWeekSelect.value = String(week);
+  }
+  if (els.desktopWeekPrevious) els.desktopWeekPrevious.disabled = week <= 1;
+  if (els.desktopWeekNext) els.desktopWeekNext.disabled = week >= maxWeek;
+  document.querySelectorAll("[data-weekly-week]").forEach((el) => { el.textContent = `Week ${week}`; });
+
+  const weeklyHTML = (conference) => {
+    const ranking = getWeeklyVoteLeaders(conference, week);
+    if (!ranking.length) return `<div class="desktop-weekly-empty">Nessun voto registrato nella Week ${week}.</div>`;
+    return ranking.map((entry, index) => `
+      <div class="desktop-weekly-row ${index === 0 ? "is-mvp" : ""}">
+        <span class="desktop-weekly-rank">${index === 0 ? "★" : index + 1}</span>
+        <div class="desktop-weekly-player">
+          <strong>${escapeHtml(entry.player.name)}</strong>
+          <small>${escapeHtml(entry.player.role)} · ${escapeHtml(entry.player.serieATeam)} · ${entry.calls} ${entry.calls === 1 ? "chiamata" : "chiamate"}</small>
+        </div>
+        <strong class="desktop-weekly-points">${entry.points} <small>pt</small></strong>
+      </div>`).join("");
+  };
+  if (els.desktopWeeklyLeague) els.desktopWeeklyLeague.innerHTML = weeklyHTML(CONFERENCE_LEAGUE);
+  if (els.desktopWeeklyChampionship) els.desktopWeeklyChampionship.innerHTML = weeklyHTML(CONFERENCE_CHAMPIONSHIP);
 }
 
 function renderMobileVoteTop5() {
@@ -2250,16 +2384,22 @@ function getCurrentWeekDeadline(now = new Date()) {
 
 function updateVoteCountdown() {
   if (!els.voteCountdownValue) return;
+  const finishDesktopCountdown = () => {
+    setText(els.desktopAllstarCountdownLabel, els.voteCountdownLabel?.textContent || "Stato votazioni");
+    setText(els.desktopAllstarCountdown, els.voteCountdownValue?.textContent || "--");
+  };
 
   if (!state.votingStartedAt) {
     setText(els.voteCountdownLabel, "Votazioni non iniziate");
     setText(els.voteCountdownValue, "--");
+    finishDesktopCountdown();
     return;
   }
 
   if (state.votingClosedAt || !state.votingOpen) {
     setText(els.voteCountdownLabel, "Votazioni chiuse");
     setText(els.voteCountdownValue, "--");
+    finishDesktopCountdown();
     return;
   }
 
@@ -2278,6 +2418,7 @@ function updateVoteCountdown() {
     els.voteCountdownValue,
     `${String(days).padStart(2, "0")}g ${String(hours).padStart(2, "0")}h ${String(minutes).padStart(2, "0")}m ${String(seconds).padStart(2, "0")}s`
   );
+  finishDesktopCountdown();
 }
 
 function canVoteNow() {
