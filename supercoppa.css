@@ -634,3 +634,79 @@ body>*{position:relative}
   .draw-item span:not(.mini-logo) {font-size:.61rem;}
   .bracket-stage .match-card {padding:18px 9px 6px;}
 }
+
+/* ==============================================================
+   SUPERCOPPA ARENA V4 - LUCE NELL'ARENA (SOLO DESKTOP)
+   Fa emergere lo sfondo mantenendo contrasto e leggibilità.
+   Mobile deliberatamente invariato rispetto alla V3.
+   ============================================================== */
+@media (min-width: 1161px) {
+  body {
+    background: #0a223b;
+  }
+  /* L'arena rimane uno sfondo fotografico, separato dai pannelli:
+     in questo modo non viene scurita dai precedenti gradienti. */
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    background: url('img/supercoppa-arena.webp') center 90px / cover no-repeat;
+    opacity: 1;
+    filter: brightness(1.46) saturate(1.20) contrast(1.04);
+  }
+  body::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    background:
+      radial-gradient(ellipse 70% 45% at 50% 58%, rgba(32,81,125,.17), transparent 83%),
+      linear-gradient(180deg, rgba(2,12,26,.10), rgba(5,18,35,.10) 65%, rgba(4,16,31,.21));
+  }
+  body > * {position:relative; z-index:1;}
+  .supercup-main::before {
+    background: linear-gradient(180deg, rgba(5,20,40,.16), rgba(4,19,39,.24));
+    border-color: rgba(235,189,93,.34);
+    box-shadow: 0 22px 66px rgba(0,0,0,.15);
+  }
+  .participants-stage {
+    background: linear-gradient(110deg, rgba(8,35,62,.74), rgba(9,34,59,.68));
+    backdrop-filter: blur(7px) saturate(1.2);
+    box-shadow: 0 13px 30px rgba(0,0,0,.20), inset 0 1px 0 rgba(255,231,175,.12);
+  }
+  .journey-stage {
+    background: linear-gradient(145deg, rgba(10,40,68,.79), rgba(6,25,48,.75));
+    border-color: rgba(231,187,106,.75);
+    backdrop-filter: blur(8px) saturate(1.15);
+    box-shadow: 0 15px 32px rgba(0,0,0,.22), inset 0 1px 0 rgba(255,235,190,.11);
+  }
+  .journey-stage[data-phase="active"] {
+    background: linear-gradient(145deg, rgba(16,51,78,.83), rgba(7,30,53,.78));
+  }
+  .journey-stage[data-phase="complete"] {
+    background: linear-gradient(145deg, rgba(18,53,77,.85), rgba(8,31,51,.78));
+  }
+  .journey-stage[data-phase="waiting"] {
+    border-color: rgba(209,166,91,.63);
+  }
+  .match-card {
+    background: linear-gradient(145deg, rgba(9,37,65,.90), rgba(7,28,51,.86));
+    box-shadow: inset 0 1px 0 rgba(255,231,175,.07), 0 8px 23px rgba(0,0,0,.15);
+  }
+  .draw-item {
+    background: linear-gradient(120deg, rgba(20,57,85,.89), rgba(13,42,73,.85));
+    border-color: rgba(225,184,106,.44);
+  }
+  .final-card {
+    background: radial-gradient(ellipse at 50% 0%, rgba(80,108,118,.22), transparent 70%),
+      linear-gradient(150deg, rgba(11,44,72,.86), rgba(8,29,53,.88));
+  }
+  .champion-card {
+    background:
+      radial-gradient(ellipse at 50% 48%, rgba(216,159,68,.22), transparent 72%),
+      linear-gradient(155deg, rgba(18,48,72,.9), rgba(8,30,52,.88));
+  }
+}
