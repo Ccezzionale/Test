@@ -939,3 +939,10 @@ td {
  .reg-nuovo-articolo h4 {font-size: .96rem;}
  .reg-nuovo-articolo p, .reg-nuovo-articolo li {font-size: .9rem;}
 }
+
+/* Spazio di sicurezza per la bottom navbar su Regolamento (solo mobile) */
+@media (max-width: 900px) {
+  body > .wrapper {
+    padding-bottom: calc(128px + env(safe-area-inset-bottom));
+  }
+}
