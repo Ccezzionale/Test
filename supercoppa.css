@@ -551,3 +551,86 @@ body>*{position:relative}
  .bracket-stage .match-card {padding:21px 8px 8px;}
  .final-card {padding:16px 14px;}
 }
+
+/* ===============================================================
+   ARENA EDITION V3 — desktop leggibile, compatto e bilanciato.
+   La logica della Supercoppa e il pannello admin restano invariati.
+   =============================================================== */
+@media (min-width:1161px) {
+  .supercup-journey {gap:14px 15px;}
+  .journey-stage {padding:14px 16px 13px;}
+  .playin-stage, .draw-stage, .bracket-stage {min-height:320px;}
+  .final-stage, .champion-stage {min-height:284px;}
+  .stage-title {margin-bottom:10px;padding-bottom:8px;}
+  .stage-inner {gap:8px;}
+  /* Nota vicino al contenuto, non abbandonata in fondo alla colonna. */
+  .stage-footnote, .draw-status {
+    margin:7px 0 0;
+    padding:7px 4px 0;
+    font-size:.77rem;
+    letter-spacing:0;
+  }
+  .playin-stage .stage-inner,
+  .draw-stage .stage-inner,
+  .bracket-stage .stage-inner {justify-content:center;}
+  .playin-stage .match-card {padding:12px 12px 10px;}
+  .playin-stage .match-row {min-height:70px;}
+  .playin-stage .match-note {font-size:.76rem;margin-top:5px;padding-top:8px;}
+  .playin-stage .stage-footnote {color:#f3d997;}
+
+  /* Urna a sinistra e quattro contendenti a destra: meno altezza, più presenza. */
+  .draw-board {
+    display:grid;
+    grid-template-columns:minmax(115px, .85fr) minmax(0,1.35fr);
+    grid-template-rows:auto auto;
+    column-gap:12px;
+    row-gap:7px;
+    align-items:center;
+  }
+  .draw-bowl {
+    grid-column:1;
+    grid-row:1 / 3;
+    height:210px;
+    min-height:0;
+  }
+  .draw-bowl::before {bottom:16px;}
+  .sorteggio-img {width:min(100%,195px);height:190px;}
+  #draw-left {grid-column:2;grid-row:1;}
+  #draw-right {grid-column:2;grid-row:2;}
+  .draw-column {display:flex;flex-direction:column;gap:7px;}
+  .draw-item {min-height:47px;padding:7px 8px;gap:8px;}
+  .draw-item .mini-logo {width:33px;height:33px;}
+  .draw-item strong {font-size:clamp(.7rem,.81vw,.88rem);line-height:1.2;}
+  .draw-item span:not(.mini-logo) {font-size:clamp(.6rem,.68vw,.72rem);line-height:1.22;}
+  .draw-status {margin-top:4px;}
+
+  /* Semifinali contenute, senza sacrificare dimensioni dei loghi. */
+  .semis-grid {gap:10px;flex:0 0 auto;}
+  .bracket-stage .match-card {padding:18px 14px 8px;}
+  .bracket-stage .match-row {min-height:48px;}
+  .bracket-stage .vs-line {margin:1px 0;font-size:.84rem;}
+  .bracket-stage .logo-wrap {width:40px;height:40px;}
+  .bracket-stage .score-box {height:40px;}
+  .bracket-stage .team-copy strong {font-size:clamp(.82rem,.90vw,.95rem);}
+  .bracket-stage .team-copy span {font-size:clamp(.66rem,.74vw,.77rem);}
+
+  /* La grande finale e il trono devono respirare, ma non essere enormi. */
+  .final-card {min-height:178px;}
+  .final-crown {font-size:2rem;margin:0 0 3px;}
+  .final-contender .logo-wrap {width:70px;height:70px;}
+  .champion-card {min-height:208px;}
+  .champion-content {min-height:92px;}
+  .champion-laurel {font-size:3.2rem;color:#edbc63;line-height:1;}
+  .champion-placeholder .champion-shield {width:76px;height:83px;font-size:2.4rem;}
+}
+@media (min-width:1161px) and (max-width:1390px) {
+  .journey-stage {padding:12px 10px;}
+  .draw-board {grid-template-columns:105px minmax(0,1fr);column-gap:6px;}
+  .draw-bowl {height:192px;}
+  .sorteggio-img {width:120px;height:165px;}
+  .draw-item {padding:6px 5px;gap:5px;}
+  .draw-item .mini-logo {width:27px;height:27px;}
+  .draw-item strong {font-size:.72rem;}
+  .draw-item span:not(.mini-logo) {font-size:.61rem;}
+  .bracket-stage .match-card {padding:18px 9px 6px;}
+}
