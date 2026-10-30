@@ -10,7 +10,7 @@ import { supabase } from "./supabase.js";
 window.__allstarModuleStarted = true;
 
 const SEASON = 2027;
-const ALLSTAR_CLIENT_VERSION = "20261030-allstar-chibi-final-v2";
+const ALLSTAR_CLIENT_VERSION = "20261030-allstar-chibi-fix-v3";
 // Questa identificazione raggruppa solo gli eventi di una singola apertura pagina.
 const diagnosticPageInstance = typeof crypto !== "undefined" && typeof crypto.randomUUID === "function"
   ? crypto.randomUUID()
@@ -28,16 +28,16 @@ const AUTO_PICK_COUNT = 10;
 
 
 const ALLSTAR_MASCOT_ASSETS = {
-  generic: "assets/allstar-mascots/generic.webp",
-  malen: "assets/allstar-mascots/malen.webp",
-  lautaro: "assets/allstar-mascots/lautaro.webp",
-  mctominay: "assets/allstar-mascots/mctominay.webp",
-  calhanoglu: "assets/allstar-mascots/calhanoglu.webp",
-  nicopaz: "assets/allstar-mascots/nicopaz.webp",
-  debruyne: "assets/allstar-mascots/debruyne.webp",
-  raimondo: "assets/allstar-mascots/raimondo.webp",
-  rabiot: "assets/allstar-mascots/rabiot.webp?v=allstar-final-v2",
-  dimarco: "assets/allstar-mascots/dimarco.webp?v=allstar-final-v2"
+  generic: "assets/allstar-mascots/generic.webp?v=allstar9-20261030-fix-contrast-assets-v3",
+  malen: "assets/allstar-mascots/malen.webp?v=allstar9-20261030-fix-contrast-assets-v3",
+  lautaro: "assets/allstar-mascots/lautaro.webp?v=allstar9-20261030-fix-contrast-assets-v3",
+  mctominay: "assets/allstar-mascots/mctominay.webp?v=allstar9-20261030-fix-contrast-assets-v3",
+  calhanoglu: "assets/allstar-mascots/calhanoglu.webp?v=allstar9-20261030-fix-contrast-assets-v3",
+  nicopaz: "assets/allstar-mascots/nicopaz.webp?v=allstar9-20261030-fix-contrast-assets-v3",
+  debruyne: "assets/allstar-mascots/debruyne.webp?v=allstar9-20261030-fix-contrast-assets-v3",
+  raimondo: "assets/allstar-mascots/raimondo.webp?v=allstar9-20261030-fix-contrast-assets-v3",
+  rabiot: "assets/allstar-mascots/rabiot.webp?v=allstar9-20261030-fix-contrast-assets-v3",
+  dimarco: "assets/allstar-mascots/dimarco.webp?v=allstar9-20261030-fix-contrast-assets-v3"
 };
 
 const ALLSTAR_PLAYER_MASCOTS = [
