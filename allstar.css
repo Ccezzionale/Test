@@ -6404,3 +6404,99 @@ body {
   color: #526986 !important;
   -webkit-text-fill-color: #526986 !important;
 }
+
+
+/* === ALL-STAR: TOP 10 ESPANDIBILE, posizioni 6–10 compatte (30/10/2026) === */
+.mobile-vote-live-board .allstar-ranking-extras,
+.ranking-card .allstar-ranking-extras {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 7px;
+  padding: 3px 2px;
+}
+.mobile-vote-live-board .allstar-ranking-extra-row,
+.ranking-card .allstar-ranking-extra-row {
+  display: grid;
+  grid-template-columns: 25px minmax(0,1fr) auto;
+  align-items: center;
+  gap: 9px;
+  min-height: 34px;
+  padding: 6px 10px;
+  background: rgba(20,40,75,.55) !important;
+  border: 1px solid rgba(117,164,232,.16) !important;
+  border-radius: 10px;
+}
+.allstar-ranking-extra-number {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 850;
+  color: #9fb9df !important;
+  -webkit-text-fill-color: #9fb9df !important;
+}
+.allstar-ranking-extra-name {
+  display: block;
+  font-size: 12px;
+  font-weight: 750;
+  line-height: 1.25;
+  color: #e9f2ff !important;
+  -webkit-text-fill-color: #e9f2ff !important;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.allstar-ranking-extra-points {
+  display: block;
+  font-size: 12px;
+  font-weight: 900;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  color: #ffd87b !important;
+  -webkit-text-fill-color: #ffd87b !important;
+}
+.mobile-vote-live-board .allstar-ranking-toggle,
+.ranking-card .allstar-ranking-toggle {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  min-height: 35px;
+  margin-top: 8px;
+  padding: 8px 12px;
+  border-radius: 11px;
+  border: 1px solid rgba(112,164,248,.35);
+  background: rgba(26,53,99,.75) !important;
+  color: #e6efff !important;
+  -webkit-text-fill-color: #e6efff !important;
+  font-size: 12px;
+  font-weight: 850;
+  letter-spacing: .01em;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+.mobile-vote-live-board .allstar-ranking-toggle small,
+.ranking-card .allstar-ranking-toggle small {
+  color: #a4c8ff !important;
+  -webkit-text-fill-color: #a4c8ff !important;
+  font-size: 11px;
+  font-weight: 700;
+}
+.mobile-vote-live-board .allstar-ranking-toggle:hover,
+.ranking-card .allstar-ranking-toggle:hover {
+  border-color: rgba(255,208,101,.65);
+  background: rgba(42,70,123,.9) !important;
+}
+.allstar-ranking-toggle:focus-visible {
+  outline: 2px solid #ffd474;
+  outline-offset: 2px;
+}
+@media (max-width: 768px) {
+  .mobile-vote-live-board .allstar-ranking-extra-row {
+    min-height: 32px;
+    padding: 5px 9px;
+    gap: 6px;
+  }
+}

@@ -10,7 +10,7 @@ import { supabase } from "./supabase.js";
 window.__allstarModuleStarted = true;
 
 const SEASON = 2027;
-const ALLSTAR_CLIENT_VERSION = "20261030-allstar-chibi-fix-v3";
+const ALLSTAR_CLIENT_VERSION = "20261030-top10-mascots-v5";
 // Questa identificazione raggruppa solo gli eventi di una singola apertura pagina.
 const diagnosticPageInstance = typeof crypto !== "undefined" && typeof crypto.randomUUID === "function"
   ? crypto.randomUUID()
@@ -81,6 +81,8 @@ let allstarReadyToVote = false;
 let picks = [];
 let votes = [];
 let mobileLiveConference = CONFERENCE_LEAGUE;
+// Memorizza l'espansione separatamente per League e Championship, anche durante i refresh live.
+const expandedVoteRankings = new Set();
 
 const els = {
   hamburger: document.getElementById("hamburger"),
@@ -450,6 +452,21 @@ function bindEvents() {
 
   els.voteForm?.addEventListener("submit", handleVoteSubmit);
   els.toggleAutoPicksBtn?.addEventListener("click", toggleMobileAutoPicks);
+  // Entrambe le top list (mobile/desktop) usano lo stesso stato per Conference.
+  document.addEventListener("click", (event) => {
+    const button = event.target.closest?.("[data-allstar-ranking-toggle]");
+    if (!button) return;
+    const conference = button.dataset.allstarRankingToggle;
+    if (!isValidConference(conference)) return;
+    if (expandedVoteRankings.has(conference)) expandedVoteRankings.delete(conference);
+    else expandedVoteRankings.add(conference);
+    // Aggiorna entrambe le viste. Non richiede letture o scritture su Supabase.
+    renderMobileVoteTop5();
+    renderConferenceRanking(
+      conference === CONFERENCE_LEAGUE ? els.leagueVoteRankingList : els.champVoteRankingList,
+      getVoteTotalsByConference(conference), conference
+    );
+  });
   document.querySelectorAll("[data-live-conference]").forEach((button) => {
     button.addEventListener("click", () => {
       const conference = button.dataset.liveConference;
@@ -1274,6 +1291,32 @@ function renderVotesArea() {
   renderAutoPickPreview(leagueTotals, champTotals);
 }
 
+// Dal 6° al 10°: solamente posizione, nome e punti, niente mascotte.
+// Il blocco viene creato solo quando l'utente seleziona Mostra altro.
+function renderAllstarRankingExtras(ranking, conference) {
+  if (ranking.length <= 5) return "";
+  const expanded = expandedVoteRankings.has(conference);
+  const additional = ranking.slice(5, 10);
+  const finalPosition = Math.min(ranking.length, 10);
+  const rows = expanded ? `
+    <div class="allstar-ranking-extras" role="list" aria-label="Posizioni dal 6 al ${finalPosition}">
+      ${additional.map((entry, offset) => `
+        <div class="allstar-ranking-extra-row" role="listitem">
+          <span class="allstar-ranking-extra-number">${offset + 6}</span>
+          <span class="allstar-ranking-extra-name">${escapeHtml(entry.player.name)}</span>
+          <strong class="allstar-ranking-extra-points">${entry.total} pt</strong>
+        </div>
+      `).join("")}
+    </div>
+  ` : "";
+  return `${rows}
+    <button type="button" class="allstar-ranking-toggle"
+      data-allstar-ranking-toggle="${escapeAttr(conference)}" aria-expanded="${expanded}">
+      <span>${expanded ? "Mostra meno" : "Mostra altro"}</span>
+      <small>${expanded ? "▴" : `6°–${finalPosition}° ▾`}</small>
+    </button>`;
+}
+
 function renderMobileVoteTop5() {
   if (!els.mobileLiveTop5) return;
 
@@ -1301,7 +1344,8 @@ function renderMobileVoteTop5() {
       callsByPlayer.set(canonicalId, (callsByPlayer.get(canonicalId) || 0) + 1);
     });
 
-  const top = getVoteTotalsByConference(conference).slice(0, 5);
+  const ranking = getVoteTotalsByConference(conference);
+  const top = ranking.slice(0, 5);
 
   if (!top.length) {
     els.mobileLiveTop5.innerHTML = `
@@ -1327,7 +1371,7 @@ function renderMobileVoteTop5() {
         <span class="mobile-live-top5-points">${entry.total} pt</span>
       </div>
     `;
-  }).join("");
+  }).join("") + renderAllstarRankingExtras(ranking, conference);
 }
 
 function renderWeekStars() {
@@ -1379,7 +1423,7 @@ function renderConferenceRanking(container, totals, conference) {
         <span class="auto-badge">Top 5</span>
       </div>
     `;
-  }).join("");
+  }).join("") + renderAllstarRankingExtras(totals, conference);
 }
 
 function getAutoPickPreviewRows(leagueTotals, champTotals) {
