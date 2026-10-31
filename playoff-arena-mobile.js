@@ -34,7 +34,13 @@
     .replace(/^\s*#?\d+\s*[°º]?\s*/, '')
     .replace(/[^a-zA-Z0-9 ]/g,' ')
     .replace(/\s+/g,' ').trim().toLowerCase();
-  const getFile = name => aliases[normalize(name)] || null;
+  const getFile = name => {
+    const key = normalize(name);
+    // Le classifiche possono usare Wildboys, Wild Boys, Wildboys FC o WildBoyz.
+    // Riconosciamo tutte queste varianti senza cambiare le altre squadre.
+    if (/wild\s*boy(?:s|z)?/.test(key)) return 'wild-boys';
+    return aliases[key] || null;
+  };
 
   function enhance() {
     const root = document.getElementById('mobile-stage-content');
@@ -52,14 +58,26 @@
         holder.setAttribute('aria-hidden','true');
         if (file) {
           const pic = document.createElement('img');
-          pic.src = BASE + file + '.webp';
+          // Fallback per Wild Boys: su alcuni siti l'immagine potrebbe
+          // essere stata caricata con il vecchio nome del file.
+          const candidates = file === 'wild-boys'
+            ? ['wild-boys.webp', 'wildboys.webp', 'wild-boys-arena.webp']
+            : [file + '.webp'];
+          let candidateIndex = 0;
+          pic.src = BASE + candidates[candidateIndex];
           pic.alt = '';
           pic.loading = 'lazy';
           pic.decoding = 'async';
           pic.addEventListener('error', () => {
-            pic.remove();
-            side.classList.add('arena-image-missing');
-          }, {once:true});
+            candidateIndex += 1;
+            if (candidateIndex < candidates.length) {
+              pic.src = BASE + candidates[candidateIndex];
+            } else {
+              console.warn('[Playoff Arena] Immagine non trovata:', name, candidates);
+              pic.remove();
+              side.classList.add('arena-image-missing');
+            }
+          });
           holder.appendChild(pic);
         }
         side.insertBefore(holder,side.firstChild);
