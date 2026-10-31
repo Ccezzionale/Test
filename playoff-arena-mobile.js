@@ -83,6 +83,34 @@
         side.insertBefore(holder,side.firstChild);
       });
 
+      // Effetto qualificazione/eliminazione SOLO con vincitore effettivamente noto.
+      // Il gioco decide il vincitore: questo add-on ne cambia solo l'aspetto.
+      const qualifiedSides = Array.from(sides).filter(side => side.classList.contains('is-winner'));
+      const bothTeamsKnown = Array.from(sides).every(side =>
+        !side.classList.contains('is-placeholder') &&
+        side.querySelector('.mobile-team-name')?.textContent?.trim()
+      );
+      const outcomeDecided = bothTeamsKnown && qualifiedSides.length === 1;
+      if (outcomeDecided) {
+        card.classList.add('arena-decided');
+        sides.forEach(side => {
+          if (side === qualifiedSides[0]) {
+            side.classList.add('arena-advanced');
+          } else {
+            side.classList.add('arena-eliminated');
+            const eliminated = document.createElement('span');
+            eliminated.className = 'arena-eliminated-label';
+            eliminated.textContent = 'ELIMINATA';
+            side.appendChild(eliminated);
+          }
+        });
+        // In finale il vincitore è campione, non semplicemente qualificato.
+        const matchCode = card.getAttribute('data-mobile-match') || '';
+        const qualification = qualifiedSides[0].querySelector('.mobile-qualified-badge');
+        if (qualification && matchCode === 'F') qualification.textContent = '🏆 CAMPIONE';
+        if (qualification && matchCode === 'P3') qualification.textContent = '✓ 3° POSTO';
+      }
+
       const code = card.getAttribute('data-mobile-match') || '';
       const label = card.querySelector('.mobile-match-code');
       if (label && codeNames[code]) label.textContent = codeNames[code];
