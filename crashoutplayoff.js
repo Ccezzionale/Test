@@ -32,6 +32,41 @@ const TEAM_LOGOS = Object.fromEntries(TEAM_DATA.map(team => [team.nome, team.log
 let SCORES = {};
 let SEED_LOCK = { locked: false, seeds: [], lockedAt: null };
 
+// Mobile Miami Vice. I dati dei punteggi continuano a vivere nella
+// tabella Supabase crashout_playoff_scores gia' usata dalla versione desktop.
+const MIAMI_IMG_PATH = "img/crashout-miami/";
+const TEAM_MIAMI_IMAGES = {
+  "Atlètico Leon": "atletico-leon.webp",
+  "Bayern Christiansen": "bayern-christiansen.webp",
+  "Team Bartowski": "team-bartowski.webp",
+  "Golden Knights": "golden-knights.webp",
+  "Ibla": "ibla.webp",
+  "Fantaugusta": "fantaugusta.webp",
+  "Riverfilo": "riverfilo.webp",
+  "Desperados": "desperados.webp",
+  "Wildboys 78": "wildboys.webp",
+  "Pandinicoccolosini": "pandini.webp",
+  "Pokermantra": "pokermantra.webp",
+  "Minnesode Timberland": "minnesode.webp",
+  "Minnesota Snakes": "minnesota-snakes.webp",
+  "Eintracht Franco 126": "eintracht-franco.webp",
+  "FC Disoneste": "fc-disoneste.webp",
+  "Athletic Pongao": "athletic-pongao.webp"
+};
+let IS_CRASH_ADMIN = false;
+let LAST_CRASH_BRACKET = null;
+let ACTIVE_MIAMI_ROUND = "ottavi";
+let ACTIVE_MIAMI_SERIES = { ottavi: 0, quarti: 0, semifinali: 0, finale: 0 };
+let MIAMI_EDIT_SERIES_ID = null;
+let MIAMI_SAVING = false;
+
+function crashEscape(text) {
+  return String(text ?? "").replace(/[&<>"']/g, c => ({
+    "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+  }[c]));
+}
+
+
 const SERIES_META = [
   { id: "L1", label: "Ottavo 1", side: "Sinistra" },
   { id: "L2", label: "Ottavo 2", side: "Sinistra" },
@@ -126,6 +161,8 @@ async function initCrashAdminPanel() {
   if (!panel) return;
 
   const isAdmin = await isCurrentUserAdmin();
+  IS_CRASH_ADMIN = isAdmin;
+  if (LAST_CRASH_BRACKET) renderMobileList(LAST_CRASH_BRACKET);
 
   if (!isAdmin) {
     panel.classList.add("hidden");
@@ -795,185 +832,241 @@ function createMobileLogo(teamObj) {
   return wrap;
 }
 
-function createMobileSeriesCard(match, label, isFinal = false) {
-  const score = getScoreFor(match.id);
-  const homeWon = score.home >= 3 && score.home > score.away;
-  const awayWon = score.away >= 3 && score.away > score.home;
+// ======== MIAMI VICE MOBILE: ONE FIGHT CARD PER SERIES ========
+const MIAMI_ROUNDS = [
+  { id: "ottavi", label: "Ottavi", title: "OTTAVI DI FINALE", short: "OTTAVI", prefix: "SERIE" },
+  { id: "quarti", label: "Quarti", title: "QUARTI DI FINALE", short: "QUARTI", prefix: "QUARTO" },
+  { id: "semifinali", label: "Semifinali", title: "SEMIFINALI", short: "SEMIFINALI", prefix: "SEMIFINALE" },
+  { id: "finale", label: "Finale", title: "GRAN FINALE", short: "FINALE", prefix: "FINALE" }
+];
 
-  const card = document.createElement("article");
-  card.className = isFinal ? "mobile-series-card mobile-series-final" : "mobile-series-card";
-  card.dataset.series = match.id;
+function getMiamiPanels(bracket) {
+  return {
+    ottavi: [...bracket.r1.left, ...bracket.r1.right],
+    quarti: [...bracket.leftSF, ...bracket.rightSF],
+    semifinali: [...bracket.leftCF, ...bracket.rightCF],
+    finale: bracket.finals
+  };
+}
 
-  if (homeWon) card.classList.add("winner-home");
-  if (awayWon) card.classList.add("winner-away");
+function getMatchById(bracket, id) {
+  return Object.values(getMiamiPanels(bracket)).flat().find(m => m.id === id) || null;
+}
 
-  const title = document.createElement("div");
-  title.className = "mobile-series-label";
-  title.textContent = label;
-  card.appendChild(title);
+function createMiamiPortrait(teamObj, side) {
+  const team = teamObj?.team || "TBD";
+  const isTbd = team === "TBD";
+  if (isTbd) return `<div class="cv-portrait cv-${side} cv-pending" aria-hidden="true">?</div>`;
+  const image = TEAM_MIAMI_IMAGES[team];
+  if (!image) return `<div class="cv-portrait cv-${side} cv-pending" aria-hidden="true">?</div>`;
+  return `<img class="cv-portrait cv-${side}" src="${MIAMI_IMG_PATH}${image}" alt="Mascotte di ${crashEscape(team)}" loading="eager" decoding="async">`;
+}
 
-  if (isFinal) {
-    const finalInner = document.createElement("div");
-    finalInner.className = "mobile-final-card-inner";
-
-    const homeSide = document.createElement("div");
-    homeSide.className = "mobile-final-logo-side";
-    homeSide.appendChild(createMobileLogo(match.home));
-
-    const center = document.createElement("div");
-    center.className = "mobile-final-score-block";
-    center.innerHTML = `
-      <div class="mobile-final-mini-trophy" aria-hidden="true"></div>
-      <div class="mobile-final-score">${score.home} - ${score.away}</div>
-      <div class="mobile-final-serie">SERIE</div>
-    `;
-
-    const awaySide = document.createElement("div");
-    awaySide.className = "mobile-final-logo-side";
-    awaySide.appendChild(createMobileLogo(match.away));
-
-    finalInner.append(homeSide, center, awaySide);
-    card.appendChild(finalInner);
-
-    const cta = document.createElement("div");
-    cta.className = "mobile-final-cta";
-    cta.textContent = "Verso la gloria";
-    card.appendChild(cta);
-    return card;
-  }
-
-  const row = document.createElement("div");
-  row.className = "mobile-series-row";
-
-  const home = document.createElement("div");
-  home.className = "mobile-team-side mobile-home" + (homeWon ? " is-winner" : "");
-  home.innerHTML = `
-    <span class="mobile-seed">${match.home.seed || ""}</span>
-    <span class="mobile-score">${score.home}</span>
+function createMiamiMatchCard(match, meta, index) {
+  const s = getScoreFor(match.id);
+  const homeTeam = match.home?.team && match.home.team !== "TBD" ? match.home.team : "Da definire";
+  const awayTeam = match.away?.team && match.away.team !== "TBD" ? match.away.team : "Da definire";
+  const hasTeams = homeTeam !== "Da definire" && awayTeam !== "Da definire";
+  const homeWon = s.home >= 3 && s.home > s.away;
+  const awayWon = s.away >= 3 && s.away > s.home;
+  const winner = homeWon ? homeTeam : awayWon ? awayTeam : null;
+  const totalPlayed = Math.min(5, s.home + s.away);
+  const badges = Array.from({ length: 5 }, (_, i) => {
+    // Questo e' un progresso aggregato (numero vittorie), non uno storico cronologico
+    // delle gare: il database attuale salva 2 totali, non 5 risultati individuali.
+    const side = i < s.home ? "home" : i < totalPlayed ? "away" : "";
+    const team = side === "home" ? homeTeam : side === "away" ? awayTeam : "";
+    return `<span class="cv-game ${side ? `cv-game-${side}` : "cv-game-empty"}" title="${side ? `Vittoria ${crashEscape(team)}` : "Vittoria ancora da assegnare"}" aria-label="${side ? `Una vittoria per ${crashEscape(team)}` : "Vittoria da assegnare"}">${side ? `<img src="${crashEscape(logoSrc(team))}" alt="" loading="lazy" onerror="this.style.display='none'">` : `<span>${i + 1}</span>`}</span>`;
+  }).join("");
+  const editor = IS_CRASH_ADMIN && hasTeams;
+  const scoreboardInner = `
+    <span class="cv-score-title">BEST OF 5</span>
+    <span class="cv-score-numbers"><b>${s.home}</b><span>–</span><b>${s.away}</b></span>
+    <span class="cv-score-caption">${editor ? "TOCCA PER ASSEGNARE UNA VITTORIA" : "PRIMO A 3 VITTORIE"}</span>
+    <span class="cv-games">${badges}</span>
+    ${winner ? `<span class="cv-qualified">✦ ${crashEscape(winner)} QUALIFICATA</span>` : ""}
   `;
-  home.insertBefore(createMobileLogo(match.home), home.querySelector(".mobile-score"));
-
-  const vs = document.createElement("div");
-  vs.className = "mobile-vs";
-  vs.textContent = "VS";
-
-  const away = document.createElement("div");
-  away.className = "mobile-team-side mobile-away" + (awayWon ? " is-winner" : "");
-  away.innerHTML = `
-    <span class="mobile-score">${score.away}</span>
-    <span class="mobile-seed">${match.away.seed || ""}</span>
+  const scoreBox = editor
+    ? `<button type="button" class="cv-scoreboard cv-scoreboard-admin" data-edit-miami="${match.id}" aria-label="Gestisci Best of 5: ${crashEscape(homeTeam)} contro ${crashEscape(awayTeam)}">${scoreboardInner}</button>`
+    : `<div class="cv-scoreboard">${scoreboardInner}</div>`;
+  return `
+    <article class="cv-fight${winner ? " cv-fight-finished" : ""}" data-series="${match.id}">
+      <div class="cv-fight-head"><strong>${meta.prefix} ${index + 1}</strong><span>${meta.short} · ROAD TO THE CRASH</span></div>
+      <div class="cv-scene">
+        <div class="cv-city" aria-hidden="true"></div>
+        <img class="cv-palm cv-palm-left" src="${MIAMI_IMG_PATH}palma.svg" alt="" aria-hidden="true">
+        <img class="cv-palm cv-palm-right" src="${MIAMI_IMG_PATH}palma.svg" alt="" aria-hidden="true">
+        <div class="cv-person${homeWon ? " cv-person-advance" : awayWon ? " cv-person-eliminated" : ""}">${createMiamiPortrait(match.home, "home")}</div>
+        <div class="cv-person${awayWon ? " cv-person-advance" : homeWon ? " cv-person-eliminated" : ""}">${createMiamiPortrait(match.away, "away")}</div>
+        <span class="cv-vs" aria-hidden="true">VS</span>
+      </div>
+      <div class="cv-names">
+        <div class="cv-nameplate"><span class="cv-seed">${match.home?.seed ? "#"+crashEscape(match.home.seed) : "?"}</span><strong>${crashEscape(homeTeam)}</strong></div>
+        <div class="cv-nameplate cv-nameplate-away"><strong>${crashEscape(awayTeam)}</strong><span class="cv-seed">${match.away?.seed ? "#"+crashEscape(match.away.seed) : "?"}</span></div>
+      </div>
+      ${scoreBox}
+    </article>
   `;
-  away.insertBefore(createMobileLogo(match.away), away.querySelector(".mobile-seed"));
-
-  row.append(home, vs, away);
-  card.appendChild(row);
-  return card;
 }
 
 function renderMobileList(bracket) {
-  const mob = document.getElementById("bracket-mobile");
-  if (!mob) return;
-
-  const panels = [
-    {
-      id: "ottavi",
-      label: "Ottavi",
-      title: "Ottavi di finale",
-      matches: [...bracket.r1.left, ...bracket.r1.right]
-    },
-    {
-      id: "quarti",
-      label: "Quarti",
-      title: "Quarti di finale",
-      matches: [...bracket.leftSF, ...bracket.rightSF]
-    },
-    {
-      id: "semifinali",
-      label: "Semifinali",
-      title: "Semifinali",
-      matches: [...bracket.leftCF, ...bracket.rightCF]
-    },
-    {
-      id: "finale",
-      label: "Finale",
-      title: "Finale",
-      matches: bracket.finals,
-      isFinal: true
-    }
-  ];
-
-  mob.innerHTML = "";
-  mob.appendChild(createMobileTrophyHero());
-
-  const board = document.createElement("section");
-  board.className = "mobile-playoff-board";
-
-  const tabs = document.createElement("div");
-  tabs.className = "mobile-round-tabs";
-  tabs.setAttribute("role", "tablist");
-
-  const content = document.createElement("div");
-  content.className = "mobile-round-content";
-
-  panels.forEach((panel, panelIndex) => {
-    const active = panelIndex === 0;
-
-    const btn = document.createElement("button");
-    btn.type = "button";
-    btn.className = `mobile-round-tab${active ? " is-active" : ""}`;
-    btn.dataset.mobileTab = panel.id;
-    btn.setAttribute("role", "tab");
-    btn.setAttribute("aria-selected", active ? "true" : "false");
-    btn.textContent = panel.label;
-    tabs.appendChild(btn);
-
-    const section = document.createElement("section");
-    section.className = `mobile-round-panel${active ? " is-active" : ""}`;
-    section.dataset.mobilePanel = panel.id;
-    section.setAttribute("role", "tabpanel");
-    section.innerHTML = `<h3>${panel.title}</h3>`;
-
-    panel.matches.forEach((match, matchIndex) => {
-      const prefix = panel.id === "ottavi"
-        ? "Serie"
-        : panel.id === "quarti"
-          ? "Quarto"
-          : panel.id === "semifinali"
-            ? "Semifinale"
-            : "Finale";
-
-      section.appendChild(
-        createMobileSeriesCard(
-          match,
-          panel.isFinal ? "Finale" : `${prefix} ${matchIndex + 1}`,
-          !!panel.isFinal
-        )
-      );
-    });
-
-    content.appendChild(section);
+  LAST_CRASH_BRACKET = bracket;
+  const mobile = document.getElementById("bracket-mobile");
+  if (!mobile) return;
+  const panels = getMiamiPanels(bracket);
+  const meta = MIAMI_ROUNDS.find(m => m.id === ACTIVE_MIAMI_ROUND) || MIAMI_ROUNDS[0];
+  const matches = panels[meta.id];
+  const index = Math.max(0, Math.min(matches.length - 1, ACTIVE_MIAMI_SERIES[meta.id] || 0));
+  ACTIVE_MIAMI_SERIES[meta.id] = index;
+  const match = matches[index];
+  mobile.innerHTML = `
+    <section class="cv-mobile" aria-label="Crash Out Cup Miami Vice">
+      <nav class="cv-rounds" aria-label="Turni Crash Out">
+        ${MIAMI_ROUNDS.map(m => `<button type="button" data-cv-round="${m.id}" class="${m.id === meta.id ? "is-active" : ""}" aria-pressed="${m.id === meta.id}">${m.label}</button>`).join("")}
+      </nav>
+      <div class="cv-round-heading"><strong>${meta.title}</strong><span>BEST OF 5 · ${matches.length} ${matches.length === 1 ? "SFIDA" : "SFIDE"}</span></div>
+      <nav class="cv-series-nav" aria-label="Seleziona sfida">
+        ${matches.map((m, i) => `<button type="button" data-cv-series="${i}" class="${i === index ? "is-active" : ""}" aria-pressed="${i === index}">${meta.prefix} ${i + 1}</button>`).join("")}
+      </nav>
+      ${createMiamiMatchCard(match, meta, index)}
+      <div class="cv-series-footer">
+        <button type="button" data-cv-prev ${index === 0 ? "disabled" : ""}>‹ PRECEDENTE</button>
+        <span>${index + 1} / ${matches.length}</span>
+        <button type="button" data-cv-next ${index === matches.length - 1 ? "disabled" : ""}>SUCCESSIVA ›</button>
+      </div>
+    </section>
+  `;
+  mobile.querySelectorAll("[data-cv-round]").forEach(btn => btn.addEventListener("click", () => {
+    ACTIVE_MIAMI_ROUND = btn.dataset.cvRound;
+    renderMobileList(LAST_CRASH_BRACKET);
+  }));
+  mobile.querySelectorAll("[data-cv-series]").forEach(btn => btn.addEventListener("click", () => {
+    ACTIVE_MIAMI_SERIES[meta.id] = Number(btn.dataset.cvSeries);
+    renderMobileList(LAST_CRASH_BRACKET);
+  }));
+  mobile.querySelector("[data-cv-prev]")?.addEventListener("click", () => {
+    ACTIVE_MIAMI_SERIES[meta.id] = Math.max(0, index - 1);
+    renderMobileList(LAST_CRASH_BRACKET);
   });
+  mobile.querySelector("[data-cv-next]")?.addEventListener("click", () => {
+    ACTIVE_MIAMI_SERIES[meta.id] = Math.min(matches.length - 1, index + 1);
+    renderMobileList(LAST_CRASH_BRACKET);
+  });
+  mobile.querySelector("[data-edit-miami]")?.addEventListener("click", () => {
+    if (IS_CRASH_ADMIN) openMiamiScoreEditor(match.id);
+  });
+  // Mantiene il bottone della serie attiva visibile nello scorrimento orizzontale.
+  const activeChip = mobile.querySelector(".cv-series-nav .is-active");
+  if (activeChip) {
+    const scroller = activeChip.parentElement;
+    scroller.scrollLeft = Math.max(0, activeChip.offsetLeft - scroller.offsetLeft - 10);
+  }
+}
 
-  board.append(tabs, content);
-  mob.appendChild(board);
+function closeMiamiScoreEditor() {
+  const modal = document.getElementById("cv-admin-modal");
+  if (modal) modal.hidden = true;
+  document.body.classList.remove("cv-modal-open");
+  MIAMI_EDIT_SERIES_ID = null;
+}
 
-  tabs.addEventListener("click", event => {
-    const btn = event.target.closest(".mobile-round-tab");
-    if (!btn) return;
+function openMiamiScoreEditor(seriesId) {
+  if (!IS_CRASH_ADMIN || !LAST_CRASH_BRACKET) return;
+  const match = getMatchById(LAST_CRASH_BRACKET, seriesId);
+  if (!match || !match.home?.team || !match.away?.team || match.home.team === "TBD" || match.away.team === "TBD") return;
+  MIAMI_EDIT_SERIES_ID = seriesId;
+  const modal = document.getElementById("cv-admin-modal");
+  if (!modal) return;
+  modal.hidden = false;
+  document.body.classList.add("cv-modal-open");
+  renderMiamiScoreEditor();
+  modal.querySelector(".cv-modal-close")?.focus();
+}
 
-    const selected = btn.dataset.mobileTab;
-
-    tabs.querySelectorAll(".mobile-round-tab").forEach(tab => {
-      const isSelected = tab.dataset.mobileTab === selected;
-      tab.classList.toggle("is-active", isSelected);
-      tab.setAttribute("aria-selected", isSelected ? "true" : "false");
-    });
-
-    content.querySelectorAll(".mobile-round-panel").forEach(panel => {
-      panel.classList.toggle("is-active", panel.dataset.mobilePanel === selected);
-    });
+function renderMiamiScoreEditor(statusText = "") {
+  if (!MIAMI_EDIT_SERIES_ID) return;
+  const match = getMatchById(LAST_CRASH_BRACKET, MIAMI_EDIT_SERIES_ID);
+  const modal = document.getElementById("cv-admin-modal");
+  if (!match || !modal) return;
+  const score = getScoreFor(match.id);
+  const maxed = score.home >= 3 || score.away >= 3 || score.home + score.away >= 5;
+  const adminBody = modal.querySelector(".cv-modal-body");
+  const roundMeta = MIAMI_ROUNDS.find(m => getMiamiPanels(LAST_CRASH_BRACKET)[m.id].some(x => x.id === match.id));
+  const matchIndex = roundMeta ? getMiamiPanels(LAST_CRASH_BRACKET)[roundMeta.id].findIndex(x => x.id === match.id) : 0;
+  const roundLabel = roundMeta ? `${roundMeta.prefix} ${matchIndex + 1}` : match.id;
+  adminBody.innerHTML = `
+    <div class="cv-edit-kicker">COMMISSIONER CONTROL</div>
+    <h2 id="cv-editor-title">BEST OF 5 · ${crashEscape(roundLabel)}</h2>
+    <p class="cv-edit-subtitle">Assegna una vittoria. I punteggi vengono salvati su Supabase e aggiornano il tabellone.</p>
+    <div class="cv-edit-score"><b>${score.home}</b><span>:</span><b>${score.away}</b></div>
+    <div class="cv-edit-actions">
+      <div class="cv-edit-team cv-edit-team-home">
+        <img src="${crashEscape(logoSrc(match.home.team))}" alt="" onerror="this.style.display='none'">
+        <strong>${crashEscape(match.home.team)}</strong>
+        <button type="button" data-cv-award="home" ${maxed || MIAMI_SAVING ? "disabled" : ""}>+1 VITTORIA</button>
+        <button class="cv-edit-undo" type="button" data-cv-remove="home" ${!score.home || MIAMI_SAVING ? "disabled" : ""}>−1 CORREGGI</button>
+      </div>
+      <div class="cv-edit-team cv-edit-team-away">
+        <img src="${crashEscape(logoSrc(match.away.team))}" alt="" onerror="this.style.display='none'">
+        <strong>${crashEscape(match.away.team)}</strong>
+        <button type="button" data-cv-award="away" ${maxed || MIAMI_SAVING ? "disabled" : ""}>+1 VITTORIA</button>
+        <button class="cv-edit-undo" type="button" data-cv-remove="away" ${!score.away || MIAMI_SAVING ? "disabled" : ""}>−1 CORREGGI</button>
+      </div>
+    </div>
+    ${maxed ? "<p class=\"cv-edit-done\">Serie conclusa. Per correggerla, togli prima una vittoria.</p>" : ""}
+    ${!SEED_LOCK.locked ? `<div class="cv-edit-seed-warning"><span>⚠ Seed ancora dinamici: gli accoppiamenti possono cambiare.</span><button data-cv-lock-seeds type="button" ${MIAMI_SAVING ? "disabled" : ""}>Blocca tabellone</button></div>` : ""}
+    <p class="cv-edit-status" role="status">${crashEscape(statusText)}</p>
+  `;
+  adminBody.querySelectorAll("[data-cv-award]").forEach(btn => btn.addEventListener("click", () => updateMiamiWin(btn.dataset.cvAward, 1)));
+  adminBody.querySelectorAll("[data-cv-remove]").forEach(btn => btn.addEventListener("click", () => updateMiamiWin(btn.dataset.cvRemove, -1)));
+  adminBody.querySelector("[data-cv-lock-seeds]")?.addEventListener("click", async () => {
+    if (MIAMI_SAVING) return;
+    MIAMI_SAVING = true;
+    renderMiamiScoreEditor("Blocco seed in corso...");
+    await lockCurrentPlayoffSeeds();
+    MIAMI_SAVING = false;
+    renderMiamiScoreEditor(SEED_LOCK.locked ? "Seed bloccati correttamente." : "Impossibile bloccare i seed. Controlla le autorizzazioni.");
   });
 }
+
+async function updateMiamiWin(side, delta) {
+  if (!IS_CRASH_ADMIN || MIAMI_SAVING || !MIAMI_EDIT_SERIES_ID || !["home", "away"].includes(side) || ![-1, 1].includes(delta)) return;
+  const match = getMatchById(LAST_CRASH_BRACKET, MIAMI_EDIT_SERIES_ID);
+  if (!match || match.home?.team === "TBD" || match.away?.team === "TBD") return;
+  const oldScore = getScoreFor(match.id);
+  if (delta > 0 && (oldScore.home >= 3 || oldScore.away >= 3 || oldScore.home + oldScore.away >= 5)) return;
+  const updated = { ...oldScore, [side]: oldScore[side] + delta };
+  if (updated.home < 0 || updated.away < 0 || updated.home > 3 || updated.away > 3 || updated.home + updated.away > 5) return;
+  MIAMI_SAVING = true;
+  renderMiamiScoreEditor("Salvataggio in corso...");
+  const { error } = await supabase.from("crashout_playoff_scores").upsert({
+    series_id: match.id,
+    home_score: updated.home,
+    away_score: updated.away,
+    updated_at: new Date().toISOString()
+  }, { onConflict: "series_id" });
+  MIAMI_SAVING = false;
+  if (error) {
+    console.error("Errore salvataggio Best of 5:", error);
+    renderMiamiScoreEditor("Errore nel salvataggio. Verifica la policy admin Supabase.");
+    return;
+  }
+  await buildBracket();
+  renderCrashAdminPanel();
+  renderMiamiScoreEditor("Vittoria aggiornata e tabellone ricalcolato.");
+}
+
+function initializeMiamiEditor() {
+  const modal = document.getElementById("cv-admin-modal");
+  if (!modal) return;
+  modal.querySelector(".cv-modal-close")?.addEventListener("click", closeMiamiScoreEditor);
+  modal.addEventListener("click", e => { if (e.target === modal) closeMiamiScoreEditor(); });
+  document.addEventListener("keydown", e => {
+    if (e.key === "Escape" && !modal.hidden) closeMiamiScoreEditor();
+  });
+}
+
+document.addEventListener("DOMContentLoaded", initializeMiamiEditor);
 
 // ======== WIRES ========
 function ensureWireLayer(clear = false) {
