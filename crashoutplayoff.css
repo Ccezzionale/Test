@@ -2544,3 +2544,41 @@ body::before{
 @media(min-width:901px){
   .cv-admin-overlay{display:none!important;}
 }
+
+/* ===============================================================
+   CRASH OUT MIAMI SKYLINE v2 — 2026-11-01
+   Solo mobile: città notturna e mascotte leggermente meno zoomate.
+   Best of 5, tabellone, amministrazione e desktop invariati.
+   =============================================================== */
+@media (max-width:900px) {
+  .cv-scene {
+    background: #0b0b2f url("img/crashout-miami/miami-skyline-night.webp") center center / cover no-repeat;
+  }
+  /* Il tramonto, la città e i riflessi sono nell'immagine stessa. */
+  .cv-scene::before {
+    background:linear-gradient(90deg,rgba(4,3,25,.12),transparent 29%,transparent 71%,rgba(0,8,30,.12));
+    opacity:1;
+  }
+  .cv-scene::after {
+    left:0;right:0;bottom:0;height:57px;top:auto;
+    background:linear-gradient(to bottom,transparent,rgba(4,5,24,.36));
+    transform:none;
+  }
+  .cv-city {display:none;}
+  .cv-person {
+    width:clamp(210px,59vw,248px);
+    height:clamp(242px,67vw,272px);
+    bottom:-18px;
+  }
+  .cv-person:has(.cv-home) {left:-13px;}
+  .cv-person:has(.cv-away) {right:-15px;}
+}
+@media(max-width:360px){
+  .cv-person {
+    width:210px;
+    height:242px;
+    bottom:-14px;
+  }
+  .cv-person:has(.cv-home){left:-20px;}
+  .cv-person:has(.cv-away){right:-20px;}
+}
