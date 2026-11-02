@@ -1,4 +1,4 @@
-/* CHAMPIONS ARENA V2 — SOLO schermata del duello.
+/* CHAMPIONS ARENA V3 — SOLO schermata del duello.
    Layout ricostruito da elementi reali, mai dalle immagini dei mockup.
    La logica dei playoff e il desktop rimangono quelli esistenti. */
 @import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,600;0,700;0,800;0,900;1,700;1,800;1,900&family=Cinzel:wght@700;800;900&display=swap');
@@ -62,7 +62,7 @@ body.rl-duel-page .rl-counter{font:800 15px 'Barlow Condensed',sans-serif;
  color:#ffe3a6!important;padding:4px 10px;border-radius:8px;border:1px solid #f0ca7ca6;background:#041c3e}
 /* SCENA SENZA CORNICE. Le creature sono separate, come nel riferimento scelto. */
 body.rl-duel-page .rl-arena{position:relative;isolation:isolate;overflow:hidden;
- width:calc(100% + 24px);margin:0 -12px;aspect-ratio:390/595; height:auto;min-height:0;
+ width:calc(100% + 24px);margin:0 -12px;aspect-ratio:390/535; height:auto;min-height:0;
  border:0!important;border-radius:0!important;
  background:#03172c url('img/playoff-real-legends/arena-stadium.svg') center 25%/100% 100% no-repeat!important;
  box-shadow:none!important}
@@ -71,33 +71,32 @@ body.rl-duel-page .rl-arena::before{content:'';position:absolute;inset:0;z-index
  radial-gradient(ellipse 52% 45% at 82% 58%,color-mix(in srgb,var(--rl-right-color,#ddb45d),transparent 74%),transparent 90%),
  linear-gradient(180deg,#06162a32 0%,transparent 20%,transparent 56%,#07142a69 79%,#061630df 100%)}
 body.rl-duel-page .rl-arena::after{content:'';position:absolute;inset:0;z-index:6;pointer-events:none;
- background:linear-gradient(110deg,transparent 46%,#b8f6ff1b 50%,transparent 55%),
- radial-gradient(ellipse 80% 15% at 50% 94%,#179de544,transparent 75%)}
+ background:radial-gradient(ellipse 80% 15% at 50% 94%,#179de544,transparent 75%)}
 body.rl-duel-page .rl-arena-light{position:absolute;z-index:2;top:10%;width:60%;height:69%;pointer-events:none;mix-blend-mode:screen}
 body.rl-duel-page .rl-arena-light--left{left:-18%;background:radial-gradient(ellipse,color-mix(in srgb,var(--rl-left-color,#b5385e),transparent 52%),transparent 70%)}
 body.rl-duel-page .rl-arena-light--right{right:-18%;background:radial-gradient(ellipse,color-mix(in srgb,var(--rl-right-color,#e5a74c),transparent 55%),transparent 70%)}
-/* Il limite e' sul personaggio, non un zoom forzato a 193% come prima.
-   Centro del corpo + maschera sfumata soltanto sul lato del VS. */
-body.rl-duel-page .rl-arena-side{position:absolute;z-index:3;top:7%;height:70%;width:50%;overflow:visible;
+/* Figure grandi ma NON zoomate oltre la scena: ancorate ai bordi esterni.
+   Evitiamo la vecchia traslazione centrata che tagliava volti, ali e busti. */
+body.rl-duel-page .rl-arena-side{position:absolute;z-index:3;top:18%;height:66%;width:50%;overflow:visible;
  background:none!important;box-shadow:none!important}
 body.rl-duel-page .rl-arena-side--left{left:0}
 body.rl-duel-page .rl-arena-side--right{right:0}
 body.rl-duel-page .rl-arena-side::before,body.rl-duel-page .rl-arena-side::after{display:none!important}
-body.rl-duel-page .rl-arena-side img{display:block;position:absolute;top:2%;left:50%;
- width:150%;max-width:none;height:auto;aspect-ratio:1/1;object-fit:contain;object-position:center;
- transform:translateX(-50%)!important;
- filter:drop-shadow(0 13px 9px #010713a6) drop-shadow(0 0 16px color-mix(in srgb,var(--rl-color,#2eaaff),transparent 72%))!important}
-body.rl-duel-page .rl-arena-side--left img{-webkit-mask-image:linear-gradient(90deg,#000 0%,#000 61%,transparent 100%);mask-image:linear-gradient(90deg,#000 0%,#000 61%,transparent 100%)}
-body.rl-duel-page .rl-arena-side--right img{-webkit-mask-image:linear-gradient(270deg,#000 0%,#000 61%,transparent 100%);mask-image:linear-gradient(270deg,#000 0%,#000 61%,transparent 100%)}
+body.rl-duel-page .rl-arena-side img{display:block;position:absolute;top:1%;width:142%;max-width:none;
+ height:auto;aspect-ratio:1/1;object-fit:contain;transform:none!important;
+ filter:drop-shadow(0 11px 12px #010713a8) drop-shadow(0 0 14px color-mix(in srgb,var(--rl-color,#2eaaff),transparent 75%))!important}
+body.rl-duel-page .rl-arena-side--left img{left:0;right:auto;
+ -webkit-mask-image:linear-gradient(90deg,#000 0%,#000 72%,transparent 100%);
+ mask-image:linear-gradient(90deg,#000 0%,#000 72%,transparent 100%)}
+body.rl-duel-page .rl-arena-side--right img{right:0;left:auto;
+ -webkit-mask-image:linear-gradient(270deg,#000 0%,#000 72%,transparent 100%);
+ mask-image:linear-gradient(270deg,#000 0%,#000 72%,transparent 100%)}
 body.rl-duel-page .rl-arena-side.rl-placeholder img{display:none!important}
 body.rl-duel-page .rl-arena-side.rl-placeholder::before{content:'?';display:flex!important;justify-content:center;align-items:center;
  color:#e6f9ff96;font:900 105px 'Cinzel',serif;min-height:75%}
 body.rl-duel-page .rl-arena-side.rl-eliminata img{filter:grayscale(.55) brightness(.72) drop-shadow(0 8px 6px #000)!important}
-/* Slash diagonale, senza cartello sovrapposto agli occhi. */
-body.rl-duel-page .rl-fracture{position:absolute;z-index:5;top:18%;left:41%;width:18%;height:57%;pointer-events:none;
- background:linear-gradient(90deg,transparent,#068dff99 38%,#e2ffff 51%,#0e9bed88 65%,transparent);
- clip-path:polygon(48% 0,65% 0,38% 30%,63% 51%,37% 71%,54% 100%,35% 100%,19% 72%,39% 52%,15% 31%);
- filter:drop-shadow(0 0 14px #12b0ff)}
+/* NESSUN divisorio diagonale/verticale: rimane solo il VS luminoso centrale. */
+body.rl-duel-page .rl-fracture{display:none!important}
 body.rl-duel-page .rl-arena-ribbon{position:absolute;z-index:10;top:1%;left:50%;transform:translateX(-50%);
  white-space:nowrap;padding:5px 24px 6px;max-width:85%;
  clip-path:polygon(7% 0,93% 0,100% 50%,93% 100%,7% 100%,0 50%);
@@ -105,13 +104,20 @@ body.rl-duel-page .rl-arena-ribbon{position:absolute;z-index:10;top:1%;left:50%;
  color:#fff7db!important;-webkit-text-fill-color:#fff7db!important;
  font:italic 900 clamp(15px,4vw,21px)/1 'Barlow Condensed',Impact,sans-serif;
  letter-spacing:1px;text-shadow:0 0 8px #051c32;box-shadow:none}
-body.rl-duel-page .rl-vs-symbol{position:absolute;z-index:8;left:50%;top:59%;
- transform:translate(-50%,-50%) rotate(-10deg)!important;
- color:#faffff!important;-webkit-text-fill-color:#faffff!important;-webkit-text-stroke:1px #0978d5;
- font:italic 900 clamp(70px,21vw,122px)/1 'Barlow Condensed',Impact,sans-serif;
- text-shadow:0 2px 1px #014a9b,0 0 12px #0ef0ff,0 0 32px #209aff,0 9px 15px #001024}
+body.rl-duel-page .rl-vs-symbol{position:absolute;z-index:8;left:50%;top:56%;
+ transform:translate(-50%,-50%) rotate(-8deg)!important;
+ background:linear-gradient(165deg,#ffffff 0%,#fffbed 27%,#fbd97d 48%,#f3a528 66%,#fff5c9 86%)!important;
+ background-clip:text!important;-webkit-background-clip:text!important;
+ color:transparent!important;-webkit-text-fill-color:transparent!important;
+ -webkit-text-stroke:1.1px #ffe5ad;
+ font:italic 900 clamp(68px,20vw,117px)/1 'Barlow Condensed',Impact,sans-serif;
+ letter-spacing:-.08em;
+ filter:drop-shadow(0 1px 2px #241009) drop-shadow(0 0 11px #ffbb4b) drop-shadow(0 0 24px #157bde)}
+body.rl-duel-page .rl-vs-symbol::before{content:'';position:absolute;z-index:-1;left:50%;top:54%;
+ transform:translate(-50%,-50%);width:150%;height:110%;border-radius:50%;
+ background:radial-gradient(ellipse,#ffd7893d 0%,#126bd322 47%,transparent 76%);pointer-events:none}
 /* Le targhette riprendono i colori REALI delle franchigie passati dal JavaScript. */
-body.rl-duel-page .rl-arena-bottom{position:absolute;z-index:11;left:0;right:0;bottom:12%;
+body.rl-duel-page .rl-arena-bottom{position:absolute;z-index:11;left:0;right:0;bottom:11%;
  display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:17%;padding:0 8px}
 body.rl-duel-page .rl-arena-name{min-width:0;min-height:75px;display:flex;flex-direction:column;
  justify-content:center;align-items:flex-start;gap:4px;padding:9px 7px 10px;
@@ -126,7 +132,7 @@ body.rl-duel-page .rl-arena-name--right{align-items:flex-end;text-align:right;
  clip-path:polygon(0 0,100% 0,100% 100%,10% 100%)}
 body.rl-duel-page .rl-arena-name strong,body.rl-duel-page #rl-left-name,body.rl-duel-page #rl-right-name{
  color:#fff!important;-webkit-text-fill-color:#fff!important;opacity:1!important;
- font:italic 900 clamp(15px,4.6vw,24px)/.98 'Barlow Condensed',Impact,sans-serif!important;
+ font:italic 900 clamp(13px,4vw,21px)/.98 'Barlow Condensed',Impact,sans-serif!important;
  text-transform:uppercase;overflow-wrap:anywhere;text-shadow:0 2px 3px #000,0 0 7px #001126!important}
 body.rl-duel-page .rl-seed{display:inline-flex;color:#ffe3a4!important;-webkit-text-fill-color:#ffe3a4!important;
  font:900 10px 'Barlow Condensed',sans-serif;letter-spacing:.4px;
@@ -183,17 +189,7 @@ body.rl-duel-page .rl-loading{margin:10px 0;padding:25px 18px;border-radius:12px
  body.rl-duel-page .rl-vs-symbol{animation:rlPulse 3.5s ease-in-out infinite alternate}
  @keyframes rlPulse{to{filter:drop-shadow(0 0 11px #17b3ff)}}
 }
-/* Finitura mobile: titoli su una sola riga, soggetti senza taglio del volto. */
-body.rl-duel-page .rl-event-title{
- font-size:clamp(34px,10.7vw,59px);letter-spacing:.025em;white-space:nowrap}
+/* Finitura mobile: niente sovrascritture tardive sulle dimensioni delle mascotte. */
+body.rl-duel-page .rl-event-title{font-size:clamp(34px,10.7vw,59px);letter-spacing:.025em;white-space:nowrap}
 body.rl-duel-page .rl-event-title strong{display:inline}
-body.rl-duel-page .rl-arena-side{top:11%}
-body.rl-duel-page .rl-arena-side img{width:174%;top:0}
-body.rl-duel-page .rl-arena-side--left img{
- -webkit-mask-image:linear-gradient(90deg,#000 0%,#000 79%,transparent 100%);
- mask-image:linear-gradient(90deg,#000 0%,#000 79%,transparent 100%)}
-body.rl-duel-page .rl-arena-side--right img{
- -webkit-mask-image:linear-gradient(270deg,#000 0%,#000 79%,transparent 100%);
- mask-image:linear-gradient(270deg,#000 0%,#000 79%,transparent 100%)}
-body.rl-duel-page .rl-tagline{
- font-size:clamp(18px,5.9vw,29px);white-space:nowrap;letter-spacing:0}
+body.rl-duel-page .rl-tagline{font-size:clamp(18px,5.9vw,29px);white-space:nowrap;letter-spacing:0}
