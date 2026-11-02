@@ -34,7 +34,7 @@ a{color:inherit;text-decoration:none}a:focus-visible{outline:2px solid #60e3ff;o
  background:linear-gradient(180deg,transparent 5%,#0000 45%,#00142a88 75%,#01142bf2 100%)}
 .rl-arena-side img{position:absolute;bottom:34px;left:50%;z-index:2;width:135%;max-width:none;height:93%;object-fit:contain;
  transform:translateX(-50%) scale(1.3);filter:drop-shadow(0 9px 10px #000b) saturate(1.1)}
-.rl-arena-side--right img{transform:translateX(-50%) scaleX(-1) scale(1.3)}
+.rl-arena-side--right img{transform:translateX(-50%) scale(1.3)}
 .rl-arena-side.rl-placeholder::before{content:'?';display:grid;place-items:center;color:#3b9bd7;font-size:140px;font-weight:900}
 .rl-arena-side.rl-placeholder img{display:none}
 .rl-arena-side.rl-eliminata img{filter:grayscale(.75) brightness(.65)}
@@ -84,3 +84,192 @@ a{color:inherit;text-decoration:none}a:focus-visible{outline:2px solid #60e3ff;o
 @media(min-width:769px){.rl-duel-shell{max-width:720px;padding-top:28px}.rl-arena{height:620px}.rl-arena-side img{height:96%}}
 @media(max-width:380px){.rl-duel-shell{padding-inline:8px}.rl-arena{min-height:360px}.rl-arena-name strong{font-size:17px}}
 @media(prefers-reduced-motion:no-preference){.rl-vs-symbol{animation:vsBreathe 3s ease-in-out infinite alternate}@keyframes vsBreathe{from{filter:drop-shadow(0 0 2px #008cff)}to{filter:drop-shadow(0 0 11px #1bd6ff)}}}
+
+
+/* ===============================================================
+   REAL LEGENDS • FIX V2 (2026-11-02)
+   Mobile PWA resilience: navbar/mobile-nav global styles must never
+   turn this page pale or put dark text on dark cards.
+   This sheet is loaded ONLY by playoff-sfida.html.
+   No changes to desktop playoff.css, JS, results or tabellone.
+   =============================================================== */
+
+/* The production navbar/theme may inject global body backgrounds with
+   !important after this stylesheet loads. Keep the duel theme scoped. */
+html:has(body.rl-duel-page),
+html:has(body.rl-duel-page) body.rl-duel-page {
+  color-scheme: dark;
+  background-color: #03152f !important;
+  background-image:
+    radial-gradient(ellipse 80% 45% at 50% 5%, rgba(12,103,209,.42), transparent 76%),
+    radial-gradient(ellipse 60% 42% at 100% 73%, rgba(5,124,230,.22), transparent 75%),
+    linear-gradient(140deg, transparent 19%, rgba(0,166,255,.055) 20%, transparent 24%, transparent 67%, rgba(22,123,248,.07) 69%, transparent 72%),
+    linear-gradient(180deg, #03152f 0%, #062b58 48%, #031429 100%) !important;
+  background-attachment: scroll !important;
+  color: #f5fbff !important;
+}
+body.rl-duel-page::before,
+body.rl-duel-page::after {
+  /* Page-specific ambient effects, never an opaque white wash. */
+  background: none !important;
+}
+body.rl-duel-page .rl-duel-shell {
+  position: relative;
+  isolation: isolate;
+  min-height: calc(100dvh - 60px);
+  background:
+    linear-gradient(140deg, transparent 5%, rgba(6,105,214,.12) 12%, transparent 18%, transparent 74%, rgba(3,151,245,.08) 80%, transparent 86%),
+    linear-gradient(180deg, rgba(1,14,34,.20), rgba(1,20,47,.06) 40%, rgba(2,17,41,.20));
+  color: #f5fbff !important;
+}
+body.rl-duel-page .rl-duel-shell *,
+body.rl-duel-page .rl-duel-shell *::before,
+body.rl-duel-page .rl-duel-shell *::after { box-sizing: border-box; }
+body.rl-duel-page .rl-return {
+  color: #eefaff !important;
+  background: #052851 !important;
+  border-color: rgba(92,206,255,.60) !important;
+}
+body.rl-duel-page .rl-return span {color:#61e6ff !important;}
+body.rl-duel-page .rl-strap { color: #76e6ff !important; }
+body.rl-duel-page .rl-duel-top h1 {
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+  text-shadow: 0 2px 0 #043566, 0 0 20px rgba(15,151,255,.6) !important;
+}
+body.rl-duel-page .rl-counter {
+  color: #f7faff !important;
+  background: #032754 !important;
+  border-color: #38c5ff !important;
+}
+body.rl-duel-page .rl-arena {
+  background: #051a39 !important;
+  border-color: #3bbcff !important;
+  box-shadow: 0 0 0 1px rgba(159,239,255,.18), 0 16px 36px rgba(0,3,21,.55), 0 0 22px rgba(4,133,255,.4) !important;
+}
+/* Proportional, unobtrusive gradient beneath each creature; original images remain unchanged. */
+body.rl-duel-page .rl-arena-side--left {
+  background: radial-gradient(ellipse 90% 62% at 23% 32%, var(--rl-color, #df3658) 0%, #172647 47%, #061329 95%) !important;
+}
+body.rl-duel-page .rl-arena-side--right {
+  background: radial-gradient(ellipse 90% 62% at 77% 32%, var(--rl-color, #e4ae3c) 0%, #152f50 49%, #061329 95%) !important;
+}
+body.rl-duel-page .rl-arena-ribbon {
+  color: #f6fdff !important;
+  -webkit-text-fill-color: #f6fdff !important;
+  background: linear-gradient(180deg,#0c67bc,#06366c) !important;
+  text-shadow: 0 2px 5px #00152c !important;
+}
+body.rl-duel-page .rl-vs-symbol {
+  color: #ffffff !important;
+  -webkit-text-fill-color:#ffffff !important;
+}
+/* Keep the diagonal cut while guaranteeing high contrast across all 16 team palettes. */
+body.rl-duel-page .rl-arena-bottom { gap: 9px; padding: 0 12px 14px; }
+body.rl-duel-page .rl-arena-name {
+  color: #fff !important;
+  background: linear-gradient(105deg, rgba(68,10,32,.98), rgba(8,18,44,.96)) !important;
+  border: 1px solid #f85a76 !important;
+  box-shadow: inset 0 0 14px rgba(235,53,89,.24), 0 6px 17px rgba(0,7,24,.6) !important;
+  padding: 9px 10px 10px;
+  min-height: 79px;
+  justify-content: center;
+}
+body.rl-duel-page .rl-arena-name--right {
+  color: #ffffff !important;
+  background: linear-gradient(255deg, rgba(95,58,10,.98), rgba(12,26,50,.96)) !important;
+  border-color: #eac064 !important;
+  box-shadow: inset 0 0 14px rgba(242,171,44,.20), 0 6px 17px rgba(0,7,24,.6) !important;
+}
+body.rl-duel-page .rl-arena-name strong,
+body.rl-duel-page #rl-left-name,
+body.rl-duel-page #rl-right-name {
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+  font-size: clamp(15px, 4.15vw, 20px) !important;
+  line-height: 1.03 !important;
+  opacity: 1 !important;
+  filter: none !important;
+  text-shadow: 0 2px 4px #000, 0 0 8px rgba(0,0,0,.8) !important;
+}
+body.rl-duel-page .rl-arena-name .rl-seed,
+body.rl-duel-page #rl-left-seed,
+body.rl-duel-page #rl-right-seed {
+  color: #fff1c8 !important;
+  -webkit-text-fill-color: #fff1c8 !important;
+  background: rgba(1,16,35,.92) !important;
+  border: 1px solid rgba(255,228,160,.45);
+}
+body.rl-duel-page .rl-arena-name .rl-outcome {
+  color: #d5f4ff !important;
+  -webkit-text-fill-color: #d5f4ff !important;
+}
+body.rl-duel-page .rl-tagline {
+  color: #f7fdff !important;
+  -webkit-text-fill-color: #f7fdff !important;
+  text-shadow: 0 1px 3px #00142f, 0 0 12px #008dff !important;
+  font-size: clamp(19px, 5.2vw, 25px);
+  margin: 17px 0 4px;
+}
+body.rl-duel-page .rl-tagline strong {
+  color: #ffd26d !important;
+  -webkit-text-fill-color: #ffd26d !important;
+}
+body.rl-duel-page .rl-scoreboard {
+  background: linear-gradient(155deg, #063e79, #05244d 62%, #03264a) !important;
+  border: 1px solid #35c8ff !important;
+  color: #ffffff !important;
+  box-shadow: 0 10px 22px rgba(0,10,35,.38), inset 0 1px 0 rgba(157,240,255,.23) !important;
+}
+body.rl-duel-page .rl-score-title,
+body.rl-duel-page #rl-score-kicker {
+  color: #a0efff !important;
+  -webkit-text-fill-color: #a0efff !important;
+}
+body.rl-duel-page .rl-scores,
+body.rl-duel-page .rl-scores strong,
+body.rl-duel-page #rl-score-left,
+body.rl-duel-page #rl-score-right {
+  color: #fff !important;
+  -webkit-text-fill-color: #fff !important;
+  text-shadow: 0 1px 6px rgba(0,18,39,.8) !important;
+}
+body.rl-duel-page .rl-scores em,
+body.rl-duel-page #rl-score-middle {color: #62edff !important; -webkit-text-fill-color: #62edff !important; }
+body.rl-duel-page .rl-score-note,
+body.rl-duel-page #rl-score-note {color: #e0f5ff !important; -webkit-text-fill-color: #e0f5ff !important;}
+body.rl-duel-page .rl-pager a {
+  color: #f2fbff !important;
+  -webkit-text-fill-color: #f2fbff !important;
+  opacity: 1;
+  border-color: #369ee5 !important;
+  background: linear-gradient(180deg,#12427c,#062856) !important;
+  text-shadow: 0 1px 3px rgba(0,10,25,.7);
+  font-weight: 900;
+}
+body.rl-duel-page .rl-pager a span {color:inherit !important; -webkit-text-fill-color:currentColor !important;}
+body.rl-duel-page .rl-pager a.rl-primary {
+  color: #00172f !important;
+  -webkit-text-fill-color: #00172f !important;
+  background: linear-gradient(180deg,#67e9ff,#05a2ec 57%,#117df1) !important;
+  border-color: #89f1ff !important;
+  box-shadow: 0 0 15px rgba(21,165,255,.40), inset 0 1px 0 rgba(255,255,255,.45) !important;
+  text-shadow: none;
+}
+body.rl-duel-page .rl-pager a.rl-disabled {
+  opacity: .44 !important;
+  color: #c4deed !important;
+  -webkit-text-fill-color: #c4deed !important;
+  box-shadow:none !important;
+  cursor:default;
+}
+body.rl-duel-page .rl-dots .rl-dot {background:#3b80b4 !important;}
+body.rl-duel-page .rl-dots .rl-dot.active {background:#55e8ff !important;}
+body.rl-duel-page .rl-hint {color:#b5e3ff !important;-webkit-text-fill-color:#b5e3ff !important;}
+/* Original right mascot artwork can include text and crests: never mirror it. */
+body.rl-duel-page .rl-arena-side--right img {transform:translateX(-50%) scale(1.3) !important;}
+@media (max-width:380px) {
+  body.rl-duel-page .rl-arena-bottom {gap:6px;padding-inline:8px}
+  body.rl-duel-page .rl-arena-name {padding:8px 7px; min-height:76px}
+  body.rl-duel-page .rl-arena-name strong {font-size:16px !important}
+}
