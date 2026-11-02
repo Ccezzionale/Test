@@ -75,22 +75,19 @@ body.rl-duel-page .rl-arena::after{content:'';position:absolute;inset:0;z-index:
 body.rl-duel-page .rl-arena-light{position:absolute;z-index:2;top:10%;width:60%;height:69%;pointer-events:none;mix-blend-mode:screen}
 body.rl-duel-page .rl-arena-light--left{left:-18%;background:radial-gradient(ellipse,color-mix(in srgb,var(--rl-left-color,#b5385e),transparent 52%),transparent 70%)}
 body.rl-duel-page .rl-arena-light--right{right:-18%;background:radial-gradient(ellipse,color-mix(in srgb,var(--rl-right-color,#e5a74c),transparent 55%),transparent 70%)}
-/* Figure grandi ma NON zoomate oltre la scena: ancorate ai bordi esterni.
-   Evitiamo la vecchia traslazione centrata che tagliava volti, ali e busti. */
-body.rl-duel-page .rl-arena-side{position:absolute;z-index:3;top:18%;height:66%;width:50%;overflow:visible;
- background:none!important;box-shadow:none!important}
-body.rl-duel-page .rl-arena-side--left{left:0}
-body.rl-duel-page .rl-arena-side--right{right:0}
+/* Ogni mascotte vive nella SUA meta' dell'arena: niente sovrapposizioni.
+   L'immagine usa object-fit:contain, quindi resta piu' grande possibile
+   entro la propria meta', rispettando sempre le proporzioni originali. */
+body.rl-duel-page .rl-arena-side{position:absolute;z-index:3;top:15%;bottom:22%;width:50%;overflow:hidden;
+ display:flex;align-items:flex-end;background:none!important;box-shadow:none!important}
+body.rl-duel-page .rl-arena-side--left{left:0;justify-content:flex-start;padding:0 4% 0 2%}
+body.rl-duel-page .rl-arena-side--right{right:0;justify-content:flex-end;padding:0 2% 0 4%}
 body.rl-duel-page .rl-arena-side::before,body.rl-duel-page .rl-arena-side::after{display:none!important}
-body.rl-duel-page .rl-arena-side img{display:block;position:absolute;top:1%;width:142%;max-width:none;
- height:auto;aspect-ratio:1/1;object-fit:contain;transform:none!important;
+body.rl-duel-page .rl-arena-side img{display:block;position:relative;width:100%;height:100%;max-width:100%;max-height:100%;
+ aspect-ratio:auto;object-fit:contain;object-position:center bottom;transform:none!important;
  filter:drop-shadow(0 11px 12px #010713a8) drop-shadow(0 0 14px color-mix(in srgb,var(--rl-color,#2eaaff),transparent 75%))!important}
-body.rl-duel-page .rl-arena-side--left img{left:0;right:auto;
- -webkit-mask-image:linear-gradient(90deg,#000 0%,#000 72%,transparent 100%);
- mask-image:linear-gradient(90deg,#000 0%,#000 72%,transparent 100%)}
-body.rl-duel-page .rl-arena-side--right img{right:0;left:auto;
- -webkit-mask-image:linear-gradient(270deg,#000 0%,#000 72%,transparent 100%);
- mask-image:linear-gradient(270deg,#000 0%,#000 72%,transparent 100%)}
+body.rl-duel-page .rl-arena-side--left img{object-position:left bottom;-webkit-mask-image:none;mask-image:none}
+body.rl-duel-page .rl-arena-side--right img{object-position:right bottom;-webkit-mask-image:none;mask-image:none}
 body.rl-duel-page .rl-arena-side.rl-placeholder img{display:none!important}
 body.rl-duel-page .rl-arena-side.rl-placeholder::before{content:'?';display:flex!important;justify-content:center;align-items:center;
  color:#e6f9ff96;font:900 105px 'Cinzel',serif;min-height:75%}
@@ -104,7 +101,7 @@ body.rl-duel-page .rl-arena-ribbon{position:absolute;z-index:10;top:1%;left:50%;
  color:#fff7db!important;-webkit-text-fill-color:#fff7db!important;
  font:italic 900 clamp(15px,4vw,21px)/1 'Barlow Condensed',Impact,sans-serif;
  letter-spacing:1px;text-shadow:0 0 8px #051c32;box-shadow:none}
-body.rl-duel-page .rl-vs-symbol{position:absolute;z-index:8;left:50%;top:56%;
+body.rl-duel-page .rl-vs-symbol{position:absolute;z-index:8;left:50%;top:57%;
  transform:translate(-50%,-50%) rotate(-8deg)!important;
  background:linear-gradient(165deg,#ffffff 0%,#fffbed 27%,#fbd97d 48%,#f3a528 66%,#fff5c9 86%)!important;
  background-clip:text!important;-webkit-background-clip:text!important;
