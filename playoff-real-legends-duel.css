@@ -1,4 +1,4 @@
-/* CHAMPIONS ARENA V3 — SOLO schermata del duello.
+/* CHAMPIONS ARENA V5 — SOLO schermata del duello.
    Layout ricostruito da elementi reali, mai dalle immagini dei mockup.
    La logica dei playoff e il desktop rimangono quelli esistenti. */
 @import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,600;0,700;0,800;0,900;1,700;1,800;1,900&family=Cinzel:wght@700;800;900&display=swap');
@@ -62,7 +62,7 @@ body.rl-duel-page .rl-counter{font:800 15px 'Barlow Condensed',sans-serif;
  color:#ffe3a6!important;padding:4px 10px;border-radius:8px;border:1px solid #f0ca7ca6;background:#041c3e}
 /* SCENA SENZA CORNICE. Le creature sono separate, come nel riferimento scelto. */
 body.rl-duel-page .rl-arena{position:relative;isolation:isolate;overflow:hidden;
- width:calc(100% + 24px);margin:0 -12px;aspect-ratio:390/535; height:auto;min-height:0;
+ width:calc(100% + 24px);margin:0 -12px;aspect-ratio:390/340; height:auto;min-height:0;
  border:0!important;border-radius:0!important;
  background:#03172c url('img/playoff-real-legends/arena-stadium.svg') center 25%/100% 100% no-repeat!important;
  box-shadow:none!important}
@@ -78,10 +78,10 @@ body.rl-duel-page .rl-arena-light--right{right:-18%;background:radial-gradient(e
 /* Ogni mascotte vive nella SUA meta' dell'arena: niente sovrapposizioni.
    L'immagine usa object-fit:contain, quindi resta piu' grande possibile
    entro la propria meta', rispettando sempre le proporzioni originali. */
-body.rl-duel-page .rl-arena-side{position:absolute;z-index:3;top:15%;bottom:22%;width:50%;overflow:hidden;
+body.rl-duel-page .rl-arena-side{position:absolute;z-index:3;top:7%;bottom:23%;width:50%;overflow:hidden;
  display:flex;align-items:flex-end;background:none!important;box-shadow:none!important}
-body.rl-duel-page .rl-arena-side--left{left:0;justify-content:flex-start;padding:0 4% 0 2%}
-body.rl-duel-page .rl-arena-side--right{right:0;justify-content:flex-end;padding:0 2% 0 4%}
+body.rl-duel-page .rl-arena-side--left{left:0;justify-content:flex-start;padding:0 1% 0 1%}
+body.rl-duel-page .rl-arena-side--right{right:0;justify-content:flex-end;padding:0 1% 0 1%}
 body.rl-duel-page .rl-arena-side::before,body.rl-duel-page .rl-arena-side::after{display:none!important}
 body.rl-duel-page .rl-arena-side img{display:block;position:relative;width:100%;height:100%;max-width:100%;max-height:100%;
  aspect-ratio:auto;object-fit:contain;object-position:center bottom;transform:none!important;
@@ -101,7 +101,7 @@ body.rl-duel-page .rl-arena-ribbon{position:absolute;z-index:10;top:1%;left:50%;
  color:#fff7db!important;-webkit-text-fill-color:#fff7db!important;
  font:italic 900 clamp(15px,4vw,21px)/1 'Barlow Condensed',Impact,sans-serif;
  letter-spacing:1px;text-shadow:0 0 8px #051c32;box-shadow:none}
-body.rl-duel-page .rl-vs-symbol{position:absolute;z-index:8;left:50%;top:57%;
+body.rl-duel-page .rl-vs-symbol{position:absolute;z-index:8;left:50%;top:47%;
  transform:translate(-50%,-50%) rotate(-8deg)!important;
  background:linear-gradient(165deg,#ffffff 0%,#fffbed 27%,#fbd97d 48%,#f3a528 66%,#fff5c9 86%)!important;
  background-clip:text!important;-webkit-background-clip:text!important;
@@ -114,10 +114,10 @@ body.rl-duel-page .rl-vs-symbol::before{content:'';position:absolute;z-index:-1;
  transform:translate(-50%,-50%);width:150%;height:110%;border-radius:50%;
  background:radial-gradient(ellipse,#ffd7893d 0%,#126bd322 47%,transparent 76%);pointer-events:none}
 /* Le targhette riprendono i colori REALI delle franchigie passati dal JavaScript. */
-body.rl-duel-page .rl-arena-bottom{position:absolute;z-index:11;left:0;right:0;bottom:11%;
- display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:17%;padding:0 8px}
-body.rl-duel-page .rl-arena-name{min-width:0;min-height:75px;display:flex;flex-direction:column;
- justify-content:center;align-items:flex-start;gap:4px;padding:9px 7px 10px;
+body.rl-duel-page .rl-arena-bottom{position:absolute;z-index:11;left:0;right:0;bottom:4%;
+ display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:19%;padding:0 7px}
+body.rl-duel-page .rl-arena-name{min-width:0;min-height:64px;display:flex;flex-direction:column;
+ justify-content:center;align-items:flex-start;gap:3px;padding:7px 6px 8px;
  background:linear-gradient(110deg,color-mix(in srgb,var(--rl-left-color,#dd4b57),#07142c 52%),#07172cd9 90%)!important;
  border:0!important;border-block:2px solid var(--rl-left-color,#e34961)!important;
  box-shadow:0 0 20px color-mix(in srgb,var(--rl-left-color,#ff3b5a),transparent 74%),0 7px 16px #0009!important;
@@ -136,8 +136,8 @@ body.rl-duel-page .rl-seed{display:inline-flex;color:#ffe3a4!important;-webkit-t
  background:#041b33ec!important;border:1px solid #f5cc78;border-radius:4px;padding:2px 5px}
 body.rl-duel-page .rl-outcome{min-height:0;color:#bbf7ff!important;font-size:10px;font-weight:900}
 body.rl-duel-page .rl-outcome:empty{display:none}
-body.rl-duel-page .rl-trophy{position:absolute;z-index:13;width:clamp(77px,23vw,120px);height:auto;
- left:50%;bottom:4%;transform:translateX(-50%);pointer-events:none;
+body.rl-duel-page .rl-trophy{position:absolute;z-index:13;width:clamp(71px,20vw,102px);height:auto;
+ left:50%;bottom:-1%;transform:translateX(-50%);pointer-events:none;
  filter:drop-shadow(0 0 15px #f5bc6f) drop-shadow(0 12px 8px #000)}
 body.rl-duel-page .rl-trophy svg{width:100%;height:auto;display:block}
 /* Claim e risultato non dentro un secondo poster o pannello gigante. */
@@ -190,3 +190,12 @@ body.rl-duel-page .rl-loading{margin:10px 0;padding:25px 18px;border-radius:12px
 body.rl-duel-page .rl-event-title{font-size:clamp(34px,10.7vw,59px);letter-spacing:.025em;white-space:nowrap}
 body.rl-duel-page .rl-event-title strong{display:inline}
 body.rl-duel-page .rl-tagline{font-size:clamp(18px,5.9vw,29px);white-space:nowrap;letter-spacing:0}
+/* Prima dei risultati, il pannello non deve ripetere VS e sottotitolo:
+   rimane solo il messaggio. Quando arrivano i punteggi, la scoreboard ritorna completa. */
+body.rl-duel-page .rl-scoreboard:has(#rl-score-middle:not(:empty)){
+ padding:1px 4px 5px;margin-top:0;border:0!important;border-radius:0;
+ background:transparent!important;box-shadow:none!important}
+body.rl-duel-page .rl-scoreboard:has(#rl-score-middle:not(:empty)) .rl-score-title,
+body.rl-duel-page .rl-scoreboard:has(#rl-score-middle:not(:empty)) .rl-scores{display:none}
+body.rl-duel-page .rl-scoreboard:has(#rl-score-middle:not(:empty)) .rl-score-note{
+ color:#d1e6ff!important;font-size:11px;line-height:1.4}
