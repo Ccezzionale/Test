@@ -1,275 +1,168 @@
-@import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800;900&display=swap');
-:root{--blue:#119aff;--ice:#46e2ff;--white:#f2f8ff;--muted:#9acdf7;--gold:#ffdd88}
+/* CHAMPIONS ARENA / REAL LEGENDS – mobile duel page only, 2026-11-02.
+   All game data and desktop bracket remain under the original playoff.js / playoff.css. */
+@import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800;900&family=Cinzel:wght@700;800;900&display=swap');
+:root{--rl-blue:#0baaff;--rl-ice:#81eaff;--rl-gold:#ffd371;--rl-ink:#021329}
 *,*::before,*::after{box-sizing:border-box}
-html{min-height:100%;background:#03152f}
-body.rl-duel-page{margin:0;min-height:100dvh;color:var(--white);font:14px/1.35 'Segoe UI',Arial,sans-serif;
- background:radial-gradient(ellipse at 50% -10%,#0754a2,transparent 45%),
- linear-gradient(133deg,transparent 10%,#00b8ff0d 12%,transparent 18%,transparent 44%,#39adff0d 47%,transparent 50%),
- linear-gradient(180deg,#031327,#064277 53%,#02132c);overflow-x:hidden}
-body.rl-duel-page .site-nav{position:sticky;top:0;z-index:50}
-a{color:inherit;text-decoration:none}a:focus-visible{outline:2px solid #60e3ff;outline-offset:3px}
-.rl-duel-shell{max-width:550px;padding:12px 12px 115px;margin:0 auto}
-.rl-return{display:inline-flex;align-items:center;gap:8px;margin:2px 0 14px;padding:8px 12px;border:1px solid #216cb3;
- border-radius:8px;background:#051c3bbf;color:#cff1ff;font-weight:800;font-size:12px}
-.rl-return span{font-size:24px;line-height:10px;margin-top:-3px;color:#4edcff}
-.rl-duel-top{display:flex;justify-content:space-between;align-items:center;margin:1px 0 14px;padding:0 4px}
-.rl-strap{font-size:10px;letter-spacing:2px;font-weight:900;color:#7ee5ff}
-.rl-duel-top h1{margin:7px 0 0;font:italic 900 36px/.95 'Barlow Condensed',Impact,sans-serif;letter-spacing:1px;text-shadow:0 0 15px #1276dc}
-.rl-counter{font:800 16px 'Barlow Condensed',sans-serif;background:#062049;border:1px solid #1ca5ff;border-radius:8px;
- padding:9px 12px;box-shadow:0 0 13px #07b5ff44}
-.rl-arena{height:min(114vw,540px);min-height:385px;position:relative;isolation:isolate;overflow:hidden;
- border:2px solid #299dff;border-radius:18px;background:#011933;
- box-shadow:inset 0 0 0 1px #c6eaff33,0 0 30px #007aff4a,0 22px 43px #0009}
-.rl-arena::before{content:'';position:absolute;inset:0;pointer-events:none;z-index:4;
- background:repeating-linear-gradient(114deg,transparent 0 110px,#00aaff0c 115px,#00aaff02 124px,transparent 131px)}
-.rl-arena::after{content:'';pointer-events:none;position:absolute;inset:0;z-index:10;border-radius:16px;box-shadow:inset 0 0 20px #20a4ff4d}
-.rl-arena-side{position:absolute;top:0;bottom:0;width:53%;isolation:isolate;overflow:hidden}
-.rl-arena-side--left{left:0;--rl-color:#db3454;background:radial-gradient(ellipse at 25% 43%,var(--rl-color) 0,#1b1740 37%,#020e20 87%)}
-.rl-arena-side--right{right:0;--rl-color:#deae39;background:radial-gradient(ellipse at 75% 43%,var(--rl-color) 0,#162747 39%,#020e20 87%)}
-.rl-arena-side:before{content:'';position:absolute;inset:0;z-index:0;opacity:.72;
- background:radial-gradient(circle at 12% 27%,#e7faff72 0 1px,transparent 3px),
- radial-gradient(circle at 70% 19%,#fff8 0 1px,transparent 3px),
- linear-gradient(25deg,transparent 35%,#fff2 45%,transparent 55%);background-size:63px 76px,87px 93px,100% 100%}
-.rl-arena-side::after{content:'';position:absolute;inset:0;z-index:3;pointer-events:none;
- background:linear-gradient(180deg,transparent 5%,#0000 45%,#00142a88 75%,#01142bf2 100%)}
-.rl-arena-side img{position:absolute;bottom:34px;left:50%;z-index:2;width:135%;max-width:none;height:93%;object-fit:contain;
- transform:translateX(-50%) scale(1.3);filter:drop-shadow(0 9px 10px #000b) saturate(1.1)}
-.rl-arena-side--right img{transform:translateX(-50%) scale(1.3)}
-.rl-arena-side.rl-placeholder::before{content:'?';display:grid;place-items:center;color:#3b9bd7;font-size:140px;font-weight:900}
-.rl-arena-side.rl-placeholder img{display:none}
-.rl-arena-side.rl-eliminata img{filter:grayscale(.75) brightness(.65)}
-.rl-arena-side.rl-qualificata{box-shadow:inset 0 0 27px #ffd787aa}
-.rl-fracture{position:absolute;top:-1%;bottom:-1%;width:29%;left:35.5%;z-index:5;pointer-events:none;
- background:linear-gradient(90deg,transparent 9%,#19afff66 45%,#f9fdff 50%,#34cfff 55%,transparent 91%);
- clip-path:polygon(41% 0%,59% 0%,49% 20%,69% 34%,38% 49%,60% 60%,40% 77%,57% 100%,36% 100%,29% 76%,48% 60%,20% 47%,52% 34%,32% 18%);
- filter:drop-shadow(0 0 16px #00cbff)}
-.rl-fracture::after{content:'';position:absolute;inset:0;background:linear-gradient(#e3faff,#03beff,#fff);opacity:.9}
-.rl-vs-symbol{position:absolute;top:41%;left:50%;z-index:8;transform:translate(-50%,-50%) rotate(-8deg);
- font:italic 900 clamp(57px,17vw,96px)/.8 'Barlow Condensed',Impact,sans-serif;color:white;
- -webkit-text-stroke:2px #006ded;text-shadow:0 3px 0 #045cb7,0 0 16px #06aeff,0 0 33px #0be7ff,4px 5px 10px #001326}
-.rl-arena-ribbon{position:absolute;top:0;left:50%;transform:translateX(-50%);z-index:9;white-space:nowrap;
- padding:9px 21px;background:linear-gradient(180deg,#0c4e99,#05204d);border:1px solid #48e7ff;border-top:0;
- clip-path:polygon(0 0,100% 0,93% 100%,7% 100%);font:italic 900 17px 'Barlow Condensed',sans-serif;letter-spacing:1.2px;text-shadow:0 2px 5px #000}
-.rl-arena-bottom{position:absolute;bottom:0;left:0;right:0;z-index:9;display:grid;grid-template-columns:1fr 1fr;gap:7px;padding:0 11px 13px}
-.rl-arena-name{display:flex;flex-direction:column;align-items:flex-start;min-width:0;gap:4px;
- padding:7px 9px 8px;background:linear-gradient(105deg,#6a1934eb,#0c1b3bdf);border:1px solid #fa4566;
- clip-path:polygon(0 0,93% 0,100% 100%,0 100%);box-shadow:0 0 13px #f73b5a44}
-.rl-arena-name--right{align-items:flex-end;text-align:right;background:linear-gradient(255deg,#a77313e3,#111d39e8);border-color:#ffcc63;
- clip-path:polygon(7% 0,100% 0,100% 100%,0 100%)}
-.rl-arena-name .rl-seed{font-size:9px;font-weight:900;color:#ffe1ae;background:#06182ea8;padding:3px 5px;border-radius:3px}
-.rl-arena-name strong{font:italic 900 clamp(17px,5vw,27px)/.98 'Barlow Condensed',Impact,sans-serif;text-transform:uppercase;
- overflow-wrap:anywhere;text-shadow:0 2px 5px #000}
-.rl-arena-name .rl-outcome{font-size:9px;letter-spacing:.45px;font-weight:900;color:#ffe5a7;min-height:12px}
-.rl-scoreboard{margin-top:13px;border:1px solid #2db8ff;border-radius:13px;padding:13px 10px 11px;
- background:linear-gradient(145deg,#05356c,#06224c 65%,#00192b);box-shadow:0 8px 24px #001021a0,inset 0 0 15px #12adff2b;text-align:center}
-.rl-score-title{color:#79deff;letter-spacing:1.65px;font-size:10px;font-weight:900}
-.rl-scores{display:flex;justify-content:center;align-items:center;gap:20px;margin:8px 0 1px;font:900 32px/1 'Barlow Condensed',sans-serif}
-.rl-scores strong{min-width:55px}.rl-scores em{font-size:17px;font-style:normal;color:#64d8ff}
-.rl-score-note{font-size:12px;color:#c5e5ff;margin:5px 0 0}
-.rl-tagline{margin:14px 0 0;font:italic 900 20px 'Barlow Condensed',sans-serif;letter-spacing:1.5px;
- color:#f2fcff;text-align:center;text-shadow:0 0 12px #1493ff}
-.rl-tagline strong{color:#ffdc8e}
-.rl-pager{display:flex;align-items:center;gap:12px;margin-top:15px}
-.rl-pager a{flex:1;display:flex;align-items:center;justify-content:center;gap:10px;min-height:47px;border-radius:11px;
- border:1px solid #288bdb;background:linear-gradient(#092e60,#06204b);font-weight:850;font-size:13px}
-.rl-pager a.rl-primary{border-color:#3febff;background:linear-gradient(180deg,#3ddaff,#0075ee);color:#001539;box-shadow:0 0 18px #13adff67}
-.rl-pager a.rl-disabled{opacity:.35;pointer-events:none}
-.rl-pager a span{font-size:23px;font-weight:600}
-.rl-dots{display:flex;align-items:center;justify-content:center;gap:8px;margin-top:14px}
-.rl-dot{width:9px;height:9px;background:#2d6ca1;border-radius:20px;display:block}
-.rl-dot.active{width:25px;background:#45e6ff;box-shadow:0 0 12px #1ec5ff}
-.rl-hint{color:#91bedf;text-align:center;margin:9px 0 0;font-size:11px}
-.rl-loading{border:1px solid #2673af;background:#06234e;border-radius:14px;padding:28px 16px;text-align:center;color:#bdeaff}
+html:has(body.rl-duel-page),html:has(body.rl-duel-page) body.rl-duel-page{
+  color-scheme:dark;color:#f7fbff!important;min-height:100%;margin:0;overflow-x:hidden;
+  background:radial-gradient(ellipse 75% 28% at 50% 2%,#1260a2 0%,transparent 90%),
+   radial-gradient(ellipse 90% 40% at 50% 80%,#093e77 0%,transparent 100%),
+   linear-gradient(180deg,#020d22,#042b57 45%,#02122b 92%)!important;
+  font:14px/1.4 'Segoe UI',Arial,sans-serif;
+}
+body.rl-duel-page::before,body.rl-duel-page::after{background:none!important;pointer-events:none}
+body.rl-duel-page .site-nav{position:sticky;top:0;z-index:200}
+body.rl-duel-page .rl-duel-shell{max-width:590px;margin:0 auto;padding:10px 11px 105px;position:relative;isolation:isolate;color:#fff!important;
+ background:linear-gradient(180deg,rgba(1,16,39,.18),rgba(1,12,29,.2))}
+body.rl-duel-page .rl-duel-shell *{box-sizing:border-box}
+body.rl-duel-page .rl-duel-shell a{text-decoration:none}
+body.rl-duel-page .rl-duel-shell a:focus-visible{outline:2px solid #b1f3ff;outline-offset:3px}
+body.rl-duel-page .rl-return{display:inline-flex;align-items:center;gap:8px;color:#deefff!important;padding:7px 13px;
+ border:1px solid rgba(78,174,254,.45);border-radius:99px;background:rgba(1,19,47,.72);font-weight:800;font-size:11px;margin:2px 0 10px}
+body.rl-duel-page .rl-return span{font-size:21px;line-height:12px;color:#7fdbff!important}
+body.rl-duel-page .rl-event-head{text-align:center;position:relative;padding:4px 0 13px;background:radial-gradient(ellipse 75% 85% at 50% 55%,rgba(18,99,189,.28),transparent)}
+body.rl-duel-page .rl-event-eyebrow{font:800 10px/1.1 'Cinzel',Georgia,serif;letter-spacing:.19em;color:#bfe5ff!important;
+ text-shadow:0 0 13px #228dff;display:flex;gap:12px;align-items:center;justify-content:center}
+body.rl-duel-page .rl-event-eyebrow span{color:#f7cf70}
+body.rl-duel-page .rl-event-brand{display:flex;align-items:center;justify-content:center;gap:11px;
+ font:900 clamp(17px,4.4vw,25px)/1.1 'Cinzel',Georgia,serif;letter-spacing:.035em;color:#ffedae!important;
+ text-shadow:0 2px 1px #52340f,0 0 20px #b7803485;margin:8px 0 1px}
+body.rl-duel-page .rl-event-brand b{color:#fff6da}
+body.rl-duel-page .rl-gold-wings{font-size:28px;color:#ffe28b!important;transform:rotate(20deg);opacity:.85}
+body.rl-duel-page .rl-event-title{margin:1px 0 -1px;font:italic 900 clamp(40px,11vw,64px)/1 'Barlow Condensed',Impact,sans-serif;
+ letter-spacing:.045em;color:#f7fbff!important;-webkit-text-fill-color:#f7fbff!important;text-shadow:0 2px 1px #00234e,0 0 21px #239aff}
+body.rl-duel-page .rl-event-title strong{color:#ffd878!important;-webkit-text-fill-color:#ffd878!important;font-weight:900}
+body.rl-duel-page .rl-event-stage{display:inline-block;min-width:56%;margin:9px 0 13px;padding:3px 25px 5px;
+ color:#fff7d7!important;-webkit-text-fill-color:#fff7d7!important;letter-spacing:.2em;
+ font:800 clamp(16px,5.3vw,27px)/1.2 'Cinzel',Georgia,serif;text-shadow:0 2px 7px #00152f;
+ background:linear-gradient(90deg,transparent,#0c3a71 20%,#041b3c 50%,#0c3a71 80%,transparent);
+ border-block:1px solid rgba(237,190,92,.75);box-shadow:0 6px 15px -10px #5ddcff}
+body.rl-duel-page .rl-stage-nav{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px;margin:0 2px}
+body.rl-duel-page .rl-stage-nav a{display:flex;align-items:center;justify-content:center;min-height:38px;padding:5px 3px;
+ border:1px solid rgba(125,199,255,.75);border-radius:999px;background:linear-gradient(180deg,#0b315b,#051a39);
+ font:800 clamp(12px,3.5vw,15px) 'Barlow Condensed',Arial,sans-serif;letter-spacing:.025em;color:#e9f7ff!important;-webkit-text-fill-color:#e9f7ff!important}
+body.rl-duel-page .rl-stage-nav a.active{color:#06182c!important;-webkit-text-fill-color:#06182c!important;
+ background:linear-gradient(180deg,#fff3b5,#ffcf67 55%,#dc8b28);border-color:#ffecaa;box-shadow:0 0 16px rgba(253,197,63,.55);
+ text-shadow:none}
+body.rl-duel-page .rl-duel-top{display:flex;justify-content:space-between;align-items:center;gap:10px;margin:7px 4px 10px}
+body.rl-duel-page .rl-strap{font:900 9px 'Segoe UI',sans-serif;color:#83e7ff!important;letter-spacing:1.5px}
+body.rl-duel-page .rl-duel-top h2{font:italic 900 24px/1 'Barlow Condensed',Impact,sans-serif;margin:0;color:white!important;
+ text-shadow:0 1px 2px #001b38,0 0 14px #148eff}
+body.rl-duel-page .rl-counter{padding:4px 11px;color:#ffe7a0!important;font:800 15px 'Barlow Condensed',sans-serif;
+ border:1px solid rgba(255,225,145,.65);background:#041d40;border-radius:7px;white-space:nowrap}
+/* LIVE ARENA: three-dimensional environment, no baked team names or results. */
+body.rl-duel-page .rl-arena{position:relative;isolation:isolate;overflow:hidden;
+ height:clamp(445px,118vw,610px);min-height:0;border:none!important;border-radius:9px;
+ background:#03162f url('img/playoff-real-legends/arena-stadium.svg') center / cover no-repeat!important;
+ box-shadow:0 0 0 1px rgba(63,187,255,.4),0 12px 25px rgba(0,5,16,.5),inset 0 -30px 55px #010b20!important;}
+body.rl-duel-page .rl-arena::before{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;
+ background:linear-gradient(180deg,#020c1e00 0%,#031b3900 50%,#020a18d9 92%,#010916f5 100%),
+ radial-gradient(ellipse at 17% 50%,color-mix(in srgb,var(--rl-left-color,#e63c57),transparent 69%),transparent 50%),
+ radial-gradient(ellipse at 83% 50%,color-mix(in srgb,var(--rl-right-color,#d8a947),transparent 68%),transparent 50%)}
+body.rl-duel-page .rl-arena::after{content:"";position:absolute;inset:0;z-index:12;pointer-events:none;
+ background:linear-gradient(125deg,transparent 20%,#e7faff24 24%,transparent 27% 75%,#dbf6ff1d 79%,transparent 83%);
+ border:1px solid rgba(50,172,245,.35);box-shadow:inset 0 0 24px #0088ff4f}
+body.rl-duel-page .rl-arena-light{position:absolute;top:7%;height:77%;width:68%;z-index:1;pointer-events:none;
+ mix-blend-mode:screen;opacity:.65}
+body.rl-duel-page .rl-arena-light--left{left:-24%;background:radial-gradient(ellipse, color-mix(in srgb,var(--rl-left-color,#b52b46),transparent 65%),transparent 67%)}
+body.rl-duel-page .rl-arena-light--right{right:-24%;background:radial-gradient(ellipse, color-mix(in srgb,var(--rl-right-color,#f6b845),transparent 69%),transparent 67%)}
+body.rl-duel-page .rl-arena-side{position:absolute;top:3%;bottom:13%;width:54%;z-index:3;overflow:visible;
+ background:transparent!important;box-shadow:none!important}
+body.rl-duel-page .rl-arena-side--left{left:-3%} body.rl-duel-page .rl-arena-side--right{right:-3%}
+body.rl-duel-page .rl-arena-side::before,body.rl-duel-page .rl-arena-side::after{display:none!important}
+body.rl-duel-page .rl-arena-side img{position:absolute;top:5%;bottom:auto;left:50%;display:block;
+ max-width:none;width:193%;height:91%;object-fit:contain;object-position:center center;
+ transform:translateX(-50%) scale(1.13)!important;
+ filter:drop-shadow(0 9px 5px rgba(0,0,0,.57)) drop-shadow(0 0 23px color-mix(in srgb,var(--rl-color,#007fff),transparent 64%)) saturate(1.06)!important}
+body.rl-duel-page .rl-arena-side--right img{transform:translateX(-50%) scale(1.13)!important} /* Never reverse names in jersey art */
+body.rl-duel-page .rl-arena-side.rl-placeholder img{display:none!important}
+body.rl-duel-page .rl-arena-side.rl-placeholder::before{display:flex!important;content:'?';height:67%;align-items:center;justify-content:center;font:900 106px 'Cinzel',serif;color:#abe5ff7a}
+body.rl-duel-page .rl-arena-side.rl-eliminata img{filter:grayscale(.55) brightness(.7) drop-shadow(0 8px 6px #000)!important}
+body.rl-duel-page .rl-fracture{position:absolute;left:37%;top:13%;width:26%;height:73%;z-index:4;pointer-events:none;
+ background:linear-gradient(90deg,transparent,#168dffb0 44%,#e7fcff 50%,#38b4ffab 55%,transparent);
+ clip-path:polygon(50% 0,58% 0,44% 20%,65% 35%,43% 56%,57% 76%,47% 100%,38% 100%,44% 77%,28% 55%,49% 34%,39% 20%);
+ filter:drop-shadow(0 0 12px #1ab4ff)}
+body.rl-duel-page .rl-vs-symbol{position:absolute;z-index:7;left:50%;top:62%;transform:translate(-50%,-50%) rotate(-10deg)!important;
+ color:#fff!important;-webkit-text-fill-color:#fff!important;-webkit-text-stroke:2px #146fef;
+ font:italic 900 clamp(77px,23vw,132px)/.9 'Barlow Condensed',Impact,sans-serif;
+ text-shadow:0 3px 1px #0868d4,0 0 14px #0cbdff,0 0 30px #0c82ff,0 10px 17px #00121f;}
+body.rl-duel-page .rl-arena-ribbon{position:absolute;z-index:10;top:0;left:50%;transform:translateX(-50%);
+ max-width:90%;white-space:nowrap;clip-path:polygon(0 0,100% 0,90% 100%,10% 100%);
+ padding:6px 26px;color:#fff9dc!important;-webkit-text-fill-color:#fff9dc!important;text-shadow:0 2px 5px #031731;
+ background:linear-gradient(180deg,#123c67,#04162f)!important;
+ border:1px solid rgba(254,205,112,.75);border-top:none;
+ font:italic 900 17px/1.2 'Barlow Condensed',sans-serif;letter-spacing:1px}
+body.rl-duel-page .rl-arena-bottom{position:absolute;left:0;right:0;bottom:5%;z-index:9;
+ display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:9%;padding:0 12px}
+body.rl-duel-page .rl-arena-name{min-height:84px;min-width:0;display:flex;align-items:flex-start;justify-content:center;
+ flex-direction:column;gap:4px;padding:8px 8px 9px;overflow:visible;
+ background:linear-gradient(100deg,#761330 0%,#161e3b 97%)!important;
+ border:1px solid #f53c63!important;border-bottom:3px solid #ff4e6b!important;
+ border-radius:3px;clip-path:polygon(0 0,100% 0,93% 100%,0 100%);
+ color:white!important;box-shadow:0 7px 16px #0008!important}
+body.rl-duel-page .rl-arena-name--right{align-items:flex-end;text-align:right;
+ background:linear-gradient(270deg,#644013 0%,#131f3c 99%)!important;
+ border-color:#f0bd5d!important;border-bottom-color:#ffcf73!important;
+ clip-path:polygon(0 0,100% 0,100% 100%,7% 100%)}
+body.rl-duel-page .rl-arena-name strong,body.rl-duel-page #rl-left-name,body.rl-duel-page #rl-right-name{
+ color:#fff!important;-webkit-text-fill-color:#fff!important;opacity:1!important;filter:none!important;
+ font:italic 900 clamp(17px,4.8vw,26px)/.98 'Barlow Condensed',Impact,sans-serif!important;
+ text-transform:uppercase;overflow-wrap:anywhere;text-shadow:0 2px 3px #000,0 0 8px #000!important}
+body.rl-duel-page .rl-seed,body.rl-duel-page #rl-left-seed,body.rl-duel-page #rl-right-seed{
+ display:inline-block;color:#ffdfa0!important;-webkit-text-fill-color:#ffdfa0!important;
+ font:900 10px 'Barlow Condensed',sans-serif;letter-spacing:.5px;
+ border:1px solid #f6cc7c;background:#07172f!important;padding:2px 6px;border-radius:4px}
+body.rl-duel-page .rl-outcome{color:#b8efff!important;-webkit-text-fill-color:#b8efff!important;font-size:10px;font-weight:900;min-height:12px}
+body.rl-duel-page .rl-trophy{position:absolute;z-index:11;width:85px;height:102px;left:50%;bottom:0;transform:translateX(-50%);
+ filter:drop-shadow(0 0 10px #ffde7a) drop-shadow(0 5px 8px #000)}
+body.rl-duel-page .rl-trophy svg{width:100%;height:100%;display:block}
+body.rl-duel-page .rl-tagline{margin:16px 0 3px;text-align:center;
+ font:italic 900 clamp(22px,6.2vw,34px)/1.07 'Barlow Condensed',Impact,sans-serif;
+ letter-spacing:.06em;color:#f9fdff!important;-webkit-text-fill-color:#f9fdff!important;
+ text-shadow:0 2px 2px #031c36,0 0 20px #2587fe!important}
+body.rl-duel-page .rl-tagline strong{color:#ff4a61!important;-webkit-text-fill-color:#ff4a61!important;
+ text-shadow:0 0 10px #ea455c,0 0 26px #c5123b}
+body.rl-duel-page .rl-legend-line{text-align:center;color:#eafaff!important;-webkit-text-fill-color:#eafaff!important;
+ font:800 12px 'Cinzel',Georgia,serif;letter-spacing:.11em;margin:8px 0 6px}
+body.rl-duel-page .rl-scoreboard{padding:9px 12px;margin:8px 5px 0;text-align:center;border:1px solid rgba(69,181,254,.65)!important;
+ border-radius:11px;background:linear-gradient(160deg,#09345d,#04192f)!important;color:#fff!important;
+ box-shadow:0 5px 14px #00132d6e,inset 0 1px 0 #bcf4ff4a!important}
+body.rl-duel-page .rl-score-title{color:#8deaff!important;-webkit-text-fill-color:#8deaff!important;font:900 10px 'Segoe UI',sans-serif;letter-spacing:.1em}
+body.rl-duel-page .rl-scores{display:flex;justify-content:center;align-items:center;gap:20px;margin:5px 0 0;font:900 29px 'Barlow Condensed',Impact,sans-serif;color:#fff!important}
+body.rl-duel-page .rl-scores strong{min-width:62px;color:#fff!important;-webkit-text-fill-color:#fff!important}
+body.rl-duel-page .rl-scores em{font:italic 900 16px 'Barlow Condensed',sans-serif;color:#7feaff!important;-webkit-text-fill-color:#7feaff!important}
+body.rl-duel-page .rl-score-note{font-size:12px;color:#ddf3ff!important;-webkit-text-fill-color:#ddf3ff!important;margin:3px 0 0}
+body.rl-duel-page .rl-pager{display:flex;gap:9px;align-items:center;margin:12px 2px 0}
+body.rl-duel-page .rl-pager a{display:flex;flex:1;justify-content:center;align-items:center;gap:8px;min-height:45px;
+ color:#fff!important;-webkit-text-fill-color:#fff!important;font:900 13px 'Barlow Condensed',sans-serif;
+ border:1px solid #4baeff!important;border-radius:999px;
+ background:linear-gradient(180deg,#0b427b,#05214b)!important;
+ box-shadow:0 0 12px #149bff56,inset 0 1px 0 #b2ebff3d!important;text-shadow:0 1px 3px #00152e}
+body.rl-duel-page .rl-pager a.rl-primary{background:linear-gradient(180deg,#2074ba,#0b396c)!important;border-color:#61dcff!important;
+ box-shadow:0 0 20px #019dff85!important}
+body.rl-duel-page .rl-pager a.rl-disabled{opacity:.38!important;pointer-events:none;box-shadow:none!important}
+body.rl-duel-page .rl-pager a span{color:#ffe099!important;-webkit-text-fill-color:#ffe099!important;font-size:24px;line-height:10px}
+body.rl-duel-page .rl-dots{display:flex;justify-content:center;align-items:center;gap:8px;margin-top:14px}
+body.rl-duel-page .rl-dot{height:9px;width:9px;border-radius:99px;background:#276a9e;display:block}
+body.rl-duel-page .rl-dot.active{background:#ffd67d;width:25px;box-shadow:0 0 12px #ffc668}
+body.rl-duel-page .rl-hint{text-align:center;color:#a1d6f5!important;-webkit-text-fill-color:#a1d6f5!important;font-size:11px;margin-top:9px}
+body.rl-duel-page .rl-loading{margin:10px 0;padding:25px 18px;border-radius:12px;color:#bceeff!important;background:#052b54;border:1px solid #328ace;text-align:center}
 [hidden]{display:none!important}
-@media(min-width:769px){.rl-duel-shell{max-width:720px;padding-top:28px}.rl-arena{height:620px}.rl-arena-side img{height:96%}}
-@media(max-width:380px){.rl-duel-shell{padding-inline:8px}.rl-arena{min-height:360px}.rl-arena-name strong{font-size:17px}}
-@media(prefers-reduced-motion:no-preference){.rl-vs-symbol{animation:vsBreathe 3s ease-in-out infinite alternate}@keyframes vsBreathe{from{filter:drop-shadow(0 0 2px #008cff)}to{filter:drop-shadow(0 0 11px #1bd6ff)}}}
-
-
-/* ===============================================================
-   REAL LEGENDS • FIX V2 (2026-11-02)
-   Mobile PWA resilience: navbar/mobile-nav global styles must never
-   turn this page pale or put dark text on dark cards.
-   This sheet is loaded ONLY by playoff-sfida.html.
-   No changes to desktop playoff.css, JS, results or tabellone.
-   =============================================================== */
-
-/* The production navbar/theme may inject global body backgrounds with
-   !important after this stylesheet loads. Keep the duel theme scoped. */
-html:has(body.rl-duel-page),
-html:has(body.rl-duel-page) body.rl-duel-page {
-  color-scheme: dark;
-  background-color: #03152f !important;
-  background-image:
-    radial-gradient(ellipse 80% 45% at 50% 5%, rgba(12,103,209,.42), transparent 76%),
-    radial-gradient(ellipse 60% 42% at 100% 73%, rgba(5,124,230,.22), transparent 75%),
-    linear-gradient(140deg, transparent 19%, rgba(0,166,255,.055) 20%, transparent 24%, transparent 67%, rgba(22,123,248,.07) 69%, transparent 72%),
-    linear-gradient(180deg, #03152f 0%, #062b58 48%, #031429 100%) !important;
-  background-attachment: scroll !important;
-  color: #f5fbff !important;
+@media (max-width:365px){
+ body.rl-duel-page .rl-duel-shell{padding-inline:7px}
+ body.rl-duel-page .rl-stage-nav{gap:4px}
+ body.rl-duel-page .rl-arena{height:445px}
+ body.rl-duel-page .rl-arena-name{min-height:80px;padding-inline:6px}
+ body.rl-duel-page .rl-arena-name strong{font-size:16px!important}
+ body.rl-duel-page .rl-arena-bottom{padding-inline:7px;gap:11%}
+ body.rl-duel-page .rl-event-brand{font-size:16px}
 }
-body.rl-duel-page::before,
-body.rl-duel-page::after {
-  /* Page-specific ambient effects, never an opaque white wash. */
-  background: none !important;
+@media(min-width:769px){
+ body.rl-duel-page .rl-duel-shell{max-width:690px}
+ body.rl-duel-page .rl-arena{height:640px}
+ body.rl-duel-page .rl-arena-side img{height:97%}
 }
-body.rl-duel-page .rl-duel-shell {
-  position: relative;
-  isolation: isolate;
-  min-height: calc(100dvh - 60px);
-  background:
-    linear-gradient(140deg, transparent 5%, rgba(6,105,214,.12) 12%, transparent 18%, transparent 74%, rgba(3,151,245,.08) 80%, transparent 86%),
-    linear-gradient(180deg, rgba(1,14,34,.20), rgba(1,20,47,.06) 40%, rgba(2,17,41,.20));
-  color: #f5fbff !important;
-}
-body.rl-duel-page .rl-duel-shell *,
-body.rl-duel-page .rl-duel-shell *::before,
-body.rl-duel-page .rl-duel-shell *::after { box-sizing: border-box; }
-body.rl-duel-page .rl-return {
-  color: #eefaff !important;
-  background: #052851 !important;
-  border-color: rgba(92,206,255,.60) !important;
-}
-body.rl-duel-page .rl-return span {color:#61e6ff !important;}
-body.rl-duel-page .rl-strap { color: #76e6ff !important; }
-body.rl-duel-page .rl-duel-top h1 {
-  color: #ffffff !important;
-  -webkit-text-fill-color: #ffffff !important;
-  text-shadow: 0 2px 0 #043566, 0 0 20px rgba(15,151,255,.6) !important;
-}
-body.rl-duel-page .rl-counter {
-  color: #f7faff !important;
-  background: #032754 !important;
-  border-color: #38c5ff !important;
-}
-body.rl-duel-page .rl-arena {
-  background: #051a39 !important;
-  border-color: #3bbcff !important;
-  box-shadow: 0 0 0 1px rgba(159,239,255,.18), 0 16px 36px rgba(0,3,21,.55), 0 0 22px rgba(4,133,255,.4) !important;
-}
-/* Proportional, unobtrusive gradient beneath each creature; original images remain unchanged. */
-body.rl-duel-page .rl-arena-side--left {
-  background: radial-gradient(ellipse 90% 62% at 23% 32%, var(--rl-color, #df3658) 0%, #172647 47%, #061329 95%) !important;
-}
-body.rl-duel-page .rl-arena-side--right {
-  background: radial-gradient(ellipse 90% 62% at 77% 32%, var(--rl-color, #e4ae3c) 0%, #152f50 49%, #061329 95%) !important;
-}
-body.rl-duel-page .rl-arena-ribbon {
-  color: #f6fdff !important;
-  -webkit-text-fill-color: #f6fdff !important;
-  background: linear-gradient(180deg,#0c67bc,#06366c) !important;
-  text-shadow: 0 2px 5px #00152c !important;
-}
-body.rl-duel-page .rl-vs-symbol {
-  color: #ffffff !important;
-  -webkit-text-fill-color:#ffffff !important;
-}
-/* Keep the diagonal cut while guaranteeing high contrast across all 16 team palettes. */
-body.rl-duel-page .rl-arena-bottom { gap: 9px; padding: 0 12px 14px; }
-body.rl-duel-page .rl-arena-name {
-  color: #fff !important;
-  background: linear-gradient(105deg, rgba(68,10,32,.98), rgba(8,18,44,.96)) !important;
-  border: 1px solid #f85a76 !important;
-  box-shadow: inset 0 0 14px rgba(235,53,89,.24), 0 6px 17px rgba(0,7,24,.6) !important;
-  padding: 9px 10px 10px;
-  min-height: 79px;
-  justify-content: center;
-}
-body.rl-duel-page .rl-arena-name--right {
-  color: #ffffff !important;
-  background: linear-gradient(255deg, rgba(95,58,10,.98), rgba(12,26,50,.96)) !important;
-  border-color: #eac064 !important;
-  box-shadow: inset 0 0 14px rgba(242,171,44,.20), 0 6px 17px rgba(0,7,24,.6) !important;
-}
-body.rl-duel-page .rl-arena-name strong,
-body.rl-duel-page #rl-left-name,
-body.rl-duel-page #rl-right-name {
-  color: #ffffff !important;
-  -webkit-text-fill-color: #ffffff !important;
-  font-size: clamp(15px, 4.15vw, 20px) !important;
-  line-height: 1.03 !important;
-  opacity: 1 !important;
-  filter: none !important;
-  text-shadow: 0 2px 4px #000, 0 0 8px rgba(0,0,0,.8) !important;
-}
-body.rl-duel-page .rl-arena-name .rl-seed,
-body.rl-duel-page #rl-left-seed,
-body.rl-duel-page #rl-right-seed {
-  color: #fff1c8 !important;
-  -webkit-text-fill-color: #fff1c8 !important;
-  background: rgba(1,16,35,.92) !important;
-  border: 1px solid rgba(255,228,160,.45);
-}
-body.rl-duel-page .rl-arena-name .rl-outcome {
-  color: #d5f4ff !important;
-  -webkit-text-fill-color: #d5f4ff !important;
-}
-body.rl-duel-page .rl-tagline {
-  color: #f7fdff !important;
-  -webkit-text-fill-color: #f7fdff !important;
-  text-shadow: 0 1px 3px #00142f, 0 0 12px #008dff !important;
-  font-size: clamp(19px, 5.2vw, 25px);
-  margin: 17px 0 4px;
-}
-body.rl-duel-page .rl-tagline strong {
-  color: #ffd26d !important;
-  -webkit-text-fill-color: #ffd26d !important;
-}
-body.rl-duel-page .rl-scoreboard {
-  background: linear-gradient(155deg, #063e79, #05244d 62%, #03264a) !important;
-  border: 1px solid #35c8ff !important;
-  color: #ffffff !important;
-  box-shadow: 0 10px 22px rgba(0,10,35,.38), inset 0 1px 0 rgba(157,240,255,.23) !important;
-}
-body.rl-duel-page .rl-score-title,
-body.rl-duel-page #rl-score-kicker {
-  color: #a0efff !important;
-  -webkit-text-fill-color: #a0efff !important;
-}
-body.rl-duel-page .rl-scores,
-body.rl-duel-page .rl-scores strong,
-body.rl-duel-page #rl-score-left,
-body.rl-duel-page #rl-score-right {
-  color: #fff !important;
-  -webkit-text-fill-color: #fff !important;
-  text-shadow: 0 1px 6px rgba(0,18,39,.8) !important;
-}
-body.rl-duel-page .rl-scores em,
-body.rl-duel-page #rl-score-middle {color: #62edff !important; -webkit-text-fill-color: #62edff !important; }
-body.rl-duel-page .rl-score-note,
-body.rl-duel-page #rl-score-note {color: #e0f5ff !important; -webkit-text-fill-color: #e0f5ff !important;}
-body.rl-duel-page .rl-pager a {
-  color: #f2fbff !important;
-  -webkit-text-fill-color: #f2fbff !important;
-  opacity: 1;
-  border-color: #369ee5 !important;
-  background: linear-gradient(180deg,#12427c,#062856) !important;
-  text-shadow: 0 1px 3px rgba(0,10,25,.7);
-  font-weight: 900;
-}
-body.rl-duel-page .rl-pager a span {color:inherit !important; -webkit-text-fill-color:currentColor !important;}
-body.rl-duel-page .rl-pager a.rl-primary {
-  color: #00172f !important;
-  -webkit-text-fill-color: #00172f !important;
-  background: linear-gradient(180deg,#67e9ff,#05a2ec 57%,#117df1) !important;
-  border-color: #89f1ff !important;
-  box-shadow: 0 0 15px rgba(21,165,255,.40), inset 0 1px 0 rgba(255,255,255,.45) !important;
-  text-shadow: none;
-}
-body.rl-duel-page .rl-pager a.rl-disabled {
-  opacity: .44 !important;
-  color: #c4deed !important;
-  -webkit-text-fill-color: #c4deed !important;
-  box-shadow:none !important;
-  cursor:default;
-}
-body.rl-duel-page .rl-dots .rl-dot {background:#3b80b4 !important;}
-body.rl-duel-page .rl-dots .rl-dot.active {background:#55e8ff !important;}
-body.rl-duel-page .rl-hint {color:#b5e3ff !important;-webkit-text-fill-color:#b5e3ff !important;}
-/* Original right mascot artwork can include text and crests: never mirror it. */
-body.rl-duel-page .rl-arena-side--right img {transform:translateX(-50%) scale(1.3) !important;}
-@media (max-width:380px) {
-  body.rl-duel-page .rl-arena-bottom {gap:6px;padding-inline:8px}
-  body.rl-duel-page .rl-arena-name {padding:8px 7px; min-height:76px}
-  body.rl-duel-page .rl-arena-name strong {font-size:16px !important}
+@media(prefers-reduced-motion:no-preference){
+ body.rl-duel-page .rl-vs-symbol{animation:rlPulse 3s ease-in-out infinite alternate}
+ @keyframes rlPulse{from{filter:drop-shadow(0 0 2px #008cff)}to{filter:drop-shadow(0 0 12px #16c8ff)}}
 }

@@ -27,6 +27,8 @@
     const pick=(typeof PICKS!=='undefined')?PICKS[code]:null;
     const scored=pick&&hasNum(pick.home)&&hasNum(pick.away);
     put('rl-stage-kicker','REAL LEGENDS · '+labels[stage]);
+    put('rl-event-stage',labels[stage]);
+    document.querySelectorAll('[data-rl-stage]').forEach(tab => { const active=tab.dataset.rlStage===stage; tab.classList.toggle('active',active); if(active) tab.setAttribute('aria-current','page'); else tab.removeAttribute('aria-current'); });
     put('rl-duel-title',stage==='finale'?(code==='F'?'GRAN FINALE':'FINALE 3° POSTO'):'DUELLO '+(index+1));
     put('rl-duel-counter',(index+1)+' / '+matches.length);
     put('rl-arena-code',stageCode[code]||code);
@@ -43,6 +45,7 @@
       put('rl-'+pos+'-seed',team.seed?'#'+team.seed+' SEED':'DA DEFINIRE');
       const side=$('rl-'+pos+'-side');
       side.style.setProperty('--rl-color',window.PlayoffRealLegends?.color(name)||'#23aaff');
+      $('rl-arena').style.setProperty(i===0?'--rl-left-color':'--rl-right-color',window.PlayoffRealLegends?.color(name)||'#23aaff');
       side.classList.toggle('rl-placeholder',placeholder);
       side.classList.toggle('rl-qualificata',winner===(i===0?'home':'away'));
       side.classList.toggle('rl-eliminata',Boolean(winner)&&winner!==(i===0?'home':'away'));

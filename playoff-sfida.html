@@ -1,10 +1,10 @@
 <!DOCTYPE html><html lang="it"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Duello Playoff | Lega degli Eroi</title><meta name="theme-color" content="#061e43">
-<link rel="stylesheet" href="navbar.css"><link rel="stylesheet" href="playoff-real-legends-duel.css?v=20261102-fixcolori2">
+<link rel="stylesheet" href="navbar.css"><link rel="stylesheet" href="playoff-real-legends-duel.css?v=20261102-championsarena1">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="playoff-real-legends-assets.js?v=20261102" defer></script>
 <script src="playoff.js?v=20261102-reallegends1" defer></script>
-<script src="playoff-real-legends-duel.js?v=20261102" defer></script>
+<script src="playoff-real-legends-duel.js?v=20261102-championsarena1" defer></script>
 <meta name="lega-app-build" content="v20261028-ef9f76dc3f25">
 <script defer src="./app-updates.js?bootstrap=v20261028-ef9f76dc3f25" data-eroi-update="1"></script>
 </head><body class="rl-duel-page">
@@ -109,27 +109,57 @@
 
 
 <main class="rl-duel-shell">
-<a class="rl-return" id="rl-back" href="playoff.html"><span>‹</span> Torna agli incontri</a>
-<div id="rl-loading" class="rl-loading" role="status">Caricamento sfida dai dati ufficiali dei Playoff…</div>
-<section id="rl-duel-content" hidden>
-  <div class="rl-duel-top"><div><span class="rl-strap" id="rl-stage-kicker">REAL LEGENDS · WILD CARD</span><h1 id="rl-duel-title">DUELLO</h1></div><span class="rl-counter" id="rl-duel-counter">1 / 4</span></div>
-  <div class="rl-arena" id="rl-arena" aria-label="La sfida tra due REAL LEGENDS">
-    <div class="rl-arena-side rl-arena-side--left" id="rl-left-side"><img id="rl-left-image" alt=""></div>
-    <div class="rl-arena-side rl-arena-side--right" id="rl-right-side"><img id="rl-right-image" alt=""></div>
-    <div class="rl-fracture" aria-hidden="true"></div><div class="rl-arena-ribbon" id="rl-arena-code">WILD CARD</div>
-    <div class="rl-vs-symbol" aria-hidden="true">VS</div>
-    <div class="rl-arena-bottom">
-      <div class="rl-arena-name"><span id="rl-left-seed" class="rl-seed"></span><strong id="rl-left-name"></strong><span id="rl-left-outcome" class="rl-outcome"></span></div>
-      <div class="rl-arena-name rl-arena-name--right"><span id="rl-right-seed" class="rl-seed"></span><strong id="rl-right-name"></strong><span id="rl-right-outcome" class="rl-outcome"></span></div>
+  <a class="rl-return" id="rl-back" href="playoff.html"><span aria-hidden="true">‹</span> Torna agli incontri</a>
+  <div id="rl-loading" class="rl-loading" role="status">Caricamento sfida dai dati ufficiali dei Playoff…</div>
+  <section id="rl-duel-content" hidden>
+    <header class="rl-event-head">
+      <div class="rl-event-eyebrow"><span aria-hidden="true">✦</span> LEGA DEGLI EROI <span aria-hidden="true">✦</span></div>
+      <div class="rl-event-brand"><span class="rl-gold-wings" aria-hidden="true">❧</span><span>CHAMPIONS <b>ARENA</b></span><span class="rl-gold-wings" aria-hidden="true">❧</span></div>
+      <h1 class="rl-event-title">PLAYOFF <strong>2027</strong></h1>
+      <div class="rl-event-stage" id="rl-event-stage">WILD CARD</div>
+      <nav class="rl-stage-nav" aria-label="Fasi dei Playoff">
+        <a href="playoff-sfida.html?fase=wildcard&amp;match=WC1" data-rl-stage="wildcard">Wildcard</a>
+        <a href="playoff-sfida.html?fase=quarti&amp;match=Q1" data-rl-stage="quarti">Quarti</a>
+        <a href="playoff-sfida.html?fase=semifinali&amp;match=S1" data-rl-stage="semifinali">Semifinali</a>
+        <a href="playoff-sfida.html?fase=finale&amp;match=F" data-rl-stage="finale">Finale</a>
+      </nav>
+    </header>
+    <div class="rl-duel-top">
+      <div><span class="rl-strap" id="rl-stage-kicker">REAL LEGENDS · WILD CARD</span><h2 id="rl-duel-title">DUELLO</h2></div>
+      <span class="rl-counter" id="rl-duel-counter">1 / 4</span>
     </div>
-  </div>
-  <div class="rl-tagline">THINGS ARE GETTIN’ <strong>REAL</strong></div>
-  <section class="rl-scoreboard" aria-label="Risultato della sfida"><div class="rl-score-title" id="rl-score-kicker"></div>
-    <div class="rl-scores"><strong id="rl-score-left">–</strong><em id="rl-score-middle">VS</em><strong id="rl-score-right">–</strong></div>
-    <p id="rl-score-note" class="rl-score-note"></p>
+    <section class="rl-arena" id="rl-arena" aria-label="Arena del duello fra le due Real Legends">
+      <div class="rl-arena-light rl-arena-light--left" aria-hidden="true"></div>
+      <div class="rl-arena-light rl-arena-light--right" aria-hidden="true"></div>
+      <div class="rl-arena-side rl-arena-side--left" id="rl-left-side"><img id="rl-left-image" alt=""></div>
+      <div class="rl-arena-side rl-arena-side--right" id="rl-right-side"><img id="rl-right-image" alt=""></div>
+      <div class="rl-fracture" aria-hidden="true"></div>
+      <div class="rl-arena-ribbon" id="rl-arena-code">WILD CARD</div>
+      <div class="rl-vs-symbol" aria-hidden="true">VS</div>
+      <div class="rl-arena-bottom">
+        <div class="rl-arena-name rl-arena-name--left"><span id="rl-left-seed" class="rl-seed"></span><strong id="rl-left-name"></strong><span id="rl-left-outcome" class="rl-outcome"></span></div>
+        <div class="rl-arena-name rl-arena-name--right"><span id="rl-right-seed" class="rl-seed"></span><strong id="rl-right-name"></strong><span id="rl-right-outcome" class="rl-outcome"></span></div>
+      </div>
+      <div class="rl-trophy" aria-hidden="true">
+        <svg viewBox="0 0 128 150" role="presentation" focusable="false">
+          <defs><linearGradient id="rlCupMetal" x1="0" x2="1"><stop stop-color="#7f430a"/><stop offset=".22" stop-color="#f6ba48"/><stop offset=".47" stop-color="#fff7ca"/><stop offset=".7" stop-color="#efad2f"/><stop offset="1" stop-color="#8b4c08"/></linearGradient></defs>
+          <path d="M28 18H100L94 80Q83 100 64 103Q45 100 34 80Z" fill="url(#rlCupMetal)" stroke="#ffe19b" stroke-width="3"/>
+          <path d="M27 29H12Q6 70 38 78M101 29H116Q122 70 90 78" fill="none" stroke="url(#rlCupMetal)" stroke-width="11" stroke-linecap="round"/>
+          <path d="M62 102V123M50 123H78L84 138H44Z" stroke="#ffe19b" stroke-width="3" fill="url(#rlCupMetal)" stroke-linejoin="round"/>
+          <path d="M64 34L70 46L84 48L74 58L77 72L64 65L51 72L54 58L44 48L58 46Z" fill="#fff6bc" opacity=".9"/>
+        </svg>
+      </div>
+    </section>
+    <div class="rl-tagline">THINGS ARE GETTIN’ <strong>REAL</strong></div>
+    <div class="rl-legend-line">UNA SFIDA. DUE LEGGENDE.</div>
+    <section class="rl-scoreboard" aria-label="Risultato della sfida">
+      <div class="rl-score-title" id="rl-score-kicker"></div>
+      <div class="rl-scores"><strong id="rl-score-left">–</strong><em id="rl-score-middle">VS</em><strong id="rl-score-right">–</strong></div>
+      <p id="rl-score-note" class="rl-score-note"></p>
+    </section>
+    <nav class="rl-pager" aria-label="Sfide della fase"><a id="rl-prev"><span aria-hidden="true">‹</span> PRECEDENTE</a><a id="rl-next" class="rl-primary">SUCCESSIVA <span aria-hidden="true">›</span></a></nav>
+    <div class="rl-dots" id="rl-dots"></div>
+    <p class="rl-hint">Scorri sull’arena per passare alla prossima sfida.</p>
   </section>
-  <nav class="rl-pager" aria-label="Sfide della fase"><a id="rl-prev"><span>‹</span> PRECEDENTE</a><a id="rl-next" class="rl-primary">SUCCESSIVA <span>›</span></a></nav>
-  <div class="rl-dots" id="rl-dots"></div><p class="rl-hint">Scorri sull’arena per passare alla prossima sfida.</p>
-</section>
 </main>
 <script src="mobile-nav.js"></script><script src="navbar.js"></script></body></html>
