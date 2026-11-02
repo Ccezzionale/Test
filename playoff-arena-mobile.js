@@ -1,136 +1,77 @@
-/* LEGA DEGLI EROI — Playoff Arena add-on (mobile)
-   Integra le immagini nei match creati da renderMobilePlayoff(P).
-   Non riscrive calcolo seed, punteggi, vincitori, Supabase o tabellone desktop.
-   Caricare con `defer` DOPO playoff.js.
-*/
+/* PLAYOFF REAL LEGENDS — mobile match index.
+   Converts EXISTING match card output to separate match-route links; doesn't alter
+   playoff score/seed/winner logic or desktop board. */
 (() => {
   'use strict';
-  const BASE = 'img/playoff-arena/';
-  const aliases = {
-    'team bartowski':'team-bartowski', 'bartowski':'team-bartowski',
-    'atletico leon':'atletico-leon', 'atletico leon fc':'atletico-leon',
-    'bayern christiansen':'bayern-christiansen',
-    'desperados':'desperados',
-    'fc disoneste':'fc-disoneste', 'disoneste':'fc-disoneste',
-    'fantaugusta':'fantaugusta', 'fantaaugusta':'fantaugusta', 'fanta augusta':'fantaugusta',
-    'eintracht franco 126':'eintracht-franco-126', 'eintracht franco':'eintracht-franco-126',
-    'golden knights':'golden-knights',
-    'ibla':'ibla-fc', 'ibla fc':'ibla-fc',
-    'minnesode timberland':'minnesode-timberland', 'minnesode':'minnesode-timberland',
-    'pandinicoccolosini':'pandini', 'pandinicoccolosini fc':'pandini', 'pandini':'pandini',
-    'pokermantra':'pokermantra',
-    'athletic pongao':'athletic-pongao', 'athletic pongao fc':'athletic-pongao',
-    'riverfilo':'riverfilo',
-    'minnesota snakes':'minnesota-snakes', 'minnesota snake':'minnesota-snakes', 'snakes':'minnesota-snakes',
-    'wildboys':'wild-boys', 'wild boys':'wild-boys', 'wildboys fc':'wild-boys', 'wild boys fc':'wild-boys'
+  const meta = {
+    WC1:'WILD CARD · 1', WC2:'WILD CARD · 2', WC3:'WILD CARD · 3', WC4:'WILD CARD · 4',
+    Q1:'QUARTI · 1', Q2:'QUARTI · 2', Q3:'QUARTI · 3', Q4:'QUARTI · 4',
+    S1:'SEMIFINALE · 1',S2:'SEMIFINALE · 2', P3:'FINALE 3° POSTO',F:'GRAN FINALE'
   };
-  const codeNames = {
-    WC1:'WILD CARD 1', WC2:'WILD CARD 2', WC3:'WILD CARD 3', WC4:'WILD CARD 4',
-    Q1:'QUARTO 1',Q2:'QUARTO 2',Q3:'QUARTO 3',Q4:'QUARTO 4',
-    S1:'SEMIFINALE 1',S2:'SEMIFINALE 2',P3:'FINALE 3° POSTO',F:'GRAN FINALE'
-  };
-  const normalize = value => (value || '')
-    .toString().normalize('NFD').replace(/[\u0300-\u036f]/g, '')
-    .replace(/^\s*#?\d+\s*[°º]?\s*/, '')
-    .replace(/[^a-zA-Z0-9 ]/g,' ')
-    .replace(/\s+/g,' ').trim().toLowerCase();
-  const getFile = name => {
-    const key = normalize(name);
-    // Le classifiche possono usare Wildboys, Wild Boys, Wildboys FC o WildBoyz.
-    // Riconosciamo tutte queste varianti senza cambiare le altre squadre.
-    if (/wild\s*boy(?:s|z)?/.test(key)) return 'wild-boys';
-    return aliases[key] || null;
-  };
-
-  function enhance() {
-    const root = document.getElementById('mobile-stage-content');
-    if (!root) return;
-    root.querySelectorAll('.mobile-match-card').forEach(card => {
-      if (card.classList.contains('arena-ready')) return;
-      const sides = card.querySelectorAll('.mobile-team-side');
-      if (sides.length !== 2) return;
-
-      sides.forEach(side => {
-        const name = side.querySelector('.mobile-team-name')?.textContent?.trim() || '';
-        const file = getFile(name);
-        const holder = document.createElement('span');
-        holder.className = 'arena-visual';
-        holder.setAttribute('aria-hidden','true');
-        if (file) {
-          const pic = document.createElement('img');
-          // Fallback per Wild Boys: su alcuni siti l'immagine potrebbe
-          // essere stata caricata con il vecchio nome del file.
-          const candidates = file === 'wild-boys'
-            ? ['wild-boys.webp', 'wildboys.webp', 'wild-boys-arena.webp']
-            : [file + '.webp'];
-          let candidateIndex = 0;
-          pic.src = BASE + candidates[candidateIndex];
-          pic.alt = '';
-          pic.loading = 'lazy';
-          pic.decoding = 'async';
-          pic.addEventListener('error', () => {
-            candidateIndex += 1;
-            if (candidateIndex < candidates.length) {
-              pic.src = BASE + candidates[candidateIndex];
-            } else {
-              console.warn('[Playoff Arena] Immagine non trovata:', name, candidates);
-              pic.remove();
-              side.classList.add('arena-image-missing');
-            }
-          });
-          holder.appendChild(pic);
-        }
-        side.insertBefore(holder,side.firstChild);
-      });
-
-      // Effetto qualificazione/eliminazione SOLO con vincitore effettivamente noto.
-      // Il gioco decide il vincitore: questo add-on ne cambia solo l'aspetto.
-      const qualifiedSides = Array.from(sides).filter(side => side.classList.contains('is-winner'));
-      const bothTeamsKnown = Array.from(sides).every(side =>
-        !side.classList.contains('is-placeholder') &&
-        side.querySelector('.mobile-team-name')?.textContent?.trim()
-      );
-      const outcomeDecided = bothTeamsKnown && qualifiedSides.length === 1;
-      if (outcomeDecided) {
-        card.classList.add('arena-decided');
-        sides.forEach(side => {
-          if (side === qualifiedSides[0]) {
-            side.classList.add('arena-advanced');
-          } else {
-            side.classList.add('arena-eliminated');
-            const eliminated = document.createElement('span');
-            eliminated.className = 'arena-eliminated-label';
-            eliminated.textContent = 'ELIMINATA';
-            side.appendChild(eliminated);
-          }
-        });
-        // In finale il vincitore è campione, non semplicemente qualificato.
-        const matchCode = card.getAttribute('data-mobile-match') || '';
-        const qualification = qualifiedSides[0].querySelector('.mobile-qualified-badge');
-        if (qualification && matchCode === 'F') qualification.textContent = '🏆 CAMPIONE';
-        if (qualification && matchCode === 'P3') qualification.textContent = '✓ 3° POSTO';
-      }
-
-      const code = card.getAttribute('data-mobile-match') || '';
-      const label = card.querySelector('.mobile-match-code');
-      if (label && codeNames[code]) label.textContent = codeNames[code];
-      if (card.querySelector('.mobile-vs-pill.has-score')) card.classList.add('arena-has-score');
-      card.classList.add('arena-ready');
-    });
-
-    document.querySelectorAll('.stage-tab').forEach(tab =>
-      tab.setAttribute('aria-selected',tab.classList.contains('active')?'true':'false')
-    );
+  const stageFromCode = c => c.startsWith('WC')?'wildcard':c.startsWith('Q')?'quarti':c.startsWith('S')?'semifinali':'finale';
+  function add(tag, className, text) {
+    const node=document.createElement(tag);
+    if(className)node.className=className;
+    if(text!==undefined)node.textContent=text;
+    return node;
   }
-
-  const init = () => {
-    const root = document.getElementById('mobile-stage-content');
-    if (!root) return;
-    enhance();
-    // Le card vengono ricreate anche cliccando un'altra fase o dopo i risultati.
-    const observer = new MutationObserver(enhance);
+  function visual(name, side, placeholder) {
+    const wrap=add('span','rl-fixture-art rl-fixture-art--'+side+(placeholder?' is-placeholder':''));
+    wrap.style.setProperty('--rl-team-color',window.PlayoffRealLegends?.color(name)||'#36bfff');
+    if(!placeholder) {
+      const url=window.PlayoffRealLegends?.image(name);
+      if(url){
+        const img=add('img');img.src=url;img.alt='';img.loading='lazy';img.decoding='async';
+        img.addEventListener('error',()=>{img.remove();wrap.classList.add('is-placeholder')},{once:true});
+        wrap.appendChild(img);
+      } else wrap.classList.add('is-placeholder');
+    }
+    return wrap;
+  }
+  function transform(card){
+    const sides=Array.from(card.querySelectorAll('.mobile-team-side'));
+    if(sides.length!==2)return;
+    const code=card.getAttribute('data-mobile-match')||'';
+    const stage=stageFromCode(code);
+    const a=add('a','rl-fixture');
+    a.href='playoff-sfida.html?fase='+encodeURIComponent(stage)+'&match='+encodeURIComponent(code);
+    a.setAttribute('aria-label','Apri la sfida '+(meta[code]||code));
+    const teams=sides.map(s=>({
+      name:s.querySelector('.mobile-team-name')?.textContent?.trim()||'In attesa',
+      seed:s.querySelector('.mobile-seed')?.textContent?.trim()||'',
+      placeholder:s.classList.contains('is-placeholder'),
+      winner:s.classList.contains('is-winner')
+    }));
+    a.append(visual(teams[0].name,'left',teams[0].placeholder));
+    const center=add('span','rl-fixture-center');
+    center.appendChild(add('span','rl-fixture-number',meta[code]||code));
+    const label=add('span','rl-fixture-versus');
+    label.append(add('span','rl-team-name rl-team-left',teams[0].name),add('em','rl-vs-text','VS'),add('span','rl-team-name rl-team-right',teams[1].name));
+    center.appendChild(label);
+    const score=card.querySelector('.mobile-vs-pill');
+    const scoreText=score?.textContent?.trim()||'VS';
+    let note='APRI L’ARENA DELL’INCONTRO';
+    if(score?.classList.contains('has-score'))note='RISULTATO · '+scoreText;
+    else if(teams.some(x=>x.placeholder))note='IN ATTESA DEGLI ACCOPPIAMENTI';
+    center.appendChild(add('span','rl-fixture-subline',note));
+    a.append(center,visual(teams[1].name,'right',teams[1].placeholder),add('span','rl-fixture-arrow','›'));
+    a.classList.toggle('is-decided',teams.some(x=>x.winner));
+    card.replaceWith(a);
+  }
+  function enhance(){
+    const root=document.querySelector('#mobile-stage-content');if(!root)return;
+    const cards=root.querySelectorAll('.mobile-match-card');
+    cards.forEach(transform);
+    const title=root.querySelector('.mobile-stage-title-row');
+    if(title)title.classList.add('rl-stage-heading');
+    document.querySelectorAll('.stage-tab').forEach(t=>t.setAttribute('aria-selected',t.classList.contains('active')?'true':'false'));
+  }
+  function init(){
+    const root=document.querySelector('#mobile-stage-content');if(!root)return;
+    const observer=new MutationObserver(enhance);
     observer.observe(root,{childList:true,subtree:false});
-  };
-  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',init,{once:true});
+    enhance();
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});
   else init();
 })();

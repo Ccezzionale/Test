@@ -1,316 +1,76 @@
-/* LEGA DEGLI EROI — PLAYOFF ARENA / MOBILE ONLY
-   CARICARE DOPO playoff.css. Non modifica il tabellone desktop.
-   Le immagini vengono abbinate ai nomi delle squadre da playoff-arena-mobile.js.
-*/
+/* REAL LEGENDS: MOBILE ONLY. The desktop board styles remain 100% those of playoff.css. */
 @media (max-width:768px) {
-  :root { --arena-gold:#ffce66; --arena-border:rgba(157,190,232,.52); }
-
-  .playoff-mobile-app { padding-left:10px; padding-right:10px; }
-  .mobile-playoff-shell { width:100%; max-width:520px; }
-  .mobile-stage-tabs { margin-bottom:17px; border-radius:19px; background:#041936e8; }
-  .stage-tab.active { color:#ffe09a; }
-  .mobile-stage-title-row { margin:20px 5px 12px; }
-  .mobile-stage-title-row h2 { font-size:clamp(1.27rem,5vw,1.63rem); }
-  .mobile-stage-content { gap:12px; }
-
-  /* Applichiamo il look SOLO a card già arricchite dallo script. */
-  .mobile-match-card.arena-ready {
-    position:relative;
-    isolation:isolate;
-    height:clamp(140px,39vw,185px);
-    min-height:140px;
-    border-radius:16px;
-    border:1px solid var(--arena-border);
-    background:#071528;
-    overflow:hidden;
-    box-shadow:0 10px 22px rgba(0,0,0,.38),inset 0 1px 0 rgba(255,255,255,.12);
+  :root {--rl-blue:#1b9dff;--rl-cyan:#48e6ff;--rl-gold:#ffdb83}
+  html:has(.playoff-mobile-app),body:has(.playoff-mobile-app) {background-color:#031b43!important}
+  body:has(.playoff-mobile-app){
+    background:radial-gradient(ellipse at 50% -20%,#075dbb 0,transparent 55%),
+      repeating-linear-gradient(125deg,transparent 0 70px,#0b4f9d18 70px 105px,transparent 105px 180px),
+      linear-gradient(180deg,#041631,#062b62 52%,#03182f)!important;
   }
-  .mobile-match-card.arena-ready::before,
-  .mobile-match-card.arena-ready::after { content:none !important; }
-  .mobile-match-card.arena-ready.is-final {
-    border-color:rgba(255,211,107,.88);
-    box-shadow:0 0 0 1px #ad7c35aa,0 0 30px #c38b3340,0 14px 28px #0008;
+  .playoff-hero-banner {display:none!important}
+  .playoff-mobile-app {padding:12px 10px 125px!important;min-height:100dvh}
+  .mobile-playoff-shell {width:100%!important;max-width:520px!important}
+  .rl-page-intro {
+    position:relative;isolation:isolate;overflow:hidden;
+    border:1px solid #1caefa;border-radius:17px;margin:0 0 15px;
+    min-height:171px;padding:19px 16px;
+    background:radial-gradient(circle at 78% 32%,#0b66c3 0,#064177 25%,transparent 55%),
+     linear-gradient(125deg,#062a60,#02172e 80%);
+    box-shadow:inset 0 0 24px #008bff2c,0 0 0 1px #09518b66,0 10px 30px #0007;
   }
-
-  .mobile-match-card.arena-ready .mobile-match-main {
-    position:absolute;
-    inset:0;
-    z-index:1;
-    display:grid;
-    grid-template-columns:minmax(0,1fr) minmax(0,1fr);
-    gap:0;
-    padding:0;
-    min-height:0;
-    height:100%;
-    align-items:stretch;
-  }
-
-  .mobile-match-card.arena-ready .mobile-team-side {
-    position:relative;
-    display:block;
-    min-width:0;
-    height:100%;
-    margin:0;
-    padding:0;
-    overflow:hidden;
-    isolation:isolate;
-  }
-  .mobile-match-card.arena-ready .mobile-team-side .arena-visual {
-    position:absolute;
-    inset:0;
-    z-index:-1;
-    display:block;
-    background:radial-gradient(ellipse at center,#172e53,#03132a 75%);
-    overflow:hidden;
-  }
-  .mobile-match-card.arena-ready .arena-visual img {
-    display:block;
-    position:absolute;
-    inset:0;
-    width:100%;
-    height:100%;
-    object-fit:cover;
-    object-position:50% 48%;
-    transform:scale(1.03);
-    filter:saturate(1.11) contrast(1.05);
-  }
-  .mobile-match-card.arena-ready .mobile-team-side.left .arena-visual img { object-position:53% 45%; }
-  .mobile-match-card.arena-ready .mobile-team-side.right .arena-visual img { object-position:49% 45%; }
-  .mobile-match-card.arena-ready .mobile-team-side.is-placeholder .arena-visual { background:linear-gradient(135deg,#132b4c,#06152d); }
-  .mobile-match-card.arena-ready .mobile-team-side.is-placeholder .arena-visual::before {
-    content:'?'; position:absolute; inset:0; display:grid; place-items:center;
-    font-size:5.6rem; font-weight:900; color:rgba(154,188,220,.11);
-  }
-  .mobile-match-card.arena-ready .mobile-team-side::after {
-    content:'';
-    position:absolute;
-    inset:0;
-    z-index:0;
-    pointer-events:none;
-    background:linear-gradient(180deg,rgba(1,10,23,.04) 0%,transparent 31%,rgba(1,10,23,.18) 52%,rgba(1,11,28,.91) 100%);
-  }
-  .mobile-match-card.arena-ready .mobile-team-side.left::after {
-    background:linear-gradient(90deg,transparent 55%,rgba(1,9,22,.47) 100%),
-      linear-gradient(180deg,rgba(1,10,23,.12) 0%,transparent 29%,rgba(1,11,28,.16) 53%,rgba(1,10,22,.95) 100%);
-  }
-  .mobile-match-card.arena-ready .mobile-team-side.right::after {
-    background:linear-gradient(270deg,transparent 55%,rgba(1,9,22,.47) 100%),
-      linear-gradient(180deg,rgba(1,10,23,.12) 0%,transparent 29%,rgba(1,11,28,.16) 53%,rgba(1,10,22,.95) 100%);
-  }
-  .mobile-match-card.arena-ready .mobile-team-logo-wrap {display:none !important;}
-
-  /* Seed + nomi: SEMPRE HTML dinamico, mai scritti nei banner. */
-  .mobile-match-card.arena-ready .mobile-seed {
-    position:absolute;
-    z-index:4;
-    top:auto;
-    bottom:10px;
-    min-width:0;
-    min-height:0;
-    height:auto;
-    padding:0;
-    background:transparent;
-    border:0;
-    border-radius:0;
-    box-shadow:none;
-    color:#ffd36d;
-    font-size:clamp(11px,3.2vw,14px);
-    font-weight:1000;
-    line-height:1.08;
-    text-shadow:0 1px 4px #000,0 0 8px #000;
-  }
-  .mobile-match-card.arena-ready .mobile-team-side.left .mobile-seed {left:8px;right:auto;}
-  .mobile-match-card.arena-ready .mobile-team-side.right .mobile-seed {right:auto;left:10px;}
-  .mobile-match-card.arena-ready .mobile-team-name {
-    position:absolute;
-    z-index:4;
-    top:auto;
-    bottom:9px;
-    display:-webkit-box;
-    width:auto;
-    min-height:0;
-    max-width:none;
-    padding:0;
-    margin:0;
-    font-size:clamp(10px,2.9vw,14px);
-    line-height:1.04;
-    font-weight:1000;
-    color:#fff;
-    text-transform:uppercase;
-    text-align:left;
-    overflow:hidden;
-    -webkit-line-clamp:2;
-    -webkit-box-orient:vertical;
-    text-shadow:0 2px 2px #000,0 0 7px #000;
-  }
-  .mobile-match-card.arena-ready .mobile-team-side.left .mobile-team-name {left:34px;right:4px;}
-  .mobile-match-card.arena-ready .mobile-team-side.right .mobile-team-name {left:37px;right:3px;}
-  .mobile-match-card.arena-ready .mobile-team-side:not(:has(.mobile-seed)) .mobile-team-name {left:9px;}
-  .mobile-match-card.arena-ready .mobile-team-side.is-placeholder .mobile-team-name {color:#b8c9df;}
-  .mobile-match-card.arena-ready .mobile-team-side.is-winner::before {
-    content:'';position:absolute;z-index:3;inset:0;pointer-events:none;
-    box-shadow:inset 0 0 0 2px rgba(255,216,100,.66),inset 0 0 24px rgba(255,204,70,.15);
-  }
-  .mobile-match-card.arena-ready .mobile-qualified-badge {
-    position:absolute;
-    z-index:4;
-    top:32px;
-    left:7px;
-    font-size:9px;
-    line-height:1;
-    padding:5px 6px;
-    border-radius:5px;
-    color:#ffdb7f;
-    background:rgba(0,17,36,.78);
-    border:1px solid rgba(255,204,99,.6);
-    white-space:nowrap;
-  }
-  .mobile-match-card.arena-ready .mobile-team-side.right .mobile-qualified-badge {left:auto;right:7px;}
-
-  /* Titolo fase e punteggio galleggiano sopra la giunzione tra le due immagini. */
-  .mobile-match-card.arena-ready .mobile-match-code {
-    position:absolute;
-    z-index:9;
-    top:8px;
-    left:50%;
-    transform:translateX(-50%);
-    white-space:nowrap;
-    color:#ffd86f;
-    font-size:clamp(10px,2.8vw,12px);
-    letter-spacing:.6px;
-    font-weight:950;
-    text-shadow:0 2px 6px #000,0 0 10px #000;
-  }
-  .mobile-match-card.arena-ready .mobile-vs-center {
-    position:absolute;
-    z-index:8;
-    inset:0;
-    height:100%;
-    min-width:0;
-    align-self:auto;
-    display:block;
-    pointer-events:none;
-  }
-  .mobile-match-card.arena-ready .mobile-match-label { display:none; }
-  .mobile-match-card.arena-ready .mobile-vs-pill {
-    position:absolute;
-    top:49%;
-    left:50%;
-    transform:translate(-50%,-50%);
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    width:auto;
-    min-width:61px;
-    height:auto;
-    min-height:42px;
-    padding:2px 6px;
-    border:0;
-    border-radius:0;
-    background:transparent;
-    box-shadow:none;
-    color:#fff0bc;
-    font-size:clamp(26px,8.5vw,38px);
-    font-weight:1000;
-    font-style:italic;
-    line-height:1.1;
-    letter-spacing:-1px;
-    text-shadow:0 2px 2px #4e2905,0 0 8px #f5a83f,0 0 23px #ec943f,2px 3px 10px #000;
-    -webkit-text-stroke:.5px rgba(255,216,132,.95);
-  }
-  .mobile-match-card.arena-ready .mobile-vs-pill.has-score {
-    font-size:clamp(22px,6.5vw,32px);
-    font-style:normal;
-    letter-spacing:0;
-    white-space:nowrap;
-  }
-  .mobile-match-card.arena-ready .mobile-vs-pill::before,
-  .mobile-match-card.arena-ready .mobile-vs-pill::after {display:none !important;}
-  .mobile-match-card.arena-ready .mobile-match-status { display:none; }
-  .mobile-match-card.arena-ready.arena-has-score .mobile-match-status {
-    position:absolute;
-    display:block;
-    top:65%;
-    left:50%;
-    transform:translateX(-50%);
-    white-space:nowrap;
-    color:#e6ddcc;
-    text-shadow:0 1px 4px #000,0 0 9px #000;
-    font-size:9px;
-    font-weight:900;
-  }
-  /* La progressione è già nel tabellone, non occupa spazio nel poster mobile. */
-  .mobile-match-card.arena-ready .mobile-match-footer {display:none !important;}
+  .rl-page-intro::before {content:'';position:absolute;inset:0;z-index:-1;opacity:.7;
+    background:linear-gradient(127deg,transparent 32%,#008fff30 34%,transparent 37%,transparent 62%,#05c4ff29 65%,transparent 67%)}
+  .rl-page-intro::after {content:'';position:absolute;left:10%;right:10%;bottom:0;height:3px;
+   background:linear-gradient(90deg,transparent,#2bb9ff,#baf8ff,#2bb9ff,transparent);box-shadow:0 0 16px #20b7ff}
+  .rl-hero-characters{position:absolute;right:-24px;bottom:-6px;z-index:0;display:flex;align-items:flex-end;opacity:.94;pointer-events:none}
+  .rl-hero-characters img{width:132px;height:174px;object-fit:contain;filter:drop-shadow(0 7px 12px #000b)}
+  .rl-hero-characters img:first-child{margin-right:-59px;filter:drop-shadow(0 7px 13px #000a)}
+  .rl-intro-copy {position:relative;z-index:2;max-width:78%;pointer-events:none;text-shadow:0 2px 5px #001833}
+  .rl-intro-eyebrow{display:block;font-size:9px;letter-spacing:1.5px;font-weight:900;color:#72dfff}
+  .rl-intro-copy h1{margin:10px 0 0;font:900 clamp(33px,9vw,48px)/.92 'Bebas Neue','Arial Narrow',Impact,sans-serif;letter-spacing:1px;color:#fff;text-shadow:0 2px 0 #2863ac,0 0 15px #1580ff}
+  .rl-intro-copy h1 em{font-style:normal;color:#ffdc8d}
+  .rl-intro-tagline{margin:9px 0 0;display:inline-block;max-width:270px;transform:skew(-8deg);padding:5px 7px;
+    border-block:1px solid #42d9ff;background:linear-gradient(90deg,#0069dd69,transparent);font:italic 900 15px/.95 'Segoe UI',sans-serif;color:#fff;white-space:nowrap;
+    text-shadow:0 0 9px #29b7ff}
+  .rl-intro-tagline strong{color:#ffd878}
+  .rl-intro-copy p{margin:10px 0 0;font-size:10px;line-height:1.45;font-weight:650;color:#d1f3ff;max-width:210px}
+  .mobile-stage-tabs{margin:0 0 17px!important;border-radius:12px!important;background:#031a3df0!important;border:1px solid #206cc2!important;padding:4px!important;box-shadow:0 8px 22px #00132b88!important}
+  .stage-tab{color:#b6d9ff!important;border-radius:8px!important;min-height:43px!important}
+  .stage-tab.active{color:#001c41!important;background:linear-gradient(180deg,#67d9ff,#1683e9)!important;text-shadow:none!important;box-shadow:0 0 17px #05aeff88,inset 0 1px 0 #e8ffff!important}
+  .stage-tab.active::after{display:none!important}
+  .mobile-stage-content{display:flex!important;flex-direction:column;gap:11px!important}
+  .rl-stage-heading{margin:7px 2px 9px!important;align-items:center!important}
+  .rl-stage-heading::before{content:'';display:block;width:5px;height:35px;transform:skew(-16deg);background:linear-gradient(#4ff1ff,#0076df);box-shadow:0 0 10px #00a9ff;margin-right:8px}
+  .rl-stage-heading h2{font:italic 900 26px/1 'Segoe UI',sans-serif!important;text-transform:uppercase!important;color:#fff!important;text-shadow:0 0 9px #167fff!important;margin-right:auto}
+  .rl-stage-heading span{border:1px solid #267ec9;border-radius:5px;background:#0629579c;padding:6px 9px;color:#bceaff!important;font-size:10px!important}
+  .rl-fixture{position:relative;display:grid;grid-template-columns:25% minmax(0,1fr) 25% 15px;align-items:center;
+    height:113px;min-height:113px;padding:0 8px;overflow:hidden;isolation:isolate;
+    border:1px solid #2ca8ff;border-radius:12px;
+    background:linear-gradient(100deg,#07192b,#092b5b 50%,#051833);
+    box-shadow:inset 0 0 0 1px #338af333,0 9px 22px #001021a8,0 0 12px #118fff20;
+    text-decoration:none;color:white!important;cursor:pointer}
+  .rl-fixture::after{content:'';position:absolute;inset:0;z-index:-1;pointer-events:none;
+    background:linear-gradient(130deg,transparent 35%,#03bfff20 40%,transparent 42%,transparent 59%,#05bfff20 63%,transparent 67%)}
+  .rl-fixture:active{transform:scale(.993)}
+  .rl-fixture-art{position:relative;display:block;width:100%;height:112px;isolation:isolate;overflow:visible}
+  .rl-fixture-art::before{content:'';position:absolute;inset:3px -14px 0;z-index:-1;background:radial-gradient(circle at 50% 55%,var(--rl-team-color),transparent 69%);opacity:.45;filter:blur(9px)}
+  .rl-fixture-art img{position:absolute;display:block;height:132px;width:154px;max-width:none;bottom:-7px;left:50%;transform:translateX(-50%);object-fit:contain;filter:drop-shadow(0 4px 7px #000a)}
+  .rl-fixture-art--right img{transform:translateX(-50%) scaleX(-1)}
+  .rl-fixture-art.is-placeholder:after{content:'?';position:absolute;inset:0;display:grid;place-items:center;color:#65bce8aa;font-size:60px;font-weight:900}
+  .rl-fixture-center{z-index:2;min-width:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:5px;text-shadow:0 2px 4px #001323}
+  .rl-fixture-number{color:#81eaff;font-size:9px;letter-spacing:1.4px;font-weight:900;white-space:nowrap}
+  .rl-fixture-versus{display:flex;flex-direction:column;align-items:center;min-width:0;line-height:1.02}
+  .rl-team-name{display:block;max-width:100%;font:italic 900 clamp(12px,3.5vw,18px)/1.03 'Segoe UI',Arial,sans-serif;text-transform:uppercase;overflow-wrap:anywhere}
+  .rl-vs-text{color:#34daff;line-height:1.1;font:italic 950 15px 'Segoe UI',sans-serif}
+  .rl-fixture-subline{font-weight:750;font-size:8px;letter-spacing:.35px;color:#c1dcf5;max-width:100%;line-height:1.15}
+  .rl-fixture-arrow{font-size:35px;text-shadow:0 0 8px #00bdff;color:#68edff;font-weight:650;transform:translateY(-2px)}
+  .rl-fixture:focus-visible{outline:3px solid #91e7ff;outline-offset:2px}
+  /* Desktop content remains hidden by the original desktop/mobile breakpoints. */
 }
-
-@media (max-width:360px) {
-  .mobile-match-card.arena-ready {height:137px;min-height:137px;}
-  .mobile-match-card.arena-ready .mobile-team-name {font-size:10px;}
-  .mobile-match-card.arena-ready .mobile-team-side.left .mobile-team-name {left:30px;}
-  .mobile-match-card.arena-ready .mobile-team-side.right .mobile-team-name {left:32px;}
-}
-
-/* =========================================================
-   V2 · ESITO PLAYOFF ARENA
-   Solo mobile, soltanto quando playoff.js identifica un vincitore.
-   Nessuna modifica ai dati, ai punteggi o agli accoppiamenti.
-   ========================================================= */
-@media (max-width:768px) {
-  /* Chi è eliminato resta riconoscibile, ma arretra visivamente. */
-  .mobile-match-card.arena-ready.arena-decided .mobile-team-side.arena-eliminated .arena-visual img {
-    filter:grayscale(.86) saturate(.34) brightness(.56) contrast(.94);
-    transition:filter .45s ease;
-  }
-  .mobile-match-card.arena-ready.arena-decided .mobile-team-side.arena-eliminated::before {
-    content:'';
-    position:absolute;
-    inset:0;
-    z-index:2;
-    pointer-events:none;
-    background:linear-gradient(130deg,rgba(2,9,20,.18),rgba(3,12,26,.42));
-  }
-  .mobile-match-card.arena-ready.arena-decided .mobile-team-side.arena-eliminated .mobile-team-name {
-    color:#d0d7e2;
-    text-shadow:0 2px 5px #000;
-  }
-  .mobile-match-card.arena-ready.arena-decided .mobile-team-side.arena-eliminated .mobile-seed {
-    color:#c1c9d3;
-  }
-  /* Il vincitore rimane a colori con un accenno di luce dorata. */
-  .mobile-match-card.arena-ready.arena-decided .mobile-team-side.arena-advanced .arena-visual img {
-    filter:saturate(1.2) contrast(1.08) brightness(1.05);
-  }
-  .mobile-match-card.arena-ready.arena-decided .mobile-team-side.arena-advanced::before {
-    box-shadow:inset 0 0 0 2px rgba(255,215,105,.79),inset 0 0 27px rgba(255,201,72,.19);
-  }
-  .mobile-match-card.arena-ready .arena-eliminated-label {
-    position:absolute;
-    z-index:6;
-    top:33px;
-    left:7px;
-    display:inline-flex;
-    align-items:center;
-    justify-content:center;
-    padding:5px 7px;
-    border-radius:5px;
-    background:rgba(7,14,29,.79);
-    border:1px solid rgba(186,196,207,.55);
-    color:#dbe1e8;
-    font-size:9px;
-    line-height:1;
-    font-weight:900;
-    letter-spacing:.4px;
-    text-shadow:0 1px 3px #000;
-    pointer-events:none;
-  }
-  .mobile-match-card.arena-ready .mobile-team-side.right .arena-eliminated-label {
-    left:auto;
-    right:7px;
-  }
-  .mobile-match-card.arena-ready .mobile-team-side.arena-advanced .mobile-qualified-badge {
-    color:#ffe3a2;
-    background:rgba(27,20,3,.82);
-    border-color:rgba(255,214,105,.91);
-    box-shadow:0 0 12px rgba(255,192,64,.33);
-  }
+@media(max-width:360px){
+ .rl-hero-characters img{width:113px}
+ .rl-intro-copy h1{font-size:35px}
+ .rl-fixture{grid-template-columns:23% minmax(0,1fr) 23% 12px}
+ .rl-fixture-art img{width:130px;height:123px}
+ .rl-team-name{font-size:12px}
 }

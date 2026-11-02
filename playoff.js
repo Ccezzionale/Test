@@ -391,6 +391,9 @@ function aggiornaPlayoff() {
   renderCampione(P);
   renderMobilePlayoff(P);
   renderPlayoffAdminPanel(P);
+  // Evento puramente informativo: la schermata mobile dedicata puo' riusare
+  // i dati gia' calcolati, senza alterare il tabellone desktop.
+  document.dispatchEvent(new CustomEvent('lega:playoff-rendered', {detail: {participants: P}}));
 }
 
 /* =========================================
@@ -845,7 +848,10 @@ function buildTotalRankingFromRows(rawRows) {
    - Usa gli stessi dati P giÃ  calcolati.
    - Non modifica PICKS, computeParticipants o winnerOf.
    ========================================= */
-let currentMobileStage = "wildcard";
+let currentMobileStage = (() => {
+  const stage = new URLSearchParams(location.search).get('fase');
+  return ['wildcard','quarti','semifinali','finale'].includes(stage) ? stage : 'wildcard';
+})();
 let mobileTabsBound = false;
 let lastMobileParticipants = null;
 
