@@ -1,168 +1,199 @@
-/* CHAMPIONS ARENA / REAL LEGENDS – mobile duel page only, 2026-11-02.
-   All game data and desktop bracket remain under the original playoff.js / playoff.css. */
-@import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800;900&family=Cinzel:wght@700;800;900&display=swap');
-:root{--rl-blue:#0baaff;--rl-ice:#81eaff;--rl-gold:#ffd371;--rl-ink:#021329}
+/* CHAMPIONS ARENA V2 — SOLO schermata del duello.
+   Layout ricostruito da elementi reali, mai dalle immagini dei mockup.
+   La logica dei playoff e il desktop rimangono quelli esistenti. */
+@import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,600;0,700;0,800;0,900;1,700;1,800;1,900&family=Cinzel:wght@700;800;900&display=swap');
+:root{--rl-blue:#12acff;--rl-ice:#b5eeff;--rl-gold:#f5c15b;--rl-ink:#041831}
 *,*::before,*::after{box-sizing:border-box}
 html:has(body.rl-duel-page),html:has(body.rl-duel-page) body.rl-duel-page{
-  color-scheme:dark;color:#f7fbff!important;min-height:100%;margin:0;overflow-x:hidden;
-  background:radial-gradient(ellipse 75% 28% at 50% 2%,#1260a2 0%,transparent 90%),
-   radial-gradient(ellipse 90% 40% at 50% 80%,#093e77 0%,transparent 100%),
-   linear-gradient(180deg,#020d22,#042b57 45%,#02122b 92%)!important;
-  font:14px/1.4 'Segoe UI',Arial,sans-serif;
-}
-body.rl-duel-page::before,body.rl-duel-page::after{background:none!important;pointer-events:none}
+ color-scheme:dark; margin:0;min-height:100%;overflow-x:hidden;
+ background:radial-gradient(ellipse 85% 42% at 50% 26%,#114c85 0%,#041e42 48%,#030c20 100%)!important;
+ color:#fff!important;font:14px/1.4 'Segoe UI',Arial,sans-serif}
+body.rl-duel-page::before,body.rl-duel-page::after{display:none!important}
 body.rl-duel-page .site-nav{position:sticky;top:0;z-index:200}
-body.rl-duel-page .rl-duel-shell{max-width:590px;margin:0 auto;padding:10px 11px 105px;position:relative;isolation:isolate;color:#fff!important;
- background:linear-gradient(180deg,rgba(1,16,39,.18),rgba(1,12,29,.2))}
-body.rl-duel-page .rl-duel-shell *{box-sizing:border-box}
+body.rl-duel-page .rl-duel-shell{width:min(100%,590px);margin:0 auto;padding:9px 12px 105px;
+ position:relative;isolation:isolate;color:#fff!important;
+ background:linear-gradient(180deg,rgba(1,13,31,.16),rgba(1,17,42,.06) 45%,rgba(0,12,30,.2))}
 body.rl-duel-page .rl-duel-shell a{text-decoration:none}
-body.rl-duel-page .rl-duel-shell a:focus-visible{outline:2px solid #b1f3ff;outline-offset:3px}
-body.rl-duel-page .rl-return{display:inline-flex;align-items:center;gap:8px;color:#deefff!important;padding:7px 13px;
- border:1px solid rgba(78,174,254,.45);border-radius:99px;background:rgba(1,19,47,.72);font-weight:800;font-size:11px;margin:2px 0 10px}
-body.rl-duel-page .rl-return span{font-size:21px;line-height:12px;color:#7fdbff!important}
-body.rl-duel-page .rl-event-head{text-align:center;position:relative;padding:4px 0 13px;background:radial-gradient(ellipse 75% 85% at 50% 55%,rgba(18,99,189,.28),transparent)}
-body.rl-duel-page .rl-event-eyebrow{font:800 10px/1.1 'Cinzel',Georgia,serif;letter-spacing:.19em;color:#bfe5ff!important;
- text-shadow:0 0 13px #228dff;display:flex;gap:12px;align-items:center;justify-content:center}
-body.rl-duel-page .rl-event-eyebrow span{color:#f7cf70}
-body.rl-duel-page .rl-event-brand{display:flex;align-items:center;justify-content:center;gap:11px;
- font:900 clamp(17px,4.4vw,25px)/1.1 'Cinzel',Georgia,serif;letter-spacing:.035em;color:#ffedae!important;
- text-shadow:0 2px 1px #52340f,0 0 20px #b7803485;margin:8px 0 1px}
-body.rl-duel-page .rl-event-brand b{color:#fff6da}
-body.rl-duel-page .rl-gold-wings{font-size:28px;color:#ffe28b!important;transform:rotate(20deg);opacity:.85}
-body.rl-duel-page .rl-event-title{margin:1px 0 -1px;font:italic 900 clamp(40px,11vw,64px)/1 'Barlow Condensed',Impact,sans-serif;
- letter-spacing:.045em;color:#f7fbff!important;-webkit-text-fill-color:#f7fbff!important;text-shadow:0 2px 1px #00234e,0 0 21px #239aff}
-body.rl-duel-page .rl-event-title strong{color:#ffd878!important;-webkit-text-fill-color:#ffd878!important;font-weight:900}
-body.rl-duel-page .rl-event-stage{display:inline-block;min-width:56%;margin:9px 0 13px;padding:3px 25px 5px;
- color:#fff7d7!important;-webkit-text-fill-color:#fff7d7!important;letter-spacing:.2em;
- font:800 clamp(16px,5.3vw,27px)/1.2 'Cinzel',Georgia,serif;text-shadow:0 2px 7px #00152f;
- background:linear-gradient(90deg,transparent,#0c3a71 20%,#041b3c 50%,#0c3a71 80%,transparent);
- border-block:1px solid rgba(237,190,92,.75);box-shadow:0 6px 15px -10px #5ddcff}
-body.rl-duel-page .rl-stage-nav{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px;margin:0 2px}
-body.rl-duel-page .rl-stage-nav a{display:flex;align-items:center;justify-content:center;min-height:38px;padding:5px 3px;
- border:1px solid rgba(125,199,255,.75);border-radius:999px;background:linear-gradient(180deg,#0b315b,#051a39);
- font:800 clamp(12px,3.5vw,15px) 'Barlow Condensed',Arial,sans-serif;letter-spacing:.025em;color:#e9f7ff!important;-webkit-text-fill-color:#e9f7ff!important}
-body.rl-duel-page .rl-stage-nav a.active{color:#06182c!important;-webkit-text-fill-color:#06182c!important;
- background:linear-gradient(180deg,#fff3b5,#ffcf67 55%,#dc8b28);border-color:#ffecaa;box-shadow:0 0 16px rgba(253,197,63,.55);
- text-shadow:none}
-body.rl-duel-page .rl-duel-top{display:flex;justify-content:space-between;align-items:center;gap:10px;margin:7px 4px 10px}
-body.rl-duel-page .rl-strap{font:900 9px 'Segoe UI',sans-serif;color:#83e7ff!important;letter-spacing:1.5px}
-body.rl-duel-page .rl-duel-top h2{font:italic 900 24px/1 'Barlow Condensed',Impact,sans-serif;margin:0;color:white!important;
- text-shadow:0 1px 2px #001b38,0 0 14px #148eff}
-body.rl-duel-page .rl-counter{padding:4px 11px;color:#ffe7a0!important;font:800 15px 'Barlow Condensed',sans-serif;
- border:1px solid rgba(255,225,145,.65);background:#041d40;border-radius:7px;white-space:nowrap}
-/* LIVE ARENA: three-dimensional environment, no baked team names or results. */
+body.rl-duel-page .rl-duel-shell a:focus-visible{outline:2px solid #b9f0ff;outline-offset:3px}
+body.rl-duel-page .rl-return{display:inline-flex;align-items:center;gap:6px;
+ margin:0 0 5px;padding:5px 11px;border-radius:99px;background:#05254caa;
+ border:1px solid #2f93cb8a;color:#dcefff!important;font-weight:800;font-size:11px}
+body.rl-duel-page .rl-return span{font-size:18px;line-height:10px;color:#90dfff!important}
+/* Testata solenne, ma gli elementi sono selezionabili e responsive. */
+body.rl-duel-page .rl-event-head{text-align:center;position:relative;padding:11px 0 9px;overflow:hidden;
+ background:radial-gradient(ellipse 68% 70% at 50% 30%,#0e559089,transparent 80%)}
+body.rl-duel-page .rl-event-head::before,body.rl-duel-page .rl-event-head::after{
+ content:'✦';position:absolute;top:32px;color:#ffdb8f;font-size:12px;text-shadow:0 0 19px #fff1bd}
+body.rl-duel-page .rl-event-head::before{left:11%}
+body.rl-duel-page .rl-event-head::after{right:11%}
+body.rl-duel-page .rl-event-eyebrow{display:flex;justify-content:center;gap:8px;
+ font:800 9px 'Cinzel',serif;letter-spacing:.17em;color:#ceeaff!important}
+body.rl-duel-page .rl-event-eyebrow span{color:#eec574}
+body.rl-duel-page .rl-event-brand{display:flex;align-items:center;justify-content:center;gap:9px;margin:4px 0 3px;
+ font:900 clamp(18px,5.1vw,28px)/1.13 'Cinzel',serif;letter-spacing:.01em;
+ color:#ffedb6!important;text-shadow:0 2px 2px #2b1904,0 0 17px #eebf5684}
+body.rl-duel-page .rl-event-brand b{color:#fff9e9!important}
+body.rl-duel-page .rl-gold-wings{font-size:23px;color:#ffc969!important}
+body.rl-duel-page .rl-event-title{margin:0;
+ font:italic 900 clamp(43px,12.9vw,74px)/1 'Barlow Condensed',Impact,sans-serif;
+ letter-spacing:.055em;color:#fdfcff!important;-webkit-text-fill-color:#fdfcff!important;
+ text-shadow:0 2px #0a3268,0 3px 16px #54adff99}
+body.rl-duel-page .rl-event-title strong{color:#ffd17b!important;-webkit-text-fill-color:#ffd17b!important;font-weight:900;
+ text-shadow:0 3px #643916,0 0 17px #caa13f8a}
+body.rl-duel-page .rl-event-stage{display:table;min-width:68%;margin:6px auto 12px;padding:5px 25px 6px;
+ clip-path:polygon(8% 0,92% 0,100% 50%,92% 100%,8% 100%,0 50%);
+ border-block:1px solid #6accff;background:linear-gradient(90deg,#06477b,#071d43 40%,#071d43 60%,#06477b);
+ box-shadow:0 0 17px #008def;letter-spacing:.13em;
+ font:800 clamp(16px,4.8vw,25px)/1.17 'Cinzel',serif;
+ color:#f8faff!important;-webkit-text-fill-color:#f8faff!important;text-shadow:0 2px 5px #00274b}
+body.rl-duel-page .rl-stage-nav{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;margin:0 0 3px}
+body.rl-duel-page .rl-stage-nav a{display:flex;align-items:center;justify-content:center;
+ min-height:37px;padding:6px 1px;border-radius:99px;border:1px solid #6abbe9a8;
+ background:linear-gradient(180deg,#0b3964,#041b3c);
+ color:#f3fbff!important;-webkit-text-fill-color:#f3fbff!important;
+ font:800 clamp(12px,3.6vw,16px)/1 'Barlow Condensed',sans-serif}
+body.rl-duel-page .rl-stage-nav a.active{background:linear-gradient(#fff2bd,#f5c463 58%,#cd8022);
+ border-color:#fff0b7;box-shadow:0 0 14px #efbb599e;color:#072146!important;-webkit-text-fill-color:#072146!important}
+body.rl-duel-page .rl-duel-top{display:flex;justify-content:space-between;align-items:end;gap:10px;margin:13px 4px 0;position:relative;z-index:14}
+body.rl-duel-page .rl-strap{color:#7cdfff!important;font:900 9px 'Segoe UI',sans-serif;letter-spacing:1.5px}
+body.rl-duel-page .rl-duel-top h2{font:italic 900 clamp(23px,6.5vw,34px)/1 'Barlow Condensed',Impact,sans-serif;
+ color:#fff!important;margin:2px 0 0;text-shadow:0 0 17px #58acff}
+body.rl-duel-page .rl-counter{font:800 15px 'Barlow Condensed',sans-serif;
+ color:#ffe3a6!important;padding:4px 10px;border-radius:8px;border:1px solid #f0ca7ca6;background:#041c3e}
+/* SCENA SENZA CORNICE. Le creature sono separate, come nel riferimento scelto. */
 body.rl-duel-page .rl-arena{position:relative;isolation:isolate;overflow:hidden;
- height:clamp(445px,118vw,610px);min-height:0;border:none!important;border-radius:9px;
- background:#03162f url('img/playoff-real-legends/arena-stadium.svg') center / cover no-repeat!important;
- box-shadow:0 0 0 1px rgba(63,187,255,.4),0 12px 25px rgba(0,5,16,.5),inset 0 -30px 55px #010b20!important;}
-body.rl-duel-page .rl-arena::before{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;
- background:linear-gradient(180deg,#020c1e00 0%,#031b3900 50%,#020a18d9 92%,#010916f5 100%),
- radial-gradient(ellipse at 17% 50%,color-mix(in srgb,var(--rl-left-color,#e63c57),transparent 69%),transparent 50%),
- radial-gradient(ellipse at 83% 50%,color-mix(in srgb,var(--rl-right-color,#d8a947),transparent 68%),transparent 50%)}
-body.rl-duel-page .rl-arena::after{content:"";position:absolute;inset:0;z-index:12;pointer-events:none;
- background:linear-gradient(125deg,transparent 20%,#e7faff24 24%,transparent 27% 75%,#dbf6ff1d 79%,transparent 83%);
- border:1px solid rgba(50,172,245,.35);box-shadow:inset 0 0 24px #0088ff4f}
-body.rl-duel-page .rl-arena-light{position:absolute;top:7%;height:77%;width:68%;z-index:1;pointer-events:none;
- mix-blend-mode:screen;opacity:.65}
-body.rl-duel-page .rl-arena-light--left{left:-24%;background:radial-gradient(ellipse, color-mix(in srgb,var(--rl-left-color,#b52b46),transparent 65%),transparent 67%)}
-body.rl-duel-page .rl-arena-light--right{right:-24%;background:radial-gradient(ellipse, color-mix(in srgb,var(--rl-right-color,#f6b845),transparent 69%),transparent 67%)}
-body.rl-duel-page .rl-arena-side{position:absolute;top:3%;bottom:13%;width:54%;z-index:3;overflow:visible;
- background:transparent!important;box-shadow:none!important}
-body.rl-duel-page .rl-arena-side--left{left:-3%} body.rl-duel-page .rl-arena-side--right{right:-3%}
+ width:calc(100% + 24px);margin:0 -12px;aspect-ratio:390/595; height:auto;min-height:0;
+ border:0!important;border-radius:0!important;
+ background:#03172c url('img/playoff-real-legends/arena-stadium.svg') center 25%/100% 100% no-repeat!important;
+ box-shadow:none!important}
+body.rl-duel-page .rl-arena::before{content:'';position:absolute;inset:0;z-index:1;pointer-events:none;
+ background:radial-gradient(ellipse 50% 42% at 18% 58%,color-mix(in srgb,var(--rl-left-color,#d94654),transparent 74%),transparent 90%),
+ radial-gradient(ellipse 52% 45% at 82% 58%,color-mix(in srgb,var(--rl-right-color,#ddb45d),transparent 74%),transparent 90%),
+ linear-gradient(180deg,#06162a32 0%,transparent 20%,transparent 56%,#07142a69 79%,#061630df 100%)}
+body.rl-duel-page .rl-arena::after{content:'';position:absolute;inset:0;z-index:6;pointer-events:none;
+ background:linear-gradient(110deg,transparent 46%,#b8f6ff1b 50%,transparent 55%),
+ radial-gradient(ellipse 80% 15% at 50% 94%,#179de544,transparent 75%)}
+body.rl-duel-page .rl-arena-light{position:absolute;z-index:2;top:10%;width:60%;height:69%;pointer-events:none;mix-blend-mode:screen}
+body.rl-duel-page .rl-arena-light--left{left:-18%;background:radial-gradient(ellipse,color-mix(in srgb,var(--rl-left-color,#b5385e),transparent 52%),transparent 70%)}
+body.rl-duel-page .rl-arena-light--right{right:-18%;background:radial-gradient(ellipse,color-mix(in srgb,var(--rl-right-color,#e5a74c),transparent 55%),transparent 70%)}
+/* Il limite e' sul personaggio, non un zoom forzato a 193% come prima.
+   Centro del corpo + maschera sfumata soltanto sul lato del VS. */
+body.rl-duel-page .rl-arena-side{position:absolute;z-index:3;top:7%;height:70%;width:50%;overflow:visible;
+ background:none!important;box-shadow:none!important}
+body.rl-duel-page .rl-arena-side--left{left:0}
+body.rl-duel-page .rl-arena-side--right{right:0}
 body.rl-duel-page .rl-arena-side::before,body.rl-duel-page .rl-arena-side::after{display:none!important}
-body.rl-duel-page .rl-arena-side img{position:absolute;top:5%;bottom:auto;left:50%;display:block;
- max-width:none;width:193%;height:91%;object-fit:contain;object-position:center center;
- transform:translateX(-50%) scale(1.13)!important;
- filter:drop-shadow(0 9px 5px rgba(0,0,0,.57)) drop-shadow(0 0 23px color-mix(in srgb,var(--rl-color,#007fff),transparent 64%)) saturate(1.06)!important}
-body.rl-duel-page .rl-arena-side--right img{transform:translateX(-50%) scale(1.13)!important} /* Never reverse names in jersey art */
+body.rl-duel-page .rl-arena-side img{display:block;position:absolute;top:2%;left:50%;
+ width:150%;max-width:none;height:auto;aspect-ratio:1/1;object-fit:contain;object-position:center;
+ transform:translateX(-50%)!important;
+ filter:drop-shadow(0 13px 9px #010713a6) drop-shadow(0 0 16px color-mix(in srgb,var(--rl-color,#2eaaff),transparent 72%))!important}
+body.rl-duel-page .rl-arena-side--left img{-webkit-mask-image:linear-gradient(90deg,#000 0%,#000 61%,transparent 100%);mask-image:linear-gradient(90deg,#000 0%,#000 61%,transparent 100%)}
+body.rl-duel-page .rl-arena-side--right img{-webkit-mask-image:linear-gradient(270deg,#000 0%,#000 61%,transparent 100%);mask-image:linear-gradient(270deg,#000 0%,#000 61%,transparent 100%)}
 body.rl-duel-page .rl-arena-side.rl-placeholder img{display:none!important}
-body.rl-duel-page .rl-arena-side.rl-placeholder::before{display:flex!important;content:'?';height:67%;align-items:center;justify-content:center;font:900 106px 'Cinzel',serif;color:#abe5ff7a}
-body.rl-duel-page .rl-arena-side.rl-eliminata img{filter:grayscale(.55) brightness(.7) drop-shadow(0 8px 6px #000)!important}
-body.rl-duel-page .rl-fracture{position:absolute;left:37%;top:13%;width:26%;height:73%;z-index:4;pointer-events:none;
- background:linear-gradient(90deg,transparent,#168dffb0 44%,#e7fcff 50%,#38b4ffab 55%,transparent);
- clip-path:polygon(50% 0,58% 0,44% 20%,65% 35%,43% 56%,57% 76%,47% 100%,38% 100%,44% 77%,28% 55%,49% 34%,39% 20%);
- filter:drop-shadow(0 0 12px #1ab4ff)}
-body.rl-duel-page .rl-vs-symbol{position:absolute;z-index:7;left:50%;top:62%;transform:translate(-50%,-50%) rotate(-10deg)!important;
- color:#fff!important;-webkit-text-fill-color:#fff!important;-webkit-text-stroke:2px #146fef;
- font:italic 900 clamp(77px,23vw,132px)/.9 'Barlow Condensed',Impact,sans-serif;
- text-shadow:0 3px 1px #0868d4,0 0 14px #0cbdff,0 0 30px #0c82ff,0 10px 17px #00121f;}
-body.rl-duel-page .rl-arena-ribbon{position:absolute;z-index:10;top:0;left:50%;transform:translateX(-50%);
- max-width:90%;white-space:nowrap;clip-path:polygon(0 0,100% 0,90% 100%,10% 100%);
- padding:6px 26px;color:#fff9dc!important;-webkit-text-fill-color:#fff9dc!important;text-shadow:0 2px 5px #031731;
- background:linear-gradient(180deg,#123c67,#04162f)!important;
- border:1px solid rgba(254,205,112,.75);border-top:none;
- font:italic 900 17px/1.2 'Barlow Condensed',sans-serif;letter-spacing:1px}
-body.rl-duel-page .rl-arena-bottom{position:absolute;left:0;right:0;bottom:5%;z-index:9;
- display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:9%;padding:0 12px}
-body.rl-duel-page .rl-arena-name{min-height:84px;min-width:0;display:flex;align-items:flex-start;justify-content:center;
- flex-direction:column;gap:4px;padding:8px 8px 9px;overflow:visible;
- background:linear-gradient(100deg,#761330 0%,#161e3b 97%)!important;
- border:1px solid #f53c63!important;border-bottom:3px solid #ff4e6b!important;
- border-radius:3px;clip-path:polygon(0 0,100% 0,93% 100%,0 100%);
- color:white!important;box-shadow:0 7px 16px #0008!important}
+body.rl-duel-page .rl-arena-side.rl-placeholder::before{content:'?';display:flex!important;justify-content:center;align-items:center;
+ color:#e6f9ff96;font:900 105px 'Cinzel',serif;min-height:75%}
+body.rl-duel-page .rl-arena-side.rl-eliminata img{filter:grayscale(.55) brightness(.72) drop-shadow(0 8px 6px #000)!important}
+/* Slash diagonale, senza cartello sovrapposto agli occhi. */
+body.rl-duel-page .rl-fracture{position:absolute;z-index:5;top:18%;left:41%;width:18%;height:57%;pointer-events:none;
+ background:linear-gradient(90deg,transparent,#068dff99 38%,#e2ffff 51%,#0e9bed88 65%,transparent);
+ clip-path:polygon(48% 0,65% 0,38% 30%,63% 51%,37% 71%,54% 100%,35% 100%,19% 72%,39% 52%,15% 31%);
+ filter:drop-shadow(0 0 14px #12b0ff)}
+body.rl-duel-page .rl-arena-ribbon{position:absolute;z-index:10;top:1%;left:50%;transform:translateX(-50%);
+ white-space:nowrap;padding:5px 24px 6px;max-width:85%;
+ clip-path:polygon(7% 0,93% 0,100% 50%,93% 100%,7% 100%,0 50%);
+ background:linear-gradient(100deg,#0c3671,#052047,#0c3671)!important;
+ color:#fff7db!important;-webkit-text-fill-color:#fff7db!important;
+ font:italic 900 clamp(15px,4vw,21px)/1 'Barlow Condensed',Impact,sans-serif;
+ letter-spacing:1px;text-shadow:0 0 8px #051c32;box-shadow:none}
+body.rl-duel-page .rl-vs-symbol{position:absolute;z-index:8;left:50%;top:59%;
+ transform:translate(-50%,-50%) rotate(-10deg)!important;
+ color:#faffff!important;-webkit-text-fill-color:#faffff!important;-webkit-text-stroke:1px #0978d5;
+ font:italic 900 clamp(70px,21vw,122px)/1 'Barlow Condensed',Impact,sans-serif;
+ text-shadow:0 2px 1px #014a9b,0 0 12px #0ef0ff,0 0 32px #209aff,0 9px 15px #001024}
+/* Le targhette riprendono i colori REALI delle franchigie passati dal JavaScript. */
+body.rl-duel-page .rl-arena-bottom{position:absolute;z-index:11;left:0;right:0;bottom:12%;
+ display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:17%;padding:0 8px}
+body.rl-duel-page .rl-arena-name{min-width:0;min-height:75px;display:flex;flex-direction:column;
+ justify-content:center;align-items:flex-start;gap:4px;padding:9px 7px 10px;
+ background:linear-gradient(110deg,color-mix(in srgb,var(--rl-left-color,#dd4b57),#07142c 52%),#07172cd9 90%)!important;
+ border:0!important;border-block:2px solid var(--rl-left-color,#e34961)!important;
+ box-shadow:0 0 20px color-mix(in srgb,var(--rl-left-color,#ff3b5a),transparent 74%),0 7px 16px #0009!important;
+ clip-path:polygon(0 0,100% 0,90% 100%,0 100%);color:#fff!important;text-align:left}
 body.rl-duel-page .rl-arena-name--right{align-items:flex-end;text-align:right;
- background:linear-gradient(270deg,#644013 0%,#131f3c 99%)!important;
- border-color:#f0bd5d!important;border-bottom-color:#ffcf73!important;
- clip-path:polygon(0 0,100% 0,100% 100%,7% 100%)}
+ background:linear-gradient(270deg,color-mix(in srgb,var(--rl-right-color,#d9a34b),#07142c 52%),#07172cd9 90%)!important;
+ border-block-color:var(--rl-right-color,#dab14a)!important;
+ box-shadow:0 0 20px color-mix(in srgb,var(--rl-right-color,#dab14a),transparent 74%),0 7px 16px #0009!important;
+ clip-path:polygon(0 0,100% 0,100% 100%,10% 100%)}
 body.rl-duel-page .rl-arena-name strong,body.rl-duel-page #rl-left-name,body.rl-duel-page #rl-right-name{
- color:#fff!important;-webkit-text-fill-color:#fff!important;opacity:1!important;filter:none!important;
- font:italic 900 clamp(17px,4.8vw,26px)/.98 'Barlow Condensed',Impact,sans-serif!important;
- text-transform:uppercase;overflow-wrap:anywhere;text-shadow:0 2px 3px #000,0 0 8px #000!important}
-body.rl-duel-page .rl-seed,body.rl-duel-page #rl-left-seed,body.rl-duel-page #rl-right-seed{
- display:inline-block;color:#ffdfa0!important;-webkit-text-fill-color:#ffdfa0!important;
- font:900 10px 'Barlow Condensed',sans-serif;letter-spacing:.5px;
- border:1px solid #f6cc7c;background:#07172f!important;padding:2px 6px;border-radius:4px}
-body.rl-duel-page .rl-outcome{color:#b8efff!important;-webkit-text-fill-color:#b8efff!important;font-size:10px;font-weight:900;min-height:12px}
-body.rl-duel-page .rl-trophy{position:absolute;z-index:11;width:85px;height:102px;left:50%;bottom:0;transform:translateX(-50%);
- filter:drop-shadow(0 0 10px #ffde7a) drop-shadow(0 5px 8px #000)}
-body.rl-duel-page .rl-trophy svg{width:100%;height:100%;display:block}
-body.rl-duel-page .rl-tagline{margin:16px 0 3px;text-align:center;
- font:italic 900 clamp(22px,6.2vw,34px)/1.07 'Barlow Condensed',Impact,sans-serif;
- letter-spacing:.06em;color:#f9fdff!important;-webkit-text-fill-color:#f9fdff!important;
- text-shadow:0 2px 2px #031c36,0 0 20px #2587fe!important}
-body.rl-duel-page .rl-tagline strong{color:#ff4a61!important;-webkit-text-fill-color:#ff4a61!important;
- text-shadow:0 0 10px #ea455c,0 0 26px #c5123b}
-body.rl-duel-page .rl-legend-line{text-align:center;color:#eafaff!important;-webkit-text-fill-color:#eafaff!important;
- font:800 12px 'Cinzel',Georgia,serif;letter-spacing:.11em;margin:8px 0 6px}
-body.rl-duel-page .rl-scoreboard{padding:9px 12px;margin:8px 5px 0;text-align:center;border:1px solid rgba(69,181,254,.65)!important;
- border-radius:11px;background:linear-gradient(160deg,#09345d,#04192f)!important;color:#fff!important;
- box-shadow:0 5px 14px #00132d6e,inset 0 1px 0 #bcf4ff4a!important}
-body.rl-duel-page .rl-score-title{color:#8deaff!important;-webkit-text-fill-color:#8deaff!important;font:900 10px 'Segoe UI',sans-serif;letter-spacing:.1em}
-body.rl-duel-page .rl-scores{display:flex;justify-content:center;align-items:center;gap:20px;margin:5px 0 0;font:900 29px 'Barlow Condensed',Impact,sans-serif;color:#fff!important}
-body.rl-duel-page .rl-scores strong{min-width:62px;color:#fff!important;-webkit-text-fill-color:#fff!important}
-body.rl-duel-page .rl-scores em{font:italic 900 16px 'Barlow Condensed',sans-serif;color:#7feaff!important;-webkit-text-fill-color:#7feaff!important}
-body.rl-duel-page .rl-score-note{font-size:12px;color:#ddf3ff!important;-webkit-text-fill-color:#ddf3ff!important;margin:3px 0 0}
-body.rl-duel-page .rl-pager{display:flex;gap:9px;align-items:center;margin:12px 2px 0}
-body.rl-duel-page .rl-pager a{display:flex;flex:1;justify-content:center;align-items:center;gap:8px;min-height:45px;
- color:#fff!important;-webkit-text-fill-color:#fff!important;font:900 13px 'Barlow Condensed',sans-serif;
- border:1px solid #4baeff!important;border-radius:999px;
- background:linear-gradient(180deg,#0b427b,#05214b)!important;
- box-shadow:0 0 12px #149bff56,inset 0 1px 0 #b2ebff3d!important;text-shadow:0 1px 3px #00152e}
-body.rl-duel-page .rl-pager a.rl-primary{background:linear-gradient(180deg,#2074ba,#0b396c)!important;border-color:#61dcff!important;
- box-shadow:0 0 20px #019dff85!important}
-body.rl-duel-page .rl-pager a.rl-disabled{opacity:.38!important;pointer-events:none;box-shadow:none!important}
-body.rl-duel-page .rl-pager a span{color:#ffe099!important;-webkit-text-fill-color:#ffe099!important;font-size:24px;line-height:10px}
-body.rl-duel-page .rl-dots{display:flex;justify-content:center;align-items:center;gap:8px;margin-top:14px}
-body.rl-duel-page .rl-dot{height:9px;width:9px;border-radius:99px;background:#276a9e;display:block}
-body.rl-duel-page .rl-dot.active{background:#ffd67d;width:25px;box-shadow:0 0 12px #ffc668}
-body.rl-duel-page .rl-hint{text-align:center;color:#a1d6f5!important;-webkit-text-fill-color:#a1d6f5!important;font-size:11px;margin-top:9px}
-body.rl-duel-page .rl-loading{margin:10px 0;padding:25px 18px;border-radius:12px;color:#bceeff!important;background:#052b54;border:1px solid #328ace;text-align:center}
+ color:#fff!important;-webkit-text-fill-color:#fff!important;opacity:1!important;
+ font:italic 900 clamp(15px,4.6vw,24px)/.98 'Barlow Condensed',Impact,sans-serif!important;
+ text-transform:uppercase;overflow-wrap:anywhere;text-shadow:0 2px 3px #000,0 0 7px #001126!important}
+body.rl-duel-page .rl-seed{display:inline-flex;color:#ffe3a4!important;-webkit-text-fill-color:#ffe3a4!important;
+ font:900 10px 'Barlow Condensed',sans-serif;letter-spacing:.4px;
+ background:#041b33ec!important;border:1px solid #f5cc78;border-radius:4px;padding:2px 5px}
+body.rl-duel-page .rl-outcome{min-height:0;color:#bbf7ff!important;font-size:10px;font-weight:900}
+body.rl-duel-page .rl-outcome:empty{display:none}
+body.rl-duel-page .rl-trophy{position:absolute;z-index:13;width:clamp(77px,23vw,120px);height:auto;
+ left:50%;bottom:4%;transform:translateX(-50%);pointer-events:none;
+ filter:drop-shadow(0 0 15px #f5bc6f) drop-shadow(0 12px 8px #000)}
+body.rl-duel-page .rl-trophy svg{width:100%;height:auto;display:block}
+/* Claim e risultato non dentro un secondo poster o pannello gigante. */
+body.rl-duel-page .rl-tagline{margin:0;padding:0 0 2px;text-align:center;
+ color:#f9fdff!important;-webkit-text-fill-color:#f9fdff!important;
+ font:italic 900 clamp(23px,7vw,36px)/1.1 'Barlow Condensed',Impact,sans-serif;
+ letter-spacing:.02em;text-shadow:0 2px #06142d,0 0 20px #129eff}
+body.rl-duel-page .rl-tagline strong{color:#ff4a63!important;-webkit-text-fill-color:#ff4a63!important;text-shadow:0 0 12px #d92345}
+body.rl-duel-page .rl-legend-line{margin:7px 0 7px;text-align:center;color:#fff5da!important;
+ font:800 12px 'Cinzel',Georgia,serif;letter-spacing:.11em}
+body.rl-duel-page .rl-scoreboard{padding:8px 12px;margin:7px 0 0;text-align:center;
+ border:1px solid #2380b986!important;border-radius:8px;
+ background:linear-gradient(110deg,#031a3a,#073061,#031a3a)!important;
+ color:#fff!important;box-shadow:0 9px 20px #0007!important}
+body.rl-duel-page .rl-score-title{color:#b0eaff!important;font:900 10px 'Segoe UI',sans-serif;letter-spacing:.1em}
+body.rl-duel-page .rl-scores{display:flex;align-items:center;justify-content:center;gap:16px;margin:3px 0 0;
+ font:900 27px 'Barlow Condensed',Impact,sans-serif;color:#fff!important}
+body.rl-duel-page .rl-scores strong{min-width:55px;color:#fff!important;-webkit-text-fill-color:#fff!important}
+body.rl-duel-page .rl-scores em{font:italic 900 17px 'Barlow Condensed',Impact,sans-serif;color:#7deaff!important;-webkit-text-fill-color:#7deaff!important}
+body.rl-duel-page .rl-score-note{margin:2px 0 0;color:#d8f3ff!important;font-size:12px}
+body.rl-duel-page .rl-pager{display:flex;gap:10px;align-items:center;margin:15px 2px 0}
+body.rl-duel-page .rl-pager a{display:flex;flex:1;justify-content:center;align-items:center;gap:7px;min-height:44px;
+ border-radius:99px;border:1px solid #45caff!important;
+ background:linear-gradient(#15528e,#051c42)!important;
+ color:white!important;-webkit-text-fill-color:white!important;
+ font:900 14px 'Barlow Condensed',sans-serif;box-shadow:0 0 14px #039eff80;text-shadow:0 1px 3px #00152e}
+body.rl-duel-page .rl-pager a.rl-primary{border-color:#91eaff!important;background:linear-gradient(#1d7ac1,#073260)!important}
+body.rl-duel-page .rl-pager a.rl-disabled{opacity:.4!important;pointer-events:none;box-shadow:none!important}
+body.rl-duel-page .rl-pager a span{font-size:22px;color:#ffe39e!important;-webkit-text-fill-color:#ffe39e!important;line-height:10px}
+body.rl-duel-page .rl-dots{display:flex;justify-content:center;gap:8px;margin-top:12px}
+body.rl-duel-page .rl-dot{width:9px;height:9px;background:#2b79ad;border-radius:10px;display:block}
+body.rl-duel-page .rl-dot.active{width:24px;background:#f7d47c;box-shadow:0 0 10px #ffd47c}
+body.rl-duel-page .rl-hint{text-align:center;font-size:11px;margin-top:8px;color:#a4d8fa!important}
+body.rl-duel-page .rl-loading{margin:10px 0;padding:25px 18px;border-radius:12px;color:#c2efff!important;background:#052b54;border:1px solid #328ace;text-align:center}
 [hidden]{display:none!important}
-@media (max-width:365px){
- body.rl-duel-page .rl-duel-shell{padding-inline:7px}
- body.rl-duel-page .rl-stage-nav{gap:4px}
- body.rl-duel-page .rl-arena{height:445px}
- body.rl-duel-page .rl-arena-name{min-height:80px;padding-inline:6px}
- body.rl-duel-page .rl-arena-name strong{font-size:16px!important}
- body.rl-duel-page .rl-arena-bottom{padding-inline:7px;gap:11%}
- body.rl-duel-page .rl-event-brand{font-size:16px}
+@media(max-width:365px){
+ body.rl-duel-page .rl-duel-shell{padding-inline:9px}
+ body.rl-duel-page .rl-arena{width:calc(100% + 18px);margin-inline:-9px}
+ body.rl-duel-page .rl-arena-name{min-height:70px;padding:7px 5px 8px}
+ body.rl-duel-page .rl-arena-bottom{padding-inline:6px;gap:16%}
+ body.rl-duel-page .rl-arena-name strong{font-size:15px!important}
+ body.rl-duel-page .rl-event-brand{font-size:17px}
 }
-@media(min-width:769px){
- body.rl-duel-page .rl-duel-shell{max-width:690px}
- body.rl-duel-page .rl-arena{height:640px}
- body.rl-duel-page .rl-arena-side img{height:97%}
-}
+@media(min-width:769px){body.rl-duel-page .rl-duel-shell{max-width:690px}}
 @media(prefers-reduced-motion:no-preference){
- body.rl-duel-page .rl-vs-symbol{animation:rlPulse 3s ease-in-out infinite alternate}
- @keyframes rlPulse{from{filter:drop-shadow(0 0 2px #008cff)}to{filter:drop-shadow(0 0 12px #16c8ff)}}
+ body.rl-duel-page .rl-vs-symbol{animation:rlPulse 3.5s ease-in-out infinite alternate}
+ @keyframes rlPulse{to{filter:drop-shadow(0 0 11px #17b3ff)}}
 }
+/* Finitura mobile: titoli su una sola riga, soggetti senza taglio del volto. */
+body.rl-duel-page .rl-event-title{
+ font-size:clamp(34px,10.7vw,59px);letter-spacing:.025em;white-space:nowrap}
+body.rl-duel-page .rl-event-title strong{display:inline}
+body.rl-duel-page .rl-arena-side{top:11%}
+body.rl-duel-page .rl-arena-side img{width:174%;top:0}
+body.rl-duel-page .rl-arena-side--left img{
+ -webkit-mask-image:linear-gradient(90deg,#000 0%,#000 79%,transparent 100%);
+ mask-image:linear-gradient(90deg,#000 0%,#000 79%,transparent 100%)}
+body.rl-duel-page .rl-arena-side--right img{
+ -webkit-mask-image:linear-gradient(270deg,#000 0%,#000 79%,transparent 100%);
+ mask-image:linear-gradient(270deg,#000 0%,#000 79%,transparent 100%)}
+body.rl-duel-page .rl-tagline{
+ font-size:clamp(18px,5.9vw,29px);white-space:nowrap;letter-spacing:0}
