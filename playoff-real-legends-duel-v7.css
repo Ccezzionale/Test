@@ -1,0 +1,211 @@
+/* CHAMPIONS ARENA V7 — SOLO schermata del duello.
+   Layout ricostruito da elementi reali, mai dalle immagini dei mockup.
+   La logica dei playoff e il desktop rimangono quelli esistenti. */
+@import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,600;0,700;0,800;0,900;1,700;1,800;1,900&family=Cinzel:wght@700;800;900&display=swap');
+:root{--rl-blue:#12acff;--rl-ice:#b5eeff;--rl-gold:#f5c15b;--rl-ink:#041831}
+*,*::before,*::after{box-sizing:border-box}
+html:has(body.rl-duel-page),html:has(body.rl-duel-page) body.rl-duel-page{
+ color-scheme:dark; margin:0;min-height:100%;overflow-x:hidden;
+ background:radial-gradient(ellipse 85% 42% at 50% 26%,#114c85 0%,#041e42 48%,#030c20 100%)!important;
+ color:#fff!important;font:14px/1.4 'Segoe UI',Arial,sans-serif}
+body.rl-duel-page::before,body.rl-duel-page::after{display:none!important}
+body.rl-duel-page .site-nav{position:sticky;top:0;z-index:200}
+body.rl-duel-page .rl-duel-shell{width:min(100%,590px);margin:0 auto;padding:9px 12px 105px;
+ position:relative;isolation:isolate;color:#fff!important;
+ background:linear-gradient(180deg,rgba(1,13,31,.16),rgba(1,17,42,.06) 45%,rgba(0,12,30,.2))}
+body.rl-duel-page .rl-duel-shell a{text-decoration:none}
+body.rl-duel-page .rl-duel-shell a:focus-visible{outline:2px solid #b9f0ff;outline-offset:3px}
+body.rl-duel-page .rl-return{display:inline-flex;align-items:center;gap:6px;
+ margin:0 0 5px;padding:5px 11px;border-radius:99px;background:#05254caa;
+ border:1px solid #2f93cb8a;color:#dcefff!important;font-weight:800;font-size:11px}
+body.rl-duel-page .rl-return span{font-size:18px;line-height:10px;color:#90dfff!important}
+/* Testata solenne, ma gli elementi sono selezionabili e responsive. */
+body.rl-duel-page .rl-event-head{text-align:center;position:relative;padding:11px 0 9px;overflow:hidden;
+ background:radial-gradient(ellipse 68% 70% at 50% 30%,#0e559089,transparent 80%)}
+body.rl-duel-page .rl-event-head::before,body.rl-duel-page .rl-event-head::after{
+ content:'✦';position:absolute;top:32px;color:#ffdb8f;font-size:12px;text-shadow:0 0 19px #fff1bd}
+body.rl-duel-page .rl-event-head::before{left:11%}
+body.rl-duel-page .rl-event-head::after{right:11%}
+body.rl-duel-page .rl-event-eyebrow{display:flex;justify-content:center;gap:8px;
+ font:800 9px 'Cinzel',serif;letter-spacing:.17em;color:#ceeaff!important}
+body.rl-duel-page .rl-event-eyebrow span{color:#eec574}
+body.rl-duel-page .rl-event-brand{display:flex;align-items:center;justify-content:center;gap:9px;margin:4px 0 3px;
+ font:900 clamp(18px,5.1vw,28px)/1.13 'Cinzel',serif;letter-spacing:.01em;
+ color:#ffedb6!important;text-shadow:0 2px 2px #2b1904,0 0 17px #eebf5684}
+body.rl-duel-page .rl-event-brand b{color:#fff9e9!important}
+body.rl-duel-page .rl-gold-wings{font-size:23px;color:#ffc969!important}
+body.rl-duel-page .rl-event-title{margin:0;
+ font:italic 900 clamp(43px,12.9vw,74px)/1 'Barlow Condensed',Impact,sans-serif;
+ letter-spacing:.055em;color:#fdfcff!important;-webkit-text-fill-color:#fdfcff!important;
+ text-shadow:0 2px #0a3268,0 3px 16px #54adff99}
+body.rl-duel-page .rl-event-title strong{color:#ffd17b!important;-webkit-text-fill-color:#ffd17b!important;font-weight:900;
+ text-shadow:0 3px #643916,0 0 17px #caa13f8a}
+body.rl-duel-page .rl-event-stage{display:table;min-width:68%;margin:6px auto 12px;padding:5px 25px 6px;
+ clip-path:polygon(8% 0,92% 0,100% 50%,92% 100%,8% 100%,0 50%);
+ border-block:1px solid #6accff;background:linear-gradient(90deg,#06477b,#071d43 40%,#071d43 60%,#06477b);
+ box-shadow:0 0 17px #008def;letter-spacing:.13em;
+ font:800 clamp(16px,4.8vw,25px)/1.17 'Cinzel',serif;
+ color:#f8faff!important;-webkit-text-fill-color:#f8faff!important;text-shadow:0 2px 5px #00274b}
+body.rl-duel-page .rl-stage-nav{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;margin:0 0 3px}
+body.rl-duel-page .rl-stage-nav a{display:flex;align-items:center;justify-content:center;
+ min-height:37px;padding:6px 1px;border-radius:99px;border:1px solid #6abbe9a8;
+ background:linear-gradient(180deg,#0b3964,#041b3c);
+ color:#f3fbff!important;-webkit-text-fill-color:#f3fbff!important;
+ font:800 clamp(12px,3.6vw,16px)/1 'Barlow Condensed',sans-serif}
+body.rl-duel-page .rl-stage-nav a.active{background:linear-gradient(#fff2bd,#f5c463 58%,#cd8022);
+ border-color:#fff0b7;box-shadow:0 0 14px #efbb599e;color:#072146!important;-webkit-text-fill-color:#072146!important}
+body.rl-duel-page .rl-duel-top{display:flex;justify-content:space-between;align-items:end;gap:10px;margin:13px 4px 0;position:relative;z-index:14}
+body.rl-duel-page .rl-strap{color:#7cdfff!important;font:900 9px 'Segoe UI',sans-serif;letter-spacing:1.5px}
+body.rl-duel-page .rl-duel-top h2{font:italic 900 clamp(23px,6.5vw,34px)/1 'Barlow Condensed',Impact,sans-serif;
+ color:#fff!important;margin:2px 0 0;text-shadow:0 0 17px #58acff}
+body.rl-duel-page .rl-counter{font:800 15px 'Barlow Condensed',sans-serif;
+ color:#ffe3a6!important;padding:4px 10px;border-radius:8px;border:1px solid #f0ca7ca6;background:#041c3e}
+/* SCENA SENZA CORNICE. Le creature sono separate, come nel riferimento scelto. */
+body.rl-duel-page .rl-arena{position:relative;isolation:isolate;overflow:hidden;
+ width:calc(100% + 24px);margin:0 -12px;aspect-ratio:390/288; height:auto;min-height:0;
+ border:0!important;border-radius:0!important;
+ background:#03172c url('img/playoff-real-legends/arena-stadium.svg') center center / cover no-repeat!important;
+ box-shadow:none!important}
+body.rl-duel-page .rl-arena::before{content:'';position:absolute;inset:0;z-index:1;pointer-events:none;
+ background:radial-gradient(ellipse 50% 42% at 18% 58%,color-mix(in srgb,var(--rl-left-color,#d94654),transparent 74%),transparent 90%),
+ radial-gradient(ellipse 52% 45% at 82% 58%,color-mix(in srgb,var(--rl-right-color,#ddb45d),transparent 74%),transparent 90%),
+ linear-gradient(180deg,#06162a32 0%,transparent 20%,transparent 56%,#07142a69 79%,#061630df 100%)}
+body.rl-duel-page .rl-arena::after{content:'';position:absolute;inset:0;z-index:6;pointer-events:none;
+ background:radial-gradient(ellipse 80% 15% at 50% 94%,#179de544,transparent 75%)}
+body.rl-duel-page .rl-arena-light{position:absolute;z-index:2;top:10%;width:60%;height:69%;pointer-events:none;mix-blend-mode:screen}
+body.rl-duel-page .rl-arena-light--left{left:-18%;background:radial-gradient(ellipse,color-mix(in srgb,var(--rl-left-color,#b5385e),transparent 52%),transparent 70%)}
+body.rl-duel-page .rl-arena-light--right{right:-18%;background:radial-gradient(ellipse,color-mix(in srgb,var(--rl-right-color,#e5a74c),transparent 55%),transparent 70%)}
+/* V7: ARTE CONTROLLATA - due finestre laterali, 50/50.
+   L'altezza dell'arena corrisponde ora alle dimensioni reali delle mascotte.
+   Non si croppano mai le teste/ali, ma le gambe sfumano nella pedana. */
+body.rl-duel-page .rl-arena-side{
+ position:absolute;z-index:3;left:auto;top:8%;bottom:17%;width:50%;overflow:hidden;
+ display:flex;align-items:flex-end;justify-content:center;
+ padding:0 1.5%;background:none!important;box-shadow:none!important}
+body.rl-duel-page .rl-arena-side--left{left:0}
+body.rl-duel-page .rl-arena-side--right{right:0}
+body.rl-duel-page .rl-arena-side::before,body.rl-duel-page .rl-arena-side::after{display:none!important}
+body.rl-duel-page .rl-arena-side img{
+ display:block;position:relative;width:100%;height:100%;max-width:100%;max-height:100%;
+ aspect-ratio:auto;object-fit:contain;object-position:center bottom;
+ transform:none!important;
+ -webkit-mask-image:linear-gradient(to bottom,#000 0%,#000 79%,rgba(0,0,0,.92) 85%,rgba(0,0,0,.40) 94%,transparent 100%);
+ mask-image:linear-gradient(to bottom,#000 0%,#000 79%,rgba(0,0,0,.92) 85%,rgba(0,0,0,.40) 94%,transparent 100%);
+ filter:drop-shadow(0 8px 9px #01071393) drop-shadow(0 0 9px color-mix(in srgb,var(--rl-color,#2eaaff),transparent 80%))!important}
+body.rl-duel-page .rl-arena-side--left img{object-position:left bottom}
+body.rl-duel-page .rl-arena-side--right img{object-position:right bottom}
+body.rl-duel-page .rl-arena-side.rl-placeholder img{display:none!important}
+body.rl-duel-page .rl-arena-side.rl-placeholder::before{content:'?';display:flex!important;justify-content:center;align-items:center;
+ color:#e6f9ff96;font:900 105px 'Cinzel',serif;min-height:75%}
+body.rl-duel-page .rl-arena-side.rl-eliminata img{filter:grayscale(.55) brightness(.72) drop-shadow(0 8px 6px #000)!important}
+/* NESSUN divisorio diagonale/verticale: rimane solo il VS luminoso centrale. */
+body.rl-duel-page .rl-fracture{display:none!important}
+body.rl-duel-page .rl-arena-ribbon{position:absolute;z-index:10;top:1%;left:50%;transform:translateX(-50%);
+ white-space:nowrap;padding:5px 24px 6px;max-width:85%;
+ clip-path:polygon(7% 0,93% 0,100% 50%,93% 100%,7% 100%,0 50%);
+ background:linear-gradient(100deg,#0c3671,#052047,#0c3671)!important;
+ color:#fff7db!important;-webkit-text-fill-color:#fff7db!important;
+ font:italic 900 clamp(15px,4vw,21px)/1 'Barlow Condensed',Impact,sans-serif;
+ letter-spacing:1px;text-shadow:0 0 8px #051c32;box-shadow:none}
+body.rl-duel-page .rl-vs-symbol{position:absolute;z-index:8;left:50%;top:64%;
+ transform:translate(-50%,-50%) rotate(-8deg)!important;
+ background:linear-gradient(165deg,#ffffff 0%,#fffbed 27%,#fbd97d 48%,#f3a528 66%,#fff5c9 86%)!important;
+ background-clip:text!important;-webkit-background-clip:text!important;
+ color:transparent!important;-webkit-text-fill-color:transparent!important;
+ -webkit-text-stroke:1.1px #ffe5ad;
+ font:italic 900 clamp(50px,13vw,80px)/1 'Barlow Condensed',Impact,sans-serif;
+ letter-spacing:-.08em;
+ filter:drop-shadow(0 1px 2px #241009) drop-shadow(0 0 8px #ffbb4b) drop-shadow(0 0 14px #157bde)}
+body.rl-duel-page .rl-vs-symbol::before{content:'';position:absolute;z-index:-1;left:50%;top:54%;
+ transform:translate(-50%,-50%);width:150%;height:110%;border-radius:50%;
+ background:radial-gradient(ellipse,#ffd7893d 0%,#126bd322 47%,transparent 76%);pointer-events:none}
+/* Le targhette riprendono i colori REALI delle franchigie passati dal JavaScript. */
+body.rl-duel-page .rl-arena-bottom{position:absolute;z-index:11;left:0;right:0;bottom:1.5%;
+ display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:20%;padding:0 7px}
+body.rl-duel-page .rl-arena-name{min-width:0;min-height:56px;display:flex;flex-direction:column;
+ justify-content:center;align-items:flex-start;gap:3px;padding:6px 6px 7px;
+ background:linear-gradient(110deg,color-mix(in srgb,var(--rl-left-color,#dd4b57),#07142c 52%),#07172cd9 90%)!important;
+ border:0!important;border-block:2px solid var(--rl-left-color,#e34961)!important;
+ box-shadow:0 0 20px color-mix(in srgb,var(--rl-left-color,#ff3b5a),transparent 74%),0 7px 16px #0009!important;
+ clip-path:polygon(0 0,100% 0,90% 100%,0 100%);color:#fff!important;text-align:left}
+body.rl-duel-page .rl-arena-name--right{align-items:flex-end;text-align:right;
+ background:linear-gradient(270deg,color-mix(in srgb,var(--rl-right-color,#d9a34b),#07142c 52%),#07172cd9 90%)!important;
+ border-block-color:var(--rl-right-color,#dab14a)!important;
+ box-shadow:0 0 20px color-mix(in srgb,var(--rl-right-color,#dab14a),transparent 74%),0 7px 16px #0009!important;
+ clip-path:polygon(0 0,100% 0,100% 100%,10% 100%)}
+body.rl-duel-page .rl-arena-name strong,body.rl-duel-page #rl-left-name,body.rl-duel-page #rl-right-name{
+ color:#fff!important;-webkit-text-fill-color:#fff!important;opacity:1!important;
+ font:italic 900 clamp(13px,4vw,21px)/.98 'Barlow Condensed',Impact,sans-serif!important;
+ text-transform:uppercase;overflow-wrap:anywhere;text-shadow:0 2px 3px #000,0 0 7px #001126!important}
+body.rl-duel-page .rl-seed{display:inline-flex;color:#ffe3a4!important;-webkit-text-fill-color:#ffe3a4!important;
+ font:900 10px 'Barlow Condensed',sans-serif;letter-spacing:.4px;
+ background:#041b33ec!important;border:1px solid #f5cc78;border-radius:4px;padding:2px 5px}
+body.rl-duel-page .rl-outcome{min-height:0;color:#bbf7ff!important;font-size:10px;font-weight:900}
+body.rl-duel-page .rl-outcome:empty{display:none}
+body.rl-duel-page .rl-trophy{position:absolute;z-index:13;width:clamp(58px,15vw,82px);height:auto;
+ left:50%;bottom:-0.5%;transform:translateX(-50%);pointer-events:none;
+ filter:drop-shadow(0 0 15px #f5bc6f) drop-shadow(0 12px 8px #000)}
+body.rl-duel-page .rl-trophy svg{width:100%;height:auto;display:block}
+/* Claim e risultato non dentro un secondo poster o pannello gigante. */
+body.rl-duel-page .rl-tagline{margin:0;padding:0 0 2px;text-align:center;
+ color:#f9fdff!important;-webkit-text-fill-color:#f9fdff!important;
+ font:italic 900 clamp(23px,7vw,36px)/1.1 'Barlow Condensed',Impact,sans-serif;
+ letter-spacing:.02em;text-shadow:0 2px #06142d,0 0 20px #129eff}
+body.rl-duel-page .rl-tagline strong{color:#ff4a63!important;-webkit-text-fill-color:#ff4a63!important;text-shadow:0 0 12px #d92345}
+body.rl-duel-page .rl-legend-line{margin:7px 0 7px;text-align:center;color:#fff5da!important;
+ font:800 12px 'Cinzel',Georgia,serif;letter-spacing:.11em}
+body.rl-duel-page .rl-scoreboard{padding:8px 12px;margin:7px 0 0;text-align:center;
+ border:1px solid #2380b986!important;border-radius:8px;
+ background:linear-gradient(110deg,#031a3a,#073061,#031a3a)!important;
+ color:#fff!important;box-shadow:0 9px 20px #0007!important}
+body.rl-duel-page .rl-score-title{color:#b0eaff!important;font:900 10px 'Segoe UI',sans-serif;letter-spacing:.1em}
+body.rl-duel-page .rl-scores{display:flex;align-items:center;justify-content:center;gap:16px;margin:3px 0 0;
+ font:900 27px 'Barlow Condensed',Impact,sans-serif;color:#fff!important}
+body.rl-duel-page .rl-scores strong{min-width:55px;color:#fff!important;-webkit-text-fill-color:#fff!important}
+body.rl-duel-page .rl-scores em{font:italic 900 17px 'Barlow Condensed',Impact,sans-serif;color:#7deaff!important;-webkit-text-fill-color:#7deaff!important}
+body.rl-duel-page .rl-score-note{margin:2px 0 0;color:#d8f3ff!important;font-size:12px}
+body.rl-duel-page .rl-pager{display:flex;gap:10px;align-items:center;margin:15px 2px 0}
+body.rl-duel-page .rl-pager a{display:flex;flex:1;justify-content:center;align-items:center;gap:7px;min-height:44px;
+ border-radius:99px;border:1px solid #45caff!important;
+ background:linear-gradient(#15528e,#051c42)!important;
+ color:white!important;-webkit-text-fill-color:white!important;
+ font:900 14px 'Barlow Condensed',sans-serif;box-shadow:0 0 14px #039eff80;text-shadow:0 1px 3px #00152e}
+body.rl-duel-page .rl-pager a.rl-primary{border-color:#91eaff!important;background:linear-gradient(#1d7ac1,#073260)!important}
+body.rl-duel-page .rl-pager a.rl-disabled{opacity:.4!important;pointer-events:none;box-shadow:none!important}
+body.rl-duel-page .rl-pager a span{font-size:22px;color:#ffe39e!important;-webkit-text-fill-color:#ffe39e!important;line-height:10px}
+body.rl-duel-page .rl-dots{display:flex;justify-content:center;gap:8px;margin-top:12px}
+body.rl-duel-page .rl-dot{width:9px;height:9px;background:#2b79ad;border-radius:10px;display:block}
+body.rl-duel-page .rl-dot.active{width:24px;background:#f7d47c;box-shadow:0 0 10px #ffd47c}
+body.rl-duel-page .rl-hint{text-align:center;font-size:11px;margin-top:8px;color:#a4d8fa!important}
+body.rl-duel-page .rl-loading{margin:10px 0;padding:25px 18px;border-radius:12px;color:#c2efff!important;background:#052b54;border:1px solid #328ace;text-align:center}
+[hidden]{display:none!important}
+@media(max-width:365px){
+ body.rl-duel-page .rl-duel-shell{padding-inline:9px}
+ body.rl-duel-page .rl-arena{width:calc(100% + 18px);margin-inline:-9px}
+ body.rl-duel-page .rl-arena-name{min-height:57px;padding:6px 5px 7px}
+ body.rl-duel-page .rl-arena-bottom{padding-inline:6px;gap:17%}
+ body.rl-duel-page .rl-arena-name strong{font-size:15px!important}
+ body.rl-duel-page .rl-event-brand{font-size:17px}
+}
+@media(min-width:769px){body.rl-duel-page .rl-duel-shell{max-width:690px}}
+@media(prefers-reduced-motion:no-preference){
+ body.rl-duel-page .rl-vs-symbol{animation:rlPulse 3.5s ease-in-out infinite alternate}
+ @keyframes rlPulse{to{filter:drop-shadow(0 0 11px #17b3ff)}}
+}
+/* Finitura mobile: niente sovrascritture tardive sulle dimensioni delle mascotte. */
+body.rl-duel-page .rl-event-title{font-size:clamp(34px,10.7vw,59px);letter-spacing:.025em;white-space:nowrap}
+body.rl-duel-page .rl-event-title strong{display:inline}
+body.rl-duel-page .rl-tagline{font-size:clamp(18px,5.9vw,29px);white-space:nowrap;letter-spacing:0}
+/* Prima dei risultati, il pannello non deve ripetere VS e sottotitolo:
+   rimane solo il messaggio. Quando arrivano i punteggi, la scoreboard ritorna completa. */
+body.rl-duel-page .rl-scoreboard:has(#rl-score-middle:not(:empty)){
+ padding:1px 4px 5px;margin-top:0;border:0!important;border-radius:0;
+ background:transparent!important;box-shadow:none!important}
+body.rl-duel-page .rl-scoreboard:has(#rl-score-middle:not(:empty)) .rl-score-title,
+body.rl-duel-page .rl-scoreboard:has(#rl-score-middle:not(:empty)) .rl-scores{display:none}
+body.rl-duel-page .rl-scoreboard:has(#rl-score-middle:not(:empty)) .rl-score-note{
+ color:#d1e6ff!important;font-size:11px;line-height:1.4}
+
+/* V7 viewport fine-tuning */
+@media(max-width:365px){body.rl-duel-page .rl-arena{aspect-ratio:390/314}}
+@media(min-width:580px){body.rl-duel-page .rl-arena{aspect-ratio:390/300}}
