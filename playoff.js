@@ -860,8 +860,8 @@ const MOBILE_STAGE_META = {
     title: "Wildcard",
     matches: [
       { code: "WC1", next: "Quarti" },
-      { code: "WC3", next: "Quarti" },
       { code: "WC2", next: "Quarti" },
+      { code: "WC3", next: "Quarti" },
       { code: "WC4", next: "Quarti" }
     ]
   },
@@ -869,9 +869,9 @@ const MOBILE_STAGE_META = {
     title: "Quarti",
     matches: [
       { code: "Q1", next: "Semifinale" },
-      { code: "Q4", next: "Semifinale" },
       { code: "Q2", next: "Semifinale" },
-      { code: "Q3", next: "Semifinale" }
+      { code: "Q3", next: "Semifinale" },
+      { code: "Q4", next: "Semifinale" }
     ]
   },
   semifinali: {
