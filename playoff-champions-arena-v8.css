@@ -1,0 +1,204 @@
+/* Lega degli Eroi • Champions Arena V8 (proporzioni V9) • livello visivo della pagina playoff-sfida.html.
+   Caricare DOPO playoff-real-legends-duel.css. Nessun cambio a logica, seed o risultati.
+   La pagina usa i WebP già risolti da PlayoffRealLegends.image(name). */
+@import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,600;0,700;0,800;0,900;1,700;1,800;1,900&family=Cinzel:wght@600;700;800;900&display=swap');
+:root { --ca-gold:#f7ba4b; --ca-gold-light:#ffe8a7; --ca-midnight:#041631; }
+html:has(body.rl-duel-page), body.rl-duel-page {background:#020b1b!important;color:#fff!important;color-scheme:dark;overflow-x:hidden;}
+body.rl-duel-page::before,body.rl-duel-page::after{display:none!important}
+body.rl-duel-page .rl-duel-shell{
+  width:min(100%,600px);max-width:600px;min-height:100vh;margin:0 auto;
+  padding:0 10px 64px!important;isolation:isolate;position:relative;
+  color:#fff!important;
+  background:radial-gradient(ellipse 110% 35% at 50% 27%,#123460 0%,#061b3b 52%,#020b1b 100%)!important;
+}
+body.rl-duel-page .rl-duel-shell a{text-decoration:none}
+body.rl-duel-page .rl-return{position:absolute!important;width:1px!important;height:1px!important;overflow:hidden!important;clip-path:inset(100%)!important}
+body.rl-duel-page .rl-event-head{
+  padding:8px 0 0!important;margin:0!important;text-align:center;position:relative;overflow:visible;
+  background:none!important;border:0!important;
+}
+body.rl-duel-page .rl-event-head::before,body.rl-duel-page .rl-event-head::after{display:none!important}
+body.rl-duel-page .rl-event-eyebrow,body.rl-duel-page .rl-event-title,body.rl-duel-page .rl-event-stage{display:none!important}
+body.rl-duel-page .rl-event-brand{
+  display:table!important;position:relative;margin:0 auto 14px!important;padding:7px 21px!important;
+  width:auto;max-width:96%;white-space:nowrap;
+  color:#ffe5a6!important;-webkit-text-fill-color:#ffe5a6!important;
+  background:linear-gradient(110deg,#071a32 0%,#103861 47%,#081a36 100%)!important;
+  border:1.5px solid #f4bc54!important;border-radius:3px;
+  font:800 clamp(10px,3.2vw,14px)/1.25 'Cinzel',Georgia,serif!important;
+  letter-spacing:.11em!important;text-shadow:0 0 12px #f9bc6465!important;
+  box-shadow:0 0 12px #f2ad3f44,0 2px 0 #3b250f, inset 0 0 18px #eec57522!important;
+  transform:none!important;clip-path:polygon(0 50%,4% 0,96% 0,100% 50%,96% 100%,4% 100%)!important;
+}
+body.rl-duel-page .rl-event-brand::before,body.rl-duel-page .rl-event-brand::after{content:'★';color:#ffd26e;font-size:12px;margin:0 10px;}
+body.rl-duel-page .rl-event-brand b{color:#ffe5a6!important;-webkit-text-fill-color:#ffe5a6!important}
+body.rl-duel-page .rl-gold-wings{display:none!important}
+body.rl-duel-page .rl-stage-nav{display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px;margin:0 0 3px!important}
+body.rl-duel-page .rl-stage-nav a{
+  display:flex!important;align-items:center;justify-content:center;min-height:42px;padding:7px 2px!important;
+  border-radius:40px;border:1px solid #588cb5!important;
+  background:linear-gradient(180deg,#103b67 0%,#061e42 66%,#03132c 100%)!important;
+  color:#e7f0ff!important;-webkit-text-fill-color:#e7f0ff!important;
+  font:800 clamp(13px,3.8vw,17px)/1 'Barlow Condensed',Arial,sans-serif!important;
+  box-shadow:inset 0 2px 0 #8bc5ff1d,0 4px 9px #0009!important;
+}
+body.rl-duel-page .rl-stage-nav a.active{
+  border-color:#fff1b6!important;
+  background:linear-gradient(180deg,#fff2bd,#ffd676 40%,#efab35 70%,#c97715 100%)!important;
+  color:#1e170b!important;-webkit-text-fill-color:#1e170b!important;
+  box-shadow:0 0 15px #ffc3578c,inset 0 1px 2px #fff!important;
+}
+body.rl-duel-page .rl-duel-top{
+  display:flex!important;align-items:center!important;justify-content:space-between!important;position:relative;
+  margin:11px 0 4px!important;padding:0 8px!important;gap:9px;
+}
+body.rl-duel-page .rl-duel-top>div{text-align:center;flex:1;min-width:0;padding-left:23px}
+body.rl-duel-page .rl-strap{display:block;color:#ffe9bb!important;font:700 clamp(9px,2.7vw,12px)/1.35 'Cinzel',Georgia,serif!important;letter-spacing:.18em!important;white-space:nowrap}
+body.rl-duel-page .rl-duel-top h2{
+  margin:3px 0!important;
+  color:#fff0d1!important;-webkit-text-fill-color:#fff0d1!important;
+  font:italic 900 clamp(39px,10.5vw,66px)/.97 'Barlow Condensed',Impact,sans-serif!important;
+  letter-spacing:.045em;white-space:nowrap;text-shadow:0 3px 0 #663c20,0 0 15px #e7ad685c!important;
+}
+body.rl-duel-page .rl-counter{
+  flex:0 0 auto;min-width:67px;padding:7px 10px!important;
+  color:#ffe2a3!important;-webkit-text-fill-color:#ffe2a3!important;
+  border:1.6px solid #ffcb6d!important;border-radius:99px!important;
+  background:linear-gradient(120deg,#07192e,#072952)!important;
+  font:900 clamp(17px,5vw,24px)/1 'Barlow Condensed',sans-serif!important;
+  text-align:center;box-shadow:0 0 9px #edb4524a!important;
+}
+body.rl-duel-page .rl-arena{
+  display:block!important;position:relative!important;isolation:isolate!important;overflow:hidden!important;
+  width:calc(100% + 20px)!important;max-width:none!important;margin:0 -10px!important;
+  min-height:0!important;height:auto!important;aspect-ratio:420 / 570!important;
+  border:0!important;border-radius:0!important;box-shadow:none!important;
+  background:#07182f url('img/playoff-real-legends/colosseo-champions-arena-v7.webp') center/100% 100% no-repeat!important;
+}
+body.rl-duel-page .rl-arena::before{content:''!important;display:block!important;position:absolute;inset:0;z-index:2;pointer-events:none;
+ background:linear-gradient(180deg,#020d2070 0%,transparent 20%,#071c2c00 52%,#06142828 83%,#020b2066 100%),
+ radial-gradient(ellipse 48% 40% at 18% 66%,color-mix(in srgb,var(--rl-left-color,#eaa556),transparent 80%),transparent 100%),
+ radial-gradient(ellipse 48% 42% at 82% 66%,color-mix(in srgb,var(--rl-right-color,#eaa556),transparent 80%),transparent 100%)!important;
+}
+body.rl-duel-page .rl-arena::after{content:''!important;display:block!important;position:absolute;z-index:7;left:10%;right:10%;bottom:9%;height:16%;pointer-events:none;
+ background:radial-gradient(ellipse,#ffa93a61,transparent 70%);filter:blur(8px)}
+body.rl-duel-page .rl-arena-light{z-index:2;top:22%;height:56%;opacity:.4}
+body.rl-duel-page .rl-arena-side{
+  position:absolute!important;z-index:4!important;top:10%!important;bottom:21%!important;
+  width:53%!important;display:flex!important;align-items:flex-end!important;overflow:visible!important;
+  background:none!important;border:0!important;box-shadow:none!important;padding:0!important;
+}
+body.rl-duel-page .rl-arena-side--left{left:-4%!important;right:auto!important;justify-content:flex-start!important}
+body.rl-duel-page .rl-arena-side--right{right:-4%!important;left:auto!important;justify-content:flex-end!important}
+body.rl-duel-page .rl-arena-side img{
+  width:100%!important;height:100%!important;max-width:100%!important;max-height:100%!important;
+  object-fit:contain!important;object-position:center bottom!important;
+  transform:translate(var(--rl-optical-x,0px),var(--rl-optical-y,0px)) scale(var(--rl-optical-scale,1))!important;
+  transform-origin:center bottom!important;filter:drop-shadow(0 8px 7px #000d) drop-shadow(0 0 9px #df9e4554)!important;
+}
+body.rl-duel-page .rl-arena-side.rl-placeholder::before{content:'?';display:flex!important;color:#ebddad99;font:900 100px 'Cinzel',serif}
+body.rl-duel-page .rl-arena-side.rl-eliminata img{filter:grayscale(.45) brightness(.75) drop-shadow(0 8px 8px #000)!important}
+body.rl-duel-page .rl-fracture{display:none!important}
+body.rl-duel-page .rl-arena-ribbon{
+  position:absolute!important;z-index:10;top:1%!important;left:50%!important;transform:translateX(-50%)!important;
+  width:auto;min-width:50%;max-width:82%;white-space:nowrap;padding:8px 21px!important;
+  background:linear-gradient(100deg,#0c3565,#09204b,#0c3565)!important;
+  border:2px solid #ffe4a0!important;clip-path:polygon(0 50%,7% 0,93% 0,100% 50%,93% 100%,7% 100%)!important;
+  color:#fff0d2!important;-webkit-text-fill-color:#fff0d2!important;
+  text-align:center;font:italic 900 clamp(16px,5.3vw,27px)/1 'Barlow Condensed',sans-serif!important;
+  text-shadow:0 2px #071528,0 0 11px #f7ca935c!important;
+  filter:drop-shadow(0 3px 4px #000c);
+}
+body.rl-duel-page .rl-vs-symbol{
+  position:absolute!important;z-index:8!important;left:50%!important;top:62%!important;
+  transform:translate(-50%,-50%) rotate(-9deg)!important;
+  background:linear-gradient(160deg,#fffefa,#ffe9a0 28%,#ffd056 55%,#c77614 75%,#ffefa8)!important;
+  background-clip:text!important;-webkit-background-clip:text!important;
+  color:transparent!important;-webkit-text-fill-color:transparent!important;
+  font:italic 900 clamp(62px,18vw,96px)/1 'Barlow Condensed',Impact,sans-serif!important;
+  letter-spacing:-.08em;-webkit-text-stroke:1.25px #ffebb0!important;
+  filter:drop-shadow(0 3px 0 #6c360e) drop-shadow(0 0 13px #ffa825)!important;
+}
+body.rl-duel-page .rl-arena-bottom{
+  position:absolute!important;z-index:11!important;left:0!important;right:0!important;bottom:10%!important;
+  display:grid!important;grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;
+  gap:20%!important;padding:0 8px!important;
+}
+body.rl-duel-page .rl-arena-name{
+  min-width:0!important;min-height:72px!important;padding:6px 9px!important;gap:3px;
+  display:flex!important;flex-direction:column;justify-content:center;align-items:center!important;
+  text-align:center!important;color:#fff!important;
+  background:linear-gradient(125deg,#0f3154fa,#061d3df5 85%)!important;
+  border:2px solid #f6c16a!important;clip-path:polygon(0 50%,7% 0,100% 0,100% 100%,7% 100%)!important;
+  box-shadow:0 0 15px #ffbd6170!important;filter:drop-shadow(0 4px 4px #000c)
+}
+body.rl-duel-page .rl-arena-name--right{clip-path:polygon(0 0,93% 0,100% 50%,93% 100%,0 100%)!important}
+body.rl-duel-page .rl-arena-name strong,body.rl-duel-page #rl-left-name,body.rl-duel-page #rl-right-name{
+  font:italic 900 clamp(15px,4.6vw,24px)/.99 'Barlow Condensed',Impact,sans-serif!important;
+  color:#fffaf1!important;-webkit-text-fill-color:#fffaf1!important;text-align:center!important;
+  white-space:normal!important;overflow-wrap:anywhere;text-shadow:0 2px 3px #000!important;
+}
+body.rl-duel-page .rl-seed{
+  display:inline-flex!important;border-radius:6px;padding:2px 7px!important;
+  background:#04162d!important;border:1.5px solid #ffd161!important;
+  color:#ffd779!important;-webkit-text-fill-color:#ffd779!important;
+  font:900 clamp(12px,3.4vw,17px)/1.15 'Barlow Condensed',sans-serif!important;
+}
+body.rl-duel-page .rl-outcome{color:#fff0ae!important;font-size:9px;font-weight:900}
+body.rl-duel-page .rl-trophy{
+  position:absolute!important;z-index:14!important;left:50%!important;bottom:6%!important;
+  width:clamp(76px,22vw,116px)!important;height:auto!important;transform:translateX(-50%)!important;
+  pointer-events:none;filter:drop-shadow(0 0 16px #ffc456) drop-shadow(0 10px 5px #000c)!important;
+}
+body.rl-duel-page .rl-trophy svg{width:100%;height:auto}
+body.rl-duel-page .rl-tagline{
+  margin:-3px 0 0!important;padding:5px 0 2px!important;text-align:center;white-space:nowrap;
+  color:#fcf7ec!important;-webkit-text-fill-color:#fcf7ec!important;
+  font:italic 900 clamp(21px,6.7vw,36px)/1 'Barlow Condensed',sans-serif!important;
+  letter-spacing:.007em;text-shadow:0 2px 2px #01070f!important;
+  background:linear-gradient(90deg,transparent,#071630 21%,#071630 79%,transparent);
+}
+body.rl-duel-page .rl-tagline strong{color:#ffce65!important;-webkit-text-fill-color:#ffce65!important;text-shadow:0 0 12px #fca233!important}
+body.rl-duel-page .rl-legend-line{
+  margin:5px 0 7px!important;text-align:center;color:#ffe5a9!important;
+  font:700 clamp(8px,2.9vw,12px)/1.25 'Cinzel',Georgia,serif!important;letter-spacing:.16em!important;
+}
+body.rl-duel-page .rl-scoreboard{margin:0!important;padding:2px 5px!important;border:0!important;box-shadow:none!important;border-radius:0!important;background:transparent!important;text-align:center}
+body.rl-duel-page .rl-score-title,body.rl-duel-page .rl-scores{display:none!important}
+body.rl-duel-page .rl-score-note{color:#b8cbe3!important;font-size:10px!important;margin:0!important}
+body.rl-duel-page .rl-scoreboard:has(#rl-score-middle:empty){
+  border:1px solid #8c9aba6c!important;border-radius:8px!important;background:#091f3fdd!important;padding:9px 14px!important;margin-top:10px!important;
+}
+body.rl-duel-page .rl-scoreboard:has(#rl-score-middle:empty) .rl-score-title,body.rl-duel-page .rl-scoreboard:has(#rl-score-middle:empty) .rl-scores{display:flex!important}
+body.rl-duel-page .rl-pager{display:flex!important;align-items:center;gap:9px;margin:13px 3px 0!important}
+body.rl-duel-page .rl-pager a{
+  display:flex!important;flex:1!important;align-items:center;justify-content:center;gap:7px;
+  min-height:49px!important;padding:6px!important;border-radius:99px!important;
+  border:1.5px solid #88b5d5!important;background:linear-gradient(#174573,#03172f)!important;
+  color:#e4edff!important;-webkit-text-fill-color:#e4edff!important;
+  font:900 clamp(17px,5vw,22px)/1 'Barlow Condensed',Arial,sans-serif!important;
+  box-shadow:0 3px 8px #0009,inset 0 1px 0 #fff6!important;
+}
+body.rl-duel-page .rl-pager a.rl-primary{
+  border-color:#fff1b1!important;background:linear-gradient(#fff3be,#ffd673 35%,#f0ab3e 73%,#c67c18)!important;
+  color:#141a27!important;-webkit-text-fill-color:#141a27!important;
+  box-shadow:0 0 15px #ffbf5591,inset 0 2px 3px #fff9!important;
+}
+body.rl-duel-page .rl-pager a.rl-primary span{color:#101c2a!important;-webkit-text-fill-color:#101c2a!important}
+body.rl-duel-page .rl-pager a.rl-disabled{opacity:.4!important;pointer-events:none!important}
+body.rl-duel-page .rl-pager a span{font-size:24px!important;color:inherit!important;-webkit-text-fill-color:inherit!important}
+body.rl-duel-page .rl-dots{margin-top:12px!important;display:flex;justify-content:center;gap:8px}
+body.rl-duel-page .rl-dot{width:8px;height:8px;background:#397099;border-radius:99px}
+body.rl-duel-page .rl-dot.active{width:22px;background:#f9c76e;box-shadow:0 0 12px #e8b54b}
+body.rl-duel-page .rl-hint{color:#8baecf!important;text-align:center;font-size:10px;margin:6px 0 0!important}
+body.rl-duel-page .rl-loading{color:#cde7ff!important;padding:20px;text-align:center}
+body.rl-duel-page [hidden]{display:none!important}
+@media(max-width:370px){body.rl-duel-page .rl-duel-top>div{padding-left:12px}body.rl-duel-page .rl-counter{min-width:61px}body.rl-duel-page .rl-arena-bottom{gap:19%}body.rl-duel-page .rl-arena-name{min-height:65px;padding:5px 4px!important}}
+@media(min-width:600px){body.rl-duel-page .rl-duel-shell{box-shadow:0 0 0 1px #3d6380,0 0 45px #000b}body.rl-duel-page .rl-arena{aspect-ratio:420/570!important}}
+@media(prefers-reduced-motion:no-preference){body.rl-duel-page .rl-vs-symbol{animation:ca-pulse 3.4s ease-in-out infinite alternate!important}@keyframes ca-pulse{to{filter:drop-shadow(0 3px 0 #643109) drop-shadow(0 0 20px #ffc75c)}}}
+/* Preview soltanto: nel sito la navbar esistente resta quella ufficiale. */
+body.rl-duel-page .ca-demo-navbar{height:70px;display:flex;gap:10px;align-items:center;justify-content:space-between;padding:0 max(13px,calc((100vw - 590px)/2));background:linear-gradient(110deg,#061a38,#0d345b 50%,#061a38);border-bottom:1px solid #3b668e}
+.ca-demo-logo{display:flex;align-items:center;gap:9px;font:800 clamp(18px,5vw,25px)/1.1 Arial,sans-serif;white-space:nowrap}
+.ca-logo-disc{display:grid;place-items:center;width:44px;height:44px;border-radius:50%;border:1px solid #eabb5a;background:#07162b;font-size:24px}
+.ca-nav-actions{display:flex;gap:8px}.ca-nav-actions span{border:1px solid #f7c374;border-radius:10px;display:grid;place-items:center;width:39px;height:39px;font-size:20px;background:#0a2745}
+.ca-preview-only{max-width:590px;padding:8px 13px;margin:0 auto 5px;font:11px Arial;color:#abc5df;text-align:center}
