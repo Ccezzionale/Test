@@ -1,164 +1,98 @@
 <!DOCTYPE html><html lang="it"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Duello Playoff | Lega degli Eroi</title><meta name="theme-color" content="#061e43">
-<link rel="stylesheet" href="navbar.css"><link rel="stylesheet" href="playoff-real-legends-duel.css?v=20261103-v9">
+<link rel="stylesheet" href="navbar.css"><link rel="stylesheet" href="playoff-real-legends-duel.css?v=20261102-championsarena5">
+<link rel="stylesheet" href="playoff-champions-arena-v7.css?v=20261103-colosseo">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="playoff-real-legends-assets.js?v=20261103-v9" defer></script>
+<script src="playoff-real-legends-assets.js?v=20261102" defer></script>
 <script src="playoff.js?v=20261102-reallegends1" defer></script>
-<script src="playoff-real-legends-duel.js?v=20261103-v9" defer></script>
+<script src="playoff-real-legends-duel.js?v=20261102-championsarena1" defer></script>
 <meta name="lega-app-build" content="v20261028-ef9f76dc3f25">
 <script defer src="./app-updates.js?bootstrap=v20261028-ef9f76dc3f25" data-eroi-update="1"></script>
 </head><body class="rl-duel-page">
-  <nav class="site-nav">
-    <div class="nav-inner">
-      <div class="nav-left">
-        <span id="hamburger" class="hamburger" aria-label="Apri menu">☰</span>
-
-        <a href="index.html" class="brand-home" aria-label="Home">
-          <img src="icons/nav/home.webp" alt="" class="nav-home-icon">
-        </a>
-      </div>
-
-      <ul class="navbar" id="mainMenu">
-        <li class="dropdown">
-  <a href="#" class="toggle-submenu">
-    Rose <span class="caret">▾</span>
-  </a>
-
-  <ul class="submenu">
-    <li>
-      <a href="rose.html">
-        Rose Squadre
-      </a>
-    </li>
-
-    <li>
-      <a href="franchigie.html">
-        Franchigie
-      </a>
-    </li>
+<nav class="site-nav">
+ <div class="nav-inner">
+  <div class="nav-left">
+   <span id="hamburger" class="hamburger" aria-label="Apri menu">☰</span>
+   <a href="index.html" class="brand-home" aria-label="Home"><img src="icons/nav/home.webp" alt="" class="nav-home-icon"></a>
+  </div>
+  <ul class="navbar" id="mainMenu">
+   <li class="dropdown"><a href="#" class="toggle-submenu">Rose <span class="caret">▾</span></a>
+    <ul class="submenu"><li><a href="rose.html">Rose Squadre</a></li><li><a href="franchigie.html">Franchigie</a></li></ul></li>
+   <li class="dropdown"><a href="#" class="toggle-submenu">Draft <span class="caret">▾</span></a>
+    <ul class="submenu">
+     <li><a href="pre-draft.html"><img src="icons/nav/pre-draft.webp" class="menu-icon" alt="">Pre-Draft</a></li>
+     <li><a href="draft_championship.html"><img src="icons/nav/conf-championship.webp" class="menu-icon" alt="">Conf. Championship</a></li>
+     <li><a href="draft_conference.html"><img src="icons/nav/conf-league.webp" class="menu-icon" alt="">Conf. League</a></li>
+     <li><a href="dinamico-draft.html"><img src="icons/nav/draft-2026.webp" class="menu-icon" alt="">Draft 2027-28</a></li>
+    </ul></li>
+   <li class="dropdown competizioni"><a href="#" class="toggle-submenu">Competizioni <span class="caret">▾</span></a>
+    <ul class="submenu">
+     <li><a href="classifica.html"><img src="icons/nav/classifiche.webp" class="menu-icon" alt="">Classifiche</a></li>
+     <li><a href="playoff.html"><img src="icons/nav/playoff.webp" class="menu-icon" alt="">Playoff</a></li>
+     <li><a href="arena.html"><img src="icons/nav/highlander.webp" class="menu-icon" alt="">Highlander</a></li>
+     <li><a href="crashoutcup.html"><img src="icons/nav/crashout-cup.webp" class="menu-icon" alt="">Crash Out Cup</a></li>
+     <li><a href="crashoutplayoff.html"><img src="icons/nav/crashout-playoff.webp" class="menu-icon" alt="">Crash Out Cup - Playoff</a></li>
+     <li><a href="supercoppa.html"><img src="icons/nav/supercoppa.webp" class="menu-icon" alt="">Supercoppa</a></li>
+     <li><a href="allstar.html"><img src="icons/nav/allstar.webp" class="menu-icon" alt="">All-Star Game</a></li>
+     <li><a href="statistiche.html"><img src="icons/nav/statistiche.webp" class="menu-icon" alt="">Statistiche</a></li>
+    </ul></li>
+   <li><a href="waiver.html">Waiver Wire</a></li>
+   <li><a href="hall-of-fame.html">Hall of Fame</a></li>
+   <li><a href="regolamento.html">Regolamento</a></li>
   </ul>
-</li>
-
-        <li class="dropdown">
-          <a href="#" class="toggle-submenu">
-            Draft <span class="caret">▾</span>
-          </a>
-
-          <ul class="submenu">
-            <li><a href="pre-draft.html"><img src="icons/nav/pre-draft.webp" class="menu-icon" alt="">Pre-Draft</a></li>
-            <li><a href="draft_championship.html"><img src="icons/nav/conf-championship.webp" class="menu-icon" alt="">Conf. Championship</a></li>
-            <li><a href="draft_conference.html"><img src="icons/nav/conf-league.webp" class="menu-icon" alt="">Conf. League</a></li>
-            <li><a href="dinamico-draft.html"><img src="icons/nav/draft-2026.webp" class="menu-icon" alt="">Draft 2027-28</a></li>
-          </ul>
-        </li>
-
-        <li class="dropdown competizioni">
-          <a href="#" class="toggle-submenu">
-            Competizioni <span class="caret">▾</span>
-          </a>
-
-          <ul class="submenu">
-            <li><a href="classifica.html"><img src="icons/nav/classifiche.webp" class="menu-icon" alt="">Classifiche</a></li>
-            <li><a href="playoff.html"><img src="icons/nav/playoff.webp" class="menu-icon" alt="">Playoff</a></li>
-            <li><a href="arena.html"><img src="icons/nav/highlander.webp" class="menu-icon" alt="">Highlander</a></li>
-            <li><a href="crashoutcup.html"><img src="icons/nav/crashout-cup.webp" class="menu-icon" alt="">Crash Out Cup</a></li>
-            <li><a href="crashoutplayoff.html"><img src="icons/nav/crashout-playoff.webp" class="menu-icon" alt="">Crash Out Cup - Playoff</a></li>
-            <li><a href="supercoppa.html"><img src="icons/nav/supercoppa.webp" class="menu-icon" alt="">Supercoppa</a></li>
-                                    <li>
-              <a href="allstar.html">
-                <img src="icons/nav/allstar.webp" class="menu-icon" alt="">
-                All-Star Game
-              </a>
-            </li>
-            <li><a href="statistiche.html"><img src="icons/nav/statistiche.webp" class="menu-icon" alt="">Statistiche</a></li>
-          </ul>
-        </li>
-
-        <li><a href="waiver.html">Waiver Wire</a></li>
-
-<li>
-  <a href="hall-of-fame.html">Hall of Fame</a>
-</li>
-
-        <li><a href="regolamento.html">Regolamento</a></li>
-      </ul>
-
-      <div class="nav-right hero-actions">
-        <a id="trade-badge" href="trade-room.html" class="btn-hero trade-badge" aria-label="Trade Room">
-          <img src="icons/nav/trade-room.webp" class="action-icon" alt="">
-          <span class="btn-label">Trade Room</span>
-        </a>
-
-        <a id="login-btn" href="login.html" class="btn-hero" style="display:none;" aria-label="Login">
-          <img src="icons/nav/login-logout.webp" class="action-icon" alt="">
-          <span class="btn-label">Login</span>
-        </a>
-
-        <button id="logout-btn" type="button" class="btn-hero" style="display:none;" aria-label="Logout">
-          <img src="icons/nav/login-logout.webp" class="action-icon" alt="">
-          <span class="btn-label">Logout</span>
-        </button>
-
-        <button id="attiva-notifiche-btn" type="button" class="btn-hero warning" aria-label="Attiva notifiche">
-          <img src="icons/nav/notifications.webp" class="action-icon" alt="">
-          <span class="btn-label">Attiva notifiche</span>
-        </button>
-      </div>
-    </div>
-  </nav>
-
-
+  <div class="nav-right hero-actions">
+   <a id="trade-badge" href="trade-room.html" class="btn-hero trade-badge" aria-label="Trade Room"><img src="icons/nav/trade-room.webp" class="action-icon" alt=""><span class="btn-label">Trade Room</span></a>
+   <a id="login-btn" href="login.html" class="btn-hero" style="display:none;" aria-label="Login"><img src="icons/nav/login-logout.webp" class="action-icon" alt=""><span class="btn-label">Login</span></a>
+   <button id="logout-btn" type="button" class="btn-hero" style="display:none;" aria-label="Logout"><img src="icons/nav/login-logout.webp" class="action-icon" alt=""><span class="btn-label">Logout</span></button>
+   <button id="attiva-notifiche-btn" type="button" class="btn-hero warning" aria-label="Attiva notifiche"><img src="icons/nav/notifications.webp" class="action-icon" alt=""><span class="btn-label">Attiva notifiche</span></button>
+  </div>
+ </div>
+</nav>
 <main class="rl-duel-shell">
-  <a class="rl-return" id="rl-back" href="playoff.html"><span aria-hidden="true">‹</span> Torna agli incontri</a>
-  <div id="rl-loading" class="rl-loading" role="status">Caricamento sfida dai dati ufficiali dei Playoff…</div>
-  <section id="rl-duel-content" hidden>
-    <header class="rl-event-head">
-      <div class="rl-event-eyebrow"><span aria-hidden="true">✦</span> LEGA DEGLI EROI <span aria-hidden="true">✦</span></div>
-      <div class="rl-event-brand"><span class="rl-gold-wings" aria-hidden="true">♛</span><span>CHAMPIONS <b>ARENA</b></span><span class="rl-gold-wings" aria-hidden="true">❧</span></div>
-      <h1 class="rl-event-title">PLAYOFF <strong>2027</strong></h1>
-      <div class="rl-event-stage" id="rl-event-stage">WILD CARD</div>
-      <nav class="rl-stage-nav" aria-label="Fasi dei Playoff">
-        <a href="playoff-sfida.html?fase=wildcard&amp;match=WC1" data-rl-stage="wildcard">Wildcard</a>
-        <a href="playoff-sfida.html?fase=quarti&amp;match=Q1" data-rl-stage="quarti">Quarti</a>
-        <a href="playoff-sfida.html?fase=semifinali&amp;match=S1" data-rl-stage="semifinali">Semifinali</a>
-        <a href="playoff-sfida.html?fase=finale&amp;match=F" data-rl-stage="finale">Finale</a>
-      </nav>
-    </header>
-    <div class="rl-duel-top">
-      <div><span class="rl-strap" id="rl-stage-kicker">REAL LEGENDS · WILD CARD</span><h2 id="rl-duel-title">DUELLO</h2></div>
-      <span class="rl-counter" id="rl-duel-counter">1 / 4</span>
-    </div>
-    <section class="rl-arena" id="rl-arena" aria-label="Arena del duello fra le due Real Legends">
-      <div class="rl-arena-light rl-arena-light--left" aria-hidden="true"></div>
-      <div class="rl-arena-light rl-arena-light--right" aria-hidden="true"></div>
-      <div class="rl-arena-side rl-arena-side--left" id="rl-left-side"><img id="rl-left-image" alt=""></div>
-      <div class="rl-arena-side rl-arena-side--right" id="rl-right-side"><img id="rl-right-image" alt=""></div>
-        <div class="rl-arena-ribbon" id="rl-arena-code">WILD CARD</div>
-      <div class="rl-vs-symbol" aria-hidden="true">VS</div>
-      <div class="rl-arena-bottom">
-        <div class="rl-arena-name rl-arena-name--left"><span id="rl-left-seed" class="rl-seed"></span><strong id="rl-left-name"></strong><span id="rl-left-outcome" class="rl-outcome"></span></div>
-        <div class="rl-arena-name rl-arena-name--right"><span id="rl-right-seed" class="rl-seed"></span><strong id="rl-right-name"></strong><span id="rl-right-outcome" class="rl-outcome"></span></div>
-      </div>
-      <div class="rl-trophy" aria-hidden="true">
-        <svg viewBox="0 0 128 150" role="presentation" focusable="false">
-          <defs><linearGradient id="rlCupMetal" x1="0" x2="1"><stop stop-color="#7f430a"/><stop offset=".22" stop-color="#f6ba48"/><stop offset=".47" stop-color="#fff7ca"/><stop offset=".7" stop-color="#efad2f"/><stop offset="1" stop-color="#8b4c08"/></linearGradient></defs>
-          <path d="M28 18H100L94 80Q83 100 64 103Q45 100 34 80Z" fill="url(#rlCupMetal)" stroke="#ffe19b" stroke-width="3"/>
-          <path d="M27 29H12Q6 70 38 78M101 29H116Q122 70 90 78" fill="none" stroke="url(#rlCupMetal)" stroke-width="11" stroke-linecap="round"/>
-          <path d="M62 102V123M50 123H78L84 138H44Z" stroke="#ffe19b" stroke-width="3" fill="url(#rlCupMetal)" stroke-linejoin="round"/>
-          <path d="M64 34L70 46L84 48L74 58L77 72L64 65L51 72L54 58L44 48L58 46Z" fill="#fff6bc" opacity=".9"/>
-        </svg>
-      </div>
-    </section>
-    <div class="rl-tagline">THINGS ARE GETTIN’ <strong>REAL</strong></div>
-    <div class="rl-legend-line">UNA SFIDA. DUE LEGGENDE.</div>
-    <section class="rl-scoreboard" aria-label="Risultato della sfida">
-      <div class="rl-score-title" id="rl-score-kicker"></div>
-      <div class="rl-scores"><strong id="rl-score-left">–</strong><em id="rl-score-middle">VS</em><strong id="rl-score-right">–</strong></div>
-      <p id="rl-score-note" class="rl-score-note"></p>
-    </section>
-    <nav class="rl-pager" aria-label="Sfide della fase"><a id="rl-prev"><span aria-hidden="true">‹</span> PRECEDENTE</a><a id="rl-next" class="rl-primary">SUCCESSIVA <span aria-hidden="true">›</span></a></nav>
-    <div class="rl-dots" id="rl-dots"></div>
-    <p class="rl-hint">Scorri sull’arena per passare alla prossima sfida.</p>
+ <a class="rl-return" id="rl-back" href="playoff.html"><span aria-hidden="true">‹</span> Torna agli incontri</a>
+ <div id="rl-loading" class="rl-loading" role="status">Caricamento sfida dai dati ufficiali dei Playoff…</div>
+ <section id="rl-duel-content" hidden>
+  <header class="rl-event-head">
+   <div class="rl-event-eyebrow"><span aria-hidden="true">✦</span> LEGA DEGLI EROI <span aria-hidden="true">✦</span></div>
+   <div class="rl-event-brand"><span class="rl-gold-wings" aria-hidden="true">♛</span><span>PLAYOFF · CHAMPIONS <b>ARENA</b></span><span class="rl-gold-wings" aria-hidden="true">❧</span></div>
+   <h1 class="rl-event-title">PLAYOFF <strong>2027</strong></h1>
+   <div class="rl-event-stage" id="rl-event-stage">WILD CARD</div>
+   <nav class="rl-stage-nav" aria-label="Fasi dei Playoff">
+    <a href="playoff-sfida.html?fase=wildcard&amp;match=WC1" data-rl-stage="wildcard">Wildcard</a>
+    <a href="playoff-sfida.html?fase=quarti&amp;match=Q1" data-rl-stage="quarti">Quarti</a>
+    <a href="playoff-sfida.html?fase=semifinali&amp;match=S1" data-rl-stage="semifinali">Semifinali</a>
+    <a href="playoff-sfida.html?fase=finale&amp;match=F" data-rl-stage="finale">Finale</a>
+   </nav>
+  </header>
+  <div class="rl-duel-top"><div><span class="rl-strap" id="rl-stage-kicker">REAL LEGENDS · WILD CARD</span><h2 id="rl-duel-title">DUELLO</h2></div><span class="rl-counter" id="rl-duel-counter">1 / 4</span></div>
+  <section class="rl-arena" id="rl-arena" aria-label="Arena del duello fra le due Real Legends">
+   <div class="rl-arena-light rl-arena-light--left" aria-hidden="true"></div><div class="rl-arena-light rl-arena-light--right" aria-hidden="true"></div>
+   <div class="rl-arena-side rl-arena-side--left" id="rl-left-side"><img id="rl-left-image" alt=""></div>
+   <div class="rl-arena-side rl-arena-side--right" id="rl-right-side"><img id="rl-right-image" alt=""></div>
+   <div class="rl-arena-ribbon" id="rl-arena-code">WILD CARD</div>
+   <div class="rl-vs-symbol" aria-hidden="true">VS</div>
+   <div class="rl-arena-bottom">
+    <div class="rl-arena-name rl-arena-name--left"><span id="rl-left-seed" class="rl-seed"></span><strong id="rl-left-name"></strong><span id="rl-left-outcome" class="rl-outcome"></span></div>
+    <div class="rl-arena-name rl-arena-name--right"><span id="rl-right-seed" class="rl-seed"></span><strong id="rl-right-name"></strong><span id="rl-right-outcome" class="rl-outcome"></span></div>
+   </div>
+   <div class="rl-trophy" aria-hidden="true"><svg viewBox="0 0 128 150" role="presentation" focusable="false">
+    <defs><linearGradient id="rlCupMetal" x1="0" x2="1"><stop stop-color="#7f430a"/><stop offset=".22" stop-color="#f6ba48"/><stop offset=".47" stop-color="#fff7ca"/><stop offset=".7" stop-color="#efad2f"/><stop offset="1" stop-color="#8b4c08"/></linearGradient></defs>
+    <path d="M28 18H100L94 80Q83 100 64 103Q45 100 34 80Z" fill="url(#rlCupMetal)" stroke="#ffe19b" stroke-width="3"/>
+    <path d="M27 29H12Q6 70 38 78M101 29H116Q122 70 90 78" fill="none" stroke="url(#rlCupMetal)" stroke-width="11" stroke-linecap="round"/>
+    <path d="M62 102V123M50 123H78L84 138H44Z" stroke="#ffe19b" stroke-width="3" fill="url(#rlCupMetal)" stroke-linejoin="round"/>
+    <path d="M64 34L70 46L84 48L74 58L77 72L64 65L51 72L54 58L44 48L58 46Z" fill="#fff6bc" opacity=".9"/>
+   </svg></div>
   </section>
+  <div class="rl-tagline">THINGS ARE GETTIN’ <strong>REAL</strong></div>
+  <div class="rl-legend-line">DUE LEGGENDE · UN SOLO VINCITORE</div>
+  <section class="rl-scoreboard" aria-label="Risultato della sfida">
+   <div class="rl-score-title" id="rl-score-kicker"></div>
+   <div class="rl-scores"><strong id="rl-score-left">–</strong><em id="rl-score-middle">VS</em><strong id="rl-score-right">–</strong></div>
+   <p id="rl-score-note" class="rl-score-note"></p>
+  </section>
+  <nav class="rl-pager" aria-label="Sfide della fase"><a id="rl-prev"><span aria-hidden="true">‹</span> PRECEDENTE</a><a id="rl-next" class="rl-primary">SUCCESSIVA <span aria-hidden="true">›</span></a></nav>
+  <div class="rl-dots" id="rl-dots"></div>
+  <p class="rl-hint">Scorri sull’arena per passare alla prossima sfida.</p>
+ </section>
 </main>
 <script src="mobile-nav.js"></script><script src="navbar.js"></script></body></html>
