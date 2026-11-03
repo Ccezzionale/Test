@@ -44,6 +44,8 @@
       put('rl-'+pos+'-name',name);
       put('rl-'+pos+'-seed',team.seed?'#'+team.seed+' SEED':'DA DEFINIRE');
       const side=$('rl-'+pos+'-side');
+      // Layout V8: scala ottica per ogni Real Legend, senza alterare il WebP.
+      side.dataset.rlMascot = window.PlayoffRealLegends?.slug(name) || '';
       side.style.setProperty('--rl-color',window.PlayoffRealLegends?.color(name)||'#23aaff');
       $('rl-arena').style.setProperty(i===0?'--rl-left-color':'--rl-right-color',window.PlayoffRealLegends?.color(name)||'#23aaff');
       side.classList.toggle('rl-placeholder',placeholder);

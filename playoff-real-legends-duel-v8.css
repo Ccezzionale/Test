@@ -1,0 +1,52 @@
+/* CHAMPIONS ARENA V8 — correzione proporzioni OTTICHE delle Real Legends.
+   Usa la V7 come base, poi aggiunge solo questi ritocchi alla pagina del duello.
+   Non interviene sul tabellone desktop, né sui WebP originali.
+   Ogni fattore e' mirato alla figura visibile, non alla dimensione dei pixel. */
+
+/* Mantieni l'intera metà della scena disponibile, ma sfuma la parte inferiore
+   DELLA FINESTRA: la maschera non si sposta quando ingrandiamo la mascotte. */
+body.rl-duel-page .rl-arena-side {
+  top: 6%;
+  bottom: 16%;
+  width: 50%;
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 74%, #000 82%, rgba(0,0,0,.82) 88%, transparent 100%);
+  mask-image: linear-gradient(to bottom, #000 0%, #000 74%, #000 82%, rgba(0,0,0,.82) 88%, transparent 100%);
+}
+body.rl-duel-page .rl-arena-side img {
+  width: 100% !important;
+  height: 100% !important;
+  max-width: 100% !important;
+  max-height: 100% !important;
+  object-fit: contain !important;
+  object-position: center bottom !important;
+  transform: translate(var(--rl-optical-x, 0px), var(--rl-optical-y, 0px)) scale(var(--rl-optical-scale, 1)) !important;
+  transform-origin: center 51% !important;
+  -webkit-mask-image: none !important;
+  mask-image: none !important;
+}
+/* In questo caso l'altezza visibile di una mascotte quadrata in contain è
+   minore di quella di una mascotte portrait 700x875. Questi fattori correggono
+   le differenze (e parte dei margini trasparenti) senza modificare i file. */
+body.rl-duel-page .rl-arena-side[data-rl-mascot='desperados'] { --rl-optical-scale: 1.23; --rl-optical-y: 0px; }
+body.rl-duel-page .rl-arena-side[data-rl-mascot='ibla-fc'] { --rl-optical-scale: 1.00; }
+body.rl-duel-page .rl-arena-side[data-rl-mascot='bayern-christiansen'] { --rl-optical-scale: 1.00; }
+body.rl-duel-page .rl-arena-side[data-rl-mascot='pokermantra'] { --rl-optical-scale: 1.16; --rl-optical-y: -4px; }
+body.rl-duel-page .rl-arena-side[data-rl-mascot='athletic-pongao'] { --rl-optical-scale: 1.05; }
+body.rl-duel-page .rl-arena-side[data-rl-mascot='golden-knights'] { --rl-optical-scale: 1.04; }
+body.rl-duel-page .rl-arena-side[data-rl-mascot='eintracht-franco-126'] { --rl-optical-scale: 1.09; --rl-optical-y: -2px; }
+body.rl-duel-page .rl-arena-side[data-rl-mascot='atletico-leon'] { --rl-optical-scale: 1.00; }
+body.rl-duel-page .rl-arena-side[data-rl-mascot='team-bartowski'] { --rl-optical-scale: 1.03; }
+body.rl-duel-page .rl-arena-side[data-rl-mascot='fantaugusta'] { --rl-optical-scale: 1.02; }
+body.rl-duel-page .rl-arena-side[data-rl-mascot='fc-disoneste'] { --rl-optical-scale: 1.14; }
+body.rl-duel-page .rl-arena-side[data-rl-mascot='minnesode-timberland'] { --rl-optical-scale: 1.04; }
+body.rl-duel-page .rl-arena-side[data-rl-mascot='minnesota-snakes'] { --rl-optical-scale: 1.07; }
+body.rl-duel-page .rl-arena-side[data-rl-mascot='wild-boys'] { --rl-optical-scale: 1.02; }
+body.rl-duel-page .rl-arena-side[data-rl-mascot='riverfilo'] { --rl-optical-scale: 1.06; }
+body.rl-duel-page .rl-arena-side[data-rl-mascot='pandini'] { --rl-optical-scale: 1.07; }
+
+/* Il VS non copre la testa dei soggetti più grandi. */
+body.rl-duel-page .rl-vs-symbol { top: 64% !important; font-size: clamp(44px, 14vw, 82px) !important; }
+/* Piccolo marcatore TEMPORANEO: serve a riconoscere che il CSS nuovo e' attivo,
+   anche dentro la PWA. Dopo il test si puo' togliere. */
+body.rl-duel-page .rl-counter::after { content: ' V8'; font: 800 9px/1 Arial,sans-serif; letter-spacing: .02em; color: #69dbff; }
