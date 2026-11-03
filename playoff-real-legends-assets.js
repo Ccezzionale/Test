@@ -23,6 +23,26 @@
     'fc-disoneste':'#d96aff','minnesode-timberland':'#ff9644','minnesota-snakes':'#ad75ef',
     'wild-boys':'#74b9ff','pokermantra':'#d15dff','ibla-fc':'#dab177','eintracht-franco-126':'#f46b68'
   };
+
+  const optical = {
+    'desperados':{scale:1.21,y:0,x:0},
+    'ibla-fc':{scale:1.02,y:0,x:0},
+    'bayern-christiansen':{scale:1.03,y:0,x:0},
+    'pokermantra':{scale:1.14,y:-4,x:0},
+    'athletic-pongao':{scale:1.06,y:0,x:0},
+    'golden-knights':{scale:1.03,y:0,x:0},
+    'eintracht-franco-126':{scale:1.08,y:-2,x:0},
+    'atletico-leon':{scale:1.01,y:0,x:0},
+    'team-bartowski':{scale:1.03,y:0,x:0},
+    'fantaugusta':{scale:1.07,y:-2,x:0},
+    'fc-disoneste':{scale:1.12,y:-2,x:0},
+    'minnesode-timberland':{scale:1.05,y:0,x:0},
+    'minnesota-snakes':{scale:1.06,y:-1,x:0},
+    'wild-boys':{scale:1.03,y:0,x:0},
+    'riverfilo':{scale:1.20,y:-8,x:0},
+    'pandini':{scale:1.08,y:-2,x:0}
+  };
+
   function clean(v) {
     return String(v||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'')
       .replace(/^\s*#?\d+\s*[°º]?\s*/,'').replace(/[^a-z0-9 ]/gi,' ')
@@ -37,5 +57,5 @@
     const key = slug(name);
     return key ? 'img/playoff-real-legends/'+key+'.webp' : null;
   };
-  window.PlayoffRealLegends={slug,image,palette,color:name=>palette[slug(name)]||'#33b6ff'};
+  window.PlayoffRealLegends={slug,image,palette,optical,color:name=>palette[slug(name)]||'#33b6ff'};
 })();
