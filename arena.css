@@ -1808,7 +1808,17 @@ h1 {
    Nessuna modifica ai layout desktop, alle query o al pannello admin.
    ============================================================== */
 @media (max-width: 768px) {
-  .hero-arena { display:none !important; }
+  /* V2: ripristina il banner ORIGINALE dell'Arena, senza duplicare i chip
+     dei contatori (ora gestiti dalla dashboard The Last Survivor).
+     Le immagini originali rimangono icons/nav/higlandermobilebanner.webp
+     e icons/nav/higlanderbanner.webp, già presenti sul sito. */
+  .hero-arena {
+    display:block !important;
+    padding:12px 0 0 !important;
+    background:transparent !important;
+  }
+  .hero-arena .arena-stats { display:none !important; }
+
   body {
     background: radial-gradient(ellipse at 50% 8%, #47201b 0%, #15131c 38%, #070d15 78%) !important;
     background-color:#080b13 !important;

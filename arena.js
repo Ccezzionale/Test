@@ -528,7 +528,7 @@ function renderMobileDashboard() {
     if (isFinale) {
       const winner = inGioco[0];
       heroFinal.hidden = false;
-      heroFinal.innerHTML = `<img src="${escapeLsHtml(winner.mascotte)}" alt="${escapeLsHtml(winner.nome)}" loading="lazy"><span>♛ ${escapeLsHtml(winner.nome)} ♛</span>`;
+      heroFinal.innerHTML = `<img src="${escapeLsHtml(winner.highlander || winner.mascotte)}" alt="${escapeLsHtml(winner.nome)}" loading="lazy"><span>♛ ${escapeLsHtml(winner.nome)} ♛</span>`;
     } else {
       heroFinal.hidden = true;
       heroFinal.innerHTML = "";
@@ -540,7 +540,7 @@ function renderMobileDashboard() {
     if (title) title.textContent = "IL VERDETTO FINALE";
     mobileVerdict.className = "mobile-verdict ls-verdict ls-is-champion";
     mobileVerdict.innerHTML = `
-      <img class="ls-verdict-mascot" src="${escapeLsHtml(winner.mascotte)}" alt="${escapeLsHtml(winner.nome)}" loading="lazy">
+      <img class="ls-verdict-mascot" src="${escapeLsHtml(winner.highlander || winner.mascotte)}" alt="${escapeLsHtml(winner.nome)}" loading="lazy">
       <div class="ls-verdict-content"><div class="ls-verdict-kicker">♛ IL CAMPIONE HIGHLANDER</div><strong class="ls-verdict-name">${escapeLsHtml(winner.nome)}</strong><div class="ls-verdict-meta">L'ultimo sopravvissuto ha conquistato il trono.</div><span class="ls-verdict-badge ls-champion-badge">CAMPIONE</span></div>`;
   } else if (ultimaEliminata) {
     const eliminated = ultimaEliminata;
@@ -555,12 +555,13 @@ function renderMobileDashboard() {
     mobileVerdict.innerHTML = `<div class="ls-verdict-placeholder">⚔</div><div class="ls-verdict-content"><div class="ls-verdict-kicker">LA SFIDA HA INIZIO</div><strong class="ls-verdict-name">Il trono è ancora vuoto</strong><div class="ls-verdict-meta">Nessuna eliminazione registrata. La prima battaglia deve ancora cominciare.</div></div>`;
   }
 
+  // I superstiti e il campione usano la posa Highlander già definita nel roster.
   // La tabella esistente memorizza i Magic Punti delle eliminazioni,
   // NON i punteggi settimanali dei superstiti. Non mostrare valori inventati.
   mobileGrid.classList.toggle("ls-grid-final", sopravvissute <= 3);
   mobileGrid.innerHTML = inGioco.map(team => `
     <div class="mobile-team-card ls-survivor-card" title="${escapeLsHtml(team.nome)}">
-      <div class="ls-survivor-portrait"><img src="${escapeLsHtml(team.mascotte)}" alt="${escapeLsHtml(team.nome)}" loading="lazy"></div>
+      <div class="ls-survivor-portrait"><img src="${escapeLsHtml(team.highlander || team.mascotte)}" alt="${escapeLsHtml(team.nome)}" loading="lazy"></div>
       <span class="ls-survivor-name">${escapeLsHtml(team.nome)}</span>
       <span class="ls-survivor-status">${isFinale ? "♛ CAMPIONE" : "IN GARA"}</span>
     </div>`).join("");
