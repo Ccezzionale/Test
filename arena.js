@@ -497,61 +497,105 @@ function renderArenaTeams() {
    RENDER MOBILE DASHBOARD
    ========================= */
 
+function escapeLsHtml(value = "") {
+  return String(value).replace(/[&<>"']/g, char => ({
+    "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+  })[char]);
+}
+
 function renderMobileDashboard() {
   const mobileVerdict = document.getElementById("mobile-verdict");
   const mobileGrid = document.getElementById("mobile-teams-grid");
+  const cemeteryList = document.getElementById("ls-cemetery-list");
+  const history = document.getElementById("ls-history");
+  const hero = document.getElementById("ls-hero");
+  const heroFinal = document.getElementById("ls-hero-final");
+  const title = document.getElementById("ls-verdict-heading");
+  if (!mobileVerdict || !mobileGrid || !cemeteryList || !history) return;
 
-  if (!mobileVerdict || !mobileGrid) return;
-
-  if (inGioco.length === 1) {
-    const vincitore = inGioco[0];
-
-    mobileVerdict.innerHTML = `
-      <div class="mobile-verdict-icon">🏆</div>
-      <div class="mobile-verdict-kicker">Ultimo sopravvissuto</div>
-      <div class="mobile-verdict-name">${vincitore.nome}</div>
-      <div class="mobile-verdict-subtitle">L’arena ha emesso il suo verdetto finale.</div>
-    `;
-  } else if (ultimaEliminata) {
-    mobileVerdict.innerHTML = `
-      ${buildImgHtml(ultimaEliminata, "mobile-verdict-logo")}
-      <div class="mobile-verdict-kicker danger">Ultima eliminata</div>
-      <div class="mobile-verdict-name">${ultimaEliminata.nome}</div>
-      <div class="mobile-verdict-subtitle">L’arena reclama un’altra vittima.</div>
-    `;
-  } else {
-    mobileVerdict.innerHTML = `
-      <div class="mobile-verdict-icon">⚔️</div>
-      <div class="mobile-verdict-kicker">Sfida in corso</div>
-      <div class="mobile-verdict-name">Nessun verdetto ancora</div>
-      <div class="mobile-verdict-subtitle">Sedici entrano. Una resterà.</div>
-    `;
+  const $ = id => document.getElementById(id);
+  const roundToPlay = isFinale ? ultimoTurno : Math.min(squadreBase.length - 1, Math.max(1, ultimoTurno + 1));
+  if ($("ls-turno")) $("ls-turno").textContent = roundToPlay;
+  if ($("ls-survivors")) $("ls-survivors").textContent = sopravvissute;
+  if ($("ls-eliminated")) $("ls-eliminated").textContent = eliminateCount;
+  if ($("ls-survivors-count")) $("ls-survivors-count").textContent = isFinale ? "1 CAMPIONE" : `${sopravvissute} IN GARA`;
+  if ($("ls-survivors-title")) $("ls-survivors-title").textContent = isFinale ? "L’ULTIMO SOPRAVVISSUTO" : "I SOPRAVVISSUTI";
+  if (hero) {
+    hero.classList.toggle("ls-is-final", isFinale);
+    hero.classList.toggle("ls-is-duel", inGioco.length === 2);
+  }
+  if (heroFinal) {
+    if (isFinale) {
+      const winner = inGioco[0];
+      heroFinal.hidden = false;
+      heroFinal.innerHTML = `<img src="${escapeLsHtml(winner.mascotte)}" alt="${escapeLsHtml(winner.nome)}" loading="lazy"><span>♛ ${escapeLsHtml(winner.nome)} ♛</span>`;
+    } else {
+      heroFinal.hidden = true;
+      heroFinal.innerHTML = "";
+    }
   }
 
-  mobileGrid.innerHTML = "";
+  if (isFinale) {
+    const winner = inGioco[0];
+    if (title) title.textContent = "IL VERDETTO FINALE";
+    mobileVerdict.className = "mobile-verdict ls-verdict ls-is-champion";
+    mobileVerdict.innerHTML = `
+      <img class="ls-verdict-mascot" src="${escapeLsHtml(winner.mascotte)}" alt="${escapeLsHtml(winner.nome)}" loading="lazy">
+      <div class="ls-verdict-content"><div class="ls-verdict-kicker">♛ IL CAMPIONE HIGHLANDER</div><strong class="ls-verdict-name">${escapeLsHtml(winner.nome)}</strong><div class="ls-verdict-meta">L'ultimo sopravvissuto ha conquistato il trono.</div><span class="ls-verdict-badge ls-champion-badge">CAMPIONE</span></div>`;
+  } else if (ultimaEliminata) {
+    const eliminated = ultimaEliminata;
+    if (title) title.textContent = "ULTIMA ELIMINAZIONE";
+    mobileVerdict.className = "mobile-verdict ls-verdict ls-is-eliminated";
+    mobileVerdict.innerHTML = `
+      <img class="ls-verdict-mascot" src="${escapeLsHtml(getTeamImage(eliminated))}" alt="${escapeLsHtml(eliminated.nome)}" loading="lazy">
+      <div class="ls-verdict-content"><div class="ls-verdict-kicker">ULTIMA ELIMINAZIONE</div><strong class="ls-verdict-name">${escapeLsHtml(eliminated.nome)}</strong><div class="ls-verdict-meta">Turno ${eliminated.turnoEliminazione} · ${formatPunti(eliminated.magicPunti)} MP</div><span class="ls-verdict-badge">✕ ELIMINATO</span></div>`;
+  } else {
+    if (title) title.textContent = "LA PRIMA BATTAGLIA";
+    mobileVerdict.className = "mobile-verdict ls-verdict ls-is-pending";
+    mobileVerdict.innerHTML = `<div class="ls-verdict-placeholder">⚔</div><div class="ls-verdict-content"><div class="ls-verdict-kicker">LA SFIDA HA INIZIO</div><strong class="ls-verdict-name">Il trono è ancora vuoto</strong><div class="ls-verdict-meta">Nessuna eliminazione registrata. La prima battaglia deve ancora cominciare.</div></div>`;
+  }
 
-  squadre.forEach(s => {
-    const card = document.createElement("div");
-    card.className = "mobile-team-card";
+  // La tabella esistente memorizza i Magic Punti delle eliminazioni,
+  // NON i punteggi settimanali dei superstiti. Non mostrare valori inventati.
+  mobileGrid.classList.toggle("ls-grid-final", sopravvissute <= 3);
+  mobileGrid.innerHTML = inGioco.map(team => `
+    <div class="mobile-team-card ls-survivor-card" title="${escapeLsHtml(team.nome)}">
+      <div class="ls-survivor-portrait"><img src="${escapeLsHtml(team.mascotte)}" alt="${escapeLsHtml(team.nome)}" loading="lazy"></div>
+      <span class="ls-survivor-name">${escapeLsHtml(team.nome)}</span>
+      <span class="ls-survivor-status">${isFinale ? "♛ CAMPIONE" : "IN GARA"}</span>
+    </div>`).join("");
 
-    if (s.eliminata) card.classList.add("is-out");
-    if (!s.eliminata) card.classList.add("is-alive");
-    if (s.ultimaEliminata) card.classList.add("is-latest");
+  const hint = $("ls-scroll-hint");
+  if (hint) hint.hidden = sopravvissute <= 3;
 
-    card.title = s.nome;
+  // Il registro contiene già Magic Punti e turno, non servono nuove tabelle.
+  if (eliminateOrdinate.length === 0) {
+    cemeteryList.innerHTML = `<p class="ls-empty-message">Nessun eroe è ancora caduto. Tutte le squadre sono in gara.</p>`;
+  } else {
+    cemeteryList.innerHTML = eliminateOrdinate.map(team => `
+      <div class="ls-fallen-row ${team.ultimaEliminata ? "ls-fallen-latest" : ""}">
+        <img src="${escapeLsHtml(getTeamImage(team))}" alt="" loading="lazy">
+        <div class="ls-fallen-info"><strong>${escapeLsHtml(team.nome)}</strong><small>Turno ${team.turnoEliminazione}${team.ultimaEliminata ? " · Ultima eliminata" : ""}</small></div>
+        <span class="ls-fallen-score">${formatPunti(team.magicPunti)} MP</span>
+      </div>`).join("");
+  }
 
-    card.innerHTML = `
-      ${buildImgHtml(s)}
-      <span>${s.nome}</span>
-    `;
-
-    mobileGrid.appendChild(card);
-  });
+  if (!eliminazioniDb.length) {
+    history.innerHTML = `<p class="ls-empty-message">La cronaca apparirà dopo il primo turno omologato.</p>`;
+    return;
+  }
+  const latest = [...eliminazioniDb].sort((a, b) => Number(b.turno) - Number(a.turno))[0];
+  const latestVictim = squadre.find(team => team.nome === latest.team_name);
+  const danger = Array.isArray(latest.danger_zone) ? latest.danger_zone : [];
+  const rescueThreshold = latest.magic_punti == null ? null : Number(latest.magic_punti) + 0.5;
+  const safeRows = danger.filter(item => item.team_name).map((item, i) => `
+    <div class="ls-risk-row"><span>${i === 0 ? "Sull'orlo del baratro" : "Salva"}</span><strong>${escapeLsHtml(item.team_name)}</strong><b>${formatPunti(item.magic_punti)} MP</b></div>`).join("");
+  history.innerHTML = `
+    <div class="ls-history-round"><span>ULTIMO VERDETTO · TURNO ${Number(latest.turno)}</span><strong>${escapeLsHtml(latestVictim?.nome || latest.team_name)}</strong><small>${formatPunti(latest.magic_punti)} MP</small></div>
+    <div class="ls-history-threshold"><span>SOGLIA SALVEZZA</span><strong>${formatPunti(rescueThreshold)} MP</strong><small>${rescueThreshold === null ? "Punteggio non disponibile" : "Calcolata come punteggio dell'eliminata + 0,5 MP"}</small></div>
+    ${safeRows ? `<div class="ls-history-risk"><div class="ls-history-caption">LE SQUADRE A RISCHIO</div>${safeRows}</div>` : `<p class="ls-empty-message">Zona pericolo non ancora registrata per questo turno.</p>`}
+    <p class="ls-history-footnote">Apri “Il Cimitero degli Eroi” per consultare tutte le eliminazioni precedenti.</p>`;
 }
-
-/* =========================
-   ZONA PERICOLO
-   ========================= */
 
 function formatPunti(value) {
   if (value === null || value === undefined || value === "") return "--";

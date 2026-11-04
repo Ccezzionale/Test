@@ -1800,3 +1800,229 @@ h1 {
   .eliminata-testo .main-name { font-size: 1.08rem; }
   .centro-caption { font-size: .73rem; }
 }
+
+
+/* ==============================================================
+   HIGHLANDER — THE LAST SURVIVOR | REDESIGN MOBILE 2026-11-04
+   Scena image-backed, mascotte e contenuti HTML dinamici.
+   Nessuna modifica ai layout desktop, alle query o al pannello admin.
+   ============================================================== */
+@media (max-width: 768px) {
+  .hero-arena { display:none !important; }
+  body {
+    background: radial-gradient(ellipse at 50% 8%, #47201b 0%, #15131c 38%, #070d15 78%) !important;
+    background-color:#080b13 !important;
+    color:#f8e9c7;
+  }
+  .arena-page {
+    width:100%;
+    padding:8px 10px 130px !important;
+    background:transparent !important;
+  }
+  .mobile-arena-dashboard.ls-dashboard {
+    display:block;
+    margin:2px auto 22px;
+    max-width:520px;
+    width:100%;
+    overflow:visible;
+    text-align:center;
+  }
+  .ls-dashboard * { box-sizing:border-box; }
+  .ls-hero {
+    position:relative;
+    min-height:368px;
+    overflow:hidden;
+    border-radius:20px 20px 15px 15px;
+    border:1px solid rgba(235,174,77,.45);
+    background:
+      linear-gradient(180deg,rgba(4,9,17,.52) 0%,rgba(4,9,17,.08) 30%,rgba(4,9,17,.03) 70%,#100e14 100%),
+      url('img/highlander-last-survivor-throne.webp') center center / cover no-repeat;
+    box-shadow:0 15px 40px rgba(0,0,0,.6), inset 0 0 45px rgba(0,0,0,.14);
+  }
+  .ls-hero::before {
+    content:"";position:absolute;inset:0;pointer-events:none;
+    background:radial-gradient(ellipse at 50% 58%,transparent 12%,rgba(1,3,9,.23) 80%);
+  }
+  .ls-hero-heading {position:relative;z-index:2;padding:16px 7px 0;}
+  .ls-eyebrow {
+    color:#f7da99;font-family:Georgia,serif;letter-spacing:2.4px;
+    text-shadow:0 2px 5px #000;font-size:.75rem;font-weight:800;
+  }
+  .ls-hero-heading h1 {
+    font-family:'Cinzel Decorative', Georgia, serif;
+    font-size:clamp(1.78rem,8.7vw,2.9rem);
+    line-height:1.12;margin:9px 0 5px;letter-spacing:-.8px;
+    color:#f9cf75;
+    text-shadow:0 2px 0 #4f2411, 0 4px 6px #000, 0 0 17px rgba(255,184,68,.48);
+  }
+  .ls-red-ribbon {
+    display:inline-block;
+    width:min(87%,300px);padding:6px 9px;
+    background:linear-gradient(180deg,#a41f23,#611119);
+    border:1px solid #b95543;border-radius:5px;
+    font-family:Georgia,serif;font-size:clamp(.83rem,3.8vw,1.1rem);
+    color:#fbe1a5;letter-spacing:1px;font-weight:900;
+    box-shadow:0 5px 15px #000a;
+  }
+  .ls-hero-heading p {
+    margin:10px 0 0;font-family:Georgia,serif;
+    letter-spacing:2.2px;font-weight:bold;color:#fdf0cd;
+    text-shadow:0 2px 9px #000;font-size:.67rem;
+  }
+  .ls-hero-final {
+    position:absolute;inset:auto 0 17px;z-index:3;
+    display:flex;align-items:center;flex-direction:column;
+    pointer-events:none;text-shadow:0 3px 7px #000;
+  }
+  .ls-hero-final[hidden] { display:none; }
+  .ls-hero-final img {height:128px;width:160px;object-fit:contain;filter:drop-shadow(0 5px 14px #000);}
+  .ls-hero-final span {color:#ffe9a2;background:#100b0ccf;padding:4px 10px;border-radius:15px;font-weight:900;font-size:.85rem;}
+  .ls-hero.ls-is-final{box-shadow:0 0 25px #c99a4938,0 20px 40px #000a;}
+  .ls-stats {
+    position:relative;z-index:4;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));
+    gap:6px;margin:-12px 2px 24px;padding:0;
+  }
+  .ls-stat {
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    min-width:0;min-height:75px;padding:9px 3px 7px;
+    border-radius:13px;border:1px solid #b99056;
+    background:linear-gradient(165deg,#192131,#080d17);
+    box-shadow:0 7px 20px #000a,inset 0 1px 0 #ffffff19;
+  }
+  .ls-stat-icon {font-size:1.18rem;color:#f3c66f;line-height:1;}
+  .ls-stat-label {font-size:.63rem;letter-spacing:.2px;text-transform:uppercase;font-weight:800;color:#f4e4ca;margin:5px 0 3px;}
+  .ls-stat strong {font-size:1.6rem;color:#fff4ce;line-height:1.02;font-weight:950;}
+  .ls-stat-alive {background:linear-gradient(155deg,#123e2d,#071e19);border-color:#71a56b;}
+  .ls-stat-alive .ls-stat-icon{color:#e5c573;}
+  .ls-stat-out {background:linear-gradient(155deg,#521d25,#210b11);border-color:#bd5345;}
+  .ls-stat-out .ls-stat-icon {color:#ffad83;}
+  .ls-section-title {
+    font-family:'Cinzel Decorative', Georgia, serif;
+    font-weight:900;font-size:clamp(.95rem,4.1vw,1.25rem);
+    line-height:1.25;letter-spacing:.35px;margin:0;
+    color:#f4ce80;text-shadow:0 3px 9px #000;
+  }
+  .ls-elimination-title{margin:0 0 12px;}
+  .mobile-verdict.ls-verdict {
+    display:grid;grid-template-columns:103px minmax(0,1fr);align-items:center;
+    gap:9px;min-height:133px;margin:0 0 26px;padding:10px 12px;
+    text-align:left;border-radius:17px;
+    background:radial-gradient(ellipse at 15% 80%,#70282d 0%,#300d18 46%,#160c16 100%);
+    border:1px solid #e55e50;box-shadow:0 0 23px #c32f3333,inset 0 0 14px #ffb1a40d;
+  }
+  .ls-verdict-mascot {display:block;width:103px;height:112px;object-fit:contain;filter:drop-shadow(0 6px 10px #0008);}
+  .ls-verdict-content {min-width:0;}
+  .ls-verdict-kicker{font-size:.62rem;letter-spacing:1px;font-weight:900;color:#ffc581;margin-bottom:5px;}
+  .ls-verdict-name{display:block;color:#fff8e8;font-size:clamp(1.02rem,4.7vw,1.44rem);line-height:1.08;overflow-wrap:anywhere;}
+  .ls-verdict-meta {font-size:.79rem;line-height:1.4;color:#ead8c7;margin-top:6px;}
+  .ls-verdict-badge{display:inline-block;margin-top:8px;font-size:.66rem;font-weight:900;color:#ffd9d1;background:#9d1e27;border:1px solid #c44145;border-radius:99px;padding:4px 9px;}
+  .ls-is-champion.mobile-verdict{border-color:#edc46f;background:linear-gradient(125deg,#50401f,#1c1719);box-shadow:0 0 28px #d8ad4c35;}
+  .ls-champion-badge{color:#221805;background:#f2c46c;border-color:#f9e3a5;}
+  .ls-is-pending.mobile-verdict{border-color:#b78c50;background:linear-gradient(145deg,#252334,#100f1b);}
+  .ls-verdict-placeholder{font-size:3.8rem;color:#efc272;text-align:center;}
+  .ls-survivors-heading{display:flex;flex-direction:column;align-items:center;gap:8px;margin-bottom:13px;}
+  .ls-count-pill{color:#c0eaca;background:#17402bd9;border:1px solid #3c8159;font-size:.63rem;font-weight:900;padding:3px 12px;border-radius:20px;letter-spacing:.4px;}
+  .mobile-teams-grid {
+    display:grid !important;
+    width:100%;max-width:100%;padding:5px 1px 10px;
+    border:0;border-radius:0;box-shadow:none;
+    grid-template-columns:none !important;grid-auto-flow:column;grid-template-rows:repeat(2,196px);
+    grid-auto-columns:clamp(130px,39vw,171px);
+    gap:10px;background:transparent;
+    overflow-x:auto;overflow-y:hidden;
+    overscroll-behavior-inline:contain;
+    scroll-snap-type:x mandatory;
+    scrollbar-width:none;
+    text-align:center;
+  }
+  .mobile-teams-grid::-webkit-scrollbar{display:none;}
+  .mobile-teams-grid.ls-grid-final{
+    grid-template-rows:1fr;
+    grid-auto-columns:clamp(145px,45vw,180px);
+    justify-content:safe center;
+    min-height:214px;
+  }
+  .mobile-team-card.ls-survivor-card {
+    display:flex;flex-direction:column;justify-content:flex-end;align-items:center;
+    width:100%;min-width:0;height:196px;min-height:0;aspect-ratio:auto;
+    padding:5px 5px 8px;border-radius:13px;position:relative;
+    background:radial-gradient(ellipse at 50% 30%,#154a3c 0%,#10292c 38%,#081118 83%);
+    border:1px solid #d6bd75;
+    box-shadow:inset 0 0 13px #d1e3ad09,0 8px 13px #0008;
+    scroll-snap-align:start;overflow:hidden;
+  }
+  .mobile-team-card.ls-survivor-card .ls-survivor-portrait {position:relative;flex:1;width:100%;min-height:0;display:flex;align-items:center;justify-content:center;}
+  .mobile-team-card.ls-survivor-card .ls-survivor-portrait img{
+    display:block;width:100%;height:100%;max-width:none;max-height:none;
+    object-fit:contain;filter:drop-shadow(0 6px 8px #000a);
+  }
+  .mobile-team-card.ls-survivor-card .ls-survivor-name {
+    display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;
+    overflow:hidden;min-height:32px;max-width:100%;color:#faf9ec;
+    font-size:.77rem;line-height:1.15;font-weight:850;text-shadow:0 2px 4px #000;
+    overflow-wrap:anywhere;
+  }
+  .mobile-team-card.ls-survivor-card .ls-survivor-status {
+    display:block;width:100%;border-radius:99px;margin-top:5px;padding:5px 3px;
+    background:linear-gradient(180deg,#12683e,#0b3f2b);color:#d3ffd7;
+    border:1px solid #368852;font-size:.64rem;font-weight:900;letter-spacing:.4px;
+  }
+  .ls-scroll-hint{margin:2px auto 21px;color:#b6a38a;font-size:.7rem;letter-spacing:.15px;}
+  .ls-scroll-hint[hidden]{display:none;}
+  .ls-details {
+    margin:12px 0 0;
+    color:#fff4da;border-radius:14px;border:1px solid #927750;
+    background:linear-gradient(140deg,#26262b,#101923 56%,#19151c);
+    box-shadow:inset 0 1px 0 #ffffff1a,0 7px 14px #0006;
+    overflow:hidden;
+  }
+  .ls-details summary {
+    cursor:pointer;display:grid;grid-template-columns:36px minmax(0,1fr) 20px;
+    gap:9px;align-items:center;min-height:74px;padding:10px 12px;
+    list-style:none;text-align:left;-webkit-tap-highlight-color:transparent;
+  }
+  .ls-details summary::-webkit-details-marker{display:none;}
+  .ls-details-icon{display:grid;place-items:center;font-size:2rem;color:#dfbd7b;}
+  .ls-details-copy{display:flex;flex-direction:column;min-width:0;gap:4px;}
+  .ls-details-copy strong{font-family:Georgia,serif;font-size:clamp(.8rem,3.4vw,1rem);line-height:1.2;letter-spacing:.2px;color:#f9e9c6;}
+  .ls-details-copy small{font-size:.68rem;line-height:1.3;color:#cabda6;}
+  .ls-details-chevron{font-size:1.55rem;color:#efc97a;transition:transform .2s;}
+  .ls-details[open] .ls-details-chevron{transform:rotate(180deg);}
+  .ls-details-body{border-top:1px solid #8064436b;padding:11px 12px 12px;text-align:left;background:#080e15aa;}
+  .ls-empty-message{padding:9px 3px;font-size:.82rem;line-height:1.45;color:#d2bfa3;}
+  .ls-fallen-row{display:grid;grid-template-columns:43px minmax(0,1fr) auto;align-items:center;gap:9px;padding:9px 3px;border-bottom:1px solid #ffffff1a;}
+  .ls-fallen-row:last-child{border-bottom:0;}
+  .ls-fallen-row img{width:42px;height:42px;object-fit:contain;filter:grayscale(.55);}
+  .ls-fallen-info{display:flex;flex-direction:column;gap:4px;min-width:0;}
+  .ls-fallen-info strong{font-size:.81rem;line-height:1.15;overflow-wrap:anywhere;color:#f6e7d0;}
+  .ls-fallen-info small{font-size:.69rem;color:#bdaaa0;}
+  .ls-fallen-score{font-size:.75rem;font-weight:900;color:#e7cc93;white-space:nowrap;}
+  .ls-fallen-latest{border-radius:8px;padding-left:5px;padding-right:5px;background:#4c242440;}
+  .ls-history-round{display:flex;flex-direction:column;gap:5px;padding:9px 4px 14px;border-bottom:1px solid #ddbf7440;}
+  .ls-history-round span,.ls-history-threshold span,.ls-history-caption{color:#dfbd76;font-weight:900;font-size:.72rem;letter-spacing:.6px;}
+  .ls-history-round strong{font-size:1.04rem;color:#fff1d8;}
+  .ls-history-round small{color:#ffa498;}
+  .ls-history-threshold{display:flex;flex-direction:column;gap:4px;padding:15px 4px;}
+  .ls-history-threshold strong{font-size:1.56rem;color:#f9d07e;}
+  .ls-history-threshold small{font-size:.72rem;color:#cabca8;}
+  .ls-history-risk{border:1px solid #a0886144;border-radius:9px;overflow:hidden;}
+  .ls-history-caption{padding:9px 10px;background:#47321655;}
+  .ls-risk-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:3px;padding:9px 10px;border-top:1px solid #ffffff13;}
+  .ls-risk-row span{grid-column:1/-1;color:#b1a498;font-size:.69rem;}
+  .ls-risk-row strong{font-size:.8rem;overflow-wrap:anywhere;}
+  .ls-risk-row b{font-size:.77rem;color:#f6cd80;white-space:nowrap;}
+  .ls-history-footnote{font-size:.69rem;color:#a99b89;margin:14px 1px 3px;}
+  /* Gli stessi pannelli dati restano sul desktop; il mobile li presenta nei due details. */
+  .arena-panels {display:none !important;}
+  #highlander-admin-panel {margin-top:24px !important;}
+}
+@media (max-width:360px) {
+  .ls-hero{min-height:344px;}
+  .ls-hero-heading h1{font-size:1.64rem;}
+  .ls-eyebrow{letter-spacing:1.6px;}
+  .mobile-verdict.ls-verdict{grid-template-columns:84px 1fr;padding:9px;gap:8px;}
+  .ls-verdict-mascot{width:84px;height:95px;}
+  .ls-stats{gap:4px;}
+  .ls-stat-label{font-size:.56rem;}
+  .ls-details summary{grid-template-columns:30px minmax(0,1fr) 17px;gap:7px;padding:9px;}
+}

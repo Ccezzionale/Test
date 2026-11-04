@@ -6,7 +6,7 @@
   <title>Highlander Cup - Arena</title>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="navbar.css">
-  <link rel="stylesheet" href="arena.css?v=20261020-circle-epic-v3" />
+  <link rel="stylesheet" href="arena.css?v=20261104-last-survivor-v1" />
 <meta name="lega-app-build" content="v20261028-ef9f76dc3f25">
 <script defer src="./app-updates.js?bootstrap=v20261028-ef9f76dc3f25" data-eroi-update="1"></script>
 </head>
@@ -175,11 +175,44 @@
       </div>
     </section>
 
-    <section class="mobile-arena-dashboard">
-  <div id="mobile-verdict" class="mobile-verdict"></div>
-  <div class="mobile-grid-title">Le squadre dell’arena</div>
-  <div id="mobile-teams-grid" class="mobile-teams-grid"></div>
-</section>
+    <!-- The Last Survivor: nuova esperienza mobile; desktop intatto. -->
+    <section class="mobile-arena-dashboard ls-dashboard" aria-label="Highlander The Last Survivor">
+      <div class="ls-hero" id="ls-hero">
+        <div class="ls-hero-heading">
+          <div class="ls-eyebrow">♛ LEGA DEGLI EROI ♛</div>
+          <h1>HIGHLANDER</h1>
+          <div class="ls-red-ribbon">THE LAST SURVIVOR</div>
+          <p>THERE CAN BE ONLY ONE</p>
+        </div>
+        <div class="ls-hero-final" id="ls-hero-final" hidden></div>
+      </div>
+
+      <div class="ls-stats" aria-label="Statistiche della competizione">
+        <div class="ls-stat ls-stat-turno"><span class="ls-stat-icon">◷</span><span class="ls-stat-label">Turno</span><strong id="ls-turno">1</strong></div>
+        <div class="ls-stat ls-stat-alive"><span class="ls-stat-icon">❧</span><span class="ls-stat-label">Sopravvissuti</span><strong id="ls-survivors">16</strong></div>
+        <div class="ls-stat ls-stat-out"><span class="ls-stat-icon">☠</span><span class="ls-stat-label">Eliminati</span><strong id="ls-eliminated">0</strong></div>
+      </div>
+
+      <h2 class="ls-section-title ls-elimination-title" id="ls-verdict-heading">ULTIMA ELIMINAZIONE</h2>
+      <div id="mobile-verdict" class="mobile-verdict" aria-live="polite"></div>
+
+      <div class="ls-survivors-heading">
+        <h2 class="ls-section-title" id="ls-survivors-title">I SOPRAVVISSUTI</h2>
+        <span class="ls-count-pill" id="ls-survivors-count">16 IN GARA</span>
+      </div>
+      <div id="mobile-teams-grid" class="mobile-teams-grid" aria-label="Squadre ancora in gara"></div>
+      <div id="ls-scroll-hint" class="ls-scroll-hint">Scorri per vedere le altre squadre <span aria-hidden="true">→</span></div>
+
+      <details class="ls-details ls-cemetery" id="ls-cemetery">
+        <summary><span class="ls-details-icon" aria-hidden="true">♱</span><span class="ls-details-copy"><strong>IL CIMITERO DEGLI EROI</strong><small>Tutte le eliminazioni, turno per turno</small></span><span class="ls-details-chevron" aria-hidden="true">⌄</span></summary>
+        <div class="ls-details-body" id="ls-cemetery-list"></div>
+      </details>
+
+      <details class="ls-details ls-chronicle" id="ls-chronicle">
+        <summary><span class="ls-details-icon" aria-hidden="true">▤</span><span class="ls-details-copy"><strong>LA CRONACA DELLA SOPRAVVIVENZA</strong><small>La zona pericolo e il percorso della sfida</small></span><span class="ls-details-chevron" aria-hidden="true">⌄</span></summary>
+        <div class="ls-details-body" id="ls-history"></div>
+      </details>
+    </section>
 
     <section class="arena-panels" aria-label="Dettagli Highlander Cup">
       <article class="arena-panel danger-panel">
@@ -284,7 +317,7 @@
 </section>
   </main>
 <script src="mobile-nav.js"></script>
-<script type="module" src="arena.js?v=20261020-circle-epic-v3"></script>
+<script type="module" src="arena.js?v=20261104-last-survivor-v1"></script>
 <script src="navbar.js"></script>
 </body>
 </html>
