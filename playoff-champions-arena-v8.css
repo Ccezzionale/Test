@@ -1,4 +1,4 @@
-/* Lega degli Eroi • Champions Arena V8 (proporzioni V9) • livello visivo della pagina playoff-sfida.html.
+/* Lega degli Eroi • Champions Arena V10 (proporzioni V9 conservate) • livello visivo della pagina playoff-sfida.html.
    Caricare DOPO playoff-real-legends-duel.css. Nessun cambio a logica, seed o risultati.
    La pagina usa i WebP già risolti da PlayoffRealLegends.image(name). */
 @import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,600;0,700;0,800;0,900;1,700;1,800;1,900&family=Cinzel:wght@600;700;800;900&display=swap');
@@ -89,11 +89,14 @@ body.rl-duel-page .rl-arena-side{
   background:none!important;border:0!important;box-shadow:none!important;padding:0!important;
 }
 body.rl-duel-page .rl-arena-side--left{left:-4%!important;right:auto!important;justify-content:flex-start!important}
-body.rl-duel-page .rl-arena-side--right{right:-4%!important;left:auto!important;justify-content:flex-end!important}
+body.rl-duel-page .rl-arena-side--right{right:-4%!important;left:auto!important;justify-content:flex-end!important;--rl-mirror-x:-1}
 body.rl-duel-page .rl-arena-side img{
   width:100%!important;height:100%!important;max-width:100%!important;max-height:100%!important;
   object-fit:contain!important;object-position:center bottom!important;
-  transform:translate(var(--rl-optical-x,0px),var(--rl-optical-y,0px)) scale(var(--rl-optical-scale,1))!important;
+  /* Rispetta perfettamente gli offset e le dimensioni ottiche della V9.
+     --rl-mirror-x = -1 solo sulla squadra a destra (come nelle card).
+     Per un'eccezione su una singola mascotte: impostare --rl-mirror-x: 1 sul relativo contenitore. */
+  transform:translate(var(--rl-optical-x,0px),var(--rl-optical-y,0px)) scale(var(--rl-optical-scale,1)) scaleX(var(--rl-mirror-x,1))!important;
   transform-origin:center bottom!important;filter:drop-shadow(0 8px 7px #000d) drop-shadow(0 0 9px #df9e4554)!important;
 }
 body.rl-duel-page .rl-arena-side.rl-placeholder::before{content:'?';display:flex!important;color:#ebddad99;font:900 100px 'Cinzel',serif}

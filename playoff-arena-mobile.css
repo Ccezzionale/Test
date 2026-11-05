@@ -1,70 +1,72 @@
-/* REAL LEGENDS: MOBILE ONLY. The desktop board styles remain 100% those of playoff.css. */
+/* REAL LEGENDS: NAVY V10 - MOBILE ONLY. Desktop board and V9 dimensions unchanged. */
 @media (max-width:768px) {
-  :root {--rl-blue:#1b9dff;--rl-cyan:#48e6ff;--rl-gold:#ffdb83}
-  html:has(.playoff-mobile-app),body:has(.playoff-mobile-app) {background-color:#031b43!important}
+  :root {--rl-blue:#2778b5;--rl-cyan:#83cfe6;--rl-gold:#f5c979}
+  html:has(.playoff-mobile-app),body:has(.playoff-mobile-app) {background-color:#020b1b!important}
   body:has(.playoff-mobile-app){
-    background:radial-gradient(ellipse at 50% -20%,#075dbb 0,transparent 55%),
-      repeating-linear-gradient(125deg,transparent 0 70px,#0b4f9d18 70px 105px,transparent 105px 180px),
-      linear-gradient(180deg,#041631,#062b62 52%,#03182f)!important;
+    background:radial-gradient(ellipse at 50% -20%,#123b68 0,transparent 55%),
+      repeating-linear-gradient(125deg,transparent 0 70px,#17446e14 70px 105px,transparent 105px 180px),
+      linear-gradient(180deg,#030e20,#071c38 52%,#020b1b)!important;
   }
   .playoff-hero-banner {display:none!important}
   .playoff-mobile-app {padding:12px 10px 125px!important;min-height:100dvh}
   .mobile-playoff-shell {width:100%!important;max-width:520px!important}
   .rl-page-intro {
     position:relative;isolation:isolate;overflow:hidden;
-    border:1px solid #1caefa;border-radius:17px;margin:0 0 15px;
+    border:1px solid #b18a4a;border-radius:17px;margin:0 0 15px;
     min-height:171px;padding:19px 16px;
-    background:radial-gradient(circle at 78% 32%,#0b66c3 0,#064177 25%,transparent 55%),
-     linear-gradient(125deg,#062a60,#02172e 80%);
-    box-shadow:inset 0 0 24px #008bff2c,0 0 0 1px #09518b66,0 10px 30px #0007;
+    background:radial-gradient(circle at 78% 32%,#164b72 0,#0a2b4d 25%,transparent 55%),
+     linear-gradient(125deg,#071e37,#030d20 80%);
+    box-shadow:inset 0 0 24px #225b8b30,0 0 0 1px #94703c50,0 10px 30px #0009;
   }
   .rl-page-intro::before {content:'';position:absolute;inset:0;z-index:-1;opacity:.7;
-    background:linear-gradient(127deg,transparent 32%,#008fff30 34%,transparent 37%,transparent 62%,#05c4ff29 65%,transparent 67%)}
+    background:linear-gradient(127deg,transparent 32%,#3c779b22 34%,transparent 37%,transparent 62%,#f2bc5b17 65%,transparent 67%)}
   .rl-page-intro::after {content:'';position:absolute;left:10%;right:10%;bottom:0;height:3px;
-   background:linear-gradient(90deg,transparent,#2bb9ff,#baf8ff,#2bb9ff,transparent);box-shadow:0 0 16px #20b7ff}
+   background:linear-gradient(90deg,transparent,#a97e42,#f6d993,#a97e42,transparent);box-shadow:0 0 16px #dfa95588}
   .rl-hero-characters{position:absolute;right:-24px;bottom:-6px;z-index:0;display:flex;align-items:flex-end;opacity:.94;pointer-events:none}
   .rl-hero-characters img{width:132px;height:174px;object-fit:contain;filter:drop-shadow(0 7px 12px #000b)}
   .rl-hero-characters img:first-child{margin-right:-59px;filter:drop-shadow(0 7px 13px #000a)}
   .rl-intro-copy {position:relative;z-index:2;max-width:78%;pointer-events:none;text-shadow:0 2px 5px #001833}
-  .rl-intro-eyebrow{display:block;font-size:9px;letter-spacing:1.5px;font-weight:900;color:#72dfff}
-  .rl-intro-copy h1{margin:10px 0 0;font:900 clamp(33px,9vw,48px)/.92 'Bebas Neue','Arial Narrow',Impact,sans-serif;letter-spacing:1px;color:#fff;text-shadow:0 2px 0 #2863ac,0 0 15px #1580ff}
+  .rl-intro-eyebrow{display:block;font-size:9px;letter-spacing:1.5px;font-weight:900;color:#e0bd81}
+  .rl-intro-copy h1{margin:10px 0 0;font:900 clamp(33px,9vw,48px)/.92 'Bebas Neue','Arial Narrow',Impact,sans-serif;letter-spacing:1px;color:#fff;text-shadow:0 2px 0 #193e65,0 0 15px #457db285}
   .rl-intro-copy h1 em{font-style:normal;color:#ffdc8d}
   .rl-intro-tagline{margin:9px 0 0;display:inline-block;max-width:270px;transform:skew(-8deg);padding:5px 7px;
-    border-block:1px solid #42d9ff;background:linear-gradient(90deg,#0069dd69,transparent);font:italic 900 15px/.95 'Segoe UI',sans-serif;color:#fff;white-space:nowrap;
-    text-shadow:0 0 9px #29b7ff}
+    border-block:1px solid #bf9a58;background:linear-gradient(90deg,#0c365b88,transparent);font:italic 900 15px/.95 'Segoe UI',sans-serif;color:#fff;white-space:nowrap;
+    text-shadow:0 0 9px #3e88b388}
   .rl-intro-tagline strong{color:#ffd878}
-  .rl-intro-copy p{margin:10px 0 0;font-size:10px;line-height:1.45;font-weight:650;color:#d1f3ff;max-width:210px}
-  .mobile-stage-tabs{margin:0 0 17px!important;border-radius:12px!important;background:#031a3df0!important;border:1px solid #206cc2!important;padding:4px!important;box-shadow:0 8px 22px #00132b88!important}
-  .stage-tab{color:#b6d9ff!important;border-radius:8px!important;min-height:43px!important}
-  .stage-tab.active{color:#001c41!important;background:linear-gradient(180deg,#67d9ff,#1683e9)!important;text-shadow:none!important;box-shadow:0 0 17px #05aeff88,inset 0 1px 0 #e8ffff!important}
+  .rl-intro-copy p{margin:10px 0 0;font-size:10px;line-height:1.45;font-weight:650;color:#cadbea;max-width:210px}
+  .mobile-stage-tabs{margin:0 0 17px!important;border-radius:12px!important;background:#06162deb!important;border:1px solid #365b7a!important;padding:4px!important;box-shadow:0 8px 22px #000a,inset 0 1px 0 #7194ab20!important}
+  .stage-tab{color:#bed0e3!important;border-radius:8px!important;min-height:43px!important}
+  .stage-tab.active{color:#ffe7b3!important;background:linear-gradient(180deg,#174a76,#0a284b)!important;text-shadow:0 0 9px #f7cb6f30!important;box-shadow:inset 0 0 0 1px #d8ae61,0 0 13px #328ab755!important}
   .stage-tab.active::after{display:none!important}
   .mobile-stage-content{display:flex!important;flex-direction:column;gap:11px!important}
   .rl-stage-heading{margin:7px 2px 9px!important;align-items:center!important}
-  .rl-stage-heading::before{content:'';display:block;width:5px;height:35px;transform:skew(-16deg);background:linear-gradient(#4ff1ff,#0076df);box-shadow:0 0 10px #00a9ff;margin-right:8px}
-  .rl-stage-heading h2{font:italic 900 26px/1 'Segoe UI',sans-serif!important;text-transform:uppercase!important;color:#fff!important;text-shadow:0 0 9px #167fff!important;margin-right:auto}
-  .rl-stage-heading span{border:1px solid #267ec9;border-radius:5px;background:#0629579c;padding:6px 9px;color:#bceaff!important;font-size:10px!important}
+  .rl-stage-heading::before{content:'';display:block;width:5px;height:35px;transform:skew(-16deg);background:linear-gradient(#ffdf94,#b67d32);box-shadow:0 0 10px #e6b66c6b;margin-right:8px}
+  .rl-stage-heading h2{font:italic 900 26px/1 'Segoe UI',sans-serif!important;text-transform:uppercase!important;color:#fff!important;text-shadow:0 0 9px #467ca6!important;margin-right:auto}
+  .rl-stage-heading span{border:1px solid #7d694a;border-radius:5px;background:#07192fe8;padding:6px 9px;color:#eed19b!important;font-size:10px!important}
   .rl-fixture{position:relative;display:grid;grid-template-columns:25% minmax(0,1fr) 25% 15px;align-items:center;
     height:113px;min-height:113px;padding:0 8px;overflow:hidden;isolation:isolate;
-    border:1px solid #2ca8ff;border-radius:12px;
-    background:linear-gradient(100deg,#07192b,#092b5b 50%,#051833);
-    box-shadow:inset 0 0 0 1px #338af333,0 9px 22px #001021a8,0 0 12px #118fff20;
+    border:1px solid #42779b;border-radius:12px;
+    background:linear-gradient(100deg,#061426,#0a2646 50%,#051226);
+    box-shadow:inset 0 1px 0 #d3a45c26,inset 0 0 0 1px #386a8e20,0 9px 22px #000a,0 0 12px #2e6b9624;
     text-decoration:none;color:white!important;cursor:pointer}
   .rl-fixture::after{content:'';position:absolute;inset:0;z-index:-1;pointer-events:none;
-    background:linear-gradient(130deg,transparent 35%,#03bfff20 40%,transparent 42%,transparent 59%,#05bfff20 63%,transparent 67%)}
+    background:linear-gradient(130deg,transparent 35%,#5796bb16 40%,transparent 42%,transparent 59%,#b98f4e14 63%,transparent 67%)}
   .rl-fixture:active{transform:scale(.993)}
   .rl-fixture-art{position:relative;display:block;width:100%;height:112px;isolation:isolate;overflow:visible}
   .rl-fixture-art::before{content:'';position:absolute;inset:3px -14px 0;z-index:-1;background:radial-gradient(circle at 50% 55%,var(--rl-team-color),transparent 69%);opacity:.45;filter:blur(9px)}
   .rl-fixture-art img{position:absolute;display:block;height:132px;width:154px;max-width:none;bottom:-7px;left:50%;transform:translateX(-50%);object-fit:contain;filter:drop-shadow(0 4px 7px #000a)}
+  /* FACING: la mascotte a destra guarda verso il centro. Quella a sinistra resta originale.
+     Questa stessa regola viene replicata nel duello dal CSS Champions Arena V9. */
   .rl-fixture-art--right img{transform:translateX(-50%) scaleX(-1)}
-  .rl-fixture-art.is-placeholder:after{content:'?';position:absolute;inset:0;display:grid;place-items:center;color:#65bce8aa;font-size:60px;font-weight:900}
-  .rl-fixture-center{z-index:2;min-width:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:5px;text-shadow:0 2px 4px #001323}
-  .rl-fixture-number{color:#81eaff;font-size:9px;letter-spacing:1.4px;font-weight:900;white-space:nowrap}
+  .rl-fixture-art.is-placeholder:after{content:'?';position:absolute;inset:0;display:grid;place-items:center;color:#a0b7c6aa;font-size:60px;font-weight:900}
+  .rl-fixture-center{z-index:2;min-width:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:5px;text-shadow:0 2px 4px #000c}
+  .rl-fixture-number{color:#e3bf80;font-size:9px;letter-spacing:1.4px;font-weight:900;white-space:nowrap}
   .rl-fixture-versus{display:flex;flex-direction:column;align-items:center;min-width:0;line-height:1.02}
   .rl-team-name{display:block;max-width:100%;font:italic 900 clamp(12px,3.5vw,18px)/1.03 'Segoe UI',Arial,sans-serif;text-transform:uppercase;overflow-wrap:anywhere}
-  .rl-vs-text{color:#34daff;line-height:1.1;font:italic 950 15px 'Segoe UI',sans-serif}
-  .rl-fixture-subline{font-weight:750;font-size:8px;letter-spacing:.35px;color:#c1dcf5;max-width:100%;line-height:1.15}
-  .rl-fixture-arrow{font-size:35px;text-shadow:0 0 8px #00bdff;color:#68edff;font-weight:650;transform:translateY(-2px)}
-  .rl-fixture:focus-visible{outline:3px solid #91e7ff;outline-offset:2px}
+  .rl-vs-text{color:#f6cb76;line-height:1.1;font:italic 950 15px 'Segoe UI',sans-serif}
+  .rl-fixture-subline{font-weight:750;font-size:8px;letter-spacing:.35px;color:#bdd0e1;max-width:100%;line-height:1.15}
+  .rl-fixture-arrow{font-size:35px;text-shadow:0 0 8px #3885b088;color:#8ed1e8;font-weight:650;transform:translateY(-2px)}
+  .rl-fixture:focus-visible{outline:3px solid #f0ca7b;outline-offset:2px}
   /* Desktop content remains hidden by the original desktop/mobile breakpoints. */
 }
 @media(max-width:360px){
