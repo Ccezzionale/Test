@@ -10,30 +10,32 @@
   .playoff-hero-banner {display:none!important}
   .playoff-mobile-app {padding:12px 10px 125px!important;min-height:100dvh}
   .mobile-playoff-shell {width:100%!important;max-width:520px!important}
+  /* V12: poster illustrato mobile. Il banner desktop rimane completamente separato. */
   .rl-page-intro {
-    position:relative;isolation:isolate;overflow:hidden;
-    border:1px solid #b18a4a;border-radius:17px;margin:0 0 15px;
-    min-height:171px;padding:19px 16px;
-    background:radial-gradient(circle at 78% 32%,#164b72 0,#0a2b4d 25%,transparent 55%),
-     linear-gradient(125deg,#071e37,#030d20 80%);
-    box-shadow:inset 0 0 24px #225b8b30,0 0 0 1px #94703c50,0 10px 30px #0009;
+    display:block;
+    position:relative;
+    width:100%;
+    height:auto;
+    min-height:0;
+    margin:0 0 15px;
+    padding:0;
+    overflow:hidden;
+    border:0;
+    border-radius:15px;
+    background:#020b1b;
+    box-shadow:0 10px 26px #0009;
   }
-  .rl-page-intro::before {content:'';position:absolute;inset:0;z-index:-1;opacity:.7;
-    background:linear-gradient(127deg,transparent 32%,#3c779b22 34%,transparent 37%,transparent 62%,#f2bc5b17 65%,transparent 67%)}
-  .rl-page-intro::after {content:'';position:absolute;left:10%;right:10%;bottom:0;height:3px;
-   background:linear-gradient(90deg,transparent,#a97e42,#f6d993,#a97e42,transparent);box-shadow:0 0 16px #dfa95588}
-  .rl-hero-characters{position:absolute;right:-24px;bottom:-6px;z-index:0;display:flex;align-items:flex-end;opacity:.94;pointer-events:none}
-  .rl-hero-characters img{width:132px;height:174px;object-fit:contain;filter:drop-shadow(0 7px 12px #000b)}
-  .rl-hero-characters img:first-child{margin-right:-59px;filter:drop-shadow(0 7px 13px #000a)}
-  .rl-intro-copy {position:relative;z-index:2;max-width:78%;pointer-events:none;text-shadow:0 2px 5px #001833}
-  .rl-intro-eyebrow{display:block;font-size:9px;letter-spacing:1.5px;font-weight:900;color:#e0bd81}
-  .rl-intro-copy h1{margin:10px 0 0;font:900 clamp(33px,9vw,48px)/.92 'Bebas Neue','Arial Narrow',Impact,sans-serif;letter-spacing:1px;color:#fff;text-shadow:0 2px 0 #193e65,0 0 15px #457db285}
-  .rl-intro-copy h1 em{font-style:normal;color:#ffdc8d}
-  .rl-intro-tagline{margin:9px 0 0;display:inline-block;max-width:270px;transform:skew(-8deg);padding:5px 7px;
-    border-block:1px solid #bf9a58;background:linear-gradient(90deg,#0c365b88,transparent);font:italic 900 15px/.95 'Segoe UI',sans-serif;color:#fff;white-space:nowrap;
-    text-shadow:0 0 9px #3e88b388}
-  .rl-intro-tagline strong{color:#ffd878}
-  .rl-intro-copy p{margin:10px 0 0;font-size:10px;line-height:1.45;font-weight:650;color:#cadbea;max-width:210px}
+  .rl-page-intro::before, .rl-page-intro::after {content:none;display:none}
+  .rl-playoff-banner-img {
+    display:block;
+    width:100%;
+    height:auto;
+    max-width:100%;
+    aspect-ratio:1840 / 854;
+    object-fit:contain;
+    border:0;
+    border-radius:15px;
+  }
   .mobile-stage-tabs{margin:0 0 17px!important;border-radius:12px!important;background:#06162deb!important;border:1px solid #365b7a!important;padding:4px!important;box-shadow:0 8px 22px #000a,inset 0 1px 0 #7194ab20!important}
   .stage-tab{color:#bed0e3!important;border-radius:8px!important;min-height:43px!important}
   .stage-tab.active{color:#ffe7b3!important;background:linear-gradient(180deg,#174a76,#0a284b)!important;text-shadow:0 0 9px #f7cb6f30!important;box-shadow:inset 0 0 0 1px #d8ae61,0 0 13px #328ab755!important}
@@ -70,8 +72,6 @@
   /* Desktop content remains hidden by the original desktop/mobile breakpoints. */
 }
 @media(max-width:360px){
- .rl-hero-characters img{width:113px}
- .rl-intro-copy h1{font-size:35px}
  .rl-fixture{grid-template-columns:23% minmax(0,1fr) 23% 12px}
  .rl-fixture-art img{width:130px;height:123px}
  .rl-team-name{font-size:12px}

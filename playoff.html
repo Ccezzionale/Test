@@ -8,7 +8,7 @@
 
   <link rel="stylesheet" href="navbar.css">
   <link rel="stylesheet" href="playoff.css?v=20261012-fantasy-board2" />
-  <link rel="stylesheet" href="playoff-arena-mobile.css?v=20261105-navy-v10" />
+  <link rel="stylesheet" href="playoff-arena-mobile.css?v=20261105-banner-v12" />
 
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Cinzel:wght@700;800&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -153,16 +153,15 @@
       <button class="mobile-playoff-icon-btn mobile-menu-pulse" type="button" aria-label="Menu">☰</button>
     </div>
 
-    <div class="rl-page-intro" aria-label="Le leggende prendono vita ai Playoff">
-      <div class="rl-hero-characters" aria-hidden="true">
-        <img src="img/playoff-real-legends/team-bartowski.webp" alt="">
-        <img src="img/playoff-real-legends/golden-knights.webp" alt="">
-      </div>
-      <div class="rl-intro-copy"><span class="rl-intro-eyebrow">LEGA DEGLI EROI · REAL LEGENDS</span>
-        <h1>THE <em>PLAYOFFS</em></h1>
-        <div class="rl-intro-tagline">THINGS ARE GETTIN’ <strong>REAL</strong></div>
-        <p>Le leggende prendono vita. Ogni sfida ha la sua arena.</p>
-      </div>
+    <!-- Banner esclusivo mobile: mascotte della Lega + coppa Real Legends. -->
+    <div class="rl-page-intro" aria-label="The Playoffs: Things Are Gettin’ Real">
+      <img
+        class="rl-playoff-banner-img"
+        src="img/playoff-real-legends/banner-playoff-mini-titano-v12.webp"
+        alt="The Playoffs. Things Are Gettin’ Real. Il Mini Titano della Lega degli Eroi tiene la coppa dei playoff."
+        width="1840" height="854"
+        loading="eager" decoding="async" fetchpriority="high"
+      >
     </div>
     <div class="mobile-stage-tabs" role="tablist" aria-label="Fasi playoff">
       <button class="stage-tab active" type="button" data-stage="wildcard">Wildcard</button>
