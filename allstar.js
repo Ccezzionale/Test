@@ -10,7 +10,7 @@ import { supabase } from "./supabase.js";
 window.__allstarModuleStarted = true;
 
 const SEASON = 2027;
-const ALLSTAR_CLIENT_VERSION = "20261030-desktop-weekly-v1";
+const ALLSTAR_CLIENT_VERSION = "20261109-desktop-weekly-douvikas-v1";
 // Questa identificazione raggruppa solo gli eventi di una singola apertura pagina.
 const diagnosticPageInstance = typeof crypto !== "undefined" && typeof crypto.randomUUID === "function"
   ? crypto.randomUUID()
@@ -37,7 +37,8 @@ const ALLSTAR_MASCOT_ASSETS = {
   debruyne: "assets/allstar-mascots/debruyne.webp?v=allstar9-20261030-fix-contrast-assets-v3",
   raimondo: "assets/allstar-mascots/raimondo.webp?v=allstar9-20261030-fix-contrast-assets-v3",
   rabiot: "assets/allstar-mascots/rabiot.webp?v=allstar9-20261030-fix-contrast-assets-v3",
-  dimarco: "assets/allstar-mascots/dimarco.webp?v=allstar9-20261030-fix-contrast-assets-v3"
+  dimarco: "assets/allstar-mascots/dimarco.webp?v=allstar9-20261030-fix-contrast-assets-v3",
+  douvikas: "assets/allstar-mascots/douvikas.webp?v=allstar10-20261109-douvikas-v1"
 };
 
 const ALLSTAR_PLAYER_MASCOTS = [
@@ -49,7 +50,8 @@ const ALLSTAR_PLAYER_MASCOTS = [
   { tokens: ["de bruyne", "debruyne"], asset: ALLSTAR_MASCOT_ASSETS.debruyne, title: "De Bruyne" },
   { tokens: ["raimondo"], asset: ALLSTAR_MASCOT_ASSETS.raimondo, title: "Raimondo" },
   { tokens: ["rabiot"], asset: ALLSTAR_MASCOT_ASSETS.rabiot, title: "Rabiot" },
-  { tokens: ["dimarco", "di marco"], asset: ALLSTAR_MASCOT_ASSETS.dimarco, title: "Dimarco" }
+  { tokens: ["dimarco", "di marco"], asset: ALLSTAR_MASCOT_ASSETS.dimarco, title: "Dimarco" },
+  { tokens: ["douvikas", "tasos douvikas", "anastasios douvikas"], asset: ALLSTAR_MASCOT_ASSETS.douvikas, title: "Douvikas" }
 ];
 const ALLSTAR_TIME_ZONE = "Europe/Brussels";
 const DAY_MS = 24 * 60 * 60 * 1000;
@@ -249,6 +251,15 @@ function getMascotEntryForPlayer(player) {
   }
   if ((key === "paz n" || key === "nico paz" || key === "paz nico") && club === "como") {
     return ALLSTAR_PLAYER_MASCOTS.find((entry) => entry.title === "Nico Paz");
+  }
+  // Il listone Fantacalcio puo' usare "Douvikas", "Douvikas T." o il nome esteso.
+  // Abbiniamo la mascotte solo all'attaccante del Como.
+  if (club.includes("como") && (
+    key === "douvikas" || key.startsWith("douvikas ") ||
+    key === "tasos douvikas" || key === "anastasios douvikas" ||
+    key.startsWith("tasos douvikas ") || key.startsWith("anastasios douvikas ")
+  )) {
+    return ALLSTAR_PLAYER_MASCOTS.find((entry) => entry.title === "Douvikas");
   }
 
   const simpleKeys = [
