@@ -18,7 +18,8 @@ const state = {
   rounds: [], round: null, fixtures: [], teams: [], user: null, profile: null, adminAuthorized: false,
   resultsRows: [], fallbacks: [], picks: {}, savedPicks: {},
   publicEntries: [], expandedEntries: new Set(), leaderboard: [], adminFixtures: [], adminResults: {}, gw: 7,
-  loading: false, count: 0, timer: null, jackpot: null, jackpotError: null
+  loading: false, count: 0, timer: null, jackpot: null, jackpotError: null,
+  adminEntryTeams: [], adminEntriesLoaded: false, adminEntriesLoading: false, adminEntriesError: null, adminEntriesRequestId: 0
 };
 const esc = x => String(x ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const norm = x => String(x||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]/g,'');
@@ -110,7 +111,7 @@ async function refreshJackpot(){
     state.jackpot=data;
     state.jackpotError=null;
     // Riflette subito eventuali aggiornamenti delle esclusioni nelle sezioni TotoEroi.
-    renderStatus();renderPicks();renderRanking();renderPublicEntries();
+    renderStatus();renderPicks();renderRanking();renderPublicEntries();renderAdminEntries();
   }catch(e){
     console.warn('Jackpot TotoEroi:',e);
     state.jackpotError='Jackpot non disponibile: manca la funzione SQL su Supabase.';
@@ -209,6 +210,7 @@ function switchTab(name){
   if(name==='entries')renderPublicEntries();
   if(name==='ranking')renderRanking();
   if(name==='history')renderHistory();
+  if(name==='admin')void refreshAdminEntryTeams();
 }
 function formatPreview(sign){return ['1','X','2'].includes(sign)?sign:'?';}
 function renderPublicEntries(){
@@ -288,6 +290,82 @@ function renderHistory(){
       <div><strong>Giornata ${r.gw}</strong><small>${esc(r.closes_at?timeString(r.closes_at):'Scadenza da fissare')}</small></div><span class="te-history-pill ${r.status==='homologated'?'won':''}">${esc(label)} →</span></button>`;
     }).join('');
 }
+// Il RPC ritorna solo gli ID delle franchigie che hanno inviato, mai i pronostici.
+// La funzione SQL verifica nuovamente i permessi lato server.
+function renderAdminEntries(){
+  if(!isAdmin())return;
+  const summary=$('te-admin-entries-summary');
+  const content=$('te-admin-entries');
+  if(!summary||!content)return;
+  if(!state.round){
+    summary.textContent='Nessuna giornata configurata';
+    content.innerHTML='<p class="te-submissions-placeholder">Configura una giornata per controllare gli invii.</p>';
+    return;
+  }
+  if(state.adminEntriesLoading && !state.adminEntriesLoaded){
+    summary.textContent='Controllo delle schedine in corso…';
+    content.innerHTML='<p class="te-submissions-placeholder">Caricamento consegne…</p>';
+    return;
+  }
+  if(state.adminEntriesError){
+    summary.textContent='Impossibile verificare le consegne';
+    content.innerHTML=`<p class="te-submissions-error">${esc(state.adminEntriesError)}. Riprova con «Aggiorna».</p>`;
+    return;
+  }
+  if(!state.adminEntriesLoaded){
+    summary.textContent='In attesa delle consegne…';
+    content.innerHTML='<p class="te-submissions-placeholder">Caricamento consegne…</p>';
+    return;
+  }
+  const participants=state.teams.filter(t=>isTotoParticipant(t.id)).sort((a,b)=>a.name.localeCompare(b.name,'it'));
+  const submittedByTeam=new Map(state.adminEntryTeams.map(entry=>[String(entry.team_id),entry]));
+  const submitted=participants.filter(t=>submittedByTeam.has(String(t.id)));
+  const missing=participants.filter(t=>!submittedByTeam.has(String(t.id)));
+  summary.innerHTML=`<strong>${submitted.length}<span> / ${participants.length}</span></strong> consegnate <span class="te-submissions-summary-sep">·</span> <b>${missing.length}</b> da consegnare`;
+  const row=(t,done)=>{
+    const entry=submittedByTeam.get(String(t.id));
+    const updated=done && entry?.updated_at ? ` · ${timeString(entry.updated_at)}` : '';
+    return `<li class="te-submissions-team"><img src="${esc(logo(t.name))}" alt="" loading="lazy" onerror="this.src='icon-192.png';this.onerror=null"><span class="te-submissions-name">${esc(t.name)}</span><span class="te-submissions-state ${done?'is-done':'is-missing'}" title="${done?'Ultimo invio'+updated:'Schedina non ancora inviata'}">${done?'✓ Inviata':'Da fare'}</span></li>`;
+  };
+  content.innerHTML=`<div class="te-submissions-columns">
+    <section class="te-submissions-group"><h4 class="te-submissions-group-head is-done">✓ Consegnate <span>${submitted.length}</span></h4><ul>${submitted.length?submitted.map(t=>row(t,true)).join(''):'<li class="te-submissions-none">Ancora nessuna schedina.</li>'}</ul></section>
+    <section class="te-submissions-group"><h4 class="te-submissions-group-head is-missing">◷ Mancanti <span>${missing.length}</span></h4><ul>${missing.length?missing.map(t=>row(t,false)).join(''):'<li class="te-submissions-none">Tutti hanno consegnato! 🎉</li>'}</ul></section>
+  </div>`;
+}
+
+async function refreshAdminEntryTeams(){
+  if(!isAdmin())return;
+  const id=state.round?.id;
+  const request=++state.adminEntriesRequestId;
+  if(!id){
+    state.adminEntryTeams=[];state.adminEntriesLoaded=false;
+    state.adminEntriesLoading=false;state.adminEntriesError=null;
+    renderAdminEntries();return;
+  }
+  state.adminEntriesLoading=true;
+  renderAdminEntries();
+  const button=$('te-admin-refresh-entries');
+  if(button)button.disabled=true;
+  try{
+    const {data,error}=await supabase.rpc('totoeroi_admin_entry_teams',{p_round_id:id});
+    if(error)throw error;
+    if(request!==state.adminEntriesRequestId||state.round?.id!==id)return;
+    state.adminEntryTeams=Array.isArray(data)?data:[];
+    state.adminEntriesLoaded=true;
+    state.adminEntriesError=null;
+  }catch(e){
+    if(request!==state.adminEntriesRequestId||state.round?.id!==id)return;
+    console.warn('TotoEroi · consegne admin:',e);
+    state.adminEntriesError='Dati non disponibili';
+  }finally{
+    if(request===state.adminEntriesRequestId){
+      state.adminEntriesLoading=false;
+      if(button)button.disabled=false;
+      renderAdminEntries();
+    }
+  }
+}
+
 function renderAdmin(){
   const admin=$('te-admin');admin.hidden=!isAdmin();
   const adminTab=document.querySelector('[data-te-tab="admin"]');
@@ -308,23 +386,32 @@ function renderAdmin(){
   renderAdminFixtures();
   renderAdminResults();
   renderJackpotAdmin();
+  renderAdminEntries();
   $('te-prefill').disabled=Boolean(round&&round.status!=='draft');
 }
 function renderAdminFixtures(){
   const round=state.round;
-  $('te-admin-fixtures').innerHTML=state.adminFixtures.length ? state.adminFixtures.map((f,i)=>{
+  const count=state.adminFixtures.length;
+  $('te-admin-fixtures-count').textContent=`${count}/8 incontri`;
+  $('te-admin-fixtures').innerHTML=count ? state.adminFixtures.map((f,i)=>{
     const disabled=round && round.status!=='draft';
-    return `<div class="te-fixture-editor ${disabled?'is-readonly':''}"><small>${i+1}</small><select data-f-conf="${i}" ${disabled?'disabled':''}><option value="Conf A" ${f.conference==='Conf A'?'selected':''}>Conf A</option><option value="Conf B" ${f.conference==='Conf B'?'selected':''}>Conf B</option><option value="Unificata" ${f.conference==='Unificata'?'selected':''}>Unificata</option></select>
-      <input data-f-home="${i}" value="${esc(f.home_name)}" placeholder="Casa" ${disabled?'disabled':''}><input data-f-away="${i}" value="${esc(f.away_name)}" placeholder="Trasferta" ${disabled?'disabled':''}></div>`;
+    return `<div class="te-fixture-editor te-fixture-compact ${disabled?'is-readonly':''}">
+      <div class="te-fixture-meta"><small>${String(i+1).padStart(2,'0')}</small><select data-f-conf="${i}" aria-label="Conference incontro ${i+1}" ${disabled?'disabled':''}><option value="Conf A" ${f.conference==='Conf A'?'selected':''}>Conf A</option><option value="Conf B" ${f.conference==='Conf B'?'selected':''}>Conf B</option><option value="Unificata" ${f.conference==='Unificata'?'selected':''}>Unificata</option></select></div>
+      <input data-f-home="${i}" aria-label="Squadra di casa incontro ${i+1}" value="${esc(f.home_name)}" placeholder="Casa" ${disabled?'disabled':''}>
+      <input data-f-away="${i}" aria-label="Squadra in trasferta incontro ${i+1}" value="${esc(f.away_name)}" placeholder="Trasferta" ${disabled?'disabled':''}></div>`;
   }).join('') : '<div class="te-empty">Nessun incontro precaricato.</div>';
 }
+
 function renderAdminResults(){
   const el=$('te-admin-results');
+  const selected=state.fixtures.filter(f=>['1','X','2'].includes(state.adminResults[String(f.slot)] ?? f.result_sign)).length;
+  $('te-admin-results-count').textContent=`${selected}/8 esiti`;
   if(!state.round||!state.fixtures.length){el.innerHTML='<div class="te-empty">Salva gli otto incontri prima di importare i risultati.</div>';return;}
   el.innerHTML=state.fixtures.map(f=>{
     const pick=state.adminResults[String(f.slot)] ?? f.result_sign ?? '';
-    return `<div class="te-fixture-editor te-result-editor"><small>${f.slot}</small><span>${esc(f.home_name)}</span><span>${esc(f.away_name)}</span>
-      <select data-result-slot="${f.slot}"><option value="" ${!pick?'selected':''}>—</option>${['1','X','2'].map(s=>`<option value="${s}" ${pick===s?'selected':''}>${s}</option>`).join('')}</select></div>`;
+    return `<div class="te-fixture-editor te-result-editor te-result-compact"><small>${f.slot}</small>
+      <div class="te-result-pair" title="${esc(f.home_name)} - ${esc(f.away_name)}"><span>${esc(f.home_name)}</span><span>${esc(f.away_name)}</span></div>
+      <select data-result-slot="${f.slot}" aria-label="Esito incontro ${f.slot}"><option value="" ${!pick?'selected':''}>—</option>${['1','X','2'].map(s=>`<option value="${s}" ${pick===s?'selected':''}>${s}</option>`).join('')}</select></div>`;
   }).join('');
 }
 function adminMessage(str, bad=false){$('te-admin-message').textContent=str;$('te-admin-message').style.color=bad?'#b52121':'#235681';}
@@ -343,6 +430,7 @@ async function loadRound(gw){
   state.gw=Number(gw);
   state.round=state.rounds.find(r=>Number(r.gw)===Number(gw))||null;
   state.fixtures=[];state.picks={};state.savedPicks={};state.publicEntries=[];state.expandedEntries.clear();state.adminResults={};state.count=0;
+  ++state.adminEntriesRequestId;state.adminEntryTeams=[];state.adminEntriesLoaded=false;state.adminEntriesLoading=false;state.adminEntriesError=null;
   if(state.round){
     const {data,error}=await supabase.from('totoeroi_fixtures').select('*').eq('round_id',state.round.id).order('slot');
     if(error){console.error('Incontri TotoEroi:',error);}
@@ -358,6 +446,7 @@ async function loadRound(gw){
     }
   }else{state.adminFixtures=[];}
   renderAll();
+  await refreshAdminEntryTeams();
 }
 
 function isRelevantResultRow(r,gw,conference){
@@ -430,6 +519,7 @@ async function prefillFixtures(){
     home_name:preview[i]?.home_name||'',away_name:preview[i]?.away_name||''
   }));
   renderAdminFixtures();
+  $('te-admin-fixtures-fold').open=true;
   adminMessage(preview.length===8?'Otto partite precaricate. Controlla casa/trasferta prima di aprire la giornata.':
     `Trovate ${preview.length} partite su 8. Completa manualmente il calendario prima di pubblicare.`,preview.length!==8);
 }
@@ -524,6 +614,7 @@ async function importResults(){
   state.resultsRows=await loadResultsRows();
   for(const f of state.fixtures){const s=suggestedResultFor(f);if(s){state.adminResults[String(f.slot)]=s;n++;}}
   renderAdminResults();
+  $('te-admin-results-fold').open=true;
   adminMessage(`Proposti ${n} risultati su 8. Verifica gli esiti ufficiali prima di salvarli.${n<8?' Alcuni incontri non sono ancora disponibili.':''}`,n===0);
 }
 async function saveResults(){
@@ -572,9 +663,21 @@ async function savePicks(){
     if(error)throw error;
     state.savedPicks={...state.picks};state.count=await safeRpc('totoeroi_entry_count',{p_round_id:state.round.id},state.count);
     renderPicks();renderStatus();showSaveMessage('✅ Schedina salvata! L’ultimo invio prima della scadenza è quello valido.');
+    if(isAdmin())await refreshAdminEntryTeams();
   }catch(e){renderPicks();showSaveMessage(`Impossibile salvare: ${e.message||e}`,true);}
 }
 function setupEvents(){
+  // Su mobile gli elenchi si aprono solo quando servono, su desktop restano aperti.
+  const compactAdmin=window.matchMedia('(max-width:740px)').matches;
+  $('te-admin-fixtures-fold').open=!compactAdmin;
+  $('te-admin-results-fold').open=!compactAdmin;
+  $('te-admin-refresh-entries').addEventListener('click',refreshAdminEntryTeams);
+  $('te-admin-results').addEventListener('change',e=>{
+    const select=e.target.closest('[data-result-slot]');
+    if(select){state.adminResults[String(select.dataset.resultSlot)]=select.value;
+      $('te-admin-results-count').textContent=`${document.querySelectorAll('#te-admin-results [data-result-slot]').length ? [...document.querySelectorAll('#te-admin-results [data-result-slot]')].filter(s=>['1','X','2'].includes(s.value)).length : 0}/8 esiti`;
+    }
+  });
   document.querySelector('.te-tabs').addEventListener('click',e=>{
     const btn=e.target.closest('[data-te-tab]');if(btn)switchTab(btn.dataset.teTab);
   });

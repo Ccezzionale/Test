@@ -7,7 +7,7 @@
 <meta content="#eaf3ff" name="theme-color"/>
 <title>TotoEroi | Lega degli Eroi</title>
 <link href="icon-192.png" rel="icon" type="image/png"/>
-<link href="totoeroi.css?v=partecipanti14-20261026" rel="stylesheet"/>
+<link href="totoeroi.css?v=admin-compatta-20261109" rel="stylesheet"/>
 <meta name="lega-app-build" content="v20261028-ef9f76dc3f25">
 <script defer src="./app-updates.js?bootstrap=v20261028-ef9f76dc3f25" data-eroi-update="1"></script>
 </head>
@@ -277,8 +277,13 @@
 </div>
 <p class="te-admin-explain">Imposta la scadenza a 5 minuti prima del primo incontro di Serie A. L'ora si può cambiare fino alla chiusura effettiva; non viene presunta dal calendario fantacalcistico.</p>
 <div class="te-admin-actions"><button class="te-secondary" id="te-preset-deadline" type="button">⏱ Preset sabato 14:55</button><button class="te-secondary" id="te-prefill" type="button">📅 Precarica 8 partite</button><button class="te-primary" id="te-admin-save-round" type="button">Salva giornata →</button></div>
-<h3 class="te-admin-mini">Incontri (modificabili soltanto in bozza)</h3>
+<details class="te-admin-fold" id="te-admin-fixtures-fold" open>
+<summary><span class="te-fold-title">⚽ Incontri della giornata</span><span class="te-fold-count" id="te-admin-fixtures-count">0/8 incontri</span><span class="te-fold-chevron" aria-hidden="true">⌄</span></summary>
+<div class="te-fold-body">
+<p class="te-muted">Modificabili soltanto finché la giornata è in bozza.</p>
 <div class="te-admin-fixtures" id="te-admin-fixtures"><div class="te-empty">Seleziona una giornata e premi “Precarica 8 partite”.</div></div>
+</div>
+</details>
 <div class="te-admin-divider"></div>
 <h3>🏆 Jackpot e franchigie escluse</h3>
 <p class="te-muted">Indica le 2 franchigie escluse dal montepremi. Tutto il resto si calcola dai risultati omologati.</p>
@@ -287,13 +292,23 @@
 <button type="button" class="te-secondary" id="te-jackpot-save-exclusions">Salva esclusioni</button></div>
 <div class="te-admin-feedback" id="te-jackpot-admin-note" role="status"></div>
 <div class="te-admin-divider"></div>
-<h3>Risultati ufficiali e omologazione</h3>
-<p class="te-muted">Dopo la scadenza, importa i risultati dal Match Center, controlla i segni e omologa. Le rettifiche ufficiali possono essere recepite in seguito.</p>
+<details class="te-admin-fold" id="te-admin-results-fold" open>
+<summary><span class="te-fold-title">🏁 Risultati ufficiali e omologazione</span><span class="te-fold-count" id="te-admin-results-count">0/8 esiti</span><span class="te-fold-chevron" aria-hidden="true">⌄</span></summary>
+<div class="te-fold-body">
+<p class="te-muted">Dopo la scadenza, importa i risultati dal Match Center, controlla i segni e omologa.</p>
 <div class="te-admin-results" id="te-admin-results"><div class="te-empty">Prima configura una giornata.</div></div>
 <div class="te-admin-actions"><button class="te-secondary" id="te-import-results" type="button">↻ Proponi esiti da risultati</button><button class="te-secondary" id="te-save-results" type="button">Salva esiti</button><button class="te-primary" id="te-homologate" type="button">Omologa giornata</button></div>
+</div>
+</details>
 <div class="te-admin-feedback" id="te-admin-message" role="status"></div>
+<div class="te-admin-divider"></div>
+<section class="te-admin-submissions" aria-labelledby="te-admin-submissions-title">
+<div class="te-submissions-head"><div><h3 id="te-admin-submissions-title">📋 Chi ha consegnato?</h3><p class="te-muted">Le 14 franchigie partecipanti. Solo lo stato di invio, mai i pronostici prima della chiusura.</p></div><button class="te-secondary te-refresh-entries" id="te-admin-refresh-entries" type="button">↻ Aggiorna</button></div>
+<div class="te-submissions-summary" id="te-admin-entries-summary" aria-live="polite">Caricamento consegne…</div>
+<div id="te-admin-entries" class="te-submissions-content" aria-live="polite"><div class="te-empty">Caricamento consegne…</div></div>
+</section>
 </section></section></div>
 </main>
-<script src="totoeroi.js?v=partecipanti14-20261026" type="module"></script>
+<script src="totoeroi.js?v=admin-compatta-20261109" type="module"></script>
 <script src="mobile-nav.js?v=20261007-bottom4"></script><script src="navbar.js?v=20261005-center6"></script><script src="admin-nav.js?v=1" type="module"></script></body>
 </html>

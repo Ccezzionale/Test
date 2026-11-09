@@ -1067,3 +1067,97 @@ body.te-page .te-entry-legend{margin:5px 2px 0;color:#607b97;font-size:11px;line
 
 /* Nasconde le due righe informative sotto il jackpot (preferenza confermata). */
 body.te-page #te-jackpot-note,body.te-page .te-jackpot-aside > small{display:none!important;}
+
+
+/* ====================================================================
+   TotoEroi · V5.7 · Commissioner compatto + stato consegne.
+   Soltanto il pannello Admin; schedine e navbar restano invariate.
+   ==================================================================== */
+body.te-page #te-panel-admin .te-admin-fold{margin:13px 0 10px;border:1px solid #d9e5f1;border-radius:13px;background:#fff;overflow:hidden;}
+body.te-page #te-panel-admin .te-admin-fold>summary{list-style:none;display:flex;align-items:center;gap:9px;min-height:52px;padding:10px 12px;cursor:pointer;background:#f7faff;color:#0d3f70;}
+body.te-page #te-panel-admin .te-admin-fold>summary::-webkit-details-marker{display:none;}
+body.te-page #te-panel-admin .te-admin-fold[open]>summary{border-bottom:1px solid #e2eaf3;}
+body.te-page #te-panel-admin .te-fold-title{font-size:14px;font-weight:900;flex:1;min-width:0;}
+body.te-page #te-panel-admin .te-fold-count{white-space:nowrap;background:#e7f1fc;color:#235a8e;border-radius:20px;padding:5px 9px;font-size:11px;font-weight:850;}
+body.te-page #te-panel-admin .te-fold-chevron{font-size:20px;color:#47789f;line-height:1;transform:rotate(0);transition:transform .16s ease;}
+body.te-page #te-panel-admin .te-admin-fold[open] .te-fold-chevron{transform:rotate(180deg);}
+body.te-page #te-panel-admin .te-fold-body{padding:10px;}
+body.te-page #te-panel-admin .te-fold-body>p{font-size:11px;margin:0 0 8px!important;}
+body.te-page #te-panel-admin .te-admin-fixtures,body.te-page #te-panel-admin .te-admin-results{gap:6px;}
+body.te-page #te-panel-admin .te-fixture-editor.te-fixture-compact{display:grid;grid-template-columns:145px minmax(0,1fr) minmax(0,1fr);gap:7px;padding:7px 9px;min-height:45px;align-items:center;}
+body.te-page #te-panel-admin .te-fixture-meta{display:flex;gap:7px;align-items:center;min-width:0;}
+body.te-page #te-panel-admin .te-fixture-meta>small{min-width:21px;font-size:11px;text-align:center;}
+body.te-page #te-panel-admin .te-fixture-meta>select{min-width:0;width:100%;padding:6px 7px;min-height:33px;font-size:12px;}
+body.te-page #te-panel-admin .te-fixture-compact>input{min-width:0;min-height:33px;padding:6px 8px;font-size:12px;}
+body.te-page #te-panel-admin .te-result-editor.te-result-compact{display:grid;grid-template-columns:28px minmax(0,1fr) 69px;gap:8px;padding:7px 9px;min-height:49px;align-items:center;}
+body.te-page #te-panel-admin .te-result-compact>small{font-weight:950;grid-column:auto;grid-row:auto;}
+body.te-page #te-panel-admin .te-result-pair{display:flex;flex-wrap:wrap;align-items:center;gap:3px 7px;min-width:0;color:#153e65;font-size:12px;font-weight:780;line-height:1.23;}
+body.te-page #te-panel-admin .te-result-pair span{min-width:0;overflow-wrap:break-word;}
+body.te-page #te-panel-admin .te-result-pair span+span:before{content:'vs';color:#6a89a4;font-size:10px;font-weight:650;margin-right:7px;}
+body.te-page #te-panel-admin .te-result-compact>select{width:100%;min-width:0;min-height:33px;padding:5px 7px;font-weight:900;font-size:13px;grid-column:auto;grid-row:auto;}
+body.te-page #te-panel-admin .te-submissions-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:4px 0 10px;}
+body.te-page #te-panel-admin .te-submissions-head h3{margin:0 0 4px!important;}
+body.te-page #te-panel-admin .te-submissions-head p{margin:0!important;font-size:12px;line-height:1.4;}
+body.te-page #te-panel-admin .te-refresh-entries{min-height:37px;padding:8px 12px;font-size:12px;flex-shrink:0;}
+body.te-page #te-panel-admin .te-submissions-summary{background:#f1f7fd;color:#24557d;padding:11px 14px;border:1px solid #d8e8f5;border-radius:11px;font-size:13px;font-weight:720;margin-bottom:10px;}
+body.te-page #te-panel-admin .te-submissions-summary strong{color:#0a4c83;font-size:22px;font-weight:950;}
+body.te-page #te-panel-admin .te-submissions-summary strong span{font-size:14px;color:#65829e;}
+body.te-page #te-panel-admin .te-submissions-summary b{color:#a65c1b;}
+body.te-page #te-panel-admin .te-submissions-summary-sep{padding:0 8px;color:#8ba8bf;}
+body.te-page #te-panel-admin .te-submissions-columns{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;}
+body.te-page #te-panel-admin .te-submissions-group{min-width:0;border:1px solid #e1eaf3;border-radius:12px;padding:10px;background:#fff;}
+body.te-page #te-panel-admin .te-submissions-group-head{margin:0 0 7px;padding:2px 3px 9px;border-bottom:1px solid #e8edf4;color:#0f6d55;font-size:13px;font-weight:950;display:flex;align-items:center;justify-content:space-between;}
+body.te-page #te-panel-admin .te-submissions-group-head.is-missing{color:#a05a19;}
+body.te-page #te-panel-admin .te-submissions-group-head span{font-size:12px;background:#edf5fb;border-radius:6px;padding:3px 7px;color:#2a567e;}
+body.te-page #te-panel-admin .te-submissions-group ul{padding:0;margin:0;list-style:none;display:grid;gap:3px;}
+body.te-page #te-panel-admin .te-submissions-team{display:flex;align-items:center;gap:8px;min-width:0;padding:6px 5px;border-radius:8px;}
+body.te-page #te-panel-admin .te-submissions-team:nth-child(even){background:#f7faff;}
+body.te-page #te-panel-admin .te-submissions-team img{width:26px;height:26px;flex:0 0 26px;object-fit:contain;}
+body.te-page #te-panel-admin .te-submissions-name{font-size:12px;font-weight:780;color:#1a4265;min-width:0;flex:1;overflow-wrap:break-word;line-height:1.25;}
+body.te-page #te-panel-admin .te-submissions-state{flex:0 0 auto;padding:4px 7px;border-radius:7px;font-size:10px;font-weight:900;white-space:nowrap;}
+body.te-page #te-panel-admin .te-submissions-state.is-done{background:#def5e9;color:#117050;}
+body.te-page #te-panel-admin .te-submissions-state.is-missing{background:#fff1dd;color:#955b17;}
+body.te-page #te-panel-admin .te-submissions-placeholder,body.te-page #te-panel-admin .te-submissions-error,body.te-page #te-panel-admin .te-submissions-none{font-size:12px;padding:12px;margin:0;color:#56758f;}
+body.te-page #te-panel-admin .te-submissions-error{color:#aa2936;}
+@media(max-width:740px){
+  body.te-page #te-panel-admin .te-admin{padding:11px;}
+  body.te-page #te-panel-admin .te-admin-head h2{font-size:19px;}
+  body.te-page #te-panel-admin .te-admin-form{gap:9px;margin-top:10px;}
+  body.te-page #te-panel-admin .te-admin-form label{gap:5px;font-size:11px;}
+  body.te-page #te-panel-admin .te-admin-form input,body.te-page #te-panel-admin .te-admin-form select{padding:9px;min-height:38px;font-size:12px;}
+  body.te-page #te-panel-admin .te-admin-explain{padding:7px 9px;font-size:11px!important;}
+  body.te-page #te-panel-admin .te-admin-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;margin:10px 0;}
+  body.te-page #te-panel-admin .te-admin-actions>button{width:100%;min-height:38px;padding:7px 6px;font-size:11px;line-height:1.2;}
+  body.te-page #te-panel-admin .te-admin-actions>button:last-child:nth-child(odd){grid-column:1/-1;}
+  body.te-page #te-panel-admin .te-admin-fold{margin:9px 0;}
+  body.te-page #te-panel-admin .te-admin-fold>summary{min-height:51px;padding:9px;gap:6px;}
+  body.te-page #te-panel-admin .te-fold-title{font-size:12px;line-height:1.24;}
+  body.te-page #te-panel-admin .te-fold-count{font-size:10px;padding:5px 7px;}
+  body.te-page #te-panel-admin .te-fold-body{padding:7px;}
+  body.te-page #te-panel-admin .te-fixture-editor.te-fixture-compact{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:5px;padding:7px;min-height:0;}
+  body.te-page #te-panel-admin .te-fixture-compact>.te-fixture-meta{grid-column:1/-1;grid-row:auto;}
+  body.te-page #te-panel-admin .te-fixture-compact>.te-fixture-meta select{max-width:132px;min-height:28px;padding:4px 7px;}
+  body.te-page #te-panel-admin .te-fixture-compact>input[data-f-home],body.te-page #te-panel-admin .te-fixture-compact>input[data-f-away]{grid-column:auto;grid-row:auto;width:100%;padding:6px;min-height:33px;font-size:11px;}
+  body.te-page #te-panel-admin .te-result-editor.te-result-compact{grid-template-columns:19px minmax(0,1fr) 54px;grid-template-rows:auto;gap:5px;padding:6px 7px;min-height:44px;}
+  body.te-page #te-panel-admin .te-result-compact>small{grid-column:1;grid-row:1;align-self:center;font-size:11px;}
+  body.te-page #te-panel-admin .te-result-compact>.te-result-pair{grid-column:2;grid-row:1;display:flex;flex-direction:column;align-items:flex-start;gap:2px;font-size:11px;line-height:1.17;}
+  body.te-page #te-panel-admin .te-result-pair span+span:before{content:'vs';margin-right:5px;font-size:9px;}
+  body.te-page #te-panel-admin .te-result-compact>select{grid-column:3;grid-row:1;width:100%;min-width:0;min-height:33px;padding:5px;font-size:12px;}
+  body.te-page #te-panel-admin .te-admin-divider{margin:16px 0 8px;}
+  body.te-page #te-panel-admin .te-submissions-head h3{font-size:16px;}
+  body.te-page #te-panel-admin .te-submissions-head p{font-size:11px;}
+  body.te-page #te-panel-admin .te-refresh-entries{min-height:36px;padding:7px 8px;font-size:11px;}
+  body.te-page #te-panel-admin .te-submissions-columns{grid-template-columns:minmax(0,1fr);gap:9px;}
+  body.te-page #te-panel-admin .te-submissions-group{padding:8px;}
+  body.te-page #te-panel-admin .te-submissions-team{padding:5px 6px;}
+  body.te-page #te-panel-admin .te-submissions-team img{width:23px;height:23px;flex-basis:23px;}
+  body.te-page #te-panel-admin .te-submissions-summary{font-size:12px;padding:9px 11px;}
+}
+/* Piccolo risparmio verticale anche nella configurazione mobile. */
+@media(max-width:740px){
+  body.te-page #te-panel-admin .te-admin-form{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;}
+  body.te-page #te-panel-admin .te-admin-form>label:nth-child(1){grid-column:1;grid-row:1;}
+  body.te-page #te-panel-admin .te-admin-form>label:nth-child(2){grid-column:1/-1;grid-row:2;}
+  body.te-page #te-panel-admin .te-admin-form>label:nth-child(3){grid-column:2;grid-row:1;}
+  body.te-page #te-panel-admin .te-admin-form>label:nth-child(4){grid-column:1/-1;grid-row:3;}
+}
