@@ -1270,92 +1270,171 @@ function isChampionshipSource(competition) {
     || (key.startsWith("playoff") && !key.includes("crashout"));
 }
 
-function extractLeagueTrend(rows, team) {
-  const weeks = new Map();
-  rows.forEach(row => {
-    if (!isChampionshipSource(row.Conference) || !isCompletedRow(row)) return;
-    if (normalizeTeamName(row.Team) !== normalizeTeamName(team)) return;
-    const gw = Number(row.GW_Stagionale) || Number(row.GW);
-    const fp = Number(String(row.PointsFor ?? "").replace(",", "."));
-    if (!Number.isInteger(gw) || gw < 1 || !Number.isFinite(fp) || fp < 0) return;
-    // Se arrivano dati duplicati, una giornata conta una volta soltanto.
-    if (!weeks.has(gw)) weeks.set(gw, {gw, fp});
-  });
-  return [...weeks.values()].sort((a,b) => a.gw-b.gw);
+// Classifica progressiva ricostruita giornata per giornata.
+// Il campionato assegna 3 punti per vittoria e 1 per pareggio; i fantapunti
+// servono soltanto a risolvere i pari punti, NON diventano il valore del grafico.
+function mcLeagueGroup(row) {
+  const key = normalizeTeamName(row.Conference);
+  if (key === "confa" || key === "conferenceleague") return "Conf A";
+  if (key === "confb" || key === "conferencechampionship") return "Conf B";
+  if (key === "unificata" || key === "roundrobin") return "Unificata";
+  return null;
 }
 
-function movingAverageTrend(points) {
-  return points.map((point,i) => ({
-    ...point,
-    fp: points.slice(Math.max(0,i-2),i+1).reduce((s,p)=>s+p.fp,0)/Math.min(i+1,3)
-  }));
+function mcLeagueMatchResult(row) {
+  // Usa il risultato omologato quando è disponibile, anche nelle versioni
+  // W/D/L del database; altrimenti applica la conversione gol della lega.
+  const explicit = String(row.Result || "").trim().toUpperCase();
+  if (["V", "W"].includes(explicit)) return "V";
+  if (["N", "D", "X"].includes(explicit)) return "N";
+  if (["P", "L"].includes(explicit)) return "P";
+  return resultFromPoints(row.PointsFor, row.PointsAgainst);
+}
+
+function mcLeagueStandingsTimeline(rows) {
+  const games = new Map();
+  const groupTeams = new Map();
+  const groupWeeks = new Map();
+
+  rows.forEach(row => {
+    const group=mcLeagueGroup(row);
+    if (!group) return;
+    const official=String(row.Result || "").trim().toUpperCase();
+    if (!isCompletedRow(row) && !["V","N","P","W","D","L","X"].includes(official)) return;
+    const week=Number(row.GW_Stagionale) || Number(row.GW);
+    const fp=Number(String(row.PointsFor ?? "").replace(",", "."));
+    if (!Number.isInteger(week) || week<1 || !Number.isFinite(fp) || fp<0) return;
+    const team=canonicalTeamName(row.Team);
+    const key=normalizeTeamName(team);
+    if (!key) return;
+    if (!groupTeams.has(group)) groupTeams.set(group,new Map());
+    groupTeams.get(group).set(key,team);
+    if (!groupWeeks.has(group)) groupWeeks.set(group,new Set());
+    groupWeeks.get(group).add(week);
+    // Una stessa giornata/team può arrivare due volte da fonti diverse.
+    const id=`${group}|${week}|${key}`;
+    if (!games.has(id)) games.set(id,{group,week,team,key,fp,
+      gf:pointsToGoals(row.PointsFor),ga:pointsToGoals(row.PointsAgainst),result:mcLeagueMatchResult(row)});
+  });
+
+  const timeline=new Map();
+  const groupSizes=new Map();
+  for (const [group,teamMap] of groupTeams) {
+    const state=new Map([...teamMap].map(([key,team])=>[key,{team,key,pts:0,fp:0,gf:0,ga:0,played:0}]));
+    groupSizes.set(group,teamMap.size);
+    for (const week of [...groupWeeks.get(group)].sort((a,b)=>a-b)) {
+      for (const [key,entry] of state) {
+        const game=games.get(`${group}|${week}|${key}`);
+        if (!game) continue;
+        entry.pts += game.result==="V" ? 3 : game.result==="N" ? 1 : 0;
+        entry.fp += game.fp;
+        entry.gf += game.gf;
+        entry.ga += game.ga;
+        entry.played++;
+      }
+      const ordered=[...state.values()].sort((a,b)=>
+        b.pts-a.pts || b.fp-a.fp || b.gf-a.gf || a.ga-b.ga || a.team.localeCompare(b.team,"it")
+      );
+      ordered.forEach((entry,index)=>{
+        // Non creare un punto fittizio nel grafico se la squadra non ha
+        // effettivamente un risultato registrato per questa giornata.
+        if (!games.has(`${group}|${week}|${entry.key}`)) return;
+        timeline.set(`${group}|${week}|${entry.key}`,{
+          gw:week,group,teamKey:entry.key,position:index+1,points:entry.pts,played:entry.played
+        });
+      });
+    }
+  }
+  return {timeline,groupSizes};
 }
 
 function renderSeasonTrend(params, leagueRows) {
-  const shell = document.getElementById("mc-trends-section");
-  const svg = document.getElementById("mc-trends-svg");
-  const legend = document.getElementById("mc-trends-legend");
-  const summary = document.getElementById("mc-trends-summary");
-  const caption = document.getElementById("mc-trends-caption");
+  const shell=document.getElementById("mc-trends-section");
+  const svg=document.getElementById("mc-trends-svg");
+  const legend=document.getElementById("mc-trends-legend");
+  const summary=document.getElementById("mc-trends-summary");
+  const caption=document.getElementById("mc-trends-caption");
   if (!shell || !svg || !legend || !summary || !caption) return;
-  shell.hidden = false;
+  shell.hidden=false;
 
-  const names = [params.home, params.away];
-  const raw = names.map(name => extractLeagueTrend(leagueRows,name));
-  const allWeeks = [...new Set(raw.flatMap(list=>list.map(row=>row.gw)))].sort((a,b)=>a-b);
-  caption.textContent = `Stagione ${CURRENT_SEASON} · solo campionato · ${allWeeks.length} giornate con dati`;
+  const names=[params.home,params.away];
+  const {timeline,groupSizes}=mcLeagueStandingsTimeline(leagueRows);
+  const tracked=names.map(name=>{
+    const key=normalizeTeamName(name);
+    return [...timeline.values()].filter(point=>point.teamKey===key)
+      .sort((a,b)=>a.gw-b.gw);
+  });
+  const allWeeks=[...new Set(tracked.flatMap(list=>list.map(p=>p.gw)))].sort((a,b)=>a-b);
+  const groups=[...new Set(tracked.flatMap(list=>list.map(p=>p.group)))];
+  const mixedGroups=groups.includes("Conf A") && groups.includes("Conf B");
+  caption.textContent=`Stagione ${CURRENT_SEASON} · solo campionato · ${allWeeks.length} giornate`;
   if (!allWeeks.length) {
-    svg.removeAttribute("viewBox");
-    svg.innerHTML = "";
-    legend.innerHTML = "";
-    summary.innerHTML = '<p class="mc-insights-empty">Nessun fantapunteggio del campionato disponibile per queste squadre.</p>';
+    svg.removeAttribute("viewBox");svg.innerHTML="";legend.innerHTML="";
+    summary.innerHTML='<p class="mc-insights-empty">La classifica non è ancora disponibile per queste squadre.</p>';
     return;
   }
 
-  let mode = "points";
-  const fmt = n => formatNumber(n);
-  const buttonGroup = shell.querySelectorAll("[data-mc-trend-mode]");
-  const draw = () => {
-    const lists = mode === "average" ? raw.map(movingAverageTrend) : raw;
-    const values = lists.flatMap(list=>list.map(row=>row.fp));
-    const yMin = Math.max(0, Math.floor((Math.min(...values,66)-7)/10)*10);
-    const yMax = Math.max(yMin+20,Math.ceil((Math.max(...values,66)+7)/10)*10);
-    const width = Math.max(650,102 + (allWeeks.length-1)*52);
-    const height = 310;
-    const left=50,right=24,top=22,bottom=47;
-    const plotW=width-left-right,plotH=height-top-bottom;
-    const x=week=>left+(allWeeks.indexOf(week)/(Math.max(1,allWeeks.length-1)))*plotW;
-    const y=value=>top+(yMax-value)/(yMax-yMin)*plotH;
-    const ticks=Array.from({length:5},(_,i)=>yMin+(yMax-yMin)*i/4);
-    const yGrid=ticks.map(t=>`<g><line x1="${left}" x2="${width-right}" y1="${y(t).toFixed(1)}" y2="${y(t).toFixed(1)}" stroke="#a8b7c9" stroke-opacity=".16" stroke-dasharray="3 5"/><text x="${left-12}" y="${(y(t)+4).toFixed(1)}" text-anchor="end" fill="#aab9d0" font-size="12">${fmt(t)}</text></g>`).join("");
-    const weekGrid=allWeeks.map((week,i)=>`<text x="${x(week).toFixed(1)}" y="${height-19}" text-anchor="middle" fill="#aebcd0" font-size="12">${week}</text>`).join("");
-    const threshold=66>=yMin&&66<=yMax?`<line x1="${left}" x2="${width-right}" y1="${y(66)}" y2="${y(66)}" stroke="#f6c66a" stroke-dasharray="5 6" stroke-opacity=".8"/><text x="${width-right-3}" y="${y(66)-6}" text-anchor="end" fill="#f6c66a" font-size="11">66 FP</text>`:"";
-    const lines=lists.map((list,side)=>{
-      const color=MC_TREND_COLORS[side];
-      const path=list.map((p,i)=>`${i===0?"M":"L"} ${x(p.gw).toFixed(1)} ${y(p.fp).toFixed(1)}`).join(" ");
-      return `<path d="${path}" fill="none" stroke="${color}" stroke-width="3.1" stroke-linecap="round" stroke-linejoin="round"/>
-        ${list.map(p=>`<circle cx="${x(p.gw).toFixed(1)}" cy="${y(p.fp).toFixed(1)}" r="5.1" fill="${color}" stroke="#081728" stroke-width="2" tabindex="0" role="img" aria-label="${escapeHtml(names[side])}, giornata ${p.gw}, ${fmt(p.fp)} fantapunti"><title>${escapeHtml(names[side])} · G${p.gw} · ${fmt(p.fp)} FP${mode==="average"?" (media mobile)":""}</title></circle>`).join("")}`;
+  let mode="position";
+  const buttons=shell.querySelectorAll("[data-mc-trend-mode]");
+  const draw=()=>{
+    const maxRank=Math.max(8,...[...groupSizes.values()],...tracked.flatMap(list=>list.map(p=>p.position)));
+    const allPoints=tracked.flatMap(list=>list.map(p=>p.points));
+    const maxPts=Math.max(3,Math.ceil(Math.max(...allPoints)/5)*5);
+    const width=Math.max(650,105+(allWeeks.length-1)*55),height=315;
+    const left=57,right=23,top=27,bottom=49;
+    const w=width-left-right,h=height-top-bottom;
+    const x=week=>left+(allWeeks.indexOf(week)/Math.max(1,allWeeks.length-1))*w;
+    // La classifica ha 1° IN ALTO. I punti vanno invece dal basso verso l'alto.
+    const y=value=>mode==="position"
+      ? top+(value-1)/Math.max(1,maxRank-1)*h
+      : top+(maxPts-value)/maxPts*h;
+    const ticks=mode==="position"
+      ? Array.from({length:maxRank<=8?maxRank:5},(_,i)=>maxRank<=8?i+1:Math.round(1+i*(maxRank-1)/4))
+      : Array.from({length:6},(_,i)=>maxPts*i/5);
+    const grid=ticks.map(t=>`<g><line x1="${left}" x2="${width-right}" y1="${y(t).toFixed(1)}" y2="${y(t).toFixed(1)}" stroke="#a8b7c9" stroke-opacity=".16" stroke-dasharray="3 5"/><text x="${left-12}" y="${(y(t)+4).toFixed(1)}" text-anchor="end" fill="#aab9d0" font-size="12">${mode==="position"?t+"°":formatNumber(t)}</text></g>`).join("");
+    const axisTitle=mode==="position"?"POSIZIONE":"PUNTI";
+    const labels=allWeeks.map(week=>`<text x="${x(week).toFixed(1)}" y="${height-21}" text-anchor="middle" fill="#aebcd0" font-size="12">${week}</text>`).join("");
+    const paths=tracked.map((list,side)=>{
+      const color=MC_TREND_COLORS[side],field=mode==="position"?"position":"points";
+      // Separare i segmenti se mancano giornate o cambia la fase del torneo.
+      let d="",previous=null;
+      for (const p of list) {
+        const continuous=previous && p.gw===previous.gw+1 && p.group===previous.group;
+        d+=`${continuous?" L":" M"} ${x(p.gw).toFixed(1)} ${y(p[field]).toFixed(1)}`;
+        previous=p;
+      }
+      return `<path d="${d}" fill="none" stroke="${color}" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/>
+      ${list.map(p=>{
+        const value=mode==="position"?p.position+"° posto":p.points+" punti";
+        const label=`${names[side]} · G${p.gw} · ${value}`;
+        return `<circle cx="${x(p.gw).toFixed(1)}" cy="${y(p[field]).toFixed(1)}" r="5" fill="${color}" stroke="#081728" stroke-width="2" tabindex="0" role="img" aria-label="${escapeHtml(label)}"><title>${escapeHtml(label)} · ${escapeHtml(p.group)}</title></circle>`;
+      }).join("")}`;
     }).join("");
     svg.setAttribute("viewBox",`0 0 ${width} ${height}`);
-    svg.setAttribute("width",String(width));
-    svg.setAttribute("height",String(height));
-    svg.setAttribute("aria-label",`Andamento ${mode==="average"?"della media mobile a tre giornate":"dei fantapunti"} di ${names.join(" contro ")} nel campionato ${CURRENT_SEASON}`);
-    svg.innerHTML=`<rect x="0" y="0" width="${width}" height="${height}" fill="transparent"/>${yGrid}${threshold}${lines}${weekGrid}<text x="${left}" y="${height-4}" font-size="10" fill="#7189a6">GIORNATA</text>`;
+    svg.setAttribute("width",String(width));svg.setAttribute("height",String(height));
+    svg.setAttribute("aria-label",`Andamento ${mode==="position"?"della posizione":"dei punti"} in classifica di ${names.join(" e ")} · ${CURRENT_SEASON}`);
+    svg.innerHTML=`<rect x="0" y="0" width="${width}" height="${height}" fill="transparent"/>${grid}${paths}${labels}<text x="${left}" y="${height-5}" font-size="10" fill="#7189a6">GIORNATA · ${axisTitle}</text>`;
     legend.innerHTML=names.map((name,i)=>{
-      const entries=raw[i];
-      const avg=entries.length?entries.reduce((s,p)=>s+p.fp,0)/entries.length:null;
-      return `<div class="mc-trend-team"><i style="background:${MC_TREND_COLORS[i]}"></i><img src="${teamLogo(name)}" alt=""><span>${escapeHtml(name)}</span><strong>${avg===null?"–":fmt(avg)+" FP"}</strong></div>`;
+      const last=tracked[i].at(-1);
+      const current=last ? mode==="position"?`${last.position}° posto`:`${last.points} pt` : "–";
+      return `<div class="mc-trend-team"><i style="background:${MC_TREND_COLORS[i]}"></i><img src="${teamLogo(name)}" alt=""><span>${escapeHtml(name)}</span><strong>${current}</strong></div>`;
     }).join("");
-    const highest=[...raw.flatMap((list,i)=>list.map(p=>({...p,name:names[i]})))].sort((a,b)=>b.fp-a.fp)[0];
-    summary.innerHTML=`<span>${mode==="average"?"Media mobile sulle ultime tre giornate disponibili":"Fantapunti giornata per giornata"}</span><span>Picco: <strong>${escapeHtml(highest.name)} · ${fmt(highest.fp)} FP (G${highest.gw})</strong></span>`;
-    buttonGroup.forEach(button=>{
+    const changes=tracked.map((list,i)=>{
+      if (!list.length)return `${escapeHtml(names[i])}: nessun dato`;
+      const first=list[0],last=list.at(-1);
+      if (mode==="points")return `${escapeHtml(names[i])}: <strong>${last.points} pt</strong> (G${last.gw})`;
+      const delta=first.position-last.position;
+      return `${escapeHtml(names[i])}: <strong>${last.position}°</strong> ${delta>0?`(↑${delta})`:delta<0?`(↓${-delta})`:"(stabile)"}`;
+    });
+    summary.innerHTML=`<span>${mode==="position"?"1° posto in alto · posizione dopo ogni giornata":"Punti cumulati in classifica (3-1-0)"}${mixedGroups?" · ogni squadra nella propria conference":""}</span><span>${changes.join(" · ")}</span>`;
+    buttons.forEach(button=>{
       const active=button.dataset.mcTrendMode===mode;
       button.classList.toggle("is-active",active);
       button.setAttribute("aria-pressed",String(active));
     });
   };
-  buttonGroup.forEach(button=>button.addEventListener("click",()=>{
-    mode=button.dataset.mcTrendMode;
+  buttons.forEach(button=>button.addEventListener("click",()=>{
+    mode=button.dataset.mcTrendMode==="points"?"points":"position";
     draw();
   }));
   draw();
