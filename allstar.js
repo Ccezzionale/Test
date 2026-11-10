@@ -10,7 +10,7 @@ import { supabase } from "./supabase.js";
 window.__allstarModuleStarted = true;
 
 const SEASON = 2027;
-const ALLSTAR_CLIENT_VERSION = "20261109-desktop-weekly-douvikas-v1";
+const ALLSTAR_CLIENT_VERSION = "20261110-allstar-pulisic-public-vote-status-v1";
 // Questa identificazione raggruppa solo gli eventi di una singola apertura pagina.
 const diagnosticPageInstance = typeof crypto !== "undefined" && typeof crypto.randomUUID === "function"
   ? crypto.randomUUID()
@@ -38,7 +38,8 @@ const ALLSTAR_MASCOT_ASSETS = {
   raimondo: "assets/allstar-mascots/raimondo.webp?v=allstar9-20261030-fix-contrast-assets-v3",
   rabiot: "assets/allstar-mascots/rabiot.webp?v=allstar9-20261030-fix-contrast-assets-v3",
   dimarco: "assets/allstar-mascots/dimarco.webp?v=allstar9-20261030-fix-contrast-assets-v3",
-  douvikas: "assets/allstar-mascots/douvikas.webp?v=allstar10-20261109-douvikas-v1"
+  douvikas: "assets/allstar-mascots/douvikas.webp?v=allstar10-20261109-douvikas-v1",
+  pulisic: "assets/allstar-mascots/pulisic.webp?v=20261110-pulisic-v1"
 };
 
 const ALLSTAR_PLAYER_MASCOTS = [
@@ -51,7 +52,8 @@ const ALLSTAR_PLAYER_MASCOTS = [
   { tokens: ["raimondo"], asset: ALLSTAR_MASCOT_ASSETS.raimondo, title: "Raimondo" },
   { tokens: ["rabiot"], asset: ALLSTAR_MASCOT_ASSETS.rabiot, title: "Rabiot" },
   { tokens: ["dimarco", "di marco"], asset: ALLSTAR_MASCOT_ASSETS.dimarco, title: "Dimarco" },
-  { tokens: ["douvikas", "tasos douvikas", "anastasios douvikas"], asset: ALLSTAR_MASCOT_ASSETS.douvikas, title: "Douvikas" }
+  { tokens: ["douvikas", "tasos douvikas", "anastasios douvikas"], asset: ALLSTAR_MASCOT_ASSETS.douvikas, title: "Douvikas" },
+  { tokens: ["pulisic", "christian pulisic"], asset: ALLSTAR_MASCOT_ASSETS.pulisic, title: "Pulisic" }
 ];
 const ALLSTAR_TIME_ZONE = "Europe/Brussels";
 const DAY_MS = 24 * 60 * 60 * 1000;
@@ -82,6 +84,8 @@ let stateLoaded = false;
 let allstarReadyToVote = false;
 let picks = [];
 let votes = [];
+let voteRecordsLoaded = false;
+let voteRecordsUpdatedAt = null;
 let mobileLiveConference = CONFERENCE_LEAGUE;
 let desktopActiveTab = "vote";
 let desktopWeeklySelectedWeek = null;
@@ -197,7 +201,13 @@ const els = {
   desktopWeekSelect: document.getElementById("desktopWeekSelect"),
   desktopWeekNext: document.getElementById("desktopWeekNext"),
   desktopWeeklyLeague: document.getElementById("desktopWeeklyLeague"),
-  desktopWeeklyChampionship: document.getElementById("desktopWeeklyChampionship")
+  desktopWeeklyChampionship: document.getElementById("desktopWeeklyChampionship"),
+  participationWeek: document.getElementById("allstarParticipationWeek"),
+  participationLeague: document.getElementById("allstarParticipationLeague"),
+  participationChampionship: document.getElementById("allstarParticipationChampionship"),
+  participationLeagueCount: document.getElementById("allstarParticipationLeagueCount"),
+  participationChampionshipCount: document.getElementById("allstarParticipationChampionshipCount"),
+  participationUpdateText: document.getElementById("allstarParticipationUpdated")
 };
 
 // Non tracciare mai password, token, URL completi o messaggi di errore grezzi.
@@ -260,6 +270,11 @@ function getMascotEntryForPlayer(player) {
     key.startsWith("tasos douvikas ") || key.startsWith("anastasios douvikas ")
   )) {
     return ALLSTAR_PLAYER_MASCOTS.find((entry) => entry.title === "Douvikas");
+  }
+
+  // Pulisic: solo il calciatore del Milan, non un eventuale omonimo.
+  if (club === "milan" && (key === "pulisic" || key.startsWith("pulisic ") || key === "christian pulisic")) {
+    return ALLSTAR_PLAYER_MASCOTS.find((entry) => entry.title === "Pulisic");
   }
 
   const simpleKeys = [
@@ -668,6 +683,8 @@ async function loadVotes() {
     if ((data || []).length < pageSize) break;
   }
   votes = allRows.map(normalizeVote);
+  voteRecordsLoaded = true;
+  voteRecordsUpdatedAt = new Date();
 }
 
 async function loadPicks() {
@@ -1331,7 +1348,75 @@ function renderVotesArea() {
   renderConferenceRanking(els.champVoteRankingList, champTotals, CONFERENCE_CHAMPIONSHIP);
   renderAutoPickPreview(leagueTotals, champTotals);
   renderDesktopWeeklyLeaders();
+  renderAllstarParticipation();
   updateDesktopAllstarStatus();
+}
+
+// Stato settimanale dei voti, accessibile a tutti gli allenatori.
+// L'unita' e' la squadra: le franchigie con piu' coach votano una sola volta.
+// Usiamo gli slot salvati su Supabase, non il numero di click o le sessioni.
+function renderAllstarParticipation() {
+  if (!els.participationLeague || !els.participationChampionship) return;
+
+  const isReady = stateLoaded && voteRecordsLoaded && teamsById.size > 0;
+  setText(els.participationWeek, stateLoaded ? `Week ${state.activeWeek}` : "Caricamento...");
+
+  if (!isReady) {
+    const message = !currentUser && !voteRecordsLoaded
+      ? "Accedi per verificare lo stato delle votazioni."
+      : "Stato delle votazioni non disponibile. Riprova tra poco.";
+    const placeholder = `<tr><td colspan="2" class="allstar-participation-empty">${escapeHtml(message)}</td></tr>`;
+    els.participationLeague.innerHTML = placeholder;
+    els.participationChampionship.innerHTML = placeholder;
+    setText(els.participationLeagueCount, "—");
+    setText(els.participationChampionshipCount, "—");
+    setText(els.participationUpdateText, message);
+    return;
+  }
+
+  const week = state.activeWeek;
+  const byTeam = new Map();
+  votes.forEach((vote) => {
+    if (Number(vote.week) !== Number(week) || !vote.voterTeamId) return;
+    const key = String(vote.voterTeamId);
+    if (!byTeam.has(key)) byTeam.set(key, new Set());
+    if (vote.slot) byTeam.get(key).add(String(vote.slot));
+  });
+
+  const makeConferenceRows = (conference, tbody, countEl) => {
+    const teams = [...teamsById.values()]
+      .filter((team) => team.conference === conference)
+      .map((team) => {
+        const voteCount = Math.min(5, byTeam.get(String(team.id))?.size || 0);
+        return {team, voteCount, status: voteCount === 5 ? "done" : voteCount > 0 ? "partial" : "missing"};
+      })
+      // Le squadre che devono ancora completare il voto sono davanti.
+      .sort((a,b) => (a.status === "done") - (b.status === "done") ||
+        a.voteCount - b.voteCount || a.team.name.localeCompare(b.team.name, "it"));
+
+    const completed = teams.filter((row) => row.status === "done").length;
+    setText(countEl, `${completed}/${teams.length} completate`);
+
+    tbody.innerHTML = teams.length ? teams.map(({team, voteCount, status}) => {
+      const label = status === "done" ? "Votato" : status === "partial" ? "In corso" : "Da votare";
+      const symbol = status === "done" ? "✓" : status === "partial" ? "◐" : "○";
+      return `<tr class="allstar-participation-row is-${status}">
+        <td class="allstar-participation-name">${escapeHtml(team.name)}</td>
+        <td><div class="allstar-participation-state">
+          <span class="allstar-participation-status is-${status}"><span aria-hidden="true">${symbol}</span> ${label}</span>
+          <small>${voteCount}/5</small>
+        </div></td>
+      </tr>`;
+    }).join("") : '<tr><td colspan="2" class="allstar-participation-empty">Nessuna squadra in questa Conference.</td></tr>';
+  };
+
+  makeConferenceRows(CONFERENCE_LEAGUE, els.participationLeague, els.participationLeagueCount);
+  makeConferenceRows(CONFERENCE_CHAMPIONSHIP, els.participationChampionship, els.participationChampionshipCount);
+
+  const stamp = voteRecordsUpdatedAt
+    ? voteRecordsUpdatedAt.toLocaleTimeString("it-IT", {hour: "2-digit", minute: "2-digit"})
+    : "—";
+  setText(els.participationUpdateText, `Stato voti della Week ${week} · aggiornato alle ${stamp}. Valido per squadra, anche con due allenatori.`);
 }
 
 // Dal 6° al 10°: solamente posizione, nome e punti, niente mascotte.

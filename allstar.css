@@ -6942,3 +6942,118 @@ body {
     overflow: visible !important;
   }
 }
+
+
+/* === ALL-STAR: Pannello pubblico «Chi ha votato?» (10/11/2026) === */
+.allstar-participation-section {
+  width: 100%;
+  margin: 20px 0 0;
+  padding: clamp(14px, 1.9vw, 24px);
+  background: linear-gradient(142deg, #08152d 0%, #091a35 50%, #10152e 100%);
+  color: #f7faff;
+  border: 1px solid rgba(94, 144, 237, .32);
+  border-radius: 23px;
+  box-shadow: 0 15px 45px rgba(3, 10, 29, .22), inset 0 1px rgba(255, 255, 255, .05);
+  box-sizing: border-box;
+}
+.allstar-participation-header {
+  display: flex; align-items: center; justify-content: space-between; gap: 14px;
+  margin-bottom: 17px;
+}
+.allstar-participation-header > div { min-width: 0; }
+.allstar-participation-eyebrow {
+  font-size: 10px; font-weight: 950; letter-spacing: .12em; color: #ffcf71;
+}
+.allstar-participation-header h2 {
+  margin: 5px 0 4px; color: #fdfefe !important;
+  font-size: clamp(19px, 2vw, 26px); font-weight: 950;
+  text-transform: uppercase; letter-spacing: .025em;
+}
+.allstar-participation-header p { color: #aebfde !important; margin: 0; font-size: 12px; line-height: 1.4; }
+.allstar-participation-week {
+  flex: none; padding: 9px 12px; border-radius: 12px;
+  background: rgba(232, 174, 67, .14); border: 1px solid rgba(252, 207, 111, .28);
+  color: #ffda89; font-size: 12px; font-weight: 950; text-transform: uppercase;
+}
+.allstar-participation-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+.allstar-participation-conference {
+  min-width: 0; background: rgba(4, 12, 29, .55);
+  border: 1px solid rgba(86, 133, 203, .25); border-top: 3px solid #fa527a;
+  border-radius: 17px; overflow: hidden;
+}
+.allstar-participation-conference.championship { border-top-color: #4f99ff; }
+.allstar-participation-conference-header {
+  display: flex; align-items: center; justify-content: space-between; gap: 8px;
+  padding: 13px 14px 12px;
+  border-bottom: 1px solid rgba(116, 152, 211, .2);
+}
+.allstar-participation-conference-header > div { display: flex; align-items: center; gap: 10px; min-width:0; }
+.allstar-participation-conference-header h3 {
+  margin: 0; color: #f5f9ff !important; font-size: 14px; line-height: 1.15;
+}
+.allstar-participation-conference-header strong {
+  font-size: 10px; color: #f3d48e !important; white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+.allstar-participation-crest {
+  display: grid; place-items:center; width:34px; height:34px; flex:none;
+  border-radius:10px; background: rgba(247, 83, 117, .17); color:#ff9db3;
+  font-size: 11px; font-weight: 950;
+}
+.allstar-participation-conference.championship .allstar-participation-crest {
+  background: rgba(78, 152, 255, .2); color: #a2caff;
+}
+.allstar-participation-table { border-collapse: collapse; width:100%; table-layout:fixed; }
+.allstar-participation-table th:first-child { width:59%; }
+.allstar-participation-table th:last-child { width:41%; }
+.allstar-participation-table thead th {
+  text-align: left; padding: 9px 13px; color: #829cc1 !important;
+  font-size: 10px; font-weight: 900; text-transform: uppercase; letter-spacing: .065em;
+}
+.allstar-participation-table tbody tr { border-top: 1px solid rgba(104, 140, 208, .13); }
+.allstar-participation-table tbody tr:nth-child(odd) { background: rgba(255,255,255,.024); }
+.allstar-participation-table td { padding: 9px 13px; vertical-align:middle; }
+.allstar-participation-name {
+  color: #eef4ff !important; font-size: 12px; font-weight: 800;
+  overflow-wrap: anywhere;
+}
+.allstar-participation-state { display:flex; align-items:center; gap:8px; justify-content:space-between; }
+.allstar-participation-status {
+  display: inline-flex; align-items:center; gap:4px; padding: 5px 7px;
+  border: 1px solid transparent; border-radius: 9px; white-space: nowrap;
+  font-size: 10px; font-weight: 900; line-height:1.15;
+}
+.allstar-participation-status.is-done {
+  color:#8ef1bc; background:rgba(46,183,122,.15); border-color:rgba(60,201,138,.25);
+}
+.allstar-participation-status.is-partial {
+  color:#ffe09c; background:rgba(232,162,60,.13); border-color:rgba(243,185,85,.25);
+}
+.allstar-participation-status.is-missing {
+  color:#ffa0ae; background:rgba(237,76,107,.12); border-color:rgba(239,99,127,.24);
+}
+.allstar-participation-state small {
+  color:#b9c8e1 !important; font-size: 10px; font-weight: 800; white-space:nowrap;
+  font-variant-numeric:tabular-nums;
+}
+.allstar-participation-empty {
+  color:#b4c3df !important; font-size:12px; line-height:1.5;
+}
+.allstar-participation-updated {
+  margin: 12px 1px 0; color:#a1b7d6 !important; font-size:11px;
+}
+@media (max-width: 768px) {
+  .allstar-participation-section { margin:14px 0 0; padding:13px 11px; border-radius:20px; }
+  .allstar-participation-header { align-items:flex-start; gap:10px; }
+  .allstar-participation-header h2 { font-size:20px; }
+  .allstar-participation-header p { font-size:11px; }
+  .allstar-participation-grid { grid-template-columns:minmax(0,1fr); gap:11px; }
+  .allstar-participation-conference-header { padding:10px 12px; }
+  .allstar-participation-table td { padding:8px 11px; }
+  .allstar-participation-table thead th { padding:8px 11px; }
+}
+@media (max-width: 350px) {
+  .allstar-participation-state { gap:3px; }
+  .allstar-participation-status { font-size:9px; padding:4px 5px; }
+  .allstar-participation-header { flex-wrap:wrap; }
+}

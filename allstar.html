@@ -21,7 +21,7 @@
   <meta name="apple-mobile-web-app-title" content="Lega Eroi">
 
   <link rel="stylesheet" href="navbar.css" />
-  <link rel="stylesheet" href="allstar.css?v=allstar-desktop-weekly-20261030-v1" />
+  <link rel="stylesheet" href="allstar.css?v=allstar-pulisic-stato-voti-20261110-v1" />
 
   <script>
     // Evita una Week 1 fittizia se la PWA non carica proprio il modulo JS.
@@ -36,7 +36,7 @@
       }
     }, 15000);
   </script>
-  <script type="module" src="allstar.js?v=allstar-desktop-weekly-20261109-douvikas-v1" defer></script>
+  <script type="module" src="allstar.js?v=allstar-pulisic-stato-voti-20261110-v1" defer></script>
 <meta name="lega-app-build" content="v20261028-ef9f76dc3f25">
 <script defer src="./app-updates.js?bootstrap=v20261028-ef9f76dc3f25" data-eroi-update="1"></script>
 </head>
@@ -521,6 +521,41 @@
           <div id="desktopWeeklyChampionship" class="desktop-weekly-list" aria-live="polite"><p class="desktop-weekly-empty">Caricamento dei voti...</p></div>
         </article>
       </div>
+    </section>
+
+    <!-- PUBBLICO: stato votazioni settimanali, per tutte le squadre -->
+    <section class="allstar-participation-section" data-mobile-section="vote" aria-labelledby="allstarParticipationTitle">
+      <div class="allstar-participation-header">
+        <div>
+          <span class="allstar-participation-eyebrow">ALL-STAR · STATO VOTAZIONI</span>
+          <h2 id="allstarParticipationTitle">Chi ha votato?</h2>
+          <p>Situazione delle squadre nella settimana attiva. Completato = 5 giocatori selezionati.</p>
+        </div>
+        <span class="allstar-participation-week" id="allstarParticipationWeek">Caricamento...</span>
+      </div>
+      <div class="allstar-participation-grid">
+        <article class="allstar-participation-conference league" aria-label="Stato voti Conference League">
+          <header class="allstar-participation-conference-header">
+            <div><span class="allstar-participation-crest">CL</span><h3>Conference League</h3></div>
+            <strong id="allstarParticipationLeagueCount">—</strong>
+          </header>
+          <table class="allstar-participation-table">
+            <thead><tr><th scope="col">Squadra</th><th scope="col">Votazione</th></tr></thead>
+            <tbody id="allstarParticipationLeague"><tr><td colspan="2">Caricamento...</td></tr></tbody>
+          </table>
+        </article>
+        <article class="allstar-participation-conference championship" aria-label="Stato voti Conference Championship">
+          <header class="allstar-participation-conference-header">
+            <div><span class="allstar-participation-crest">CC</span><h3>Conference Championship</h3></div>
+            <strong id="allstarParticipationChampionshipCount">—</strong>
+          </header>
+          <table class="allstar-participation-table">
+            <thead><tr><th scope="col">Squadra</th><th scope="col">Votazione</th></tr></thead>
+            <tbody id="allstarParticipationChampionship"><tr><td colspan="2">Caricamento...</td></tr></tbody>
+          </table>
+        </article>
+      </div>
+      <p class="allstar-participation-updated" id="allstarParticipationUpdated" role="status">Sincronizzazione con i voti...</p>
     </section>
 
     <!-- RANKINGS MOBILE / TAB FALLBACK -->
