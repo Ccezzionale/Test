@@ -1103,13 +1103,13 @@ async function loadCrashoutMatchRows() {
       {
         MatchId: match.id, GW: Number(match.matchday), GW_Stagionale: Number(match.matchday), Date: "",
         Team: canonicalTeamName(match.home_team), Opponent: canonicalTeamName(match.away_team),
-        PointsFor: homeMagic, PointsAgainst: awayMagic, Result: homeResult, Phase: phase,
+        PointsFor: homeMagic, PointsAgainst: awayMagic, GoalsFor: played ? hg : null, GoalsAgainst: played ? ag : null, Result: homeResult, Phase: phase,
         Conference: "Crash Out Cup", TeamKey: `Crash Out Cup::${canonicalTeamName(match.home_team)}`, IsHome: true
       },
       {
         MatchId: match.id, GW: Number(match.matchday), GW_Stagionale: Number(match.matchday), Date: "",
         Team: canonicalTeamName(match.away_team), Opponent: canonicalTeamName(match.home_team),
-        PointsFor: awayMagic, PointsAgainst: homeMagic, Result: awayResult, Phase: phase,
+        PointsFor: awayMagic, PointsAgainst: homeMagic, GoalsFor: played ? ag : null, GoalsAgainst: played ? hg : null, Result: awayResult, Phase: phase,
         Conference: "Crash Out Cup", TeamKey: `Crash Out Cup::${canonicalTeamName(match.away_team)}`, IsHome: false
       }
     );
@@ -1258,6 +1258,241 @@ function renderPlayoffWeekNumbers(params, playedRows) {
   <article class="mc-week-stat closest"><div class="mc-week-label">≈ Sfida più equilibrata</div><div class="mc-week-team"><img src="${teamLogo(closest.Team)}" alt=""><div><strong>${formatNumber(closest.PointsFor)} - ${formatNumber(closest.PointsAgainst)} FP</strong><span>${escapeHtml(closest.Team)} vs ${escapeHtml(closest.Opponent)}</span></div></div></article>`;
 }
 
+
+// ============ MATCH CENTER INSIGHTS: ANDAMENTO & RIVALITA' ============
+// I dati restano di sola lettura: nessuna modifica a risultati, notifiche o Bo5.
+const MC_TREND_COLORS = ["#3ad4e9", "#fc73c4"];
+
+function isChampionshipSource(competition) {
+  const key = normalizeTeamName(competition);
+  return ["confa", "confb", "unificata", "roundrobin", "conferenceleague",
+    "conferencechampionship", "campionato", "playoff", "playoffs"].includes(key)
+    || (key.startsWith("playoff") && !key.includes("crashout"));
+}
+
+function extractLeagueTrend(rows, team) {
+  const weeks = new Map();
+  rows.forEach(row => {
+    if (!isChampionshipSource(row.Conference) || !isCompletedRow(row)) return;
+    if (normalizeTeamName(row.Team) !== normalizeTeamName(team)) return;
+    const gw = Number(row.GW_Stagionale) || Number(row.GW);
+    const fp = Number(String(row.PointsFor ?? "").replace(",", "."));
+    if (!Number.isInteger(gw) || gw < 1 || !Number.isFinite(fp) || fp < 0) return;
+    // Se arrivano dati duplicati, una giornata conta una volta soltanto.
+    if (!weeks.has(gw)) weeks.set(gw, {gw, fp});
+  });
+  return [...weeks.values()].sort((a,b) => a.gw-b.gw);
+}
+
+function movingAverageTrend(points) {
+  return points.map((point,i) => ({
+    ...point,
+    fp: points.slice(Math.max(0,i-2),i+1).reduce((s,p)=>s+p.fp,0)/Math.min(i+1,3)
+  }));
+}
+
+function renderSeasonTrend(params, leagueRows) {
+  const shell = document.getElementById("mc-trends-section");
+  const svg = document.getElementById("mc-trends-svg");
+  const legend = document.getElementById("mc-trends-legend");
+  const summary = document.getElementById("mc-trends-summary");
+  const caption = document.getElementById("mc-trends-caption");
+  if (!shell || !svg || !legend || !summary || !caption) return;
+  shell.hidden = false;
+
+  const names = [params.home, params.away];
+  const raw = names.map(name => extractLeagueTrend(leagueRows,name));
+  const allWeeks = [...new Set(raw.flatMap(list=>list.map(row=>row.gw)))].sort((a,b)=>a-b);
+  caption.textContent = `Stagione ${CURRENT_SEASON} · solo campionato · ${allWeeks.length} giornate con dati`;
+  if (!allWeeks.length) {
+    svg.removeAttribute("viewBox");
+    svg.innerHTML = "";
+    legend.innerHTML = "";
+    summary.innerHTML = '<p class="mc-insights-empty">Nessun fantapunteggio del campionato disponibile per queste squadre.</p>';
+    return;
+  }
+
+  let mode = "points";
+  const fmt = n => formatNumber(n);
+  const buttonGroup = shell.querySelectorAll("[data-mc-trend-mode]");
+  const draw = () => {
+    const lists = mode === "average" ? raw.map(movingAverageTrend) : raw;
+    const values = lists.flatMap(list=>list.map(row=>row.fp));
+    const yMin = Math.max(0, Math.floor((Math.min(...values,66)-7)/10)*10);
+    const yMax = Math.max(yMin+20,Math.ceil((Math.max(...values,66)+7)/10)*10);
+    const width = Math.max(650,102 + (allWeeks.length-1)*52);
+    const height = 310;
+    const left=50,right=24,top=22,bottom=47;
+    const plotW=width-left-right,plotH=height-top-bottom;
+    const x=week=>left+(allWeeks.indexOf(week)/(Math.max(1,allWeeks.length-1)))*plotW;
+    const y=value=>top+(yMax-value)/(yMax-yMin)*plotH;
+    const ticks=Array.from({length:5},(_,i)=>yMin+(yMax-yMin)*i/4);
+    const yGrid=ticks.map(t=>`<g><line x1="${left}" x2="${width-right}" y1="${y(t).toFixed(1)}" y2="${y(t).toFixed(1)}" stroke="#a8b7c9" stroke-opacity=".16" stroke-dasharray="3 5"/><text x="${left-12}" y="${(y(t)+4).toFixed(1)}" text-anchor="end" fill="#aab9d0" font-size="12">${fmt(t)}</text></g>`).join("");
+    const weekGrid=allWeeks.map((week,i)=>`<text x="${x(week).toFixed(1)}" y="${height-19}" text-anchor="middle" fill="#aebcd0" font-size="12">${week}</text>`).join("");
+    const threshold=66>=yMin&&66<=yMax?`<line x1="${left}" x2="${width-right}" y1="${y(66)}" y2="${y(66)}" stroke="#f6c66a" stroke-dasharray="5 6" stroke-opacity=".8"/><text x="${width-right-3}" y="${y(66)-6}" text-anchor="end" fill="#f6c66a" font-size="11">66 FP</text>`:"";
+    const lines=lists.map((list,side)=>{
+      const color=MC_TREND_COLORS[side];
+      const path=list.map((p,i)=>`${i===0?"M":"L"} ${x(p.gw).toFixed(1)} ${y(p.fp).toFixed(1)}`).join(" ");
+      return `<path d="${path}" fill="none" stroke="${color}" stroke-width="3.1" stroke-linecap="round" stroke-linejoin="round"/>
+        ${list.map(p=>`<circle cx="${x(p.gw).toFixed(1)}" cy="${y(p.fp).toFixed(1)}" r="5.1" fill="${color}" stroke="#081728" stroke-width="2" tabindex="0" role="img" aria-label="${escapeHtml(names[side])}, giornata ${p.gw}, ${fmt(p.fp)} fantapunti"><title>${escapeHtml(names[side])} · G${p.gw} · ${fmt(p.fp)} FP${mode==="average"?" (media mobile)":""}</title></circle>`).join("")}`;
+    }).join("");
+    svg.setAttribute("viewBox",`0 0 ${width} ${height}`);
+    svg.setAttribute("width",String(width));
+    svg.setAttribute("height",String(height));
+    svg.setAttribute("aria-label",`Andamento ${mode==="average"?"della media mobile a tre giornate":"dei fantapunti"} di ${names.join(" contro ")} nel campionato ${CURRENT_SEASON}`);
+    svg.innerHTML=`<rect x="0" y="0" width="${width}" height="${height}" fill="transparent"/>${yGrid}${threshold}${lines}${weekGrid}<text x="${left}" y="${height-4}" font-size="10" fill="#7189a6">GIORNATA</text>`;
+    legend.innerHTML=names.map((name,i)=>{
+      const entries=raw[i];
+      const avg=entries.length?entries.reduce((s,p)=>s+p.fp,0)/entries.length:null;
+      return `<div class="mc-trend-team"><i style="background:${MC_TREND_COLORS[i]}"></i><img src="${teamLogo(name)}" alt=""><span>${escapeHtml(name)}</span><strong>${avg===null?"–":fmt(avg)+" FP"}</strong></div>`;
+    }).join("");
+    const highest=[...raw.flatMap((list,i)=>list.map(p=>({...p,name:names[i]})))].sort((a,b)=>b.fp-a.fp)[0];
+    summary.innerHTML=`<span>${mode==="average"?"Media mobile sulle ultime tre giornate disponibili":"Fantapunti giornata per giornata"}</span><span>Picco: <strong>${escapeHtml(highest.name)} · ${fmt(highest.fp)} FP (G${highest.gw})</strong></span>`;
+    buttonGroup.forEach(button=>{
+      const active=button.dataset.mcTrendMode===mode;
+      button.classList.toggle("is-active",active);
+      button.setAttribute("aria-pressed",String(active));
+    });
+  };
+  buttonGroup.forEach(button=>button.addEventListener("click",()=>{
+    mode=button.dataset.mcTrendMode;
+    draw();
+  }));
+  draw();
+}
+
+async function loadAllHistoricalMatchRows() {
+  // L'archivio può superare i 1000 record in futuro: paginazione esplicita.
+  const all=[];
+  const pageSize=1000;
+  for(let offset=0;offset<10000;offset+=pageSize) {
+    const {data,error}=await supabase.from("match_history")
+      .select("season,season_week,competition,phase,conference,team_a,team_b,score_a,score_b")
+      .order("season",{ascending:true}).order("season_week",{ascending:true})
+      .order("team_a",{ascending:true}).order("team_b",{ascending:true})
+      .range(offset,offset+pageSize-1);
+    if(error)throw error;
+    all.push(...(data||[]));
+    if(!data||data.length<pageSize)break;
+  }
+  return all;
+}
+
+function buildHistoricalRivalries(historyRows,currentRows) {
+  const records=new Map();
+  const matchPhaseKey=value=>{
+    const k=normalizeTeamName(value||"regular");
+    if(k.includes("rivalry"))return "rivalry";
+    if(k.includes("ottav"))return "ottavi";
+    if(k.includes("quart"))return "quarti";
+    if(k.includes("semifinal"))return "semifinali";
+    if(k.includes("final"))return "finale";
+    return k;
+  };
+  const insert=(id,teamA,teamB,pointsA,pointsB,competition,goalsA=null,goalsB=null,preferCurrent=false)=>{
+    if(!teamA||!teamB||normalizeTeamName(teamA)===normalizeTeamName(teamB))return;
+    const a=canonicalTeamName(teamA),b=canonicalTeamName(teamB);
+    const fpA=Number(String(pointsA??"").replace(",","."));
+    const fpB=Number(String(pointsB??"").replace(",","."));
+    if(!Number.isFinite(fpA)||!Number.isFinite(fpB))return;
+    const gA=goalsA===null||goalsA===undefined?pointsToGoals(fpA):Number(goalsA);
+    const gB=goalsB===null||goalsB===undefined?pointsToGoals(fpB):Number(goalsB);
+    if(!Number.isFinite(gA)||!Number.isFinite(gB))return;
+    const normPair=[normalizeTeamName(a),normalizeTeamName(b)].sort().join("|");
+    const key=`${id}|${normPair}`;
+    if(!records.has(key)||preferCurrent)records.set(key,{a,b,goalsA:gA,goalsB:gB,kind:isChampionshipSource(competition)?"league":"cup"});
+  };
+
+  (historyRows||[]).forEach(row=>{
+    const type=row.conference||row.competition||"Campionato";
+    const kind=/crash\s*out|\bcoc\b/i.test(String(row.competition||""))?"Crash Out Cup":type;
+    const id=`${row.season}:${row.season_week}:${normalizeTeamName(kind)}:${matchPhaseKey(row.phase)}`;
+    insert(id,row.team_a,row.team_b,row.score_a,row.score_b,kind);
+  });
+
+  (currentRows||[]).filter(isCompletedRow).forEach(row=>{
+    const week=Number(row.GW_Stagionale)||Number(row.GW)||0;
+    const id=`${CURRENT_SEASON}:${week}:${normalizeTeamName(row.Conference)}:${matchPhaseKey(row.Phase)}`;
+    // Le righe speculari e l'eventuale storico già archiviato valgono una sola volta.
+    insert(id,row.Team,row.Opponent,row.PointsFor,row.PointsAgainst,row.Conference,row.GoalsFor,row.GoalsAgainst,true);
+  });
+  return [...records.values()];
+}
+
+function teamRivalryLeaderboard(team,matches,scope) {
+  const byOpponent=new Map();
+  const target=normalizeTeamName(team);
+  matches.forEach(match=>{
+    if(scope==="league"&&match.kind!=="league")return;
+    const isA=normalizeTeamName(match.a)===target;
+    const isB=normalizeTeamName(match.b)===target;
+    if(!isA&&!isB)return;
+    const rival=isA?match.b:match.a;
+    const key=normalizeTeamName(rival);
+    if(!byOpponent.has(key))byOpponent.set(key,{name:rival,w:0,d:0,l:0,n:0});
+    const rec=byOpponent.get(key);
+    const gf=isA?match.goalsA:match.goalsB;
+    const ga=isA?match.goalsB:match.goalsA;
+    rec.n++;
+    if(gf>ga)rec.w++;
+    else if(gf<ga)rec.l++;
+    else rec.d++;
+  });
+  const vals=[...byOpponent.values()];
+  const losses=vals.filter(r=>r.l>0).sort((a,b)=>b.l-a.l||(b.l/b.n)-(a.l/a.n)||b.n-a.n||a.name.localeCompare(b.name,"it"));
+  const wins=vals.filter(r=>r.w>0).sort((a,b)=>b.w-a.w||(b.w/b.n)-(a.w/a.n)||b.n-a.n||a.name.localeCompare(b.name,"it"));
+  return {nemesis:losses[0]||null,victim:wins[0]||null, total:vals.reduce((s,r)=>s+r.n,0),
+    tiedNemesis:losses[0]?losses.filter(r=>r.l===losses[0].l).length:0,
+    tiedVictim:wins[0]?wins.filter(r=>r.w===wins[0].w).length:0};
+}
+
+function renderRivalryFortunes(params, historicalRecords,currentRows,historyError=false) {
+  const section=document.getElementById("mc-rivalries-section");
+  const grid=document.getElementById("mc-rivalries-grid");
+  const caption=document.getElementById("mc-rivalries-caption");
+  if(!section||!grid||!caption)return;
+  section.hidden=false;
+  const matches=buildHistoricalRivalries(historicalRecords,currentRows);
+  let scope="all";
+  const filters=section.querySelectorAll("[data-mc-rivalry-scope]");
+  const card=(team,record,type,tiedCount)=>{
+    const isNemesis=type==="nemesis";
+    const cls=isNemesis?"nemesis":"victim";
+    const title=isNemesis?"BESTIA NERA":"VITTIMA PREFERITA";
+    const icon=isNemesis?"☠":"♛";
+    if(!record)return `<div class="mc-rivalry-stat ${cls}"><div class="mc-rivalry-stat-heading"><span>${icon}</span>${title}</div><div class="mc-rivalry-no-data">Nessuna ${isNemesis?"sconfitta":"vittoria"} registrata</div></div>`;
+    const amount=isNemesis?record.l:record.w;
+    const pct=Math.round(100*amount/record.n);
+    return `<div class="mc-rivalry-stat ${cls}">
+      <div class="mc-rivalry-stat-heading"><span>${icon}</span>${title}</div>
+      <div class="mc-rivalry-rival"><img src="${teamLogo(record.name)}" alt=""><strong>${escapeHtml(record.name)}</strong></div>
+      <div class="mc-rivalry-number"><strong>${amount}</strong><span>${isNemesis?"sconfitte":"vittorie"}<small>${pct}% su ${record.n} sfide</small></span></div>
+      <div class="mc-rivalry-record"><span>${record.w}V</span><span>${record.d}N</span><span>${record.l}P</span></div>
+      ${tiedCount>1?`<small class="mc-rivalry-tie">${tiedCount-1} ${tiedCount===2?"altro avversario a pari numero":"altri avversari a pari numero"} di ${isNemesis?"sconfitte":"vittorie"}</small>`:""}
+    </div>`;
+  };
+  const draw=()=>{
+    grid.innerHTML=[params.home,params.away].map(team=>{
+      const r=teamRivalryLeaderboard(team,matches,scope);
+      return `<article class="mc-rivalry-team">
+        <div class="mc-rivalry-team-head"><img src="${teamLogo(team)}" alt=""><div><h3>${escapeHtml(team)}</h3><small>${r.total} partite nello storico selezionato</small></div></div>
+        <div class="mc-rivalry-stats">${card(team,r.nemesis,"nemesis",r.tiedNemesis)}${card(team,r.victim,"victim",r.tiedVictim)}</div>
+      </article>`;
+    }).join("");
+    filters.forEach(button=>{
+      const active=button.dataset.mcRivalryScope===scope;
+      button.classList.toggle("is-active",active);
+      button.setAttribute("aria-pressed",String(active));
+    });
+    caption.textContent=(scope==="league"?"Campionato e playoff di lega":"Campionato, Rivalry Games e Crash Out Playoff")
+      +" · stagioni disponibili · vittorie calcolate sui gol (non sui soli fantapunti)."
+      +(historyError?" Archivio storico precedente non disponibile: vengono usati i risultati correnti.":"");
+  };
+  filters.forEach(button=>button.addEventListener("click",()=>{scope=button.dataset.mcRivalryScope;draw();}));
+  draw();
+}
+// ============ FINE MATCH CENTER INSIGHTS ============
+
 function showError(message) {
   document.getElementById("mc-loading").style.display = "none";
   const app = document.getElementById("mc-app");
@@ -1278,7 +1513,7 @@ async function initMatchCenter() {
     // Un problema alla fonte secondaria non deve bloccare il Match Center.
     const primaryIsCrashout = params.source === "crashout";
     const primaryIsPlayoff = params.source === "crashoutplayoff";
-    const [rows, history, fixtures, extraHistoryRows, seriesScore] = await Promise.all([
+    const [rows, history, fixtures, extraHistoryRows, seriesScore, allHistoricalResult] = await Promise.all([
       primaryIsPlayoff ? loadPlayoffMatchRows() : primaryIsCrashout ? loadCrashoutMatchRows() : loadResultsRows(),
       historicalMeetings(params),
       loadLeagueFixtures(params),
@@ -1293,7 +1528,11 @@ async function initMatchCenter() {
         console.warn("Fonte secondaria H2H non disponibile:", result.reason);
         return [];
       })),
-      primaryIsPlayoff ? loadPlayoffSeriesScore(params.seriesId) : Promise.resolve(null)
+      primaryIsPlayoff ? loadPlayoffSeriesScore(params.seriesId) : Promise.resolve(null),
+      loadAllHistoricalMatchRows().then(data=>({data,error:false})).catch(error=>{
+        console.warn("Archivio storico per Bestia Nera non disponibile:",error);
+        return {data:[],error:true};
+      })
     ]);
 
     const target = targetMatch(rows, params);
@@ -1306,6 +1545,10 @@ async function initMatchCenter() {
     document.getElementById("mc-app").hidden = false;
 
     renderHeader(params, target, completed);
+    // Il grafico usa SOLO i risultati del campionato corrente anche se si arriva dalla coppa.
+    renderSeasonTrend(params, [...rows,...extraHistoryRows]);
+    // Rivalità: vecchie stagioni + dati correnti di tutte le competizioni, una sfida per volta.
+    renderRivalryFortunes(params, allHistoricalResult.data, [...rows,...extraHistoryRows], allHistoricalResult.error);
     if (primaryIsPlayoff) {
       // La serie Bo5 è indipendente dal singolo risultato e non viene mai modificata qui.
       renderPlayoffSeriesContext(params, seriesScore, rows, target);

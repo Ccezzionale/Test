@@ -11,6 +11,78 @@
   <meta name="theme-color" content="#061326">
 <meta name="lega-app-build" content="v20261028-ef9f76dc3f25">
 <script defer src="./app-updates.js?bootstrap=v20261028-ef9f76dc3f25" data-eroi-update="1"></script>
+
+<style id="mc-insights-styles">
+  /* Estensioni autonome: il match.css e i suoi componenti esistenti restano invariati. */
+  .mc-trends-card, .mc-rivalries-card { overflow:hidden; }
+  .mc-insights-header { display:flex; gap:14px; align-items:center; flex-wrap:wrap; justify-content:space-between; }
+  .mc-insights-title { display:flex; align-items:center; gap:12px; min-width:0; }
+  .mc-insights-title h2 { margin:0; }
+  .mc-insights-title small { display:block; margin-top:4px; font-size:12px; font-weight:500; opacity:.7; }
+  .mc-insights-toggle { display:inline-flex; padding:4px; gap:4px; border-radius:12px; border:1px solid rgba(159,193,218,.2); background:rgba(5,17,32,.46); }
+  .mc-insights-toggle button { border:0; border-radius:9px; padding:9px 13px; font:inherit; font-size:12px; font-weight:800; color:#acbed5; background:transparent; cursor:pointer; white-space:nowrap; }
+  .mc-insights-toggle button.is-active { color:#071626; background:linear-gradient(135deg,#5ce7ef,#c7f7fc); box-shadow:0 2px 10px rgba(44,216,236,.15); }
+  .mc-insights-toggle button:focus-visible { outline:2px solid #7af3ff; outline-offset:2px; }
+  .mc-trends-inside { padding:16px 20px 18px; }
+  .mc-trends-legend { display:flex; flex-wrap:wrap; gap:10px; margin-bottom:10px; }
+  .mc-trend-team { display:flex; flex:1 1 225px; min-width:0; align-items:center; gap:9px; border:1px solid rgba(160,192,221,.15); border-radius:11px; padding:10px 12px; background:rgba(10,30,50,.42); }
+  .mc-trend-team i { display:block; width:10px; height:10px; border-radius:50%; flex-shrink:0; box-shadow:0 0 10px currentColor; }
+  .mc-trend-team img { width:29px; height:29px; object-fit:contain; flex-shrink:0; }
+  .mc-trend-team span { font-size:13px; font-weight:700; min-width:0; flex:1; overflow-wrap:anywhere; }
+  .mc-trend-team strong { font-size:13px; white-space:nowrap; }
+  .mc-trends-scroll { width:100%; overflow-x:auto; overscroll-behavior-x:contain; scrollbar-color:#326084 transparent; padding-bottom:6px; }
+  .mc-trends-scroll svg { display:block; max-width:none; min-width:100%; }
+  .mc-trends-scroll circle:focus-visible { stroke:#fff; stroke-width:4; outline:none; }
+  .mc-trends-summary { display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap; font-size:12px; line-height:1.5; color:#9fb7d1; margin:8px 2px 0; }
+  .mc-trends-summary strong { color:#e8f3ff; }
+  .mc-rivalries-inside { padding:15px 17px 18px; }
+  .mc-rivalries-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:14px; }
+  .mc-rivalry-team { min-width:0; border:1px solid rgba(120,174,206,.22); border-radius:15px; padding:14px; background:linear-gradient(145deg,rgba(15,39,64,.8),rgba(6,20,38,.78)); }
+  .mc-rivalry-team-head { display:flex; align-items:center; gap:10px; margin-bottom:13px; }
+  .mc-rivalry-team-head img { height:40px; width:40px; object-fit:contain; flex-shrink:0; }
+  .mc-rivalry-team-head h3 { margin:0; font-size:16px; line-height:1.3; overflow-wrap:anywhere; }
+  .mc-rivalry-team-head small { font-size:11px; color:#98b6d3; }
+  .mc-rivalry-stats { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; }
+  .mc-rivalry-stat { min-width:0; border-radius:12px; border:1px solid rgba(174,204,231,.15); padding:13px 11px 11px; background:rgba(4,17,31,.55); }
+  .mc-rivalry-stat.nemesis { border-top:2px solid #f38b99; }
+  .mc-rivalry-stat.victim { border-top:2px solid #58dfb8; }
+  .mc-rivalry-stat-heading { display:flex; align-items:center; gap:5px; font-size:10px; font-weight:900; letter-spacing:.06em; color:#d3e3f4; }
+  .mc-rivalry-stat.nemesis .mc-rivalry-stat-heading span { color:#ff99a8; font-size:19px; }
+  .mc-rivalry-stat.victim .mc-rivalry-stat-heading span { color:#7ff2c5; font-size:19px; }
+  .mc-rivalry-rival { display:flex; align-items:center; gap:7px; margin:12px 0 9px; min-width:0; }
+  .mc-rivalry-rival img { height:31px; width:31px; flex-shrink:0; object-fit:contain; }
+  .mc-rivalry-rival strong { font-size:13px; line-height:1.25; overflow-wrap:anywhere; }
+  .mc-rivalry-number { display:flex; align-items:center; gap:9px; }
+  .mc-rivalry-number > strong { font-size:35px; line-height:1; font-weight:950; color:#fff; }
+  .mc-rivalry-number > span { font-size:12px; font-weight:700; }
+  .mc-rivalry-number small { display:block; margin-top:4px; color:#9ab5ca; font-size:11px; font-weight:500; }
+  .mc-rivalry-record { display:flex; gap:7px; padding-top:10px; margin-top:11px; border-top:1px solid rgba(255,255,255,.1); color:#b8cbe1; font-weight:800; font-size:11px; }
+  .mc-rivalry-tie { display:block; margin-top:9px; font-size:10px; color:#9fb1c6; line-height:1.35; }
+  .mc-rivalry-no-data { font-size:12px; color:#b7c8d9; padding:13px 0; line-height:1.5; }
+  .mc-insights-footnote { margin:12px 2px 0; color:#92a9c3; font-size:11px; line-height:1.5; }
+  .mc-insights-empty { color:#a9c2dd; font-size:13px; }
+  @media(max-width:920px) {
+    .mc-rivalries-grid { grid-template-columns:1fr; }
+  }
+  @media(max-width:560px) {
+    .mc-insights-header { align-items:flex-start; gap:10px; }
+    .mc-insights-title h2 { font-size:16px; }
+    .mc-insights-title small { font-size:11px; }
+    .mc-insights-toggle { width:100%; display:grid; grid-template-columns:1fr 1fr; }
+    .mc-insights-toggle button { padding:9px 8px; }
+    .mc-trends-inside { padding:12px 10px; }
+    .mc-trend-team { flex:1 1 100%; }
+    .mc-rivalries-inside { padding:11px 10px 14px; }
+    .mc-rivalry-team { padding:11px 9px; }
+    .mc-rivalry-stats { gap:7px; }
+    .mc-rivalry-stat { padding:10px 7px; }
+    .mc-rivalry-rival { flex-wrap:wrap; }
+    .mc-rivalry-rival strong { font-size:12px; }
+    .mc-rivalry-number > strong { font-size:29px; }
+    .mc-rivalry-number > span { font-size:10px; }
+    .mc-rivalry-number small { font-size:10px; }
+  }
+</style>
 </head>
 <body class="match-center-page">
   <nav class="site-nav">
@@ -288,6 +360,24 @@
       </article>
     </section>
 
+    <!-- MATCH CENTER INSIGHTS · ANDAMENTO STAGIONALE -->
+    <section class="mc-card mc-trends-card" id="mc-trends-section" hidden>
+      <header class="mc-card-head mc-insights-header">
+        <div class="mc-insights-title"><span class="mc-card-icon">⌁</span><div><h2>Andamento stagionale</h2><small id="mc-trends-caption">Campionato 2026/27</small></div></div>
+        <div class="mc-insights-toggle" role="group" aria-label="Tipo di andamento">
+          <button type="button" class="is-active" data-mc-trend-mode="points" aria-pressed="true">Fantapunti</button>
+          <button type="button" data-mc-trend-mode="average" aria-pressed="false">Media 3G</button>
+        </div>
+      </header>
+      <div class="mc-trends-inside">
+        <div id="mc-trends-legend" class="mc-trends-legend"></div>
+        <div class="mc-trends-scroll" tabindex="0" role="region" aria-label="Grafico scorrevole dell'andamento stagionale">
+          <svg id="mc-trends-svg" xmlns="http://www.w3.org/2000/svg" role="img"></svg>
+        </div>
+        <div id="mc-trends-summary" class="mc-trends-summary" aria-live="polite"></div>
+      </div>
+    </section>
+
     <section class="mc-grid">
       <article class="mc-card mc-h2h-card">
         <header class="mc-card-head">
@@ -339,6 +429,22 @@
       </article>
     </section>
 
+
+    <!-- MATCH CENTER INSIGHTS · BESTIA NERA E VITTIMA PREFERITA -->
+    <section class="mc-card mc-rivalries-card" id="mc-rivalries-section" hidden>
+      <header class="mc-card-head mc-insights-header">
+        <div class="mc-insights-title"><span class="mc-card-icon">♛</span><div><h2>Rivalità storiche</h2><small>Bestia Nera &amp; Vittima Preferita</small></div></div>
+        <div class="mc-insights-toggle" role="group" aria-label="Competizioni incluse nelle rivalità">
+          <button type="button" data-mc-rivalry-scope="league" aria-pressed="false">Campionato</button>
+          <button type="button" class="is-active" data-mc-rivalry-scope="all" aria-pressed="true">Tutte</button>
+        </div>
+      </header>
+      <div class="mc-rivalries-inside">
+        <div id="mc-rivalries-grid" class="mc-rivalries-grid"></div>
+        <p id="mc-rivalries-caption" class="mc-insights-footnote"></p>
+      </div>
+    </section>
+
     <section class="mc-card mc-recent-card">
       <header class="mc-card-head">
         <span class="mc-card-icon">◷</span>
@@ -371,7 +477,7 @@
   </div>
 </main>
 
-<script type="module" src="match.js?v=20261110-crashout-bo5-history-v2"></script>
+<script type="module" src="match.js?v=20261110-insights-trend-rivalries-v1"></script>
 <script src="mobile-nav.js?v=2"></script>
 <script src="navbar.js"></script>
 <script type="module" src="admin-nav.js?v=1"></script>
