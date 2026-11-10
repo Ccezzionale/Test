@@ -9,6 +9,33 @@
   <link rel="stylesheet" href="crashoutplayoff.css?v=20261101-miami-skyline-v2">
 <meta name="lega-app-build" content="v20261028-ef9f76dc3f25">
 <script defer src="./app-updates.js?bootstrap=v20261028-ef9f76dc3f25" data-eroi-update="1"></script>
+<style>
+/* Nuovi controlli Match Center, indipendenti dal restyling Miami Vice */
+#bracket .cv-mc-clickable, .finals .cv-mc-clickable {cursor:pointer}
+#bracket .cv-mc-clickable:focus-visible {outline:2px solid #f9b4ed;outline-offset:2px}
+.cv-mc-mobile-links {padding:12px 12px 16px;background:rgba(4,10,27,.92);color:#fff;text-align:center}
+.cv-mc-mobile-links>strong{display:block;font-size:10px;letter-spacing:.1em;color:#ffc5f0;margin-bottom:8px}
+.cv-mc-games{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;max-width:100%;margin:8px auto}
+.cv-mc-game{display:flex;min-width:46px;flex:1 1 46px;max-width:90px;flex-direction:column;align-items:center;justify-content:center;gap:2px;text-decoration:none!important;border:1px solid rgba(255,255,255,.25);border-radius:8px;padding:8px 3px;background:rgba(255,255,255,.05);color:#e9f4ff!important}
+.cv-mc-game span{font-size:13px;font-weight:900}.cv-mc-game small{font-size:9px;letter-spacing:.04em;font-weight:800;opacity:.8}
+.cv-mc-game.is-report{border-color:#48d4ba;background:rgba(6,126,112,.25);color:#dbfff5!important}
+.cv-mc-game:hover,.cv-mc-game:focus-visible{border-color:#ff66d8;background:rgba(253,82,207,.16)}
+.cv-mc-modal[hidden]{display:none!important}.cv-mc-modal{position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;background:rgba(0,0,12,.82);padding:18px}
+.cv-mc-modal-dialog{position:relative;width:min(600px,100%);border-radius:15px;border:1px solid #ff6ddd;box-shadow:0 15px 60px #000b;background:linear-gradient(135deg,#131830,#1b1443 60%,#271136);padding:26px 16px;color:#fff;text-align:center}
+.cv-mc-close{position:absolute;right:10px;top:6px;background:transparent;border:0;color:#fff;font-size:27px;cursor:pointer}
+.cv-mc-kicker{color:#f9aadf;font-size:11px;letter-spacing:.18em;font-weight:800}.cv-mc-modal-content h2{font-size:clamp(16px,3vw,23px);margin:13px 0;overflow-wrap:anywhere}.cv-mc-modal-content h2 span{color:#f67ecb}.cv-mc-modal-content p{color:#c9ccda;font-size:13px}
+.cv-mc-explain{font-size:11px!important;line-height:1.45}
+.cv-import-panel{margin:22px 0;padding:16px;border:1px solid rgba(255,255,255,.25);border-radius:12px;background:#111c32;color:#fff}
+.cv-import-panel h3{font-size:17px;margin:0 0 7px;color:#fff}.cv-import-panel p{font-size:12px;line-height:1.6;opacity:.9}
+.cv-import-controls{display:grid;grid-template-columns:2fr 1fr 1fr;align-items:end;gap:10px;margin-top:16px}.cv-import-controls label{display:flex;flex-direction:column;gap:6px;font-size:11px;color:#e8e9ff;font-weight:800}
+.cv-import-controls input,.cv-import-controls select{max-width:100%;min-width:0;box-sizing:border-box;background:#fff;color:#172136;padding:9px 8px;border-radius:7px;border:1px solid #aaa}
+.cv-import-controls button{min-height:40px;border:1px solid #de81cd;background:#3c2459;color:#fff;border-radius:7px;padding:8px 12px;font-weight:850;cursor:pointer}
+.cv-import-controls button:last-child{background:#0a715e;border-color:#38c8a6}.cv-import-controls button:disabled{opacity:.45;cursor:not-allowed}
+#cv-import-status{min-height:15px}#cv-import-preview{max-height:320px;overflow:auto}
+.cv-import-rows>div{display:grid;grid-template-columns:1fr 105px 1fr;gap:7px;border-bottom:1px solid #485269;padding:9px 0;align-items:center;text-align:center;font-size:12px}
+.cv-import-rows>div>b{overflow-wrap:anywhere;font-size:12px}.cv-import-rows>div>span{font-weight:bold;color:#67ead4}.cv-import-rows small{display:block;font-size:10px;color:#e1deea}
+@media(max-width:700px){.cv-import-controls{grid-template-columns:1fr 1fr}.cv-import-controls label:first-child{grid-column:1/-1}.cv-import-controls button{grid-column:1/-1}.cv-import-rows>div{grid-template-columns:1fr 66px 1fr}}
+</style>
 </head>
 
 <body>
@@ -228,10 +255,26 @@
         <div id="crash-admin-grid" class="crash-admin-grid"></div>
 
         <p id="crash-admin-status" class="crash-admin-status"></p>
+        <section class="cv-import-panel" aria-label="Importazione Excel Match Center">
+          <h3>Importa le singole gare nel Match Center</h3>
+          <p>Carica il calendario Excel di una Gara. La procedura salva fantapunti e gol, senza modificare il punteggio Best of 5 già omologato nel tabellone.</p>
+          <div class="cv-import-controls">
+            <label>File Excel (.xlsx)<input id="cv-import-file" type="file" accept=".xlsx,.xls" /></label>
+            <label>Fase<select id="cv-import-stage"><option>Ottavi</option><option>Quarti</option><option>Semifinali</option><option>Finale</option></select></label>
+            <label>Gara<select id="cv-import-game"><option value="1">Gara 1</option><option value="2">Gara 2</option><option value="3">Gara 3</option><option value="4">Gara 4</option><option value="5">Gara 5</option></select></label>
+            <button type="button" id="cv-import-preview-btn">Verifica Excel</button>
+            <button type="button" id="cv-import-save" disabled>Salva i Match Report</button>
+          </div>
+          <p id="cv-import-status" role="status"></p><div id="cv-import-preview"></div>
+        </section>
+
       </div>
     </section>
 
     <div id="bracket-mobile" class="bracket-mobile"></div>
+    <div id="cv-match-center-modal" class="cv-mc-modal" role="dialog" aria-modal="true" aria-label="Gare Match Center" hidden>
+      <div class="cv-mc-modal-dialog"><button type="button" class="cv-mc-close" aria-label="Chiudi">×</button><div class="cv-mc-modal-content"></div></div>
+    </div>
     <div id="cv-admin-modal" class="cv-admin-overlay" role="dialog" aria-modal="true" aria-labelledby="cv-editor-title" hidden>
       <div class="cv-admin-dialog">
         <button type="button" class="cv-modal-close" aria-label="Chiudi">×</button>
@@ -259,7 +302,8 @@
   </template>
 
   <script src="mobile-nav.js"></script>
-  <script type="module" src="crashoutplayoff.js?v=20261101-miami-vice-v1" defer></script>
+  <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js" defer></script>
+  <script type="module" src="crashoutplayoff.js?v=20261110-crashout-matchcenter-v1" defer></script>
   <script src="navbar.js"></script>
 
 </body>

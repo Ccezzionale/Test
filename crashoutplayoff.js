@@ -59,6 +59,8 @@ let ACTIVE_MIAMI_ROUND = "ottavi";
 let ACTIVE_MIAMI_SERIES = { ottavi: 0, quarti: 0, semifinali: 0, finale: 0 };
 let MIAMI_EDIT_SERIES_ID = null;
 let MIAMI_SAVING = false;
+let PLAYOFF_GAME_RESULTS = new Map();
+let PENDING_EXCEL_IMPORT = null;
 
 function crashEscape(text) {
   return String(text ?? "").replace(/[&<>"']/g, c => ({
@@ -88,6 +90,182 @@ const SERIES_META = [
 
   { id: "F", label: "Finale", side: "Finale" }
 ];
+
+
+// ==== BO5 MATCH CENTER: dati partita separati dai punteggi della serie. ====
+function normalizedMatchName(text) {
+  return String(text || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z0-9]/g, "");
+}
+function canonicalMatchName(text) {
+  return TEAM_NAMES.find(t => normalizedMatchName(t) === normalizedMatchName(text)) || null;
+}
+function playoffKey(seriesId, gameNumber) { return `${seriesId}:${gameNumber}`; }
+function comparePlayoffPair(a,b,c,d) {
+  return [normalizedMatchName(a),normalizedMatchName(b)].sort().join("|") ===
+    [normalizedMatchName(c),normalizedMatchName(d)].sort().join("|");
+}
+async function loadPlayoffGameResults() {
+  const {data,error}=await supabase.from("crashout_playoff_games")
+    .select("season,series_id,stage,game_number,league_gw,serie_a_gw,home_team,away_team,home_magic,away_magic,home_goals,away_goals,is_played")
+    .eq("season",CRASHOUT_SEASON);
+  if (error) {
+    console.warn("Archivio risultati singole gare Crash Out non disponibile:",error);
+    PLAYOFF_GAME_RESULTS=new Map();
+    return;
+  }
+  PLAYOFF_GAME_RESULTS=new Map((data || []).map(r=>[playoffKey(r.series_id,r.game_number),r]));
+}
+function crashMatchCenterUrl(match, gameNumber) {
+  const result=PLAYOFF_GAME_RESULTS.get(playoffKey(match.id,gameNumber));
+  const home=result?.home_team || match.home?.team;
+  const away=result?.away_team || match.away?.team;
+  const stage=(SERIES_META.find(s=>s.id===match.id)?.label||"").startsWith("Ottavo") ? "Ottavi" :
+    (SERIES_META.find(s=>s.id===match.id)?.label||"").startsWith("Quarto") ? "Quarti" :
+    (SERIES_META.find(s=>s.id===match.id)?.label||"").startsWith("Semifinale") ? "Semifinali" : "Finale";
+  if (!home || !away || home==="TBD" || away==="TBD") return "";
+  const p=new URLSearchParams({source:"crashoutplayoff",competition:"Crash Out Cup",seriesId:match.id,
+    gameNumber:String(gameNumber),matchId:playoffKey(match.id,gameNumber),stage,
+    home,away,seriesHome:match.home.team,seriesAway:match.away.team,gw:String(gameNumber)});
+  return `match.html?${p.toString()}`;
+}
+function crashGameButtons(match) {
+  if (!match?.home?.team || !match?.away?.team || match.home.team==="TBD" || match.away.team==="TBD") return "";
+  return `<nav class="cv-mc-games" aria-label="Match Center per singola gara">
+    ${Array.from({length:5},(_,i)=>{
+      const n=i+1;
+      const game=PLAYOFF_GAME_RESULTS.get(playoffKey(match.id,n));
+      const isPlayed=game?.is_played===true;
+      const url=crashMatchCenterUrl(match,n);
+      return `<a href="${crashEscape(url)}" class="cv-mc-game ${isPlayed ? "is-report" : "is-preview"}"
+         title="${isPlayed ? "Match Report" : "Match Preview · risultato non importato"} di Gara ${n}">
+          <span>G${n}</span><small>${isPlayed ? "REPORT" : "PREVIEW"}</small></a>`;
+    }).join("")}</nav>`;
+}
+function openCrashMatchCenterModal(match) {
+  if (!match?.home?.team || !match?.away?.team || match.home.team==="TBD" || match.away.team==="TBD") return;
+  const modal=document.getElementById("cv-match-center-modal");
+  if (!modal) return;
+  const panel=modal.querySelector(".cv-mc-modal-content");
+  panel.innerHTML=`<span class="cv-mc-kicker">CRASH OUT CUP · BEST OF 5</span>
+    <h2>${crashEscape(match.home.team)} <span>VS</span> ${crashEscape(match.away.team)}</h2>
+    <p>Apri il Match Preview o il Match Report della singola partita.</p>
+    ${crashGameButtons(match)}<p class="cv-mc-explain">REPORT = risultato Excel importato · PREVIEW = risultato ancora da importare.</p>`;
+  modal.hidden=false;
+  modal.querySelector(".cv-mc-close")?.focus();
+}
+function initializeCrashMatchModal() {
+  const modal=document.getElementById("cv-match-center-modal");
+  if (!modal) return;
+  const close=()=>{modal.hidden=true;};
+  modal.querySelector(".cv-mc-close")?.addEventListener("click",close);
+  modal.addEventListener("click",e=>{if(e.target===modal)close();});
+  document.addEventListener("keydown",e=>{if(e.key==="Escape" && !modal.hidden)close();});
+}
+
+function parseCrashExcelMatrix(matrix,stage,gameNumber,filename) {
+  if (!Number.isInteger(gameNumber) || gameNumber<1 || gameNumber>5) throw new Error("Seleziona una Gara da 1 a 5.");
+  if (!LAST_CRASH_BRACKET) throw new Error("Il tabellone non è disponibile.");
+  let activeStage="",leagueGw=null,serieAGw=null;
+  const results=[];
+  const groups=getMiamiPanels(LAST_CRASH_BRACKET);
+  const stageMap={"ottavi":"Ottavi","quarti":"Quarti","semifinali":"Semifinali","finale":"Finale"};
+  const targetGroups={Ottavi:groups.ottavi,Quarti:groups.quarti,Semifinali:groups.semifinali,Finale:groups.finale};
+  if (!targetGroups[stage]) throw new Error("Seleziona una fase valida.");
+  const foundIds=new Set();
+  for (const row of matrix) {
+    const first=String(row[0]??"").trim();
+    const key=normalizedMatchName(first);
+    if (stageMap[key]) {activeStage=stageMap[key];leagueGw=null;serieAGw=null;continue;}
+    if (/giornata\s+lega/i.test(first)) {
+      leagueGw=Number(first.match(/\d+/)?.[0])||null;
+      serieAGw=Number(String(row[2]??"").match(/\d+/)?.[0])||null;
+      continue;
+    }
+    if (activeStage!==stage || !first || !String(row[3]??"").trim()) continue;
+    const home=canonicalMatchName(first);
+    const away=canonicalMatchName(row[3]);
+    if (!home || !away) throw new Error(`Squadra non riconosciuta: ${first} / ${String(row[3]??"")}`);
+    const homeMagic=Number(String(row[1]??"").replace(",","."));
+    const awayMagic=Number(String(row[2]??"").replace(",","."));
+    if (!Number.isFinite(homeMagic)||!Number.isFinite(awayMagic)||homeMagic<=0||awayMagic<=0) continue;
+    const goals=String(row[4]??"").trim().match(/^(\d+)\s*[-–:]\s*(\d+)$/);
+    if (!goals) throw new Error(`Risultato gol non riconosciuto per ${home} - ${away}: ${row[4]}`);
+    const series=targetGroups[stage].find(m=>comparePlayoffPair(m.home?.team,m.away?.team,home,away));
+    if (!series) throw new Error(`La sfida ${home} - ${away} non esiste nel tabellone ${stage}. Controlla i seed.`);
+    if (foundIds.has(series.id)) throw new Error(`Serie ${series.id} duplicata nell'Excel.`);
+    foundIds.add(series.id);
+    results.push({season:CRASHOUT_SEASON,series_id:series.id,stage,game_number:gameNumber,
+      league_gw:leagueGw,serie_a_gw:serieAGw,home_team:home,away_team:away,
+      home_magic:homeMagic,away_magic:awayMagic,home_goals:Number(goals[1]),away_goals:Number(goals[2]),
+      is_played:true,source_filename:String(filename).slice(0,255)});
+  }
+  if (!results.length) throw new Error(`Non trovo risultati giocati nella sezione «${stage}» dell'Excel.`);
+  const numberExpected=targetGroups[stage].filter(m=>m.home?.team!=="TBD" && m.away?.team!=="TBD").length;
+  if (results.length!==numberExpected) throw new Error(`Trovate ${results.length} sfide, ma per ${stage} ne aspettavo ${numberExpected}. Non salvo un'importazione parziale.`);
+  return results;
+}
+function previewCrashImport() {
+  const preview=document.getElementById("cv-import-preview");
+  const status=document.getElementById("cv-import-status");
+  const save=document.getElementById("cv-import-save");
+  const file=document.getElementById("cv-import-file")?.files?.[0];
+  if (!file) {PENDING_EXCEL_IMPORT=null;save.disabled=true;status.textContent="Seleziona un file Excel.";preview.innerHTML="";return;}
+  if (!window.XLSX) {PENDING_EXCEL_IMPORT=null;save.disabled=true;status.textContent="Lettore Excel non caricato. Verifica la connessione Internet.";return;}
+  file.arrayBuffer().then(buffer=>{
+    const book=window.XLSX.read(buffer,{type:"array"});
+    const sheet=book.Sheets[book.SheetNames[0]];
+    const matrix=window.XLSX.utils.sheet_to_json(sheet,{header:1,raw:true,defval:null});
+    const stage=document.getElementById("cv-import-stage").value;
+    const number=Number(document.getElementById("cv-import-game").value);
+    const results=parseCrashExcelMatrix(matrix,stage,number,file.name);
+    PENDING_EXCEL_IMPORT={rows:results,stage,number,filename:file.name};
+    save.disabled=false;
+    status.textContent=`Anteprima: ${results.length} partite, ${stage} · Gara ${number}. Nessun dato salvato ancora.`;
+    preview.innerHTML=`<div class="cv-import-rows">${results.map(r=>`<div><b>${crashEscape(r.home_team)}</b><span>${r.home_goals}–${r.away_goals}<small>${String(r.home_magic).replace('.',',')}–${String(r.away_magic).replace('.',',')} FP</small></span><b>${crashEscape(r.away_team)}</b></div>`).join("")}</div>`;
+  }).catch(err=>{PENDING_EXCEL_IMPORT=null;save.disabled=true;preview.innerHTML="";status.textContent=`Errore: ${err.message}`;});
+}
+async function saveCrashExcelImport() {
+  if (!IS_CRASH_ADMIN || !PENDING_EXCEL_IMPORT) return;
+  const status=document.getElementById("cv-import-status");
+  const save=document.getElementById("cv-import-save");
+  const rows=PENDING_EXCEL_IMPORT.rows;
+  const existing=rows.filter(r=>PLAYOFF_GAME_RESULTS.has(playoffKey(r.series_id,r.game_number)));
+  if (existing.length && !window.confirm(`${existing.length} risultati sono già presenti per questa Gara. Vuoi sovrascriverli con l'Excel selezionato?`)) return;
+  save.disabled=true;
+  status.textContent="Salvataggio sul database in corso...";
+  const {data,error}=await supabase.from("crashout_playoff_games")
+    .upsert(rows.map(r=>({...r,updated_at:new Date().toISOString()})),{onConflict:"season,series_id,game_number"})
+    .select("series_id,game_number");
+  if (error) {status.textContent=`Errore di salvataggio: ${error.message}. Controlla tabella e permessi admin.`;save.disabled=false;return;}
+  if (!data || data.length!==rows.length) {status.textContent="Importazione non verificata: controlla i permessi RLS e riprova.";save.disabled=false;return;}
+  await loadPlayoffGameResults();
+  await buildBracket();
+  status.textContent=`Salvati e verificati ${data.length} Match Report di ${PENDING_EXCEL_IMPORT.stage} · Gara ${PENDING_EXCEL_IMPORT.number}. Le vittorie delle serie Bo5 NON sono state modificate.`;
+  PENDING_EXCEL_IMPORT=null;
+  document.getElementById("cv-import-preview").innerHTML="";
+}
+function initializeCrashExcelImporter() {
+  if (!IS_CRASH_ADMIN) return;
+  const input=document.getElementById("cv-import-file");
+  const stage=document.getElementById("cv-import-stage");
+  const number=document.getElementById("cv-import-game");
+  const preview=document.getElementById("cv-import-preview-btn");
+  const save=document.getElementById("cv-import-save");
+  if (!input||!stage||!number||!preview||!save) return;
+  input.addEventListener("change",()=>{
+    const selected=input.files?.[0];
+    const m=selected?.name.match(/gara[\s_-]*(\d)/i);
+    if(m && Number(m[1])>=1 && Number(m[1])<=5) number.value=m[1];
+    const name=normalizedMatchName(selected?.name);
+    const detected=name.includes("ottavi")?"Ottavi":name.includes("quarti")?"Quarti":name.includes("semifinali")?"Semifinali":name.includes("finale")?"Finale":null;
+    if(detected) stage.value=detected;
+    PENDING_EXCEL_IMPORT=null;save.disabled=true;
+    document.getElementById("cv-import-status").textContent="Controlla fase e numero della gara, poi premi Verifica Excel.";
+  });
+  [stage,number].forEach(el=>el.addEventListener("change",()=>{PENDING_EXCEL_IMPORT=null;save.disabled=true;}));
+  preview.addEventListener("click",previewCrashImport);
+  save.addEventListener("click",saveCrashExcelImport);
+}
 
 // ======== UTILS ========
 const $ = (sel, root = document) => root.querySelector(sel);
@@ -183,6 +361,7 @@ async function initCrashAdminPanel() {
 
   seedLockBtn?.addEventListener("click", lockCurrentPlayoffSeeds);
   saveBtn?.addEventListener("click", saveCrashAdminScores);
+  initializeCrashExcelImporter();
 }
 
 function renderCrashAdminPanel() {
@@ -744,7 +923,16 @@ function createMatchElement(match) {
 
   applyScoresToNode(node, match.id);
   applyWinnerStyles(node, match.id);
-
+  if (!homeIsTbd && !awayIsTbd) {
+    node.classList.add("cv-mc-clickable");
+    node.setAttribute("role", "button");
+    node.setAttribute("tabindex", "0");
+    node.setAttribute("aria-label", `Apri le gare di ${match.home.team} contro ${match.away.team} nel Match Center`);
+    node.addEventListener("click",()=>openCrashMatchCenterModal(match));
+    node.addEventListener("keydown",e=>{
+      if(e.key==="Enter" || e.key===" ") {e.preventDefault();openCrashMatchCenterModal(match);}
+    });
+  }
   return node;
 }
 
@@ -929,6 +1117,7 @@ function renderMobileList(bracket) {
         ${matches.map((m, i) => `<button type="button" data-cv-series="${i}" class="${i === index ? "is-active" : ""}" aria-pressed="${i === index}">${meta.prefix} ${i + 1}</button>`).join("")}
       </nav>
       ${createMiamiMatchCard(match, meta, index)}
+      <section class="cv-mc-mobile-links" aria-label="Match Center Crash Out"><strong>MATCH CENTER · SINGOLE GARE</strong>${crashGameButtons(match)}</section>
       <div class="cv-series-footer">
         <button type="button" data-cv-prev ${index === 0 ? "disabled" : ""}>‹ PRECEDENTE</button>
         <span>${index + 1} / ${matches.length}</span>
@@ -1191,6 +1380,7 @@ async function buildBracket() {
 
     const bracket = makeBracketStructure(seeds);
     propagateWinners(bracket);
+    await loadPlayoffGameResults();
 
     renderRound("left-round-1", bracket.r1.left);
     renderRound("right-round-1", bracket.r1.right);
@@ -1200,6 +1390,14 @@ async function buildBracket() {
     renderRound("right-round-3", bracket.rightCF);
 
     const finalMatch = bracket.finals[0];
+    if (finalMatch.home?.team!=="TBD" && finalMatch.away?.team!=="TBD") {
+      ["finals-top","finals-bottom"].forEach(id=>{
+        const el=document.getElementById(id);
+        if (!el) return;
+        el.classList.add("cv-mc-clickable");
+        el.onclick=()=>openCrashMatchCenterModal(finalMatch);
+      });
+    }
 
     document
       .getElementById("finals-top")
@@ -1228,6 +1426,7 @@ window.addEventListener("resize", () => {
 });
 
 document.addEventListener("DOMContentLoaded", async () => {
+  initializeCrashMatchModal();
   await buildBracket();
   await initCrashAdminPanel();
 });

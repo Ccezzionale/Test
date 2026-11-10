@@ -104,7 +104,12 @@ function getParams() {
     gw: Number(params.get("gw")) || null,
     competition: params.get("competition") || "Conf A",
     source: params.get("source") || "league",
-    matchId: params.get("matchId") || ""
+    matchId: params.get("matchId") || "",
+    seriesId: params.get("seriesId") || "",
+    gameNumber: Number(params.get("gameNumber")) || null,
+    stage: params.get("stage") || "",
+    seriesHome: canonicalTeamName(params.get("seriesHome")),
+    seriesAway: canonicalTeamName(params.get("seriesAway"))
   };
 }
 
@@ -175,6 +180,7 @@ function targetMatch(rows, params) {
   const candidates = rows.filter(row =>
     String(row.Conference || "").trim() === params.competition &&
     Number(row.GW) === Number(params.gw) &&
+    (params.source !== "crashoutplayoff" || row.MatchId === params.matchId) &&
     pairMatches(row.Team, row.Opponent, params.home, params.away) &&
     isCompletedRow(row)
   );
@@ -187,7 +193,9 @@ function targetMatch(rows, params) {
     pointsAway: directIsHome ? parseNumber(direct.PointsAgainst) : parseNumber(direct.PointsFor),
     date: direct.Date || "",
     seasonalGw: Number(direct.GW_Stagionale) || Number(params.gw),
-    resultHome: directIsHome ? rowResult(direct) : ({ V: "P", P: "V", N: "N" }[rowResult(direct)] || "N")
+    resultHome: directIsHome ? rowResult(direct) : ({ V: "P", P: "V", N: "N" }[rowResult(direct)] || "N"),
+    goalsHome: directIsHome ? direct.GoalsFor : direct.GoalsAgainst,
+    goalsAway: directIsHome ? direct.GoalsAgainst : direct.GoalsFor
   };
 }
 
@@ -206,7 +214,7 @@ function currentSeasonMeetings(rows, params) {
 
   rows.filter(isCompletedRow).forEach(row => {
     if (!pairMatches(row.Team, row.Opponent, params.home, params.away)) return;
-    const key = `${String(row.Conference || "")}|${Number(row.GW) || 0}|${[normalizeTeamName(row.Team), normalizeTeamName(row.Opponent)].sort().join("|")}`;
+    const key = `${String(row.Conference || "")}|${String(row.Phase || "")}|${row.MatchId || Number(row.GW) || 0}|${[normalizeTeamName(row.Team), normalizeTeamName(row.Opponent)].sort().join("|")}`;
     if (seen.has(key)) return;
     seen.add(key);
 
@@ -244,7 +252,7 @@ function currentSeasonMeetings(rows, params) {
       venueAwayTeam,
       pointsVenueHome,
       pointsVenueAway,
-      isTarget: String(row.Conference || "").trim() === params.competition && Number(row.GW) === Number(params.gw)
+      isTarget: String(row.Conference || "").trim() === params.competition && Number(row.GW) === Number(params.gw) && (params.source !== "crashoutplayoff" || row.MatchId === params.matchId)
     });
   });
 
@@ -418,7 +426,7 @@ function formMarkup(rows, team, params, includeTarget) {
 
 
 async function loadLeagueFixtures(params) {
-  if (params.source === "crashout") return [];
+  if (params.source === "crashout" || params.source === "crashoutplayoff") return [];
 
   const { data, error } = await supabase
     .from("fantacalcio_fixtures")
@@ -825,12 +833,18 @@ function renderWeekNumbers(params, rows, roundComplete) {
 }
 
 function renderHeader(params, target, completed) {
+  if (params.source === "crashoutplayoff") {
+    const back = document.querySelector(".mc-back");
+    if (back) {back.href="crashoutplayoff.html";back.setAttribute("aria-label","Torna al tabellone Crash Out Cup");}
+  }
   document.title = `${completed ? "Match Report" : "Match Preview"} - ${params.home} vs ${params.away}`;
   document.getElementById("mc-mode").textContent = completed ? "Match Report" : "Match Preview";
   document.getElementById("mc-status").textContent = completed ? "Finale" : "Pre-partita";
-  document.getElementById("mc-subtitle").textContent = params.source === "crashout"
-    ? `Crash Out Cup · Rivalry Games · Giornata ${target?.seasonalGw || params.gw}`
-    : `Giornata ${target?.seasonalGw || params.gw} · ${competitionLabel(params.competition)}`;
+  document.getElementById("mc-subtitle").textContent = params.source === "crashoutplayoff"
+    ? `Crash Out Cup · ${params.stage || "Playoff"} · Gara ${params.gameNumber} · ${target?.seasonalGw ? `${target.seasonalGw}ª Serie A` : "Best of 5"}`
+    : params.source === "crashout"
+      ? `Crash Out Cup · Rivalry Games · Giornata ${target?.seasonalGw || params.gw}`
+      : `Giornata ${target?.seasonalGw || params.gw} · ${competitionLabel(params.competition)}`;
 
   const homeLogo = document.getElementById("mc-home-logo");
   const awayLogo = document.getElementById("mc-away-logo");
@@ -843,7 +857,7 @@ function renderHeader(params, target, completed) {
 
   const score = document.getElementById("mc-score");
   score.innerHTML = completed
-    ? `<strong>${pointsToGoals(target.pointsHome)}</strong><span>–</span><strong>${pointsToGoals(target.pointsAway)}</strong>`
+    ? `<strong>${Number.isFinite(Number(target.goalsHome)) && target.goalsHome != null ? target.goalsHome : pointsToGoals(target.pointsHome)}</strong><span>–</span><strong>${Number.isFinite(Number(target.goalsAway)) && target.goalsAway != null ? target.goalsAway : pointsToGoals(target.pointsAway)}</strong>`
     : `<span class="mc-vs-large">VS</span>`;
 }
 
@@ -1103,6 +1117,147 @@ async function loadCrashoutMatchRows() {
   return rows;
 }
 
+
+// ---- Crash Out Cup BO5: le gare importate dall'Excel sono separate dai punteggi aggregati.
+function playoffGameHref(record) {
+  const params = new URLSearchParams({
+    source: "crashoutplayoff", competition: "Crash Out Cup",
+    seriesId: record.SeriesId, gameNumber: String(record.GameNumber),
+    matchId: record.MatchId, stage: record.Phase,
+    home: record.Team, away: record.Opponent, seriesHome:record.Team, seriesAway:record.Opponent,
+    gw: String(record.GameNumber)
+  });
+  return `match.html?${params.toString()}`;
+}
+
+async function loadPlayoffMatchRows() {
+  const {data, error} = await supabase.from("crashout_playoff_games")
+    .select("season, series_id, stage, game_number, league_gw, serie_a_gw, home_team, away_team, home_magic, away_magic, home_goals, away_goals, is_played")
+    .eq("season", "2026")
+    .order("game_number", {ascending: true});
+  if (error) throw new Error("Risultati playoff non disponibili. Verifica la tabella crashout_playoff_games e i permessi di lettura.");
+  const rows = [];
+  (data || []).forEach(game => {
+    const played = game.is_played === true;
+    const h = played ? parseNumber(game.home_magic) : 0;
+    const a = played ? parseNumber(game.away_magic) : 0;
+    const gh = Number(game.home_goals);
+    const ga = Number(game.away_goals);
+    const result = played && gh > ga ? "V" : played && gh < ga ? "P" : played ? "N" : "";
+    const reverse = result === "V" ? "P" : result === "P" ? "V" : result;
+    const id = `${game.series_id}:${game.game_number}`;
+    const base = {MatchId:id, SeriesId:game.series_id, GameNumber:Number(game.game_number),
+      GW:Number(game.game_number), GW_Stagionale:Number(game.serie_a_gw) || Number(game.game_number),
+      Date:"", Phase:game.stage, Conference:"Crash Out Cup"};
+    rows.push({...base, Team:canonicalTeamName(game.home_team), Opponent:canonicalTeamName(game.away_team),
+      PointsFor:h, PointsAgainst:a, GoalsFor:gh, GoalsAgainst:ga, Result:result,
+      TeamKey:`Crash Out Cup::${canonicalTeamName(game.home_team)}`, IsHome:true});
+    rows.push({...base, Team:canonicalTeamName(game.away_team), Opponent:canonicalTeamName(game.home_team),
+      PointsFor:a, PointsAgainst:h, GoalsFor:ga, GoalsAgainst:gh, Result:reverse,
+      TeamKey:`Crash Out Cup::${canonicalTeamName(game.away_team)}`, IsHome:false});
+  });
+  return rows;
+}
+
+async function loadPlayoffSeriesScore(seriesId) {
+  const [scoreResult,seedResult]=await Promise.all([
+    supabase.from("crashout_playoff_scores").select("series_id,home_score,away_score"),
+    supabase.from("crashout_playoff_seeds").select("seed_number,team_name").eq("season","2026")
+  ]);
+  if (scoreResult.error) console.warn("Punteggi serie playoff non disponibili:",scoreResult.error);
+  if (seedResult.error) console.warn("Seed playoff non disponibili:",seedResult.error);
+  const scoreMap=new Map((scoreResult.data || []).map(r=>[r.series_id,{home:Number(r.home_score||0),away:Number(r.away_score||0)}]));
+  const bySeed=Object.fromEntries((seedResult.data||[]).map(r=>[Number(r.seed_number),canonicalTeamName(r.team_name)]));
+  const bracket=new Map();
+  const pair=(id,home,away)=>{bracket.set(id,{seriesHome:home||null,seriesAway:away||null});};
+  pair("L1",bySeed[1],bySeed[16]);pair("L2",bySeed[8],bySeed[9]);
+  pair("L3",bySeed[5],bySeed[12]);pair("L4",bySeed[4],bySeed[13]);
+  pair("R1",bySeed[3],bySeed[14]);pair("R2",bySeed[6],bySeed[11]);
+  pair("R3",bySeed[7],bySeed[10]);pair("R4",bySeed[2],bySeed[15]);
+  const winner=(id)=>{
+    const s=scoreMap.get(id)||{home:0,away:0};
+    const m=bracket.get(id);
+    return s.home>=3&&s.home>s.away ? m?.seriesHome : s.away>=3&&s.away>s.home ? m?.seriesAway : null;
+  };
+  pair("LSF1",winner("L1"),winner("L2"));pair("LSF2",winner("L3"),winner("L4"));
+  pair("RSF1",winner("R1"),winner("R2"));pair("RSF2",winner("R3"),winner("R4"));
+  pair("LCF",winner("LSF1"),winner("LSF2"));pair("RCF",winner("RSF1"),winner("RSF2"));
+  pair("F",winner("LCF"),winner("RCF"));
+  return {...(scoreMap.get(seriesId)||{home:0,away:0}),...(bracket.get(seriesId)||{})};
+}
+
+function playoffSeriesCurrentLabel(params, score) {
+  return `Best of 5 · ${score.home}–${score.away}`;
+}
+
+function renderPlayoffSeriesContext(params, score, playedRows, target) {
+  document.getElementById("mc-standings-title").textContent = "Situazione serie · Best of 5";
+  // Il tabellone è ordinato per seed; l'Excel può invertire casa e trasferta.
+  const firstTeam=score.seriesHome || params.seriesHome;
+  const switched=firstTeam && normalizeTeamName(params.home)!==normalizeTeamName(firstTeam);
+  const homeWins=switched ? score.away : score.home;
+  const awayWins=switched ? score.home : score.away;
+  document.getElementById("mc-rank-chip").textContent=`Best of 5 · ${homeWins}–${awayWins}`;
+  const winner = homeWins >= 3 && homeWins > awayWins ? params.home : awayWins >= 3 && awayWins > homeWins ? params.away : null;
+  const imported = new Set(playedRows.filter(r=>r.SeriesId===params.seriesId && r.IsHome && isCompletedRow(r)).map(r=>r.GameNumber)).size;
+  document.getElementById("mc-standings-body").innerHTML = `
+    <div class="mc-position-grid">
+      <div><img src="${teamLogo(params.home)}" alt=""><strong>${homeWins}</strong><small>Vittorie serie *</small></div>
+      <span>–</span>
+      <div><img src="${teamLogo(params.away)}" alt=""><strong>${awayWins}</strong><small>Vittorie serie *</small></div>
+    </div>
+    <p class="mc-muted">${winner ? `${escapeHtml(winner)} qualificata.` : "La prima squadra a 3 vittorie passa il turno."} ${imported} ${imported===1?"gara importata":"gare importate"} nel Match Center. * Punteggio della serie pubblicato sul tabellone, distinto dai gol della singola gara.</p>`;
+  const title = document.getElementById("mc-story-title");
+  const badge = document.getElementById("mc-stakes-badge");
+  const story = document.getElementById("mc-story-body");
+  const scenarios = document.getElementById("mc-stakes-scenarios");
+  if (target) {
+    title.textContent="Match impact";
+    badge.textContent=`${(params.stage || "Playoff").toUpperCase()} · GARA ${params.gameNumber}`;
+    const gh=target.goalsHome ?? pointsToGoals(target.pointsHome);
+    const ga=target.goalsAway ?? pointsToGoals(target.pointsAway);
+    story.textContent=`Gara ${params.gameNumber}: ${params.home} ${gh} - ${ga} ${params.away} (${formatNumber(target.pointsHome)} - ${formatNumber(target.pointsAway)} fantapunti).`;
+    scenarios.innerHTML=`<div class="mc-stakes-row"><span>◎</span><div><strong>Serie ${homeWins}–${awayWins}</strong><small>Il punteggio Bo5 è gestito separatamente sul tabellone. Un pareggio nei gol non viene convertito automaticamente in una vittoria della serie.</small></div></div>`;
+  } else {
+    title.textContent="What's at stake";
+    badge.textContent=`MATCH PREVIEW · GARA ${params.gameNumber}`;
+    story.textContent=`La Gara ${params.gameNumber} di ${params.stage || "playoff"} non è ancora stata importata nel Match Center. Il tabellone può comunque avere un punteggio aggiornato.`;
+    scenarios.innerHTML=`<div class="mc-stakes-row pending"><span>◎</span><div><strong>Risultato da importare</strong><small>L'amministratore può caricare il file Excel di questa gara dalla pagina Crash Out Cup.</small></div></div>`;
+  }
+}
+
+function renderPlayoffOtherMatches(params, playedRows) {
+  const host=document.getElementById("mc-around-list");
+  document.getElementById("mc-around-title").textContent="Altre sfide della Gara";
+  document.getElementById("mc-around-subtitle").textContent=`${params.stage || "Playoff"} · Gara ${params.gameNumber}`;
+  const games=playedRows.filter(r=>r.IsHome && r.Phase===(params.stage||r.Phase) && r.GameNumber===params.gameNumber && isCompletedRow(r));
+  if (!games.length) { host.innerHTML='<div class="mc-empty">Nessun risultato ancora importato per questa gara.</div>';return;}
+  host.innerHTML=games.map(r=>{
+    const current=r.MatchId===params.matchId;
+    const href=playoffGameHref(r);
+    return `<article class="mc-around-match ${current ? "is-current" : ""}">
+      <div class="mc-around-team"><img src="${teamLogo(r.Team)}" alt=""><strong>${escapeHtml(r.Team)}</strong></div>
+      <div class="mc-around-score"><strong>${r.GoalsFor} - ${r.GoalsAgainst}</strong><small>${formatNumber(r.PointsFor)} - ${formatNumber(r.PointsAgainst)} FP</small></div>
+      <div class="mc-around-team away"><img src="${teamLogo(r.Opponent)}" alt=""><strong>${escapeHtml(r.Opponent)}</strong></div>
+      <a class="mc-around-link" href="${href}">${current ? "QUESTA PARTITA" : "MATCH REPORT"}<span>›</span></a>
+    </article>`;
+  }).join("");
+}
+
+function renderPlayoffWeekNumbers(params, playedRows) {
+  const host=document.getElementById("mc-week-numbers");
+  const status=document.getElementById("mc-week-status");
+  const games=playedRows.filter(r=>r.IsHome && r.Phase===(params.stage||r.Phase) && r.GameNumber===params.gameNumber && isCompletedRow(r));
+  const expected={"Ottavi":8,"Quarti":4,"Semifinali":2,"Finale":1}[params.stage] || 0;
+  status.textContent=`${games.length}${expected ? `/${expected}` : ""} partite importate`;
+  if (!games.length) {host.innerHTML='<div class="mc-empty">Statistiche disponibili dopo il caricamento dei risultati.</div>';return;}
+  const teams=games.flatMap(g=>[{name:g.Team,points:g.PointsFor},{name:g.Opponent,points:g.PointsAgainst}]);
+  const best=[...teams].sort((a,b)=>b.points-a.points)[0];
+  const closest=[...games].sort((a,b)=>Math.abs(a.PointsFor-a.PointsAgainst)-Math.abs(b.PointsFor-b.PointsAgainst))[0];
+  host.innerHTML=`<article class="mc-week-stat best"><div class="mc-week-label">★ Miglior fantapunteggio</div><div class="mc-week-team"><img src="${teamLogo(best.name)}" alt=""><div><strong>${formatNumber(best.points)} FP</strong><span>${escapeHtml(best.name)}</span></div></div></article>
+  <article class="mc-week-stat closest"><div class="mc-week-label">≈ Sfida più equilibrata</div><div class="mc-week-team"><img src="${teamLogo(closest.Team)}" alt=""><div><strong>${formatNumber(closest.PointsFor)} - ${formatNumber(closest.PointsAgainst)} FP</strong><span>${escapeHtml(closest.Team)} vs ${escapeHtml(closest.Opponent)}</span></div></div></article>`;
+}
+
 function showError(message) {
   document.getElementById("mc-loading").style.display = "none";
   const app = document.getElementById("mc-app");
@@ -1112,7 +1267,7 @@ function showError(message) {
 
 async function initMatchCenter() {
   const params = getParams();
-  if (!params.home || !params.away || !params.gw || normalizeTeamName(params.home) === normalizeTeamName(params.away)) {
+  if (!params.home || !params.away || !params.gw || (params.source === "crashoutplayoff" && (!params.seriesId || !params.gameNumber || !params.matchId)) || normalizeTeamName(params.home) === normalizeTeamName(params.away)) {
     showError("Parametri della partita mancanti o non validi.");
     return;
   }
@@ -1122,15 +1277,18 @@ async function initMatchCenter() {
     // ma usiamo SEMPRE la competizione corrente per risultato e classifica.
     // Un problema alla fonte secondaria non deve bloccare il Match Center.
     const primaryIsCrashout = params.source === "crashout";
-    const [rows, history, fixtures, extraHistoryRows] = await Promise.all([
-      primaryIsCrashout ? loadCrashoutMatchRows() : loadResultsRows(),
+    const primaryIsPlayoff = params.source === "crashoutplayoff";
+    const [rows, history, fixtures, extraHistoryRows, seriesScore] = await Promise.all([
+      primaryIsPlayoff ? loadPlayoffMatchRows() : primaryIsCrashout ? loadCrashoutMatchRows() : loadResultsRows(),
       historicalMeetings(params),
       loadLeagueFixtures(params),
-      (primaryIsCrashout ? loadResultsRows() : loadCrashoutMatchRows())
-        .catch(error => {
+      primaryIsPlayoff
+        ? Promise.allSettled([loadResultsRows(), loadCrashoutMatchRows()]).then(all => all.flatMap(v=>v.status==="fulfilled" ? v.value : []))
+        : (primaryIsCrashout ? loadResultsRows() : loadCrashoutMatchRows()).catch(error => {
           console.warn("Storico aggiuntivo non disponibile:", error);
           return [];
-        })
+        }),
+      primaryIsPlayoff ? loadPlayoffSeriesScore(params.seriesId) : Promise.resolve(null)
     ]);
 
     const target = targetMatch(rows, params);
@@ -1143,12 +1301,21 @@ async function initMatchCenter() {
     document.getElementById("mc-app").hidden = false;
 
     renderHeader(params, target, completed);
-    renderStandings(params, rows, target, completed, roundComplete);
-    renderH2H(params, meetings, completed);
-    renderForm(params, rows, completed);
-    renderStory(params, meetings, rows, target, completed, roundComplete);
-    renderAroundLeague(params, rows, fixtures);
-    renderWeekNumbers(params, rows, roundComplete);
+    if (primaryIsPlayoff) {
+      // La serie Bo5 è indipendente dal singolo risultato e non viene mai modificata qui.
+      renderPlayoffSeriesContext(params, seriesScore, rows, target);
+      renderH2H(params, meetings, completed);
+      renderForm(params, [...rows, ...extraHistoryRows], completed);
+      renderPlayoffOtherMatches(params, rows);
+      renderPlayoffWeekNumbers(params, rows);
+    } else {
+      renderStandings(params, rows, target, completed, roundComplete);
+      renderH2H(params, meetings, completed);
+      renderForm(params, rows, completed);
+      renderStory(params, meetings, rows, target, completed, roundComplete);
+      renderAroundLeague(params, rows, fixtures);
+      renderWeekNumbers(params, rows, roundComplete);
+    }
   } catch (error) {
     console.error("Errore Match Center:", error);
     showError(error?.message || "Errore durante il caricamento dei dati.");
