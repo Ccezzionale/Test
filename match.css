@@ -2262,3 +2262,172 @@ body.match-center-page {
     padding-top:34px !important;
   }
 }
+
+
+/* ==============================================================
+   MATCH CENTER · RIVALITA STORICHE · CONTRASTO / MOBILE FIX
+   Palette scura coerente: testo leggibile e accenti rosa/menta.
+   Override delle regole della sezione Insights presenti in match.html.
+   ============================================================= */
+
+body.match-center-page .mc-rivalries-card .mc-rivalries-inside {
+  color: #edf6ff;
+}
+
+body.match-center-page .mc-rivalries-card .mc-rivalry-team {
+  color: #f6fbff;
+  border: 1px solid rgba(137, 187, 232, .22);
+  background: linear-gradient(145deg, #183551 0%, #0c2037 100%);
+  box-shadow: 0 8px 24px rgba(3, 17, 34, .16);
+}
+
+body.match-center-page .mc-rivalries-card .mc-rivalry-team-head h3 {
+  color: #f5faff;
+  font-size: clamp(14px, 1.45vw, 17px);
+  font-weight: 900;
+  text-shadow: none;
+}
+
+body.match-center-page .mc-rivalries-card .mc-rivalry-team-head small {
+  display: block;
+  margin-top: 3px;
+  color: #bed1e6;
+  line-height: 1.35;
+  opacity: 1;
+}
+
+body.match-center-page .mc-rivalries-card .mc-rivalry-stat {
+  color: #f3f8ff;
+  background: linear-gradient(160deg, #12273f, #101f34);
+  border: 1px solid rgba(159, 188, 219, .16);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.04);
+}
+
+body.match-center-page .mc-rivalries-card .mc-rivalry-stat.nemesis {
+  border-top: 2px solid #ff8399;
+}
+
+body.match-center-page .mc-rivalries-card .mc-rivalry-stat.victim {
+  border-top: 2px solid #58e6be;
+}
+
+body.match-center-page .mc-rivalries-card .mc-rivalry-stat-heading {
+  color: #f2f8ff;
+  line-height: 1.18;
+  font-weight: 950;
+  text-shadow: none;
+}
+
+body.match-center-page .mc-rivalries-card .mc-rivalry-stat.nemesis .mc-rivalry-stat-heading span {
+  color: #ff8da2;
+}
+
+body.match-center-page .mc-rivalries-card .mc-rivalry-stat.victim .mc-rivalry-stat-heading span {
+  color: #5ee9c4;
+}
+
+body.match-center-page .mc-rivalries-card .mc-rivalry-rival {
+  align-items: center;
+  min-width: 0;
+}
+
+body.match-center-page .mc-rivalries-card .mc-rivalry-rival strong {
+  color: #f5faff;
+  font-weight: 900;
+  line-height: 1.25;
+  text-shadow: none;
+  overflow-wrap: anywhere;
+}
+
+body.match-center-page .mc-rivalries-card .mc-rivalry-number {
+  align-items: center;
+  min-width: 0;
+}
+
+body.match-center-page .mc-rivalries-card .mc-rivalry-number > strong {
+  flex-shrink: 0;
+  color: #ffffff;
+  font-weight: 1000;
+  font-variant-numeric: tabular-nums;
+}
+
+body.match-center-page .mc-rivalries-card .mc-rivalry-number > span {
+  min-width: 0;
+  color: #c3d6e9;
+  font-weight: 800;
+  line-height: 1.25;
+}
+
+body.match-center-page .mc-rivalries-card .mc-rivalry-number small {
+  color: #a8d9ef;
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+body.match-center-page .mc-rivalries-card .mc-rivalry-record {
+  color: #e5f0ff;
+  border-top: 1px solid rgba(207, 228, 249, .18);
+  font-weight: 900;
+  flex-wrap: wrap;
+  line-height: 1.4;
+}
+
+body.match-center-page .mc-rivalries-card .mc-rivalry-record span {
+  color: #e5f0ff;
+}
+
+body.match-center-page .mc-rivalries-card .mc-rivalry-tie,
+body.match-center-page .mc-rivalries-card .mc-rivalry-no-data {
+  color: #c1d2e7;
+  line-height: 1.45;
+}
+
+body.match-center-page .mc-rivalries-card .mc-insights-footnote {
+  color: #7086a1;
+}
+
+@media (max-width: 560px) {
+  body.match-center-page .mc-rivalries-card .mc-rivalry-stats {
+    gap: 8px;
+  }
+  body.match-center-page .mc-rivalries-card .mc-rivalry-stat {
+    padding: 12px 9px;
+  }
+  body.match-center-page .mc-rivalries-card .mc-rivalry-stat-heading {
+    font-size: 10px;
+    letter-spacing: .015em;
+    gap: 5px;
+  }
+  body.match-center-page .mc-rivalries-card .mc-rivalry-rival {
+    gap: 7px;
+    margin: 10px 0 12px;
+  }
+  body.match-center-page .mc-rivalries-card .mc-rivalry-rival strong {
+    font-size: 12px;
+    line-height: 1.25;
+  }
+  body.match-center-page .mc-rivalries-card .mc-rivalry-number {
+    gap: 8px;
+  }
+  body.match-center-page .mc-rivalries-card .mc-rivalry-number > strong {
+    font-size: 30px;
+  }
+  body.match-center-page .mc-rivalries-card .mc-rivalry-number > span {
+    font-size: 11px;
+  }
+  body.match-center-page .mc-rivalries-card .mc-rivalry-number small {
+    font-size: 10px;
+  }
+}
+
+@media (max-width: 365px) {
+  body.match-center-page .mc-rivalries-card .mc-rivalry-stat {
+    padding: 10px 7px;
+  }
+  body.match-center-page .mc-rivalries-card .mc-rivalry-number {
+    gap: 5px;
+  }
+  body.match-center-page .mc-rivalries-card .mc-rivalry-number > strong {
+    font-size: 27px;
+  }
+}
