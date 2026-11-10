@@ -1282,12 +1282,17 @@ async function initMatchCenter() {
       primaryIsPlayoff ? loadPlayoffMatchRows() : primaryIsCrashout ? loadCrashoutMatchRows() : loadResultsRows(),
       historicalMeetings(params),
       loadLeagueFixtures(params),
-      primaryIsPlayoff
-        ? Promise.allSettled([loadResultsRows(), loadCrashoutMatchRows()]).then(all => all.flatMap(v=>v.status==="fulfilled" ? v.value : []))
-        : (primaryIsCrashout ? loadResultsRows() : loadCrashoutMatchRows()).catch(error => {
-          console.warn("Storico aggiuntivo non disponibile:", error);
-          return [];
-        }),
+      // Storico H2H unificato in ogni Match Center: campionato + Rivalry + playoff Bo5.
+      // La fonte della partita resta quella primaria, quindi non confondiamo i risultati.
+      Promise.allSettled([
+        ...(primaryIsPlayoff ? [] : [loadPlayoffMatchRows()]),
+        ...(primaryIsCrashout ? [] : [loadCrashoutMatchRows()]),
+        ...(primaryIsPlayoff || primaryIsCrashout ? [loadResultsRows()] : [])
+      ]).then(results => results.flatMap(result => {
+        if (result.status === "fulfilled") return result.value;
+        console.warn("Fonte secondaria H2H non disponibile:", result.reason);
+        return [];
+      })),
       primaryIsPlayoff ? loadPlayoffSeriesScore(params.seriesId) : Promise.resolve(null)
     ]);
 
