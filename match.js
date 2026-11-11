@@ -428,10 +428,16 @@ function formMarkup(rows, team, params, includeTarget) {
 async function loadLeagueFixtures(params) {
   if (params.source === "crashout" || params.source === "crashoutplayoff") return [];
 
+  // Nelle due Conference carichiamo il calendario di entrambe.
+  // Il Round Robin resta una competizione unica da 16 squadre.
+  const conferenceFilter = ["Conf A", "Conf B"].includes(params.competition)
+    ? ["Conf A", "Conf B"]
+    : [params.competition];
+
   const { data, error } = await supabase
     .from("fantacalcio_fixtures")
     .select("conference, phase, gw, home_team, away_team, match_date")
-    .eq("conference", params.competition)
+    .in("conference", conferenceFilter)
     .eq("gw", params.gw)
     .order("home_team", { ascending: true });
 
@@ -647,50 +653,62 @@ function renderAroundLeague(params, rows, fixtures) {
   const subtitle = document.getElementById("mc-around-subtitle");
   if (!host) return;
 
+  const twoConferences = ["Conf A", "Conf B"].includes(params.competition)
+    && params.source !== "crashout";
+  // Mostra per prima la Conference della partita corrente, poi l'altra.
+  const competitions = twoConferences
+    ? [params.competition, params.competition === "Conf A" ? "Conf B" : "Conf A"]
+    : [params.competition];
+
   if (title) title.textContent = "Around the League";
-  if (subtitle) subtitle.textContent = `GW ${params.gw} · ${competitionLabel(params.competition)}`;
+  if (subtitle) subtitle.textContent = twoConferences
+    ? `GW ${params.gw} · Entrambe le Conference`
+    : `GW ${params.gw} · ${competitionLabel(params.competition)}`;
 
-  let schedule = fixtures;
-
-  // Fallback: se non abbiamo fixtures, ricaviamo le partite già giocate.
-  if (!schedule.length) {
+  // I fixture vengono sempre preferiti per preservare l'ordine casa/trasferta;
+  // i risultati sono fallback quando il calendario non è ancora stato importato.
+  // L'unione non deve duplicare una partita presente in entrambe le sorgenti.
+  const scheduleFor = competition => {
     const seen = new Set();
-    schedule = [];
+    const schedule = [];
+    const add = (home, away, date) => {
+      if (!home || !away || normalizeTeamName(home) === normalizeTeamName(away)) return;
+      const key = [normalizeTeamName(home), normalizeTeamName(away)].sort().join("|");
+      if (seen.has(key)) return;
+      seen.add(key);
+      schedule.push({ home: canonicalTeamName(home), away: canonicalTeamName(away), date: date || "" });
+    };
+
+    (fixtures || [])
+      .filter(row => row.conference === competition && Number(row.gw) === Number(params.gw))
+      .forEach(f => add(f.home, f.away, f.date));
+
     rows
-      .filter(row => String(row.Conference || "").trim() === params.competition && Number(row.GW) === Number(params.gw))
-      .forEach(row => {
-        const home = canonicalTeamName(row.IsHome === false ? row.Opponent : row.Team);
-        const away = canonicalTeamName(row.IsHome === false ? row.Team : row.Opponent);
-        const key = [normalizeTeamName(home), normalizeTeamName(away)].sort().join("|");
-        if (seen.has(key)) return;
-        seen.add(key);
-        schedule.push({ home, away, date: row.Date || "" });
-      });
-  }
+      .filter(row => String(row.Conference || "").trim() === competition
+        && Number(row.GW) === Number(params.gw))
+      .forEach(row => add(
+        row.IsHome === false ? row.Opponent : row.Team,
+        row.IsHome === false ? row.Team : row.Opponent,
+        row.Date
+      ));
+    return schedule;
+  };
 
-  if (!schedule.length) {
-    host.innerHTML = '<div class="mc-empty">Calendario della giornata non disponibile.</div>';
-    return;
-  }
-
-  const before = standingSnapshot(rows, params.competition, params.gw);
-
-  host.innerHTML = schedule.map(f => {
+  const makeMatch = (f, competition, before) => {
     const home = canonicalTeamName(f.home);
     const away = canonicalTeamName(f.away);
-    const result = resultForPair(rows, params.competition, params.gw, home, away);
-    const current = pairMatches(home, away, params.home, params.away);
+    const result = resultForPair(rows, competition, params.gw, home, away);
+    const current = competition === params.competition
+      && pairMatches(home, away, params.home, params.away);
 
     const homePos = positionOf(before, home);
     const awayPos = positionOf(before, away);
     const date = formatFixtureDate(f.date);
-
-    const href = `match.html?home=${encodeURIComponent(home)}&away=${encodeURIComponent(away)}&gw=${encodeURIComponent(params.gw)}&competition=${encodeURIComponent(params.competition)}&source=${encodeURIComponent(params.source || "league")}`;
+    const href = `match.html?home=${encodeURIComponent(home)}&away=${encodeURIComponent(away)}&gw=${encodeURIComponent(params.gw)}&competition=${encodeURIComponent(competition)}&source=${encodeURIComponent(params.source || "league")}`;
 
     const scoreMarkup = result
       ? `<div class="mc-around-score"><strong>${pointsToGoals(result.pointsHome)} - ${pointsToGoals(result.pointsAway)}</strong><small>${formatNumber(result.pointsHome)} - ${formatNumber(result.pointsAway)} FP</small></div>`
       : `<div class="mc-around-score upcoming"><strong>VS</strong><small>${date || "Da giocare"}</small></div>`;
-
     const status = current ? "QUESTA PARTITA" : result ? "FINALE" : "PREVIEW";
 
     return `
@@ -700,20 +718,40 @@ function renderAroundLeague(params, rows, fixtures) {
           <strong>${escapeHtml(home)}</strong>
           <small>${homePos ? `${homePos}°` : "–"}</small>
         </div>
-
         ${scoreMarkup}
-
         <div class="mc-around-team away">
           <img src="${teamLogo(away)}" alt="">
           <strong>${escapeHtml(away)}</strong>
           <small>${awayPos ? `${awayPos}°` : "–"}</small>
         </div>
-
         <a class="mc-around-link" href="${href}">
           ${status}<span>›</span>
         </a>
       </article>`;
+  };
+
+  const grouped = twoConferences;
+  host.classList.toggle("is-grouped", grouped);
+  const html = competitions.map((competition, index) => {
+    const schedule = scheduleFor(competition);
+    const before = standingSnapshot(rows, competition, params.gw);
+    const items = schedule.length
+      ? schedule.map(f => makeMatch(f, competition, before)).join("")
+      : '<div class="mc-empty">Calendario della giornata non disponibile.</div>';
+
+    if (!grouped) return items;
+    const active = competition === params.competition;
+    return `<section class="mc-around-conference ${active ? "is-active" : ""}" aria-label="${escapeHtml(competitionLabel(competition))}">
+      <header class="mc-around-conference-head">
+        <div><span class="mc-around-conference-kicker">${active ? "LA CONFERENCE DELLA SFIDA" : "L’ALTRA CONFERENCE"}</span>
+        <h3>${escapeHtml(competitionLabel(competition))}</h3></div>
+        <span class="mc-around-conference-count">${schedule.length} ${schedule.length === 1 ? "partita" : "partite"}</span>
+      </header>
+      <div class="mc-around-conference-matches">${items}</div>
+    </section>`;
   }).join("");
+
+  host.innerHTML = html;
 }
 
 function renderWeekNumbers(params, rows, roundComplete) {
