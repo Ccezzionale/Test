@@ -861,7 +861,9 @@ function setupClassificaRaceTab(){
     racePanel.hidden=false;
     document.querySelector('.classifica-card')?.classList.add('race-mode');
     const heroTitle=document.querySelector('.classifica-hero h1');
+    const heroSubtitle=document.querySelector('.classifica-subtitle');
     if(heroTitle) heroTitle.textContent='RACE TO #1';
+    if(heroSubtitle) heroSubtitle.textContent='Road to Playoffs: la corsa per il primo posto.';
 
     setRaceBanner();
 
@@ -881,6 +883,8 @@ function setupClassificaRaceTab(){
     raceButton.classList.remove('active');
     raceButton.setAttribute('aria-pressed','false');
     document.querySelector('.classifica-card')?.classList.remove('race-mode');
+    const heroSubtitle=document.querySelector('.classifica-subtitle');
+    if(heroSubtitle) heroSubtitle.textContent='Panoramica completa della stagione regolare';
     clearRaceBanner();
 
     if(location.hash==='#race'){
