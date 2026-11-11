@@ -4,6 +4,7 @@
 -- Il campo stagioni di partecipazione resta NULL perché il solo Albo non ne prova la durata.
 WITH alumni_seed(name, logo_url, description, epitaph, sort_order) AS (
   VALUES
+  ('Costantinobull', 'img/Costantinobull.png', 'Nel 2023–24 ha conquistato Campionato, Conference Championship e Playoff: tre titoli che ne fanno una delle franchigie più decorate della storia degli Eroi.', 'Tre titoli in una stagione. Una traccia difficile da cancellare.', 0),
   ('Pollisti', 'img/Pollisti.png', 'Nel 2022/23 conquistarono Campionato e Playoff. Anche nel 2023/24 tornarono sul podio, confermandosi tra i protagonisti delle prime stagioni.', 'La doppietta è finita. La bacheca no.', 10),
   ('Real Mimmo', 'img/Real Mimmo.png', 'Campione Highlander nel 2023/24, con cinque piazzamenti sul podio registrati nell''Albo d''Oro. Sopravvivere era diventata un''arte.', 'L''ultimo superstite, almeno una volta.', 20),
   ('Rubinkebab', 'img/Rubinkebab.png', 'Quattro titoli ufficiali: Campionato, Conference Championship, Round Robin e Supercoppa degli Eroi. Una franchigia che ha lasciato una bacheca tutt''altro che vuota.', 'Il kebab se ne va. Le coppe restano.', 30),
