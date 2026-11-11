@@ -71,8 +71,7 @@ import { supabase } from './supabase.js';
     const initials = (row.name || '?').split(/\s+/).map(s => s.slice(0,1)).join('').slice(0,3).toUpperCase();
     const meta = [];
     if (row.seasons) meta.push(['Stagioni', row.seasons]);
-    if (row.trophy_count !== null && row.trophy_count !== undefined) meta.push(['Trofei', String(row.trophy_count)]);
-    if (row.best_finish) meta.push(['Miglior piazzamento', row.best_finish]);
+    meta.push(['Trofei', String(row.trophy_count ?? 0)]);
     const stats = meta.length ? '<div class="hof-alumni-stats">' +
       meta.map(pair => '<div class="hof-alumni-stat"><strong>' + escapeHtml(pair[0]) +
         '</strong><span>' + escapeHtml(pair[1]) + '</span></div>').join('') + '</div>' : '';
@@ -169,10 +168,10 @@ import { supabase } from './supabase.js';
     const row = state.rows.find(item => item.id === id);
     if (!row) return;
     const form = byId('hof-alumni-form');
-    for (const key of ['id','name','seasons','best_finish','logo_url','description','epitaph','story','sort_order']) {
+    for (const key of ['id','name','seasons','logo_url','description','epitaph','story','sort_order']) {
       form.elements[key].value = row[key] ?? '';
     }
-    form.elements.trophy_count.value = row.trophy_count ?? '';
+    form.elements.trophy_count.value = row.trophy_count ?? 0;
     form.elements.published.checked = Boolean(row.published);
     form.elements.logo_file.value = '';
     state.editingId = id;
@@ -203,11 +202,11 @@ import { supabase } from './supabase.js';
         logo = supabase.storage.from('hof-alumni').getPublicUrl(key).data.publicUrl;
       }
       if (logo && !validLogo(logo)) throw new Error('Il percorso del logo non è valido.');
-      const trophyText = e.trophy_count.value.trim();
+      const trophyCount = Number(e.trophy_count.value || 0);
+      if (!Number.isInteger(trophyCount) || trophyCount < 0) throw new Error('Inserisci un numero di trofei valido.');
       const data = {
         name, seasons:e.seasons.value.trim() || null,
-        trophy_count: trophyText === '' ? null : Number(trophyText),
-        best_finish:e.best_finish.value.trim() || null,
+        trophy_count: trophyCount,
         logo_url:logo || null,
         description:e.description.value.trim(),
         epitaph:e.epitaph.value.trim(),
