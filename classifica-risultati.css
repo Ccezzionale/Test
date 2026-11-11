@@ -59,3 +59,7 @@
   .res-matches{padding:8px;gap:8px}
   .switcher button[data-classifica-view="results"]{grid-column:1/-1}
 }
+
+@media (min-width:521px) and (max-width:768px){
+  .switcher button[data-classifica-view="results"]{grid-column:1/-1}
+}
