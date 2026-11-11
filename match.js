@@ -1575,8 +1575,8 @@ function renderRivalryFortunes(params, historicalRecords,currentRows,historyErro
   const card=(team,record,type,tiedCount)=>{
     const isNemesis=type==="nemesis";
     const cls=isNemesis?"nemesis":"victim";
-    const title=isNemesis?"BESTIA NERA":"VITTIMA PREFERITA";
-    const icon=isNemesis?"☠":"♛";
+    const title=isNemesis?"BESTIA NERA":"AGNELLO SACRIFICALE";
+    const icon=isNemesis?"☠":"🐑";
     if(!record)return `<div class="mc-rivalry-stat ${cls}"><div class="mc-rivalry-stat-heading"><span>${icon}</span>${title}</div><div class="mc-rivalry-no-data">Nessuna ${isNemesis?"sconfitta":"vittoria"} registrata</div></div>`;
     const amount=isNemesis?record.l:record.w;
     const pct=Math.round(100*amount/record.n);
