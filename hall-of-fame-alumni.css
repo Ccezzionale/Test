@@ -75,3 +75,7 @@
  .hof-alumni-manage-row{flex-wrap:wrap}
 }
 @media(prefers-reduced-motion:reduce){.hof-alumni-carousel{scroll-behavior:auto}}
+
+/* Cinque schede desktop; gli elementi hidden non devono essere forzati visibili. */
+@media(min-width:651px){.hall-of-fame-page .hof-tabs{grid-template-columns:repeat(5,minmax(0,1fr))}}
+.hof-alumni-carousel[hidden],.hof-alumni-empty[hidden],.hof-alumni-nav[hidden]{display:none!important}
