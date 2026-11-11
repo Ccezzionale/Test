@@ -9,6 +9,7 @@
   <link rel="stylesheet" href="albo.css">
   <link rel="stylesheet" href="hall-of-fame.css">
   <link rel="stylesheet" href="hall-of-fame-alumni.css">
+  <link rel="stylesheet" href="hall-of-fame-overview.css?v=20261111-museum1">
 <meta name="lega-app-build" content="v20261028-ef9f76dc3f25">
 <script defer src="./app-updates.js?bootstrap=v20261028-ef9f76dc3f25" data-eroi-update="1"></script>
 </head>
@@ -92,19 +93,11 @@
     </div>
   </nav>
 
-  <header class="hof-hero">
-    <div class="hof-hero__overlay"></div>
-    <div class="hof-hero__inner">
-      <div class="hero-kicker-hof">La storia della Lega degli Eroi</div>
-      <h1>Hall of Fame</h1>
-      <p class="hero-subtitle-hof">Campioni, rivalità, imprese e leggende del fantacalcio più eroico del multiverso.</p>
-      <div class="hero-pill-row">
-        <span>Campioni</span>
-        <span>Trofei</span>
-        <span>Medagliere</span>
-        <span>Record</span>
-      </div>
-    </div>
+  <header class="hof-hero" aria-label="Hall of Fame della Lega degli Eroi">
+    <picture class="hof-banner-picture">
+      <source media="(max-width: 760px)" srcset="img/hall-of-fame-mobile.webp">
+      <img class="hof-banner-image" src="img/hall-of-fame-desktop.webp" alt="Hall of Fame, il museo delle leggende della Lega degli Eroi" fetchpriority="high">
+    </picture>
   </header>
 
   <main class="hof-page">
@@ -118,50 +111,60 @@
       </div>
     </section>
 
-    <section class="hof-tab-panel is-active" id="tab-overview" role="tabpanel">
-      <div class="overview-metrics" id="overview-metrics"></div>
-
-      <section class="overview-panel">
+    <section class="hof-tab-panel is-active" id="tab-overview" role="tabpanel" aria-label="Panoramica Hall of Fame">
+      <section class="overview-panel hof-podium-feature" aria-labelledby="hof-overview-podium-title">
         <div class="overview-heading">
           <div>
-            <h2>Ultimi campioni</h2>
-            <p>I vincitori più recenti delle competizioni principali.</p>
+            <span class="hof-overview-kicker">IL TEMPIO DELLE LEGGENDE</span>
+            <h2 id="hof-overview-podium-title">Il podio della storia</h2>
+            <p>Tre franchigie. Una vetta. La gloria che sopravvive alle stagioni.</p>
           </div>
+          <button class="hof-overview-link" type="button" data-tab-link="medagliere">Medagliere completo <span aria-hidden="true">↗</span></button>
+        </div>
+        <div class="hof-podium-stage">
+          <div class="hof-podium-backlight" aria-hidden="true"></div>
+          <div class="mini-podium" id="mini-podium"></div>
+          <div class="hof-podium-floor" aria-hidden="true"></div>
+        </div>
+      </section>
+
+      <div class="overview-metrics hof-metrics-bar" id="overview-metrics" aria-label="Numeri storici della Lega"></div>
+
+      <section class="overview-panel hof-champions-feature" aria-labelledby="hof-overview-champions-title">
+        <div class="overview-heading">
+          <div>
+            <span class="hof-overview-kicker">I VOLTI DELLA VITTORIA</span>
+            <h2 id="hof-overview-champions-title">Ultimi campioni</h2>
+            <p>Chi ha lasciato per ultimo il proprio nome sulle coppe.</p>
+          </div>
+          <button class="hof-overview-link" type="button" data-tab-link="albo">Apri l'Albo d'Oro <span aria-hidden="true">↗</span></button>
         </div>
         <div class="champions-grid" id="champions-grid"></div>
       </section>
 
-      <div class="overview-bottom-grid">
-        <section class="overview-panel">
-          <div class="overview-heading">
-            <div>
-              <h2>Podio storico</h2>
-              <p>Le tre franchigie più vincenti nella storia della Lega.</p>
-            </div>
+      <section class="overview-panel hof-trophy-feature" aria-labelledby="hof-overview-trophies-title">
+        <div class="overview-heading">
+          <div>
+            <span class="hof-overview-kicker">OGGETTI DI CULTO</span>
+            <h2 id="hof-overview-trophies-title">La galleria dei trofei</h2>
+            <p>Ogni coppa racconta una battaglia. Tocca una teca per scoprire chi l'ha vinta.</p>
           </div>
-          <div class="mini-podium" id="mini-podium"></div>
-        </section>
+          <button class="hof-overview-link" type="button" data-tab-link="albo">Tutte le competizioni <span aria-hidden="true">↗</span></button>
+        </div>
+        <div class="trophy-showcase" id="trophy-showcase"></div>
+      </section>
 
-        <section class="overview-panel">
-          <div class="overview-heading">
-            <div>
-              <h2>Vetrina dei trofei</h2>
-              <p>I trofei che definiscono la Hall of Fame.</p>
-            </div>
+      <section class="overview-panel hof-records-feature" aria-labelledby="hof-overview-records-title">
+        <div class="overview-heading">
+          <div>
+            <span class="hof-overview-kicker">NUMERI IMMORTALI</span>
+            <h2 id="hof-overview-records-title">I record della Lega</h2>
+            <p>Primati, imprese e piccole umiliazioni destinate a durare per sempre.</p>
           </div>
-          <div class="trophy-showcase" id="trophy-showcase"></div>
-        </section>
-
-        <section class="overview-panel">
-          <div class="overview-heading">
-            <div>
-              <h2>I record della Lega</h2>
-              <p>Numeri, imprese e piccole umiliazioni eterne.</p>
-            </div>
-          </div>
-          <div class="records-preview" id="records-preview"></div>
-        </section>
-      </div>
+          <button class="hof-overview-link" type="button" data-tab-link="record">Tutti i record <span aria-hidden="true">↗</span></button>
+        </div>
+        <div class="records-preview" id="records-preview"></div>
+      </section>
     </section>
 
     <section class="hof-tab-panel" id="tab-albo" role="tabpanel" hidden>
@@ -948,6 +951,8 @@
         panel.classList.toggle('is-active', active);
         panel.hidden = !active;
       });
+      const overviewHero = document.querySelector('.hof-hero');
+      if (overviewHero) overviewHero.hidden = tabName !== 'overview';
       const url = new URL(window.location);
       url.hash = tabName;
       history.replaceState(null, '', url);
