@@ -1608,11 +1608,135 @@ function renderRivalryFortunes(params, historicalRecords,currentRows,historyErro
   filters.forEach(button=>button.addEventListener("click",()=>{scope=button.dataset.mcRivalryScope;draw();}));
   draw();
 }
+
+
+// ============ STORICO DELLA MIA FRANCHIGIA ============
+// Profilo associato alla squadra tramite profiles.team_id -> teams.id.
+// Se il profilo manca o la pagina è pubblica, il selettore rimane utilizzabile.
+async function mcGetOwnFranchise() {
+  const {data:authData,error:authError}=await supabase.auth.getUser();
+  if(authError||!authData?.user?.id)return null;
+  const {data:profile,error:profileError}=await supabase.from("profiles")
+    .select("team_id").eq("id",authData.user.id).maybeSingle();
+  if(profileError||!profile?.team_id)return null;
+  const {data:team,error:teamError}=await supabase.from("teams")
+    .select("name").eq("id",profile.team_id).maybeSingle();
+  if(teamError||!team?.name)return null;
+  return canonicalTeamName(team.name);
+}
+
+function mcFranchiseOpponentRecords(team,matches,scope) {
+  const target=normalizeTeamName(team);
+  const records=new Map();
+  // Tutte le franchigie attuali, anche quelle mai affrontate.
+  TEAM_META.forEach(entry=>{
+    const key=normalizeTeamName(entry.name);
+    if(key&&key!==target)records.set(key,{name:entry.name,w:0,d:0,l:0,n:0});
+  });
+  matches.forEach(match=>{
+    if(scope==="league"&&match.kind!=="league")return;
+    const isA=normalizeTeamName(match.a)===target;
+    const isB=normalizeTeamName(match.b)===target;
+    if(!isA&&!isB)return;
+    const rival=canonicalTeamName(isA?match.b:match.a);
+    const key=normalizeTeamName(rival);
+    if(!key||key===target)return;
+    if(!records.has(key))records.set(key,{name:rival,w:0,d:0,l:0,n:0});
+    const rec=records.get(key);
+    rec.n++;
+    const gf=isA?match.goalsA:match.goalsB;
+    const ga=isA?match.goalsB:match.goalsA;
+    if(gf>ga)rec.w++;
+    else if(gf<ga)rec.l++;
+    else rec.d++;
+  });
+  return [...records.values()].sort((a,b)=>
+    Number(b.n>0)-Number(a.n>0)||a.name.localeCompare(b.name,"it")
+  );
+}
+
+function renderAllFranchiseRecords(params,historicalRecords,currentRows,historyError=false) {
+  const section=document.getElementById("mc-all-h2h-section");
+  const selector=document.getElementById("mc-all-h2h-team");
+  const summary=document.getElementById("mc-all-h2h-summary");
+  const list=document.getElementById("mc-all-h2h-list");
+  const note=document.getElementById("mc-all-h2h-note");
+  const title=document.getElementById("mc-all-h2h-title");
+  if(!section||!selector||!summary||!list||!note||!title)return;
+  section.hidden=false;
+
+  const matches=buildHistoricalRivalries(historicalRecords,currentRows);
+  const names=new Map();
+  TEAM_META.forEach(t=>names.set(normalizeTeamName(t.name),t.name));
+  matches.forEach(m=>[m.a,m.b].forEach(t=>{
+    const key=normalizeTeamName(t);
+    if(key&&!names.has(key))names.set(key,canonicalTeamName(t));
+  }));
+  const franchiseNames=[...names.values()].sort((a,b)=>a.localeCompare(b,"it"));
+  selector.innerHTML=franchiseNames.map(team=>
+    `<option value="${escapeHtml(team)}">${escapeHtml(team)}</option>`
+  ).join("");
+  let currentTeam=names.get(normalizeTeamName(params.home))||franchiseNames[0]||"";
+  let scope="all";
+  let userChanged=false;
+  let isOwnTeam=false;
+  const filterButtons=section.querySelectorAll("[data-mc-all-h2h-scope]");
+
+  const draw=()=>{
+    const records=mcFranchiseOpponentRecords(currentTeam,matches,scope);
+    const totals=records.reduce((o,r)=>({w:o.w+r.w,d:o.d+r.d,l:o.l+r.l,n:o.n+r.n}),{w:0,d:0,l:0,n:0});
+    title.textContent=isOwnTeam?"Il mio storico":"Storico franchigia";
+    summary.innerHTML=`<img class="mc-all-h2h-logo" src="${teamLogo(currentTeam)}" alt="">
+      <div class="mc-all-h2h-summary-title"><strong>${escapeHtml(currentTeam)}</strong><small>${totals.n} partite disponibili nello storico selezionato</small></div>
+      <div class="mc-all-h2h-total"><span class="mc-all-h2h-total-count">${totals.n} sfide</span><span>${totals.w}V · ${totals.d}N · ${totals.l}P</span></div>`;
+    list.innerHTML=records.map(rec=>{
+      const pct=rec.n?Math.round(100*rec.w/rec.n):null;
+      return `<div class="mc-all-h2h-row">
+        <div class="mc-all-h2h-rival"><img src="${teamLogo(rec.name)}" alt=""><div class="mc-all-h2h-rival-name"><strong>${escapeHtml(rec.name)}</strong><small>${rec.n?`${rec.n} ${rec.n===1?"partita":"partite"}`:"Mai incontrata"}</small></div></div>
+        <div class="mc-all-h2h-balance" aria-label="${escapeHtml(rec.name)}: ${rec.w} vittorie, ${rec.d} pareggi, ${rec.l} sconfitte">
+          ${rec.n?`<strong><span class="win">${rec.w}V</span><span class="draw">${rec.d}N</span><span class="loss">${rec.l}P</span></strong><small>${pct}% vittorie</small>`:`<strong class="no-games">0 sfide</strong>`}
+        </div>
+      </div>`;
+    }).join("");
+    note.textContent=(scope==="league"?"Solo campionato e playoff di lega.":"Campionato, Rivalry Games e Crash Out Playoff.")+
+      " Risultati calcolati sui gol; sono incluse anche le franchigie mai incontrate."+
+      (historyError?" Archivio delle stagioni precedenti momentaneamente non disponibile.":"");
+    filterButtons.forEach(button=>{
+      const active=button.dataset.mcAllH2hScope===scope;
+      button.classList.toggle("is-active",active);
+      button.setAttribute("aria-pressed",String(active));
+    });
+  };
+  selector.value=currentTeam;
+  selector.addEventListener("change",()=>{
+    userChanged=true;
+    currentTeam=selector.value;
+    isOwnTeam=false;
+    draw();
+  });
+  filterButtons.forEach(button=>button.addEventListener("click",()=>{
+    scope=button.dataset.mcAllH2hScope==="league"?"league":"all";
+    draw();
+  }));
+  draw();
+  // La ricerca del profilo non ritarda il Match Center e non blocca chi non è autenticato.
+  mcGetOwnFranchise().then(team=>{
+    if(!team||userChanged)return;
+    const resolved=names.get(normalizeTeamName(team));
+    if(!resolved)return;
+    currentTeam=resolved;
+    selector.value=resolved;
+    isOwnTeam=true;
+    draw();
+  }).catch(error=>console.warn("Franchigia del profilo non disponibile:",error));
+}
+// ============ FINE STORICO DELLA MIA FRANCHIGIA ============
+
 // ============ FINE MATCH CENTER INSIGHTS ============
 
 function showError(message) {
-  document.getElementById("mc-loading").style.display = "none";
   const app = document.getElementById("mc-app");
+  app.classList.remove("mc-init-pending");
   app.hidden = false;
   app.innerHTML = `<section class="mc-error"><strong>Match Center non disponibile</strong><p>${escapeHtml(message)}</p><a href="index.html">← Torna alla Home</a></section>`;
 }
@@ -1623,6 +1747,12 @@ async function initMatchCenter() {
     showError("Parametri della partita mancanti o non validi.");
     return;
   }
+
+  // Mostra immediatamente il banner vero con le squadre, senza schermata di attesa.
+  const app = document.getElementById("mc-app");
+  app.classList.add("mc-init-pending");
+  renderHeader(params, null, false);
+  app.hidden = false;
 
   try {
     // Carichiamo sia campionato sia Crash Out Cup per gli H2H,
@@ -1658,14 +1788,14 @@ async function initMatchCenter() {
     const currentMeetings = currentSeasonMeetings([...rows, ...extraHistoryRows], params);
     const meetings = sortMeetings(uniqueMeetings([...history, ...currentMeetings]));
 
-    document.getElementById("mc-loading").style.display = "none";
-    document.getElementById("mc-app").hidden = false;
+    document.getElementById("mc-app").classList.remove("mc-init-pending");
 
     renderHeader(params, target, completed);
     // Il grafico usa SOLO i risultati del campionato corrente anche se si arriva dalla coppa.
     renderSeasonTrend(params, [...rows,...extraHistoryRows]);
     // Rivalità: vecchie stagioni + dati correnti di tutte le competizioni, una sfida per volta.
     renderRivalryFortunes(params, allHistoricalResult.data, [...rows,...extraHistoryRows], allHistoricalResult.error);
+    renderAllFranchiseRecords(params, allHistoricalResult.data, [...rows,...extraHistoryRows], allHistoricalResult.error);
     if (primaryIsPlayoff) {
       // La serie Bo5 è indipendente dal singolo risultato e non viene mai modificata qui.
       renderPlayoffSeriesContext(params, seriesScore, rows, target);
