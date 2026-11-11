@@ -855,8 +855,13 @@ function setupClassificaRaceTab(){
     raceButton.setAttribute('aria-pressed','true');
 
     normalContainer.hidden=true;
+    // Chiudi anche la scheda Risultati se si arriva qui da quella sezione.
+    const resultsPanel=document.getElementById('risultati-tab-panel');
+    if(resultsPanel) resultsPanel.hidden=true;
     racePanel.hidden=false;
     document.querySelector('.classifica-card')?.classList.add('race-mode');
+    const heroTitle=document.querySelector('.classifica-hero h1');
+    if(heroTitle) heroTitle.textContent='RACE TO #1';
 
     setRaceBanner();
 
