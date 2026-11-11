@@ -1,0 +1,61 @@
+/* Risultati della stagione 2026/27, dentro Classifiche */
+#risultati-tab-panel[hidden]{display:none!important}
+.risultati-panel{max-width:1240px;margin:0 auto 18px;padding:4px clamp(6px,2vw,22px) 28px}
+.res-intro{text-align:center;margin:8px 0 20px}
+.res-intro .res-kicker{font-size:.72rem;font-weight:900;letter-spacing:.16em;color:#9b6e23}
+.res-intro h2{font-size:clamp(1.5rem,4vw,2.25rem);color:#0a2a50;margin:5px 0 6px}
+.res-intro p{font-size:.95rem;color:#546780;margin:0}
+.res-toolbar{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:10px;margin:0 auto 10px;padding:13px;border:1px solid #d8e4f1;border-radius:18px;background:#fff;box-shadow:0 8px 24px rgba(7,35,67,.07)}
+.res-toolbar label{font-size:.88rem;font-weight:800;color:#193c64}
+.res-toolbar select{min-width:150px;max-width:100%;padding:10px 12px;border-radius:12px;border:1px solid #b5c8e0;background:#f7faff;color:#102f56;font:inherit;font-weight:750;cursor:pointer}
+.res-toolbar button{border:1px solid #b9cbe2;background:#eff5ff;color:#173b64;padding:9px 13px;border-radius:11px;font:inherit;font-size:.85rem;font-weight:850;cursor:pointer}
+.res-toolbar button:hover:not(:disabled){background:#d9e8ff}
+.res-toolbar button:disabled{opacity:.35;cursor:not-allowed}
+.res-toolbar button:focus-visible,.res-toolbar select:focus-visible{outline:3px solid #edc36c;outline-offset:2px}
+.res-toolbar .res-refresh{background:#10365e;color:white;border-color:#10365e}
+.res-current{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:13px 6px 18px}
+.res-current strong{font-weight:900;font-size:1.12rem;color:#0c3057}
+.res-current span{background:#e6edf7;color:#365a7b;font-size:.76rem;font-weight:850;padding:7px 12px;border-radius:99px}
+.res-conferences{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:19px}
+.res-conferences.res-roundrobin{grid-template-columns:1fr}
+.res-conference{border:1px solid #dce6f4;border-radius:21px;background:white;box-shadow:0 12px 26px rgba(6,28,55,.08);overflow:hidden;min-width:0}
+.res-conference-heading{background:linear-gradient(125deg,#0a2343,#123f71);color:#fff;padding:18px 18px;display:flex;justify-content:space-between;align-items:center;gap:10px}
+.res-conference-heading span{font-size:.7rem;color:#eac67e;font-weight:900;letter-spacing:.15em}
+.res-conference-heading h3{font-size:1.14rem;line-height:1.2;margin:4px 0 0;color:#fff}
+.res-conference-heading small{white-space:nowrap;color:#dbe6f6;font-size:.78rem}
+.res-matches{display:grid;gap:10px;padding:12px}
+.res-match{display:grid;grid-template-columns:minmax(0,1fr) 76px minmax(0,1fr);gap:5px;align-items:center;padding:15px 10px;border:1px solid #e1e9f3;border-radius:14px;background:#f8fbff;min-width:0}
+.res-match.res-pending{background:#f9fafb;opacity:.88}
+.res-team{display:flex;flex-direction:column;justify-content:center;align-items:center;gap:5px;min-width:0;text-align:center}
+.res-team img{width:40px;height:40px;object-fit:contain}
+.res-team strong{font-size:.83rem;font-weight:800;line-height:1.25;color:#123457;overflow-wrap:anywhere;max-width:100%}
+.res-team small{font-size:.72rem;line-height:1.2;color:#687c95}
+.res-team.res-winner strong{color:#0b6d57}
+.res-score{text-align:center;display:flex;flex-direction:column;align-items:center;gap:5px}
+.res-score strong{font-size:1.28rem;font-weight:950;font-variant-numeric:tabular-nums;white-space:nowrap;color:#0b2d57}
+.res-score span{font-size:.66rem;font-weight:850;text-transform:uppercase;letter-spacing:.055em;color:#59728f}
+.res-pending .res-score strong{color:#97a5b5}
+.res-empty{padding:38px 16px;text-align:center;color:#5b6d83;font-size:.95rem}
+.res-error{color:#9b2638;background:#fff3f3;border:1px solid #f2ced3;border-radius:13px}
+@media(max-width:860px){
+  .res-conferences{grid-template-columns:1fr}
+  .res-conference{max-width:640px;width:100%;margin:0 auto}
+}
+@media(max-width:520px){
+  .risultati-panel{padding:3px 0 18px}
+  .res-toolbar{gap:7px;padding:10px 6px}
+  .res-toolbar label{display:none}
+  .res-toolbar button{font-size:.8rem;padding:9px 10px}
+  .res-toolbar select{min-width:124px;font-size:.84rem;padding:9px}
+  .res-toolbar .res-refresh{flex-basis:100%}
+  .res-match{grid-template-columns:minmax(0,1fr) 64px minmax(0,1fr);gap:3px;padding:13px 5px}
+  .res-team img{height:34px;width:34px}
+  .res-team strong{font-size:.77rem}
+  .res-team small{font-size:.67rem}
+  .res-score strong{font-size:1.19rem}
+  .res-conference-heading{padding:16px 12px}
+  .res-conference-heading h3{font-size:1rem}
+  .res-conference-heading small{font-size:.72rem}
+  .res-matches{padding:8px;gap:8px}
+  .switcher button[data-classifica-view="results"]{grid-column:1/-1}
+}
