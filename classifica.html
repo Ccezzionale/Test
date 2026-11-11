@@ -6,6 +6,7 @@
   <title>Classifica - Lega degli Eroi</title>
   <link rel="stylesheet" href="navbar.css">
   <link rel="stylesheet" href="classifica.css">
+  <link rel="stylesheet" href="classifica-risultati.css?v=20261111">
 <meta name="lega-app-build" content="v20261028-ef9f76dc3f25">
 <script defer src="./app-updates.js?bootstrap=v20261028-ef9f76dc3f25" data-eroi-update="1"></script>
 </head>
@@ -124,6 +125,7 @@
         <button>Conf. Championship</button>
         <button>Round Robin</button>
         <button>Totale</button>
+        <button type="button" data-classifica-view="results">Risultati</button>
       </div>
 
       <div class="race-entry-wrap">
@@ -149,6 +151,30 @@
 
         <div id="classifica-mobile"></div>
       </div>
+
+      <section id="risultati-tab-panel" class="risultati-panel" hidden aria-label="Risultati delle giornate">
+        <header class="res-intro">
+          <span class="res-kicker">STAGIONE 2026/27</span>
+          <h2>Risultati delle giornate</h2>
+          <p>Gol e fantapunti di tutte le partite, divisi per Conference.</p>
+        </header>
+        <div class="res-toolbar">
+          <button type="button" id="risultati-prev" aria-label="Giornata precedente">‹ Precedente</button>
+          <label for="risultati-giornata">Giornata</label>
+          <select id="risultati-giornata" aria-label="Seleziona giornata">
+            <option>Caricamento…</option>
+          </select>
+          <button type="button" id="risultati-next" aria-label="Giornata successiva">Successiva ›</button>
+          <button type="button" id="risultati-refresh" class="res-refresh">↻ Aggiorna</button>
+        </div>
+        <div class="res-current">
+          <strong id="risultati-current">Risultati</strong>
+          <span id="risultati-phase">Fase Conference</span>
+        </div>
+        <div id="risultati-sezioni" class="res-conferences">
+          <div class="res-empty">Apri Risultati per caricare le partite.</div>
+        </div>
+      </section>
 
       <section id="race-tab-panel" class="race-page race-embedded" hidden aria-label="Race">
 
@@ -594,7 +620,8 @@ return {
       refreshDashboard();
     });
   </script>
-  <script type="module" src="classifica-race.js"></script>
+  <script type="module" src="classifica-race.js?v=20261111-risultati"></script>
+  <script type="module" src="classifica-risultati.js?v=20261111"></script>
   <script type="module" src="classifica-admin.js"></script>
   <script src="mobile-nav.js"></script>
    <script src="navbar.js"></script>
