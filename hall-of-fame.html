@@ -546,7 +546,7 @@
 
         <section id="hof-alumni-admin-panel" class="hof-alumni-admin" hidden aria-label="Gestione franchigie Alumni">
           <h3 id="hof-alumni-form-heading">Aggiungi una franchigia</h3>
-          <p>Inserisci soltanto i dati storici verificati. I campi facoltativi non compariranno sulla scheda se lasciati vuoti.</p>
+          <p>Personalizza le ex franchigie. Il totale dei trofei compare sempre, anche quando è zero.</p>
           <form id="hof-alumni-form" autocomplete="off">
             <input type="hidden" name="id" value="">
             <div class="hof-alumni-form">
@@ -563,10 +563,7 @@
                 <input name="seasons" maxlength="70" placeholder="Es. 2023–2025">
               </label>
               <label class="hof-alumni-field">Trofei
-                <input name="trophy_count" type="number" min="0" step="1" placeholder="Facoltativo">
-              </label>
-              <label class="hof-alumni-field">Miglior piazzamento
-                <input name="best_finish" maxlength="80" placeholder="Es. 5° posto">
+                <input name="trophy_count" type="number" min="0" step="1" value="0">
               </label>
               <label class="hof-alumni-field wide">Descrizione breve
                 <textarea name="description" rows="3" maxlength="700" placeholder="Due o tre righe per ricordare la franchigia…"></textarea>
@@ -992,7 +989,7 @@
   </script>
 
   <script type="module" src="hall-of-fame-live.js"></script>
-  <script type="module" src="hall-of-fame-alumni.js"></script>
+  <script type="module" src="hall-of-fame-alumni.js?v=20261111-alumni12"></script>
   <script src="mobile-nav.js"></script>
   <script src="navbar.js"></script>
 </body>
