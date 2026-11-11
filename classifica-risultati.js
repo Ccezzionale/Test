@@ -190,6 +190,8 @@ import { supabase } from './supabase.js';
     if ($('risultati-tab-panel').hidden) return;
     $('risultati-tab-panel').hidden = true;
     $('classifica-container').hidden = false;
+    const subtitle = document.querySelector('.classifica-subtitle');
+    if (subtitle) subtitle.textContent = 'Panoramica completa della stagione regolare';
     if (location.hash === '#risultati') history.replaceState(null, '', location.pathname + location.search);
   }
 
