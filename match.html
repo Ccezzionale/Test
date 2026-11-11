@@ -40,10 +40,10 @@
   .mc-rivalry-team { min-width:0; border:1px solid rgba(120,174,206,.22); border-radius:15px; padding:14px; background:linear-gradient(145deg,rgba(15,39,64,.8),rgba(6,20,38,.78)); }
   .mc-rivalry-team-head { display:flex; align-items:center; gap:10px; margin-bottom:13px; }
   .mc-rivalry-team-head img { height:40px; width:40px; object-fit:contain; flex-shrink:0; }
-  .mc-rivalry-team-head h3 { margin:0; font-size:16px; line-height:1.3; overflow-wrap:anywhere; color:#ffffff; }
+  .mc-rivalry-team-head h3 { margin:0; font-size:16px; line-height:1.3; overflow-wrap:anywhere; }
   .mc-rivalry-team-head small { font-size:11px; color:#98b6d3; }
   .mc-rivalry-stats { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; }
-  .mc-rivalry-stat { min-width:0; border-radius:12px; border:1px solid rgba(174,204,231,.15); padding:13px 11px 11px; background:rgba(4,17,31,.55); color:#ffffff; }
+  .mc-rivalry-stat { min-width:0; border-radius:12px; border:1px solid rgba(174,204,231,.15); padding:13px 11px 11px; background:rgba(4,17,31,.55); }
   .mc-rivalry-stat.nemesis { border-top:2px solid #f38b99; }
   .mc-rivalry-stat.victim { border-top:2px solid #58dfb8; }
   .mc-rivalry-stat-heading { display:flex; align-items:center; gap:5px; font-size:10px; font-weight:900; letter-spacing:.06em; color:#d3e3f4; }
@@ -51,12 +51,12 @@
   .mc-rivalry-stat.victim .mc-rivalry-stat-heading span { color:#7ff2c5; font-size:19px; }
   .mc-rivalry-rival { display:flex; align-items:center; gap:7px; margin:12px 0 9px; min-width:0; }
   .mc-rivalry-rival img { height:31px; width:31px; flex-shrink:0; object-fit:contain; }
-  .mc-rivalry-rival strong { font-size:13px; line-height:1.25; overflow-wrap:anywhere; color:#ffffff; overflow-wrap:anywhere; }
+  .mc-rivalry-rival strong { font-size:13px; line-height:1.25; overflow-wrap:anywhere; }
   .mc-rivalry-number { display:flex; align-items:center; gap:9px; }
   .mc-rivalry-number > strong { font-size:35px; line-height:1; font-weight:950; color:#fff; }
-  .mc-rivalry-number > span { font-size:12px; font-weight:700; color:#ffffff; }
+  .mc-rivalry-number > span { font-size:12px; font-weight:700; }
   .mc-rivalry-number small { display:block; margin-top:4px; color:#9ab5ca; font-size:11px; font-weight:500; }
-  .mc-rivalry-record { display:flex; gap:7px; padding-top:10px; margin-top:11px; border-top:1px solid rgba(255,255,255,.1); color:#ffffff; font-weight:800; font-size:11px; }
+  .mc-rivalry-record { display:flex; gap:7px; padding-top:10px; margin-top:11px; border-top:1px solid rgba(255,255,255,.1); color:#b8cbe1; font-weight:800; font-size:11px; }
   .mc-rivalry-tie { display:block; margin-top:9px; font-size:10px; color:#9fb1c6; line-height:1.35; }
   .mc-rivalry-no-data { font-size:12px; color:#b7c8d9; padding:13px 0; line-height:1.5; }
   .mc-insights-footnote { margin:12px 2px 0; color:#92a9c3; font-size:11px; line-height:1.5; }
@@ -81,6 +81,68 @@
     .mc-rivalry-number > strong { font-size:29px; }
     .mc-rivalry-number > span { font-size:10px; }
     .mc-rivalry-number small { font-size:10px; }
+  }
+
+  /* RIVALITA STORICHE | tema chiaro, compatibile con le regole
+     più specifiche del match.css senza modificare il layout. */
+  body.match-center-page .mc-rivalries-card .mc-rivalries-inside {
+    color: #173757;
+  }
+  body.match-center-page .mc-rivalries-card .mc-rivalry-team {
+    color: #102e50;
+    background: linear-gradient(145deg, #ffffff 0%, #f4f9ff 100%);
+    border: 1px solid #d7e6f4;
+    box-shadow: 0 8px 25px rgba(12, 58, 101, .08);
+  }
+  body.match-center-page .mc-rivalries-card .mc-rivalry-team-head h3 {
+    color: #0c3054;
+  }
+  body.match-center-page .mc-rivalries-card .mc-rivalry-team-head small {
+    color: #5f7690;
+  }
+  body.match-center-page .mc-rivalries-card .mc-rivalry-stat {
+    color: #12395d;
+    background: linear-gradient(160deg, #ffffff 0%, #f6faff 100%);
+    border: 1px solid #d8e6f3;
+    box-shadow: 0 4px 15px rgba(13, 55, 92, .045);
+  }
+  body.match-center-page .mc-rivalries-card .mc-rivalry-stat.nemesis {
+    border-top: 3px solid #ed688a;
+  }
+  body.match-center-page .mc-rivalries-card .mc-rivalry-stat.victim {
+    border-top: 3px solid #31bc9a;
+  }
+  body.match-center-page .mc-rivalries-card .mc-rivalry-stat-heading {
+    color: #133657;
+  }
+  body.match-center-page .mc-rivalries-card .mc-rivalry-stat.nemesis .mc-rivalry-stat-heading span {
+    color: #d84d78;
+  }
+  body.match-center-page .mc-rivalries-card .mc-rivalry-stat.victim .mc-rivalry-stat-heading span {
+    color: #0f997c;
+  }
+  body.match-center-page .mc-rivalries-card .mc-rivalry-rival strong {
+    color: #0b3158;
+  }
+  body.match-center-page .mc-rivalries-card .mc-rivalry-number > strong {
+    color: #0b3158;
+  }
+  body.match-center-page .mc-rivalries-card .mc-rivalry-number > span {
+    color: #365675;
+  }
+  body.match-center-page .mc-rivalries-card .mc-rivalry-number small {
+    color: #587995;
+  }
+  body.match-center-page .mc-rivalries-card .mc-rivalry-record {
+    color: #25496d;
+    border-top: 1px solid #d7e5f1;
+  }
+  body.match-center-page .mc-rivalries-card .mc-rivalry-record span {
+    color: #25496d;
+  }
+  body.match-center-page .mc-rivalries-card .mc-rivalry-tie,
+  body.match-center-page .mc-rivalries-card .mc-rivalry-no-data {
+    color: #617b96;
   }
 </style>
 </head>
@@ -430,10 +492,10 @@
     </section>
 
 
-    <!-- MATCH CENTER INSIGHTS · BESTIA NERA E VITTIMA PREFERITA -->
+    <!-- MATCH CENTER INSIGHTS · BESTIA NERA E AGNELLO SACRIFICALE -->
     <section class="mc-card mc-rivalries-card" id="mc-rivalries-section" hidden>
       <header class="mc-card-head mc-insights-header">
-        <div class="mc-insights-title"><span class="mc-card-icon">♛</span><div><h2>Rivalità storiche</h2><small>Bestia Nera &amp; Vittima Preferita</small></div></div>
+        <div class="mc-insights-title"><span class="mc-card-icon">♛</span><div><h2>Rivalità storiche</h2><small>Bestia Nera &amp; Agnello Sacrificale</small></div></div>
         <div class="mc-insights-toggle" role="group" aria-label="Competizioni incluse nelle rivalità">
           <button type="button" data-mc-rivalry-scope="league" aria-pressed="false">Campionato</button>
           <button type="button" class="is-active" data-mc-rivalry-scope="all" aria-pressed="true">Tutte</button>
@@ -477,7 +539,7 @@
   </div>
 </main>
 
-<script type="module" src="match.js?v=20261111-align-around-both"></script>
+<script type="module" src="match.js?v=20261111-agnello-sacrificale-v1"></script>
 <script src="mobile-nav.js?v=2"></script>
 <script src="navbar.js"></script>
 <script type="module" src="admin-nav.js?v=1"></script>
