@@ -171,6 +171,11 @@ import { supabase } from './supabase.js';
     switcher.querySelectorAll('button').forEach(b => b.classList.toggle('active', b === button));
     $('classifica-container').hidden = true;
     $('race-tab-panel').hidden = true;
+    const heroBanner = $('heroBanner');
+    if (heroBanner?.dataset.raceBanner === '1') {
+      heroBanner.style.backgroundImage = '';
+      delete heroBanner.dataset.raceBanner;
+    }
     $('risultati-tab-panel').hidden = false;
     document.querySelector('.classifica-card')?.classList.remove('race-mode');
     const title = document.querySelector('.classifica-hero h1');
