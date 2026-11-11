@@ -1,0 +1,81 @@
+/* Hall of Fame Alumni | isolato dalle altre sezioni */
+.hof-tabs .hof-tab[data-tab="alumni"]{white-space:nowrap}
+.hof-alumni{--alumni-gold:#edc779;--alumni-light:#fff4dc;color:#f6f0e7;max-width:1100px;margin:0 auto 45px}
+.hof-alumni *{box-sizing:border-box}
+.hof-alumni-hero{text-align:center;position:relative;padding:26px 15px 18px;margin:0 auto 14px;border-radius:24px;background:radial-gradient(ellipse at top,rgba(221,164,64,.16),transparent 68%),linear-gradient(150deg,#141417,#07090f)}
+.hof-alumni-eyebrow{display:block;color:var(--alumni-gold);font-size:.72rem;letter-spacing:.2em;text-transform:uppercase;font-weight:800}
+.hof-alumni-hero h2{font-family:Georgia,'Times New Roman',serif;font-size:clamp(2rem,6vw,3.6rem);color:var(--alumni-gold);margin:6px 0 8px}
+.hof-alumni-hero p{margin:0;color:#ded5ca;font-style:italic;font-family:Georgia,serif;line-height:1.45}
+.hof-alumni-toolbar{display:flex;justify-content:flex-end;padding:0 4px 12px}
+.hof-alumni-admin-toggle,.hof-alumni-action{appearance:none;border:1px solid #be9353;border-radius:12px;padding:11px 16px;background:linear-gradient(130deg,#f4d78b,#c79645);color:#1c150c;font-weight:800;cursor:pointer}
+.hof-alumni-admin-toggle[hidden],.hof-alumni-admin[hidden],.hof-alumni-story[hidden]{display:none!important}
+.hof-alumni-admin-toggle:hover,.hof-alumni-action:hover{filter:brightness(1.08)}
+.hof-alumni-admin-toggle:focus-visible,.hof-alumni-action:focus-visible,.hof-alumni-arrow:focus-visible,.hof-alumni-card:focus-visible{outline:2px solid #ffe8a4;outline-offset:3px}
+.hof-alumni-carousel-wrap{position:relative;max-width:100%;overflow:hidden;padding:10px 0 14px}
+.hof-alumni-carousel{display:flex;overflow-x:auto;gap:18px;scroll-snap-type:x mandatory;scroll-behavior:smooth;padding:10px max(15px, calc((100% - 410px)/2)) 24px;overscroll-behavior-x:contain;scrollbar-width:none}
+.hof-alumni-carousel::-webkit-scrollbar{display:none}
+.hof-alumni-card{scroll-snap-align:center;scroll-snap-stop:always;flex:0 0 min(410px,calc(100vw - 76px));border:1px solid #bc9050;border-radius:25px;min-height:490px;overflow:hidden;position:relative;background:radial-gradient(ellipse at 50% 0%,rgba(211,155,65,.15),transparent 50%),linear-gradient(146deg,#292624 0%,#100f11 50%,#19171a 100%);box-shadow:0 15px 38px rgba(0,0,0,.4),inset 0 0 0 1px rgba(252,219,150,.07);padding:25px 22px 22px;text-align:center}
+.hof-alumni-card:before{content:"";pointer-events:none;position:absolute;inset:0;background:repeating-linear-gradient(155deg,transparent 0 73px,rgba(255,217,153,.025) 75px 76px,transparent 78px 155px)}
+.hof-alumni-logo-shell{display:grid;place-items:center;margin:0 auto 13px;width:122px;height:122px;border:2px solid #cba361;border-radius:50%;background:radial-gradient(circle,#3d3325,#111014 72%);box-shadow:0 0 28px rgba(226,174,69,.17);overflow:hidden}
+.hof-alumni-logo-shell img{width:90%;height:90%;object-fit:contain}
+.hof-alumni-logo-fallback{font-family:Georgia,serif;color:var(--alumni-gold);font-size:2.5rem}
+.hof-alumni-team{font-family:Georgia,'Times New Roman',serif;font-size:clamp(1.35rem,4.5vw,1.9rem);font-weight:800;color:#fff8ee;margin:2px 0 9px;overflow-wrap:anywhere}
+.hof-alumni-mark{display:inline-flex;align-items:center;border-radius:30px;padding:5px 18px;color:#20180d;background:linear-gradient(100deg,#c49239,#f4d889,#c28a37);font-weight:900;letter-spacing:.18em;font-size:.68rem}
+.hof-alumni-stats{border:1px solid rgba(215,175,98,.35);border-radius:14px;padding:9px 13px;margin:20px 0 16px;text-align:left;background:rgba(0,0,0,.2)}
+.hof-alumni-stat{display:flex;gap:7px;align-items:center;justify-content:space-between;padding:8px 0;font-size:.87rem}
+.hof-alumni-stat+.hof-alumni-stat{border-top:1px solid rgba(255,255,255,.1)}
+.hof-alumni-stat strong{color:var(--alumni-gold)}.hof-alumni-stat span{color:#f8f1e9;text-align:right}
+.hof-alumni-description{font-size:.91rem;line-height:1.55;color:#e5ddd2;text-align:left;margin:0 0 12px;white-space:pre-line}
+.hof-alumni-epitaph{font-family:Georgia,serif;font-style:italic;color:#eacb88;border-top:1px solid rgba(218,184,108,.3);margin:16px 0 0;padding-top:14px;line-height:1.42}
+.hof-alumni-card-footer{position:relative;margin-top:16px}
+.hof-alumni-story-btn{width:100%;border:1px solid #f8d995;border-radius:12px;color:#20170a;background:linear-gradient(120deg,#e3b65d,#fbe3a0,#c18a38);font-weight:850;font-size:.93rem;padding:11px;cursor:pointer}
+.hof-alumni-nav{display:flex;align-items:center;justify-content:center;gap:15px;margin-top:3px}
+.hof-alumni-arrow{background:rgba(219,171,91,.12);border:1px solid rgba(232,182,95,.36);color:#ffe2a0;display:grid;place-items:center;width:36px;height:36px;border-radius:50%;cursor:pointer;font-size:1.3rem}
+.hof-alumni-arrow:disabled{opacity:.35;cursor:default}
+.hof-alumni-dots{display:flex;gap:7px;max-width:210px;overflow:auto;align-items:center}
+.hof-alumni-dot{border:none;cursor:pointer;background:#5e5c60;width:9px;height:9px;border-radius:50%;flex:0 0 auto;padding:0}
+.hof-alumni-dot.is-active{background:#f1c56f;box-shadow:0 0 10px rgba(244,201,113,.45)}
+.hof-alumni-empty{text-align:center;border:1px dashed rgba(225,188,116,.4);padding:45px 24px;border-radius:18px;color:#e4d3b6}
+.hof-alumni-notice{font-size:.88rem;line-height:1.5;color:#e1ccaa}
+.hof-alumni-notice.is-error{color:#ffa6a6}
+.hof-alumni-notice.is-ok{color:#b5f3c4}
+.hof-alumni-admin{border:1px solid #776342;border-radius:19px;padding:18px;margin:22px 0;background:#111827}
+.hof-alumni-admin h3{font-family:Georgia,serif;color:#f0c979;margin:0 0 8px}
+.hof-alumni-admin p{margin:0 0 15px;color:#d0d5e0;font-size:.88rem}
+.hof-alumni-form{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.hof-alumni-field{display:grid;gap:5px;font-size:.83rem;color:#ffe1a5;font-weight:700}
+.hof-alumni-field.wide{grid-column:1/-1}
+.hof-alumni-field input,.hof-alumni-field select,.hof-alumni-field textarea{width:100%;min-width:0;background:#081120;color:#fff;border:1px solid #546073;border-radius:9px;padding:10px;font:inherit;font-weight:400}
+.hof-alumni-field textarea{resize:vertical;min-height:65px}
+.hof-alumni-check{display:flex;gap:8px;align-items:center;color:#f4e4c6;font-size:.9rem}
+.hof-alumni-admin-actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:15px}
+.hof-alumni-secondary,.hof-alumni-danger{border:1px solid #827453;background:#222831;color:#fff2d6;border-radius:10px;padding:10px 13px;cursor:pointer}
+.hof-alumni-danger{border-color:#a76565;color:#ffd0d0}
+.hof-alumni-manage-list{margin-top:18px;display:grid;gap:8px}
+.hof-alumni-manage-row{display:flex;align-items:center;gap:12px;border-top:1px solid rgba(255,255,255,.1);padding:11px 0}
+.hof-alumni-manage-row span{flex:1;overflow-wrap:anywhere}
+.hof-alumni-manage-row button{border:1px solid #a78c5b;background:#22252b;color:#fbe5ba;border-radius:8px;padding:8px;cursor:pointer}
+.hof-alumni-dialog{border:1px solid #b8904e;border-radius:20px;width:min(560px,calc(100% - 30px));max-height:85vh;overflow:auto;color:#f6ebd7;background:linear-gradient(140deg,#272322,#0c1019);padding:27px 23px;box-shadow:0 28px 90px #000}
+.hof-alumni-dialog::backdrop{background:rgba(0,0,0,.75)}
+.hof-alumni-dialog h3{color:#f1cb81;font-family:Georgia,serif;font-size:1.6rem;margin:0 0 15px}
+.hof-alumni-dialog p{white-space:pre-line;line-height:1.65}
+.hof-alumni-dialog button{margin-top:15px}
+@media(max-width:650px){
+ .hof-page{width:calc(100% - 24px)}
+ .hof-tabs{display:flex;overflow-x:auto;gap:7px;scrollbar-width:none;scroll-snap-type:x proximity;padding:0 2px 6px}
+ .hof-tabs .hof-tab{flex:0 0 auto;min-height:43px;padding:0 13px;font-size:.8rem;border-radius:12px;scroll-snap-align:start}
+ .hof-tabs .hof-tab[data-tab="alumni"]{display:inline-flex;align-items:center}
+ .hof-alumni-hero{padding:23px 12px 16px}
+ .hof-alumni-card{flex-basis:calc(100vw - 75px);padding:22px 17px 19px;min-height:0}
+ .hof-alumni-carousel{gap:12px;padding:8px 25px 20px}
+ .hof-alumni-logo-shell{height:105px;width:105px}
+ .hof-alumni-stat{font-size:.78rem}
+ .hof-alumni-form{grid-template-columns:1fr}
+ .hof-alumni-field.wide{grid-column:auto}
+ .hof-alumni-manage-row{flex-wrap:wrap}
+}
+@media(prefers-reduced-motion:reduce){.hof-alumni-carousel{scroll-behavior:auto}}
+
+/* Cinque schede desktop; gli elementi hidden non devono essere forzati visibili. */
+@media(min-width:651px){.hall-of-fame-page .hof-tabs{grid-template-columns:repeat(5,minmax(0,1fr))}}
+.hof-alumni-carousel[hidden],.hof-alumni-empty[hidden],.hof-alumni-nav[hidden]{display:none!important}
