@@ -1519,10 +1519,20 @@ siamo lieti di presentarvi una nuova e coinvolgente modalità di gioco per il fa
     panel.hidden = true;
     buttons.forEach(function (btn) {btn.classList.remove("is-active");btn.setAttribute("aria-expanded","false");});
   });
+  function contentForTopic(target) {
+    if (!target) return "";
+    if (target.tagName === "SECTION") return target.textContent.slice(0,9000);
+    let body = "";
+    let node = target.nextElementSibling;
+    while (node && node.tagName !== "H4" && body.length < 5000) {
+      body += " " + node.textContent;
+      node = node.nextElementSibling;
+    }
+    return body;
+  }
   const entries = uniqueItems.map(function (item) {
     const target = document.getElementById(item.id);
-    const section = target && target.closest("section[id]");
-    return {id:item.id,title:item.title,desc:item.desc,body: section ? section.textContent.slice(0,13000) : "",kind:"topic"};
+    return {id:item.id,title:item.title,desc:item.desc,body:contentForTopic(target),kind:"topic"};
   });
   headings.forEach(function (heading) {
     const title = heading.textContent.trim();
