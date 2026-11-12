@@ -54,6 +54,7 @@ function configureExploreNavigation() {
       </a>
       <ul class="submenu" aria-label="Esplora Lega degli Eroi">
         <li><a href="totoeroi.html"><span class="nav-explore-symbol" aria-hidden="true">🎯</span><span>TotoEroi</span></a></li>
+        <li><a href="playoffs-challenge.html"><span class="nav-explore-symbol" aria-hidden="true">🏆</span><span>Playoffs Challenge</span></a></li>
         <li><a href="statistiche.html"><span class="nav-explore-symbol" aria-hidden="true">📊</span><span>Statistiche</span></a></li>
         <li><a href="timeline.html"><span class="nav-explore-symbol" aria-hidden="true">🎬</span><span>Timeline Stagionale</span></a></li>
         <li><a href="hall-of-fame.html"><span class="nav-explore-symbol" aria-hidden="true">🏆</span><span>Hall of Fame</span></a></li>
