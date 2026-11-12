@@ -108,24 +108,47 @@
 <img alt="Regolamento Lega degli Eroi" class="regolamento-banner-img" src="icons/nav/regolamentobanner.webp"/>
 </picture>
 </header>
-<div class="link-sezione"><a href="#lega">Lega</a>
-<a href="#draft">Draft</a>
-<a href="#fp">Franchise Player</a>
-<a href="#rfa">RFA</a>
-<a href="#u21">Under 21</a>
-<a href="#ir">Injury Reserve</a>
-<a href="#scambi">Mercato</a>
-<a href="#waiver">Waiver Wire</a>
-<a href="#seriea">Giocatore asterisco</a>
-<a href="#bonus">Bonus &amp; Malus</a>
-<a href="#uscita">Abbandono Squadra</a>
-<a href="#premi">Quote e Premi</a>
-<a href="#totoeroi">🎯 TotoEroi</a>
-<a href="#playoffs-challenge">🏆 Playoffs Challenge</a>
-</div>
-<div class="search-container">
-<input id="searchInput" placeholder="Cerca nel regolamento..." type="text"/>
-<button onclick="cercaNelRegolamento()" type="button">🔍 Cerca</button>
+
+<div class="rules-hub" id="rules-hub">
+  <div class="rules-hub-hero">
+    <span class="rules-eyebrow">GUIDA UFFICIALE · STAGIONE 2026/27</span>
+    <h1>Il regolamento, senza perdersi tra le regole.</h1>
+    <p>Trova subito ciò che cerchi, leggi un riepilogo e apri il testo completo quando ti serve.</p>
+    <form class="rules-search-form" id="rulesSearchForm" role="search" autocomplete="off">
+      <label class="rules-visually-hidden" for="searchInput">Cerca nel regolamento</label>
+      <span class="rules-search-symbol" aria-hidden="true">⌕</span>
+      <input id="searchInput" type="search" placeholder="Cerca: All-Star, FP, waiver, mercato..." autocomplete="off"/>
+      <button type="submit">Cerca</button>
+    </form>
+    <div class="rules-search-results" id="rulesSearchResults" hidden aria-live="polite"></div>
+  </div>
+  <div class="rules-category-heading">
+    <div><span class="rules-kicker">ESPLORA IL REGOLAMENTO</span><h2>Scegli un argomento</h2></div>
+    <span class="rules-category-help">Seleziona una categoria per vedere le singole regole</span>
+  </div>
+  <div class="rules-category-grid" id="rulesCategoryGrid">
+    <button type="button" class="rules-category" data-rule-category="competizioni" aria-expanded="false"><span class="rules-cat-icon" aria-hidden="true">🏆</span><span class="rules-cat-title">Competizioni</span><span class="rules-cat-desc">Campionato, Playoff, Coppe e All-Star</span><span class="rules-cat-arrow" aria-hidden="true">↗</span></button>
+    <button type="button" class="rules-category" data-rule-category="draft" aria-expanded="false"><span class="rules-cat-icon" aria-hidden="true">💎</span><span class="rules-cat-title">Draft &amp; Keeper</span><span class="rules-cat-desc">Draft, FP, RFA e Under 21</span><span class="rules-cat-arrow" aria-hidden="true">↗</span></button>
+    <button type="button" class="rules-category" data-rule-category="mercato" aria-expanded="false"><span class="rules-cat-icon" aria-hidden="true">🔄</span><span class="rules-cat-title">Mercato</span><span class="rules-cat-desc">Trade, waiver, IR e casi speciali</span><span class="rules-cat-arrow" aria-hidden="true">↗</span></button>
+    <button type="button" class="rules-category" data-rule-category="gioco" aria-expanded="false"><span class="rules-cat-icon" aria-hidden="true">⚽</span><span class="rules-cat-title">Regole di gioco</span><span class="rules-cat-desc">Mantra, bonus, malus e formazioni</span><span class="rules-cat-arrow" aria-hidden="true">↗</span></button>
+    <button type="button" class="rules-category" data-rule-category="premi" aria-expanded="false"><span class="rules-cat-icon" aria-hidden="true">💰</span><span class="rules-cat-title">Quote &amp; Premi</span><span class="rules-cat-desc">Partecipazione, montepremi e premi</span><span class="rules-cat-arrow" aria-hidden="true">↗</span></button>
+    <button type="button" class="rules-category" data-rule-category="speciali" aria-expanded="false"><span class="rules-cat-icon" aria-hidden="true">🎯</span><span class="rules-cat-title">Giochi speciali</span><span class="rules-cat-desc">TotoEroi e Playoffs Challenge</span><span class="rules-cat-arrow" aria-hidden="true">↗</span></button>
+  </div>
+  <div class="rules-category-panel" id="rulesCategoryPanel" hidden>
+    <div class="rules-panel-head">
+      <div><span class="rules-kicker">IN BREVE, POI NEL DETTAGLIO</span><h3 id="rulesPanelTitle"></h3></div>
+      <button class="rules-panel-close" id="rulesPanelClose" type="button" aria-label="Chiudi categoria">✕</button>
+    </div>
+    <div class="rules-topic-grid" id="rulesTopicGrid"></div>
+  </div>
+  <nav class="rules-quick-links" aria-label="Collegamenti rapidi alle regole più consultate">
+    <span>Accessi rapidi</span>
+    <a href="#rule-allstar">⭐ All-Star</a>
+    <a href="#fp">💎 Franchise Player</a>
+    <a href="#waiver">📥 Waiver</a>
+    <a href="#rule-playoff">🏆 Playoff</a>
+  </nav>
+  <p class="rules-fulltext-label">REGOLAMENTO COMPLETO <span>Apri le sezioni qui sotto per leggere tutti i dettagli ufficiali.</span></p>
 </div>
 <section id="lega">
 <details>
@@ -1349,90 +1372,226 @@ siamo lieti di presentarvi una nuova e coinvolgente modalità di gioco per il fa
 </section>
 <script src="navbar.js"></script>
 <script>
-function cercaNelRegolamento() {
-  const input = document.getElementById("searchInput").value.trim().toLowerCase();
-  const sections = document.querySelectorAll("details");
-
-  // Rimuove vecchie evidenziazioni
-  document.querySelectorAll(".highlight").forEach(el => {
-    el.outerHTML = el.innerText;
+(function () {
+  "use strict";
+  const categories = {
+    competizioni: {title:"Competizioni", topics:[
+      {id:"lega",title:"Campionato e Regular Season",desc:"Formula della Lega, Conference e Round Robin."},
+      {id:"rule-playoff",title:"Playoff",desc:"Qualificazione, tabellone e finale per il titolo."},
+      {id:"rule-highlander",title:"Highlander Cup",desc:"Regole della competizione Highlander."},
+      {id:"rule-crashout",title:"Crash Out Cup",desc:"Rivalry Games e successivi scontri playoff."},
+      {id:"rule-allstar",title:"All-Star Game",desc:"Voti, prime cinque scelte per Conference, casi di parità e Draft."},
+      {id:"rule-supercoppa",title:"Supercoppa",desc:"Squadre qualificate, Play-In e casi particolari."}
+    ]},
+    draft: {title:"Draft & Keeper", topics:[
+      {id:"draft",title:"Draft e composizione delle rose",desc:"Rose, round, scelte e ordine di chiamata."},
+      {id:"fp",title:"Franchise Player",desc:"Chi si può confermare, come e quando si perde lo status."},
+      {id:"rfa",title:"Restricted Free Agent",desc:"Nomina, diritto di pareggio e prelazione."},
+      {id:"u21",title:"Under 21",desc:"Quattro slot U21, requisiti e riconferme."}
+    ]},
+    mercato: {title:"Mercato", topics:[
+      {id:"scambi",title:"Scambi e Trade Room",desc:"Finestre di mercato, scambi e pick tra franchigie."},
+      {id:"waiver",title:"Waiver Wire",desc:"Svincolati, chiamate, priorità e assegnazioni."},
+      {id:"ir",title:"Injury Reserve",desc:"Slot lungo degente, attivazione e durata."},
+      {id:"seriea",title:"Giocatori che lasciano la Serie A",desc:"Asterisco, giocatori protetti e sostituzioni."},
+      {id:"uscita",title:"Abbandono della Lega",desc:"Regole per squadre uscenti e subentranti."}
+    ]},
+    gioco: {title:"Regole di gioco", topics:[
+      {id:"bonus",title:"Bonus & Malus",desc:"Voti, gol, assist, switch, formazioni e modificatori."},
+      {id:"lega",title:"Formula della Lega",desc:"Conference, Round Robin e Regular Season."}
+    ]},
+    premi: {title:"Quote & Premi", topics:[
+      {id:"premi",title:"Quote e premi",desc:"Partecipazione annuale e premi delle competizioni."}
+    ]},
+    speciali: {title:"Giochi speciali", topics:[
+      {id:"totoeroi",title:"TotoEroi",desc:"Schedina, jackpot, classifiche e omologazione."},
+      {id:"playoffs-challenge",title:"Playoffs Challenge",desc:"Pronostici dei playoff, punteggi e premi al Draft."}
+    ]}
+  };
+  const quickDescriptions = {
+    lega:"Struttura della Lega, Regular Season, Playoff e competizioni stagionali.",
+    draft:"Composizione delle rose, scelte al Draft e regole per i round.",
+    fp:"Requisiti, modalità e limiti delle riconferme Franchise Player.",
+    rfa:"Protezione di un giocatore e diritti di pareggio e prelazione.",
+    u21:"Quattro Under 21 obbligatori in rosa, con requisiti e riconferme.",
+    ir:"Uno slot lungo degente per stagione, con requisiti e scadenze.",
+    scambi:"Finestre di mercato, trade tra squadre e scambi di pick.",
+    waiver:"Acquisizione degli svincolati e criteri di assegnazione.",
+    uscita:"Diritti e obblighi di una franchigia uscente o subentrante.",
+    seriea:"Sostituzione dei calciatori che lasciano la Serie A e giocatori protetti.",
+    bonus:"Voti Mantra, gol, assist, bonus, malus, switch e modificatori.",
+    premi:"Quota di partecipazione e premi previsti dalle competizioni.",
+    totoeroi:"Schedine 1-X-2, regole di vincita, jackpot e verifiche.",
+    "playoffs-challenge":"Pronostici dei playoff, punteggi e premi legati al Draft."
+  };
+  const manualTargets = [
+    ["🏆 Playoff","rule-playoff"],
+    ["🌬️ Highlander Cup","rule-highlander"],
+    ["🏀 Crash Out Cup","rule-crashout"],
+    ["⭐ All-Star Game","rule-allstar"],
+    ["🔮 Supercoppa Lega degli Eroi","rule-supercoppa"]
+  ];
+  const root = document.getElementById("rules-hub");
+  if (!root) return;
+  const panel = document.getElementById("rulesCategoryPanel");
+  const panelTitle = document.getElementById("rulesPanelTitle");
+  const topicsGrid = document.getElementById("rulesTopicGrid");
+  const buttons = Array.from(document.querySelectorAll(".rules-category[data-rule-category]"));
+  const searchInput = document.getElementById("searchInput");
+  const searchResults = document.getElementById("rulesSearchResults");
+  const form = document.getElementById("rulesSearchForm");
+  const sections = Array.from(document.querySelectorAll(".wrapper > section[id]"));
+  const allTopics = Object.values(categories).flatMap(function (c) {return c.topics;});
+  const clean = function (str) {return String(str || "").toLocaleLowerCase("it").normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-z0-9]+/g," ").trim();};
+  const uniqueItems = allTopics.filter(function (item, i) {return allTopics.findIndex(function (t) {return t.id === item.id;}) === i;});
+  const headings = Array.from(document.querySelectorAll(".wrapper section[id] details h4, .wrapper section[id] details h5, .wrapper section[id] details h6"));
+  headings.forEach(function (heading, i) {
+    const text = heading.textContent.trim();
+    const special = manualTargets.find(function (pair) {return text.startsWith(pair[0]);});
+    if (special) heading.id = special[1];
+    else if (!heading.id) heading.id = "rule-heading-" + (i + 1);
+    heading.classList.add("rules-heading-anchor");
   });
-
-  if (!input) return;
-
-  let trovato = false;
-
-  sections.forEach(section => {
-    // Apri temporaneamente per accedere a tutto il contenuto
-    const eraAperto = section.open;
-    section.open = true;
-    const text = section.innerText.toLowerCase();
-
-    if (text.includes(input)) {
-      trovato = true;
-      section.open = true; // lascialo aperto
-      evidenziaInSezione(section, input);
-    } else {
-      section.open = eraAperto; // rimettilo com'era
-    }
+  sections.forEach(function (section) {
+    const info = quickDescriptions[section.id];
+    if (!info) return;
+    const details = section.querySelector("details");
+    const summary = details && details.querySelector("summary");
+    if (!summary || details.querySelector(".rules-brief")) return;
+    const brief = document.createElement("div");
+    brief.className = "rules-brief";
+    const label = document.createElement("strong");
+    label.textContent = "IN BREVE";
+    const txt = document.createElement("p");
+    txt.textContent = info;
+    brief.appendChild(label);
+    brief.appendChild(txt);
+    summary.insertAdjacentElement("afterend", brief);
   });
-
-  if (!trovato) {
-    alert("🔍 Nessun risultato trovato.");
-  }
-}
-
-function evidenziaInSezione(section, parola) {
-  const regex = new RegExp(`(${parola})`, 'gi');
-  section.querySelectorAll("p, li, td, summary").forEach(el => {
-    if (el.innerText.toLowerCase().includes(parola)) {
-      el.innerHTML = el.innerHTML.replace(regex, `<span class="highlight flash">$1</span>`);
-    }
-  });
-}
-</script>
-<script>
-  document.getElementById("searchInput").addEventListener("keydown", function(e) {
-    if (e.key === "Enter") {
-      cercaNelRegolamento();
-    }
-  });
-</script>
-<script>
-  function apriFisarmonicaDaHash(hash) {
-    if (!hash) return;
-
-    let details = document.querySelector(`details${hash}`);
-    if (!details) {
-      const section = document.querySelector(hash);
-      if (section) {
-        details = section.querySelector("details");
-      }
-    }
-
-    if (details) {
-      details.open = true;
-      const summary = details.querySelector("summary");
-      if (summary) {
-        setTimeout(() => {
-          summary.scrollIntoView({ behavior: "smooth", block: "start" });
-        }, 100);
-      }
-    }
-  }
-
-  // Quando la pagina viene caricata con un hash nell'URL
-  document.addEventListener("DOMContentLoaded", function () {
-    apriFisarmonicaDaHash(window.location.hash);
-  });
-
-  // Quando clicchi uno dei link nella griglia
-  document.querySelectorAll('.link-sezione a').forEach(link => {
-    link.addEventListener('click', function (e) {
-      const href = this.getAttribute('href');
-      apriFisarmonicaDaHash(href);
+  function navigateTo(id, updateUrl) {
+    const target = document.getElementById(id);
+    if (!target) return false;
+    const accordion = target.closest("details") || target.querySelector("details");
+    if (accordion) accordion.open = true;
+    if (updateUrl && window.location.hash !== "#" + id) window.history.pushState(null, "", "#" + encodeURIComponent(id));
+    const scrollElement = target.tagName === "SECTION" && accordion ? accordion.querySelector("summary") : target;
+    window.requestAnimationFrame(function () {
+      if (scrollElement) scrollElement.scrollIntoView({behavior:"smooth",block:"start"});
     });
+    return true;
+  }
+  function makeTopicLink(item, className) {
+    const link = document.createElement("a");
+    link.href = "#" + item.id;
+    link.className = className;
+    const name = document.createElement("strong");
+    name.textContent = item.title;
+    const desc = document.createElement("span");
+    desc.textContent = item.desc;
+    const hint = document.createElement("em");
+    hint.textContent = "Leggi il regolamento  ↗";
+    link.append(name, desc, hint);
+    return link;
+  }
+  function openCategory(key) {
+    const data = categories[key];
+    if (!data) return;
+    const isAlreadyOpen = !panel.hidden && buttons.some(function (btn) {return btn.dataset.ruleCategory === key && btn.classList.contains("is-active");});
+    buttons.forEach(function (button) {
+      const active = !isAlreadyOpen && button.dataset.ruleCategory === key;
+      button.classList.toggle("is-active", active);
+      button.setAttribute("aria-expanded", String(active));
+    });
+    if (isAlreadyOpen) {
+      panel.hidden = true;
+      return;
+    }
+    panelTitle.textContent = data.title;
+    topicsGrid.replaceChildren();
+    data.topics.forEach(function (item) {topicsGrid.appendChild(makeTopicLink(item,"rules-topic"));});
+    panel.hidden = false;
+    if (window.matchMedia("(max-width: 768px)").matches) panel.scrollIntoView({behavior:"smooth",block:"start"});
+  }
+  buttons.forEach(function (button) {
+    button.addEventListener("click", function () {openCategory(button.dataset.ruleCategory);});
   });
+  document.getElementById("rulesPanelClose").addEventListener("click", function () {
+    panel.hidden = true;
+    buttons.forEach(function (btn) {btn.classList.remove("is-active");btn.setAttribute("aria-expanded","false");});
+  });
+  const entries = uniqueItems.map(function (item) {
+    const target = document.getElementById(item.id);
+    const section = target && target.closest("section[id]");
+    return {id:item.id,title:item.title,desc:item.desc,body: section ? section.textContent.slice(0,13000) : "",kind:"topic"};
+  });
+  headings.forEach(function (heading) {
+    const title = heading.textContent.trim();
+    const section = heading.closest("section[id]");
+    let around = "";
+    let next = heading.nextElementSibling;
+    for (let n=0;next && n<12 && around.length<2000;n++,next=next.nextElementSibling) {
+      if (/^H[4-6]$/.test(next.tagName)) break;
+      around += " " + next.textContent;
+    }
+    entries.push({id:heading.id,title:title,desc:section ? section.querySelector("summary").textContent.trim() : "",body:around,kind:"heading"});
+  });
+  function search(query) {
+    const terms = clean(query).split(" ").filter(Boolean);
+    if (!terms.length) return [];
+    return entries.map(function (entry) {
+      const title = clean(entry.title), desc = clean(entry.desc), body = clean(entry.body);
+      if (!terms.every(function (part) {return title.includes(part) || desc.includes(part) || body.includes(part);})) return null;
+      let score = entry.kind === "topic" ? 12 : 4;
+      if (title.includes(terms.join(" "))) score += 70;
+      terms.forEach(function (part) {if (title.includes(part)) score += 30;else if (desc.includes(part)) score += 9;});
+      return {entry:entry,score:score};
+    }).filter(Boolean).sort(function (a,b) {return b.score-a.score;}).slice(0,9).map(function (hit) {return hit.entry;});
+  }
+  function renderSearch() {
+    const query = searchInput.value.trim();
+    searchResults.replaceChildren();
+    if (clean(query).length < 2) {searchResults.hidden = true;return [];}
+    const matches = search(query);
+    searchResults.hidden = false;
+    const heading = document.createElement("div");
+    heading.className = "rules-results-title";
+    heading.textContent = matches.length ? "Risultati della ricerca" : "Nessuna regola trovata. Prova con un altro termine.";
+    searchResults.appendChild(heading);
+    matches.forEach(function (item) {
+      const link = document.createElement("a");
+      link.className = "rules-search-result";
+      link.href = "#" + item.id;
+      const name = document.createElement("strong");
+      name.textContent = item.title;
+      const sub = document.createElement("span");
+      sub.textContent = item.desc || "Apri la sezione completa";
+      link.append(name,sub);
+      searchResults.appendChild(link);
+    });
+    return matches;
+  }
+  searchInput.addEventListener("input", renderSearch);
+  form.addEventListener("submit", function (event) {
+    event.preventDefault();
+    const found = renderSearch();
+    if (found.length) navigateTo(found[0].id,true);
+  });
+  document.addEventListener("click", function (event) {
+    const link = event.target.closest('a[href^="#"]');
+    if (!link) return;
+    const id = decodeURIComponent(link.getAttribute("href").slice(1));
+    if (id && document.getElementById(id)) {
+      event.preventDefault();
+      navigateTo(id,true);
+    }
+  });
+  function navigateHash() {
+    const id = decodeURIComponent(window.location.hash.slice(1));
+    if (id) navigateTo(id,false);
+  }
+  window.addEventListener("hashchange",navigateHash);
+  if (window.location.hash) window.requestAnimationFrame(navigateHash);
+})();
 </script>
 </section></div>
 <!-- Barra di navigazione mobile, coerente con la navbar condivisa dell'app -->
