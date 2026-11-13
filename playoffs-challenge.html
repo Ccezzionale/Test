@@ -291,7 +291,7 @@
         <section class="pc-admin-step" id="pc-guide-step1"><header><span class="pc-step-num">01</span><div><h3>Scegli la giornata</h3><p>Ogni turno ha un palinsesto distinto. Inizia dagli ottavi.</p></div><span id="pc-guide-state-1" class="pc-step-badge">Pronto</span></header>
           <div class="pc-field"><label for="pc-admin-stage">Turno da gestire</label><select id="pc-admin-stage"></select></div><p id="pc-guide-round-status" class="pc-step-note">Caricamento stato…</p>
           <div id="pc-unpublish-panel" class="pc-step-note" hidden>
-            <p><strong>🔓 Vuoi correggere un turno già pubblicato?</strong> Se nessun allenatore ha consegnato una schedina, puoi ritirare la pubblicazione, conservare le partite e tutte le quote, e tornare ai passaggi 02–05.</p>
+            <p><strong>🔓 Vuoi correggere un turno già pubblicato?</strong> Puoi ritirare la pubblicazione e correggere partite e quote. Se esistono schedine già consegnate, il ritiro forzato le archivia e le annulla: alla nuova pubblicazione, gli allenatori dovranno riconsegnarle.</p>
             <p id="pc-unpublish-count"></p>
             <button class="pc-button pc-ghost" type="button" id="pc-admin-unpublish">↩ Ritira pubblicazione e torna in bozza</button>
             <p id="pc-unpublish-feedback" class="pc-feedback" role="status" aria-live="polite"></p>
@@ -440,7 +440,7 @@
 </main>
 <script defer src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
 <script type="module" src="playoffs-challenge.js?v=pc-v9-4-1"></script>
-<script type="module" src="playoffs-challenge-live.js?v=pc-v9-8-unpublish-feedback"></script>
+<script type="module" src="playoffs-challenge-live.js?v=pc-v9-8-force-unpublish"></script>
 <script defer src="pc-mobile-slip.js?v=pc-v9-8-mobile-premium"></script>
 <script src="mobile-nav.js?v=20261007-bottom4"></script>
 <script src="navbar.js?v=20261015"></script>
