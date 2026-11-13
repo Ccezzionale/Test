@@ -8,7 +8,7 @@
   <title>Playoffs Challenge | Lega degli Eroi</title>
   <link rel="icon" href="icon-192.png" type="image/png" />
   <link rel="stylesheet" href="navbar.css?v=20261015" />
-  <link rel="stylesheet" href="playoffs-challenge.css?v=pc-v9-8-demo-odds-compare" />
+  <link rel="stylesheet" href="playoffs-challenge.css?v=pc-v9-9-single-odds-flow" />
 </head>
 <body class="pc-page">
 <nav class="site-nav">
@@ -299,18 +299,16 @@
         </section>
         <div id="pc-admin-draft">
           <section class="pc-admin-step pc-odds-wizard" id="pc-guide-step2">
-            <header><span class="pc-step-num">02</span><div><h3>Partite e quote 1 / X / 2</h3><p>Prima controlla le squadre. Poi scegli come vuoi le quote e premi un solo pulsante per confermarle e salvarle.</p></div><span id="pc-guide-state-2" class="pc-step-badge">Da fare</span></header>
-            <div class="pc-quote-section-title"><span>A</span><div><strong>Controlla le quattro partite</strong><p>Verifica squadre e ordine. Puoi modificare a mano i numeri 1, X e 2: saranno utilizzati solo scegliendo «Quote manuali» qui sotto.</p></div></div>
-            <div id="pc-demo-odds-reference" class="pc-demo-odds-reference" hidden aria-label="Confronto delle quote indicative della scheda Schedina"></div>
-            <p class="pc-draft-odds-label"><strong>✏️ Quote della bozza da pubblicare</strong><span>Modifica qui 1 / X / 2, poi conferma e salva.</span></p>
+            <header><span class="pc-step-num">02</span><div><h3>Partite e quote 1 / X / 2</h3><p>Prima scegli le quattro partite. Poi scegli come calcolare le quote e confermale: una sola anteprima, senza numeri duplicati.</p></div><span id="pc-guide-state-2" class="pc-step-badge">Da fare</span></header>
+            <div class="pc-quote-section-title"><span>A</span><div><strong>1. Scegli le quattro partite</strong><p>Qui imposti solo gli accoppiamenti. Le quote saranno mostrate sotto, nella sezione B, per queste squadre.</p></div></div>
             <div id="pc-admin-matches"></div>
             <div class="pc-entry-actions"><button class="pc-button pc-ghost" type="button" id="pc-admin-forecast">Carica gli ottavi provvisori</button></div>
-            <div class="pc-quote-section-title"><span>B</span><div><strong>Scegli quali quote usare</strong><p>Di norma è sufficiente confermare le quote del motore attuale. Le altre opzioni servono soltanto quando vuoi modificarle.</p></div></div>
+            <div class="pc-quote-section-title"><span>B</span><div><strong>2. Scegli come ottenere le quote</strong><p>Seleziona un metodo. Sotto vedrai esclusivamente i valori di quel metodo, non altre quote.</p></div></div>
             <section class="pc-simulator" id="pc-weight-simulator" aria-label="Scelta delle quote del Commissioner">
               <div class="pc-sim-top"><div><div class="pc-kicker">UNA SCELTA, UN SALVATAGGIO</div><h3>Quali quote vuoi utilizzare?</h3></div><span class="pc-sim-total" id="pc-sim-total">STANDARD</span></div>
               <div class="pc-sim-modes" role="radiogroup" aria-label="Metodo di scelta delle quote">
-                <label><input type="radio" name="pc-sim-mode" value="standard" checked/> <span><strong>✓ Quote attuali (consigliato)</strong><small>Usa il motore che già adottiamo. Guarda i valori proposti qui sotto e confermali.</small></span></label>
-                <label><input type="radio" name="pc-sim-mode" value="manual"/> <span><strong>✎ Quote manuali</strong><small>Scrivi liberamente 1, X e 2 nei campi delle partite. Non devono sommare 100%.</small></span></label>
+                <label><input type="radio" name="pc-sim-mode" value="standard" checked/> <span><strong>✓ Quote standard (consigliato)</strong><small>Il modello standard calcola le quote per gli incontri scelti in A.</small></span></label>
+                <label><input type="radio" name="pc-sim-mode" value="manual"/> <span><strong>✎ Quote manuali</strong><small>Modifica 1, X e 2 direttamente qui sotto. Parti dai valori già presenti nella bozza.</small></span></label>
                 <label><input type="radio" name="pc-sim-mode" value="custom"/> <span><strong>⚙️ Modifica i pesi del motore</strong><small>Inserisci tre percentuali indipendenti. Confronta le quote e poi conferma.</small></span></label>
               </div>
               <div class="pc-sim-custom" id="pc-sim-custom" hidden>
@@ -323,10 +321,10 @@
                 <p id="pc-sim-input-feedback" class="pc-feedback" role="status"></p>
               </div>
               <div class="pc-sim-warning" id="pc-sim-warning" role="status"></div>
-              <div class="pc-sim-results"><div class="pc-sim-result-head"><strong>Anteprima delle quattro partite</strong><span>Quote proposte dal motore</span></div><div id="pc-sim-games"></div></div>
-              <p class="pc-sim-manual-note" id="pc-sim-manual-note" hidden>✎ <strong>Hai scelto le quote manuali.</strong> Torna ai campi delle partite sopra, inserisci 1, X e 2 a piacere e conferma qui sotto. Il totale implicito è solo informativo. Le quote potrebbero discostarsi dalla regola delle probabilità senza margine: controllale prima di pubblicare.</p>
+              <div class="pc-sim-results"><div class="pc-sim-result-head"><strong id="pc-sim-result-heading">Quote standard delle partite selezionate</strong><span id="pc-sim-result-badge">ANTEPRIMA · NON SALVATE</span></div><div id="pc-sim-games"></div></div>
+              <p class="pc-sim-manual-note" id="pc-sim-manual-note" hidden>✎ <strong>Quote manuali:</strong> modificale direttamente sopra. I valori iniziali sono quelli già presenti nella bozza. Finché non confermi, nulla cambia su Supabase.</p>
             </section>
-            <div class="pc-quote-section-title"><span>C</span><div><strong>Conferma e salva le quote scelte</strong><p>Questo pulsante salva davvero le quattro partite su Supabase, in bozza. Non apre ancora i pronostici.</p></div></div>
+            <div class="pc-quote-section-title"><span>C</span><div><strong>3. Conferma i valori visualizzati</strong><p>Solo questo pulsante salva le nuove quote nella bozza su Supabase. Non apre ancora i pronostici.</p></div></div>
             <div class="pc-quote-confirm"><button class="pc-button pc-primary" type="button" id="pc-admin-confirm-odds">✓ Conferma e salva queste quote</button><p id="pc-admin-quote-feedback" role="status" aria-live="polite">Nessuna modifica salvata in questa sessione.</p></div>
           </section>
           <section class="pc-admin-step" id="pc-guide-step4"><header><span class="pc-step-num">03</span><div><h3>Prepara le quote dei calciatori</h3><p>È questo che permetterà agli allenatori di cercare POR, DIF, CEN e ATT. Calcola le proposte, modifica le quote che vuoi e conferma il catalogo con un unico pulsante.</p></div><span id="pc-guide-state-4" class="pc-step-badge">Da fare</span></header>
@@ -442,7 +440,7 @@
 </main>
 <script defer src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
 <script type="module" src="playoffs-challenge.js?v=pc-v9-4-1"></script>
-<script type="module" src="playoffs-challenge-live.js?v=pc-v9-8-demo-odds-compare"></script>
+<script type="module" src="playoffs-challenge-live.js?v=pc-v9-9-single-odds-flow"></script>
 <script defer src="pc-mobile-slip.js?v=pc-v9-8-mobile-premium"></script>
 <script src="mobile-nav.js?v=20261007-bottom4"></script>
 <script src="navbar.js?v=20261015"></script>
