@@ -6,6 +6,13 @@ const FIELDS=['historic','season','recent5'];
 const STORAGE_KEY='lega_pc_commissioner_custom_weights_v94';
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const fmt=(value,places=2)=>Number(value).toLocaleString('it-IT',{minimumFractionDigits:places,maximumFractionDigits:places});
+function manualPercentage(vals){
+  const nums=vals.map(v=>String(v??'').trim()===''?NaN:Number(v));
+  if(nums.some(n=>!Number.isFinite(n)||n<1.01||n>10000))return 'Completa le quote 1 / X / 2 (minimo 1,01)';
+  const total=nums.reduce((sum,n)=>sum+100/n,0);
+  return `Probabilità implicite: ${fmt(total,1)}% · ${Math.abs(total-100)<=3.5?'Vicino al 100%':'Valore solo indicativo'}`;
+}
+
 
 // Kept for compatibility with older tests/modules. NOT used by the new editable fields.
 export function rebalanceWeights(previous,changed,target){
@@ -19,7 +26,7 @@ export function rebalanceWeights(previous,changed,target){
   return validateSimulatorWeights({[changed]:value,[a]:av,[b]:remaining-av});
 }
 
-export function mountCommissionerSimulator({getSnapshot,getRound,getDraftMatches,getProjectedMatches,onApply}){
+export function mountCommissionerSimulator({getSnapshot,getRound,getDraftMatches,getProjectedMatches,onManualOddsInput,onApply}){
   const el=id=>document.getElementById(id);
   const shell=el('pc-weight-simulator');
   if(!shell)return {refresh(){},setSnapshot(){},getQuoteModel(){return null},getWeights(){return null}};
@@ -49,7 +56,9 @@ export function mountCommissionerSimulator({getSnapshot,getRound,getDraftMatches
     const manual=mode==='manual';
     el('pc-sim-custom').hidden=!custom;
     el('pc-sim-manual-note').hidden=!manual;
-    el('pc-weight-simulator').querySelector('.pc-sim-results').hidden=manual;
+    el('pc-weight-simulator').querySelector('.pc-sim-results').hidden=false;
+    el('pc-sim-result-heading').textContent=manual?'Quote manuali da modificare':custom?'Quote con i pesi scelti':'Quote standard delle partite selezionate';
+    el('pc-sim-result-badge').textContent=manual?'MODIFICABILI · NON SALVATE':'ANTEPRIMA · NON SALVATE';
     for(const radio of document.querySelectorAll('input[name="pc-sim-mode"]'))radio.checked=radio.value===mode;
     const state=readFields();
     el('pc-sim-total').textContent=manual?'MANUALE':custom?(state.sum===null?'DA COMPLETARE':`${state.sum}%`):'STANDARD';
@@ -59,7 +68,20 @@ export function mountCommissionerSimulator({getSnapshot,getRound,getDraftMatches
     const round=getRound();
     if(!round||round.status!=='draft'){shell.hidden=true;return;}
     shell.hidden=false;
-    if(manual){rows=[];el('pc-sim-warning').textContent='Scrivi le quote nelle quattro partite qui sopra. Il pulsante finale salverà esattamente i valori digitati.';return;}
+    if(manual){
+      rows=[];
+      const matches=getDraftMatches().map(x=>({...x}));
+      el('pc-sim-games').innerHTML=matches.map(m=>{
+        const keys=['q1','qx','q2'];
+        return `<article class="pc-sim-fixture pc-sim-manual-fixture" data-pc-manual-slot="${Number(m.slot)}">
+          <div class="pc-sim-fixture-title"><strong>${esc(m.home_name||'Prima squadra da selezionare')} vs ${esc(m.away_name||'Seconda squadra da selezionare')}</strong><small>Partita ${Number(m.slot)}</small></div>
+          <div class="pc-sim-manual-odds">${keys.map((key,i)=>`<label><span>${['1','X','2'][i]}</span><input data-manual-field="${key}" type="number" min="1.01" max="10000" step="0.01" inputmode="decimal" value="${esc(m[key]??'')}" aria-label="Quota ${['1','X','2'][i]} della partita ${Number(m.slot)}"></label>`).join('')}</div>
+          <small class="pc-sim-manual-balance" data-manual-balance>${manualPercentage(keys.map(k=>m[k]))}</small>
+        </article>`;
+      }).join('');
+      el('pc-sim-warning').textContent='Qui trovi le quote della bozza già salvata, da modificare liberamente. Soltanto «Conferma e salva queste quote» registra i cambiamenti.';
+      return;
+    }
     if(custom&&!state.valid){clear('Completa i tre pesi fino al 100% per vedere le nuove quote. Le quote della bozza restano intatte.');return;}
     if(custom){weights={...state.raw};try{window.localStorage.setItem(STORAGE_KEY,JSON.stringify(weights));}catch(_){}}
     const source=snapshot||getSnapshot();
@@ -88,15 +110,25 @@ export function mountCommissionerSimulator({getSnapshot,getRound,getDraftMatches
       const probs=[match.current.p1,match.current.px,match.current.p2];
       const cells=['1','X','2'].map((name,i)=>{
         const delta=now[i]-old[i];
-        return `<div class="pc-sim-odd"><span>${name}</span><strong>${custom?`${fmt(old[i])} → `:''}${fmt(now[i])}</strong><small>${fmt(probs[i]*100,1)}% probabilità</small>${custom?`<em class="${delta>0.005?'increase':delta< -0.005?'decrease':''}">${Math.abs(delta)<0.005?'Invariata':`${delta>0?'+':''}${fmt(delta)} sulla quota`}</em>`:'<em>Quota del motore attuale</em>'}</div>`;
+        return `<div class="pc-sim-odd"><span>${name}</span><strong>${fmt(now[i])}</strong><small>${fmt(probs[i]*100,1)}% probabilità</small>${custom?`<em class="${delta>0.005?'increase':delta< -0.005?'decrease':''}">${Math.abs(delta)<0.005?'Come lo standard':`${delta>0?'+':''}${fmt(delta)} rispetto allo standard`}</em>`:''}</div>`;
       }).join('');
       return `<article class="pc-sim-fixture"><div class="pc-sim-fixture-title"><strong>${esc(match.home)} vs ${esc(match.away)}</strong><small>Partita ${match.slot}</small></div><div class="pc-sim-odds-grid">${cells}</div></article>`;
     }).join('');
-    let help=custom?'Simulazione alternativa con le percentuali inserite.':'Stai vedendo esattamente il modello 1X2 standard già utilizzato dall’app; non equivale al preset 10/60/30.';
+    let help=custom?'Quote con i pesi personalizzati, per gli incontri scelti nella parte A.':'Quote standard per gli incontri selezionati nella parte A. La Schedina dimostrativa può proiettare avversari diversi.';
     help+=` Dati disponibili fino alla giornata ${source.originalModel.metadata.latestRound}. Nessuna quota viene pubblicata automaticamente.`;
     if(fallback.size)help+=` Dati mancanti, pesi ridistribuiti: ${[...fallback].join('; ')}.`;
     el('pc-sim-warning').textContent=help;
   }
+  el('pc-sim-games').addEventListener('input',event=>{
+    if(mode!=='manual')return;
+    const input=event.target.closest('input[data-manual-field]');
+    if(!input)return;
+    const item=input.closest('[data-pc-manual-slot]');
+    if(!item)return;
+    onManualOddsInput?.(Number(item.dataset.pcManualSlot),input.dataset.manualField,input.value);
+    item.querySelector('[data-manual-balance]').textContent=
+      manualPercentage([...item.querySelectorAll('input[data-manual-field]')].map(x=>x.value));
+  });
   for(const radio of document.querySelectorAll('input[name="pc-sim-mode"]'))radio.addEventListener('change',e=>{if(e.target.checked){mode=e.target.value;render();}});
   for(const key of FIELDS)el(`pc-weight-${key}`).addEventListener('input',render);
   el('pc-sim-reset').addEventListener('click',()=>{
