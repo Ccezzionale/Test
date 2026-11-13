@@ -382,9 +382,10 @@ async function unpublishRound(){
    msg('pc-admin-feedback','✅ Pubblicazione ritirata. La giornata è di nuovo in bozza: puoi modificare quote e partite ai passaggi 02–05. Gli eventi già preparati sono rimasti salvati.');
  }catch(e){
    const errorMessage=`Impossibile tornare in bozza: ${e.message}`;
-   msg(nearby,errorMessage,true);msg('pc-admin-feedback',errorMessage,true);
    await readOfficial().catch(()=>{});
    renderAdmin();
+   // renderAdmin() aggiorna il pannello; ripristina l'errore subito accanto al tasto.
+   msg(nearby,errorMessage,true);msg('pc-admin-feedback',errorMessage,true);
  }finally{
    btn.disabled=false;
    const updated=S.rounds.find(x=>Number(x.id)===id);
