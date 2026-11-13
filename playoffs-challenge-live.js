@@ -146,7 +146,8 @@ function chooseActive(){const previous=S.active;
 async function update(){if(S.busy)return;
  if(S.dirty){const r=S.rounds.find(x=>x.id===S.active);if(openRound(r))return;S.dirty=false;}S.busy=true;try{await readOfficial();chooseActive();renderOfficial();await refreshLeaderboard();
  if(S.admin && Date.now()-S.modelUpdated>5*60*1000)await loadModel();
- if(S.admin && !$('pc-tab-admin').classList.contains('active'))renderAdmin();}catch(e){console.warn('Playoffs Challenge V4:',e);msg('pc-admin-feedback',e.message,true)}finally{S.busy=false;}}
+ if(S.admin && !$('pc-tab-admin').classList.contains('active'))renderAdmin();
+ else if(S.admin)renderDemoOddsComparison(S.rounds.find(x=>x.id===Number($('pc-admin-stage').value)));}catch(e){console.warn('Playoffs Challenge V4:',e);msg('pc-admin-feedback',e.message,true)}finally{S.busy=false;}}
 function initialDraft(round){let rows=roundEvents(round.id).filter(x=>!x.is_catalog);
  if(rows.length)return rows.map(e=>({...e}));
  return Array.from({length:stageData(round.stage)[2]},(_,i)=>({kind:'match',slot:i+1,home_name:'',away_name:'',q1:'',qx:'',q2:''}));}
@@ -199,13 +200,57 @@ function renderAdminGuide(r){
  const publish=$('pc-admin-publish');
  if(publish)publish.disabled=r.status!=='draft'||named!==needed||quoted!==needed||needRosterFix||(!catalog&&manualRoles!==4)||!$('pc-admin-deadline').value;
 }
+// Anteprima non interattiva: le stesse quote e gli stessi ottavi proiettati
+// che la scheda Schedina mostra finche' non esiste un turno pubblicato.
+// Non sostituisce mai gli eventi o le quote salvate nel Commissioner.
+function renderDemoOddsComparison(round){
+ const box=$('pc-demo-odds-reference');
+ if(!box)return;
+ const visible=round?.stage==='ottavi'&&round.status==='draft'&&!published().length;
+ box.hidden=!visible;
+ if(!visible)return;
+ const fixtures=S.projection?.fixtures;
+ if(!S.model||!S.projection?.hasSufficientData||!Array.isArray(fixtures)||!fixtures.length){
+   box.innerHTML='<strong>Quote indicative della Schedina</strong><p>Sto caricando gli ottavi proiettati e le quote della simulazione.</p>';
+   return;
+ }
+ const draftMatches=S.adminDraft.filter(e=>e.kind==='match');
+ let differs=false;
+ const cards=fixtures.map((match,i)=>{
+   const home=match.home?.name,away=match.away?.name;
+   if(!home||!away)return '';
+   const recorded=draftMatches.find(m=>Number(m.slot)===Number(match.slot??(i+1)));
+   if(!recorded||normalizeTeam(recorded.home_name)!==normalizeTeam(home)||normalizeTeam(recorded.away_name)!==normalizeTeam(away))differs=true;
+   try{
+     // quoteMatch e' lo stesso motore usato da playoffs-challenge.js.
+     const q=quoteMatch(S.model,home,away,'ottavi');
+     return `<div class="pc-demo-odds-item">
+       <strong>${esc(home)} <span>vs</span> ${esc(away)}</strong>
+       <div class="pc-demo-odds-triplet">
+         <span>1 <b>${fmt(q.q1)}</b></span><span>X <b>${fmt(q.qx)}</b></span><span>2 <b>${fmt(q.q2)}</b></span>
+       </div>
+     </div>`;
+   }catch(_){
+     return `<div class="pc-demo-odds-item"><strong>${esc(home)} vs ${esc(away)}</strong><small>Quote indicative non disponibili</small></div>`;
+   }
+ }).join('');
+ box.innerHTML=`<div class="pc-demo-odds-heading">
+   <strong>👁 Quote della Schedina dimostrativa</strong>
+   <span>SIMULAZIONE · NON PUBBLICATE</span>
+ </div>
+ <p>Questi sono gli ottavi <b>proiettati</b> e le quote del modello standard che vedi nella scheda Schedina quando nessun turno è pubblicato.</p>
+ <div class="pc-demo-odds-grid">${cards}</div>
+ <p class="pc-demo-odds-footnote">${differs
+   ? 'Attenzione: almeno un incontro è diverso da quelli della tua bozza. Le quote sono calcolate sulle squadre indicate e non si possono confrontare a parità di slot.'
+   : 'Gli incontri coincidono con quelli della bozza. Per applicare queste quote usa «Motore attuale» e poi «Conferma e salva»; i valori non vengono copiati automaticamente.'}</p>`;
+}
 function renderAdmin(){if(!S.admin)return;
  const selected=Number($('pc-admin-stage').value||S.rounds[0]?.id);const r=S.rounds.find(x=>x.id===selected)||S.rounds[0];if(!r)return;
  $('pc-admin-stage').innerHTML=S.rounds.map(x=>`<option value="${x.id}">${esc(stageData(x.stage)[1])} · ${x.status}</option>`).join('');$('pc-admin-stage').value=r.id;
  $('pc-admin-deadline').value=localDatetime(r.closes_at);$('pc-admin-deadline').disabled=r.status!=='draft';
  $('pc-admin-draft').hidden=r.status!=='draft';$('pc-admin-grading').hidden=r.status==='draft';
  if(S.adminDraftRoundId!==r.id){S.adminDraft=initialDraft(r);S.adminDraftRoundId=r.id;}
- renderAdminDraft(r);S.simulator?.refresh();S.playerBookmaker?.refresh();renderAdminGuide(r);
+ renderAdminDraft(r);renderDemoOddsComparison(r);S.simulator?.refresh();S.playerBookmaker?.refresh();renderAdminGuide(r);
  loadCatalogForRound(r);syncCatalogueFilter();
  const count=roundEvents(r.id).filter(x=>x.is_catalog).length;const summary=$('pc-cat-status');if(summary)summary.textContent=S.pcCatalogSource==='filtered'?`⚠️ Il catalogo contiene giocatori fuori dal listone 2026/27. Ricalcola oppure conferma e salva la lista ripulita.`:count?`✅ ${count} quote già salvate nel catalogo. Puoi modificare e confermare le quote qui sotto oppure ricalcolarle.`:'Premi «Calcola le quote suggerite» per preparare il catalogo. Non verrà salvato automaticamente.';
  if(r.status!=='draft')renderGrading(r);
@@ -649,7 +694,7 @@ function bind(){
  $('pc-official-save').addEventListener('click',saveEntry);
  $('pc-admin-stage').addEventListener('change',()=>{S.gradePreview.clear();S.gradeFile=null;S.gradeRoundId=null;msg('pc-votes-feedback','Carica il file Excel completo del turno selezionato.');msg('pc-admin-quote-feedback','Scegli le quote per questo turno e premi Conferma e salva.');renderAdmin();});
  $('pc-admin-deadline').addEventListener('input',()=>renderAdminGuide(S.rounds.find(r=>r.id===Number($('pc-admin-stage').value))));
- $('pc-admin-matches').addEventListener('change',()=>{msg('pc-admin-quote-feedback','✎ Hai modificato le partite o le quote. Premi «Conferma e salva queste quote».');collectAdminDraft();S.simulator?.refresh();renderAdminGuide(S.rounds.find(r=>r.id===Number($('pc-admin-stage').value))) });
+ $('pc-admin-matches').addEventListener('change',()=>{msg('pc-admin-quote-feedback','✎ Hai modificato le partite o le quote. Premi «Conferma e salva queste quote».');collectAdminDraft();S.simulator?.refresh();const round=S.rounds.find(r=>r.id===Number($('pc-admin-stage').value));renderDemoOddsComparison(round);renderAdminGuide(round) });
  $('pc-admin-matches').addEventListener('input',()=>{msg('pc-admin-quote-feedback','✎ Modifiche non ancora salvate. Premi «Conferma e salva queste quote».');collectAdminDraft();updateOddsBalanceRows();S.simulator?.refresh();renderAdminGuide(S.rounds.find(r=>r.id===Number($('pc-admin-stage').value))) });
  $('pc-admin-players').addEventListener('change',e=>{const row=e.target.closest('[data-admin-player]');if(e.target.dataset.playerField==='player_role')renderEventChoice(row,e.target.value);collectAdminDraft()});
  $('pc-admin-players').addEventListener('input',()=>{collectAdminDraft();renderAdminGuide(S.rounds.find(r=>r.id===Number($('pc-admin-stage').value)))});
