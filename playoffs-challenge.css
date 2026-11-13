@@ -1383,3 +1383,8 @@
   .pc-page #pc-tab-admin .pc-sim-manual-odds{gap:6px}
   .pc-page #pc-tab-admin .pc-sim-manual-odds input{font-size:.9rem;min-height:39px}
 }
+
+.pc-page #pc-tab-admin .pc-fixture-hint{
+  margin:0 0 12px;font-size:.72rem;line-height:1.48;color:#657a90
+}
+.pc-page #pc-tab-admin .pc-fixture-hint strong{color:#244c70}
