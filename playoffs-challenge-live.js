@@ -166,14 +166,15 @@ function renderAdminGuide(r){
    unpublishBox.hidden=!isPublished;
    if(isPublished){
      $('pc-unpublish-count').textContent=entryCount
-       ? `${entryCount} ${entryCount===1?'schedina già consegnata':'schedine già consegnate'}: il ritiro è bloccato per proteggere i pronostici ricevuti.`
+       ? `${entryCount} ${entryCount===1?'schedina già consegnata':'schedine già consegnate'}. Puoi comunque ritirare il turno, ma le vecchie schedine saranno archiviate e ANNULLATE: gli allenatori dovranno riconsegnarle dopo la nuova pubblicazione.`
        : 'Nessuna schedina consegnata: puoi ritirare questa pubblicazione senza perdere partite e quote.';
      const withdrawButton=$('pc-admin-unpublish');
-     // Il tasto resta cliccabile: se bloccato, spiega il motivo invece di non fare nulla.
      withdrawButton.disabled=false;
-     withdrawButton.textContent=entryCount ? 'ⓘ Perché non posso tornare in bozza?' : '↩ Ritira pubblicazione e torna in bozza';
+     withdrawButton.textContent=entryCount
+       ? `⚠️ Ritiro forzato · annulla ${entryCount} ${entryCount===1?'schedina':'schedine'}`
+       : '↩ Ritira pubblicazione e torna in bozza';
      msg('pc-unpublish-feedback',entryCount
-       ? 'Non verrà cancellata alcuna schedina. Prima del ritiro, i pronostici già consegnati devono essere gestiti esplicitamente.'
+       ? 'Le partite e le quote rimangono salvate. Le schedine esistenti vengono conservate in un archivio amministrativo, ma non saranno più valide.'
        : '');
    }
  }
@@ -356,44 +357,58 @@ async function unpublishRound(){
  const id=Number($('pc-admin-stage').value);
  const r=S.rounds.find(x=>Number(x.id)===id);
  const nearby='pc-unpublish-feedback';
- if(!r||r.status!=='open'){
-   msg(nearby,'Questa giornata non è pubblicata.',true);
-   return msg('pc-admin-feedback','Questa giornata non è pubblicata.',true);
- }
+ if(!r||r.status!=='open')return msg(nearby,'Questa giornata non è pubblicata.',true);
  const btn=$('pc-admin-unpublish');
  btn.disabled=true;
  try{
-   // Controlla il dato reale su Supabase, non una lista potenzialmente datata nel browser.
+   // Conta le schedine effettive prima della conferma, senza fidarsi della cache.
    const {count,error:countError}=await supabase.from('pc_entries')
      .select('id',{count:'exact',head:true}).eq('round_id',id);
    if(countError)throw countError;
-   if((count||0)>0){
-     const warning=`Impossibile ritirare ${stageData(r.stage)[1]}: risultano ${count} ${count===1?'schedina già consegnata':'schedine già consegnate'}. Per proteggere i pronostici, il turno può tornare in bozza soltanto dopo che queste schedine saranno gestite esplicitamente. Nessuna schedina è stata cancellata.`;
-     msg(nearby,warning,true);
-     msg('pc-admin-feedback',warning,true);
-     return;
+   const submitted=count||0;
+   const force=submitted>0;
+   if(force){
+     const ok=confirm(`⚠️ RITIRO FORZATO DI ${stageData(r.stage)[1]}\n\nCi sono ${submitted} ${submitted===1?'schedina consegnata':'schedine consegnate'}.\n\nConfermando, tornerai in bozza e tutte le schedine di questo turno saranno ANNULLATE. Prima saranno salvate in un archivio amministrativo. Le partite, le quote e gli eventi resteranno invariati.\n\nDopo la nuova pubblicazione, gli allenatori dovranno compilare nuovamente i pronostici.\n\nVuoi continuare?`);
+     if(!ok)return;
+     const typed=prompt('SECONDA CONFERMA: per annullare le schedine e tornare in bozza, scrivi RITIRA (in maiuscolo).');
+     if(typed?.trim()!=='RITIRA'){
+       if(typed!==null)msg(nearby,'Operazione annullata: devi scrivere esattamente RITIRA.',true);
+       return;
+     }
+   }else{
+     if(!confirm(`RITIRARE la pubblicazione di ${stageData(r.stage)[1]}?\n\nIl turno tornerà in bozza. Partite, calciatori e quote non verranno cancellati.`))return;
    }
-   if(!confirm(`RITIRARE la pubblicazione di ${stageData(r.stage)[1]}?\n\nLe schedine si chiuderanno subito e il turno tornerà in bozza. Partite, calciatori e quote NON verranno cancellati.\n\nConsentito soltanto se nessuno ha già consegnato pronostici.`))return;
    msg(nearby,'Ritiro della pubblicazione in corso…');
-   const {error}=await supabase.rpc('pc_admin_unpublish_round',{p_round_id:id});
-   if(error)throw error;
+   let archived=0;
+   if(force){
+     const {data,error}=await supabase.rpc('pc_admin_force_unpublish_round',{
+       p_round_id:id,p_confirmation:'RITIRA'
+     });
+     if(error)throw error;
+     archived=Number(data||0);
+   }else{
+     const {error}=await supabase.rpc('pc_admin_unpublish_round',{p_round_id:id});
+     if(error)throw error;
+   }
    await readOfficial();S.adminDraftRoundId=null;
    chooseActive();renderOfficial();renderAdmin();
-   msg('pc-admin-feedback','✅ Pubblicazione ritirata. La giornata è di nuovo in bozza: puoi modificare quote e partite ai passaggi 02–05. Gli eventi già preparati sono rimasti salvati.');
+   const feedback=force
+     ? `✅ Giornata tornata in bozza. ${archived} ${archived===1?'schedina annullata e archiviata':'schedine annullate e archiviate'}. Le quote sono salve. Alla ripubblicazione, tutti dovranno consegnare una nuova schedina.`
+     : '✅ Pubblicazione ritirata. La giornata è di nuovo in bozza, con partite, eventi e quote conservati.';
+   msg('pc-admin-feedback',feedback);
  }catch(e){
    const errorMessage=`Impossibile tornare in bozza: ${e.message}`;
    await readOfficial().catch(()=>{});
    renderAdmin();
-   // renderAdmin() aggiorna il pannello; ripristina l'errore subito accanto al tasto.
-   msg(nearby,errorMessage,true);msg('pc-admin-feedback',errorMessage,true);
+   msg(nearby,errorMessage,true);
+   msg('pc-admin-feedback',errorMessage,true);
  }finally{
    btn.disabled=false;
    const updated=S.rounds.find(x=>Number(x.id)===id);
-   // Non cancellare il messaggio di errore immediatamente dopo il clic.
    if(updated?.status==='draft')renderAdminGuide(updated);
    else if(updated?.status==='open'){
      const cnt=S.entries.filter(e=>Number(e.round_id)===id).length;
-     btn.textContent=cnt?'ⓘ Perché non posso tornare in bozza?':'↩ Ritira pubblicazione e torna in bozza';
+     btn.textContent=cnt?`⚠️ Ritiro forzato · annulla ${cnt} ${cnt===1?'schedina':'schedine'}`:'↩ Ritira pubblicazione e torna in bozza';
    }
  }
 }
