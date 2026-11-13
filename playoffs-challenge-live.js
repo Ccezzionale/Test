@@ -636,8 +636,17 @@ function bind(){
  $('pc-admin-stage').addEventListener('change',()=>{S.gradePreview.clear();S.gradeFile=null;S.gradeRoundId=null;msg('pc-votes-feedback','Carica il file Excel completo del turno selezionato.');msg('pc-admin-quote-feedback','Scegli le quote per questo turno e premi Conferma e salva.');renderAdmin();});
  $('pc-admin-deadline').addEventListener('input',()=>renderAdminGuide(S.rounds.find(r=>r.id===Number($('pc-admin-stage').value))));
  $('pc-admin-matches').addEventListener('change',()=>{
-   msg('pc-admin-quote-feedback','✎ Hai cambiato gli incontri. Controlla le quote della sezione B e confermale: quelle già salvate non cambiano automaticamente.');
-   collectAdminDraft();S.simulator?.refresh();
+   const previous=S.adminDraft.filter(m=>m.kind==='match').map(m=>({...m}));
+   collectAdminDraft();
+   // Le quote salvate per altre squadre non vanno attribuite al nuovo incontro.
+   S.adminDraft.filter(m=>m.kind==='match').forEach((m,i)=>{
+     const old=previous[i];
+     if(old&&(normalizeTeam(old.home_name)!==normalizeTeam(m.home_name)||normalizeTeam(old.away_name)!==normalizeTeam(m.away_name))){
+       m.q1='';m.qx='';m.q2='';
+     }
+   });
+   msg('pc-admin-quote-feedback','✎ Accoppiamenti modificati. Le vecchie quote degli incontri cambiati non vengono riutilizzate. Scegli il metodo B e conferma le nuove quote; Supabase non è stato modificato.');
+   S.simulator?.refresh();
    renderAdminGuide(S.rounds.find(r=>r.id===Number($('pc-admin-stage').value)));
  });
  $('pc-admin-players').addEventListener('change',e=>{const row=e.target.closest('[data-admin-player]');if(e.target.dataset.playerField==='player_role')renderEventChoice(row,e.target.value);collectAdminDraft()});
