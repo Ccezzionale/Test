@@ -428,7 +428,15 @@ async function generateOdds(force=false){
  msg('pc-admin-feedback',result,!!invalid||!!incomplete);
 }
 function seedFromForecast(){collectAdminDraft();const r=S.rounds.find(x=>x.id===Number($('pc-admin-stage').value));if(!r||r.stage!=='ottavi'||!S.projection?.hasSufficientData){msg('pc-admin-feedback','Proiezione disponibile soltanto per gli ottavi.',true);return}
- S.adminDraft.filter(x=>x.kind==='match').forEach((m,i)=>{m.home_name=S.projection.fixtures[i].home.name;m.away_name=S.projection.fixtures[i].away.name;});renderAdminDraft(r);S.simulator?.refresh();msg('pc-admin-feedback','Ottavi proiettati caricati. Prima di pubblicare, verifica il seeding UFFICIALE.');}
+ S.adminDraft.filter(x=>x.kind==='match').forEach((m,i)=>{
+   const projected=S.projection.fixtures[i];
+   if(!projected)return;
+   const home=projected.home.name,away=projected.away.name;
+   if(normalizeTeam(m.home_name)!==normalizeTeam(home)||normalizeTeam(m.away_name)!==normalizeTeam(away)){
+     m.q1='';m.qx='';m.q2='';
+   }
+   m.home_name=home;m.away_name=away;
+ });renderAdminDraft(r);S.simulator?.refresh();msg('pc-admin-feedback','Ottavi proiettati caricati. In modalità Standard, le quote ora corrispondono alla Schedina dimostrativa. Conferma le quote prima di pubblicare.');}
 async function confirmChosenOdds(){
   const r=S.rounds.find(x=>x.id===Number($('pc-admin-stage').value));
   if(!r||r.status!=='draft')return msg('pc-admin-quote-feedback','Prima scegli un turno in bozza.',true);
