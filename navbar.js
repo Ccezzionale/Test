@@ -438,7 +438,7 @@ document.addEventListener("DOMContentLoaded", function () {
   window.setTimeout(async () => {
     try {
       if (window.__LEGA_NOTIFICATION_CENTER_VERSION !== "20261010-center7-expand") {
-        await import("./notifications-center.js?v=20261010-center7-expand");
+        await import("./notifications-center.js?v=20261113-destinations");
       }
     } catch (error) {
       console.warn("Centro notifiche globale non disponibile:", error);
