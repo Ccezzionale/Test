@@ -8,7 +8,7 @@
   <title>Playoffs Challenge | Lega degli Eroi</title>
   <link rel="icon" href="icon-192.png" type="image/png" />
   <link rel="stylesheet" href="navbar.css?v=20261015" />
-  <link rel="stylesheet" href="playoffs-challenge.css?v=pc-v9-8-3-commissioner-banner-responsive" />
+  <link rel="stylesheet" href="playoffs-challenge.css?v=pc-v9-8-demo-odds-compare" />
 </head>
 <body class="pc-page">
 <nav class="site-nav">
@@ -301,6 +301,8 @@
           <section class="pc-admin-step pc-odds-wizard" id="pc-guide-step2">
             <header><span class="pc-step-num">02</span><div><h3>Partite e quote 1 / X / 2</h3><p>Prima controlla le squadre. Poi scegli come vuoi le quote e premi un solo pulsante per confermarle e salvarle.</p></div><span id="pc-guide-state-2" class="pc-step-badge">Da fare</span></header>
             <div class="pc-quote-section-title"><span>A</span><div><strong>Controlla le quattro partite</strong><p>Verifica squadre e ordine. Puoi modificare a mano i numeri 1, X e 2: saranno utilizzati solo scegliendo «Quote manuali» qui sotto.</p></div></div>
+            <div id="pc-demo-odds-reference" class="pc-demo-odds-reference" hidden aria-label="Confronto delle quote indicative della scheda Schedina"></div>
+            <p class="pc-draft-odds-label"><strong>✏️ Quote della bozza da pubblicare</strong><span>Modifica qui 1 / X / 2, poi conferma e salva.</span></p>
             <div id="pc-admin-matches"></div>
             <div class="pc-entry-actions"><button class="pc-button pc-ghost" type="button" id="pc-admin-forecast">Carica gli ottavi provvisori</button></div>
             <div class="pc-quote-section-title"><span>B</span><div><strong>Scegli quali quote usare</strong><p>Di norma è sufficiente confermare le quote del motore attuale. Le altre opzioni servono soltanto quando vuoi modificarle.</p></div></div>
@@ -440,7 +442,7 @@
 </main>
 <script defer src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
 <script type="module" src="playoffs-challenge.js?v=pc-v9-4-1"></script>
-<script type="module" src="playoffs-challenge-live.js?v=pc-v9-8-force-unpublish"></script>
+<script type="module" src="playoffs-challenge-live.js?v=pc-v9-8-demo-odds-compare"></script>
 <script defer src="pc-mobile-slip.js?v=pc-v9-8-mobile-premium"></script>
 <script src="mobile-nav.js?v=20261007-bottom4"></script>
 <script src="navbar.js?v=20261015"></script>
