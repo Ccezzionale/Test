@@ -166,9 +166,15 @@ function renderAdminGuide(r){
    unpublishBox.hidden=!isPublished;
    if(isPublished){
      $('pc-unpublish-count').textContent=entryCount
-       ? `${entryCount} schedine già consegnate: NON puoi tornare in bozza senza gestire prima i pronostici ricevuti.`
+       ? `${entryCount} ${entryCount===1?'schedina già consegnata':'schedine già consegnate'}: il ritiro è bloccato per proteggere i pronostici ricevuti.`
        : 'Nessuna schedina consegnata: puoi ritirare questa pubblicazione senza perdere partite e quote.';
-     $('pc-admin-unpublish').disabled=entryCount>0;
+     const withdrawButton=$('pc-admin-unpublish');
+     // Il tasto resta cliccabile: se bloccato, spiega il motivo invece di non fare nulla.
+     withdrawButton.disabled=false;
+     withdrawButton.textContent=entryCount ? 'ⓘ Perché non posso tornare in bozza?' : '↩ Ritira pubblicazione e torna in bozza';
+     msg('pc-unpublish-feedback',entryCount
+       ? 'Non verrà cancellata alcuna schedina. Prima del ritiro, i pronostici già consegnati devono essere gestiti esplicitamente.'
+       : '');
    }
  }
  const label=(n,value,ok=false)=>{
@@ -349,20 +355,46 @@ async function saveFullCatalog(){
 async function unpublishRound(){
  const id=Number($('pc-admin-stage').value);
  const r=S.rounds.find(x=>Number(x.id)===id);
- if(!r||r.status!=='open')return msg('pc-admin-feedback','Questa giornata non è pubblicata.',true);
- const submitted=S.entries.filter(e=>Number(e.round_id)===id).length;
- if(submitted)return msg('pc-admin-feedback',`Operazione bloccata: ci sono già ${submitted} schedine consegnate.`,true);
- if(!confirm(`RITIRARE la pubblicazione di ${stageData(r.stage)[1]}?\n\nLe schedine si chiuderanno subito e il turno tornerà in bozza. Partite, calciatori e quote NON verranno cancellati.\n\nConsentito soltanto se nessuno ha già consegnato pronostici.`))return;
- const btn=$('pc-admin-unpublish');btn.disabled=true;
+ const nearby='pc-unpublish-feedback';
+ if(!r||r.status!=='open'){
+   msg(nearby,'Questa giornata non è pubblicata.',true);
+   return msg('pc-admin-feedback','Questa giornata non è pubblicata.',true);
+ }
+ const btn=$('pc-admin-unpublish');
+ btn.disabled=true;
  try{
+   // Controlla il dato reale su Supabase, non una lista potenzialmente datata nel browser.
+   const {count,error:countError}=await supabase.from('pc_entries')
+     .select('id',{count:'exact',head:true}).eq('round_id',id);
+   if(countError)throw countError;
+   if((count||0)>0){
+     const warning=`Impossibile ritirare ${stageData(r.stage)[1]}: risultano ${count} ${count===1?'schedina già consegnata':'schedine già consegnate'}. Per proteggere i pronostici, il turno può tornare in bozza soltanto dopo che queste schedine saranno gestite esplicitamente. Nessuna schedina è stata cancellata.`;
+     msg(nearby,warning,true);
+     msg('pc-admin-feedback',warning,true);
+     return;
+   }
+   if(!confirm(`RITIRARE la pubblicazione di ${stageData(r.stage)[1]}?\n\nLe schedine si chiuderanno subito e il turno tornerà in bozza. Partite, calciatori e quote NON verranno cancellati.\n\nConsentito soltanto se nessuno ha già consegnato pronostici.`))return;
+   msg(nearby,'Ritiro della pubblicazione in corso…');
    const {error}=await supabase.rpc('pc_admin_unpublish_round',{p_round_id:id});
    if(error)throw error;
    await readOfficial();S.adminDraftRoundId=null;
    chooseActive();renderOfficial();renderAdmin();
    msg('pc-admin-feedback','✅ Pubblicazione ritirata. La giornata è di nuovo in bozza: puoi modificare quote e partite ai passaggi 02–05. Gli eventi già preparati sono rimasti salvati.');
- }catch(e){msg('pc-admin-feedback',`Impossibile tornare in bozza: ${e.message}`,true);
-   await readOfficial().catch(()=>{});renderAdmin();
- }finally{btn.disabled=false;renderAdminGuide(S.rounds.find(x=>Number(x.id)===id));}
+ }catch(e){
+   const errorMessage=`Impossibile tornare in bozza: ${e.message}`;
+   msg(nearby,errorMessage,true);msg('pc-admin-feedback',errorMessage,true);
+   await readOfficial().catch(()=>{});
+   renderAdmin();
+ }finally{
+   btn.disabled=false;
+   const updated=S.rounds.find(x=>Number(x.id)===id);
+   // Non cancellare il messaggio di errore immediatamente dopo il clic.
+   if(updated?.status==='draft')renderAdminGuide(updated);
+   else if(updated?.status==='open'){
+     const cnt=S.entries.filter(e=>Number(e.round_id)===id).length;
+     btn.textContent=cnt?'ⓘ Perché non posso tornare in bozza?':'↩ Ritira pubblicazione e torna in bozza';
+   }
+ }
 }
 // Default generation is conservative: NEVER overwrite an existing triplet of odds.
 // Recalculating all odds requires a separate explicit action and confirmation.
