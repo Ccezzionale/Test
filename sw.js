@@ -1,7 +1,7 @@
 /* LEGA DEGLI EROI - Unico Service Worker per TUTTE le pagine.
  * Il comando prepara_sito.py sostituisce il segnaposto con la release reale.
  */
-const SW_VERSION = "v20261113-push-deeplinks";
+const SW_VERSION = "v20261113-push-route-v2";
 const APP_CACHE_PREFIX = "lega-eroi-";
 
 self.addEventListener("install", (event) => {
@@ -65,7 +65,14 @@ self.addEventListener("push", (event) => {
   }));
 });
 
-// Ogni push deve aprire la pagina prevista, non semplicemente riportare l'app in Home.
+// Il browser Android puo' riaprire la PWA sulla Home anche da una push con deep link.
+// Conserviamo la destinazione per pochi secondi: la pagina riaperta chiede al worker
+// il collegamento e completa la navigazione tramite location.assign().
+const PUSH_ROUTE_CACHE = 'lega-push-route-v1';
+const PUSH_ROUTE_TTL_MS = 90000;
+function pushRouteKey() {
+  return new URL('__pending_push_route__', self.registration.scope).href;
+}
 function safePushDestination(value) {
   const scope = new URL(self.registration.scope);
   try {
@@ -78,43 +85,123 @@ function safePushDestination(value) {
     return scope.href;
   }
 }
+async function rememberPushRoute(url) {
+  try {
+    const cache = await caches.open(PUSH_ROUTE_CACHE);
+    await cache.put(pushRouteKey(), new Response(JSON.stringify({ url, time: Date.now() }), {
+      headers: { 'Content-Type': 'application/json' }
+    }));
+  } catch (error) {
+    console.warn('Lega: impossibile memorizzare temporaneamente la destinazione push', error);
+  }
+}
+async function getPendingPushRoute() {
+  try {
+    const cache = await caches.open(PUSH_ROUTE_CACHE);
+    const response = await cache.match(pushRouteKey());
+    if (!response) return null;
+    const record = await response.json();
+    if (!record?.time || Date.now() - record.time > PUSH_ROUTE_TTL_MS || record.time > Date.now() + 10000) {
+      await cache.delete(pushRouteKey());
+      return null;
+    }
+    const url = safePushDestination(record.url);
+    return new URL(url).pathname === new URL(self.registration.scope).pathname ? null : url;
+  } catch (_) {
+    return null;
+  }
+}
+async function clearPendingPushRoute(url) {
+  try {
+    const cache = await caches.open(PUSH_ROUTE_CACHE);
+    const response = await cache.match(pushRouteKey());
+    if (!response) return;
+    const record = await response.json();
+    if (safePushDestination(record?.url) === safePushDestination(url)) await cache.delete(pushRouteKey());
+  } catch (_) { /* Non bloccare la navigazione */ }
+}
+function askClientToOpen(client, url) {
+  try {
+    client?.postMessage?.({ type: 'LEGA_PUSH_NAVIGATE', url });
+  } catch (_) { /* La pagina completera' la navigazione al prossimo avvio */ }
+}
+self.addEventListener('message', (event) => {
+  const source = event.source;
+  const kind = event.data?.type;
+  if (!source || (kind !== 'LEGA_PUSH_CLIENT_READY' && kind !== 'LEGA_PUSH_ROUTE_ACK')) return;
+  event.waitUntil((async () => {
+    const pending = await getPendingPushRoute();
+    if (!pending) return;
+    try {
+      const current = new URL(source.url);
+      const scope = new URL(self.registration.scope);
+      if (current.origin !== scope.origin || !current.pathname.startsWith(scope.pathname)) return;
+      if (kind === 'LEGA_PUSH_ROUTE_ACK') {
+        const expected = new URL(pending);
+        if (current.pathname === expected.pathname) await clearPendingPushRoute(pending);
+      } else {
+        askClientToOpen(source, pending);
+      }
+    } catch (_) { /* Origine o client non valido */ }
+  })());
+});
 
 self.addEventListener("notificationclick", (event) => {
   const targetUrl = safePushDestination(event.notification?.data?.url);
   const expected = new URL(targetUrl);
+  const scope = new URL(self.registration.scope);
   event.notification.close();
 
   event.waitUntil((async () => {
-    const windows = await self.clients.matchAll({ type: "window", includeUncontrolled: true });
+    // Senza destinazione specifica, mantenere il normale avvio sulla Home.
+    const hasDeepLink = expected.pathname !== scope.pathname &&
+      expected.pathname !== scope.pathname + 'index.html';
+    if (hasDeepLink) await rememberPushRoute(targetUrl);
 
-    // Se la destinazione è già aperta, riutilizzarla senza passare dalla Home.
+    const windows = await self.clients.matchAll({ type: 'window', includeUncontrolled: true });
+    // Reimpiega una pagina gia' aperta SOLO se e' la destinazione richiesta.
     for (const client of windows) {
       try {
-        const current = new URL(client.url);
-        if (current.origin === expected.origin && current.pathname === expected.pathname) {
-          await client.focus();
-          return;
-        }
-      } catch (_) { /* Finestra non disponibile */ }
+        if (new URL(client.url).pathname !== expected.pathname) continue;
+        if (typeof client.focus === 'function') await client.focus();
+        if (hasDeepLink) askClientToOpen(client, targetUrl);
+        return;
+      } catch (_) { /* Prova un'altra finestra */ }
     }
 
-    // Prima navigare, POI dare il focus. Un navigate() che restituisce null
-    // non è un successo: altrimenti su alcuni dispositivi resta aperta la Home.
+    // Navigare alla pagina prima di portare la finestra in primo piano.
     for (const client of windows) {
-      if (typeof client.navigate !== "function") continue;
+      if (typeof client.navigate !== 'function') continue;
       try {
         const navigated = await client.navigate(targetUrl);
-        if (!navigated) continue;
-        const actual = new URL(navigated.url);
-        if (actual.origin !== expected.origin || actual.pathname !== expected.pathname) continue;
-        if (typeof navigated.focus === "function") await navigated.focus();
+        if (!navigated || new URL(navigated.url).pathname !== expected.pathname) continue;
+        if (typeof navigated.focus === 'function') await navigated.focus();
+        if (hasDeepLink) askClientToOpen(navigated, targetUrl);
         return;
-      } catch (_) { /* Aprire una nuova finestra come fallback */ }
+      } catch (_) { /* Android potrebbe gestire l'apertura tramite la PWA */ }
     }
 
     if (self.clients.openWindow) {
-      const opened = await self.clients.openWindow(targetUrl);
-      if (opened && typeof opened.focus === "function") await opened.focus();
+      try {
+        let opened = await self.clients.openWindow(targetUrl);
+        if (opened) {
+          if (new URL(opened.url).pathname !== expected.pathname && typeof opened.navigate === 'function') {
+            try { opened = await opened.navigate(targetUrl) || opened; } catch (_) {}
+          }
+          if (typeof opened.focus === 'function') await opened.focus();
+          if (hasDeepLink) askClientToOpen(opened, targetUrl);
+          return;
+        }
+      } catch (_) { /* Fallback sulla finestra esistente */ }
+    }
+
+    // Se il sistema operativo ha riaperto soltanto la Home, il messaggio
+    // viene ricevuto appena app-updates.js torna attivo.
+    if (hasDeepLink && windows.length) {
+      try {
+        if (typeof windows[0].focus === 'function') await windows[0].focus();
+        askClientToOpen(windows[0], targetUrl);
+      } catch (_) {}
     }
   })());
 });
