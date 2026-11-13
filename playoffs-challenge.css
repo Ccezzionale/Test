@@ -1349,3 +1349,51 @@
   .pc-page #pc-tab-admin .pc-step-num{width:30px;height:30px;min-width:30px}
   .pc-page #pc-tab-admin .pc-step-badge{max-width:71px;font-size:.58rem;padding:4px 5px}
 }
+
+
+/* Commissioner · preview esatta delle quote indicative della Schedina (sola lettura) */
+.pc-page #pc-tab-admin .pc-demo-odds-reference{
+  margin:10px 0 13px;padding:12px;border:1px solid #b9cce0;
+  border-radius:13px;background:#f0f5fb;color:#234563;min-width:0
+}
+.pc-page #pc-tab-admin .pc-demo-odds-heading{
+  display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px
+}
+.pc-page #pc-tab-admin .pc-demo-odds-heading strong{font-size:.83rem;color:#143c63}
+.pc-page #pc-tab-admin .pc-demo-odds-heading span{
+  font-size:.61rem;font-weight:850;letter-spacing:.045em;
+  color:#2c5577;background:#dbeaf6;border-radius:999px;padding:4px 8px
+}
+.pc-page #pc-tab-admin .pc-demo-odds-reference>p{
+  font-size:.73rem;line-height:1.5;color:#4b637a;margin:7px 0 10px
+}
+.pc-page #pc-tab-admin .pc-demo-odds-grid{
+  display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px
+}
+.pc-page #pc-tab-admin .pc-demo-odds-item{
+  padding:10px;border:1px solid #d9e5ef;border-radius:10px;background:#fff;min-width:0
+}
+.pc-page #pc-tab-admin .pc-demo-odds-item>strong{
+  display:block;font-size:.74rem;line-height:1.45;color:#21486c;overflow-wrap:anywhere
+}
+.pc-page #pc-tab-admin .pc-demo-odds-item>strong span{font-weight:500;color:#8092a0}
+.pc-page #pc-tab-admin .pc-demo-odds-triplet{
+  margin-top:7px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px
+}
+.pc-page #pc-tab-admin .pc-demo-odds-triplet span{
+  display:flex;flex-direction:column;text-align:center;gap:2px;
+  border-radius:7px;background:#eef5fb;padding:5px 3px;
+  font-size:.66rem;font-weight:650;color:#53728d;font-variant-numeric:tabular-nums
+}
+.pc-page #pc-tab-admin .pc-demo-odds-triplet b{font-size:.9rem;color:#153e65}
+.pc-page #pc-tab-admin .pc-demo-odds-reference>p.pc-demo-odds-footnote{
+  margin:10px 0 0;color:#315779;font-size:.69rem
+}
+.pc-page #pc-tab-admin .pc-draft-odds-label{
+  display:flex;gap:8px;align-items:center;justify-content:space-between;flex-wrap:wrap;
+  margin:12px 0 7px;font-size:.71rem;color:#56728b
+}
+.pc-page #pc-tab-admin .pc-draft-odds-label strong{font-size:.78rem;color:#173f64}
+@media(max-width:640px){
+  .pc-page #pc-tab-admin .pc-demo-odds-grid{grid-template-columns:minmax(0,1fr)}
+}
