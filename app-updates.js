@@ -221,18 +221,49 @@
     await checkVersion();
   }
 
+  // Su alcune PWA Android la notifica apre prima la Home. Il Service Worker
+  // comunica qui la vera destinazione: location.assign completa il deep link.
+  function notifyPushClientReady() {
+    try {
+      navigator.serviceWorker?.controller?.postMessage({ type: "LEGA_PUSH_CLIENT_READY" });
+    } catch (_) { /* Non interrompere l'avvio dell'app */ }
+  }
+  function handlePushRoute(event) {
+    if (event.data?.type !== "LEGA_PUSH_NAVIGATE") return;
+    try {
+      const destination = new URL(event.data.url, base);
+      if (destination.origin !== location.origin || !destination.pathname.startsWith(base.pathname)) return;
+      if (destination.pathname === location.pathname &&
+          destination.search === location.search && destination.hash === location.hash) {
+        navigator.serviceWorker?.controller?.postMessage({ type: "LEGA_PUSH_ROUTE_ACK", url: destination.href });
+        return;
+      }
+      location.assign(destination.href);
+    } catch (error) {
+      console.warn("Lega: destinazione della push non disponibile", error);
+    }
+  }
   if ("serviceWorker" in navigator) {
     navigator.serviceWorker.addEventListener("controllerchange", () => {
+      notifyPushClientReady();
       void checkVersion();
     });
     navigator.serviceWorker.addEventListener("message", (event) => {
       if (event.data?.type === "SW_UPDATED") void checkVersion();
+      else if (event.data?.type === "LEGA_PUSH_NAVIGATE") handlePushRoute(event);
     });
+    ready(notifyPushClientReady);
   }
   document.addEventListener("visibilitychange", () => {
-    if (document.visibilityState === "visible") void performCheck();
+    if (document.visibilityState === "visible") {
+      notifyPushClientReady();
+      void performCheck();
+    }
   });
-  window.addEventListener("pageshow", () => { void performCheck(); });
+  window.addEventListener("pageshow", () => {
+    notifyPushClientReady();
+    void performCheck();
+  });
   window.addEventListener("online", () => { void performCheck(); });
   setInterval(() => {
     if (document.visibilityState === "visible") void performCheck();
