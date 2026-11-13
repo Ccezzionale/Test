@@ -233,8 +233,9 @@
     try {
       const destination = new URL(event.data.url, base);
       if (destination.origin !== location.origin || !destination.pathname.startsWith(base.pathname)) return;
-      if (destination.pathname === location.pathname &&
-          destination.search === location.search && destination.hash === location.hash) {
+      // Le pagine possono avere query di aggiornamento (?__appv=...):
+      // stesso pathname significa che la destinazione e' gia' quella corretta.
+      if (destination.pathname === location.pathname) {
         navigator.serviceWorker?.controller?.postMessage({ type: "LEGA_PUSH_ROUTE_ACK", url: destination.href });
         return;
       }
