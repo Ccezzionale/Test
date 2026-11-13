@@ -394,14 +394,37 @@ function ensureUi() {
                 Apri pagina al click
                 <select id="notification-admin-url">
                   <option value="">Nessuna pagina specifica</option>
-                  <option value="index.html">Home</option>
-                  <option value="waiver.html">Waiver Wire</option>
-                  <option value="trade-room.html">Trade Room</option>
-                  <option value="classifica.html">Classifiche</option>
-                  <option value="giornale.html">Giornale</option>
-                  <option value="regolamento.html">Regolamento</option>
-                  <option value="allstar.html">All Star</option>
-                  <option value="crashoutcup.html">Crash Out Cup</option>
+                  <optgroup label="Lega">
+                    <option value="index.html">Home</option>
+                    <option value="classifica.html">Classifiche</option>
+                    <option value="giornale.html">Giornale</option>
+                    <option value="rose.html">Rose</option>
+                    <option value="franchigie.html">Franchigie</option>
+                    <option value="statistiche.html">Statistiche</option>
+                    <option value="hall-of-fame.html">Hall of Fame</option>
+                    <option value="timeline.html">Timeline stagionale</option>
+                    <option value="regolamento.html">Regolamento</option>
+                  </optgroup>
+                  <optgroup label="Competizioni">
+                    <option value="playoff.html">Playoff</option>
+                    <option value="crashoutcup.html">Crash Out Cup</option>
+                    <option value="crashoutplayoff.html">Crash Out Playoff</option>
+                    <option value="arena.html">Highlander Cup</option>
+                    <option value="supercoppa.html">Supercoppa</option>
+                    <option value="allstar.html">All Star</option>
+                  </optgroup>
+                  <optgroup label="Giochi">
+                    <option value="playoffs-challenge.html">Playoffs Challenge</option>
+                    <option value="totoeroi.html">TotoEroi</option>
+                  </optgroup>
+                  <optgroup label="Mercato e Draft">
+                    <option value="waiver.html">Waiver Wire</option>
+                    <option value="trade-room.html">Trade Room</option>
+                    <option value="pre-draft.html">Pre-Draft</option>
+                    <option value="draft_conference.html">Draft Conference League</option>
+                    <option value="draft_championship.html">Draft Conference Championship</option>
+                    <option value="dinamico-draft.html">Draft Dinamico</option>
+                  </optgroup>
                 </select>
               </label>
             </div>
@@ -454,8 +477,39 @@ function ensureUi() {
           <label class="notification-admin-field full">Messaggio<textarea id="notification-admin-message" maxlength="600" placeholder="Scrivi la comunicazione…"></textarea></label>
           <label class="notification-admin-field full">Apri pagina al click
             <select id="notification-admin-url">
-              <option value="">Nessuna pagina specifica</option><option value="index.html">Home</option><option value="waiver.html">Waiver Wire</option><option value="trade-room.html">Trade Room</option><option value="classifica.html">Classifiche</option><option value="giornale.html">Giornale</option><option value="regolamento.html">Regolamento</option><option value="allstar.html">All Star</option><option value="crashoutcup.html">Crash Out Cup</option>
-            </select>
+                  <option value="">Nessuna pagina specifica</option>
+                  <optgroup label="Lega">
+                    <option value="index.html">Home</option>
+                    <option value="classifica.html">Classifiche</option>
+                    <option value="giornale.html">Giornale</option>
+                    <option value="rose.html">Rose</option>
+                    <option value="franchigie.html">Franchigie</option>
+                    <option value="statistiche.html">Statistiche</option>
+                    <option value="hall-of-fame.html">Hall of Fame</option>
+                    <option value="timeline.html">Timeline stagionale</option>
+                    <option value="regolamento.html">Regolamento</option>
+                  </optgroup>
+                  <optgroup label="Competizioni">
+                    <option value="playoff.html">Playoff</option>
+                    <option value="crashoutcup.html">Crash Out Cup</option>
+                    <option value="crashoutplayoff.html">Crash Out Playoff</option>
+                    <option value="arena.html">Highlander Cup</option>
+                    <option value="supercoppa.html">Supercoppa</option>
+                    <option value="allstar.html">All Star</option>
+                  </optgroup>
+                  <optgroup label="Giochi">
+                    <option value="playoffs-challenge.html">Playoffs Challenge</option>
+                    <option value="totoeroi.html">TotoEroi</option>
+                  </optgroup>
+                  <optgroup label="Mercato e Draft">
+                    <option value="waiver.html">Waiver Wire</option>
+                    <option value="trade-room.html">Trade Room</option>
+                    <option value="pre-draft.html">Pre-Draft</option>
+                    <option value="draft_conference.html">Draft Conference League</option>
+                    <option value="draft_championship.html">Draft Conference Championship</option>
+                    <option value="dinamico-draft.html">Draft Dinamico</option>
+                  </optgroup>
+                </select>
           </label>
         </div>
         <div class="notification-admin-actions">
