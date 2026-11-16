@@ -4,7 +4,7 @@ import { supabase } from "./supabase.js";
 /* Trade Room V2: anteprima volutamente READ ONLY. Nessuna write, nessuna RPC mutativa. */
 const PREVIEW_OWNER_EMAIL = "tringali0511@gmail.com";
 const state = {
-  user:null,me:null,teams:[],players:[],extra:[],trades:[],assets:[],
+  user:null,me:null,isAdmin:false,teams:[],players:[],extra:[],trades:[],assets:[],
   settings:{active_phase:"draft",market_open:true},
   allShown:16,tab:"market",subtab:"received",
   targetId:"",give:[],want:[],currentDraft:"Draft Conference"
@@ -146,20 +146,21 @@ async function init(){
     }
     state.user=data.user;
     const [p,t,s]=await Promise.all([
-      supabase.from("profiles").select("team_id").eq("email",data.user.email).maybeSingle(),
+      supabase.from("profiles").select("team_id,role").eq("email",data.user.email).maybeSingle(),
       supabase.from("teams").select("id,name,conference").order("name",{ascending:true}),
       supabase.from("trade_settings").select("*").eq("id",1).maybeSingle()
     ]);
     if(p.error || !p.data?.team_id)throw new Error("Profilo o squadra non disponibile.");
     if(t.error)throw t.error;
     state.teams=t.data||[];
+    state.isAdmin=p.data.role==="admin";
     state.me=teamById(p.data.team_id);
     if(!state.me)throw new Error("La tua squadra non è stata trovata.");
     state.settings=s.data||state.settings;
     state.currentDraft=state.me.conference==="Conference League" ? "Draft Conference":"Draft Championship";
     await Promise.all([loadPlayers(),loadExtraAssets(),loadTrades()]);
     bind();
-    drawHeader(); drawCards(); drawProposals(); drawHistory(); drawNewForm();
+    drawHeader(); renderV2Admin(); drawCards(); drawProposals(); drawHistory(); drawNewForm();
     el("v2Auth").hidden=true; el("v2App").hidden=false;
   }catch(err){
     console.error("Trade Room V2:",err);
@@ -248,7 +249,127 @@ function drawHeader(){
   el("v2CountReceived").textContent=received().length ? received().length+" nuove" : "Nessuna nuova";
   el("v2OfficialCount").textContent=official().length+" ufficiali";
 }
+// Admin Mercato: stessi campi e stessa tabella ufficiale, protetti dalla policy RLS is_admin().
+// Solo questo pannello effettua scritture: tutte le offerte della preview rimangono disattivate.
+function v2ToDatetimeLocal(value){
+  if(!value)return "";
+  const date=new Date(value);
+  if(!Number.isFinite(date.getTime()))return "";
+  const adjusted=new Date(date.getTime()-date.getTimezoneOffset()*60000);
+  return adjusted.toISOString().slice(0,16);
+}
+function v2FromDatetimeLocal(value){
+  const txt=str(value).trim();
+  if(!txt)return null;
+  const date=new Date(txt);
+  if(!Number.isFinite(date.getTime()))throw new Error("Inserisci una data e ora valide.");
+  return date.toISOString();
+}
+function v2AdminMessage(message,type=""){
+  const field=el("v2AdminNotice");
+  field.textContent=message;
+  field.dataset.status=type;
+}
+function renderV2Admin(){
+  const panel=el("v2AdminPanel");
+  panel.hidden=!state.isAdmin;
+  if(!state.isAdmin)return;
+  const s=state.settings;
+  el("v2AdminMarketOpen").checked=s.market_open!==false;
+  el("v2AdminTradePhase").value=s.active_phase||"draft";
+  el("v2AdminFutureSeason").value=s.future_pick_season||2027;
+  el("v2AdminMarketOpenAt").value=v2ToDatetimeLocal(s.market_open_at);
+  el("v2AdminMarketCloseAt").value=v2ToDatetimeLocal(s.market_close_at);
+  el("v2AdminCurrentStatus").textContent=openMarket()
+    ?"Stato corrente: aperto"
+    :"Stato corrente: chiuso";
+}
+async function saveV2AdminSettings(){
+  if(!state.isAdmin)return;
+  const button=el("v2AdminSave");
+  if(button.disabled)return;
+  const phaseNew=el("v2AdminTradePhase").value||"draft";
+  const seasonNew=Number(el("v2AdminFutureSeason").value);
+  const marketNew=el("v2AdminMarketOpen").checked;
+  let opensAt,closesAt;
+  try{
+    if(!["draft","conference_market","round_robin_market"].includes(phaseNew)){
+      throw new Error("Fase mercato non valida.");
+    }
+    if(!Number.isInteger(seasonNew)||seasonNew<2026){
+      throw new Error("Stagione pick future non valida.");
+    }
+    opensAt=v2FromDatetimeLocal(el("v2AdminMarketOpenAt").value);
+    closesAt=v2FromDatetimeLocal(el("v2AdminMarketCloseAt").value);
+    if(opensAt&&closesAt&&Date.parse(closesAt)<=Date.parse(opensAt)){
+      throw new Error("La chiusura del mercato deve essere successiva all'apertura.");
+    }
+  }catch(error){
+    v2AdminMessage(error.message,"error");
+    return;
+  }
+  const current=state.settings;
+  const next={
+    active_phase:phaseNew,
+    market_open:marketNew,
+    future_pick_season:seasonNew,
+    market_open_at:opensAt,
+    market_close_at:closesAt
+  };
+  const changed=
+    str(current.active_phase||"draft")!==phaseNew||
+    (current.market_open!==false)!==marketNew||
+    Number(current.future_pick_season||2027)!==seasonNew||
+    str(current.market_open_at||"")!==str(opensAt||"")||
+    str(current.market_close_at||"")!==str(closesAt||"");
+  if(!changed){
+    v2AdminMessage("Nessuna modifica da salvare.","info");
+    return;
+  }
+  const opening=marketNew?"APRIRE":"CHIUDERE";
+  const phaseChanged=phaseNew!==(current.active_phase||"draft");
+  const datesChanged=str(current.market_open_at||"")!==str(opensAt||"")||
+    str(current.market_close_at||"")!==str(closesAt||"");
+  let prompt="Stai per salvare le impostazioni del mercato UFFICIALE della Lega degli Eroi."+
+    "\n\nInterruttore: "+(marketNew?"APERTO":"CHIUSO")+
+    (phaseChanged?"\nFase: "+phaseLabel()+" → "+({draft:"Draft",conference_market:"Mercato Conferences",round_robin_market:"Round Robin"})[phaseNew]:"")+
+    (datesChanged?"\nCambiano anche le finestre temporali.":"")+
+    "\n\nLe modifiche saranno reali e visibili a tutti. Confermi?";
+  if(!window.confirm(prompt))return;
+  button.disabled=true;
+  button.textContent="Salvataggio in corso...";
+  v2AdminMessage("Salvataggio delle impostazioni ufficiali...", "info");
+  try{
+    const {data,error}=await supabase.from("trade_settings").update({
+      ...next,
+      updated_at:new Date().toISOString()
+    }).eq("id",1).select("*").maybeSingle();
+    if(error)throw error;
+    if(!data)throw new Error("Aggiornamento non autorizzato o non confermato dal database.");
+    state.settings=data;
+    if(phaseChanged){
+      state.give=[];state.want=[];state.targetId="";
+      state.players=[];state.extra=[];
+      await Promise.all([loadPlayers(),loadExtraAssets()]);
+    }
+    renderV2Admin();
+    drawHeader();
+    drawCards();
+    drawNewForm();
+    v2AdminMessage(openMarket()
+      ?"Mercato ufficiale APERTO. Impostazioni salvate."
+      :"Mercato ufficiale CHIUSO. Impostazioni salvate."+(marketNew?" Verifica le finestre temporali se volevi aprirlo subito.":""),"success");
+  }catch(error){
+    console.error("Trade V2 admin save:",error);
+    v2AdminMessage("Impossibile salvare il mercato: "+(error.message||"errore sconosciuto"),"error");
+  }finally{
+    button.disabled=false;
+    button.textContent="Salva impostazioni mercato";
+  }
+}
+
 function bind(){
+  el("v2AdminSave").addEventListener("click",saveV2AdminSettings);
   el("v2Search").addEventListener("input",()=>{state.allShown=16;drawCards();});
   el("v2Role").addEventListener("change",()=>{state.allShown=16;drawCards();});
   el("v2More").addEventListener("click",()=>{state.allShown+=20;drawCards();});
