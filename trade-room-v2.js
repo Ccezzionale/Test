@@ -406,6 +406,27 @@ function closePicker(){
   backdrop.hidden=true;
   document.body.classList.remove("v2-picker-active");
 }
+
+// Le proposte salvate contengono i tag [FP], [U21], [RFA], [P6].
+// Visualizzali come fa la Trade Room ufficiale, lasciando escaped il testo.
+function tradeV2StoredAssetHtml(label){
+  let html=esc(label);
+  const tokens={
+    "[FP2]":["img/badges/fp-confermato.webp","Franchise Player confermato 2° anno"],
+    "[FP]":["img/badges/fp.webp","Franchise Player"],
+    "[U21K2]":["img/badges/u21-confermato-secondo-anno.webp","U21 confermato 2° anno"],
+    "[U21K]":["img/badges/u21-confermato.webp","U21 confermato 1° anno"],
+    "[U21]":["img/badges/u21.webp","Under 21"],
+    "[RFA]":["img/badges/rfa.webp","RFA pareggiato"],
+    "[P6]":["img/badges/protetto-p6-lucchetto.webp","Giocatore protetto mercato P6"]
+  };
+  for(const [token,[src,title]] of Object.entries(tokens)){
+    const image='<img class="v2-player-status-badge" src="'+src+'" alt="'+esc(title)+'" title="'+esc(title)+'" loading="lazy">';
+    html=html.replaceAll(token,image);
+  }
+  return html;
+}
+
 const statusName = x=>({
   pending:"In attesa",accepted:"Affare concluso",accepted_pending_cuts:"In attesa di svincoli",
   rejected:"Rifiutata",cancelled:"Annullata"
@@ -414,7 +435,7 @@ const niceDate=x=>{if(!x)return "";const d=new Date(x);return isNaN(d.getTime())
 function tradeHTML(t){
   const from=teamName(t.from_team),to=teamName(t.to_team);
   const parts=state.assets.filter(x=>same(x.proposal_id,t.id));
-  const assets=side=>parts.filter(x=>x.side===side).map(x=>"<li>"+esc(x.asset_label)+"</li>").join("")||"<li>Nessun asset</li>";
+  const assets=side=>parts.filter(x=>x.side===side).map(x=>"<li>"+tradeV2StoredAssetHtml(x.asset_label)+"</li>").join("")||"<li>Nessun asset</li>";
   return '<article class="v2-trade-card"><div class="meta"><strong>'+esc(from)+' → '+esc(to)+'</strong><span>'+esc(niceDate(t.accepted_at||t.created_at))+'</span></div>'+
   '<div class="trade-duel"><div><b>'+esc(from)+' offre</b><ul>'+assets("from")+'</ul></div><div><b>'+esc(to)+' offre</b><ul>'+assets("to")+'</ul></div></div>'+
   '<span class="v2-status">'+esc(statusName(t.status))+'</span></article>';
