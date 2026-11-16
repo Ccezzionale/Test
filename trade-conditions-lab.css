@@ -2,3 +2,26 @@
 /* Il caso intermedio compare solo quando la competizione ha piazzamenti fuori dalle due fasce. */
 .condition-row[hidden]{display:none!important}
 .field-grid label>.help-text{margin:1px 0 0;color:#bbd8f3;font-size:11px;font-weight:600;line-height:1.45}
+
+/* Terzo modulo: Premi & Trofei */
+.lab-tabs{grid-template-columns:repeat(3,minmax(0,1fr))}
+.scenario-trophy{
+  background:linear-gradient(132deg,#42301d 0%,#112f5d 42%,#071f45 100%);
+  border-color:#e9bd3b;
+  box-shadow:0 0 0 2px #e5af1c16,0 8px 23px #0006;
+}
+.field-grid label[hidden],.condition-row[hidden],[data-panel][hidden]{
+  display:none!important;
+}
+.trophy-footnote{
+  background:#061f45;
+  border:1px solid #536d88;
+  border-radius:11px;
+  padding:12px;
+  margin-top:15px;
+}
+@media(max-width:620px){
+  .lab-tabs{gap:4px;padding:4px}
+  .lab-tabs button{font-size:10.5px;letter-spacing:-.02em;padding:7px 4px;min-height:59px}
+  .lab-tabs button span{font-size:18px}
+}
