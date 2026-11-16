@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Trade Room</title>
+
+  <link rel="stylesheet" href="navbar.css" />
+  <link rel="stylesheet" href="trade-room.css" />
+<meta name="lega-app-build" content="v20261028-ef9f76dc3f25">
+<script defer src="./app-updates.js?bootstrap=v20261028-ef9f76dc3f25" data-eroi-update="1"></script>
+</head>
+
+<body>
+  <nav class="site-nav">
+    <div class="nav-inner">
+      <div class="nav-left">
+        <span id="hamburger" class="hamburger" aria-label="Apri menu">☰</span>
+
+        <a href="index.html" class="brand-home" aria-label="Home">
+          <img src="icons/nav/home.webp" alt="" class="nav-home-icon">
+        </a>
+      </div>
+
+      <ul class="navbar" id="mainMenu">
+        <li class="dropdown">
+  <a href="#" class="toggle-submenu">
+    Rose <span class="caret">▾</span>
+  </a>
+
+  <ul class="submenu">
+    <li>
+      <a href="rose.html">
+        Rose Squadre
+      </a>
+    </li>
+
+    <li>
+      <a href="franchigie.html">
+        Franchigie
+      </a>
+    </li>
+  </ul>
+</li>
+
+        <li class="dropdown">
+          <a href="#" class="toggle-submenu">
+            Draft <span class="caret">▾</span>
+          </a>
+
+          <ul class="submenu">
+            <li>
+              <a href="pre-draft.html">
+                <img src="icons/nav/pre-draft.webp" class="menu-icon" alt="">
+                Pre-Draft
+              </a>
+            </li>
+
+            <li>
+              <a href="draft_championship.html">
+                <img src="icons/nav/conf-championship.webp" class="menu-icon" alt="">
+                Conf. Championship
+              </a>
+            </li>
+
+            <li>
+              <a href="draft_conference.html">
+                <img src="icons/nav/conf-league.webp" class="menu-icon" alt="">
+                Conf. League
+              </a>
+            </li>
+
+            <li>
+              <a href="dinamico-draft.html">
+                <img src="icons/nav/draft-2026.webp" class="menu-icon" alt="">
+                Draft 2027-28
+              </a>
+            </li>
+          </ul>
+        </li>
+
+        <li class="dropdown competizioni">
+          <a href="#" class="toggle-submenu">
+            Competizioni <span class="caret">▾</span>
+          </a>
+
+          <ul class="submenu">
+            <li>
+              <a href="classifica.html">
+                <img src="icons/nav/classifiche.webp" class="menu-icon" alt="">
+                Classifiche
+              </a>
+            </li>
+
+            <li>
+              <a href="playoff.html">
+                <img src="icons/nav/playoff.webp" class="menu-icon" alt="">
+                Playoff
+              </a>
+            </li>
+
+            <li>
+              <a href="arena.html">
+                <img src="icons/nav/highlander.webp" class="menu-icon" alt="">
+                Highlander
+              </a>
+            </li>
+
+            <li>
+              <a href="crashoutcup.html">
+                <img src="icons/nav/crashout-cup.webp" class="menu-icon" alt="">
+                Crash Out Cup
+              </a>
+            </li>
+
+            <li>
+              <a href="crashoutplayoff.html">
+                <img src="icons/nav/crashout-playoff.webp" class="menu-icon" alt="">
+                Crash Out Cup - Playoff
+              </a>
+            </li>
+
+            <li>
+              <a href="supercoppa.html">
+                <img src="icons/nav/supercoppa.webp" class="menu-icon" alt="">
+                Supercoppa
+              </a>
+            </li>
+
+                                    <li>
+              <a href="allstar.html">
+                <img src="icons/nav/allstar.webp" class="menu-icon" alt="">
+                All-Star Game
+              </a>
+            </li>
+
+            <li>
+              <a href="statistiche.html">
+                <img src="icons/nav/statistiche.webp" class="menu-icon" alt="">
+                Statistiche
+              </a>
+            </li>
+          </ul>
+        </li>
+
+        <li><a href="waiver.html">Waiver Wire</a></li>
+
+<li>
+  <a href="hall-of-fame.html">Hall of Fame</a>
+</li>
+
+        <li><a href="regolamento.html">Regolamento</a></li>
+      </ul>
+
+      <div class="nav-right hero-actions">
+        <a id="trade-badge" href="trade-room.html" class="btn-hero trade-badge" aria-label="Trade Room">
+          <img src="icons/nav/trade-room.webp" class="action-icon" alt="">
+          <span class="btn-label">Trade Room</span>
+        </a>
+
+        <a id="login-btn" href="login.html" class="btn-hero" style="display:none;" aria-label="Login">
+          <img src="icons/nav/login-logout.webp" class="action-icon" alt="">
+          <span class="btn-label">Login</span>
+        </a>
+
+        <button id="logout-btn" type="button" class="btn-hero" style="display:none;" aria-label="Logout">
+          <img src="icons/nav/login-logout.webp" class="action-icon" alt="">
+          <span class="btn-label">Logout</span>
+        </button>
+
+        <button id="attiva-notifiche-btn" type="button" class="btn-hero warning" aria-label="Attiva notifiche">
+          <img src="icons/nav/notifications.webp" class="action-icon" alt="">
+          <span class="btn-label">Attiva notifiche</span>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <main class="draft-page">
+<header class="trade-room-banner-wrap" aria-label="Trade Room">
+  <picture>
+    <source
+      media="(max-width: 700px)"
+      srcset="icons/nav/traderoommobilebanner.webp"
+    >
+    <img
+      src="icons/nav/traderoombanner.webp"
+      alt="Trade Room"
+      class="trade-room-banner-img"
+    >
+  </picture>
+</header>
+
+    <section class="team-dashboard-card" id="teamDashboardCard">
+      <div class="team-dashboard-accent"></div>
+
+      <div class="team-dashboard-logo-wrap">
+        <img id="teamDashboardLogo" src="" alt="" class="team-dashboard-logo">
+      </div>
+
+      <div class="team-dashboard-info">
+        <h2 id="teamDashboardName">Controllo accesso...</h2>
+        <p id="teamDashboardMeta">Trade Room</p>
+      </div>
+
+      <div class="team-dashboard-status" id="teamDashboardStatus">
+        Mercato
+      </div>
+
+      <p id="userInfo" class="hidden-user-info">Controllo accesso...</p>
+    </section>
+
+    <section id="tradeAdminPanel" class="admin-accordion-card" style="display:none;">
+      <details class="admin-accordion">
+        <summary>
+          <span class="admin-summary-left">
+            <span class="admin-icon">⚙️</span>
+
+            <span>
+              <strong>Admin Mercato</strong>
+              <small>Fase, finestre e pick future</small>
+            </span>
+          </span>
+
+          <span class="admin-summary-pill">Apri pannello</span>
+        </summary>
+
+        <div class="admin-accordion-body">
+          <div class="admin-grid">
+            <div class="form-row">
+              <label for="adminTradePhase">Fase mercato</label>
+              <select id="adminTradePhase">
+                <option value="draft">Durante il Draft</option>
+                <option value="conference_market">Mercato Conferences</option>
+                <option value="round_robin_market">Round Robin / Mercato unificato</option>
+              </select>
+            </div>
+
+            <div class="form-row">
+              <label for="adminFutureSeason">Stagione pick future</label>
+              <input id="adminFutureSeason" type="number" min="2026" step="1" />
+            </div>
+
+            <div class="form-row">
+              <label for="adminMarketOpenAt">Apertura mercato</label>
+              <input id="adminMarketOpenAt" type="datetime-local" />
+            </div>
+
+            <div class="form-row">
+              <label for="adminMarketCloseAt">Chiusura mercato</label>
+              <input id="adminMarketCloseAt" type="datetime-local" />
+            </div>
+          </div>
+
+          <div class="admin-bottom-row">
+            <label class="admin-switch-row">
+              <input id="adminMarketOpen" type="checkbox" />
+              <span>Mercato aperto</span>
+            </label>
+
+            <button id="saveTradeSettingsBtn" type="button">
+              Salva impostazioni mercato
+            </button>
+          </div>
+
+          <p id="tradeSettingsMessage"></p>
+        </div>
+      </details>
+    </section>
+
+    <section id="tradeApp" style="display:none;">
+      <section class="draft-card trade-war-card">
+<div class="trade-war-header">
+  <div>
+    <span class="trade-kicker">Trade Room</span>
+    <h2>Fai la tua offerta</h2>
+  </div>
+</div>
+
+        <strong id="myTeamLabel" class="hidden-trade-team-label">-</strong>
+
+        <div class="trade-market-strip">
+          <span>Draft attivo</span>
+          <strong id="activeDraftLabel">-</strong>
+        </div>
+
+        <div class="trade-target-panel">
+          <label for="toTeamSelect">Proponi a</label>
+          <select id="toTeamSelect">
+            <option value="">Seleziona squadra...</option>
+          </select>
+        </div>
+
+        <div class="trade-board">
+          <div class="trade-side trade-side-give">
+            <div class="trade-side-head">
+              <span class="trade-side-icon">↑</span>
+
+              <div>
+                <h3>Tu offri</h3>
+                <p>Scegli gli asset da mettere sul tavolo</p>
+              </div>
+            </div>
+
+            <details class="pick-dropdown trade-board-dropdown">
+              <summary>
+                <span id="myPicksSummary">Seleziona i tuoi asset</span>
+                <span class="dropdown-arrow">▾</span>
+              </summary>
+
+              <div id="myPicksBox" class="pick-list">
+                Caricamento...
+              </div>
+            </details>
+
+            <details id="myWaiverCallsPanel" class="weekly-call-picker" hidden>
+              <summary>
+                <span class="weekly-call-button-copy">
+                  <span class="weekly-call-plus">+</span>
+                  <span>Aggiungi chiamate settimanali</span>
+                </span>
+                <span id="myWaiverCallsSummary" class="weekly-call-count">Nessuna</span>
+              </summary>
+
+              <div id="myWaiverCallsBox" class="weekly-call-list">
+                Caricamento...
+              </div>
+            </details>
+          </div>
+
+          <div class="trade-vs-badge">
+            <span>VS</span>
+          </div>
+
+          <div class="trade-side trade-side-get">
+            <div class="trade-side-head">
+              <span class="trade-side-icon">↓</span>
+
+              <div>
+                <h3>Tu chiedi</h3>
+                <p>Scegli cosa vuoi ricevere</p>
+              </div>
+            </div>
+
+            <details class="pick-dropdown trade-board-dropdown">
+              <summary>
+                <span id="theirPicksSummary">Seleziona prima una squadra</span>
+                <span class="dropdown-arrow">▾</span>
+              </summary>
+
+              <div id="theirPicksBox" class="pick-list">
+                Seleziona prima una squadra...
+              </div>
+            </details>
+
+            <details id="theirWaiverCallsPanel" class="weekly-call-picker" hidden>
+              <summary>
+                <span class="weekly-call-button-copy">
+                  <span class="weekly-call-plus">+</span>
+                  <span>Aggiungi chiamate settimanali</span>
+                </span>
+                <span id="theirWaiverCallsSummary" class="weekly-call-count">Nessuna</span>
+              </summary>
+
+              <div id="theirWaiverCallsBox" class="weekly-call-list">
+                Seleziona prima una squadra...
+              </div>
+            </details>
+          </div>
+        </div>
+
+        <div class="trade-message-panel">
+          <label for="tradeMessageInput">Messaggio opzionale</label>
+          <textarea id="tradeMessageInput" rows="3" placeholder="Es. Ti interessa questo scambio?"></textarea>
+        </div>
+
+        <button id="sendTradeBtn" type="button">
+          Invia proposta
+        </button>
+
+        <p id="tradeMessage"></p>
+      </section>
+
+      <section id="pendingCutsPanel" class="draft-card" style="display:none;">
+        <h2>Trade in attesa di svincolo</h2>
+        <div id="pendingCutsBox">Caricamento...</div>
+      </section>
+
+      <section class="draft-card">
+        <h2>Proposte ricevute</h2>
+        <div id="receivedTradesBox">Caricamento...</div>
+      </section>
+
+      <section class="draft-card">
+        <h2>Proposte inviate</h2>
+        <div id="sentTradesBox">Caricamento...</div>
+      </section>
+
+      <section class="draft-card history-card">
+        <details class="history-dropdown">
+          <summary>
+            <span>📜 Movimenti ufficiali della Lega</span>
+            <span class="history-summary-note" id="historySummaryNote">Apri storico</span>
+          </summary>
+
+          <div id="completedTradesBox" class="history-list">
+            Caricamento...
+          </div>
+        </details>
+      </section>
+    </section>
+  </main>
+
+  <div id="cutPlayersModal" class="trade-modal" style="display:none;">
+    <div class="trade-modal-content">
+      <h3>Svincoli obbligatori</h3>
+
+      <p id="cutPlayersModalText"></p>
+
+      <div id="cutPlayersList"></div>
+
+      <div class="trade-modal-actions">
+        <button type="button" id="confirmCutPlayersBtn">
+          Conferma e accetta trade
+        </button>
+
+        <button type="button" id="cancelCutPlayersBtn">
+          Annulla
+        </button>
+      </div>
+
+      <p id="cutPlayersModalMessage"></p>
+    </div>
+  </div>
+<script src="mobile-nav.js"></script>
+  <script type="module" src="trade-room.js"></script>
+  <script src="navbar.js"></script>
+</body>
+</html>
