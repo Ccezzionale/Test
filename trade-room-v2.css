@@ -689,3 +689,37 @@ body{
 @media(prefers-reduced-motion:reduce){
   .v2-trade-block,.v2-add-asset{transition:none!important}
 }
+
+
+/* Come nel concept scelto: azione Aggiungi sotto gli asset, a tutta larghezza. */
+.v2-trade-block:not(.is-open){
+  display:grid;
+  grid-template-columns:minmax(0,1fr);
+  grid-template-rows:auto auto auto;
+  align-items:start;
+}
+.v2-trade-block:not(.is-open)>.v2-side-head{display:contents}
+.v2-trade-block:not(.is-open) .v2-side-label{
+  grid-column:1;grid-row:1;
+  display:flex;align-items:center;min-height:42px;
+}
+.v2-trade-block:not(.is-open)>.v2-chip-row{
+  grid-column:1;grid-row:2;
+  width:100%;margin-top:12px;
+}
+.v2-trade-block:not(.is-open) .v2-add-asset{
+  grid-column:1;grid-row:3;
+  width:100%;min-height:43px;
+  margin-top:12px;justify-self:stretch;
+  border-radius:14px;
+  font-size:14px;
+}
+.v2-trade-block.give:not(.is-open) .v2-add-asset{
+  background:linear-gradient(150deg,#fff078,#ffce27 60%,#ffac00);
+  color:#062858;border-color:#ffea84;
+}
+.v2-trade-block.ask:not(.is-open) .v2-add-asset{
+  background:linear-gradient(150deg,#fff99b,#ffe056 56%,#ffc319);
+  color:#082b59;border-color:#fff9a8;
+}
+.v2-trade-block:not(.is-open) .v2-add-asset:active{transform:scale(.99)}
