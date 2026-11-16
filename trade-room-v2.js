@@ -225,7 +225,7 @@ function drawCards(){
   el("v2ListCount").textContent=matches.length+" giocatori";
   el("v2Players").innerHTML=view.map(p=>{
     const mine=same(p.ownerId,state.me.id),can=isAvailable(p);
-    return '<button type="button" class="v2-roster-row" data-pick="'+esc(p.key)+'"'+(can?"":" disabled")+
+    return '<button type="button" class="v2-roster-row'+(mine?' is-own':'')+(can?'':' is-locked')+'" data-pick="'+esc(p.key)+'"'+(can?"":" disabled")+
       ' aria-label="'+esc(p.name+" · "+teamName(p.ownerId))+'">'+
       '<span class="v2-role-avatar v2-role--'+mantraFamily(p)+'">'+esc(role(p))+'</span>'+
       '<span class="v2-roster-copy"><strong>'+esc(p.name)+'</strong><small>'+esc(p.club||"Serie A")+' · '+esc(teamName(p.ownerId))+'</small></span>'+
