@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="robots" content="noindex,nofollow">
   <title>Trade Condizionate | Laboratorio • Lega degli Eroi</title>
-  <link rel="stylesheet" href="trade-conditions-lab.css?v=20261116-standing-scope-v2">
+  <link rel="stylesheet" href="trade-conditions-lab.css?v=20261116-trophy-conditions-v1">
 </head>
 <body>
   <main class="lab-wrap">
@@ -30,6 +30,7 @@
       <div class="lab-tabs" role="tablist" aria-label="Tipo di condizione">
         <button type="button" data-tab="standing" class="is-active" role="tab" aria-selected="true"><span>🏆</span> Classifica</button>
         <button type="button" data-tab="ranked" role="tab" aria-selected="false"><span>🎯</span> Peggiore / migliore</button>
+        <button type="button" data-tab="trophy" role="tab" aria-selected="false"><span>🏅</span> Premi / trofei</button>
       </div>
 
       <section class="scenario" data-panel="standing">
@@ -119,6 +120,65 @@
         <div id="rankedResult" class="result-panel" aria-live="polite"></div>
       </section>
 
+      <section class="scenario scenario-trophy" data-panel="trophy" hidden>
+        <div class="scenario-top">
+          <span class="scenario-no">03</span>
+          <div><h2>Se si vince un premio</h2><p>Una pick se la franchigia conquista il trofeo, un'altra se non lo conquista.</p></div>
+        </div>
+        <div class="field-grid">
+          <label>Chi promette la pick
+            <select id="trophyGrantor"></select>
+          </label>
+          <label>Chi riceverà il diritto
+            <select id="trophyHolder"></select>
+          </label>
+          <label>Risultati di quale franchigia?
+            <select id="trophySubject"></select>
+          </label>
+          <label>Tipo di condizione
+            <select id="trophyMode">
+              <option value="any_trophy">Vince almeno un trofeo</option>
+              <option value="specific_trophy">Vince un trofeo specifico</option>
+            </select>
+          </label>
+        </div>
+        <div class="field-grid space-top">
+          <label id="trophySpecificRow" hidden>Quale trofeo deve vincere?
+            <select id="trophySpecific"></select>
+          </label>
+        </div>
+        <div class="condition-rows">
+          <div class="condition-row row-blue">
+            <div class="row-label"><strong>🏆 Se conquista il trofeo</strong><small>La condizione si avvera</small></div>
+            <label>Pick da assegnare<select id="trophyWonPick"></select></label>
+          </div>
+          <div class="condition-row row-yellow">
+            <div class="row-label"><strong>Se non lo conquista</strong><small>Condizione non avverata a competizione conclusa</small></div>
+            <label>Pick da assegnare<select id="trophyNotWonPick"></select></label>
+          </div>
+        </div>
+        <div class="field-grid space-top">
+          <label>Pick restituita in cambio (regola 1:1)
+            <select id="trophyCounter"></select>
+          </label>
+          <label>Prova un risultato (solo simulazione)
+            <select id="trophyTestResult">
+              <option value="pending">Competizione ancora in corso</option>
+              <option value="won">La franchigia conquista il trofeo</option>
+              <option value="not_won">Tornei conclusi: non lo conquista</option>
+            </select>
+            <small class="help-text">Non sono risultati reali; servono a provare cosa accadrebbe.</small>
+          </label>
+          <label id="trophyMockWinnerRow" hidden>Trofeo ipoteticamente conquistato
+            <select id="trophyMockWinner"></select>
+            <small class="help-text">Solo per il test. Nel contratto «qualsiasi trofeo» comprende tutte le competizioni ammissibili.</small>
+          </label>
+        </div>
+        <p class="help-text trophy-footnote">La clausola «vince qualcosa» riguarda un <strong>trofeo conquistato</strong>. Eventuali piazzamenti remunerati senza vittoria sono diversi e andranno configurati secondo il regolamento premi della lega.</p>
+        <button type="button" id="simulateTrophy" class="gold-button">Verifica la condizione <span>→</span></button>
+        <div id="trophyResult" class="result-panel" aria-live="polite"></div>
+      </section>
+
       <section id="rightsPanel" class="rights-panel" hidden>
         <div class="rights-title"><span>🔐</span><div><h2>Il diritto condizionato</h2><p>Si scambia il diritto, non le pick ancora da assegnare.</p></div></div>
         <div class="rights-box" id="rightsSummary"></div>
@@ -143,6 +203,6 @@
       <footer class="lab-footer">Test isolato · nessuna modifica al regolamento o al mercato operativo · <a href="trade-room.html">Torna al mercato</a></footer>
     </div>
   </main>
-  <script type="module" src="trade-conditions-lab.js?v=20261116-numeric-pick-order"></script>
+  <script type="module" src="trade-conditions-lab.js?v=20261116-trophy-conditions-v1"></script>
 </body>
 </html>
