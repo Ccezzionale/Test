@@ -6,7 +6,7 @@
   <meta name="robots" content="noindex,nofollow">
   <title>Trade Room V2 • Anteprima personale</title>
   <link rel="stylesheet" href="navbar.css">
-  <link rel="stylesheet" href="trade-room-v2.css?v=20261116-a">
+  <link rel="stylesheet" href="trade-room-v2.css?v=20261116-b">
 </head>
 <body>
 <nav class="site-nav">
@@ -206,36 +206,24 @@
       </nav>
 
       <section id="v2MarketView">
-        <div class="v2-section-title">
-          <h2>Scopri asset</h2>
-          <small id="v2ListCount">Caricamento...</small>
-        </div>
-        <p class="v2-sub">Cerca un calciatore e scopri subito quale franchigia lo possiede.</p>
-        <div class="v2-filterbox">
-          <input id="v2Search" type="search" class="v2-input" placeholder="Cerca nome o squadra..." aria-label="Cerca nel listone" autocomplete="off">
-          <select id="v2Role" class="v2-select" aria-label="Filtra per ruolo">
-            <option value="">Tutti i ruoli</option>
-            <option value="P">Portieri</option>
-            <option value="D">Difensori</option>
-            <option value="C">Centrocampisti</option>
-            <option value="A">Attaccanti</option>
-          </select>
-        </div>
-        <div id="v2Players" class="v2-player-grid"></div>
-        <div style="text-align:center;margin:14px 0">
-          <button type="button" class="v2-outline" id="v2More" hidden>Mostra altri giocatori ↓</button>
-        </div>
-        <div class="v2-tools">
-          <button class="v2-tool" type="button" data-v2-tab="proposals"><span class="symbol">📩</span><span><strong>Proposte</strong><small id="v2CountReceived">Ricevute</small></span></button>
-          <button class="v2-tool" type="button" data-v2-tab="history"><span class="symbol">📜</span><span><strong>Movimenti</strong><small id="v2OfficialCount">Storico</small></span></button>
-        </div>
-        <div class="v2-panel">
-          <h3>Come funziona questa anteprima?</h3>
-          <p class="v2-note">Il proprietario è letto dal database attuale, seguendo la fase di mercato. Tocca «+ Chiedi» per compilare automaticamente la squadra destinataria. Gli scambi reali si gestiscono ancora nella Trade Room ufficiale.</p>
-        </div>
-      </section>
+  <div class="v2-section-title"><h2>Scopri i giocatori</h2><small id="v2ListCount">...</small></div>
+  <p class="v2-sub">Chi ha chi? Tocca un calciatore per iniziare una trattativa.</p>
+  <button type="button" class="v2-start-trade" data-v2-new><span class="v2-start-icon">⇄</span><span><strong>Crea una trattativa</strong><small>Scegli chi vuoi e costruisci lo scambio</small></span><b>›</b></button>
+  <div class="v2-filterbox">
+    <input id="v2Search" type="search" class="v2-input" placeholder="⌕  Cerca giocatore o proprietario" aria-label="Cerca nel listone" autocomplete="off">
+    <select id="v2Role" class="v2-select" aria-label="Filtra per ruolo">
+      <option value="">Ruoli</option><option value="P">Portieri</option><option value="D">Difensori</option><option value="C">Centrocampisti</option><option value="A">Attaccanti</option>
+    </select>
+  </div>
+  <div id="v2Players" class="v2-player-grid" aria-live="polite"></div>
+  <div style="text-align:center;margin:13px 0"><button type="button" class="v2-outline" id="v2More" hidden>Mostra altri giocatori ↓</button></div>
+  <div class="v2-tools">
+    <button class="v2-tool" type="button" data-v2-tab="proposals"><span class="symbol">📩</span><span><strong>Le mie proposte</strong><small id="v2CountReceived">Ricevute</small></span></button>
+    <button class="v2-tool" type="button" data-v2-tab="history"><span class="symbol">📜</span><span><strong>Movimenti</strong><small id="v2OfficialCount">Storico</small></span></button>
+  </div>
+</section>
 
-      <section id="v2ProposalsView" hidden>
+<section id="v2ProposalsView" hidden>
         <div class="v2-section-title"><h2>Le tue proposte</h2></div>
         <p class="v2-sub">Le trattative reali, consultabili senza modificarle.</p>
         <div class="v2-subtabs">
@@ -253,43 +241,49 @@
       </section>
 
       <section id="v2NewView" hidden>
-        <div class="v2-new-head">
-          <h1>Nuova trattativa</h1>
-          <button type="button" data-v2-back class="v2-outline">← Indietro</button>
-        </div>
-        <div class="v2-steps"><span></span><span></span><span></span></div>
-        <div class="v2-panel">
-          <label class="v2-label" for="v2TargetTeam">Squadra destinataria</label>
-          <select id="v2TargetTeam" class="v2-select"></select>
-          <p class="v2-note">Se scegli «+ Chiedi» dal listone, qui trovi già la squadra corretta.</p>
-          <div class="v2-trade-block give">
-            <h3>↑ Tu offri</h3>
-            <p>Scegli i tuoi giocatori oppure, quando disponibili, pick e chiamate.</p>
-            <div id="v2GivenChips" class="v2-chip-row"></div>
-            <input id="v2GiveSearch" class="v2-input" type="search" placeholder="Cerca tra i tuoi asset...">
-            <div id="v2GiveChoices" class="v2-small-list"></div>
-          </div>
-          <div class="v2-trade-block ask">
-            <h3>↓ Tu chiedi</h3>
-            <p>Seleziona gli asset della controparte.</p>
-            <div id="v2WantedChips" class="v2-chip-row"></div>
-            <input id="v2WantSearch" class="v2-input" type="search" placeholder="Cerca cosa vuoi ricevere...">
-            <div id="v2WantChoices" class="v2-small-list"></div>
-          </div>
-          <label class="v2-label" for="v2PreviewMessage">Messaggio opzionale</label>
-          <textarea id="v2PreviewMessage" rows="2" class="v2-input" placeholder="Aggiungi un messaggio..."></textarea>
-          <p class="v2-note" id="v2DealSummary">0 asset selezionati</p>
-          <div class="v2-warn" id="v2DraftReminder">Questa è una simulazione: nessuna proposta verrà inviata.</div>
-          <button class="v2-solid" type="button" id="v2PreviewSend" disabled style="width:100%">Invia proposta · disattivato in anteprima</button>
-        </div>
-      </section>
+  <div class="v2-new-head"><div><small class="v2-eyebrow">TRADE ROOM · LABORATORIO</small><h1>Costruisci lo scambio</h1></div><button type="button" data-v2-back class="v2-outline">←</button></div>
+  <div class="v2-new-team">
+    <label class="v2-label" for="v2TargetTeam">CON CHI VUOI TRATTARE?</label>
+    <select id="v2TargetTeam" class="v2-select"></select>
+  </div>
+  <div class="v2-trade-stage">
+    <div class="v2-trade-block give" id="v2GiveBlock">
+      <div class="v2-side-head"><div class="v2-side-label"><span class="v2-side-arrow">↑</span><span><strong>TU OFFRI</strong><small>Team Bartowski</small></span></div><button type="button" id="v2AddGive" class="v2-add-asset">＋ Aggiungi</button></div>
+      <div id="v2GivenChips" class="v2-chip-row"></div>
+      <div class="v2-picker-content">
+        <div class="v2-picker-title"><strong>Scegli cosa offrire</strong><button type="button" id="v2CloseGive" class="v2-picker-close" aria-label="Chiudi selezione">✕</button></div>
+        <input id="v2GiveSearch" class="v2-input" type="search" placeholder="⌕ Cerca nella tua rosa e nelle pick">
+        <div id="v2GiveChoices" class="v2-small-list"></div>
+        <button type="button" class="v2-picker-done" id="v2DoneGive">✓ Fatto, torna alla trattativa</button>
+      </div>
+    </div>
+    <div class="v2-swap-divider"><span>⇅</span><small>SCAMBIO</small></div>
+    <div class="v2-trade-block ask" id="v2WantBlock">
+      <div class="v2-side-head"><div class="v2-side-label"><span class="v2-side-arrow">↓</span><span><strong>TU CHIEDI</strong><small id="v2RivalInfo">Scegli una squadra</small></span></div><button type="button" id="v2AddWant" class="v2-add-asset">＋ Aggiungi</button></div>
+      <div id="v2WantedChips" class="v2-chip-row"></div>
+      <div class="v2-picker-content">
+        <div class="v2-picker-title"><strong>Scegli cosa chiedere</strong><button type="button" id="v2CloseWant" class="v2-picker-close" aria-label="Chiudi selezione">✕</button></div>
+        <input id="v2WantSearch" class="v2-input" type="search" placeholder="⌕ Cerca negli asset avversari">
+        <div id="v2WantChoices" class="v2-small-list"></div>
+        <button type="button" class="v2-picker-done" id="v2DoneWant">✓ Fatto, torna alla trattativa</button>
+      </div>
+    </div>
+  </div>
+  <div class="v2-summary-footer">
+    <div class="v2-preview-summary"><strong>La tua trattativa</strong><span id="v2DealSummary">0 asset offerti · 0 richiesti</span></div>
+    <details class="v2-message-details"><summary>✎ Aggiungi un messaggio (facoltativo)</summary><textarea id="v2PreviewMessage" rows="2" class="v2-input" placeholder="Es. Che ne dici di questo scambio?"></textarea></details>
+    <div class="v2-warn" id="v2DraftReminder">Anteprima senza invio reale.</div>
+    <button class="v2-solid" type="button" id="v2PreviewSend" disabled style="width:100%">Invia proposta · non disponibile nel test</button>
+  </div>
+</section>
+<div id="v2DrawerBackdrop" class="v2-picker-backdrop" hidden></div>
 
-      <a class="v2-bottom-link" href="trade-room.html">↩ Vai alla Trade Room attuale</a>
+<a class="v2-bottom-link" href="trade-room.html">↩ Vai alla Trade Room attuale</a>
       <button type="button" class="v2-floating-cta" id="v2PreviewCta" data-v2-new>⇄ Nuova proposta</button>
     </div>
   </main>
   <script src="mobile-nav.js"></script>
   <script src="navbar.js"></script>
-  <script type="module" src="trade-room-v2.js?v=20261116-a"></script>
+  <script type="module" src="trade-room-v2.js?v=20261116-b"></script>
 </body>
 </html>
