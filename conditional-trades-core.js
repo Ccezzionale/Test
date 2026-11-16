@@ -66,3 +66,66 @@ export function validateOneForOne(offered,requested){
   assert(left===right,"Rapporto 1:1 non rispettato: i diritti condizionati contano come una singola pick.");
   return {left,right,valid:true};
 }
+
+
+/*
+ * I nomi vengono dall'Albo d'Oro della Lega; per risolvere davvero una
+ * condizione serve una fonte autorevole che dichiari il torneo concluso.
+ */
+export const TROPHY_COMPETITIONS=Object.freeze([
+  {id:"playoff",name:"Playoff"},
+  {id:"campionato",name:"Campionato"},
+  {id:"crash_out",name:"Crash Out Cup"},
+  {id:"highlander",name:"Highlander Cup"},
+  {id:"conference_league",name:"Conference League"},
+  {id:"conference_championship",name:"Conference Championship"},
+  {id:"round_robin",name:"Round Robin"},
+  {id:"supercoppa",name:"Supercoppa degli Eroi"}
+]);
+
+/*
+ * Esito della clausola:
+ *  - qualsiasi titolo: TRUE appena ne esiste uno finale vinto dalla squadra;
+ *    FALSE solo quando TUTTE le competizioni comprese nella clausola
+ *    risultano definitive (altrimenti pending).
+ *  - trofeo preciso: TRUE/FALSE soltanto a evento definitivo.
+ *
+ * outcomes: [{competition_id, status:"final"|"ongoing",
+ *             winner_team_id}].
+ * Nessun dato provvisorio può chiudere un diritto.
+ */
+export function resolveTrophyCondition({
+  mode,subjectTeamId,competitionId=null,outcomes=[],
+  eligibleCompetitionIds=TROPHY_COMPETITIONS.map(x=>x.id)
+}){
+  assert(["any_trophy","specific_trophy"].includes(mode),"Tipo di premio non valido.");
+  assert(subjectTeamId,"Indicare la franchigia cui è legata la condizione.");
+  const catalog=new Set(TROPHY_COMPETITIONS.map(x=>x.id));
+  assert(Array.isArray(eligibleCompetitionIds)&&eligibleCompetitionIds.length>0,"Nessuna competizione considerata.");
+  assert(eligibleCompetitionIds.every(id=>catalog.has(id)),"Competizione sconosciuta nell'elenco dei trofei.");
+  assert(new Set(eligibleCompetitionIds).size===eligibleCompetitionIds.length,"La stessa competizione è indicata più volte.");
+  if(mode==="specific_trophy"){
+    assert(competitionId&&eligibleCompetitionIds.includes(competitionId),"Trofeo specifico non valido.");
+  }
+  const byId=new Map();
+  for(const result of outcomes){
+    if(!result||!catalog.has(result.competition_id))continue;
+    assert(!byId.has(result.competition_id),"Esito di una competizione duplicato.");
+    assert(["final","ongoing"].includes(result.status),"Stato della competizione non riconosciuto.");
+    if(result.status==="final")assert(result.winner_team_id,"Una competizione definitiva deve avere un vincitore.");
+    byId.set(result.competition_id,result);
+  }
+  const target=mode==="specific_trophy"?[competitionId]:eligibleCompetitionIds;
+  const winners=target.filter(id=>{
+    const row=byId.get(id);
+    return row?.status==="final" && String(row.winner_team_id)===String(subjectTeamId);
+  });
+  if(winners.length){
+    return {status:"resolved",triggered:true,winningCompetitionIds:winners};
+  }
+  const done=target.every(id=>byId.get(id)?.status==="final");
+  if(!done){
+    return {status:"pending",triggered:null,winningCompetitionIds:[]};
+  }
+  return {status:"resolved",triggered:false,winningCompetitionIds:[]};
+}
