@@ -6,7 +6,7 @@
   <meta name="robots" content="noindex,nofollow">
   <title>Trade Room V2 • Anteprima personale</title>
   <link rel="stylesheet" href="navbar.css">
-  <link rel="stylesheet" href="trade-room-v2.css?v=20261116-status-badges">
+  <link rel="stylesheet" href="trade-room-v2.css?v=20261116-admin-market-v1">
 </head>
 <body class="trade-v2-preview">
 <nav class="site-nav">
@@ -199,6 +199,48 @@
         </div>
       </section>
 
+      <!-- Admin: stesse impostazioni della Trade Room ufficiale, salvataggio REALE con conferma. -->
+      <section id="v2AdminPanel" class="v2-admin-panel" hidden aria-label="Admin Mercato">
+        <details id="v2AdminAccordion" class="v2-admin-accordion">
+          <summary>
+            <span class="v2-admin-summary-icon" aria-hidden="true">⚙</span>
+            <span class="v2-admin-summary-copy"><strong>Admin Mercato</strong><small>Apri o chiudi il mercato · controlli ufficiali</small></span>
+            <span class="v2-admin-chevron" aria-hidden="true">⌄</span>
+          </summary>
+          <div class="v2-admin-body">
+            <p class="v2-admin-live-notice">Le modifiche di questo pannello si applicano al mercato <strong>ufficiale</strong>. Il resto della V2 rimane una simulazione.</p>
+            <label class="v2-admin-toggle-row" for="v2AdminMarketOpen">
+              <span class="v2-admin-toggle-copy"><strong>Mercato aperto</strong><small id="v2AdminCurrentStatus">Stato corrente: ...</small></span>
+              <input id="v2AdminMarketOpen" type="checkbox" role="switch" aria-label="Apri o chiudi mercato" />
+              <span class="v2-admin-switch" aria-hidden="true"></span>
+            </label>
+            <details class="v2-admin-advanced">
+              <summary>⚙️ Impostazioni avanzate: fase, finestre e pick future</summary>
+              <div class="v2-admin-grid">
+                <label>Fase mercato
+                  <select id="v2AdminTradePhase" class="v2-select">
+                    <option value="draft">Durante il Draft</option>
+                    <option value="conference_market">Mercato Conferences</option>
+                    <option value="round_robin_market">Round Robin / Mercato unificato</option>
+                  </select>
+                </label>
+                <label>Stagione pick future
+                  <input id="v2AdminFutureSeason" class="v2-input" type="number" min="2026" step="1" />
+                </label>
+                <label>Apertura mercato
+                  <input id="v2AdminMarketOpenAt" class="v2-input" type="datetime-local" />
+                </label>
+                <label>Chiusura mercato
+                  <input id="v2AdminMarketCloseAt" class="v2-input" type="datetime-local" />
+                </label>
+              </div>
+            </details>
+            <div id="v2AdminNotice" class="v2-admin-result" role="status" aria-live="polite"></div>
+            <button id="v2AdminSave" type="button" class="v2-admin-save">Salva impostazioni mercato</button>
+          </div>
+        </details>
+      </section>
+
       <nav id="v2Tabs" class="v2-tabs" aria-label="Sezioni mercato V2">
         <button type="button" data-v2-tab="market" class="active" aria-selected="true"><span>♜</span>Mercato</button>
         <button type="button" data-v2-tab="proposals" aria-selected="false"><span>⇄</span>Proposte</button>
@@ -297,6 +339,6 @@
   </main>
   <script src="mobile-nav.js"></script>
   <script src="navbar.js"></script>
-  <script type="module" src="trade-room-v2.js?v=20261116-status-badges"></script>
+  <script type="module" src="trade-room-v2.js?v=20261116-admin-market-v1"></script>
 </body>
 </html>
