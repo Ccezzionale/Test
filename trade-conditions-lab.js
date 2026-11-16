@@ -72,12 +72,33 @@ async function init(){
     el("loading").hidden=true;
     el("labApp").hidden=false;
     refreshStandingPicks(true);
+    refreshStandingScope();
     refreshRankedPicks(true);
     bindEvents();
   }catch(e){
     el("loading").innerHTML='<strong>Laboratorio non disponibile</strong><span>'+esc(e.message||"Impossibile caricare i dati.")+'</span>';
   }
 }
+
+function standingScope(){
+  const subject=team(el("standingSubject").value);
+  const competition=el("standingCompetition").value;
+  const teams=competition==="round_robin"?state.teams:state.teams.filter(t=>subject&&t.conference===subject.conference);
+  return {count:teams.length,name:competition==="round_robin"?"Round Robin":subject?.conference||"Conference"};
+}
+function syncStandingMiddleVisibility(){
+  const count=standingScope().count,top=Number(el("standingTopN").value),bottom=Number(el("standingBottomN").value);
+  el("standingMiddleRow").hidden=!(Number.isInteger(top)&&Number.isInteger(bottom)&&top>=1&&bottom>=1&&top+bottom<count);
+}
+function refreshStandingScope(){
+  const scope=standingScope(),existing=el("standingPosition").value||"3";
+  el("standingScopeInfo").textContent=scope.name+" · "+scope.count+" squadre (automatico)";
+  const opts=Array.from({length:scope.count},(_,i)=>'<option value="'+(i+1)+'">'+(i+1)+'° posto</option>');
+  fillSelect("standingPosition",opts,Math.min(Math.max(1,Number(existing)||3),scope.count));
+  syncStandingMiddleVisibility();
+  clearResult("standingResult");
+}
+
 function refreshStandingPicks(reset=false){
   const grantor=el("standingGrantor").value,holder=el("standingHolder").value;
   const picks=byOwner(grantor).sort((a,b)=>a.round-b.round||pickName(a).localeCompare(pickName(b),"it"));
@@ -184,15 +205,15 @@ function simulateStanding(){
   try{
     const grantor=el("standingGrantor").value,holder=el("standingHolder").value;
     const top=pickById(el("standingTopPick").value),bottom=pickById(el("standingBottomPick").value);
-    const middle=pickById(el("standingMiddlePick").value),counter=pickById(el("standingCounter").value);
+    const counter=pickById(el("standingCounter").value);
+    const scope=standingScope(),size=scope.count,topN=Number(el("standingTopN").value),bottomN=Number(el("standingBottomN").value);
+    const position=Number(el("standingPosition").value),hasMiddle=topN+bottomN<size;
+    const middle=hasMiddle?pickById(el("standingMiddlePick").value):null;
     checkParties(grantor,holder,counter);
     if(!top||!bottom||top.id===bottom.id)throw new Error("Seleziona due pick diverse per le due fasce.");
-    const candidateIds=[top,bottom,...(middle?[middle]:[])];
-    const candidates=[...new Map(candidateIds.map(p=>[str(p.id),p])).values()];
-    validateCandidates(candidates,{ownerId:grantor,season:state.season});
-    const size=Number(el("standingCount").value),topN=Number(el("standingTopN").value),bottomN=Number(el("standingBottomN").value),position=Number(el("standingPosition").value);
-    const hasMiddle=topN+bottomN<size;
     if(hasMiddle&&!middle)throw new Error("Manca il caso delle posizioni intermedie: scegli quale pick spetta al titolare.");
+    const candidates=[...new Map([top,bottom,...(middle?[middle]:[])].map(p=>[str(p.id),p])).values()];
+    validateCandidates(candidates,{ownerId:grantor,season:state.season});
     const resolved=resolveStandings({
       position,teamCount:size,topCount:topN,bottomCount:bottomN,
       topPickId:top.id,bottomPickId:bottom.id,middlePickId:middle?.id
@@ -200,7 +221,7 @@ function simulateStanding(){
     // Questo laboratorio simula un solo diritto alla volta: non bloccare i nuovi calcoli dello stesso accordo.
     const selected=pickById(resolved.pickId);
     const labels={top:"fascia alta",bottom:"fascia bassa",middle:"fascia intermedia"};
-    const rule="Posizione di "+teamLabel(el("standingSubject").value)+": "+labels[resolved.branch]+" (n. "+position+" su "+size+")";
+    const rule=scope.name+" · posizione di "+teamLabel(el("standingSubject").value)+": "+labels[resolved.branch]+" (n. "+position+" su "+size+")";
     showResult(box,selected,resolved.branch,rule,candidates.map(p=>p.id));
     prepareRight({holderId:holder,grantorId:grantor,candidates,rule,selected});
   }catch(e){state.right=null;el("rightsPanel").hidden=true;errorMessage(box,e.message);}
@@ -252,7 +273,15 @@ function bindEvents(){
   document.querySelectorAll("[data-tab]").forEach(b=>b.addEventListener("click",()=>showPanel(b.dataset.tab)));
   el("standingGrantor").addEventListener("change",()=>refreshStandingPicks(true));
   el("standingHolder").addEventListener("change",()=>refreshStandingPicks(false));
-  for(const id of ["standingSubject","standingCount","standingTopN","standingBottomN","standingTopPick","standingBottomPick","standingMiddlePick","standingPosition","standingCounter"]){
+  el("standingSubject").addEventListener("change",refreshStandingScope);
+  el("standingCompetition").addEventListener("change",refreshStandingScope);
+  for(const id of ["standingTopN","standingBottomN"]){
+    el(id).addEventListener("change",()=>{
+      syncStandingMiddleVisibility();
+      clearResult("standingResult");
+    });
+  }
+  for(const id of ["standingTopPick","standingBottomPick","standingMiddlePick","standingPosition","standingCounter"]){
     el(id).addEventListener("change",()=>clearResult("standingResult"));
   }
   el("rankedGrantor").addEventListener("change",()=>refreshRankedPicks(true));
