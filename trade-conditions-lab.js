@@ -122,7 +122,8 @@ function refreshRankedPicks(reset=false){
   const picks=byOwner(owner).filter(p=>p.pick_kind==="normal");
   const rounds=[...new Set(picks.map(p=>p.round))].sort((a,b)=>a-b);
   const current=el("rankedRound").value;
-  fillSelect("rankedRound",rounds.map(r=>'<option value="'+r+'">Round '+r+'</option>'),reset?"1":current);
+  const preferredRound=rounds.some(r=>String(r)===current)?current:String(rounds[0]??"");
+  fillSelect("rankedRound",rounds.map(r=>'<option value="'+r+'">Round '+r+'</option>'),preferredRound);
   const round=Number(el("rankedRound").value);
   const candidates=picks.filter(p=>p.round===round).sort((a,b)=>pickName(a).localeCompare(pickName(b),"it"));
   const keep=reset?new Set(candidates.map(p=>str(p.id))):state.selectedRanked;
