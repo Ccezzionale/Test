@@ -155,6 +155,7 @@ function renderRight(){
     'Condizione: '+esc(r.rule)+'<br>'+
     'Pick candidata individuata: <strong>'+esc(pickName(selected))+'</strong><br>'+
     '<span class="mini-tag">1 solo diritto = 1 pick</span><span class="mini-tag">'+r.candidate_pick_ids.length+' candidate vincolate</span>'+
+    '<p>'+esc(r.candidate_pick_ids.filter(id=>isPickLocked(id,[r])).map(id=>pickName(pickById(id))).join(" · "))+'</p>'+
     '<p>Le pick sottostanti restano intestate ai loro attuali proprietari nella simulazione.</p>';
   fillSelect("newRightHolder",teamOptions(r.holder_team_id),"");
   el("rightsHistory").innerHTML=r.history.length?
@@ -195,7 +196,7 @@ function simulateStanding(){
       position,teamCount:size,topCount:topN,bottomCount:bottomN,
       topPickId:top.id,bottomPickId:bottom.id,middlePickId:middle?.id
     });
-    if(isPickLocked(resolved.pickId,[state.right].filter(Boolean)))throw new Error("Questa pick risulta già vincolata a un altro diritto simulato.");
+    // Questo laboratorio simula un solo diritto alla volta: non bloccare i nuovi calcoli dello stesso accordo.
     const selected=pickById(resolved.pickId);
     const labels={top:"fascia alta",bottom:"fascia bassa",middle:"fascia intermedia"};
     const rule="Posizione di "+teamLabel(el("standingSubject").value)+": "+labels[resolved.branch]+" (n. "+position+" su "+size+")";
