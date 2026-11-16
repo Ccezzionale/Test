@@ -158,8 +158,9 @@ function renderRight(){
     '<p>'+esc(r.candidate_pick_ids.filter(id=>isPickLocked(id,[r])).map(id=>pickName(pickById(id))).join(" · "))+'</p>'+
     '<p>Le pick sottostanti restano intestate ai loro attuali proprietari nella simulazione.</p>';
   fillSelect("newRightHolder",teamOptions(r.holder_team_id),"");
+  fillSelect("newRightCounter",pickOptions(byOwner(el("newRightHolder").value),true),"");
   el("rightsHistory").innerHTML=r.history.length?
-    '<strong>Catena dei trasferimenti simulati</strong><div>'+r.history.map(h=>esc(teamLabel(h.from))+' → '+esc(teamLabel(h.to))).join('<br>')+'</div>':
+    '<strong>Catena dei trasferimenti simulati</strong><div>'+r.history.map(h=>esc(teamLabel(h.from))+' → '+esc(teamLabel(h.to))+(h.counterPick?' (in cambio: '+esc(h.counterPick)+')':'')).join('<br>')+'</div>':
     '<strong>Nessuna cessione successiva:</strong> il titolare è quello dell’accordo iniziale.';
 }
 function showResult(box,pick,branch,names,lockedIds){
@@ -232,8 +233,18 @@ function transfer(){
     if(!state.right)throw new Error("Simula prima una condizione valida.");
     const next=el("newRightHolder").value;
     if(!next)throw new Error("Seleziona la franchigia che riceve il diritto.");
+    if(differentConf(state.right.holder_team_id,next)){
+      throw new Error("Cessione tra Conferences non consentita nella fase attuale.");
+    }
+    const counter=pickById(el("newRightCounter").value);
+    if(!counter||str(counter.owner_team_id)!==str(next)){
+      throw new Error("Il nuovo titolare deve offrire una sua pick futura come contropartita 1:1.");
+    }
+    validateOneForOne([{kind:"conditional_right"}],[{kind:"future_pick"}]);
     // Simulazione di vendita: nessuna modifica alle pick o a Supabase.
-    state.right=transferConditionalRight(state.right,next);
+    const right=transferConditionalRight(state.right,next);
+    right.history[right.history.length-1].counterPick=pickName(counter);
+    state.right=right;
     renderRight();
   }catch(e){window.alert(e.message);}
 }
@@ -251,6 +262,9 @@ function bindEvents(){
   el("rankedCounter").addEventListener("change",()=>clearResult("rankedResult"));
   el("simulateStanding").addEventListener("click",simulateStanding);
   el("simulateRanked").addEventListener("click",simulateRanked);
+  el("newRightHolder").addEventListener("change",()=>{
+    fillSelect("newRightCounter",pickOptions(byOwner(el("newRightHolder").value),true),"");
+  });
   el("simulateTransfer").addEventListener("click",transfer);
 }
 document.addEventListener("DOMContentLoaded",init);
