@@ -47,8 +47,12 @@
           <label>Classifica di quale squadra?
             <select id="standingSubject"></select>
           </label>
-          <label>Squadre nella classifica considerata
-            <input id="standingCount" type="number" min="2" max="30" value="8">
+          <label>Classifica di riferimento
+            <select id="standingCompetition">
+              <option value="conference">Conference</option>
+              <option value="round_robin">Round Robin</option>
+            </select>
+            <small id="standingScopeInfo" class="help-text" aria-live="polite">Numero di squadre calcolato automaticamente.</small>
           </label>
         </div>
         <div class="condition-rows">
@@ -60,14 +64,15 @@
             <div class="row-label"><strong>Negli ultimi <input id="standingBottomN" class="small-number" type="number" min="1" max="10" value="4"></strong><small>La squadra finisce nella fascia bassa</small></div>
             <label>Pick assegnata<select id="standingBottomPick"></select></label>
           </div>
-          <div class="condition-row row-dark">
+          <div id="standingMiddleRow" class="condition-row row-dark" hidden>
             <div class="row-label"><strong>Se non rientra nelle due fasce</strong><small>Obbligatorio soltanto se esistono posizioni intermedie</small></div>
             <label>Pick assegnata<select id="standingMiddlePick"></select></label>
           </div>
         </div>
         <div class="field-grid space-top">
-          <label>Posizione finale per la simulazione
-            <input id="standingPosition" type="number" min="1" max="30" value="3">
+          <label>Prova un piazzamento (solo simulazione)
+            <select id="standingPosition" aria-describedby="standingPositionHelp"></select>
+            <small id="standingPositionHelp" class="help-text">Scegli una posizione ipotetica per vedere quale pick spetterebbe al titolare. Non è la classifica reale.</small>
           </label>
           <label>Pick restituita in cambio (regola 1:1)
             <select id="standingCounter"></select>
@@ -138,6 +143,6 @@
       <footer class="lab-footer">Test isolato · nessuna modifica al regolamento o al mercato operativo · <a href="trade-room.html">Torna al mercato</a></footer>
     </div>
   </main>
-  <script type="module" src="trade-conditions-lab.js?v=20261116-concept-1"></script>
+  <script type="module" src="trade-conditions-lab.js?v=20261116-standing-scope-v2"></script>
 </body>
 </html>
