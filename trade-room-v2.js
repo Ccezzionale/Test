@@ -73,6 +73,52 @@ function compareTradeAssets(a,b){
   return str(a.name).localeCompare(str(b.name),"it",{sensitivity:"base",numeric:true});
 }
 
+
+// I badge seguono le stesse regole della Trade Room ufficiale.
+// P6 e' valido soltanto mentre appartiene alla squadra protetta.
+const tradeV2PlayerFlags=(player,ownerId)=>({
+  is_u21:player.is_u21===true,
+  is_u21_slot:player.is_u21_slot===true,
+  is_u21_keeper:player.is_u21_keeper===true,
+  u21_keeper_year:player.u21_keeper_year,
+  is_fp:player.is_fp===true,
+  is_fp_keeper:player.is_fp_keeper===true,
+  fp_keeper_year:player.fp_keeper_year,
+  is_rfa_matched:player.is_rfa_matched===true,
+  is_top6_protected:player.is_top6_protected===true && same(ownerId,player.top6_protected_team_id)
+});
+function tradeV2BadgeInfo(player){
+  if(!player || player.kind!=="player")return [];
+  const badges=[];
+  if(player.is_fp_keeper===true){
+    const second=Number(player.fp_keeper_year)===2;
+    badges.push({code:"FP",src:second?"img/badges/fp-confermato.webp":"img/badges/fp.webp",title:second?"Franchise Player confermato 2° anno":"Franchise Player confermato 1° anno"});
+  } else if(player.is_fp===true){
+    badges.push({code:"FP",src:"img/badges/fp.webp",title:"Franchise Player"});
+  }
+  if(player.is_u21_keeper===true){
+    const second=Number(player.u21_keeper_year)===2;
+    badges.push({code:"U21",src:second?"img/badges/u21-confermato-secondo-anno.webp":"img/badges/u21-confermato.webp",title:second?"U21 confermato 2° anno":"U21 confermato 1° anno"});
+  } else if(player.is_u21_slot===true){
+    badges.push({code:"U21",src:"img/badges/u21.webp",title:"Under 21"});
+  }
+  if(player.is_rfa_matched===true){
+    badges.push({code:"RFA",src:"img/badges/rfa.webp",title:"RFA pareggiato"});
+  }
+  if(player.is_top6_protected===true){
+    badges.push({code:"P6",src:"img/badges/protetto-p6-lucchetto.webp",title:"Giocatore protetto mercato (P6)"});
+  }
+  return badges;
+}
+function tradeV2BadgesHtml(player){
+  const badges=tradeV2BadgeInfo(player);
+  if(!badges.length)return "";
+  const description=badges.map(b=>b.title).join(", ");
+  return '<span class="v2-badge-strip" role="img" aria-label="'+esc(description)+'">'+
+    badges.map(b=>'<img class="v2-player-status-badge" src="'+b.src+'" alt="" title="'+esc(b.title)+'" loading="lazy">').join("")+
+  '</span>';
+}
+
 const isAvailable = p => same(p.ownerId,state.me.id) || allowedTeam(teamById(p.ownerId));
 const chipLabel = a => a.name + (a.kind==="player"?"":"");
 function setAuth(title, body) {
@@ -122,7 +168,7 @@ async function init(){
 }
 async function loadPlayers(){
   const players=await allRows(()=>supabase.from("players")
-    .select("id,name,role,role_mantra,serie_a_team,owner_team_id,status,pool")
+    .select("id,name,role,role_mantra,serie_a_team,owner_team_id,status,pool,is_u21,is_u21_slot,is_u21_keeper,u21_keeper_year,is_fp,is_fp_keeper,fp_keeper_year,is_rfa_matched,is_top6_protected,top6_protected_team_id")
     .eq("status","active")
     .order("name",{ascending:true}));
   const byId=new Map(players.map(p=>[str(p.id),p]));
@@ -135,12 +181,12 @@ async function loadPlayers(){
       const info=byId.get(str(r.player_id))||{};
       return {key:"draft:"+str(r.id),name:r.player_name||info.name||"Giocatore",
         ownerId:r.team_id,club:info.serie_a_team||"",role:info.role||"",role_mantra:info.role_mantra||"",
-        draftName:r.draft_name,kind:"player"};
+        draftName:r.draft_name,kind:"player",...tradeV2PlayerFlags(info,r.team_id)};
     }).filter(p=>p.ownerId);
   }else{
     state.players=players.filter(p=>p.owner_team_id).map(p=>({
       key:"player:"+str(p.id),name:p.name,ownerId:p.owner_team_id,club:p.serie_a_team||"",
-      role:p.role,role_mantra:p.role_mantra,pool:p.pool,kind:"player"
+      role:p.role,role_mantra:p.role_mantra,pool:p.pool,kind:"player",...tradeV2PlayerFlags(p,p.owner_team_id)
     }));
   }
   state.players.sort((a,b)=>str(a.name).localeCompare(str(b.name),"it",{sensitivity:"base"}));
@@ -254,9 +300,9 @@ function drawCards(){
   el("v2Players").innerHTML=view.map(p=>{
     const mine=same(p.ownerId,state.me.id),can=isAvailable(p);
     return '<button type="button" class="v2-roster-row'+(mine?' is-own':'')+(can?'':' is-locked')+'" data-pick="'+esc(p.key)+'"'+(can?"":" disabled")+
-      ' aria-label="'+esc(p.name+" · "+teamName(p.ownerId))+'">'+
+      ' aria-label="'+esc(p.name+" · "+teamName(p.ownerId)+(tradeV2BadgeInfo(p).length?" · "+tradeV2BadgeInfo(p).map(b=>b.title).join(", "):""))+'">'+
       '<span class="v2-role-avatar v2-role--'+mantraFamily(p)+'">'+esc(role(p))+'</span>'+
-      '<span class="v2-roster-copy"><strong>'+esc(p.name)+'</strong><small>'+esc(p.club||"Serie A")+' · '+esc(teamName(p.ownerId))+'</small></span>'+
+      '<span class="v2-roster-copy"><span class="v2-player-name-line"><strong>'+esc(p.name)+'</strong>'+tradeV2BadgesHtml(p)+'</span><small>'+esc(p.club||"Serie A")+' · '+esc(teamName(p.ownerId))+'</small></span>'+
       '<span class="v2-row-add">'+(mine?"Offri +":can?"Chiedi +":"—")+'</span></button>';
   }).join("")||'<div class="v2-empty">Nessun giocatore trovato con questi filtri.</div>';
   el("v2More").hidden=matches.length<=state.allShown;
@@ -285,7 +331,7 @@ function removeItem(side,key){
 function renderChips(side){
   const items=[...(side==="give"?state.give:state.want)].sort(compareTradeAssets);
   const dest=el(side==="give"?"v2GivenChips":"v2WantedChips");
-  dest.innerHTML=items.length?items.map(a=>'<span class="v2-chip">'+esc(chipLabel(a))+' <button type="button" data-remove="'+esc(a.key)+'" aria-label="Rimuovi '+esc(a.name)+'">×</button></span>').join(""):'<small style="color:#7c8a9c">Nessun asset selezionato</small>';
+  dest.innerHTML=items.length?items.map(a=>'<span class="v2-chip"><span class="v2-chip-identity"><span class="v2-chip-name">'+esc(chipLabel(a))+'</span>'+tradeV2BadgesHtml(a)+'</span> <button type="button" data-remove="'+esc(a.key)+'" aria-label="Rimuovi '+esc(a.name)+'">×</button></span>').join(""):'<small style="color:#7c8a9c">Nessun asset selezionato</small>';
   dest.querySelectorAll("[data-remove]").forEach(b=>b.addEventListener("click",()=>removeItem(side,b.dataset.remove)));
 }
 function renderChoices(side){
@@ -308,7 +354,7 @@ function renderChoices(side){
       const meta=player?(p.club||"Serie A"):(p.kind==="call"?"Chiamata settimanale":"Pick draft");
       return '<button type="button" class="v2-small-option" data-asset="'+esc(p.key)+'">'+
         '<span class="v2-choice-badge v2-role--'+family+'">'+esc(badge)+'</span>'+
-        '<span class="v2-choice-copy"><strong>'+esc(p.name)+'</strong><small>'+esc(meta)+'</small></span>'+
+        '<span class="v2-choice-copy"><span class="v2-player-name-line"><strong>'+esc(p.name)+'</strong>'+tradeV2BadgesHtml(p)+'</span><small>'+esc(meta)+'</small></span>'+
         '<span class="v2-choice-plus" aria-hidden="true">＋</span></button>';
     }).join(""):
     '<div class="v2-empty">Nessun asset disponibile con questa ricerca.</div>';
