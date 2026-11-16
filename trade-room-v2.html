@@ -6,7 +6,7 @@
   <meta name="robots" content="noindex,nofollow">
   <title>Trade Room V2 • Anteprima personale</title>
   <link rel="stylesheet" href="navbar.css">
-  <link rel="stylesheet" href="trade-room-v2.css?v=20261116-b">
+  <link rel="stylesheet" href="trade-room-v2.css?v=20261116-mantra-gold">
 </head>
 <body>
 <nav class="site-nav">
@@ -207,12 +207,25 @@
 
       <section id="v2MarketView">
   <div class="v2-section-title"><h2>Scopri i giocatori</h2><small id="v2ListCount">...</small></div>
-  <p class="v2-sub">Chi ha chi? Tocca un calciatore per iniziare una trattativa.</p>
+  <p class="v2-sub">Ruoli Mantra e proprietari aggiornati. Tocca un giocatore per trattare.</p>
   <button type="button" class="v2-start-trade" data-v2-new><span class="v2-start-icon">⇄</span><span><strong>Crea una trattativa</strong><small>Scegli chi vuoi e costruisci lo scambio</small></span><b>›</b></button>
   <div class="v2-filterbox">
-    <input id="v2Search" type="search" class="v2-input" placeholder="⌕  Cerca giocatore o proprietario" aria-label="Cerca nel listone" autocomplete="off">
-    <select id="v2Role" class="v2-select" aria-label="Filtra per ruolo">
-      <option value="">Ruoli</option><option value="P">Portieri</option><option value="D">Difensori</option><option value="C">Centrocampisti</option><option value="A">Attaccanti</option>
+    <input id="v2Search" type="search" class="v2-input" placeholder="⌕  Nome o franchigia" aria-label="Cerca nel listone" autocomplete="off">
+    <select id="v2Role" class="v2-select" aria-label="Filtra per ruolo Mantra">
+      <option value="">Tutti i ruoli</option>
+      <optgroup label="Ruoli Mantra">
+        <option value="POR">Por</option>
+        <option value="DD">Dd</option>
+        <option value="DC">Dc</option>
+        <option value="DS">Ds</option>
+        <option value="E">E</option>
+        <option value="M">M</option>
+        <option value="C">C</option>
+        <option value="W">W</option>
+        <option value="T">T</option>
+        <option value="A">A</option>
+        <option value="PC">Pc</option>
+      </optgroup>
     </select>
   </div>
   <div id="v2Players" class="v2-player-grid" aria-live="polite"></div>
@@ -284,6 +297,6 @@
   </main>
   <script src="mobile-nav.js"></script>
   <script src="navbar.js"></script>
-  <script type="module" src="trade-room-v2.js?v=20261116-b"></script>
+  <script type="module" src="trade-room-v2.js?v=20261116-mantra-gold"></script>
 </body>
 </html>
