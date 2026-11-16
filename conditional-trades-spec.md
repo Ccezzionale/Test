@@ -49,3 +49,13 @@ Stato: **simulatore read-only** su \`trade-conditions-lab.html\`. Nessuna tabell
 - Le posizioni finali sono impostate manualmente nell'interfaccia come **dati ipotetici**. Il simulatore non dichiara finali i risultati.
 - Le protezioni mostrate sono visive/in memoria e non incidono sul mercato reale.
 - Le contropartite 1:1 sono verificate nella simulazione; nessuna proposta reale è inviata.
+
+## Condizioni V1 aggiuntive: Premi e trofei (laboratorio)
+3. **Vince almeno un trofeo**: una pick se la franchigia indicata vince almeno una delle competizioni ammissibili, un'altra se non vince nulla. Le competizioni in catalogo dell'Albo d'Oro: Playoff, Campionato, Crash Out Cup, Highlander Cup, Conference League, Conference Championship, Round Robin, Supercoppa degli Eroi. Per la franchigia si esclude l'altra Conference. Se una vittoria finale è già ufficiale, la clausola positiva è risolvibile anche con altre competizioni aperte. La clausola negativa è risolvibile **solo quando tutte le competizioni comprese nel contratto sono ufficialmente concluse**.
+4. **Vince un trofeo specifico**: una pick in caso di vittoria di quella competizione, una pick in caso contrario. Il sì/no si può determinare solo una volta ufficialmente conclusa quella specifica competizione.
+5. **Piazzamento a premio ma senza vittoria**: non confondere con «vince un trofeo». L'Albo d'Oro visualizza anche argento/bronzo, ma da questo non si deduce quali piazzamenti abbiano premi economici. Prima di implementare questa variante servono soglie e competizioni premiate definite dal regolamento.
+
+### Fonte ufficiale da collegare
+Al momento trofei e risultati si trovano in aree differenti: playoff_results, highlander_eliminations/highlander_state, crashout_playoff_games, supercoppa_settings, classifiche/risultati. L'Albo d'Oro medagliere.html elenca gli 8 trofei ma è soprattutto una presentazione storica, non un registro di risultati finali consultabile in modo uniforme.
+Per la produzione serve un registro unico con stagione, competizione, stato (in corso/definitivo), squadra vincitrice, alimentato dalle sezioni ufficiali. Vietato inferire «non ha vinto» dalla semplice assenza di un risultato. L'insieme delle competizioni ammissibili e la stagione devono essere bloccati al momento dell'accettazione, non cambiare retroattivamente se si aggiungono nuovi tornei.
+Il simulatore «Premi / trofei» crea esiti ipotetici solo in memoria. Nessun trofeo viene letto come realmente vinto e nessuna pick viene trasferita.
