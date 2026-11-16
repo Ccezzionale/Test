@@ -723,3 +723,46 @@ body{
   color:#082b59;border-color:#fff9a8;
 }
 .v2-trade-block:not(.is-open) .v2-add-asset:active{transform:scale(.99)}
+
+
+/* ===============================================================
+   FIX MOBILE: navbar.css forces a light body background !important.
+   Isolate the selected electric blue / gold theme to Trade Room V2.
+   =============================================================== */
+html:has(body.trade-v2-preview){
+  background:#04142c !important;
+}
+body.trade-v2-preview{
+  min-height:100vh;
+  color:#f7fbff;
+  background-color:#04142c !important;
+  background-image:
+    radial-gradient(ellipse 420px 330px at 102% 30%,rgba(6,114,255,.32) 0%,rgba(4,87,204,.16) 40%,transparent 74%),
+    radial-gradient(ellipse 350px 260px at -14% 56%,rgba(8,143,255,.24) 0%,transparent 75%),
+    radial-gradient(ellipse 340px 230px at 107% 83%,rgba(255,185,16,.17) 0%,transparent 74%),
+    linear-gradient(145deg,transparent 35%,rgba(5,106,246,.10) 39%,rgba(1,123,255,.23) 39.6%,rgba(24,170,255,.05) 41.5%,transparent 45%),
+    linear-gradient(35deg,transparent 67%,rgba(255,200,44,.07) 70%,rgba(255,195,24,.20) 70.45%,transparent 72%),
+    linear-gradient(180deg,#03142c 0%,#06234e 44%,#041b39 72%,#031229 100%) !important;
+  background-repeat:no-repeat !important;
+  background-size:cover !important;
+  background-attachment:fixed !important;
+}
+body.trade-v2-preview .v2-main{
+  background:transparent !important;
+}
+@media(max-width:900px){
+  /* More specific than the global @media body { background: #eef5fb !important }. */
+  body.trade-v2-preview{
+    background-color:#04142c !important;
+    background-image:
+      radial-gradient(ellipse 350px 280px at 109% 20%,rgba(0,120,255,.35),transparent 75%),
+      radial-gradient(ellipse 270px 210px at -15% 53%,rgba(0,162,255,.25),transparent 74%),
+      radial-gradient(ellipse 300px 230px at 115% 83%,rgba(255,184,17,.15),transparent 78%),
+      linear-gradient(146deg,transparent 35%,rgba(23,126,255,.09) 36%,rgba(25,155,255,.28) 36.35%,transparent 39%),
+      linear-gradient(34deg,transparent 72%,rgba(255,205,57,.09) 73%,rgba(255,187,12,.25) 73.3%,transparent 75%),
+      linear-gradient(180deg,#03142c,#08254f 45%,#041c3b 74%,#03152f) !important;
+    background-repeat:no-repeat !important;
+    background-size:cover !important;
+    background-attachment:fixed !important;
+  }
+}
