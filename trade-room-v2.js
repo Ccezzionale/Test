@@ -28,14 +28,22 @@ const pending = () => state.trades.filter(t=>t.status==="pending");
 const received = () => pending().filter(t=>same(t.to_team,state.me.id));
 const sent = () => state.trades.filter(t=>same(t.from_team,state.me.id)&&["pending","accepted_pending_cuts"].includes(t.status));
 const official = () => state.trades.filter(t=>t.status==="accepted");
-const role = p => str(p.role_mantra || p.role || "CAL").toUpperCase();
-const roleGroup = p => {
-  const r=role(p).split(/[^\p{L}]+/u);
-  if(r.some(x=>["P","POR"].includes(x)))return "P";
-  if(r.some(x=>["D","DD","DC","DS","B","E"].includes(x)))return "D";
-  if(r.some(x=>["C","M","T","W"].includes(x)))return "C";
-  if(r.some(x=>["A","PC"].includes(x)))return "A";
-  return "?";
+// Use only the actual Mantra role field: never silently substitute Classic P/D/C/A.
+const MANTRA_CODES = new Set(["POR","DD","DC","DS","E","M","C","W","T","A","PC"]);
+const MANTRA_DISPLAY = {POR:"Por",DD:"Dd",DC:"Dc",DS:"Ds",E:"E",M:"M",C:"C",W:"W",T:"T",A:"A",PC:"Pc"};
+const mantraTokens = p => [...new Set(
+  str(p.role_mantra).toUpperCase().split(/[;,/|\s+-]+/)
+    .map(code => code === "P" ? "POR" : code)
+    .filter(code => MANTRA_CODES.has(code))
+)];
+const role = p => mantraTokens(p).map(code=>MANTRA_DISPLAY[code]).join("/") || "N/D";
+const mantraFamily = p => {
+  const first = mantraTokens(p)[0];
+  if(first==="POR") return "keeper";
+  if(["DD","DC","DS","E"].includes(first)) return "defence";
+  if(["M","C","W","T"].includes(first)) return "midfield";
+  if(["A","PC"].includes(first)) return "attack";
+  return "unknown";
 };
 const isAvailable = p => same(p.ownerId,state.me.id) || allowedTeam(teamById(p.ownerId));
 const chipLabel = a => a.name + (a.kind==="player"?"":"");
@@ -209,7 +217,7 @@ function switchTab(tab){
 function playerCards(){
   const search=el("v2Search").value.trim().toLocaleLowerCase("it");
   const group=el("v2Role").value;
-  return state.players.filter(p=>(!group||roleGroup(p)===group)&&
+  return state.players.filter(p=>(!group||mantraTokens(p).includes(group))&&
     (!search||[p.name,p.club,teamName(p.ownerId)].join(" ").toLocaleLowerCase("it").includes(search)));
 }
 function drawCards(){
@@ -219,7 +227,7 @@ function drawCards(){
     const mine=same(p.ownerId,state.me.id),can=isAvailable(p);
     return '<button type="button" class="v2-roster-row" data-pick="'+esc(p.key)+'"'+(can?"":" disabled")+
       ' aria-label="'+esc(p.name+" · "+teamName(p.ownerId))+'">'+
-      '<span class="v2-role-avatar">'+esc(roleGroup(p))+'</span>'+
+      '<span class="v2-role-avatar v2-role--'+mantraFamily(p)+'">'+esc(role(p))+'</span>'+
       '<span class="v2-roster-copy"><strong>'+esc(p.name)+'</strong><small>'+esc(p.club||"Serie A")+' · '+esc(teamName(p.ownerId))+'</small></span>'+
       '<span class="v2-row-add">'+(mine?"Offri +":can?"Chiedi +":"—")+'</span></button>';
   }).join("")||'<div class="v2-empty">Nessun giocatore trovato con questi filtri.</div>';
@@ -263,8 +271,16 @@ function renderChoices(side){
   const filtered=[...playerOpts,...extraOpts].filter(x=>!search||x.name.toLocaleLowerCase("it").includes(search));
   const box=el(own?"v2GiveChoices":"v2WantChoices");
   box.innerHTML=!owner?'<div class="v2-empty">Scegli prima la squadra destinataria.</div>':
-    filtered.length?filtered.slice(0,65).map(p=>'<button type="button" class="v2-small-option" data-asset="'+esc(p.key)+'"><span>'+
-    esc(p.name)+'</span><small>'+esc(p.kind==="player"?(role(p)+" · "+(p.club||"")):(p.kind==="call"?"Chiamata":"Pick"))+'</small></button>').join(""):
+    filtered.length?filtered.slice(0,65).map(p=>{
+      const player=p.kind==="player";
+      const family=player?mantraFamily(p):"special";
+      const badge=player?role(p):(p.kind==="call"?"W":"Pick");
+      const meta=player?(p.club||"Serie A"):(p.kind==="call"?"Chiamata settimanale":"Pick draft");
+      return '<button type="button" class="v2-small-option" data-asset="'+esc(p.key)+'">'+
+        '<span class="v2-choice-badge v2-role--'+family+'">'+esc(badge)+'</span>'+
+        '<span class="v2-choice-copy"><strong>'+esc(p.name)+'</strong><small>'+esc(meta)+'</small></span>'+
+        '<span class="v2-choice-plus" aria-hidden="true">＋</span></button>';
+    }).join(""):
     '<div class="v2-empty">Nessun asset disponibile con questa ricerca.</div>';
   box.querySelectorAll("[data-asset]").forEach(b=>b.addEventListener("click",()=>{
     const p=filtered.find(x=>x.key===b.dataset.asset);
