@@ -190,7 +190,8 @@ function simulateTrophy(){
     validateCandidates(candidates,{ownerId:grantor,season:state.season});
     const eligible=trophyEligibleCompetitions();
     const eligibleIds=eligible.map(c=>c.id);
-    const otherTeam=state.teams.find(t=>str(t.id)!==str(subject));
+    const otherTeam=state.teams.find(t=>str(t.id)!==str(subject)&&t.conference===team(subject)?.conference)||
+      state.teams.find(t=>str(t.id)!==str(subject));
     if(!otherTeam)throw new Error("Non è disponibile una squadra avversaria per il test.");
     if(mode==="specific_trophy"&&!eligibleIds.includes(specificId)){
       throw new Error("La competizione scelta non è ammissibile per la franchigia indicata.");
