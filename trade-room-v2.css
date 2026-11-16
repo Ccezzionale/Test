@@ -766,3 +766,105 @@ body.trade-v2-preview .v2-main{
     background-attachment:fixed !important;
   }
 }
+
+
+/* Trade Room V2: badge giocatore ufficiali, miniatura leggibile anche su mobile. */
+.v2-player-name-line{
+  display:flex;
+  align-items:center;
+  flex-wrap:nowrap;
+  min-width:0;
+  max-width:100%;
+  gap:5px;
+}
+.v2-player-name-line>strong{
+  flex:0 1 auto;
+  min-width:0;
+  max-width:100%;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+.v2-badge-strip{
+  flex:0 0 auto;
+  display:inline-flex;
+  align-items:center;
+  flex-wrap:nowrap;
+  justify-content:flex-start;
+  gap:2px;
+  max-width:100%;
+  white-space:nowrap;
+  vertical-align:middle;
+}
+.v2-player-status-badge{
+  display:block;
+  height:19px;
+  width:auto;
+  max-width:23px;
+  object-fit:contain;
+  flex:0 0 auto;
+  filter:drop-shadow(0 1px 2px rgba(0,0,0,.22));
+}
+.v2-roster-copy .v2-player-name-line{
+  min-height:21px;
+}
+.v2-roster-copy .v2-player-status-badge{
+  height:18px;
+  max-width:22px;
+}
+.v2-choice-copy .v2-player-name-line{
+  width:100%;
+}
+.v2-choice-copy .v2-player-status-badge{
+  height:19px;
+}
+.v2-chip-identity{
+  display:flex;
+  flex:1 1 auto;
+  flex-direction:column;
+  align-items:flex-start;
+  min-width:0;
+  gap:4px;
+}
+.v2-chip-name{
+  display:block;
+  min-width:0;
+  width:100%;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+.v2-chip-identity .v2-badge-strip{
+  gap:3px;
+}
+.v2-chip-identity .v2-player-status-badge{
+  height:17px;
+  max-width:20px;
+  filter:drop-shadow(0 1px 1px rgba(0,0,0,.35));
+}
+.v2-trade-block:not(.is-open) .v2-chip{
+  align-items:center;
+  min-height:39px;
+}
+.v2-trade-block:not(.is-open) .v2-chip button{
+  align-self:center;
+}
+/* Non comprimere il nome per icone numerose: in questi casi vai a capo. */
+@media(max-width:390px){
+  .v2-roster-copy .v2-player-name-line{
+    flex-wrap:wrap;
+    row-gap:2px;
+  }
+  .v2-roster-copy .v2-player-name-line>strong{
+    max-width:100%;
+  }
+  .v2-roster-copy .v2-badge-strip{
+    gap:1px;
+  }
+  .v2-roster-copy .v2-player-status-badge{
+    height:16px;
+  }
+  .v2-chip-identity .v2-player-status-badge{
+    height:16px;
+  }
+}
