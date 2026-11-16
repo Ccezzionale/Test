@@ -16,7 +16,16 @@ const byName=name=>state.teams.find(t=>t.name===name);
 const teamLabel=id=>team(id)?.name||"Franchigia sconosciuta";
 const pickName=p=>p?("R"+p.round+" "+p.season+" · da "+teamLabel(p.original_team_id)):"Pick sconosciuta";
 const pickById=id=>state.picks.find(p=>str(p.id)===str(id));
-const byOwner=id=>state.picks.filter(p=>str(p.owner_team_id)===str(id)&&p.pick_kind==="normal"&&p.status==="active");
+// Unico ordinamento per tutti i selettori: stagione, round numerico, Conference e squadra di origine.
+const compareFuturePicks=(a,b)=>
+  Number(a.season)-Number(b.season)||
+  Number(a.round)-Number(b.round)||
+  str(a.draft_name).localeCompare(str(b.draft_name),"it",{sensitivity:"base",numeric:true})||
+  teamLabel(a.original_team_id).localeCompare(teamLabel(b.original_team_id),"it",{sensitivity:"base",numeric:true})||
+  str(a.id).localeCompare(str(b.id));
+const byOwner=id=>state.picks
+  .filter(p=>str(p.owner_team_id)===str(id)&&p.pick_kind==="normal"&&p.status==="active")
+  .sort(compareFuturePicks);
 const same=x=>(a,b)=>str(a)===str(b);
 const differentConf=(from,to)=>state.phase!=="round_robin_market"&&team(from)?.conference!==team(to)?.conference;
 const errorMessage=(box,msg)=>{box.classList.add("is-error");box.innerHTML='<h3>Condizione non valida</h3><p>'+esc(msg)+'</p>';};
@@ -55,7 +64,7 @@ async function init(){
     if(t.error)throw t.error;
     if(p.error)throw p.error;
     state.teams=t.data||[];
-    state.picks=p.data||[];
+    state.picks=(p.data||[]).sort(compareFuturePicks);
     state.phase=settings.data?.active_phase||state.phase;
     state.season=settings.data?.future_pick_season||state.season;
     if(!state.teams.length||!state.picks.length)throw new Error("Dati squadre o pick non disponibili.");
@@ -151,7 +160,7 @@ function redrawRankedPositions(){
   el("rankedCount").textContent=selected.length+" selezionate";
   const size=state.picks.filter(p=>p.draft_name===selected[0]?.draft_name&&p.round===selected[0]?.round).length;
   el("rankedPositions").innerHTML=selected.map((p,index)=>{
-    const current=state.positions[str(p.id)]??Math.min(2+index*3,size||8);
+    const current=state.positions[str(p.id)]??Math.min(index+1,size||1);
     return '<label class="position-item"><span>'+esc(teamLabel(p.original_team_id))+'</span>'+
       '<input type="number" min="1" max="'+Math.max(1,size)+'" value="'+esc(current)+'" data-position="'+esc(p.id)+'" aria-label="Posizione di '+esc(teamLabel(p.original_team_id))+'"></label>';
   }).join("");
