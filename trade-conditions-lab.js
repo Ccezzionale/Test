@@ -1,7 +1,7 @@
 import {supabase} from "./supabase.js";
 import {
   validateCandidates,resolveStandings,resolveRanked,transferConditionalRight,
-  isPickLocked,validateOneForOne
+  isPickLocked,validateOneForOne,resolveTrophyCondition,TROPHY_COMPETITIONS
 } from "./conditional-trades-core.js";
 
 /* Laboratorio di simulazione: letture SELECT soltanto.
@@ -83,6 +83,7 @@ async function init(){
     refreshStandingPicks(true);
     refreshStandingScope();
     refreshRankedPicks(true);
+    initTrophyScenario(bart,bayern);
     bindEvents();
   }catch(e){
     el("loading").innerHTML='<strong>Laboratorio non disponibile</strong><span>'+esc(e.message||"Impossibile caricare i dati.")+'</span>';
@@ -125,6 +126,119 @@ function refreshStandingPicks(reset=false){
   }
   clearResult("standingResult");
 }
+
+function trophyEligibleCompetitions(){
+  const subject=team(el("trophySubject").value);
+  return TROPHY_COMPETITIONS.filter(c=>{
+    if(c.id==="conference_league")return subject?.conference==="Conference League";
+    if(c.id==="conference_championship")return subject?.conference==="Conference Championship";
+    return true;
+  });
+}
+function trophySelectOptions(){
+  return trophyEligibleCompetitions().map(c=>
+    '<option value="'+esc(c.id)+'">'+esc(c.name)+'</option>');
+}
+function initTrophyScenario(grantor,holder){
+  const teams=teamOptions();
+  fillSelect("trophyGrantor",teams,grantor);
+  fillSelect("trophyHolder",teams,holder);
+  fillSelect("trophySubject",teams,grantor);
+  el("trophyMode").value="any_trophy";
+  refreshTrophyPicks(true);
+  refreshTrophyMode();
+}
+function refreshTrophyPicks(reset=false){
+  const grantor=el("trophyGrantor").value;
+  const holder=el("trophyHolder").value;
+  const picks=byOwner(grantor);
+  const isBart=team(grantor)?.name==="Team Bartowski";
+  const own4=picks.find(p=>p.round===4&&str(p.original_team_id)===str(grantor));
+  const own5=picks.find(p=>p.round===5&&str(p.original_team_id)===str(grantor));
+  fillSelect("trophyWonPick",pickOptions(picks),reset&&isBart?own4?.id:undefined);
+  fillSelect("trophyNotWonPick",pickOptions(picks),reset&&isBart?own5?.id:undefined);
+  fillSelect("trophyCounter",pickOptions(byOwner(holder),true),reset?"":undefined);
+  clearResult("trophyResult");
+}
+function refreshTrophyMode(){
+  const specific=el("trophyMode").value==="specific_trophy";
+  el("trophySpecificRow").hidden=!specific;
+  const available=trophySelectOptions();
+  fillSelect("trophySpecific",available);
+  fillSelect("trophyMockWinner",available);
+  const test=el("trophyTestResult").value;
+  el("trophyMockWinnerRow").hidden=specific||test!=="won";
+  clearResult("trophyResult");
+}
+function simulateTrophy(){
+  const box=el("trophyResult");
+  try{
+    const grantor=el("trophyGrantor").value;
+    const holder=el("trophyHolder").value;
+    const subject=el("trophySubject").value;
+    const mode=el("trophyMode").value;
+    const specificId=el("trophySpecific").value;
+    const test=el("trophyTestResult").value;
+    const wonPick=pickById(el("trophyWonPick").value);
+    const notWonPick=pickById(el("trophyNotWonPick").value);
+    const counter=pickById(el("trophyCounter").value);
+    checkParties(grantor,holder,counter);
+    if(!wonPick||!notWonPick||wonPick.id===notWonPick.id){
+      throw new Error("Seleziona due pick differenti, una per ciascun esito.");
+    }
+    const candidates=[wonPick,notWonPick];
+    validateCandidates(candidates,{ownerId:grantor,season:state.season});
+    const eligible=trophyEligibleCompetitions();
+    const eligibleIds=eligible.map(c=>c.id);
+    const otherTeam=state.teams.find(t=>str(t.id)!==str(subject));
+    if(!otherTeam)throw new Error("Non è disponibile una squadra avversaria per il test.");
+    if(mode==="specific_trophy"&&!eligibleIds.includes(specificId)){
+      throw new Error("La competizione scelta non è ammissibile per la franchigia indicata.");
+    }
+    const targetId=mode==="specific_trophy"?specificId:null;
+    let outcomes=[];
+    if(test==="won"){
+      const wonId=mode==="specific_trophy"?specificId:el("trophyMockWinner").value;
+      if(!eligibleIds.includes(wonId))throw new Error("Seleziona un trofeo ammissibile per il test.");
+      outcomes=[{competition_id:wonId,status:"final",winner_team_id:subject}];
+    }else if(test==="not_won"){
+      // Per "qualsiasi trofeo" il NO è dimostrabile solo se TUTTI
+      // i tornei ammissibili sono terminati senza una vittoria.
+      const targets=mode==="specific_trophy"?[specificId]:eligibleIds;
+      outcomes=targets.map(id=>({competition_id:id,status:"final",winner_team_id:otherTeam.id}));
+    }else if(test!=="pending"){
+      throw new Error("Risultato simulato non valido.");
+    }
+    const resolution=resolveTrophyCondition({
+      mode,subjectTeamId:subject,competitionId:targetId,
+      eligibleCompetitionIds:eligibleIds,outcomes
+    });
+    const specificLabel=eligible.find(c=>c.id===specificId)?.name||"Trofeo";
+    const rule=mode==="specific_trophy"
+      ?"Vittoria "+specificLabel+" di "+teamLabel(subject)
+      :"Vittoria di un qualsiasi trofeo ammissibile da parte di "+teamLabel(subject);
+    const chosen=resolution.status==="pending"?null:
+      resolution.triggered?wonPick:notWonPick;
+    box.classList.remove("is-error");
+    if(resolution.status==="pending"){
+      box.innerHTML='<h3>⏳ Condizione ancora aperta</h3>'+
+        '<p>'+esc(rule)+'</p>'+
+        '<p>Il torneo (o almeno un torneo rilevante) non è concluso: <strong>non viene assegnata alcuna pick</strong>.</p>'+
+        '<p>Entrambe le pick rimangono candidate e non possono essere cedute separatamente una volta creato il diritto reale.</p>'+
+        '<p style="color:#ffd664">Test ipotetico. Nel mercato reale servirà il risultato ufficiale definitivo.</p>';
+    }else{
+      const outcomeLabel=resolution.triggered?"Condizione avverata":"Condizione non avverata";
+      showResult(box,chosen,resolution.triggered?"won":"not_won",
+        outcomeLabel+" · "+rule,candidates.map(p=>p.id));
+    }
+    prepareRight({holderId:holder,grantorId:grantor,candidates,rule,selected:chosen});
+  }catch(e){
+    state.right=null;
+    el("rightsPanel").hidden=true;
+    errorMessage(box,e.message);
+  }
+}
+
 function clearResult(id){el(id).textContent="";el(id).classList.remove("is-error");el("rightsPanel").hidden=true;state.right=null;}
 function refreshRankedPicks(reset=false){
   const owner=el("rankedGrantor").value,holder=el("rankedHolder").value;
@@ -172,7 +286,7 @@ function redrawRankedPositions(){
 function prepareRight(spec){
   state.right={status:"active",holder_team_id:spec.holderId,grantor_team_id:spec.grantorId,
     candidate_pick_ids:spec.candidates.map(p=>str(p.id)),history:[],rule:spec.rule,
-    resultPick:spec.selected.id,season:spec.selected.season};
+    resultPick:spec.selected?.id||null,season:spec.candidates[0].season};
   el("rightsPanel").hidden=false;
   renderRight();
 }
@@ -184,7 +298,7 @@ function renderRight(){
     'Titolare attuale: <strong>'+esc(teamLabel(r.holder_team_id))+'</strong><br>'+
     'Squadra obbligata: <strong>'+esc(teamLabel(r.grantor_team_id))+'</strong><br>'+
     'Condizione: '+esc(r.rule)+'<br>'+
-    'Pick candidata individuata: <strong>'+esc(pickName(selected))+'</strong><br>'+
+    'Pick candidata individuata: <strong>'+esc(selected?pickName(selected):'In attesa del risultato ufficiale')+'</strong><br>'+
     '<span class="mini-tag">1 solo diritto = 1 pick</span><span class="mini-tag">'+r.candidate_pick_ids.length+' candidate vincolate</span>'+
     '<p>'+esc(r.candidate_pick_ids.filter(id=>isPickLocked(id,[r])).map(id=>pickName(pickById(id))).join(" · "))+'</p>'+
     '<p>Le pick sottostanti restano intestate ai loro attuali proprietari nella simulazione.</p>';
@@ -301,6 +415,15 @@ function bindEvents(){
   el("rankedCounter").addEventListener("change",()=>clearResult("rankedResult"));
   el("simulateStanding").addEventListener("click",simulateStanding);
   el("simulateRanked").addEventListener("click",simulateRanked);
+  el("trophyGrantor").addEventListener("change",()=>refreshTrophyPicks(true));
+  el("trophyHolder").addEventListener("change",()=>refreshTrophyPicks(false));
+  el("trophySubject").addEventListener("change",refreshTrophyMode);
+  el("trophyMode").addEventListener("change",refreshTrophyMode);
+  el("trophyTestResult").addEventListener("change",refreshTrophyMode);
+  for(const id of ["trophySpecific","trophyMockWinner","trophyWonPick","trophyNotWonPick","trophyCounter"]){
+    el(id).addEventListener("change",()=>clearResult("trophyResult"));
+  }
+  el("simulateTrophy").addEventListener("click",simulateTrophy);
   el("newRightHolder").addEventListener("change",()=>{
     fillSelect("newRightCounter",pickOptions(byOwner(el("newRightHolder").value),true),"");
   });
