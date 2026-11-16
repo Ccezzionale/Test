@@ -423,7 +423,6 @@
         </li>
 
         <li><a href="waiver.html">Waiver Wire</a></li>
-        <li id="tradeV2NavEntry" style="display:none!important"><a href="trade-room-v2.html">🧪 Trade Room V2 · Anteprima</a></li>
 
 <li>
   <a href="hall-of-fame.html">Hall of Fame</a>
@@ -1123,9 +1122,7 @@ document.addEventListener("DOMContentLoaded", function () {
     previewAuth.auth.getUser().then(({data,error}) => {
       if(error || String(data?.user?.email || "").toLowerCase() !== "tringali0511@gmail.com") return;
       const home=document.getElementById("tradeV2HomeEntry");
-      const nav=document.getElementById("tradeV2NavEntry");
       if(home)home.style.setProperty("display","flex","important");
-      if(nav)nav.style.setProperty("display","list-item","important");
     }).catch(err=>console.warn("Preview V2 non disponibile:",err));
   </script>
   <script type="module" src="home-dashboard.js?v=20261112-playoffs-everyone"></script>
