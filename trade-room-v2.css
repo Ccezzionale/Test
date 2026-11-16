@@ -878,3 +878,172 @@ body.trade-v2-preview .v2-main{
   vertical-align:middle;
   margin:0 2px;
 }
+
+
+/* ==========================================================
+   ADMIN MERCATO (V2): apre/chiude il mercato ufficiale.
+   Pannello solo per profiles.role=admin; la policy RLS gestisce i permessi reali.
+   ========================================================== */
+.v2-admin-panel{
+  margin:0 0 13px;
+}
+.v2-admin-accordion{
+  border-radius:17px;
+  border:1px solid #ffc83d;
+  overflow:hidden;
+  background:linear-gradient(135deg,#052b59,#063f83);
+  box-shadow:inset 0 1px #ffffff2b,0 0 18px #f5ba2736,0 7px 18px #0005;
+  color:#fff;
+}
+.v2-admin-accordion>summary{
+  cursor:pointer;
+  min-height:67px;
+  list-style:none;
+  display:flex;
+  align-items:center;
+  gap:12px;
+  padding:12px 14px;
+  touch-action:manipulation;
+}
+.v2-admin-accordion>summary::-webkit-details-marker,
+.v2-admin-advanced>summary::-webkit-details-marker{display:none}
+.v2-admin-accordion>summary:focus-visible{
+  outline:3px solid #ffe06a;
+  outline-offset:-3px;
+}
+.v2-admin-summary-icon{
+  width:39px;height:39px;flex:0 0 39px;
+  border-radius:12px;
+  display:grid;place-items:center;
+  color:#081f43;
+  font-size:22px;
+  background:linear-gradient(135deg,#fff08c,#ffc51e);
+  box-shadow:inset 0 1px #ffffff95,0 3px 9px #0004;
+}
+.v2-admin-summary-copy{display:block;min-width:0;flex:1}
+.v2-admin-summary-copy strong{
+  display:block;
+  color:#fff;font-size:15px;font-weight:950;
+}
+.v2-admin-summary-copy small{
+  display:block;color:#c9e4ff;font-size:11px;margin-top:3px;
+}
+.v2-admin-chevron{
+  font-size:20px;font-weight:800;color:#ffe16a;
+  transition:transform .2s ease;
+}
+.v2-admin-accordion[open] .v2-admin-chevron{transform:rotate(180deg)}
+.v2-admin-body{
+  background:linear-gradient(165deg,#092d5f,#061e44);
+  padding:14px;
+  border-top:1px solid #3174b1;
+}
+.v2-admin-live-notice{
+  font-size:12px;line-height:1.5;
+  color:#ffea9d;background:#ffcb2719;
+  border:1px solid #ffcc4559;
+  padding:10px 12px;border-radius:11px;margin:0 0 13px;
+}
+.v2-admin-live-notice strong{color:#fff4bc}
+.v2-admin-toggle-row{
+  display:flex;align-items:center;gap:12px;
+  border:1px solid #327cb6;
+  background:linear-gradient(135deg,#0d457b,#062f66);
+  padding:13px;border-radius:14px;
+  cursor:pointer;
+}
+.v2-admin-toggle-copy{flex:1;min-width:0}
+.v2-admin-toggle-copy strong{
+  color:#fff;display:block;font-size:15px;font-weight:900;
+}
+.v2-admin-toggle-copy small{
+  display:block;color:#c1e1fa;
+  font-size:11px;margin-top:4px;
+}
+.v2-admin-toggle-row>input{
+  opacity:0;position:absolute;width:1px;height:1px;
+}
+.v2-admin-switch{
+  display:block;flex:0 0 53px;
+  width:53px;height:30px;border-radius:100px;
+  background:#52657b;
+  border:1px solid #97a9be;
+  box-shadow:inset 0 2px 4px #0007;
+  position:relative;
+  transition:background .2s,border-color .2s;
+}
+.v2-admin-switch:before{
+  content:"";position:absolute;left:3px;top:3px;
+  height:22px;width:22px;border-radius:50%;
+  background:linear-gradient(#fff,#dce8f3);
+  box-shadow:0 2px 5px #0007;
+  transition:transform .2s;
+}
+.v2-admin-toggle-row>input:checked+.v2-admin-switch{
+  background:linear-gradient(140deg,#14c56a,#008e4f);
+  border-color:#63f6aa;
+}
+.v2-admin-toggle-row>input:checked+.v2-admin-switch:before{
+  transform:translateX(23px);
+}
+.v2-admin-toggle-row>input:focus-visible+.v2-admin-switch{
+  outline:3px solid #ffdf62;outline-offset:3px;
+}
+.v2-admin-advanced{
+  margin-top:12px;
+  border:1px solid #37668e;
+  border-radius:12px;
+  background:#04224c;
+}
+.v2-admin-advanced>summary{
+  padding:12px;
+  cursor:pointer;list-style:none;
+  font-size:12px;
+  font-weight:800;
+  color:#d2e9ff;
+}
+.v2-admin-grid{
+  padding:0 12px 12px;
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:12px;
+}
+.v2-admin-grid label{
+  display:flex;flex-direction:column;gap:7px;
+  min-width:0;
+  font-size:12px;font-weight:850;color:#dcecff;
+}
+.v2-admin-grid .v2-input,.v2-admin-grid .v2-select{
+  min-width:0;
+  min-height:43px;
+  background:#f8fcff;
+  border-color:#9ac0ed;
+  color:#10345c;
+  padding:10px 8px;
+}
+.v2-admin-result{
+  min-height:1.3em;
+  margin:12px 0;
+  font-size:12px;
+  line-height:1.45;
+  color:#c4ddf7;
+}
+.v2-admin-result[data-status="success"]{color:#9bffca}
+.v2-admin-result[data-status="error"]{color:#ffb5bc}
+.v2-admin-result[data-status="info"]{color:#ffe18c}
+.v2-admin-save{
+  width:100%;
+  min-height:46px;
+  border:1px solid #ffed92;
+  border-radius:13px;
+  font:inherit;
+  font-size:14px;font-weight:950;
+  color:#0b2b4c;
+  background:linear-gradient(140deg,#fff48d,#ffd333,#ffb710);
+  box-shadow:inset 0 1px #ffffffbd,0 4px 11px #0004;
+  cursor:pointer;
+}
+.v2-admin-save:disabled{opacity:.55;cursor:wait}
+@media(max-width:650px){
+  .v2-admin-grid{grid-template-columns:1fr;gap:11px}
+}
