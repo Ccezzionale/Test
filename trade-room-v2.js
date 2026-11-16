@@ -45,6 +45,34 @@ const mantraFamily = p => {
   if(["A","PC"].includes(first)) return "attack";
   return "unknown";
 };
+
+// Asset order in the trade selectors: Mantra role, then Draft round as a NUMBER.
+// Keep each category together: footballers → current Draft → future Draft → waiver calls.
+const MANTRA_SORT_ORDER = ["POR","DC","DD","DS","E","M","C","W","T","A","PC"];
+const assetCategory = asset => asset.kind === "player" ? 0
+  : str(asset.key).startsWith("draftpick:") ? 1
+  : str(asset.key).startsWith("future:") ? 2
+  : asset.kind === "pick" ? 2
+  : asset.kind === "call" ? 3 : 4;
+const assetNumericPosition = asset => {
+  const raw = Number(asset.sortNumber);
+  return Number.isFinite(raw) && raw > 0 ? raw : Number.MAX_SAFE_INTEGER;
+};
+function compareTradeAssets(a,b){
+  const category = assetCategory(a) - assetCategory(b);
+  if (category) return category;
+  if (a.kind === "player") {
+    const aRole = MANTRA_SORT_ORDER.indexOf(mantraTokens(a)[0]);
+    const bRole = MANTRA_SORT_ORDER.indexOf(mantraTokens(b)[0]);
+    const order = (aRole < 0 ? 99 : aRole) - (bRole < 0 ? 99 : bRole);
+    if (order) return order;
+  } else {
+    const numeric = assetNumericPosition(a) - assetNumericPosition(b);
+    if (numeric) return numeric;
+  }
+  return str(a.name).localeCompare(str(b.name),"it",{sensitivity:"base",numeric:true});
+}
+
 const isAvailable = p => same(p.ownerId,state.me.id) || allowedTeam(teamById(p.ownerId));
 const chipLabel = a => a.name + (a.kind==="player"?"":"");
 function setAuth(title, body) {
@@ -127,7 +155,7 @@ async function loadExtraAssets(){
     if(!all.error&&!used.error){
       const taken=new Set((used.data||[]).map(x=>str(x.pick_number)));
       (all.data||[]).filter(x=>!taken.has(str(x.pick_number))).forEach(x=>items.push({
-        key:"draftpick:"+str(x.pick_number),name:"Pick n. "+x.pick_number,ownerId:x.team_id,kind:"pick"
+        key:"draftpick:"+str(x.pick_number),name:"Pick n. "+x.pick_number,ownerId:x.team_id,kind:"pick",sortNumber:Number(x.pick_number)
       }));
     }
   }
@@ -136,7 +164,7 @@ async function loadExtraAssets(){
     .eq("season",state.settings.future_pick_season||2027).eq("pick_kind","normal").eq("status","active");
   if(!future.error)(future.data||[]).forEach(x=>items.push({
     key:"future:"+str(x.id),name:"Pick "+x.season+" · R"+x.round+" ("+teamName(x.original_team_id)+")",
-    ownerId:x.owner_team_id,kind:"pick"
+    ownerId:x.owner_team_id,kind:"pick",sortNumber:Number(x.round)
   }));
   if(phase()!=="draft"){
     const calls=await supabase.rpc("get_waiver_call_trade_assets",{p_view_team_id:state.me.id,p_weeks_ahead:14});
@@ -144,7 +172,7 @@ async function loadExtraAssets(){
       calls.data.filter(x=>x.tradable).forEach(x=>items.push({
         key:"call:"+str(x.key||[x.phase,x.week,x.original_team_id].join(":")),
         name:"Chiamata sett. "+str(x.week)+" · "+str(x.original_team_name||"Waiver"),
-        ownerId:x.owner_team_id,kind:"call"
+        ownerId:x.owner_team_id,kind:"call",sortNumber:Number(x.week)
       }));
     }
   }
@@ -255,7 +283,7 @@ function removeItem(side,key){
   drawNewForm();
 }
 function renderChips(side){
-  const items=side==="give"?state.give:state.want;
+  const items=[...(side==="give"?state.give:state.want)].sort(compareTradeAssets);
   const dest=el(side==="give"?"v2GivenChips":"v2WantedChips");
   dest.innerHTML=items.length?items.map(a=>'<span class="v2-chip">'+esc(chipLabel(a))+' <button type="button" data-remove="'+esc(a.key)+'" aria-label="Rimuovi '+esc(a.name)+'">×</button></span>').join(""):'<small style="color:#7c8a9c">Nessun asset selezionato</small>';
   dest.querySelectorAll("[data-remove]").forEach(b=>b.addEventListener("click",()=>removeItem(side,b.dataset.remove)));
@@ -268,7 +296,9 @@ function renderChoices(side){
   const playerOpts=state.players.filter(p=>owner && same(p.ownerId,owner)&&
       (own || allowedTeam(teamById(p.ownerId))) && !selected.some(x=>x.key===p.key));
   const extraOpts=state.extra.filter(p=>owner && same(p.ownerId,owner) && !selected.some(x=>x.key===p.key));
-  const filtered=[...playerOpts,...extraOpts].filter(x=>!search||x.name.toLocaleLowerCase("it").includes(search));
+  const filtered=[...playerOpts,...extraOpts]
+    .filter(x=>!search||x.name.toLocaleLowerCase("it").includes(search))
+    .sort(compareTradeAssets);
   const box=el(own?"v2GiveChoices":"v2WantChoices");
   box.innerHTML=!owner?'<div class="v2-empty">Scegli prima la squadra destinataria.</div>':
     filtered.length?filtered.slice(0,65).map(p=>{
