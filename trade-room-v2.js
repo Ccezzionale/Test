@@ -6,7 +6,7 @@ const PREVIEW_OWNER_EMAIL = "tringali0511@gmail.com";
 const state = {
   user:null,me:null,teams:[],players:[],extra:[],trades:[],assets:[],
   settings:{active_phase:"draft",market_open:true},
-  allShown:20,tab:"market",subtab:"received",
+  allShown:16,tab:"market",subtab:"received",
   targetId:"",give:[],want:[],currentDraft:"Draft Conference"
 };
 const el = id => document.getElementById(id);
@@ -167,8 +167,8 @@ function drawHeader(){
   el("v2OfficialCount").textContent=official().length+" ufficiali";
 }
 function bind(){
-  el("v2Search").addEventListener("input",()=>{state.allShown=20;drawCards();});
-  el("v2Role").addEventListener("change",()=>{state.allShown=20;drawCards();});
+  el("v2Search").addEventListener("input",()=>{state.allShown=16;drawCards();});
+  el("v2Role").addEventListener("change",()=>{state.allShown=16;drawCards();});
   el("v2More").addEventListener("click",()=>{state.allShown+=20;drawCards();});
   document.querySelectorAll("[data-v2-tab]").forEach(b=>b.addEventListener("click",()=>switchTab(b.dataset.v2Tab)));
   document.querySelectorAll("[data-v2-subtab]").forEach(b=>b.addEventListener("click",()=>{state.subtab=b.dataset.v2Subtab;drawProposals();}));
@@ -180,8 +180,18 @@ function bind(){
   });
   el("v2GiveSearch").addEventListener("input",drawNewForm);
   el("v2WantSearch").addEventListener("input",drawNewForm);
+  el("v2AddGive").addEventListener("click",()=>openPicker("give"));
+  el("v2AddWant").addEventListener("click",()=>openPicker("want"));
+  ["v2CloseGive","v2CloseWant","v2DoneGive","v2DoneWant"].forEach(id=>{
+    el(id).addEventListener("click",closePicker);
+  });
+  el("v2DrawerBackdrop").addEventListener("click",closePicker);
+  document.addEventListener("keydown",evt=>{
+    if(evt.key==="Escape" && !el("v2DrawerBackdrop").hidden)closePicker();
+  });
 }
 function switchTab(tab){
+  closePicker();
   state.tab=tab;
   ["market","proposals","history","new"].forEach(t=>{
     el("v2"+t[0].toUpperCase()+t.slice(1)+"View").hidden=(tab!==t);
@@ -203,20 +213,16 @@ function playerCards(){
     (!search||[p.name,p.club,teamName(p.ownerId)].join(" ").toLocaleLowerCase("it").includes(search)));
 }
 function drawCards(){
-  const matches=playerCards(),view=matches.slice(0,state.allShown);
-  el("v2ListCount").textContent=matches.length+" giocatori assegnati";
+  const matches=playerCards(), view=matches.slice(0,state.allShown);
+  el("v2ListCount").textContent=matches.length+" giocatori";
   el("v2Players").innerHTML=view.map(p=>{
-    const own=same(p.ownerId,state.me.id),can=isAvailable(p);
-    const initials=str(p.name).trim().split(" ").map(x=>x[0]).slice(0,2).join("").toUpperCase();
-    return '<article class="v2-player-card">'+
-      '<span class="v2-player-role">'+esc(role(p))+'</span>'+
-      '<div class="v2-player-art"><div class="v2-initials">'+esc(initials)+'</div></div>'+
-      '<h3 title="'+esc(p.name)+'">'+esc(p.name)+'</h3>'+
-      '<div class="v2-player-club">'+esc(p.club||"Serie A")+'</div>'+
-      '<div class="v2-player-owner"><img alt="" src="'+esc(logo(teamName(p.ownerId)))+'" onerror="this.style.visibility=\'hidden\'"><span>'+esc(teamName(p.ownerId))+'</span></div>'+
-      '<button type="button" data-pick="'+esc(p.key)+'" '+(can?"":"disabled")+'>'
-      +(own?"+ Offri":can?"+ Chiedi":"Altra Conference")+'</button></article>';
-  }).join("")||'<div class="v2-empty">Nessun giocatore trovato per questi filtri.</div>';
+    const mine=same(p.ownerId,state.me.id),can=isAvailable(p);
+    return '<button type="button" class="v2-roster-row" data-pick="'+esc(p.key)+'"'+(can?"":" disabled")+
+      ' aria-label="'+esc(p.name+" · "+teamName(p.ownerId))+'">'+
+      '<span class="v2-role-avatar">'+esc(roleGroup(p))+'</span>'+
+      '<span class="v2-roster-copy"><strong>'+esc(p.name)+'</strong><small>'+esc(p.club||"Serie A")+' · '+esc(teamName(p.ownerId))+'</small></span>'+
+      '<span class="v2-row-add">'+(mine?"Offri +":can?"Chiedi +":"—")+'</span></button>';
+  }).join("")||'<div class="v2-empty">Nessun giocatore trovato con questi filtri.</div>';
   el("v2More").hidden=matches.length<=state.allShown;
   el("v2Players").querySelectorAll("[data-pick]").forEach(b=>b.addEventListener("click",()=>chooseCard(b.dataset.pick)));
 }
@@ -272,10 +278,41 @@ function drawNewForm(){
     state.teams.filter(allowedTeam).map(t=>'<option value="'+esc(t.id)+'">'+esc(t.name)+'</option>').join("");
   }
   select.value=state.targetId;
+  el("v2AddWant").disabled=!state.targetId;
+  el("v2RivalInfo").textContent=state.targetId?teamName(state.targetId):"Prima scegli una squadra";
   renderChips("give");renderChips("want");
   renderChoices("give");renderChoices("want");
   el("v2DealSummary").textContent=state.give.length+" asset offerti · "+state.want.length+" asset richiesti";
   el("v2DraftReminder").textContent="Fase "+phaseLabel()+" · Nessuna proposta sarà inviata da questa anteprima.";
+}
+/* Il selettore mobile usa le scelte già caricate dalla Trade Room: nessuna logica trade duplicata. */
+function openPicker(side){
+  if(side==="want"&&!state.targetId){el("v2TargetTeam").focus();return;}
+  closePicker();
+  const block=el(side==="give"?"v2GiveBlock":"v2WantBlock");
+  const query=el(side==="give"?"v2GiveSearch":"v2WantSearch");
+  query.value="";
+  drawNewForm();
+  block.classList.add("is-open");
+  el("v2DrawerBackdrop").hidden=false;
+  document.body.classList.add("v2-picker-active");
+  block.querySelector(".v2-picker-content").setAttribute("role","dialog");
+  block.querySelector(".v2-picker-content").setAttribute("aria-modal","true");
+  block.querySelector(".v2-picker-content").setAttribute("aria-label",side==="give"?"Asset da offrire":"Asset da chiedere");
+  query.focus({preventScroll:true});
+}
+function closePicker(){
+  const backdrop=el("v2DrawerBackdrop");
+  if(!backdrop || backdrop.hidden)return;
+  ["v2GiveBlock","v2WantBlock"].forEach(id=>{
+    el(id).classList.remove("is-open");
+    const sheet=el(id).querySelector(".v2-picker-content");
+    sheet.removeAttribute("role");
+    sheet.removeAttribute("aria-modal");
+    sheet.removeAttribute("aria-label");
+  });
+  backdrop.hidden=true;
+  document.body.classList.remove("v2-picker-active");
 }
 const statusName = x=>({
   pending:"In attesa",accepted:"Affare concluso",accepted_pending_cuts:"In attesa di svincoli",
