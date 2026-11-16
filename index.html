@@ -423,6 +423,7 @@
         </li>
 
         <li><a href="waiver.html">Waiver Wire</a></li>
+        <li id="tradeV2NavEntry" style="display:none!important"><a href="trade-room-v2.html">🧪 Trade Room V2 · Anteprima</a></li>
 
 <li>
   <a href="hall-of-fame.html">Hall of Fame</a>
@@ -773,6 +774,11 @@
         <h2 id="league-pulse-title">Dalla lega</h2>
       </div>
       <div class="league-live-grid">
+        <a id="tradeV2HomeEntry" href="trade-room-v2.html" class="league-mini-card trade-preview-mini" style="display:none!important;grid-column:1/-1;background:linear-gradient(125deg,#09345f,#135887);border:1px solid #ffd447;color:#fff;padding:14px 18px;border-radius:18px">
+          <span style="color:#ffdc4c;font-weight:900">🧪 ANTEPRIMA PERSONALE</span>
+          <strong style="color:#fff;font-size:17px">Trade Room V2</strong>
+          <small style="color:#e3f1ff">Prova il nuovo listone e la grafica mobile →</small>
+        </a>
         <a href="trade-room.html" class="league-mini-card trade-mini-card">
           <span>Ultima trade</span>
           <strong id="dashboard-latest-trade">Caricamento…</strong>
@@ -1111,6 +1117,17 @@ document.addEventListener("DOMContentLoaded", function () {
   })();
   </script>
 
+  <script type="module">
+    import { supabase as previewAuth } from "./supabase.js";
+    // Visibile esclusivamente all'account proprietario dell'anteprima.
+    previewAuth.auth.getUser().then(({data,error}) => {
+      if(error || String(data?.user?.email || "").toLowerCase() !== "tringali0511@gmail.com") return;
+      const home=document.getElementById("tradeV2HomeEntry");
+      const nav=document.getElementById("tradeV2NavEntry");
+      if(home)home.style.setProperty("display","flex","important");
+      if(nav)nav.style.setProperty("display","list-item","important");
+    }).catch(err=>console.warn("Preview V2 non disponibile:",err));
+  </script>
   <script type="module" src="home-dashboard.js?v=20261112-playoffs-everyone"></script>
   <script type="module" src="home_auth.js?v=20261005-center6"></script>
   <script type="module" src="notifications-center.js?v=20261113-destinations"></script>
