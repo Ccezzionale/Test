@@ -1,19 +1,17 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-  <title>Trade Room</title>
-
-  <link rel="stylesheet" href="navbar.css" />
-  <link rel="stylesheet" href="trade-room.css" />
-<meta name="lega-app-build" content="v20261028-ef9f76dc3f25">
-<script defer src="./app-updates.js?bootstrap=v20261028-ef9f76dc3f25" data-eroi-update="1"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="lega-app-build" content="v20261116-trade-room-live-v2">
+  <script defer src="./app-updates.js?bootstrap=v20261116-trade-room-live-v2" data-eroi-update="1"></script>
+  <title>Trade Room • Lega degli Eroi</title>
+  <link rel="stylesheet" href="navbar.css">
+  <link rel="stylesheet" href="trade-room.css?v=20261116-live-backup">
+  <link rel="stylesheet" href="trade-room-v2.css?v=20261116-live-rollout-01">
 </head>
-
-<body>
-  <nav class="site-nav">
+<body class="trade-v2-preview trade-v2-live">
+<nav class="site-nav">
     <div class="nav-inner">
       <div class="nav-left">
         <span id="hamburger" class="hamburger" aria-label="Apri menu">☰</span>
@@ -176,8 +174,176 @@
       </div>
     </div>
   </nav>
+  <main class="v2-main">
+    <header class="v2-hero" aria-label="Trade Room V2">
+      <picture>
+        <source media="(max-width:700px)" srcset="icons/nav/traderoommobilebanner.webp">
+        <img src="icons/nav/traderoombanner.webp" alt="Trade Room Lega degli Eroi">
+      </picture>
+      <span class="preview-label">MERCATO UFFICIALE · LEGA DEGLI EROI</span>
+    </header>
+    <section class="v2-auth" id="v2Auth" role="status">
+      <div style="font-size:28px">⚔️</div>
+      <h1 id="v2AuthTitle">Caricamento Trade Room...</h1>
+      <p id="v2AuthMessage">Accesso e caricamento dei dati di mercato.</p>
+      <p><a href="index.html">Torna alla Home</a></p>
+    </section>
+    <div id="v2App" hidden>
+      <section class="v2-top-status" aria-label="La tua franchigia">
+        <img id="v2TeamLogo" alt="">
+        <div class="v2-team-txt">
+          <strong id="v2TeamName">Team</strong>
+          <small id="v2TeamConference">Conference</small>
+        </div>
+        <div class="v2-status-right">
+          <span id="v2MarketStatus" class="v2-pill">Mercato</span>
+          <small id="v2MarketPhase">Fase corrente</small>
+        </div>
+      </section>
 
-  <main class="draft-page">
+      <!-- Admin: stesse impostazioni della Trade Room ufficiale, salvataggio REALE con conferma. -->
+      <section id="v2AdminPanel" class="v2-admin-panel" hidden aria-label="Admin Mercato">
+        <details id="v2AdminAccordion" class="v2-admin-accordion">
+          <summary>
+            <span class="v2-admin-summary-icon" aria-hidden="true">⚙</span>
+            <span class="v2-admin-summary-copy"><strong>Admin Mercato</strong><small>Apri o chiudi il mercato · controlli ufficiali</small></span>
+            <span class="v2-admin-chevron" aria-hidden="true">⌄</span>
+          </summary>
+          <div class="v2-admin-body">
+            <p class="v2-admin-live-notice">Le modifiche di questo pannello si applicano al mercato <strong>ufficiale</strong>. Le modifiche sono immediatamente operative per tutte le franchigie.</p>
+            <label class="v2-admin-toggle-row" for="v2AdminMarketOpen">
+              <span class="v2-admin-toggle-copy"><strong>Mercato aperto</strong><small id="v2AdminCurrentStatus">Stato corrente: ...</small></span>
+              <input id="v2AdminMarketOpen" type="checkbox" role="switch" aria-label="Apri o chiudi mercato" />
+              <span class="v2-admin-switch" aria-hidden="true"></span>
+            </label>
+            <details class="v2-admin-advanced">
+              <summary>⚙️ Impostazioni avanzate: fase, finestre e pick future</summary>
+              <div class="v2-admin-grid">
+                <label>Fase mercato
+                  <select id="v2AdminTradePhase" class="v2-select">
+                    <option value="draft">Durante il Draft</option>
+                    <option value="conference_market">Mercato Conferences</option>
+                    <option value="round_robin_market">Round Robin / Mercato unificato</option>
+                  </select>
+                </label>
+                <label>Stagione pick future
+                  <input id="v2AdminFutureSeason" class="v2-input" type="number" min="2026" step="1" />
+                </label>
+                <label>Apertura mercato
+                  <input id="v2AdminMarketOpenAt" class="v2-input" type="datetime-local" />
+                </label>
+                <label>Chiusura mercato
+                  <input id="v2AdminMarketCloseAt" class="v2-input" type="datetime-local" />
+                </label>
+              </div>
+            </details>
+            <div id="v2AdminNotice" class="v2-admin-result" role="status" aria-live="polite"></div>
+            <button id="v2AdminSave" type="button" class="v2-admin-save">Salva impostazioni mercato</button>
+          </div>
+        </details>
+      </section>
+
+      <div id="v2LiveMessage" class="v2-live-message" role="status" aria-live="polite"></div>
+
+      <nav id="v2Tabs" class="v2-tabs" aria-label="Sezioni mercato V2">
+        <button type="button" data-v2-tab="market" class="active" aria-selected="true"><span>♜</span>Mercato</button>
+        <button type="button" data-v2-tab="proposals" aria-selected="false"><span>⇄</span>Proposte</button>
+        <button type="button" data-v2-tab="history" aria-selected="false"><span>◷</span>Movimenti</button>
+      </nav>
+
+      <section id="v2MarketView">
+  <div class="v2-section-title"><h2>Scopri i giocatori</h2><small id="v2ListCount">...</small></div>
+  <p class="v2-sub">Ruoli Mantra e proprietari aggiornati. Tocca un giocatore per trattare.</p>
+  <button type="button" class="v2-start-trade" data-v2-new><span class="v2-start-icon">⇄</span><span><strong>Crea una trattativa</strong><small>Scegli chi vuoi e costruisci lo scambio</small></span><b>›</b></button>
+  <div class="v2-filterbox">
+    <input id="v2Search" type="search" class="v2-input" placeholder="⌕  Nome o franchigia" aria-label="Cerca nel listone" autocomplete="off">
+    <select id="v2Role" class="v2-select" aria-label="Filtra per ruolo Mantra">
+      <option value="">Tutti i ruoli</option>
+      <optgroup label="Ruoli Mantra">
+        <option value="POR">Por</option>
+        <option value="DD">Dd</option>
+        <option value="DC">Dc</option>
+        <option value="DS">Ds</option>
+        <option value="E">E</option>
+        <option value="M">M</option>
+        <option value="C">C</option>
+        <option value="W">W</option>
+        <option value="T">T</option>
+        <option value="A">A</option>
+        <option value="PC">Pc</option>
+      </optgroup>
+    </select>
+  </div>
+  <div id="v2Players" class="v2-player-grid" aria-live="polite"></div>
+  <div style="text-align:center;margin:13px 0"><button type="button" class="v2-outline" id="v2More" hidden>Mostra altri giocatori ↓</button></div>
+  <div class="v2-tools">
+    <button class="v2-tool" type="button" data-v2-tab="proposals"><span class="symbol">📩</span><span><strong>Le mie proposte</strong><small id="v2CountReceived">Ricevute</small></span></button>
+    <button class="v2-tool" type="button" data-v2-tab="history"><span class="symbol">📜</span><span><strong>Movimenti</strong><small id="v2OfficialCount">Storico</small></span></button>
+  </div>
+</section>
+
+<section id="v2ProposalsView" hidden>
+        <div class="v2-section-title"><h2>Le tue proposte</h2></div>
+        <p class="v2-sub">Gestisci qui le proposte ricevute e inviate.</p>
+        <div class="v2-subtabs">
+          <button class="active" type="button" data-v2-subtab="received">Ricevute <span id="v2ReceivedCount">0</span></button>
+          <button type="button" data-v2-subtab="sent">Inviate <span id="v2SentCount">0</span></button>
+        </div>
+        <div id="v2ProposalItems"></div>
+        <div class="v2-panel"><p class="v2-note">Le operazioni rispettano le regole della Trade Room ufficiale. <a href="trade-room-classic.html">Apri la versione classica</a> se necessario.</p></div>
+      </section>
+
+      <section id="v2HistoryView" hidden>
+        <div class="v2-section-title"><h2>Movimenti ufficiali</h2><small id="v2HistoryCount"></small></div>
+        <p class="v2-sub">Gli scambi conclusi nella Lega degli Eroi.</p>
+        <div id="v2HistoryItems"></div>
+      </section>
+
+      <section id="v2NewView" hidden>
+  <div class="v2-new-head"><div><small class="v2-eyebrow">TRADE ROOM · MERCATO UFFICIALE</small><h1>Costruisci lo scambio</h1></div><button type="button" data-v2-back class="v2-outline">←</button></div>
+  <div class="v2-new-team">
+    <label class="v2-label" for="v2TargetTeam">CON CHI VUOI TRATTARE?</label>
+    <select id="v2TargetTeam" class="v2-select"></select>
+  </div>
+  <div class="v2-trade-stage">
+    <div class="v2-trade-block give" id="v2GiveBlock">
+      <div class="v2-side-head"><div class="v2-side-label"><span class="v2-side-arrow">↑</span><span><strong>TU OFFRI</strong><small id="v2GiveTeamLabel">La tua franchigia</small></span></div><button type="button" id="v2AddGive" class="v2-add-asset">＋ Aggiungi</button></div>
+      <div id="v2GivenChips" class="v2-chip-row"></div>
+      <div class="v2-picker-content">
+        <div class="v2-picker-title"><strong>Scegli cosa offrire</strong><button type="button" id="v2CloseGive" class="v2-picker-close" aria-label="Chiudi selezione">✕</button></div>
+        <input id="v2GiveSearch" class="v2-input" type="search" placeholder="⌕ Cerca nella tua rosa e nelle pick">
+        <div id="v2GiveChoices" class="v2-small-list"></div>
+        <button type="button" class="v2-picker-done" id="v2DoneGive">✓ Fatto, torna alla trattativa</button>
+      </div>
+    </div>
+    <div class="v2-swap-divider"><span>⇅</span><small>SCAMBIO</small></div>
+    <div class="v2-trade-block ask" id="v2WantBlock">
+      <div class="v2-side-head"><div class="v2-side-label"><span class="v2-side-arrow">↓</span><span><strong>TU CHIEDI</strong><small id="v2RivalInfo">Scegli una squadra</small></span></div><button type="button" id="v2AddWant" class="v2-add-asset">＋ Aggiungi</button></div>
+      <div id="v2WantedChips" class="v2-chip-row"></div>
+      <div class="v2-picker-content">
+        <div class="v2-picker-title"><strong>Scegli cosa chiedere</strong><button type="button" id="v2CloseWant" class="v2-picker-close" aria-label="Chiudi selezione">✕</button></div>
+        <input id="v2WantSearch" class="v2-input" type="search" placeholder="⌕ Cerca negli asset avversari">
+        <div id="v2WantChoices" class="v2-small-list"></div>
+        <button type="button" class="v2-picker-done" id="v2DoneWant">✓ Fatto, torna alla trattativa</button>
+      </div>
+    </div>
+  </div>
+  <div class="v2-summary-footer">
+    <div class="v2-preview-summary"><strong>La tua trattativa</strong><span id="v2DealSummary">0 asset offerti · 0 richiesti</span></div>
+    <details class="v2-message-details"><summary>✎ Aggiungi un messaggio (facoltativo)</summary><textarea id="v2PreviewMessage" rows="2" class="v2-input" placeholder="Es. Che ne dici di questo scambio?"></textarea></details>
+    <div class="v2-warn" id="v2DraftReminder">Verifica sempre gli asset: questa è una proposta ufficiale.</div>
+    <button class="v2-solid" type="button" id="v2PreviewSend" disabled style="width:100%">Caricamento motore del mercato…</button>
+  </div>
+</section>
+<div id="v2DrawerBackdrop" class="v2-picker-backdrop" hidden></div>
+
+<a class="v2-bottom-link" href="trade-room-classic.html">↩ Versione classica (backup)</a>
+      <button type="button" class="v2-floating-cta" id="v2PreviewCta" data-v2-new>⇄ Nuova proposta</button>
+    </div>
+  </main>
+  <!-- Legacy DOM stays mounted to preserve every original trade rule. -->
+  <div class="v2-legacy-engine" aria-hidden="true">
+    <main class="draft-page">
 <header class="trade-room-banner-wrap" aria-label="Trade Room">
   <picture>
     <source
@@ -411,7 +577,7 @@
       </section>
     </section>
   </main>
-
+  </div>
   <div id="cutPlayersModal" class="trade-modal" style="display:none;">
     <div class="trade-modal-content">
       <h3>Svincoli obbligatori</h3>
@@ -433,8 +599,10 @@
       <p id="cutPlayersModalMessage"></p>
     </div>
   </div>
-<script src="mobile-nav.js"></script>
-  <script type="module" src="trade-room.js"></script>
+
+  <script src="mobile-nav.js"></script>
   <script src="navbar.js"></script>
+  <script type="module" src="trade-room.js?v=20261116-live-original"></script>
+  <script type="module" src="trade-room-live.js?v=20261116-live-rollout-01"></script>
 </body>
 </html>
