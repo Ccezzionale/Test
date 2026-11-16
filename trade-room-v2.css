@@ -868,3 +868,13 @@ body.trade-v2-preview .v2-main{
     height:16px;
   }
 }
+
+/* Nelle proposte concluse i badge rimangono in linea con il testo. */
+.v2-trade-card li .v2-player-status-badge{
+  display:inline-block;
+  height:18px;
+  max-width:21px;
+  width:auto;
+  vertical-align:middle;
+  margin:0 2px;
+}
