@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <title>Trade Condizionate | Laboratorio • Lega degli Eroi</title>
+  <link rel="stylesheet" href="trade-conditions-lab.css?v=20261116-concept-1">
+</head>
+<body>
+  <main class="lab-wrap">
+    <header class="lab-heading">
+      <a href="trade-room.html" class="back-link">← Trade Room ufficiale</a>
+      <div class="lab-kicker">LEGA DEGLI EROI · LABORATORIO</div>
+      <h1>Trade <span>Condizionate</span></h1>
+      <p>Un diritto su una pick futura. Le condizioni decidono quale pick, i titolari possono cambiare.</p>
+    </header>
+
+    <section class="safety-banner" role="note">
+      <span class="safety-icon">🧪</span>
+      <div><strong>Simulatore sperimentale, senza operazioni reali</strong>
+      <small>Legge le pick 2027 già presenti in Supabase, ma non crea offerte, vincoli, trasferimenti né modifiche alle rose.</small></div>
+    </section>
+    <section class="load-banner" id="loading">
+      <strong>Caricamento delle pick della Lega...</strong>
+      <span>Accesso e dati di mercato in verifica.</span>
+    </section>
+
+    <div id="labApp" hidden>
+      <div class="lab-tabs" role="tablist" aria-label="Tipo di condizione">
+        <button type="button" data-tab="standing" class="is-active" role="tab" aria-selected="true"><span>🏆</span> Classifica</button>
+        <button type="button" data-tab="ranked" role="tab" aria-selected="false"><span>🎯</span> Peggiore / migliore</button>
+      </div>
+
+      <section class="scenario" data-panel="standing">
+        <div class="scenario-top">
+          <span class="scenario-no">01</span>
+          <div><h2>Pick legata alla classifica</h2><p>Come Bartowski–Bayern: una sola pick tra due possibili.</p></div>
+        </div>
+        <div class="field-grid">
+          <label>Chi promette la pick
+            <select id="standingGrantor"></select>
+          </label>
+          <label>Chi riceverà il diritto
+            <select id="standingHolder"></select>
+          </label>
+          <label>Classifica di quale squadra?
+            <select id="standingSubject"></select>
+          </label>
+          <label>Squadre nella classifica considerata
+            <input id="standingCount" type="number" min="2" max="30" value="8">
+          </label>
+        </div>
+        <div class="condition-rows">
+          <div class="condition-row row-blue">
+            <div class="row-label"><strong>Nei primi <input id="standingTopN" class="small-number" type="number" min="1" max="10" value="4"></strong><small>La squadra finisce nella fascia alta</small></div>
+            <label>Pick assegnata<select id="standingTopPick"></select></label>
+          </div>
+          <div class="condition-row row-yellow">
+            <div class="row-label"><strong>Negli ultimi <input id="standingBottomN" class="small-number" type="number" min="1" max="10" value="4"></strong><small>La squadra finisce nella fascia bassa</small></div>
+            <label>Pick assegnata<select id="standingBottomPick"></select></label>
+          </div>
+          <div class="condition-row row-dark">
+            <div class="row-label"><strong>Se non rientra nelle due fasce</strong><small>Obbligatorio soltanto se esistono posizioni intermedie</small></div>
+            <label>Pick assegnata<select id="standingMiddlePick"></select></label>
+          </div>
+        </div>
+        <div class="field-grid space-top">
+          <label>Posizione finale per la simulazione
+            <input id="standingPosition" type="number" min="1" max="30" value="3">
+          </label>
+          <label>Pick restituita in cambio (regola 1:1)
+            <select id="standingCounter"></select>
+          </label>
+        </div>
+        <button type="button" id="simulateStanding" class="gold-button">Calcola la condizione <span>→</span></button>
+        <div id="standingResult" class="result-panel" aria-live="polite"></div>
+      </section>
+
+      <section class="scenario" data-panel="ranked" hidden>
+        <div class="scenario-top">
+          <span class="scenario-no">02</span>
+          <div><h2>La peggiore tra più pick</h2><p>Come Golden Knights: scegli un gruppo, poi il diritto individua quella dovuta.</p></div>
+        </div>
+        <div class="field-grid">
+          <label>Chi promette le pick
+            <select id="rankedGrantor"></select>
+          </label>
+          <label>Chi acquisisce il diritto
+            <select id="rankedHolder"></select>
+          </label>
+          <label>Criterio
+            <select id="rankedType">
+              <option value="worst">La peggiore (più tardiva)</option>
+              <option value="best">La migliore (più anticipata)</option>
+            </select>
+          </label>
+          <label>Round da confrontare
+            <select id="rankedRound"></select>
+          </label>
+        </div>
+        <h3 class="minor-title">Pick candidate <span id="rankedCount"></span></h3>
+        <p class="help-text">Seleziona almeno due pick possedute dalla stessa squadra e appartenenti allo stesso round.</p>
+        <div class="candidate-list" id="rankedPicks"></div>
+        <h3 class="minor-title">Posizioni del prossimo Draft</h3>
+        <p class="help-text">I numeri sotto sono <strong>ipotetici</strong>: servono a provare l'algoritmo. In produzione arriveranno dall'ordine Draft ufficiale, quando definitivo.</p>
+        <div id="rankedPositions" class="position-list"></div>
+        <div class="field-grid space-top">
+          <label>Pick restituita in cambio (regola 1:1)
+            <select id="rankedCounter"></select>
+          </label>
+        </div>
+        <button type="button" id="simulateRanked" class="gold-button">Individua la pick <span>→</span></button>
+        <div id="rankedResult" class="result-panel" aria-live="polite"></div>
+      </section>
+
+      <section id="rightsPanel" class="rights-panel" hidden>
+        <div class="rights-title"><span>🔐</span><div><h2>Il diritto condizionato</h2><p>Si scambia il diritto, non le pick ancora da assegnare.</p></div></div>
+        <div class="rights-box" id="rightsSummary"></div>
+        <div class="field-grid space-top">
+          <label>Nuovo titolare del diritto
+            <select id="newRightHolder"></select>
+          </label>
+        </div>
+        <button id="simulateTransfer" type="button" class="outline-button">⇄ Simula la vendita del diritto</button>
+        <div id="rightsHistory" class="history-list"></div>
+      </section>
+
+      <section class="explain-panel">
+        <h2>Quali blocchi serviranno per renderlo ufficiale?</h2>
+        <div class="explain-step"><span>1</span><p><strong>Accettazione della trade.</strong> Il contratto nasce solo quando entrambe le franchigie accettano, rispettando il rapporto pick/diritti 1:1.</p></div>
+        <div class="explain-step"><span>2</span><p><strong>Vincolo sulle candidate.</strong> Le pick promesse non si possono scambiare singolarmente, ma il diritto può passare a un altro titolare.</p></div>
+        <div class="explain-step"><span>3</span><p><strong>Risoluzione automatica.</strong> A classifica oppure ordine Draft ufficiale definitivo, la pick dovuta passa all'ultimo titolare del diritto e le altre si liberano.</p></div>
+      </section>
+      <footer class="lab-footer">Test isolato · nessuna modifica al regolamento o al mercato operativo · <a href="trade-room.html">Torna al mercato</a></footer>
+    </div>
+  </main>
+  <script type="module" src="trade-conditions-lab.js?v=20261116-concept-1"></script>
+</body>
+</html>
