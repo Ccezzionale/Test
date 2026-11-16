@@ -242,6 +242,7 @@ async function loadTrades(){
 }
 function drawHeader(){
   el("v2TeamName").textContent=state.me.name;
+  el("v2GiveTeamLabel").textContent=state.me.name;
   el("v2TeamConference").textContent=state.me.conference||"Conference";
   el("v2TeamLogo").src=logo(state.me.name);
   el("v2TeamLogo").onerror=()=>{el("v2TeamLogo").src="img/logo-lega-eroi.png";};
@@ -579,6 +580,7 @@ function liveTradeNotice(message,status="info"){
   if(!target){if(status==="error")console.error(message);return;}
   target.textContent=message;
   target.dataset.status=status;
+  if(status==="error")target.scrollIntoView({behavior:"smooth",block:"center"});
 }
 function legacyAssetDescriptor(asset,side){
   const key=str(asset.key);
