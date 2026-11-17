@@ -3,7 +3,7 @@ import { supabase } from "./supabase.js";
 
 /* Trade Room ufficiale V2: la logica degli scambi è delegata al motore classico. */
 const state = {
-  user:null,me:null,isAdmin:false,teams:[],players:[],extra:[],trades:[],assets:[],cuts:[],legacyReady:false,
+  user:null,me:null,isAdmin:false,teams:[],players:[],extra:[],trades:[],assets:[],cuts:[],cutHistory:[],legacyReady:false,
   settings:{active_phase:"draft",market_open:true},
   allShown:16,tab:"market",subtab:"received",
   targetId:"",give:[],want:[],currentDraft:"Draft Conference"
@@ -247,9 +247,23 @@ async function loadTrades(){
     state.trades=state.trades.filter(t=>!internalIds.has(str(t.id)));
   }
   const ids=state.trades.map(x=>x.id);
+  state.assets=[];
+  state.cutHistory=[];
   if(ids.length){
-    const asset=await supabase.from("trade_assets").select("proposal_id,side,asset_label,asset_type,asset_id").in("proposal_id",ids);
+    const acceptedIds=state.trades.filter(t=>t.status==="accepted").map(t=>t.id);
+    const [asset,cutRows]=await Promise.all([
+      supabase.from("trade_assets")
+        .select("proposal_id,side,asset_label,asset_type,asset_id")
+        .in("proposal_id",ids),
+      acceptedIds.length
+        ? supabase.from("trade_cut_players")
+            .select("proposal_id,team_id,player_id,player:players(id,name,role,role_mantra,serie_a_team)")
+            .in("proposal_id",acceptedIds)
+        : Promise.resolve({data:[],error:null})
+    ]);
     if(!asset.error)state.assets=asset.data||[];
+    if(cutRows.error)console.warn("Impossibile caricare gli svincoli delle trade concluse:",cutRows.error);
+    else state.cutHistory=cutRows.data||[];
   }
 }
 function drawHeader(){
@@ -787,6 +801,19 @@ function tradeHTML(t){
   const assets=side=>parts.filter(x=>x.side===side).map(x=>"<li>"+tradeV2StoredAssetHtml(x.asset_label)+"</li>").join("")||"<li>Nessun asset</li>";
   const cut=state.cuts.find(x=>same(x.proposal_id,t.id));
   const remaining=cut?Math.max(0,Number(cut.cuts_required||0)-Number(cut.cuts_done||0)):0;
+  const released=t.status==="accepted"
+    ?state.cutHistory.filter(row=>same(row.proposal_id,t.id))
+    :[];
+  const cutsHtml=released.length
+    ?'<div class="v2-trade-cuts"><strong>✂️ Svincoli effettuati</strong><ul>'+
+      released.map(row=>{
+        const player=Array.isArray(row.player)?row.player[0]:row.player;
+        const playerName=player?.name||"Giocatore sconosciuto";
+        const meta=[player?.role_mantra||player?.role,player?.serie_a_team].filter(Boolean).join(" · ");
+        return '<li><span class="v2-cut-team">'+esc(teamName(row.team_id))+'</span> ha svincolato <b>'+
+          esc(playerName)+'</b>'+(meta?' <span class="v2-cut-player-meta">('+esc(meta)+')</span>':'')+'</li>';
+      }).join("")+'</ul></div>'
+    :'';
   const receivedMe=same(t.to_team,state.me.id),sentMe=same(t.from_team,state.me.id);
   const actions=[];
   if(t.status==="pending"&&receivedMe){
@@ -801,6 +828,7 @@ function tradeHTML(t){
   }
   return '<article class="v2-trade-card"><div class="meta"><strong>'+esc(from)+' → '+esc(to)+'</strong><span>'+esc(niceDate(t.accepted_at||t.created_at))+'</span></div>'+
   '<div class="trade-duel"><div><b>'+esc(from)+' offre</b><ul>'+assets("from")+'</ul></div><div><b>'+esc(to)+' offre</b><ul>'+assets("to")+'</ul></div></div>'+
+  cutsHtml+
   (t.message?'<p class="v2-trade-message">'+esc(t.message)+'</p>':'')+
   '<span class="v2-status">'+esc(statusName(t.status))+'</span>'+
   (actions.length?'<div class="v2-trade-actions">'+actions.join("")+'</div>':'')+'</article>';
