@@ -1405,3 +1405,20 @@ tbody tr:last-child {
   .roster-player-row { grid-template-columns: 47px minmax(0,1fr) 51px; column-gap: 5px; }
   .roster-player-badges .badge-img, .roster-player-badges .badge-img-star, .roster-player-badges .badge-img-pill, .roster-player-badges .badge-img-protected { width: 20px !important; height: 20px !important; }
 }
+
+
+/* Evita che le vecchie regole generiche del titolo stilizzino il testo del bottone */
+.logo-nome .roster-toggle span {
+  display: inline;
+  min-height: 0;
+  padding: 0;
+  margin: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  color: inherit;
+  font-size: inherit;
+  font-weight: inherit;
+  line-height: inherit;
+}
