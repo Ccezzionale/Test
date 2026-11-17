@@ -18,6 +18,7 @@ let model=null;
 let snapshot=null;
 let viewer=null;
 let tab="compose";
+let resaleIntent="sell";
 let formOwner=null;
 let previews={};
 const teams=()=>model?.teams||[];
@@ -83,6 +84,49 @@ function readOwner(){
 function readHolder(){
  return el("qaGrantorSide").value==="mine"?el("qaToTeam").value:viewer;
 }
+function resaleTradableRights(seller,buyer){
+ return model.rights.filter(r=>r.status==="active"&&
+  same(r.holder_team_id,seller)&&!same(r.grantor_team_id,buyer)&&
+  getTeam(seller)?.conference===getTeam(buyer)?.conference);
+}
+function resalePossibilities(buyer){
+ return displayedTeams().filter(t=>!same(t.id,buyer)&&
+  t.conference===getTeam(buyer)?.conference&&resaleTradableRights(t.id,buyer).length);
+}
+function chooseResaleIntent(next,autoTarget=true){
+ if(!["sell","buy"].includes(next))return;
+ resaleIntent=next;
+ if(el("qaKind").value!=="right_transfer")el("qaKind").value="right_transfer";
+ if(autoTarget){
+   if(next==="buy"){
+     const sellers=resalePossibilities(viewer);
+     if(sellers.length&&!sellers.some(t=>same(t.id,el("qaToTeam").value)))
+       el("qaToTeam").value=sellers[0].id;
+   }else{
+     const rights=model.rights.filter(r=>r.status==="active"&&
+       same(r.holder_team_id,viewer));
+     const buyers=displayedTeams().filter(t=>!same(t.id,viewer)&&
+       t.conference===getTeam(viewer)?.conference&&
+       rights.some(r=>!same(r.grantor_team_id,t.id)));
+     if(buyers.length&&!buyers.some(t=>same(t.id,el("qaToTeam").value)))
+       el("qaToTeam").value=buyers[0].id;
+   }
+ }
+ refreshForm(true);
+}
+function paintResaleIntent(){
+ el("qaResaleSell").setAttribute("aria-pressed",String(resaleIntent==="sell"));
+ el("qaResaleBuy").setAttribute("aria-pressed",String(resaleIntent==="buy"));
+ el("qaResaleSell").classList.toggle("is-active",resaleIntent==="sell");
+ el("qaResaleBuy").classList.toggle("is-active",resaleIntent==="buy");
+ el("qaExistingRightLabel").textContent=resaleIntent==="sell"?
+  "Quale tuo diritto vuoi vendere?":"Quale diritto dell'altra squadra vuoi acquistare?";
+ const partner=teamName(el("qaToTeam").value);
+ el("qaResaleContext").textContent=resaleIntent==="sell"?
+  "Tu sei il venditore. "+partner+" può comprare il diritto pagando una sua pick e deve accettare la tua offerta.":
+  "Tu sei il compratore. "+partner+" possiede il diritto e può accettare la tua proposta. "+
+  "La pick che paghi deve appartenere alla tua franchigia.";
+}
 function trophyOptions(){
  const subject=getTeam(el("qaTrophySubject").value);
  return QA_TROPHIES.filter(t=>t.id!=="conference_league"&&t.id!=="conference_championship"||
@@ -136,15 +180,9 @@ function refreshPlayers(){
 function refreshForm(reset=false){
  const kind=el("qaKind").value;
  if(kind==="right_transfer"){
-   el("qaGrantorSide").value="mine";
+   el("qaGrantorSide").value=resaleIntent==="sell"?"mine":"theirs";
    el("qaGrantorSide").disabled=true;
-   const owned=model.rights.find(r=>r.status==="active"&&same(r.holder_team_id,viewer));
-   if(owned&&(same(el("qaToTeam").value,owned.grantor_team_id)||
-     same(el("qaToTeam").value,viewer))){
-     const buyer=displayedTeams().find(t=>!same(t.id,viewer)&&
-       !same(t.id,owned.grantor_team_id)&&t.conference===getTeam(viewer)?.conference);
-     if(buyer)el("qaToTeam").value=buyer.id;
-   }
+   paintResaleIntent();
  }else el("qaGrantorSide").disabled=false;
  const owner=readOwner(),holder=readHolder();
  const ownerChanged=String(formOwner)!==String(owner);
@@ -178,12 +216,13 @@ function refreshForm(reset=false){
  el("qaRankedRound").disabled=!validRounds.length;
  if(reset||ownerChanged)el("qaRankedPicks").innerHTML="";
  refreshRanked(reset||ownerChanged);
- const rights=model.rights.filter(r=>r.status==="active"&&same(r.holder_team_id,owner));
- fill("qaExistingRight",[option("","Scegli un diritto…"),
+ const rights=resaleTradableRights(owner,holder);
+ fill("qaExistingRight",[option("","Scegli un diritto attivo…"),
   ...rights.map(r=>option(r.id,"Diritto da "+teamName(r.grantor_team_id)+" → "+
     teamName(r.holder_team_id)+" · "+kindLabel(r.rule_kind)))],
    rights.length===1?rights[0].id:null);
- el("qaCounterInfo").textContent=teamName(holder)+" offre una pick per il diritto di "+teamName(owner)+".";
+ el("qaCounterInfo").textContent=teamName(holder)+" paga una sua pick a "+
+   teamName(owner)+" per acquistare il diritto.";
  refreshPlayers();
  updateStanding();
  updateTrophy();
