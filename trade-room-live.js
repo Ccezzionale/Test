@@ -236,6 +236,16 @@ async function loadTrades(){
   state.cuts=cuts.error?[]:(cuts.data||[]);
   state.trades=[...new Map([...(r.data||[]),...(s.data||[]),...(o.data||[]),
     ...state.cuts.map(x=>x.proposal).filter(Boolean)].map(x=>[str(x.id),x])).values()];
+  // The legacy leg of a mixed conditional trade is an implementation detail:
+  // only the complete contract should appear in the public Movimenti list.
+  const linked=await supabase.from("conditional_trade_offers")
+    .select("mixed_legacy_trade_id")
+    .eq("status","accepted")
+    .not("mixed_legacy_trade_id","is",null);
+  if(!linked.error){
+    const internalIds=new Set((linked.data||[]).map(x=>str(x.mixed_legacy_trade_id)));
+    state.trades=state.trades.filter(t=>!internalIds.has(str(t.id)));
+  }
   const ids=state.trades.map(x=>x.id);
   if(ids.length){
     const asset=await supabase.from("trade_assets").select("proposal_id,side,asset_label,asset_type,asset_id").in("proposal_id",ids);
