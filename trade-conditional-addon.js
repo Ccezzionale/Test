@@ -275,19 +275,39 @@ function bind(){
   });
   document.querySelectorAll("[data-v2-subtab]").forEach(b=>b.addEventListener("click",()=>queueMicrotask(paintOffers)));
 }
+async function notifyConditionalTrade(eventType,proposalId){
+  // Reuses the current app_notifications + push_subscriptions infrastructure.
+  // The Edge Function verifies the signed-in actor against the stored contract.
+  try{
+    if(!proposalId)return false;
+    const {data,error}=await supabase.functions.invoke("send-conditional-trade-notification",{
+      body:{proposal_id:proposalId,event_type:eventType}
+    });
+    if(error||data?.success!==true){
+      console.warn("Notifica trade condizionata non inviata:",error||data);
+      return false;
+    }
+    return data.failed===0;
+  }catch(error){
+    console.warn("Errore invio notifica trade condizionata:",error);
+    return false;
+  }
+}
+
 async function sendOffer(){
   try{
     if(!state.enabled)throw new Error("Le trade condizionate sono ancora in collaudo.");
     if(!marketOpen())throw new Error("Il mercato è chiuso.");
     const payload=conditionPayload();
-    const clause=redrawSummary();
     if(!window.confirm("Inviare una proposta condizionata REALE a "+name(targetId())+"? La contropartita è una pick futura e il diritto sarà vincolante dopo l'accettazione."))return;
     $("ctSendOffer").disabled=true;failure("ctFormNotice","Invio della proposta...");
-    const {error}=await supabase.rpc("conditional_create_offer",payload);
+    const {data:offerId,error}=await supabase.rpc("conditional_create_offer",payload);
     if(error)throw error;
+    const noticeSent=await notifyConditionalTrade("proposal",offerId);
     failure("ctFormNotice","");
     await reload();
-    $("ctFormNotice").textContent="Proposta condizionata inviata. Il destinatario può accettarla in Proposte.";
+    $("ctFormNotice").textContent="Proposta condizionata inviata. "+(noticeSent
+      ?"Il destinatario è stato avvisato.":"Il destinatario può vederla in Proposte; la notifica non è stata confermata.");
     $("ctFormNotice").classList.remove("is-error");
   }catch(err){failure("ctFormNotice",err.message||"Impossibile inviare la proposta.");}
   finally{redrawSummary();}
@@ -304,9 +324,12 @@ async function offerAction(event){
       await supabase.rpc("conditional_cancel_offer",{p_offer_id:id}):
       await supabase.rpc("conditional_respond_offer",{p_offer_id:id,p_accept:action==="accept"});
     if(response.error)throw response.error;
+    const eventType=action==="accept"?"accepted":action==="reject"?"rejected":"cancelled";
+    const noticeSent=await notifyConditionalTrade(eventType,id);
     failure("ctOfferNotice","");
     await reload();
-    $("ctOfferNotice").textContent="Proposta "+(action==="accept"?"accettata":action==="reject"?"rifiutata":"annullata")+" correttamente.";
+    $("ctOfferNotice").textContent="Proposta "+(action==="accept"?"accettata":action==="reject"?"rifiutata":"annullata")+
+      " correttamente."+(noticeSent?" Notifica inviata.":" Notifica non confermata.");
   }catch(err){failure("ctOfferNotice",err.message||"Impossibile completare l'operazione.");btn.disabled=false;}
 }
 async function init(){
