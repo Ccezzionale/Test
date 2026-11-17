@@ -2337,3 +2337,6 @@ Promise.all([
   if (mobileTradesLeague) mobileTradesLeague.innerHTML = `<p class="draft-error">⚠️ Errore nel caricamento delle trade draft.</p>`;
   if (mobileTradesChampionship) mobileTradesChampionship.innerHTML = `<p class="draft-error">⚠️ Errore nel caricamento delle trade draft.</p>`;
 });
+
+// Public, read-only helpers shared with conditional-right projections.
+export {buildTotalRankingFromStats,generaDraftDaCSV,loadFutureDraftPicks};
