@@ -714,6 +714,13 @@ function handleAction(event){
  }catch(e){flash(e.message||"Operazione non consentita",true);}
 }
 function wire(){
+ document.querySelectorAll("[data-resale-intent]").forEach(button=>
+  button.addEventListener("click",()=>{
+   chooseResaleIntent(button.dataset.resaleIntent,true);
+   flash(resaleIntent==="buy"?
+    "Modalità ACQUISTO: seleziona il diritto dell'altra franchigia e una tua pick come prezzo.":
+    "Modalità VENDITA: seleziona un diritto che possiedi; il compratore offrirà una sua pick.");
+  }));
  el("qaTeamSwitcher").addEventListener("click",event=>{
   const button=event.target.closest("[data-viewer]");
   if(button)chooseViewer(button.dataset.viewer);
@@ -728,19 +735,12 @@ function wire(){
  for(const id of ["qaToTeam","qaGrantorSide","qaKind"])
   el(id).addEventListener("change",()=>{
    if(id==="qaKind"&&el("qaKind").value==="right_transfer"){
-     // Evita di portarsi dietro giocatori selezionati per un'altra proposta.
      el("qaPlayerFrom").value="";
      el("qaPlayerTo").value="";
      el("qaMixedDetails").open=false;
-     const seller=readOwner();
-     const right=model?.rights.find(r=>r.status==="active"&&same(r.holder_team_id,seller));
-     if(right&&same(readHolder(),right.grantor_team_id)&&same(seller,viewer)){
-       const alternative=displayedTeams().find(t=>!same(t.id,seller)&&
-         !same(t.id,right.grantor_team_id));
-       if(alternative)el("qaToTeam").value=alternative.id;
-     }
-   }
-   refreshForm(true);
+     const owns=model.rights.some(r=>r.status==="active"&&same(r.holder_team_id,viewer));
+     chooseResaleIntent(owns?"sell":resalePossibilities(viewer).length?"buy":"sell",true);
+   }else refreshForm(true);
   });
  for(const id of ["qaStandingSubject","qaScope","qaTopCount","qaBottomCount"])
   el(id).addEventListener("change",updateStanding);
