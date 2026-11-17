@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>Gestione stagioni Draft · Lega degli Eroi</title>
+<link rel="stylesheet" href="navbar.css">
+<link rel="stylesheet" href="draft-stagioni.css?v=20261117-1">
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js" defer></script>
+<script type="module" src="draft-stagioni.js?v=20261117-1"></script>
+</head>
+<body>
+<header class="season-topbar">
+  <a class="season-home" href="index.html"><img src="icons/nav/home.webp" alt="" width="35" height="35"> <span>Lega degli Eroi</span></a>
+  <a class="season-back" href="draft_conference.html">← Torna al Draft</a>
+</header>
+<main class="season-container">
+<section class="season-hero">
+  <span class="season-eyebrow">COMMISSIONER · GESTIONE DRAFT</span>
+  <h1>Gestione stagioni</h1>
+  <p>Archivio dei Draft conclusi, preparazione delle nuove Conference e controllo dei listoni Mantra.</p>
+</section>
+<div id="season-auth" class="season-message" role="status">Verifica autorizzazioni…</div>
+<div id="season-content" hidden>
+  <section class="season-two">
+    <article class="season-panel">
+      <div class="season-heading"><div><span class="season-kicker">ARCHIVIO STORICO</span><h2>Draft 2026/27</h2></div><span class="season-pill season-pill-done">Archiviato</span></div>
+      <p class="season-description">Le chiamate e l'ordine originale sono conservati separatamente dal Draft operativo. Nessun reset è stato effettuato.</p>
+      <div id="season-archive" class="season-stack" aria-live="polite">Caricamento archivio…</div>
+    </article>
+    <article class="season-panel">
+      <div class="season-heading"><div><span class="season-kicker">PROSSIMA STAGIONE</span><h2>Draft 2027/28</h2></div><span id="season-new-status" class="season-pill">In preparazione</span></div>
+      <p class="season-description">Prima si importano e verificano i listoni. Poi collegheremo ordine definitivo, trade e Pre-Draft allo switch di stagione.</p>
+      <div id="season-preflight" class="season-stack" aria-live="polite">Controllo requisiti…</div>
+    </article>
+  </section>
+
+  <section class="season-panel season-files">
+    <div class="season-heading"><div><span class="season-kicker">PREPARAZIONE 2027/28</span><h2>Carica i due listoni Excel</h2></div></div>
+    <p class="season-description">I file vengono salvati soltanto nell'area di preparazione. <strong>Non sostituiscono i giocatori attuali</strong> e non aprono il Draft. Sono supportati i fogli Fantacalcio con colonne Id, Nome, R, RM, Squadra e Qt.A M.</p>
+    <div class="season-two">
+      <article class="season-import-card" data-pool="conference_league">
+        <div class="season-import-title"><img src="icons/nav/conf-league.webp" alt="" width="34" height="34"><div><strong>Conference League</strong><small id="season-status-conference_league">Nessun listone preparato</small></div></div>
+        <label for="season-file-conference_league" class="season-file-label">Seleziona Excel (.xlsx / .xls)</label>
+        <input id="season-file-conference_league" type="file" accept=".xlsx,.xls,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" data-file-pool="conference_league">
+        <div id="season-preview-conference_league" class="season-preview" aria-live="polite"></div>
+        <button type="button" class="season-save" data-save-pool="conference_league" disabled>Salva listone in preparazione</button>
+      </article>
+      <article class="season-import-card" data-pool="conference_championship">
+        <div class="season-import-title"><img src="icons/nav/conf-championship.webp" alt="" width="34" height="34"><div><strong>Conference Championship</strong><small id="season-status-conference_championship">Nessun listone preparato</small></div></div>
+        <label for="season-file-conference_championship" class="season-file-label">Seleziona Excel (.xlsx / .xls)</label>
+        <input id="season-file-conference_championship" type="file" accept=".xlsx,.xls,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" data-file-pool="conference_championship">
+        <div id="season-preview-conference_championship" class="season-preview" aria-live="polite"></div>
+        <button type="button" class="season-save" data-save-pool="conference_championship" disabled>Salva listone in preparazione</button>
+      </article>
+    </div>
+    <p id="season-import-note" class="season-help" role="status">Ogni conferma salva il file per la sola Conference selezionata, senza cambiare le Rose.</p>
+  </section>
+
+  <section class="season-panel">
+    <div class="season-heading"><div><span class="season-kicker">SWITCH DI STAGIONE</span><h2>Attivazione ufficiale</h2></div><span class="season-pill season-pill-locked">Bloccata</span></div>
+    <p class="season-description">Questo comando resterà bloccato finché non saranno completati e verificati: listoni, ordine definitivo dal Draft Dinamico, diritti condizionati, compensative e Pre-Draft 2027.</p>
+    <button type="button" class="season-locked" disabled>🔒 Attiva Draft 2027/28</button>
+    <p class="season-help">Il vecchio Reset Draft non è una procedura per iniziare una nuova stagione.</p>
+  </section>
+
+  <div class="season-links"><a href="dinamico-draft.html">Draft Dinamico 2027/28</a><a href="draft_conference.html">Conference League</a><a href="draft_championship.html">Conference Championship</a></div>
+</div>
+</main>
+<script src="mobile-nav.js"></script>
+</body>
+</html>
