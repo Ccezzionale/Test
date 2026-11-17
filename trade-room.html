@@ -9,7 +9,7 @@
   <link rel="stylesheet" href="navbar.css">
   <link rel="stylesheet" href="trade-room.css?v=20261116-live-backup">
   <link rel="stylesheet" href="trade-room-v2.css?v=20261117-trade-cuts-restored">
-  <link rel="stylesheet" href="trade-conditional-addon.css?v=20261117-v9-mixed-history">
+  <link rel="stylesheet" href="trade-conditional-addon.css?v=20261117-v11-qa-entry">
 </head>
 <body class="trade-v2-preview trade-v2-live">
 <nav class="site-nav">
@@ -325,6 +325,9 @@
     <button type="button" id="ctModeClassic" class="is-active" role="tab" aria-selected="true">⇄ Trade classica</button>
     <button type="button" id="ctModeConditional" role="tab" aria-selected="false">🔐 Trade condizionata</button>
   </div>
+  <a id="ctQaOnlyLink" class="ct-qa-link" href="trade-conditional-qa.html" hidden>
+    <span>🧪</span><span><strong>Modalità Test riservata</strong><small>Fai una trade come Bartowski e rispondi fingendo di essere Bayern. Nessuna operazione reale.</small></span><span>›</span>
+  </a>
   <div id="ctClassicComposer">
   <div class="v2-trade-stage">
     <div class="v2-trade-block give" id="v2GiveBlock">
@@ -742,6 +745,6 @@
   <script src="navbar.js"></script>
   <script type="module" src="trade-room.js?v=20261116-live-original"></script>
   <script type="module" src="trade-room-live.js?v=20261117-trade-cuts-restored"></script>
-  <script type="module" src="trade-conditional-addon.js?v=20261117-v10-mixed-tested"></script>
+  <script type="module" src="trade-conditional-addon.js?v=20261117-v11-qa-entry"></script>
 </body>
 </html>
