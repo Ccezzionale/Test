@@ -1,6 +1,6 @@
 import {supabase} from "./supabase.js";
 import {loadResultsRows} from "./results-source.js";
-import {buildTotalRankingFromStats,generaDraftDaCSV,loadFutureDraftPicks} from "./dinamico-draft.js?v=36";
+import {buildTotalRankingFromStats,generaDraftDaCSV,loadFutureDraftPicks} from "./dinamico-draft.js?v=20261117-season-link";
 import {TROPHY_COMPETITIONS} from "./conditional-trades-core.js";
 
 /* Read-only overlay. Never updates the official Draft, rights or any future pick. */
