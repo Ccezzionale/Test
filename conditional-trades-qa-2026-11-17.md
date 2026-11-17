@@ -44,3 +44,14 @@ La tabella `app_notifications` ha i campi attesi (`user_id`, `team_id`, `type`, 
 `conditional_feature_settings.enabled = false`; zero offerte condizionate salvate, zero diritti salvati, zero candidate vincolate, zero rivendite registrate, zero finalizzazioni Hall of Fame fittizie per 2026-2027.
 
 **Decisione:** Backend e generatore di clausole superano i test eseguiti, ma il mercato condizionato resta **DISABILITATO** finché non supera il test browser con due sessioni reali e gli avvisi push in ambiente controllato.
+
+
+## Correzione UX rivendita · 17 novembre 2026
+
+Il motore di rivendita eseguiva correttamente la cessione del diritto, ma la schermata privata dava due impressioni errate:
+1. «Rivendi il diritto» precompilava soltanto una nuova proposta; non spiegava che doveva essere inviata e poi accettata dalla franchigia acquirente.
+2. Il vecchio titolare perdeva la visibilità del diritto appena venduto, perché la lista mostrava soltanto proprietario obbligato e titolare attuale.
+
+La modalità TEST ora illustra venditore, compratore, prezzo in pick, clausola originale invariata e quattro passaggi per confermare. Il venditore vede il diritto con badge «Venduto · ex titolare» e il suo storico, senza pulsanti per rivendere o liquidare un diritto che non possiede più. Sulle proposte di rivendita ricevute è riportata la clausola originale. La precompilazione svuota anche le vecchie selezioni dei giocatori per non includerle accidentalmente.
+
+La modifica riguarda esclusivamente `trade-conditional-qa.html/js/css`. Nessuna RPC di mercato, nessuna tabella, nessuna notifica push o pick reale è stata toccata. Test isolato della sequenza Bartowski → Bayern → Desperados con diritto ancora vincolato: **11/11 asserzioni superate** (proprietà finale, storico dell'ex titolare, blocco dei pulsanti non autorizzati, clausola originale, contropartita e passaggi guida). L'esecuzione manuale nel browser dell'utente resta da verificare.
