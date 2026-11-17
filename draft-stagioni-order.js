@@ -73,6 +73,8 @@ async function confirmAdmin(){
 async function build(){
  const generate=el("season-order-generate"), save=el("season-order-save");
  generate.disabled=true;save.disabled=true;pending=null;
+ el("season-order-league").textContent="Calcolo in corso…";
+ el("season-order-championship").textContent="Calcolo in corso…";
  msg("Calcolo classifica, round e pick future…");
  el("season-order-overview").replaceChildren();
  try{
@@ -129,6 +131,7 @@ async function save(){
    const {error}=await supabase.from("draft_season_order_previews").upsert(payload,{onConflict:"season,draft_name"});
    if(error)throw error;
    msg("✓ Due proiezioni salvate in preparazione. Draft 2026/27 e Rose invariati.");
+   document.dispatchEvent(new CustomEvent("season-order-staged"));
    const summary=el("season-order-overview");
    summary.append(stat("Salvataggio","Completato · "+stamp.slice(0,10),"okay"));
  }catch(e){msg("Errore salvataggio: "+(e.message||String(e)),true)}
