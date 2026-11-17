@@ -40,3 +40,12 @@ button,select,input{font:inherit}button{cursor:pointer}button:disabled{opacity:.
 /* Informazione preventiva: la clausola migliore/peggiore richiede due pick dello stesso round. */
 .qa-ranked-hint{margin:10px 0 12px;padding:10px 12px;border:1px solid #68b4ae;background:#133f55;border-radius:10px;color:#d8fff0;font-size:12px;font-weight:800;line-height:1.5}
 .qa-ranked-hint.is-error{border-color:#e9a4aa;background:#53323e;color:#ffe9e9}
+
+/* One-click guided resale for a test right that was already finalized. */
+.qa-resale-demo{margin:14px 0;padding:15px;border-radius:13px;border:1px solid #f1bf60;background:linear-gradient(125deg,#3d352d,#183955);color:#f5f7ff;line-height:1.55}
+.qa-resale-demo[hidden]{display:none!important}
+.qa-resale-demo strong{font-size:13px;color:#ffe3a0}
+.qa-resale-demo p{font-size:12px;margin:7px 0 12px;color:#e3effb}
+.qa-resale-demo small{display:block;margin-top:9px;color:#bfd4e8;font-size:10px}
+.qa-resale-demo button{display:block;width:100%;min-height:44px;border-radius:10px;padding:10px 13px;background:linear-gradient(115deg,#ffe697,#ffca52);border:1px solid #fff0b2;color:#16324d;font-size:12px;font-weight:950}
+.qa-resale-shortcut{margin-bottom:18px}
