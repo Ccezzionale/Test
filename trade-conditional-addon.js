@@ -56,7 +56,7 @@ function selectedCandidates(){
 
 function extrasFor(side,type){
   const owner=side==="from"?myId():targetId();
-  if(type==="player")return state.players.filter(x=>same(x.owner_team_id,owner))
+  if(type==="player")return state.players.filter(x=>same(x.owner_team_id,owner)&&x.role!=="P"&&!/(^|[;, ])Por($|[;, ])/i.test(x.role_mantra||""))
     .sort((a,b)=>a.name.localeCompare(b.name,"it"))
     .map(x=>({id:x.id,key:"player:"+x.id,label:x.name+(x.is_u21_slot?" · U21 slot":"")}));
   if(type==="future_pick")return picksOf(owner).map(x=>({
