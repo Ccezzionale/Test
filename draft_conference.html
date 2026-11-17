@@ -6,11 +6,11 @@
   <title>Draft Conference League</title>
   <link rel="stylesheet" href="navbar.css" />
   <link rel="stylesheet" href="draft.css?v=20260812-recap3" />
-  <link rel="stylesheet" href="draft_league_modern.css?v=20261117-b" />
+  <link rel="stylesheet" href="draft_league_modern.css?v=20261117-c" />
 <meta name="lega-app-build" content="v20261028-ef9f76dc3f25">
 <script defer src="./app-updates.js?bootstrap=v20261028-ef9f76dc3f25" data-eroi-update="1"></script>
 </head>
-<body class="draft-league-modern">
+<body class="draft-league-modern mobile-view-home" data-mobile-draft-view="home">
   <nav class="site-nav">
     <div class="nav-inner">
       <div class="nav-left">
@@ -186,39 +186,11 @@
       </div>
     </section>
 
-    <section class="mobile-companion-actions" aria-label="Azioni rapide Draft Companion">
-      <a class="mobile-companion-card" href="#draft-board-panel" data-mobile-view="draft">
-        <span class="mobile-companion-icon">
-          <img src="img/badges/draft.webp" alt="">
-        </span>
-        <span>
-          <strong>Board</strong>
-          <small>Visualizza la board completa</small>
-        </span>
-        <em>›</em>
-      </a>
-
-      <a class="mobile-companion-card" href="#pool-section" data-mobile-view="pool">
-        <span class="mobile-companion-icon">
-          <img src="img/badges/giocatori.webp" alt="">
-        </span>
-        <span>
-          <strong>Player Pool</strong>
-          <small>Esplora tutti i giocatori disponibili</small>
-        </span>
-        <em>›</em>
-      </a>
-
-      <a class="mobile-companion-card" href="#summary-panel" data-mobile-view="rose">
-        <span class="mobile-companion-icon">
-          <img src="img/badges/giocatori.webp" alt="">
-        </span>
-        <span>
-          <strong>Le mie pick</strong>
-          <small>Storico delle tue scelte</small>
-        </span>
-        <em>›</em>
-      </a>
+    <section class="mobile-companion-actions" aria-label="Panoramica Draft">
+      <div class="draft-overview-loading" role="status" aria-live="polite">
+        <span class="draft-overview-loading-icon" aria-hidden="true">🏆</span>
+        <span><strong>Caricamento Overview</strong><small>Sto preparando round e pick della Conference League…</small></span>
+      </div>
     </section>
 
     <section class="container" id="draft-board-section">
