@@ -128,15 +128,17 @@ function drawPreview(pool, parsed, name) {
   table.appendChild(tbody);root.appendChild(table);
 }
 async function loadStatuses(){
-  const [seasons,archives,listones,future,keeper]=await Promise.all([
+  const [seasons,archives,listones,future,keeper,orders,keeperSelections]=await Promise.all([
     supabase.from("draft_seasons").select("season,label,status").in("season",[2026,2027]),
     supabase.from("draft_season_archives").select("season,draft_name,order_rows,pick_rows,visual_rows").eq("season",2026),
     supabase.from("draft_season_listone_staging").select("season,pool,source_filename,player_count,uploaded_at").eq("season",SEASON),
     supabase.from("future_draft_picks").select("draft_name,status,pick_kind").eq("season",SEASON),
-    supabase.from("keeper_settings").select("season,is_open,is_applied").eq("id",1).maybeSingle()
+    supabase.from("keeper_settings").select("season,is_open,is_applied").eq("id",1).maybeSingle(),
+    supabase.from("draft_season_order_previews").select("draft_name,generated_at,last_matchday,future_pick_count").eq("season",SEASON),
+    supabase.from("keeper_selections").select("id,selection_type,status").eq("season",SEASON)
   ]);
-  if(seasons.error||archives.error||listones.error||future.error||keeper.error) {
-    const err=seasons.error||archives.error||listones.error||future.error||keeper.error;
+  if(seasons.error||archives.error||listones.error||future.error||keeper.error||orders.error||keeperSelections.error) {
+    const err=seasons.error||archives.error||listones.error||future.error||keeper.error||orders.error||keeperSelections.error;
     throw Error(err.message||"Errore caricamento dati");
   }
 
@@ -163,6 +165,12 @@ async function loadStatuses(){
     pre.appendChild(line("Listone "+TITLES[pool],found?"✓ "+found.player_count+" righe":"Da caricare",
       found?"okay":"warn"));
   });
+  for(const [draft,label] of [["Draft Conference","Ordine League"],["Draft Championship","Ordine Championship"]]){
+    const saved=(orders.data||[]).find(x=>x.draft_name===draft);
+    pre.appendChild(line(label,saved?"Proiezione salvata (GW "+saved.last_matchday+")":"Proiezione da salvare",saved?"okay":"warn"));
+  }
+  const selCount=(keeperSelections.data||[]).length;
+  pre.appendChild(line("Conferme Pre-Draft 2027",selCount+" selezioni",selCount?"warn":"blocked"));
   const keeperSettings=keeper.data;
   const keeperOkay=keeperSettings?.season===SEASON && keeperSettings?.is_applied!==true;
   pre.appendChild(line("Pre-Draft 2027",keeperOkay?"Da verificare":"⚠ Stato da verificare",keeperOkay?"warn":"blocked"));
