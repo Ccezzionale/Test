@@ -211,7 +211,7 @@ function branchLabels(kind,r,ids){
 }
 function resaleUnderlying(offer){
  const right=findRight(offer?.existing_right_id);
- return right&&right.status==="active"||right?.status==="resolved"?right:null;
+ return right&&["active","resolved"].includes(right.status)?right:null;
 }
 function resaleFlow(offer,right){
  const seller=offer.grantor_team_id;
@@ -464,7 +464,7 @@ function handleAction(event){
    chooseTab("rights");
    flash(accepted?.rule_kind==="right_transfer"?
     "Rivendita conclusa nel test: il diritto appartiene ora a "+teamName(right.holder_team_id)+
-    ". "+teamName(accepted.from_team_id)+" ha ricevuto la pick di contropartita. Le candidate restano vincolate.":
+    ". "+teamName(accepted.grantor_team_id)+" ha ricevuto la pick di contropartita. Le candidate restano vincolate.":
     "Trade accettata nella simulazione: diritto creato e pick candidate vincolate.");
   }else if(kind==="reject"){
    qaRespondOffer(model,viewer,id,false);
@@ -521,7 +521,22 @@ function wire(){
   if(event.target.closest("[data-action]"))handleAction(event);
  });
  for(const id of ["qaToTeam","qaGrantorSide","qaKind"])
-  el(id).addEventListener("change",()=>refreshForm(true));
+  el(id).addEventListener("change",()=>{
+   if(id==="qaKind"&&el("qaKind").value==="right_transfer"){
+     // Evita di portarsi dietro giocatori selezionati per un'altra proposta.
+     el("qaPlayerFrom").value="";
+     el("qaPlayerTo").value="";
+     el("qaMixedDetails").open=false;
+     const seller=readOwner();
+     const right=model?.rights.find(r=>r.status==="active"&&same(r.holder_team_id,seller));
+     if(right&&same(readHolder(),right.grantor_team_id)&&same(seller,viewer)){
+       const alternative=displayedTeams().find(t=>!same(t.id,seller)&&
+         !same(t.id,right.grantor_team_id));
+       if(alternative)el("qaToTeam").value=alternative.id;
+     }
+   }
+   refreshForm(true);
+  });
  for(const id of ["qaStandingSubject","qaScope","qaTopCount","qaBottomCount"])
   el(id).addEventListener("change",updateStanding);
  for(const id of ["qaTopPick","qaBottomPick","qaMiddlePick","qaCounterPick",
