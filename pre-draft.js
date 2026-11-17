@@ -5,6 +5,7 @@ let currentProfile = null;
 let currentTeam = null;
 let keeperSettings = null;
 let roster = [];
+let rosterSource = "snapshot";
 let selections = [];
 let eligiblePlayers = [];
 let previousKeeperSelections = [];
@@ -179,77 +180,79 @@ async function loadKeeperSettings() {
   keeperSettings = data;
 }
 
-async function loadRoster() {
-  const snapshotSeason = Number(keeperSettings.season) - 1;
 
-  const { data, error } = await supabase
-    .from("season_roster_snapshots")
+async function loadRoster() {
+  const season = Number(keeperSettings.season);
+  if (season >= 2027) {
+    // Pre-Draft 2027+: i tesserati della rosa attuale, non lo snapshot 2025.
+    const { data, error } = await supabase.from("players")
+      .select("id,name,role,role_mantra,serie_a_team,quotation,is_u21,is_u21_slot,is_u21_keeper,u21_keeper_year,u21_keeper_team_id,is_fp,is_fp_keeper,fp_keeper_year,fp_keeper_team_id")
+      .eq("owner_team_id", currentTeam.id)
+      .eq("status", "active")
+      .order("name", { ascending: true });
+    if (error) throw error;
+    rosterSource = "live";
+    roster = (data || []).map(p => ({
+      id: p.id, name: p.name || "", role: p.role || "",
+      role_mantra: p.role_mantra || "", serie_a_team: p.serie_a_team || "",
+      quotation: p.quotation ?? "", is_u21: !!p.is_u21,
+      is_u21_slot: !!p.is_u21_slot, is_u21_keeper: !!p.is_u21_keeper,
+      u21_keeper_year: p.u21_keeper_year, u21_keeper_team_id: p.u21_keeper_team_id,
+      is_fp: !!p.is_fp, is_fp_keeper: !!p.is_fp_keeper,
+      fp_keeper_year: p.fp_keeper_year, fp_keeper_team_id: p.fp_keeper_team_id
+    })).sort(sortRosterByMantraLine);
+    return;
+  }
+
+  rosterSource = "snapshot";
+  const snapshotSeason = season - 1;
+  const { data, error } = await supabase.from("season_roster_snapshots")
     .select(`
-      id,
-      season,
-      team_id,
-      player_id,
-      player_name,
-      role,
-      role_mantra,
-      serie_a_team,
-      quotation,
-      is_u21,
-      is_fp,
-      players (
-        id,
-        name,
-        role,
-        role_mantra,
-        serie_a_team,
-        quotation,
-        is_u21,
-        is_fp
-      )
+      id,season,team_id,player_id,player_name,role,role_mantra,serie_a_team,
+      quotation,is_u21,is_fp,
+      players (id,name,role,role_mantra,serie_a_team,quotation,is_u21,is_fp)
     `)
     .eq("team_id", currentTeam.id)
     .eq("season", snapshotSeason)
     .order("role", { ascending: true })
     .order("player_name", { ascending: true });
-
   if (error) throw error;
-
-roster = (data || [])
-  .map(row => {
-    const linkedPlayer = row.players || {};
-
+  roster = (data || []).map(row => {
+    const linked = row.players || {};
     return {
-      snapshot_id: row.id,
-      id: row.player_id,
-      name: row.player_name || linkedPlayer.name || "",
-      role: row.role || linkedPlayer.role || "",
-      role_mantra: row.role_mantra || linkedPlayer.role_mantra || "",
-      serie_a_team: row.serie_a_team || linkedPlayer.serie_a_team || "",
-      quotation: row.quotation ?? linkedPlayer.quotation ?? "",
-      is_u21: !!row.is_u21,
-      is_fp: !!row.is_fp,
-      snapshot_season: row.season
+      snapshot_id: row.id, id: row.player_id,
+      name: row.player_name || linked.name || "",
+      role: row.role || linked.role || "",
+      role_mantra: row.role_mantra || linked.role_mantra || "",
+      serie_a_team: row.serie_a_team || linked.serie_a_team || "",
+      quotation: row.quotation ?? linked.quotation ?? "",
+      is_u21: !!row.is_u21, is_fp: !!row.is_fp, snapshot_season: row.season
     };
-  })
-  .sort(sortRosterByMantraLine);
+  }).sort(sortRosterByMantraLine);
 }
 
+
 async function loadEligiblePlayers() {
-  const { data, error } = await supabase
-    .from("predraft_eligible_players")
-    .select(`
-      id,
-      season,
-      team_id,
-      player_id,
-      can_be_fp,
-      can_be_rfa
-    `)
+  if (rosterSource === "live") {
+    // È l'eleggibilità FP già mostrata in Rose delle Squadre.
+    // Le vecchie righe Pre-Draft 2026 avevano can_be_fp e can_be_rfa
+    // entrambi true per lo stesso insieme di giocatori.
+    const { data, error } = await supabase.rpc("get_fp_eligibility");
+    if (error) throw error;
+    const owned = new Set(roster.map(player => String(player.id)));
+    eligiblePlayers = (data || [])
+      .filter(row => row.eligible === true && owned.has(String(row.player_id)))
+      .map(row => ({
+        team_id: currentTeam.id, player_id: row.player_id,
+        can_be_fp: true, can_be_rfa: true, reason: row.reason || ""
+      }));
+    return;
+  }
+  const { data, error } = await supabase.from("predraft_eligible_players")
+    .select("id,season,team_id,player_id,can_be_fp,can_be_rfa")
     .eq("season", keeperSettings.season)
     .eq("team_id", currentTeam.id);
-
   if (error) throw error;
-
   eligiblePlayers = data || [];
 }
 
@@ -328,7 +331,7 @@ const teamLogoEl = document.getElementById("keeper-team-logo");
 if (teamNameEl) teamNameEl.textContent = currentTeam.name;
 
 if (seasonLabelEl) {
-  seasonLabelEl.textContent = `${currentTeam.conference || "Conference N/A"} · Stagione ${keeperSettings.season}`;
+  seasonLabelEl.textContent = `${currentTeam.conference || "Conference N/A"} · Stagione ${keeperSettings.season}${rosterSource === "live" ? " · Rose attuali" : ""}`;
 }
 
 if (teamLogoEl) {
@@ -446,9 +449,19 @@ function getPreviousSameTeamKeeper(playerId, type) {
   ) || null;
 }
 
+
 function getConfirmationYear(playerId, type) {
   const previous = getPreviousSameTeamKeeper(playerId, type);
-  return previous ? 2 : 1;
+  if (previous) return Number(previous.confirmation_year || 1) + 1;
+  if (rosterSource === "live") {
+    const player = roster.find(p => String(p.id) === String(playerId));
+    const isFp = type === "FP";
+    const keeper = isFp ? player?.is_fp_keeper : player?.is_u21_keeper;
+    const team = isFp ? player?.fp_keeper_team_id : player?.u21_keeper_team_id;
+    const year = Number(isFp ? player?.fp_keeper_year : player?.u21_keeper_year);
+    if (keeper && String(team) === String(currentTeam.id) && year === 1) return 2;
+  }
+  return 1;
 }
 
 function getDefaultCostRound(type, confirmationYear = 1) {
@@ -463,15 +476,23 @@ function getDefaultCostRound(type, confirmationYear = 1) {
   return null;
 }
 
+
 function isEligibleFP(player) {
-  const isNormallyEligible = eligiblePlayers.some(e =>
-    e.player_id === player.id &&
-    e.can_be_fp === true
+  const previous = getPreviousSameTeamKeeper(player.id, "FP");
+  if (rosterSource === "live" && (
+    Number(previous?.confirmation_year || 0) >= 2 ||
+    (player.is_fp_keeper && Number(player.fp_keeper_year || 0) >= 2)
+  )) return false;
+
+  const normal = eligiblePlayers.some(e =>
+    String(e.player_id) === String(player.id) && e.can_be_fp === true
   );
+  if (rosterSource !== "live") return normal || !!previous;
 
-  const isSecondYearFP = !!getPreviousSameTeamKeeper(player.id, "FP");
-
-  return isNormallyEligible || isSecondYearFP;
+  const currentFp = !!player.is_fp_keeper &&
+    String(player.fp_keeper_team_id) === String(currentTeam.id) &&
+    Number(player.fp_keeper_year) === 1;
+  return normal || currentFp;
 }
 
 async function scanKeeperConflicts() {
@@ -625,16 +646,21 @@ async function resolveKeeperConflict(conflictGroupId, winnerSelectionId) {
   await loadAdminConflicts();
 }
 
+
 function isEligibleU21Keeper(player) {
   const role = String(player.role || player.role_mantra || "").toUpperCase();
-
-  if (role === "P") return false;
-
-  const isNormallyEligible = !!player.is_u21;
-
-  const isSecondYearU21Keeper = !!getPreviousSameTeamKeeper(player.id, "U21_KEEPER");
-
-  return isNormallyEligible || isSecondYearU21Keeper;
+  if (["P", "POR", "PORTIERE", "PORTIERI"].includes(role)) return false;
+  const previous = getPreviousSameTeamKeeper(player.id, "U21_KEEPER");
+  if (rosterSource === "live") {
+    if (Number(previous?.confirmation_year || 0) >= 2 ||
+        (player.is_u21_keeper && Number(player.u21_keeper_year || 0) >= 2)) return false;
+    const currentSlot = !!player.is_u21_slot && !!player.is_u21;
+    const currentKeeper = !!player.is_u21_keeper &&
+      String(player.u21_keeper_team_id) === String(currentTeam.id) &&
+      Number(player.u21_keeper_year) === 1;
+    return currentSlot || currentKeeper;
+  }
+  return !!player.is_u21 || !!previous;
 }
 
 function isEligibleRFA(player) {
@@ -650,11 +676,11 @@ function formatPlayerOption(player, type = null) {
 
   const badges = [];
 
-  if (type === "FP" && getPreviousSameTeamKeeper(player.id, "FP")) {
+  if (type === "FP" && getConfirmationYear(player.id, "FP") === 2) {
     badges.push("2° anno FP · costa R4");
   }
 
-  if (type === "U21_KEEPER" && getPreviousSameTeamKeeper(player.id, "U21_KEEPER")) {
+  if (type === "U21_KEEPER" && getConfirmationYear(player.id, "U21_KEEPER") === 2) {
     badges.push("2° anno U21");
   }
 
@@ -857,6 +883,10 @@ function renderRoster() {
   if (!container) return;
 
   if (!roster.length) {
+    if (rosterSource === "live") {
+      container.textContent = "Nessun giocatore attivo trovato nella rosa attuale della tua franchigia.";
+      return;
+    }
     const snapshotSeason = Number(keeperSettings.season) - 1;
 
     container.innerHTML = `
@@ -997,7 +1027,21 @@ async function saveSelection(type) {
     return;
   }
 
-  const player = roster.find(p => p.id === playerId);
+  // Il mercato può cambiare la rosa dopo l'apertura della pagina.
+  // Verifica nuovamente proprietà ed eleggibilità prima del salvataggio.
+  if (rosterSource === "live") {
+    try {
+      await loadRoster();
+      await loadEligiblePlayers();
+      await loadPreviousKeeperSelections();
+    } catch (error) {
+      console.error("Pre-Draft: errore verifica dati correnti", error);
+      alert("Non è stato possibile verificare la rosa aggiornata.");
+      return;
+    }
+  }
+
+  const player = roster.find(p => String(p.id) === String(playerId));
 
   if (!player) {
     alert("Giocatore non trovato nella tua rosa.");
@@ -1014,7 +1058,15 @@ async function saveSelection(type) {
     return;
   }
 
+  if (type === "RFA" && !isEligibleRFA(player)) {
+    alert("Questo giocatore non risulta eleggibile come RFA.");
+    return;
+  }
   const confirmationYear = getConfirmationYear(playerId, type);
+  if (confirmationYear > 2 && (type === "FP" || type === "U21_KEEPER")) {
+    alert("Questo giocatore ha già completato i due anni di conferma.");
+    return;
+  }
 const costRound = getDefaultCostRound(type, confirmationYear);
 
 const payload = {
