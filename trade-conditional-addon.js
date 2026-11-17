@@ -61,11 +61,13 @@ function refreshScope(){
   $("ctStandingSize").textContent=scope==="round_robin"?"Round Robin · "+count+" squadre":(subject?.conference||"Conference")+" · "+count+" squadre";
   $("ctTopCount").max=count-1;$("ctBottomCount").max=count-1;
   $("ctMiddleField").hidden=!(top>=1&&bottom>=1&&top+bottom<count);
+  redrawSummary();
 }
 function refreshSpecificTrophy(){
   const catalog=eligibleTrophies();
   fill("ctTrophySpecific",catalog.map(x=>'<option value="'+x.id+'">'+esc(x.name)+'</option>').join(""));
   $("ctTrophySpecificField").hidden=$("ctTrophyMode").value!=="specific_trophy";
+  redrawSummary();
 }
 function refreshCandidates(){
   const owner=grantorId();
