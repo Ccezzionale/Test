@@ -8,7 +8,7 @@ import {TROPHY_COMPETITIONS} from "./conditional-trades-core.js";
  */
 const $=id=>document.getElementById(id);
 const esc=v=>String(v??"").replace(/[&<>"']/g,ch=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[ch]));
-const state={me:null,teams:[],picks:[],rights:[],offers:[],locks:new Set(),settings:null,enabled:false,mode:"classic"};
+const state={me:null,teams:[],picks:[],players:[],waiverCalls:[],extraFrom:new Set(),extraTo:new Set(),rights:[],offers:[],locks:new Set(),settings:null,enabled:false,mode:"classic"};
 const team=id=>state.teams.find(t=>String(t.id)===String(id));
 const name=id=>team(id)?.name||"Franchigia";
 const myId=()=>state.me?.team_id;
@@ -285,15 +285,16 @@ function paintRights(){
   ).join("");
 }
 async function reload(){
-  const [p,o,r,c,s]=await Promise.all([
+  const [p,o,r,c,s,pl]=await Promise.all([
     supabase.from("future_draft_picks").select("id,season,draft_name,round,original_team_id,owner_team_id,pick_kind,status").eq("season",state.settings?.future_pick_season||2027).eq("status","active"),
     supabase.from("conditional_trade_offers").select("*").order("created_at",{ascending:false}).limit(150),
     supabase.from("conditional_trade_rights").select("*").order("created_at",{ascending:false}).limit(150),
     supabase.from("conditional_trade_candidates").select("pick_id,is_locked").eq("is_locked",true),
-    supabase.from("conditional_feature_settings").select("enabled").eq("id",1).maybeSingle()
+    supabase.from("conditional_feature_settings").select("enabled").eq("id",1).maybeSingle(),
+    supabase.from("players").select("id,name,owner_team_id,status,role_mantra,role,is_u21_slot").eq("status","active")
   ]);
-  for(const x of [p,o,r,c,s])if(x.error)throw x.error;
-  state.picks=p.data||[];state.offers=o.data||[];state.rights=r.data||[];
+  for(const x of [p,o,r,c,s,pl])if(x.error)throw x.error;
+  state.picks=p.data||[];state.players=pl.data||[];state.offers=o.data||[];state.rights=r.data||[];
   state.locks=new Set((c.data||[]).map(x=>String(x.pick_id)));
   state.enabled=s.data?.enabled===true;
   refreshCandidates();paintOffers();paintRights();
