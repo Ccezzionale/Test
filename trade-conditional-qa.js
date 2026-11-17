@@ -105,16 +105,24 @@ function updateStanding(){
  el("qaMiddleField").hidden=!(a>0&&b>0&&a+b<total);
  updatePreview();
 }
-function refreshRanked(){
+function eligibleRankedRounds(owner){
+ const groups=new Map();
+ for(const p of availablePicks(owner)){
+  const round=Number(p.round);
+  groups.set(round,(groups.get(round)||0)+1);
+ }
+ return [...groups].filter(([,count])=>count>=2).sort((a,b)=>a[0]-b[0]);
+}
+function refreshRanked(autoSelect=false){
  const owner=readOwner(),round=Number(el("qaRankedRound").value);
  const all=availablePicks(owner).filter(p=>Number(p.round)===round);
  const checked=new Set([...el("qaRankedPicks").querySelectorAll("input:checked")].map(x=>x.value));
- const auto=!checked.size;
- el("qaRankedPicks").innerHTML=all.length?all.map((p,i)=>
+ const valid=all.length>=2;
+ el("qaRankedPicks").innerHTML=valid?all.map((p,i)=>
   '<label><input type="checkbox" value="'+esc(p.id)+'"'+
-    ((checked.has(String(p.id))||(auto&&i<2))?" checked":"")+'>'+
+    ((checked.has(String(p.id))||(autoSelect&&i<2))?" checked":"")+'>'+
     '<span>'+esc(pickName(p))+'</span></label>').join(""):
-  '<div class="qa-empty">Nessuna pick per questo round.</div>';
+  '<div class="qa-empty">Questa franchigia non ha almeno due pick libere nello stesso round. Prova con una condizione su classifica o trofeo.</div>';
  el("qaRankedPicks").querySelectorAll("input").forEach(input=>
   input.addEventListener("change",updatePreview));
  updatePreview();
@@ -150,10 +158,14 @@ function refreshForm(reset=false){
   const pref=fallback(other,p=>p.round===1&&same(p.original_team_id,holder));
   fill("qaCounterPick",pickOptions(holder,{empty:true}),pref);
  }
- const roundList=[...new Set(picks.map(x=>Number(x.round)))].sort((a,b)=>a-b);
- fill("qaRankedRound",roundList.map(n=>option(n,"Round "+n)),reset||ownerChanged?"1":null);
+ const validRounds=eligibleRankedRounds(owner);
+ fill("qaRankedRound",validRounds.length
+   ?validRounds.map(([round,count])=>option(round,"Round "+round+" · "+count+" pick disponibili"))
+   :[option("","Nessun round con almeno 2 pick")],
+   reset||ownerChanged?(validRounds[0]?.[0]??""):null);
+ el("qaRankedRound").disabled=!validRounds.length;
  if(reset||ownerChanged)el("qaRankedPicks").innerHTML="";
- refreshRanked();
+ refreshRanked(reset||ownerChanged);
  const rights=model.rights.filter(r=>r.status==="active"&&same(r.holder_team_id,owner));
  fill("qaExistingRight",[option("","Scegli un diritto…"),
   ...rights.map(r=>option(r.id,kindLabel(r.rule_kind)+" · "+teamName(r.grantor_team_id)))]);
@@ -252,6 +264,16 @@ function updatePreview(){
      '<p class="qa-resale-warning">Scegli un diritto attivo prima di preparare la rivendita.</p>';
  }
  el("qaSend").textContent=resale?"⇄ Invia proposta di rivendita simulata":"✉️ Invia proposta simulata";
+ const ranked=d.rule_kind==="ranked",chosen=d.candidate_pick_ids.length;
+ const eligible=ranked?eligibleRankedRounds(readOwner()):[];
+ const rankedIssue=ranked&&(eligible.length===0||chosen<2);
+ el("qaSend").disabled=Boolean(rankedIssue);
+ el("qaRankedHint").textContent=!ranked?"":eligible.length===0?
+  teamName(readOwner())+" non possiede due pick disponibili nello stesso round. "+
+  "Prova a cedere un diritto da Bayern o Desperados, oppure scegli una clausola diversa.":
+  chosen<2?"Seleziona almeno due pick del Round "+el("qaRankedRound").value+" per confrontarle.":
+  "✓ "+chosen+" pick dello stesso round selezionate: puoi inviare la proposta.";
+ el("qaRankedHint").classList.toggle("is-error",Boolean(rankedIssue));
  const extra=(d.mixed_assets||[]).map(x=>(x.side==="from"?teamName(d.from_team_id):teamName(d.to_team_id))+
   " offre "+playerName(qaPlayer(model,x.asset_id)));
  el("qaOfferPreview").innerHTML="<strong>"+(resale?"RIVENDITA DI PROVA":"CONTRATTO DI PROVA")+
@@ -543,7 +565,7 @@ function wire(){
    "qaRankedWhich","qaWonPick","qaNotWonPick","qaExistingRight","qaPlayerFrom","qaPlayerTo"])
   el(id).addEventListener("change",updatePreview);
  el("qaRankedRound").addEventListener("change",()=>{
-  el("qaRankedPicks").innerHTML="";refreshRanked();
+  el("qaRankedPicks").innerHTML="";refreshRanked(true);
  });
  el("qaTrophyMode").addEventListener("change",updateTrophy);
  el("qaTrophySubject").addEventListener("change",updateTrophy);
