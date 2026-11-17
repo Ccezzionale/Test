@@ -6509,3 +6509,279 @@ body.waiver-view-as-mode .waiver-trades-card textarea {
     grid-column: 1 / -1;
   }
 }
+
+/* ==========================================================
+   WAIVER V4 | Rose + Draft 17-11-2026
+   Solo UI: blu notte / bianco / oro, versione mobile compatta
+   ========================================================== */
+:root {
+  --waiver-v4-navy:#071d37;
+  --waiver-v4-ink:#102c50;
+  --waiver-v4-gold:#f4c535;
+  --waiver-v4-line:#c2cfdd;
+}
+body { background:#fff; color:var(--waiver-v4-ink); }
+.waiver-hero {
+  background:linear-gradient(115deg,#061a32,#092849 70%,#0d3154);
+  border:1px solid #0d3154;
+  border-bottom:3px solid var(--waiver-v4-gold);
+  box-shadow:0 8px 23px rgba(7,30,58,.075);
+}
+.waiver-card,.ir-monitor-card,.waiver-trades-card {
+  background:#fff;
+  border:1px solid var(--waiver-v4-line);
+  box-shadow:0 8px 23px rgba(7,30,58,.075);
+}
+.waiver-card > .card-title-row {
+  background:linear-gradient(115deg,#061a32,#092849 70%,#0d3154);
+  border-bottom:3px solid var(--waiver-v4-gold);
+  margin:-20px -20px 16px;
+  padding:15px 20px;
+  border-radius:21px 21px 0 0;
+}
+.waiver-card > .card-title-row h2 { color:#fff; }
+.waiver-card > .card-title-row .card-subtitle { color:#d5e1ee; }
+.waiver-card > .card-title-row .card-subtitle strong { color:#fff; }
+.waiver-card > .card-title-row .waiver-trades-eyebrow { color:var(--waiver-v4-gold); }
+.waiver-card > .card-title-row .ir-monitor-pill,
+.waiver-card > .card-title-row .waiver-trades-pill {
+  background:var(--waiver-v4-gold);
+  color:var(--waiver-v4-navy);
+  box-shadow:none;
+}
+.waiver-card input:not([type=checkbox]):not([type=radio]),
+.waiver-card select,.waiver-card textarea {
+  background:#fff;
+  color:var(--waiver-v4-ink);
+  border-color:#b6c8da;
+}
+.waiver-card input:focus-visible,.waiver-card select:focus-visible,
+.waiver-card textarea:focus-visible,.waiver-card button:focus-visible,
+.waiver-mobile-tab:focus-visible {
+  outline:2px solid var(--waiver-v4-gold);
+  outline-offset:2px;
+}
+.waiver-card .primary-btn,.waiver-card .choose-player-btn {
+  background:var(--waiver-v4-navy) !important;
+  border-color:var(--waiver-v4-navy) !important;
+  border-bottom:3px solid var(--waiver-v4-gold) !important;
+  color:#fff !important;
+  box-shadow:none !important;
+}
+.waiver-card .primary-btn:hover,.waiver-card .choose-player-btn:hover {
+  background:#0f3154 !important;
+}
+.waiver-trade-rules { gap:6px; margin-bottom:10px; }
+.waiver-trade-rules span {
+  background:#fff;
+  border:1px solid #cbd6e3;
+  color:#35516c;
+  padding:5px 8px;
+}
+.waiver-trade-builder,.waiver-trade-assets-column,.waiver-trade-asset {
+  background:#fff;
+  border-color:var(--waiver-v4-line);
+  box-shadow:none;
+}
+.waiver-trade-asset:hover { background:#f8fafc; border-color:#7188a1; }
+.waiver-trade-asset input { accent-color:var(--waiver-v4-navy); }
+.waiver-trade-history summary,.ir-rules-summary summary { color:#0f3154; }
+.public-waiver-order { gap:12px; }
+.public-waiver-group {
+  background:#fff;
+  padding:0;
+  border:1px solid var(--waiver-v4-line);
+  border-radius:15px;
+  overflow:hidden;
+}
+.public-waiver-group-title {
+  background:var(--waiver-v4-navy);
+  color:#fff;
+  border:0;
+  border-bottom:2px solid var(--waiver-v4-gold);
+  padding:12px 15px;
+  margin:0;
+}
+.public-waiver-group-title h3 { color:#fff; }
+.public-waiver-group-title span { color:#d5e1ee; font-size:.75rem; }
+.public-toggle-icon { color:var(--waiver-v4-gold); }
+.public-waiver-group-content { gap:0; padding:4px 12px; }
+.public-waiver-row,
+.public-waiver-row.won,.public-waiver-row.lost,.public-waiver-row.pending {
+  background:#fff;
+  border:0;
+  border-bottom:1px solid #e4eaf0;
+  border-radius:0;
+  box-shadow:none;
+  min-height:48px;
+  padding:9px 5px;
+}
+.public-waiver-row:last-child { border-bottom:0; }
+.public-waiver-rank {
+  width:33px;height:33px;
+  background:var(--waiver-v4-navy);
+  color:var(--waiver-v4-gold);
+  font-size:.76rem;
+}
+.public-waiver-main { gap:2px; min-width:0; }
+.public-waiver-main strong { color:var(--waiver-v4-ink); font-size:.88rem; }
+.public-waiver-via { color:#596e82; font-size:.71rem; }
+.public-waiver-via:empty,.public-waiver-result:empty { display:none; }
+.public-waiver-result { font-size:.77rem; line-height:1.35; }
+.public-waiver-row.won .public-waiver-result { color:#166534; }
+.public-waiver-row.lost .public-waiver-result { color:#991b1b; }
+.public-waiver-row.pending .public-waiver-result { color:#865600; }
+.ir-monitor-row {
+  background:#fff;
+  border:1px solid #d5dfe9;
+  border-left:3px solid var(--waiver-v4-navy);
+  border-radius:12px;
+  box-shadow:none;
+  padding:9px;
+}
+.ir-monitor-icon {
+  background:var(--waiver-v4-navy);
+  color:var(--waiver-v4-gold);
+  box-shadow:none;
+}
+.ir-monitor-main strong { color:var(--waiver-v4-ink); }
+.ir-monitor-progress>span { background:linear-gradient(90deg,#0f3154,#f4c535); }
+#freeAgentsTable thead th {
+  background:var(--waiver-v4-navy);
+  border-bottom:2px solid var(--waiver-v4-gold);
+}
+#freeAgentsTable tbody tr:nth-child(even) { background:#f9fbfd; }
+#freeAgentsTable tbody tr.selected-player {
+  background:#fff8e4 !important;
+  box-shadow:inset 3px 0 0 var(--waiver-v4-gold) !important;
+}
+.waiver-mobile-u21 { display:none; }
+.waiver-mobile-tabs {
+  background:var(--waiver-v4-navy);
+  border-bottom:2px solid var(--waiver-v4-gold);
+}
+.waiver-mobile-tab.active {
+  background:var(--waiver-v4-gold);
+  color:var(--waiver-v4-navy);
+  box-shadow:none;
+}
+.admin-command-center {
+  background:linear-gradient(115deg,#061a32,#092849 70%,#0d3154);
+  border-bottom:3px solid var(--waiver-v4-gold);
+}
+@media (max-width:768px) {
+  .waiver-page { padding:12px 12px 105px; }
+  .waiver-hero { min-height:0; padding:18px 16px; border-radius:17px; margin-bottom:12px; }
+  .waiver-hero h1 { font-size:clamp(1.7rem,7vw,2.3rem); }
+  .waiver-hero p { font-size:.85rem; }
+  .waiver-mobile-tabs {
+    gap:4px;padding:5px;border-radius:15px;margin-bottom:12px;
+    box-shadow:0 6px 18px rgba(7,30,58,.12);
+  }
+  .waiver-mobile-tab { min-height:39px; border-radius:10px; font-size:.76rem; }
+  .waiver-card { padding:12px; border-radius:16px; }
+  .waiver-card > .card-title-row {
+    margin:-12px -12px 12px;
+    padding:12px 13px;
+    border-radius:15px 15px 0 0;
+    gap:6px;
+  }
+  .waiver-card > .card-title-row h2 { font-size:1.06rem; margin:0; }
+  .waiver-card > .card-title-row .card-subtitle {
+    margin:4px 0 0;
+    font-size:.77rem;
+    line-height:1.35;
+  }
+  .waiver-card > .card-title-row .ir-monitor-pill { padding:5px 7px; font-size:.62rem; }
+  .public-waiver-group { border-radius:12px; }
+  .public-waiver-group-title {
+    flex-direction:column;align-items:stretch;gap:3px;padding:11px 12px;margin:0;
+  }
+  .public-waiver-group-title h3 { font-size:.87rem; }
+  .public-waiver-group-title span { text-align:left; font-size:.7rem; }
+  .public-waiver-group-content { padding:2px 9px; }
+  .public-waiver-row {
+    grid-template-columns:32px minmax(0,1fr);
+    min-height:43px;gap:8px;padding:7px 3px;
+  }
+  .public-waiver-rank { width:29px;height:29px;font-size:.73rem; }
+  .public-waiver-main strong { font-size:.82rem; line-height:1.22; }
+  .public-waiver-via { font-size:.68rem; }
+  .public-waiver-result { font-size:.72rem; }
+  .ir-monitor-card.mobile-panel-active { margin-top:12px;margin-bottom:0; }
+  .ir-monitor-row { grid-template-columns:32px minmax(0,1fr);gap:8px;padding:8px; }
+  .ir-monitor-icon { width:32px;height:32px;border-radius:8px;font-size:.67rem; }
+  .ir-monitor-main strong { font-size:.82rem; }
+  .ir-monitor-main span { font-size:.71rem; }
+  .ir-monitor-main small { font-size:.67rem; }
+  .ir-monitor-progress { height:4px;margin-top:5px; }
+  .ir-monitor-phase { padding:4px 7px;font-size:.61rem; }
+  .ir-monitor-list { gap:6px; }
+  .waiver-trade-rules span { font-size:.66rem;line-height:1.3; }
+  .waiver-trade-builder { padding:10px;border-radius:12px; }
+  .waiver-trade-assets-grid,.waiver-trade-inbox-grid { gap:8px; }
+  .waiver-trade-assets-column { padding:8px;border-radius:10px; }
+  .waiver-trade-asset-list { max-height:190px; }
+  .waiver-trade-asset { padding:8px;border-radius:9px; }
+  .waiver-trade-week-label { margin-top:4px;font-size:.63rem; }
+  .free-agents-filters {
+    display:grid;grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:8px;margin-bottom:10px;
+  }
+  #searchInput { grid-column:1/-1;margin-bottom:0; }
+  #roleFilter { grid-column:1; }
+  #serieATeamFilter { grid-column:2; }
+  #u21Filter { grid-column:1/-1; }
+  .free-agents-filters input,.free-agents-filters select {
+    width:100%;min-width:0;min-height:40px;
+    border-radius:10px;padding:7px 9px;font-size:.78rem;
+  }
+  .free-agents-table-wrap {
+    max-height:min(58vh,490px) !important;
+    overflow-x:hidden !important;
+    overflow-y:auto !important;
+    border-radius:12px !important;
+    border-color:var(--waiver-v4-line) !important;
+  }
+  #freeAgentsTable {
+    display:table !important;width:100% !important;
+    min-width:0 !important;table-layout:fixed !important;
+  }
+  #freeAgentsTable th,#freeAgentsTable td {
+    box-sizing:border-box !important;width:auto !important;
+    min-width:0 !important;max-width:none !important;
+    white-space:normal !important;overflow-wrap:anywhere !important;
+    padding:9px 5px !important;font-size:.75rem !important;
+    vertical-align:middle !important;
+  }
+  #freeAgentsTable thead th {
+    background:var(--waiver-v4-navy) !important;
+    border-bottom:2px solid var(--waiver-v4-gold) !important;
+    font-size:0 !important;
+  }
+  #freeAgentsTable thead th::after { font-size:.65rem; }
+  #freeAgentsTable th:nth-child(1),#freeAgentsTable td:nth-child(1) {
+    width:39% !important;max-width:39% !important;font-weight:800 !important;
+  }
+  #freeAgentsTable th:nth-child(2),#freeAgentsTable td:nth-child(2) {
+    width:16% !important;max-width:16% !important;text-align:center !important;
+  }
+  #freeAgentsTable th:nth-child(3),#freeAgentsTable td:nth-child(3) {
+    width:31% !important;max-width:31% !important;
+  }
+  #freeAgentsTable th:nth-child(4),#freeAgentsTable td:nth-child(4) {
+    width:14% !important;max-width:14% !important;text-align:center !important;
+  }
+  #freeAgentsTable th:nth-child(5),#freeAgentsTable td:nth-child(5) {
+    display:none !important;
+  }
+  #freeAgentsTable tbody tr { background:#fff !important; }
+  #freeAgentsTable tbody tr:nth-child(even) { background:#f9fbfd !important; }
+  #freeAgentsTable tbody tr.selected-player { background:#fff8e4 !important; }
+  .waiver-mobile-u21 {
+    display:inline-flex;padding:1px 3px;margin-left:3px;
+    border:1px solid #d2aa36;border-radius:4px;color:#755305;
+    font-size:.55rem;font-weight:900;vertical-align:middle;
+  }
+  .player-badges { font-size:.63rem !important; }
+}
