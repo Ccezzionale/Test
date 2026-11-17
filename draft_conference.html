@@ -6,10 +6,11 @@
   <title>Draft Conference League</title>
   <link rel="stylesheet" href="navbar.css" />
   <link rel="stylesheet" href="draft.css?v=20260812-recap3" />
+  <link rel="stylesheet" href="draft_league_modern.css?v=20261117-a" />
 <meta name="lega-app-build" content="v20261028-ef9f76dc3f25">
 <script defer src="./app-updates.js?bootstrap=v20261028-ef9f76dc3f25" data-eroi-update="1"></script>
 </head>
-<body>
+<body class="draft-league-modern">
   <nav class="site-nav">
     <div class="nav-inner">
       <div class="nav-left">
@@ -148,11 +149,12 @@
       </div>
     </section>
 
-    <section class="mobile-draft-tabs" aria-label="Navigazione rapida Draft mobile">
-      <a href="#draft-board-panel">📋 Board</a>
-      <a href="#pool-section">🔎 Pool</a>
-      <a href="#summary-panel">🛡 Rose</a>
-      <a href="#admin-panel">⚙️ Admin</a>
+    <section class="mobile-draft-tabs" aria-label="Sezioni Draft Conference League">
+      <a href="#mobile-live-draft" data-mobile-view="home" aria-label="Panoramica Draft">Overview</a>
+      <a href="#draft-board-panel" data-mobile-view="draft">Board</a>
+      <a href="#pool-section" data-mobile-view="pool">Pool</a>
+      <a href="#summary-panel" data-mobile-view="rose">Squadre</a>
+      <a href="#admin-panel" data-mobile-view="admin" class="draft-tab-admin" hidden>Admin</a>
     </section>
 
     <section class="mobile-live-draft mobile-companion-hero" id="mobile-live-draft">
@@ -224,7 +226,7 @@
         <div class="panel-header">
           <div class="panel-title-wrap">
             <h2 class="panel-title">📌 Draft Board</h2>
-            <p class="panel-subtitle">Ordine completo delle pick effettuate</p>
+            <p class="panel-subtitle">Cronologia completa: giocatori, franchigie e pick scambiate</p>
           </div>
           <div class="panel-count">Picks</div>
         </div>
@@ -249,7 +251,7 @@
         <div class="panel-header">
           <div class="panel-title-wrap">
             <h2 class="panel-title">🎯 Player Pool</h2>
-            <p class="panel-subtitle">Filtra il listone per squadra, ruolo e nome</p>
+            <p class="panel-subtitle">Cerca, filtra e scegli il tuo prossimo giocatore</p>
           </div>
           <div class="panel-count">Pool</div>
         </div>
@@ -315,8 +317,8 @@
     <section id="summary-panel" class="summary-section">
       <div class="summary-topbar">
         <div class="summary-title-wrap">
-          <h2 class="summary-title">📋 Riepilogo Pick per Squadra</h2>
-          <p class="summary-subtitle">Tutte le rose draftate, squadra per squadra</p>
+          <h2 class="summary-title">🛡️ Scelte delle Squadre</h2>
+          <p class="summary-subtitle">Tutte le chiamate effettuate, in ordine di pick per franchigia</p>
         </div>
 
         <button class="btn-riepilogo" onclick="aggiornaChiamatePerSquadra()">
@@ -479,38 +481,9 @@
     </section>
   </main>
 
-<nav class="mobile-bottom-nav" aria-label="Navigazione Draft mobile">
-  <a href="index.html" class="mobile-home-dashboard-link">
-    <img src="img/badges/home.webp" alt="">
-    <span>Home</span>
-  </a>
 
-  <a href="#" data-mobile-view="home">
-    <img src="img/badges/draft.webp" alt="">
-    <span>Board</span>
-  </a>
-
-  <a href="#" data-mobile-view="draft">
-    <img src="img/badges/draft.webp" alt="">
-    <span>Draft</span>
-  </a>
-
-  <a href="#" data-mobile-view="pool">
-    <img src="img/badges/giocatori.webp" alt="">
-    <span>Pool</span>
-  </a>
-
-  <a href="#" data-mobile-view="rose">
-    <img src="img/badges/rose.webp" alt="">
-    <span>Rose</span>
-  </a>
-
-  <a href="#" data-mobile-view="admin">
-    <img src="img/badges/admin.webp" alt="">
-    <span>Admin</span>
-  </a>
-</nav>
 <script src="mobile-nav.js"></script>
+<script defer src="draft_league_modern.js?v=20261117-a"></script>
   <script type="module" src="draft_script_unificato.js?v=20260812-recap2"></script>
   <script src="navbar.js"></script>
 
