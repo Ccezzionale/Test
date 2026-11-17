@@ -87,7 +87,8 @@ function readHolder(){
 function resaleTradableRights(seller,buyer){
  return model.rights.filter(r=>r.status==="active"&&
   same(r.holder_team_id,seller)&&!same(r.grantor_team_id,buyer)&&
-  getTeam(seller)?.conference===getTeam(buyer)?.conference);
+  getTeam(seller)?.conference===getTeam(buyer)?.conference&&
+  availablePicks(buyer).some(p=>p.draft_name===r.draft_name));
 }
 function resalePossibilities(buyer){
  return displayedTeams().filter(t=>!same(t.id,buyer)&&
@@ -178,6 +179,20 @@ function refreshPlayers(){
  fill("qaPlayerTo",[option("","Nessuno"),...qaOwnedPlayers(model,el("qaToTeam").value)
    .filter(p=>p.role!=="P").map(p=>option(p.id,playerName(p)+(p.is_u21_slot?" · U21":"")))]);
 }
+function refreshResaleCounter(update=true){
+ if(el("qaKind").value!=="right_transfer")return;
+ const right=findRight(el("qaExistingRight").value);
+ const buyer=readHolder();
+ const picks=right?availablePicks(buyer).filter(p=>p.draft_name===right.draft_name):[];
+ const current=el("qaCounterPick").value;
+ const preferred=picks.some(p=>same(p.id,current))?current:picks[0]?.id||"";
+ fill("qaCounterPick",[
+  option("","Seleziona la pick che paga "+teamName(buyer)+"…"),
+  ...picks.map(p=>option(p.id,pickName(p)))
+ ],preferred);
+ el("qaCounterPickLabel").textContent="Pick di "+teamName(buyer)+" pagata a "+teamName(readOwner());
+ if(update)updatePreview();
+}
 function refreshForm(reset=false){
  const kind=el("qaKind").value;
  if(kind==="right_transfer"){
@@ -187,6 +202,7 @@ function refreshForm(reset=false){
  }else{
    el("qaGrantorSide").disabled=false;
    el("qaGrantorLabel").textContent="Chi cede il diritto?";
+   el("qaCounterPickLabel").textContent="Pick scambiata per il diritto";
  }
  const owner=readOwner(),holder=readHolder();
  const ownerChanged=String(formOwner)!==String(owner);
@@ -227,6 +243,7 @@ function refreshForm(reset=false){
    rights.length===1?rights[0].id:null);
  el("qaCounterInfo").textContent=teamName(holder)+" paga una sua pick a "+
    teamName(owner)+" per acquistare il diritto.";
+ if(kind==="right_transfer")refreshResaleCounter(false);
  refreshPlayers();
  updateStanding();
  updateTrophy();
@@ -292,7 +309,8 @@ function resaleFlow(offer,right){
    ?"Attenzione: questa franchigia non è più titolare del diritto.":
    right&&same(buyer,right.grantor_team_id)
    ?"Attenzione: non puoi rivendere il diritto a chi deve già consegnare la pick.":
-   !price?"Seleziona la pick con cui il compratore pagherà il diritto.":"";
+   (!price||!same(price.owner_team_id,buyer)||right&&price.draft_name!==right.draft_name)?
+   "Il compratore deve pagare con una pick libera dello stesso Draft del diritto.":"";
  return {
   seller,buyer,price,error,
   summary:'<strong>Il venditore è '+esc(teamName(seller))+'; il compratore è '+esc(teamName(buyer))+'.</strong>'+
@@ -353,7 +371,8 @@ function updatePreview(){
  const validRights=resale?resaleTradableRights(readOwner(),readHolder()):[];
  const resaleIssue=resale&&(!underlying||underlying.status!=="active"||
    !same(underlying.holder_team_id,readOwner())||!!resaleInfo.error||
-   !same(qaPick(model,d.counter_pick_id)?.owner_team_id,readHolder()));
+   !same(qaPick(model,d.counter_pick_id)?.owner_team_id,readHolder())||
+   qaPick(model,d.counter_pick_id)?.draft_name!==underlying?.draft_name);
  el("qaSend").disabled=Boolean(rankedIssue||resaleIssue);
  el("qaResaleDemo").hidden=!resale||validRights.length>0;
  if(resale&&!validRights.length)
@@ -522,6 +541,7 @@ function renderRights(){
  const available=model.rights.filter(r=>r.status==="active"&&
    !same(r.holder_team_id,viewer)&&!same(r.grantor_team_id,viewer)&&
    getTeam(r.holder_team_id)?.conference===getTeam(viewer)?.conference&&
+   availablePicks(viewer).some(p=>p.draft_name===r.draft_name)&&
    displayedTeams().some(t=>same(t.id,r.holder_team_id)));
  el("qaBuyRightsList").innerHTML=available.length?available.map(r=>
   '<article class="qa-card"><div class="qa-card-head"><strong>🔐 '+esc(kindLabel(r.rule_kind))+
@@ -750,7 +770,7 @@ function wire(){
   el(id).addEventListener("change",updateStanding);
  for(const id of ["qaTopPick","qaBottomPick","qaMiddlePick","qaCounterPick",
    "qaRankedWhich","qaWonPick","qaNotWonPick","qaExistingRight","qaPlayerFrom","qaPlayerTo"])
-  el(id).addEventListener("change",updatePreview);
+  el(id).addEventListener("change",id==="qaExistingRight"?refreshResaleCounter:updatePreview);
  el("qaRankedRound").addEventListener("change",()=>{
   el("qaRankedPicks").innerHTML="";refreshRanked(true);
  });
