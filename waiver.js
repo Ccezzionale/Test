@@ -2524,9 +2524,8 @@ async function renderPublicWaiverOrder() {
         let resultText = "";
 
         if (!slotPublic) {
-          resultText = closeAt
-            ? `Le chiamate saranno visibili ${formatWaiverDateTime(closeAt)}`
-            : "Le chiamate saranno visibili dopo la chiusura dello slot.";
+          // La data compare gia' nell'intestazione dello slot.
+          resultText = "";
         } else if (!call) {
           statusClass = "empty";
           resultText = "Nessuna chiamata registrata.";
@@ -2552,7 +2551,7 @@ async function renderPublicWaiverOrder() {
             ${
               isVia
                 ? `<span class="public-waiver-via">via ${originalName}</span>`
-                : `<span class="public-waiver-via">chiamata originale</span>`
+                : ""
             }
             <span class="public-waiver-result">${resultText}</span>
           </div>
@@ -4447,6 +4446,7 @@ sortedFiltered.forEach(player => {
     tr.innerHTML = `
       <td>
         ${player.name}
+        ${player.is_u21 ? `<span class="waiver-mobile-u21">U21</span>` : ""}
         ${poolBadge || fpBadge ? `<span class="player-badges">${poolBadge} ${fpBadge}</span>` : ""}
       </td>
       <td>${player.role}</td>
