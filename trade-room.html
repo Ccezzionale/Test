@@ -9,7 +9,7 @@
   <link rel="stylesheet" href="navbar.css">
   <link rel="stylesheet" href="trade-room.css?v=20261116-live-backup">
   <link rel="stylesheet" href="trade-room-v2.css?v=20261117-trade-cuts-restored">
-  <link rel="stylesheet" href="trade-conditional-addon.css?v=20261117-v12-ranked-eligible">
+  <link rel="stylesheet" href="trade-conditional-addon.css?v=20261117-live-review-v13">
 </head>
 <body class="trade-v2-preview trade-v2-live">
 <nav class="site-nav">
@@ -284,6 +284,17 @@
     <h3>🔐 Diritti condizionati</h3>
     <p>I diritti attivi possono essere rivenduti; le pick candidate restano vincolate fino alla risoluzione.</p>
     <div id="ctRightItems"></div>
+    <div id="ctBuyRightsPanel" class="ct-buy-rights" hidden>
+      <h4>📥 Diritti che puoi proporre di acquistare</h4>
+      <p>Un diritto appartiene al suo titolare, ma puoi offrirgli una tua pick per acquistarlo. La squadra proprietaria dovrà accettare.</p>
+      <div id="ctBuyRightsItems"></div>
+    </div>
+  </section>
+  <section id="ctReviewPanel" class="ct-list-panel" hidden>
+    <h3>🔎 Controllo iniziale delle trade condizionate</h3>
+    <p>Solo amministratori. Ogni accordo concluso supera i controlli automatici e compare qui finché non viene verificato manualmente. La revisione non cambia gli scambi né le pick.</p>
+    <div id="ctReviewItems"></div>
+    <div id="ctReviewNotice" class="ct-notice" role="status" aria-live="polite"></div>
   </section>
 </section>
 
@@ -375,7 +386,7 @@
           <option value="standing">In base alla classifica</option>
           <option value="ranked">Migliore / peggiore delle pick</option>
           <option value="trophy">Se conquista un trofeo</option>
-          <option value="right_transfer">Rivendo un diritto già acquisito</option>
+          <option value="right_transfer">Compro o vendo un diritto già acquisito</option>
         </select>
       </label>
     </div>
@@ -426,8 +437,14 @@
       </div>
     </div>
     <div id="ctTransferFields" class="ct-condition-fields" hidden>
-      <label>Quale diritto vuoi rivendere?<select id="ctExistingRight" class="v2-select"></select></label>
-      <p class="ct-field-help">La clausola originale e le pick candidate rimangono identiche. Cambia soltanto il titolare del diritto.</p>
+      <p class="ct-field-help">Puoi proporre la vendita di un tuo diritto oppure l'acquisto di un diritto dell'altra squadra. Servirà sempre l'accettazione del destinatario.</p>
+      <div class="ct-resale-modes" role="group" aria-label="Vendi o compra un diritto">
+        <button id="ctResaleSell" class="is-active" type="button" aria-pressed="true">📤 Vendi un diritto</button>
+        <button id="ctResaleBuy" type="button" aria-pressed="false">📥 Proponi acquisto</button>
+      </div>
+      <p id="ctResaleContext" class="ct-field-help" aria-live="polite"></p>
+      <label><span id="ctResalePickLabel">Quale diritto vuoi vendere?</span><select id="ctExistingRight" class="v2-select"></select></label>
+      <p class="ct-field-help">La clausola originale e le pick candidate rimangono identiche. La squadra che compra paga una pick, il diritto cambia titolare solo dopo l'accettazione.</p>
     </div>
     <section class="ct-mixed-fields" id="ctMixedFields">
       <div class="ct-mixed-head">
@@ -746,6 +763,6 @@
   <script src="navbar.js"></script>
   <script type="module" src="trade-room.js?v=20261116-live-original"></script>
   <script type="module" src="trade-room-live.js?v=20261117-trade-cuts-restored"></script>
-  <script type="module" src="trade-conditional-addon.js?v=20261117-v12-ranked-eligible"></script>
+  <script type="module" src="trade-conditional-addon.js?v=20261117-live-review-v13"></script>
 </body>
 </html>
