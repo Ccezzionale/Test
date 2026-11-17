@@ -607,7 +607,14 @@ function bind(){
     });
   }
   $("ctModeConditional").addEventListener("click",()=>setMode("conditional"));
-  $("ctKind").addEventListener("change",refreshKind);
+  $("ctKind").addEventListener("change",()=>{
+    if($("ctKind").value==="right_transfer"){
+      const own=state.rights.some(r=>r.status==="active"&&same(r.holder_team_id,myId()));
+      chooseResaleIntent(own?"sell":"buy",true);
+    }else refreshKind();
+  });
+  $("ctResaleSell").addEventListener("click",()=>chooseResaleIntent("sell",true));
+  $("ctResaleBuy").addEventListener("click",()=>chooseResaleIntent("buy",true));
   $("ctGrantorSide").addEventListener("change",()=>{$("ctRankedCandidates").innerHTML="";refreshCandidates();});
   $("v2TargetTeam").addEventListener("change",()=>{$("ctRankedCandidates").innerHTML="";state.extraTo.clear();refreshCandidates();loadExtraWaiverCalls();});
   $("ctStandingSubject").addEventListener("change",refreshScope);
@@ -618,9 +625,12 @@ function bind(){
   $("ctTrophySubject").addEventListener("change",refreshSpecificTrophy);
   $("ctTrophyMode").addEventListener("change",refreshSpecificTrophy);
   for(const id of ["ctTopPick","ctBottomPick","ctMiddlePick","ctWonPick","ctNotWonPick","ctTrophySpecific",
-    "ctCounterPick","ctRankedWhich","ctExistingRight"]){
+    "ctCounterPick","ctRankedWhich"]){
     $(id).addEventListener("change",redrawSummary);
   }
+  $("ctExistingRight").addEventListener("change",()=>{
+    syncResaleCounter();redrawSummary();
+  });
   for(const n of ["From","To"]){
     $("ctMixed"+n+"Type").addEventListener("change",paintMixedChoices);
     $("ctMixed"+n+"Search").addEventListener("input",paintMixedChoices);
@@ -632,13 +642,43 @@ function bind(){
     if(!sell)return;
     document.querySelector("[data-v2-new]")?.click();
     setMode("conditional");
-    $("ctGrantorSide").value="mine";
-    $("ctKind").value="right_transfer";
-    refreshKind();
+    chooseResaleIntent("sell",true);
     $("ctExistingRight").value=sell.dataset.ctResell;
-    redrawSummary();
+    syncResaleCounter();redrawSummary();
   });
+  $("ctBuyRightsItems").addEventListener("click",event=>{
+    const buy=event.target.closest("[data-ct-buy]");
+    if(!buy)return;
+    const right=state.rights.find(r=>same(r.id,buy.dataset.ctBuy));
+    if(!right||right.status!=="active"||same(right.grantor_team_id,myId()))return;
+    document.querySelector("[data-v2-new]")?.click();
+    $("v2TargetTeam").value=right.holder_team_id;
+    setMode("conditional");
+    chooseResaleIntent("buy",false);
+    $("ctExistingRight").value=right.id;
+    syncResaleCounter();redrawSummary();
+    $("ctConditionalComposer").scrollIntoView({behavior:"smooth",block:"start"});
+  });
+  $("ctReviewItems").addEventListener("click",reviewAction);
   document.querySelectorAll("[data-v2-subtab]").forEach(b=>b.addEventListener("click",()=>queueMicrotask(paintOffers)));
+}
+async function reviewAction(event){
+  const btn=event.target.closest("[data-ct-review]");
+  if(!btn||!state.isAdmin)return;
+  const id=btn.dataset.ctReview;
+  if(!window.confirm("Confermi di aver controllato la clausola, la contropartita e le pick vincolate di questa trade REALE?"))return;
+  btn.disabled=true;
+  try{
+    const {error}=await supabase.rpc("conditional_mark_offer_reviewed",
+      {p_offer_id:id,p_note:"Controllo iniziale effettuato dalla Trade Room"});
+    if(error)throw error;
+    await reload();
+    failure("ctReviewNotice","");
+    $("ctReviewNotice").textContent="✅ Contratto verificato e archiviato nel registro.";
+  }catch(err){
+    failure("ctReviewNotice",err.message||"Impossibile registrare la verifica.");
+    btn.disabled=false;
+  }
 }
 async function notifyConditionalTrade(eventType,proposalId){
   // Reuses the current app_notifications + push_subscriptions infrastructure.
