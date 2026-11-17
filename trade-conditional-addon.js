@@ -323,8 +323,15 @@ function redrawSummary(){
   if(kind==="trophy")clause+=" · "+(winner==="any_trophy"?"Qualsiasi trofeo":
     $("ctTrophySpecific").selectedOptions?.[0]?.textContent||"")+
     " · "+name($("ctTrophySubject").value);
-  if(kind==="right_transfer")clause+=" · "+$("ctExistingRight").selectedOptions?.[0]?.textContent;
+  if(kind==="right_transfer")clause+=" · "+
+    (state.resaleIntent==="buy"?"acquisto":"vendita")+" · "+$("ctExistingRight").selectedOptions?.[0]?.textContent;
   const details=editingRule();
+  const originalRight=kind==="right_transfer"?
+    state.rights.find(r=>same(r.id,$("ctExistingRight").value)):null;
+  if(originalRight){
+    details.rule=originalRight.rule_spec;
+    details.ids=state.offers.find(o=>same(o.id,originalRight.source_offer_id))?.candidate_pick_ids||[];
+  }
   const extras=extraAssets();
   const extraHtml=extras.length?
     '<p><strong>Altri asset nello stesso contratto:</strong></p><ul class="ct-clause-list">'+
@@ -345,12 +352,17 @@ function redrawSummary(){
       rankedIssue?"Seleziona almeno due pick del Round "+$("ctRankedRound").value+".":
       "✓ "+selectedCandidates().length+" pick candidate dello stesso round selezionate.";
   }
+  const resaleIssue=kind==="right_transfer"&&(!originalRight||originalRight.status!=="active"||
+    !same(originalRight.holder_team_id,owner)||
+    !same(state.picks.find(p=>same(p.id,$("ctCounterPick").value))?.owner_team_id,holder)||
+    state.picks.find(p=>same(p.id,$("ctCounterPick").value))?.draft_name!==originalRight?.draft_name);
   const reason=!state.enabled
     ?"Le trade condizionate sono in collaudo. L'invio reale sarà sbloccato solo dopo i test completi."
     :!marketOpen()?"Il mercato è chiuso."
     :!targetId()?"Scegli prima una franchigia con cui trattare."
     :team(owner)?.conference!==team(holder)?.conference?"Condizioni fra Conferences diverse non ancora supportate."
-    :rankedIssue?"Seleziona almeno due pick candidate dello stesso round.":"";
+    :rankedIssue?"Seleziona almeno due pick candidate dello stesso round."
+    :resaleIssue?"Nessun diritto attivo acquistabile da questa franchigia oppure manca una pick di pagamento dello stesso Draft. Usa «Vendi» o «Proponi acquisto».":"";
   $("ctSendOffer").disabled=!!reason;
   failure("ctFormNotice",reason);
 }
@@ -367,7 +379,14 @@ function conditionPayload(){
     p_existing_right_id:null};
   if(kind==="right_transfer"){
     const id=$("ctExistingRight").value;
-    if(!id)throw new Error("Seleziona il diritto da rivendere.");
+    const right=state.rights.find(r=>same(r.id,id));
+    if(!right||right.status!=="active"||!same(right.holder_team_id,owner))
+      throw new Error("Seleziona un diritto attivo effettivamente posseduto dal venditore.");
+    if(same(right.grantor_team_id,holder))
+      throw new Error("Il diritto non può essere venduto alla squadra obbligata a consegnare la pick.");
+    if(!same(state.picks.find(p=>same(p.id,counter))?.owner_team_id,holder)||
+       state.picks.find(p=>same(p.id,counter))?.draft_name!==right.draft_name)
+      throw new Error("Chi compra deve pagare con una sua pick libera dello stesso Draft.");
     payload.p_existing_right_id=id;
     return payload;
   }
@@ -422,7 +441,8 @@ function offerDescription(o){
     const trophy=TROPHY_COMPETITIONS.find(c=>c.id===r.competition_id);
     return name(r.subject_team_id)+(r.mode==="any_trophy"?" conquista un trofeo":" vince "+(trophy?.name||"un trofeo"));
   }
-  return "Rivendita del diritto condizionato";
+  return "Cessione di un diritto già acquisito: "+name(o.grantor_team_id)+
+    " lo vende a "+name(o.holder_team_id);
 }
 function paintOffers(){
   const panel=$("ctOffersPanel"),items=$("ctOfferItems");if(!panel||!items)return;
@@ -435,7 +455,12 @@ function paintOffers(){
     return '<article class="ct-offer-card"><header><strong>'+esc(owner)+' → '+esc(holder)+'</strong>'+
       '<span class="ct-status">'+esc(({pending:"In attesa",accepted:"Accettata",rejected:"Rifiutata",cancelled:"Annullata"})[o.status]||o.status)+'</span></header>'+
       '<p>'+esc(offerDescription(o))+'</p>'+
-      '<ul class="ct-clause-list">'+ruleDetails(o.rule_kind,o.rule_spec,o.candidate_pick_ids).map(x=>'<li>'+esc(x)+'</li>').join("")+'</ul>'+
+      '<ul class="ct-clause-list">'+(()=>{
+        const orig=o.rule_kind==="right_transfer"?state.rights.find(r=>same(r.id,o.existing_right_id)):null;
+        const origOffer=orig?state.offers.find(x=>same(x.id,orig.source_offer_id)):null;
+        return orig?ruleDetails(orig.rule_kind,orig.rule_spec,origOffer?.candidate_pick_ids||[]):
+          ruleDetails(o.rule_kind,o.rule_spec,o.candidate_pick_ids);
+      })().map(x=>'<li>'+esc(x)+'</li>').join("")+'</ul>'+
       '<p>Contropartita: '+esc(pickText(o.counter_pick_id))+'</p>'+
       (Array.isArray(o.mixed_assets)&&o.mixed_assets.length?'<p><strong>Insieme al diritto:</strong></p><ul class="ct-clause-list">'+
         o.mixed_assets.map(x=>'<li>'+esc((x.side==="from"?name(o.from_team_id):name(o.to_team_id))+
