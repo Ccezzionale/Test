@@ -7,7 +7,7 @@
   <title>Waiver Room</title>
 
   <link rel="stylesheet" href="navbar.css" />
-  <link rel="stylesheet" href="waiver.css?v=admin-ui-20260915" />
+  <link rel="stylesheet" href="waiver.css?v=waiver-v4-20261117" />
 <meta name="lega-app-build" content="v20261028-ef9f76dc3f25">
 <script defer src="./app-updates.js?bootstrap=v20261028-ef9f76dc3f25" data-eroi-update="1"></script>
 </head>
@@ -380,6 +380,21 @@
 
       <div class="waiver-right-column">
 
+        <article class="waiver-card public-waiver-card" data-waiver-mobile-panel="order">
+          <div class="card-title-row">
+            <div>
+              <h2>Ordine Waiver</h2>
+              <p class="card-subtitle">
+                Priorità aggiornate per ogni slot. I risultati compariranno quando lo slot sarà pubblico.
+              </p>
+            </div>
+          </div>
+
+          <div id="publicWaiverOrder" class="public-waiver-order">
+            <p>Caricamento ordine waiver...</p>
+          </div>
+        </article>
+
         <article class="waiver-card ir-monitor-card" data-waiver-mobile-panel="order">
           <div class="card-title-row">
             <div>
@@ -405,21 +420,6 @@
               <li>La compensativa è “solo ingresso” e viene inserita in coda alle chiamate regolari.</li>
             </ul>
           </details>
-        </article>
-        
-<article class="waiver-card public-waiver-card" data-waiver-mobile-panel="order">
-          <div class="card-title-row">
-            <div>
-              <h2>Ordine Waiver</h2>
-              <p class="card-subtitle">
-                Priorità aggiornate per ogni slot. I risultati compariranno quando lo slot sarà pubblico.
-              </p>
-            </div>
-          </div>
-
-          <div id="publicWaiverOrder" class="public-waiver-order">
-            <p>Caricamento ordine waiver...</p>
-          </div>
         </article>
 
       </div>
@@ -813,7 +813,7 @@
   </main>
 <script src="mobile-nav.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
-  <script type="module" src="waiver.js?v=admin-ui-20260915"></script>
+  <script type="module" src="waiver.js?v=waiver-v4-20261117"></script>
   <script type="module" src="home_auth.js"></script>
   <script src="navbar.js"></script>
 </body>
