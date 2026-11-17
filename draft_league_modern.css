@@ -298,3 +298,314 @@
   body.draft-league-modern .draft-board-tools,
   body.draft-league-modern .draft-pool-quick-filters { display:none !important; }
 }
+
+
+/* ================================================================
+   DRAFT LEAGUE V4 | Palette premium bianco / blu notte / oro
+   Solo League, senza modifiche alle regole o al Draft Championship.
+   ================================================================ */
+@media (max-width: 768px) {
+  body.draft-league-modern,
+  body.draft-league-modern.mobile-view-home,
+  body.draft-league-modern.mobile-view-draft,
+  body.draft-league-modern.mobile-view-pool,
+  body.draft-league-modern.mobile-view-rose,
+  body.draft-league-modern.mobile-view-admin {
+    background: #f7f8fa !important;
+    color: #102941 !important;
+  }
+  body.draft-league-modern .page-shell { background:transparent !important; }
+  /* Navbar standard della Lega: fondo bianco, icone e testi navy. */
+  body.draft-league-modern .mobile-bottom-nav {
+    background: #ffffff !important;
+    border: 1px solid #e2e6ec !important;
+    box-shadow: 0 7px 25px rgba(7, 24, 47, .12) !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+  body.draft-league-modern .mobile-bottom-nav a,
+  body.draft-league-modern .mobile-bottom-nav a.mobile-bottom-link {
+    color: #42566c !important;
+    background: transparent !important;
+    border: 1px solid transparent !important;
+    box-shadow: none !important;
+    opacity: 1 !important;
+  }
+  body.draft-league-modern .mobile-bottom-nav a.active,
+  body.draft-league-modern .mobile-bottom-nav a.mobile-bottom-link.active {
+    background: #eef1f6 !important;
+    border: 1px solid #e4e8ee !important;
+    color: #082b50 !important;
+    box-shadow: none !important;
+  }
+  body.draft-league-modern .mobile-bottom-nav a span:last-child { color:inherit !important; }
+  body.draft-league-modern .mobile-bottom-icon { filter:none !important; }
+  /* Palette neutra, non più azzurrino/grigio acqua. */
+  body.draft-league-modern .mobile-draft-tabs {
+    background: #edeff3 !important;
+    border: 1px solid #e3e6ec !important;
+    box-shadow: none !important;
+  }
+  body.draft-league-modern .mobile-draft-tabs a { color: #415368 !important; }
+  body.draft-league-modern .mobile-draft-tabs a.active {
+    background: #061f3c !important;
+    color: #fff !important;
+    box-shadow: 0 3px 9px rgba(2, 19, 39, .17) !important;
+  }
+  body.draft-league-modern #draft-board-panel,
+  body.draft-league-modern #pool-section,
+  body.draft-league-modern #summary-panel {
+    background: #fff !important;
+    border: 1px solid #e0e5ec !important;
+    box-shadow: 0 8px 23px rgba(7,27,50,.055) !important;
+  }
+  body.draft-league-modern #draft-board-panel .panel-header,
+  body.draft-league-modern #pool-section .panel-header {
+    background: #fff !important;
+    border-bottom: 1px solid #eceff3 !important;
+  }
+  body.draft-league-modern #draft-board-panel .panel-title,
+  body.draft-league-modern #pool-section .panel-title,
+  body.draft-league-modern #summary-panel .summary-title {
+    color: #071f3b !important;
+  }
+  body.draft-league-modern #draft-board-panel .panel-subtitle,
+  body.draft-league-modern #pool-section .panel-subtitle,
+  body.draft-league-modern #summary-panel .summary-subtitle {
+    color: #6b7789 !important;
+  }
+  body.draft-league-modern #draft-board-panel .panel-count,
+  body.draft-league-modern #pool-section .panel-count {
+    background: #082d50 !important;
+    color: #fff !important;
+    box-shadow: none !important;
+    border-color: transparent !important;
+  }
+  /* Board: schede bianche, numeri in blu notte, selezione oro. */
+  body.draft-league-modern #draft-board-panel .table-shell,
+  body.draft-league-modern #draft-board-panel .table-scroll {
+    background: #fff !important;
+  }
+  body.draft-league-modern #tabella-pick tbody tr,
+  body.draft-league-modern #tabella-pick tbody tr:nth-child(odd) {
+    background: #fff !important;
+    border: 1px solid #e6eaf0 !important;
+    box-shadow: 0 3px 11px rgba(0, 21, 47, .055) !important;
+  }
+  body.draft-league-modern #tabella-pick tbody tr.next-pick {
+    background: #fff8da !important;
+    border-color: #edcb54 !important;
+    box-shadow: 0 4px 14px rgba(174, 127, 0, .12) !important;
+  }
+  body.draft-league-modern #tabella-pick tbody tr td:nth-child(1) {
+    background: #06284a !important;
+    color: #ffda59 !important;
+    border: 1px solid #123a5c !important;
+    box-shadow: none !important;
+  }
+  body.draft-league-modern #tabella-pick tbody tr td:nth-child(2) { color:#102942 !important; }
+  body.draft-league-modern #tabella-pick tbody tr td:nth-child(3) { color:#6d7787 !important; }
+  body.draft-league-modern .draft-board-tools {
+    background: #fff !important;
+    padding: 11px 12px 6px !important;
+    border-bottom: 0 !important;
+  }
+  body.draft-league-modern .draft-board-tools input,
+  body.draft-league-modern .draft-board-tools select {
+    background: #f7f8fa !important;
+    border-color: #dce2e9 !important;
+    color: #102942 !important;
+    box-shadow: none !important;
+  }
+  /* Per pick: stesso linguaggio e stesse dimensioni degli slot Per round. */
+  body.draft-league-modern .draft-overview-picks {
+    display:block;
+    margin-top: 0;
+  }
+  body.draft-league-modern .draft-overview-grid-list {
+    display:flex;
+    flex-direction:column;
+    gap:0;
+    max-height:min(590px,68vh);
+    overflow-y:auto;
+    scrollbar-width:thin;
+    scrollbar-color: #436b98 transparent;
+    overscroll-behavior:contain;
+  }
+  body.draft-league-modern .draft-overview-pick-round {
+    display:grid;
+    grid-template-columns:35px minmax(0,1fr);
+    gap:5px;
+    min-width:0;
+    padding: 4px 0;
+  }
+  body.draft-league-modern .draft-overview-pick-round[hidden] { display:none !important; }
+  body.draft-league-modern .draft-overview-pick-round .mobile-overview-round-label {
+    min-width:0; width:auto;
+  }
+  body.draft-league-modern .draft-overview-pick-round .mobile-overview-round-label strong {
+    font-size:.62rem; white-space:nowrap; letter-spacing:-.02em;
+  }
+  body.draft-league-modern .draft-overview-pick-round .mobile-overview-slots {
+    display:grid !important;
+    grid-template-columns:repeat(8,minmax(0,1fr)) !important;
+    min-width:0 !important;
+    gap:4px !important;
+  }
+  body.draft-league-modern .draft-overview-pick-slot {
+    position:relative;
+    width:100%; min-width:0;
+    padding:2px !important; margin:0 !important;
+  }
+  body.draft-league-modern .draft-overview-pick-slot.is-dimmed {
+    opacity:.20 !important;
+    pointer-events:none;
+  }
+  body.draft-league-modern .draft-overview-pick-slot[hidden] { display:none !important; }
+  body.draft-league-modern .draft-overview-search {
+    min-height:36px !important;
+    margin:1px 0 9px !important;
+    border:1px solid rgba(255,255,255,.23) !important;
+    border-radius:10px !important;
+    padding:8px 10px !important;
+    background:rgba(255,255,255,.10) !important;
+    color:#fff !important;
+    font-size:.76rem !important;
+  }
+  body.draft-league-modern .draft-overview-switch { margin: 9px 0 !important; }
+  /* Pool: prima la ricerca, filtri rapidi visibili, altri richiudibili. */
+  body.draft-league-modern #pool-section .filters-wrap { background:#fff !important; padding:12px 12px 8px !important; }
+  body.draft-league-modern #pool-section .filters-grid {
+    display:flex !important; flex-direction:column !important;
+    gap:7px !important; width:100% !important;
+  }
+  body.draft-league-modern #pool-section .filter-field:has(#searchGiocatore) {
+    display:flex; width:100%; grid-column:auto; grid-row:auto;
+  }
+  body.draft-league-modern #pool-section #searchGiocatore {
+    min-height:46px !important;
+    font-size:.91rem !important;
+    border-radius:12px !important;
+    background:#fff !important;
+    border:1px solid #cbd3df !important;
+    color:#092642 !important;
+  }
+  body.draft-league-modern #pool-section .draft-pool-quick-filters {
+    margin:10px 0 4px !important;
+    gap:5px !important;
+  }
+  body.draft-league-modern #pool-section .draft-pool-quick-filters button {
+    flex:1 0 0 !important;
+    min-width:0 !important;
+    min-height:32px !important;
+    border-radius:10px !important;
+    padding:6px 5px !important;
+    color:#41566f !important;
+    background:#f3f5f8 !important;
+    border:1px solid #e4e8ed !important;
+    font-size:.73rem !important;
+  }
+  body.draft-league-modern #pool-section .draft-pool-quick-filters button[aria-pressed="true"] {
+    background:#072949 !important;
+    border-color:#072949 !important;
+    color:#fff !important;
+  }
+  body.draft-league-modern .draft-pool-advanced {
+    min-width:0;
+    border:1px solid #e3e8ef;
+    border-radius:11px;
+    overflow:hidden;
+    background:#fafbfd;
+  }
+  body.draft-league-modern .draft-pool-advanced > summary {
+    display:flex; align-items:center; justify-content:space-between;
+    gap:10px; min-height:35px; padding:8px 10px;
+    color:#294762; font-size:.75rem; font-weight:850;
+    cursor:pointer; list-style:none;
+  }
+  body.draft-league-modern .draft-pool-advanced > summary::-webkit-details-marker {display:none;}
+  body.draft-league-modern .draft-pool-advanced > summary::after {
+    content:"⌄"; color:#16395a; font-size:1rem; line-height:1;
+  }
+  body.draft-league-modern .draft-pool-advanced[open] > summary::after {transform:rotate(180deg);}
+  body.draft-league-modern .draft-pool-advanced > summary small {
+    color:#85909f; font-size:.66rem; margin-left:auto; font-weight:700;
+  }
+  body.draft-league-modern .draft-pool-advanced-grid {
+    display:grid !important;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    align-items:end;
+    gap:9px; padding:9px 10px 11px;
+    border-top:1px solid #e6eaf0;
+  }
+  body.draft-league-modern .draft-pool-advanced-grid .filter-field {
+    width:100%; min-width:0; grid-column:auto; grid-row:auto;
+  }
+  body.draft-league-modern #pool-section input[type=text],
+  body.draft-league-modern #pool-section select {
+    background: #f8f9fb !important;
+    border-color: #dce2e9 !important;
+    color:#133450 !important;
+  }
+  body.draft-league-modern #pool-section .filters-toolbar {
+    margin-top:5px !important; margin-bottom:0 !important;
+  }
+  body.draft-league-modern #pool-section .results-pill {
+    min-height:26px !important;
+    color:#4d6076 !important;
+    background:#f2f4f7 !important;
+    border:1px solid #e6eaf0 !important;
+    font-size:.68rem !important;
+  }
+  /* Pool: giocatori più densi, spazi ottimizzati. Il clic rimane quello originale. */
+  body.draft-league-modern #pool-section #lista-giocatori-scroll {
+    max-height:min(740px,74vh) !important;
+    padding:7px 10px 14px !important;
+    background:#f7f8fa !important;
+  }
+  body.draft-league-modern #pool-section #lista-giocatori-table tbody { gap:7px !important; }
+  body.draft-league-modern #pool-section #lista-giocatori-table tbody tr {
+    min-height:68px !important;
+    height:auto !important;
+    padding:9px 11px !important;
+    border-radius:12px !important;
+    background:#fff !important;
+    border:1px solid #e3e7ed !important;
+    box-shadow:0 2px 7px rgba(1,21,45,.035) !important;
+    gap:3px 7px !important;
+  }
+  body.draft-league-modern #pool-section #lista-giocatori-table td:nth-child(1) {
+    font-size:.91rem !important;
+    color:#092744 !important;
+    line-height:1.15 !important;
+  }
+  body.draft-league-modern #pool-section #lista-giocatori-table td:nth-child(2),
+  body.draft-league-modern #pool-section #lista-giocatori-table td:nth-child(3) {
+    font-size:.70rem !important;
+    color:#6c7788 !important;
+  }
+  body.draft-league-modern #pool-section #lista-giocatori-table td:nth-child(4) {
+    background:#eef0f4 !important;
+    color:#203e5e !important;
+    padding:4px 8px !important;
+    font-size:.73rem !important;
+  }
+  body.draft-league-modern #pool-section #lista-giocatori-table tr::after {
+    min-width:55px !important;
+    padding:6px 8px !important;
+    border-radius:9px !important;
+    background:#083460 !important;
+    font-size:.66rem !important;
+  }
+  body.draft-league-modern #summary-panel {
+    background:#fff !important;
+  }
+  body.draft-league-modern #riepilogo-squadre .team-accordion {
+    background:#fff !important;
+    border:1px solid #e3e7ed !important;
+    box-shadow:0 2px 8px rgba(5,27,52,.035) !important;
+  }
+  body.draft-league-modern #riepilogo-squadre .team-accordion-header {
+    background:#fff !important;
+  }
+}
