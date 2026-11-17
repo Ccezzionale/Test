@@ -53,6 +53,60 @@ function eligibleTrophies(){
 function selectedCandidates(){
   return [...document.querySelectorAll("#ctRankedCandidates input[type=checkbox]:checked")].map(e=>e.value);
 }
+
+function extrasFor(side,type){
+  const owner=side==="from"?myId():targetId();
+  if(type==="player")return state.players.filter(x=>same(x.owner_team_id,owner))
+    .sort((a,b)=>a.name.localeCompare(b.name,"it"))
+    .map(x=>({id:x.id,key:"player:"+x.id,label:x.name+(x.is_u21_slot?" · U21 slot":"")}));
+  if(type==="future_pick")return picksOf(owner).map(x=>({
+    id:x.id,key:"future_pick:"+x.id,label:pickTitle(x)
+  }));
+  return state.waiverCalls.filter(x=>same(x.owner_team_id,owner)).map(x=>({
+    id:x.asset_id,key:"waiver_call:"+x.asset_id,label:"Sett. "+x.week+" · "+x.origin_team_name
+  }));
+}
+function paintMixedChoices(){
+  const allowed=["conference_market","round_robin_market"].includes(state.settings?.active_phase);
+  $("ctMixedFields").hidden=!allowed;
+  if(!allowed)return;
+  for(const side of ["from","to"]){
+    const n=side==="from"?"From":"To",selected=side==="from"?state.extraFrom:state.extraTo;
+    $("ctMixed"+n+"Label").textContent=name(side==="from"?myId():targetId())+" aggiunge";
+    const term=$("ctMixed"+n+"Search").value.trim().toLocaleLowerCase("it");
+    const rows=extrasFor(side,$("ctMixed"+n+"Type").value)
+      .filter(x=>x.label.toLocaleLowerCase("it").includes(term));
+    const box=$("ctMixed"+n+"Items");
+    box.innerHTML=rows.length?rows.map(x=>
+      '<label><input type="checkbox" data-mix="'+esc(x.key)+'"'+
+      (selected.has(x.key)?" checked":"")+'><span>'+esc(x.label)+'</span></label>'
+    ).join(""):'<p class="ct-field-help">Nessun asset disponibile.</p>';
+    box.querySelectorAll('input[data-mix]').forEach(input=>input.addEventListener("change",()=>{
+      if(input.checked)selected.add(input.dataset.mix);else selected.delete(input.dataset.mix);
+      $("ctMixed"+n+"Count").textContent=selected.size+" asset selezionati";
+      redrawSummary();
+    }));
+    $("ctMixed"+n+"Count").textContent=selected.size+" asset selezionati";
+  }
+}
+function extraAssets(){
+  const result=[];
+  for(const [side,selected] of [["from",state.extraFrom],["to",state.extraTo]]){
+    for(const key of selected){
+      const i=key.indexOf(":"),type=key.slice(0,i),id=key.slice(i+1);
+      if(!["player","future_pick","waiver_call"].includes(type)||!id)continue;
+      result.push({side,asset_type:type,asset_id:id});
+    }
+  }
+  return result;
+}
+function extraLabel(x){
+  if(x.asset_type==="player")return state.players.find(p=>same(p.id,x.asset_id))?.name||"Giocatore";
+  if(x.asset_type==="future_pick")return pickTitle(state.picks.find(p=>same(p.id,x.asset_id)));
+  const call=state.waiverCalls.find(p=>p.asset_id===x.asset_id);
+  return call?"Chiamata sett. "+call.week+" · "+call.origin_team_name:"Chiamata "+x.asset_id;
+}
+
 function refreshScope(){
   const subject=team($("ctStandingSubject").value);
   const scope=$("ctStandingScope").value;
