@@ -100,6 +100,33 @@ function extraAssets(){
   }
   return result;
 }
+
+function validateMixedExtras(extras,payload){
+  if(!extras.length)return;
+  if(!["conference_market","round_robin_market"].includes(state.settings?.active_phase))
+    throw new Error("Gli asset misti sono disponibili solo nel mercato successivo al Draft.");
+  if(extras.length>24)throw new Error("Puoi aggiungere al massimo 24 asset allo stesso accordo.");
+  const counts={from:{player:0,future_pick:0,u21:0},to:{player:0,future_pick:0,u21:0}};
+  const used=new Set([...payload.p_candidate_pick_ids.map(id=>"future_pick:"+id),
+    "future_pick:"+payload.p_counter_pick_id]);
+  for(const asset of extras){
+    const mark=asset.asset_type+":"+asset.asset_id;
+    if(used.has(mark))throw new Error("Lo stesso asset è stato selezionato sia nella condizione sia negli extra.");
+    used.add(mark);
+    if(asset.asset_type==="player"){
+      counts[asset.side].player++;
+      if(state.players.find(p=>same(p.id,asset.asset_id))?.is_u21_slot)counts[asset.side].u21++;
+    }
+    if(asset.asset_type==="future_pick")counts[asset.side].future_pick++;
+  }
+  if(counts.from.player!==counts.to.player)
+    throw new Error("Nella versione mista il numero di giocatori deve essere uguale sui due lati: gli svincoli differiti non sono ancora integrati.");
+  if(counts.from.u21!==counts.to.u21)
+    throw new Error("Gli U21 slot devono essere bilanciati 1:1.");
+  if(counts.from.future_pick!==counts.to.future_pick)
+    throw new Error("Le pick future aggiuntive devono essere scambiate 1:1.");
+}
+
 function extraLabel(x){
   if(x.asset_type==="player")return state.players.find(p=>same(p.id,x.asset_id))?.name||"Giocatore";
   if(x.asset_type==="future_pick")return pickTitle(state.picks.find(p=>same(p.id,x.asset_id)));
@@ -236,11 +263,18 @@ function redrawSummary(){
     " · "+name($("ctTrophySubject").value);
   if(kind==="right_transfer")clause+=" · "+$("ctExistingRight").selectedOptions?.[0]?.textContent;
   const details=editingRule();
+  const extras=extraAssets();
+  const extraHtml=extras.length?
+    '<p><strong>Altri asset nello stesso contratto:</strong></p><ul class="ct-clause-list">'+
+    extras.map(x=>'<li>'+esc((x.side==="from"?name(myId()):name(targetId()))+
+      " offre "+extraLabel(x))+'</li>').join("")+'</ul>':
+    '<p class="ct-field-help">Nessun altro asset aggiunto. Solo diritto condizionato e pick 1:1.</p>';
   $("ctTradeSummary").innerHTML="<strong>"+esc(name(owner))+" → "+esc(name(holder))+"</strong><br>"+
     esc(clause)+"<ul class=\"ct-clause-list\">"+
     ruleDetails(kind,details.rule,details.ids).map(x=>"<li>"+esc(x)+"</li>").join("")+"</ul>"+
     "<strong>Contropartita 1:1:</strong> "+esc(pickText($("ctCounterPick").value))+
-    "<br><small>Una clausola vale una sola pick. Le candidate restano vincolate fino al verdetto ufficiale.</small>";
+    extraHtml+
+    "<br><small>Un solo accordo: se gli asset aggiuntivi falliscono, anche il diritto condizionato viene annullato.</small>";
   const reason=!state.enabled
     ?"Le trade condizionate sono in collaudo. L'invio reale sarà sbloccato solo dopo i test completi."
     :!marketOpen()?"Il mercato è chiuso."
@@ -332,6 +366,9 @@ function paintOffers(){
       '<p>'+esc(offerDescription(o))+'</p>'+
       '<ul class="ct-clause-list">'+ruleDetails(o.rule_kind,o.rule_spec,o.candidate_pick_ids).map(x=>'<li>'+esc(x)+'</li>').join("")+'</ul>'+
       '<p>Contropartita: '+esc(pickText(o.counter_pick_id))+'</p>'+
+      (Array.isArray(o.mixed_assets)&&o.mixed_assets.length?'<p><strong>Insieme al diritto:</strong></p><ul class="ct-clause-list">'+
+        o.mixed_assets.map(x=>'<li>'+esc((x.side==="from"?name(o.from_team_id):name(o.to_team_id))+
+          " offre "+extraLabel(x))+'</li>').join("")+'</ul>':'')+
       '<p>Proposta: '+esc(formatDate(o.created_at))+'</p>'+
       (awaiting?'<div class="ct-action-row">'+(incoming?
         '<button class="ct-action-primary" data-ct-accept="'+esc(o.id)+'"'+(!state.enabled?" disabled":"")+'>Accetta</button>'+
@@ -441,9 +478,13 @@ async function sendOffer(){
     if(!state.enabled)throw new Error("Le trade condizionate sono ancora in collaudo.");
     if(!marketOpen())throw new Error("Il mercato è chiuso.");
     const payload=conditionPayload();
-    if(!window.confirm("Inviare una proposta condizionata REALE a "+name(targetId())+"? La contropartita è una pick futura e il diritto sarà vincolante dopo l'accettazione."))return;
+    const extras=extraAssets();
+    validateMixedExtras(extras,payload);
+    if(!window.confirm("Inviare "+(extras.length?"una trade MISTA con "+extras.length+" asset aggiuntivi":"una proposta condizionata")+" a "+name(targetId())+"? Tutte le parti saranno vincolanti dopo l'accettazione."))return;
     $("ctSendOffer").disabled=true;failure("ctFormNotice","Invio della proposta...");
-    const {data:offerId,error}=await supabase.rpc("conditional_create_offer",payload);
+    const method=extras.length?"conditional_create_mixed_offer":"conditional_create_offer";
+    const params=extras.length?{...payload,p_extra_assets:extras}:payload;
+    const {data:offerId,error}=await supabase.rpc(method,params);
     if(error)throw error;
     const noticeSent=await notifyConditionalTrade("proposal",offerId);
     failure("ctFormNotice","");
