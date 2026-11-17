@@ -8,7 +8,7 @@ import {TROPHY_COMPETITIONS} from "./conditional-trades-core.js";
  */
 const $=id=>document.getElementById(id);
 const esc=v=>String(v??"").replace(/[&<>"']/g,ch=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[ch]));
-const state={me:null,teams:[],picks:[],players:[],waiverCalls:[],extraFrom:new Set(),extraTo:new Set(),rights:[],offers:[],locks:new Set(),settings:null,enabled:false,mode:"classic"};
+const state={me:null,teams:[],picks:[],players:[],waiverCalls:[],extraFrom:new Set(),extraTo:new Set(),rights:[],offers:[],locks:new Set(),settings:null,enabled:false,mode:"classic",resaleIntent:"sell",isAdmin:false,reviews:[]};
 const team=id=>state.teams.find(t=>String(t.id)===String(id));
 const name=id=>team(id)?.name||"Franchigia";
 const myId=()=>state.me?.team_id;
@@ -44,6 +44,52 @@ function marketOpen(){
   return (!s.market_open_at||n>=Date.parse(s.market_open_at))&&
     (!s.market_close_at||n<=Date.parse(s.market_close_at));
 }
+function resaleRights(seller,buyer){
+ if(!seller||!buyer)return [];
+ const a=team(seller),b=team(buyer);
+ if(!a||!b||a.conference!==b.conference)return [];
+ return state.rights.filter(r=>r.status==="active"&&same(r.holder_team_id,seller)&&
+  !same(r.grantor_team_id,buyer)&&picksOf(buyer).some(p=>p.draft_name===r.draft_name));
+}
+function chooseResaleIntent(intent,autoTarget=true){
+ state.resaleIntent=intent==="buy"?"buy":"sell";
+ if($("ctKind").value!=="right_transfer")$("ctKind").value="right_transfer";
+ if(autoTarget){
+  const choices=state.teams.filter(t=>!same(t.id,myId())&&
+    (state.resaleIntent==="sell"?
+      resaleRights(myId(),t.id).length:resaleRights(t.id,myId()).length));
+  if(choices.length&&!choices.some(t=>same(t.id,targetId())))$("v2TargetTeam").value=choices[0].id;
+ }
+ $("ctGrantorSide").value=state.resaleIntent==="sell"?"mine":"theirs";
+ refreshKind();
+}
+function paintResaleMode(){
+ const transfer=$("ctKind").value==="right_transfer";
+ $("ctGrantorSide").disabled=transfer;
+ if(!transfer)return;
+ const sell=state.resaleIntent==="sell";
+ $("ctGrantorSide").value=sell?"mine":"theirs";
+ for(const [id,isActive] of [["ctResaleSell",sell],["ctResaleBuy",!sell]]){
+  $(id).classList.toggle("is-active",isActive);
+  $(id).setAttribute("aria-pressed",String(isActive));
+ }
+ $("ctResalePickLabel").textContent=sell?"Quale tuo diritto vuoi vendere?":"Quale diritto dell'avversario vuoi acquistare?";
+ $("ctResaleContext").textContent=sell?
+  "Sei il venditore: "+name(targetId())+" offre una pick per acquistare il tuo diritto.":
+  "Sei il compratore: proponi di acquistare da "+name(targetId())+
+  " pagando una tua pick. Sarà "+name(targetId())+" ad accettare o rifiutare.";
+}
+function syncResaleCounter(){
+ if($("ctKind").value!=="right_transfer")return;
+ const right=state.rights.find(r=>same(r.id,$("ctExistingRight").value));
+ const buyer=holderId();
+ const owned=right?picksOf(buyer).filter(p=>p.draft_name===right.draft_name):[];
+ fill("ctCounterPick",options(owned,true),owned.some(p=>same(p.id,$("ctCounterPick").value))?
+   $("ctCounterPick").value:owned[0]?.id||"");
+ $("ctCounterDescription").textContent=name(buyer)+" paga una sua pick a "+name(grantorId())+
+  " per acquistare il diritto. Il titolare cambierà solo dopo l'accettazione.";
+}
+
 function eligibleTrophies(){
   const t=team($("ctTrophySubject").value);
   return TROPHY_COMPETITIONS.filter(c=>c.id!=="conference_league"&&c.id!=="conference_championship"||
@@ -189,9 +235,12 @@ function refreshCandidates(){
   fill("ctCounterPick",options(counter,true));
   $("ctCounterDescription").textContent=name(holderId())+
     " offre una pick futura in cambio del diritto di "+name(grantorId())+".";
-  const resell=state.rights.filter(r=>r.status==="active"&&same(r.holder_team_id,grantorId()));
-  fill("ctExistingRight",'<option value="">Seleziona il diritto...</option>'+
-    resell.map(r=>'<option value="'+esc(r.id)+'">'+esc(kindLabel(r.rule_kind)+" · "+name(r.grantor_team_id)+" · "+r.season)+'</option>').join(""));
+  const resell=resaleRights(grantorId(),holderId());
+  fill("ctExistingRight",'<option value="">Seleziona un diritto attivo...</option>'+
+    resell.map(r=>'<option value="'+esc(r.id)+'">'+esc(kindLabel(r.rule_kind)+
+     " · obbligato "+name(r.grantor_team_id)+" · titolare "+name(r.holder_team_id))+'</option>').join(""),
+    resell.length===1?resell[0].id:null);
+  if($("ctKind").value==="right_transfer")syncResaleCounter();
   paintMixedChoices();
   redrawSummary();
 }
@@ -211,7 +260,11 @@ function refreshKind(){
     const id=k==="transfer"?"ctTransferFields":"ct"+k.charAt(0).toUpperCase()+k.slice(1)+"Fields";
     $(id).hidden=(k!==(kind==="right_transfer"?"transfer":kind));
   }
-  $("ctGrantorSide").disabled=kind==="right_transfer"&&false;
+  if(kind==="right_transfer"){
+    const own=state.rights.some(r=>r.status==="active"&&same(r.holder_team_id,myId()));
+    if(!own&&state.resaleIntent==="sell")state.resaleIntent="buy";
+  }
+  paintResaleMode();
   refreshCandidates();
 }
 function pickText(id){
