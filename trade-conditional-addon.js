@@ -389,6 +389,33 @@ function paintRights(){
     (same(r.holder_team_id,myId())?'<div class="ct-action-row"><button type="button" data-ct-resell="'+esc(r.id)+'">⇄ Rivendi il diritto</button></div>':'')+'</article>'
   ).join("");
 }
+
+function paintConditionalHistory(){
+  const panel=$("ctHistoryPanel"),items=$("ctHistoryItems");
+  if(!panel||!items)return;
+  const accepted=state.offers.filter(o=>o.status==="accepted");
+  panel.hidden=accepted.length===0;
+  items.innerHTML=accepted.map(o=>{
+    const right=state.rights.find(r=>same(r.source_offer_id,o.id));
+    const status=right?.status==="resolved"?"Condizione risolta":
+      o.rule_kind==="right_transfer"?"Diritto rivenduto":"Diritto attivo";
+    const extras=Array.isArray(o.mixed_assets)?o.mixed_assets:[];
+    return '<article class="ct-offer-card"><header><strong>'+
+      esc(name(o.from_team_id)+" ⇄ "+name(o.to_team_id))+'</strong>'+
+      '<span class="ct-status">'+esc(status)+'</span></header>'+
+      '<p>'+esc(offerDescription(o))+'</p>'+
+      '<ul class="ct-clause-list">'+ruleDetails(o.rule_kind,o.rule_spec,o.candidate_pick_ids)
+        .map(x=>'<li>'+esc(x)+'</li>').join("")+'</ul>'+
+      '<p>Contropartita: '+esc(pickText(o.counter_pick_id))+'</p>'+
+      (extras.length?'<p><strong>Altri asset scambiati:</strong></p><ul class="ct-clause-list">'+
+        extras.map(x=>'<li>'+esc(name(x.side==="from"?o.from_team_id:o.to_team_id)+" offre "+extraLabel(x))+
+          '</li>').join("")+'</ul>':'')+
+      (right?.status==="resolved"?'<p>Pick assegnata: <strong>'+
+        esc(pickText(right.resolved_pick_id))+'</strong> a '+esc(name(right.holder_team_id))+'</p>':'')+
+      '<p>Confermata il '+esc(formatDate(o.accepted_at))+'</p></article>';
+  }).join("");
+}
+
 async function reload(){
   const [p,o,r,c,s,pl]=await Promise.all([
     supabase.from("future_draft_picks").select("id,season,draft_name,round,original_team_id,owner_team_id,pick_kind,status").eq("season",state.settings?.future_pick_season||2027).eq("status","active"),
@@ -402,7 +429,7 @@ async function reload(){
   state.picks=p.data||[];state.players=pl.data||[];state.offers=o.data||[];state.rights=r.data||[];
   state.locks=new Set((c.data||[]).map(x=>String(x.pick_id)));
   state.enabled=s.data?.enabled===true;
-  refreshCandidates();paintOffers();paintRights();
+  refreshCandidates();paintOffers();paintRights();paintConditionalHistory();
 }
 function bind(){
   $("ctModeClassic").addEventListener("click",()=>setMode("classic"));
