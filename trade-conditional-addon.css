@@ -42,3 +42,8 @@
 .ct-action-row button.ct-action-red{background:#4e2d46;border-color:#b57d99}
 .ct-empty{color:#c9e0f4;font-size:12px;padding:10px}
 @media(max-width:620px){.ct-builder{padding:13px}.ct-grid{grid-template-columns:1fr}.ct-checkbox-list{grid-template-columns:1fr}.ct-mode-switch button{font-size:12px}}
+
+/* Accesso alla clausola direttamente dai selettori TU OFFRI / TU CHIEDI. */
+.ct-quick-pick{display:block;width:100%;margin:9px 0 12px;border:1px solid #f8cf5d;border-radius:11px;padding:12px 10px;background:linear-gradient(120deg,#173d75,#0a2757);color:#ffdd6d;font-size:12px;font-weight:950;cursor:pointer;min-height:44px;text-align:center}
+.ct-quick-pick:hover,.ct-quick-pick:focus-visible{border-color:#ffe49d;background:#164b93}
+.ct-mixed-note{border-left:3px solid #ffdc65;padding:7px 9px;background:#102c53;border-radius:6px;color:#fff0bd!important;font-size:11px!important;line-height:1.5!important;margin-top:10px!important}
