@@ -295,15 +295,37 @@ function resaleFlow(offer,right){
    (right?'<p><b>Obbligato originario:</b> '+esc(teamName(right.grantor_team_id))+
      '. Le sue pick candidate restano vincolate fino al risultato finale.</p>':'')+
    '<p><b>Prezzo immediato:</b> '+esc(teamName(buyer))+' consegna '+esc(pickName(price))+
-   ' a '+esc(teamName(seller))+' quando accetta.</p>'+
+   ' a '+esc(teamName(seller))+' al momento dell’accettazione.</p>'+
    '<p><b>Nuovo titolare:</b> '+esc(teamName(buyer))+
    ' riceverà la pick prevista dalla clausola, una volta conclusa la competizione.</p>'+
    (error?'<p class="qa-resale-warning">'+esc(error)+'</p>':'')+
-   '<ol><li>Invia la proposta di rivendita simulata.</li>'+
-   '<li>Passa alla vista <b>'+esc(teamName(buyer))+'</b> e apri Proposte.</li>'+
-   '<li>Premi <b>Accetta</b>. Solo allora il diritto cambia proprietario.</li>'+
+   '<ol><li>'+esc(resaleIntent==="buy"?"Proponi l’acquisto":"Proponi la vendita")+
+   ' del diritto nel test.</li>'+
+   '<li>Passa alla vista <b>'+esc(teamName(offer.to_team_id))+
+   '</b> e apri Proposte.</li>'+
+   '<li>Il destinatario, '+esc(teamName(offer.to_team_id))+
+   ', deve premere <b>Accetta</b>. Solo allora il diritto cambia titolare e la pick di prezzo viene trasferita.</li>'+
    '<li>Torna a Diritti & Draft per vedere il nuovo titolare e lo storico.</li></ol>'
  };
+}
+function resaleAvailabilityMessage(){
+ const seller=readOwner(),buyer=readHolder();
+ const sellerRights=model.rights.filter(r=>r.status==="active"&&same(r.holder_team_id,seller));
+ if(sellerRights.some(r=>same(r.grantor_team_id,buyer)))
+   return "Il compratore non può essere la franchigia che deve già consegnare la pick. Scegli un'altra controparte.";
+ const possible=resalePossibilities(buyer);
+ if(resaleIntent==="buy"&&possible.length)
+   return teamName(seller)+" non possiede diritti attivi acquistabili da te. "+
+     "Puoi invece proporre l'acquisto a "+possible.map(t=>t.name).join(" oppure ")+".";
+ if(resaleIntent==="sell"&&model.rights.some(r=>r.status==="active"&&
+   !same(r.holder_team_id,viewer)))
+   return "Questa franchigia non possiede diritti da vendere. Scegli «Proponi acquisto» per chiedere un diritto al suo titolare.";
+ const resolved=model.rights.filter(r=>r.status==="resolved");
+ if(resolved.length&&!model.rights.some(r=>r.status==="active"))
+   return "I diritti della simulazione sono già finalizzati: la pick è stata assegnata. Crea un nuovo esempio prima della finalizzazione.";
+ return resaleIntent==="buy"?
+   "La franchigia scelta non possiede diritti attivi disponibili. Puoi avviare un esempio di rivendita, oppure cambiare destinatario.":
+   "Non possiedi un diritto attivo rivendibile. Prova «Proponi acquisto» oppure avvia l'esempio guidato.";
 }
 function updatePreview(){
  if(!model)return;
@@ -316,29 +338,22 @@ function updatePreview(){
    branchLabels(d.rule_kind,d.rule_spec,d.candidate_pick_ids);
  if(resale){
    el("qaResaleGuide").innerHTML=underlying?resaleInfo.summary:
-     '<p class="qa-resale-warning">Nessun diritto attivo rivendibile da '+esc(teamName(viewer))+
-     '. Una pick già assegnata non può essere rivenduta. Usa la prova guidata qui sotto.</p>';
+     '<p class="qa-resale-warning">'+esc(resaleAvailabilityMessage())+'</p>';
  }
- el("qaSend").textContent=resale?"⇄ Invia proposta di rivendita simulata":"✉️ Invia proposta simulata";
+ el("qaSend").textContent=resale?
+  (resaleIntent==="buy"?"📥 Invia proposta di acquisto simulata":"📤 Invia proposta di vendita simulata"):
+  "✉️ Invia proposta simulata";
  const ranked=d.rule_kind==="ranked",chosen=d.candidate_pick_ids.length;
  const eligible=ranked?eligibleRankedRounds(readOwner()):[];
  const rankedIssue=ranked&&(eligible.length===0||chosen<2);
- const activeOwn=model.rights.filter(r=>r.status==="active"&&same(r.holder_team_id,viewer));
+ const validRights=resale?resaleTradableRights(readOwner(),readHolder()):[];
  const resaleIssue=resale&&(!underlying||underlying.status!=="active"||
-   !same(underlying.holder_team_id,viewer)||!!resaleInfo.error);
+   !same(underlying.holder_team_id,readOwner())||!!resaleInfo.error||
+   !same(qaPick(model,d.counter_pick_id)?.owner_team_id,readHolder()));
  el("qaSend").disabled=Boolean(rankedIssue||resaleIssue);
- el("qaResaleDemo").hidden=!resale||activeOwn.length>0;
- if(resale&&!activeOwn.length){
-   const solved=model.rights.find(r=>r.status==="resolved"&&
-     (same(r.grantor_team_id,viewer)||same(r.holder_team_id,viewer)||
-      (r.history||[]).some(h=>same(h.from,viewer))));
-   const other=model.rights.find(r=>r.status==="active"&&!same(r.holder_team_id,viewer));
-   el("qaResaleNoRightsText").textContent=solved?
-     "Il diritto che stai guardando è già FINALIZZATO: la pick è stata assegnata e non è più rivendibile. Usa la prova guidata per ricominciare prima della finalizzazione.":
-     other?"Il diritto attivo appartiene a "+teamName(other.holder_team_id)+
-     ". Devi usare la vista del titolare per rivenderlo, oppure avviare la prova guidata.":
-     "Non hai diritti attivi. La prova guidata crea la trade Bartowski–Bayern accettata ma non ancora finalizzata.";
- }
+ el("qaResaleDemo").hidden=!resale||validRights.length>0;
+ if(resale&&!validRights.length)
+   el("qaResaleNoRightsText").textContent=resaleAvailabilityMessage();
  el("qaRankedHint").textContent=!ranked?"":eligible.length===0?
   teamName(readOwner())+" non possiede due pick disponibili nello stesso round. "+
   "Prova a cedere un diritto da Bayern o Desperados, oppure scegli una clausola diversa.":
@@ -357,7 +372,8 @@ function updatePreview(){
   "<strong>"+(resale?"Prezzo che paga il compratore":"Contropartita")+":</strong> "+
   esc(pickName(qaPick(model,d.counter_pick_id)))+
   (extra.length?"<ul>"+extra.map(x=>"<li>"+esc(x)+"</li>").join("")+"</ul>":"")+
-  (resale?"<p class='qa-hint'>Attenzione: il diritto passerà al compratore solo dopo la sua accettazione.</p>":"")+
+  (resale?"<p class='qa-hint'>Il diritto cambierà titolare solo dopo che "+
+  esc(teamName(d.to_team_id))+" avrà accettato la proposta.</p>":"")+
   "<p class='qa-hint'>Non verrà inviata nessuna proposta reale.</p>";
 }
 function offerHtml(offer,type){
