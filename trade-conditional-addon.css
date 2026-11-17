@@ -70,3 +70,12 @@
 .ct-mixed-count{font-size:10px;text-align:right;color:#ffdf7a;font-weight:850;margin-top:8px}
 .ct-mixed-rules{border:1px solid #607b9d;border-radius:9px;padding:9px;margin-bottom:0;background:#0d345c}
 @media(max-width:650px){.ct-mixed-grid{grid-template-columns:1fr}.ct-mixed-fields{padding:10px}.ct-mixed-list{max-height:210px}}
+
+/* Entry point to private, strictly non-mutating QA simulator. */
+.ct-qa-link{display:flex;align-items:center;gap:11px;text-decoration:none;color:#e5f5ff;border:1px solid #80bde1;background:linear-gradient(110deg,#103e72,#0d3059);padding:12px 13px;margin:9px 0 12px;border-radius:12px}
+.ct-qa-link[hidden]{display:none!important}
+.ct-qa-link>span:first-child{font-size:24px;flex:none}
+.ct-qa-link>span:nth-child(2){display:flex;flex-direction:column;gap:3px;flex:1}
+.ct-qa-link strong{font-size:13px;font-weight:930;color:#ffe18b}
+.ct-qa-link small{font-size:10px;line-height:1.45;color:#c4dbf2}
+.ct-qa-link>span:last-child{font-size:22px;color:#ffdf80}
