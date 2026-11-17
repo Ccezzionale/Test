@@ -82,3 +82,19 @@
 
 #ctRankedHint{margin:10px 0;color:#d9f6df;font-size:11px;line-height:1.45;font-weight:800}
 #ctRankedRound:disabled{opacity:.65}
+
+/* Initial supervised rollout: offer-buy/sell clarity and admin review queue. */
+.ct-resale-modes{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:11px 0}
+.ct-resale-modes button{background:#153c66;color:#dfefff;border:1px solid #5984a8;border-radius:10px;padding:12px 10px;min-height:44px;font-size:12px;font-weight:850}
+.ct-resale-modes button.is-active{background:linear-gradient(120deg,#ffe99a,#f3c34d);color:#133454;border-color:#ffebac}
+#ctResaleContext{padding:10px 12px;background:#12365b;border-left:3px solid #7abbea;border-radius:8px;color:#e0f0ff;line-height:1.5}
+.ct-buy-rights{margin-top:15px;border-top:1px solid #41658d;padding-top:13px}
+.ct-buy-rights h4{color:#ffe395;font-size:14px;margin:0 0 6px;font-weight:900}
+.ct-buy-rights>p{font-size:12px;color:#c5dceb;margin:0 0 12px}
+.ct-buy-rights .ct-right-card{margin:8px 0}
+.ct-review-card{border-left:3px solid #e9c16b;margin:10px 0}
+.ct-review-auto{font-size:11px!important;color:#9ce6c1!important;font-weight:800;line-height:1.6}
+#ctReviewPanel{border-color:#6683a1}
+#ctReviewPanel>p{font-size:12px;line-height:1.5}
+#ctReviewPanel .ct-action-row button{background:#d6ecad;color:#173e33;border-color:#a8cc8d}
+@media(max-width:540px){.ct-resale-modes{grid-template-columns:1fr}.ct-resale-modes button{text-align:left}}
