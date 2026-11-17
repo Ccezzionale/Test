@@ -27,3 +27,12 @@ button,select,input{font:inherit}button{cursor:pointer}button:disabled{opacity:.
 .qa-footer-actions{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;margin:24px 0 15px}.qa-reset{padding:12px 14px;border-radius:10px;border:1px solid #88abd0;background:#112e51;color:#eaf6ff;font-weight:820}.qa-footer-actions a{font-size:12px;font-weight:700}.qa-shell footer{font-size:10px;color:#91b2cf;border-top:1px solid #2c527a;padding-top:14px}
 @media(max-width:760px){.qa-shell{padding:12px 10px 35px}.qa-form-grid{grid-template-columns:1fr}.qa-inventory{grid-template-columns:repeat(2,minmax(0,1fr))}.qa-check-grid{grid-template-columns:1fr}.qa-role-label{flex-direction:column;gap:4px}.qa-role-label h2{margin-bottom:7px}.qa-role-pill{margin-bottom:12px}}
 @media(max-width:480px){.qa-switcher{gap:5px}.qa-switcher button{flex:1 1 100%;text-align:left;min-height:39px;padding:9px 11px}.qa-tabs{gap:3px;padding:3px}.qa-tabs button{font-size:15px;flex-direction:column;gap:2px;min-height:57px;padding:4px 3px}.qa-tabs button span{font-size:10px}.qa-tabs button b{font-size:9px}.qa-metrics{grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}.qa-inventory{grid-template-columns:repeat(2,minmax(0,1fr))}.qa-panel{padding:12px}.qa-conditional-fields{padding:10px}.qa-header h1{font-size:30px}}
+
+/* Guided right resale: distinguish preparing an offer from transferring the right. */
+.qa-resale-guide{margin:12px 0;padding:14px;border:1px solid #ffd16c;border-radius:12px;background:linear-gradient(125deg,#243b55,#153d60);color:#eef8ff;font-size:12px;line-height:1.6}
+.qa-resale-guide strong{color:#ffe496;font-size:13px}
+.qa-resale-guide p{margin:7px 0;color:#e2ecf8}
+.qa-resale-guide ol{margin:10px 0 0;padding:10px 9px 10px 31px;background:#071f40;border:1px solid #456c8d;border-radius:8px}
+.qa-resale-guide li{padding:4px 0}
+.qa-resale-warning{border-left:3px solid #ff8e97;padding:8px 10px;background:#502d40;border-radius:6px;color:#fff0ef!important}
+.qa-history-note{margin:10px 0;padding:10px 12px;border-left:3px solid #ffd16c;border-radius:8px;background:#263d54;color:#ffe6af!important}
