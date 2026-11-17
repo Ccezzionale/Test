@@ -186,6 +186,17 @@ function trovaMaglia(nomeSquadra) {
     "athletic pongao": "img/maglie/pongao-mascotte.webp"
   };
 
+  // Le denominazioni Wildboys possono arrivare da Supabase con o senza
+  // spazi, numero 78 o separatori. In ogni caso mostra la mascotte,
+  // senza ripiegare sulla vecchia immagine della maglia.
+  const normalizedTeamKey = slug(nomeSquadra).replace(/-/g, "");
+  if (normalizedTeamKey.startsWith("wildboys")) {
+    return [
+      "img/maglie/wildboys-mascotte.webp",
+      "img/maglie/wildboys78-mascotte.webp"
+    ];
+  }
+
   const mascotte = mascotteMap[key];
 
   return mascotte
