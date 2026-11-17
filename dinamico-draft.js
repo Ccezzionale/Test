@@ -769,6 +769,10 @@ if (slotIndex === -1) {
         displayRound,
         displayOrder: replacementSlot?.displayOrder || pickBase.pickNumber,
         source_trade_id: futurePick?.source_trade_id || null,
+        // Riferimenti stabili per il passaggio di stagione.
+        future_pick_id: futurePick?.id || null,
+        original_team_id: futurePick?.original?.id || null,
+        owner_team_id: futurePick?.owner?.id || null,
         protection_note: futurePick?.protection_note || "",
         notes: futurePick?.notes || ""
       });
@@ -790,6 +794,9 @@ if (slotIndex === -1) {
           displayRound: bonusDisplayRoundById.get(fp.id) || roundNumber,
           displayOrder: globalPickNumber,
           source_trade_id: fp.source_trade_id || null,
+          future_pick_id: fp.id || null,
+          original_team_id: fp.original?.id || null,
+          owner_team_id: fp.owner?.id || null,
           protection_note: fp.protection_note || "",
           notes: fp.notes || ""
         };
@@ -2260,9 +2267,9 @@ function initDraftTabs() {
 initDraftTabs();
 initDraftOrderTabs();
 
-// Carica la STESSA fonte usata dalla pagina Classifica (Supabase + fallback CSV)
-// insieme alle future picks. In questo modo il Draft Dinamico segue sempre
-// i risultati importati dal pannello admin.
+// Carica la proiezione grafica soltanto sulla pagina Draft Dinamico.
+// Il Gestore stagioni usa gli stessi calcoli senza creare elementi DOM.
+if (document.getElementById('draft-league') && document.getElementById('draft-championship')) {
 Promise.all([
   loadResultsRows(),
   loadFutureDraftPicks()
@@ -2338,5 +2345,7 @@ Promise.all([
   if (mobileTradesChampionship) mobileTradesChampionship.innerHTML = `<p class="draft-error">⚠️ Errore nel caricamento delle trade draft.</p>`;
 });
 
-// Public, read-only helpers shared with conditional-right projections.
+}
+
+// Public, read-only helpers shared with conditional-right projections and season manager.
 export {buildTotalRankingFromStats,generaDraftDaCSV,loadFutureDraftPicks};
