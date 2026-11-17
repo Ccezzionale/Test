@@ -9,7 +9,7 @@
   <link rel="stylesheet" href="navbar.css">
   <link rel="stylesheet" href="trade-room.css?v=20261116-live-backup">
   <link rel="stylesheet" href="trade-room-v2.css?v=20261116-live-rollout-01">
-  <link rel="stylesheet" href="trade-conditional-addon.css?v=20261117-v4-clause-summary">
+  <link rel="stylesheet" href="trade-conditional-addon.css?v=20261117-v8-mixed-assets">
 </head>
 <body class="trade-v2-preview trade-v2-live">
 <nav class="site-nav">
@@ -354,7 +354,7 @@
   </div>
   </div><!-- /ctClassicComposer -->
   <div id="ctConditionalComposer" class="ct-builder" hidden>
-    <div class="ct-intro"><strong>🔐 Diritto su una pick futura</strong><p>L'accordo vale una sola pick. Le scelte coinvolte vengono vincolate solo dopo l'accettazione e si risolvono secondo i risultati ufficiali.</p><p class="ct-mixed-note">Questa prima versione gestisce diritti e pick future 1:1. Giocatori e chiamate non si possono ancora combinare nello stesso contratto. Le eventuali selezioni nella Trade classica restano separate.</p></div>
+    <div class="ct-intro"><strong>🔐 Diritto su una pick futura</strong><p>L'accordo vale una sola pick. Le scelte coinvolte vengono vincolate solo dopo l'accettazione e si risolvono secondo i risultati ufficiali.</p><p class="ct-mixed-note">Puoi aggiungere giocatori, altre pick future e chiamate nello stesso contratto. La Trade Room mantiene i controlli del motore classico; gli svincoli differiti restano esclusi per sicurezza. Le selezioni fatte in modalità classica non vengono importate automaticamente.</p></div>
     <div class="ct-grid">
       <label>Chi cede il diritto?
         <select id="ctGrantorSide" class="v2-select">
@@ -420,6 +420,43 @@
       <label>Quale diritto vuoi rivendere?<select id="ctExistingRight" class="v2-select"></select></label>
       <p class="ct-field-help">La clausola originale e le pick candidate rimangono identiche. Cambia soltanto il titolare del diritto.</p>
     </div>
+    <section class="ct-mixed-fields" id="ctMixedFields">
+      <div class="ct-mixed-head">
+        <strong>⚽ Aggiungi altri asset allo stesso scambio</strong>
+        <p>Giocatori, altre pick future e chiamate waiver. Verranno trasferiti insieme al diritto, mai separatamente.</p>
+      </div>
+      <div class="ct-mixed-grid">
+        <div class="ct-mixed-col">
+          <h3 id="ctMixedFromLabel">La mia franchigia aggiunge</h3>
+          <label>Tipo di asset
+            <select id="ctMixedFromType" class="v2-select">
+              <option value="player">Giocatori</option>
+              <option value="future_pick">Pick future</option>
+              <option value="waiver_call">Chiamate waiver</option>
+            </select>
+          </label>
+          <input id="ctMixedFromSearch" type="search" class="v2-input" placeholder="⌕ Cerca asset da offrire">
+          <div id="ctMixedFromItems" class="ct-mixed-list" role="group" aria-label="Asset aggiuntivi offerti"></div>
+          <div id="ctMixedFromCount" class="ct-mixed-count">0 asset selezionati</div>
+        </div>
+        <div class="ct-mixed-col">
+          <h3 id="ctMixedToLabel">L'avversario aggiunge</h3>
+          <label>Tipo di asset
+            <select id="ctMixedToType" class="v2-select">
+              <option value="player">Giocatori</option>
+              <option value="future_pick">Pick future</option>
+              <option value="waiver_call">Chiamate waiver</option>
+            </select>
+          </label>
+          <input id="ctMixedToSearch" type="search" class="v2-input" placeholder="⌕ Cerca asset da chiedere">
+          <div id="ctMixedToItems" class="ct-mixed-list" role="group" aria-label="Asset aggiuntivi richiesti"></div>
+          <div id="ctMixedToCount" class="ct-mixed-count">0 asset selezionati</div>
+        </div>
+      </div>
+      <p id="ctMixedRules" class="ct-mixed-rules">
+        La clausola e la sua contropartita valgono già come 1:1. Le eventuali altre pick future devono essere pari sui due lati. In questa prima versione, anche i giocatori devono avere quantità uguali: nessuno svincolo differito.
+      </p>
+    </section>
     <div class="ct-counter">
       <strong>⇄ Contropartita obbligatoria · 1:1</strong>
       <p id="ctCounterDescription">La squadra che riceve il diritto cede una sua pick futura.</p>
@@ -700,6 +737,6 @@
   <script src="navbar.js"></script>
   <script type="module" src="trade-room.js?v=20261116-live-original"></script>
   <script type="module" src="trade-room-live.js?v=20261117-conditional-protected-picks"></script>
-  <script type="module" src="trade-conditional-addon.js?v=20261117-v4-clause-summary"></script>
+  <script type="module" src="trade-conditional-addon.js?v=20261117-v8-mixed-assets"></script>
 </body>
 </html>
