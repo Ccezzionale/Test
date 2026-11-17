@@ -57,3 +57,24 @@ button,input{font:inherit}
 .season-links a{padding:10px 13px;border-radius:10px;border:1px solid #cbd8e6;color:#0a467f;background:#fff;font-size:.78rem;font-weight:850;text-decoration:none}
 #season-content[hidden]{display:none!important}
 @media(max-width:700px){.season-container{padding:13px 11px 115px}.season-hero{padding:20px 16px}.season-two{grid-template-columns:1fr;gap:0}.season-panel{padding:15px;margin-bottom:13px}.season-import-card{margin-bottom:12px}.season-heading h2{font-size:1.13rem}.season-import-card:last-child{margin-bottom:0}.season-back{font-size:.7rem}}
+
+
+/* Proiezioni Draft Dinamico 2027/28 (mai operative) */
+.season-order-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:5px}
+.season-action{display:inline-flex;align-items:center;justify-content:center;min-height:42px;padding:10px 14px;color:#fff;background:#071d37;border:1px solid #071d37;border-bottom:3px solid #f4c535;border-radius:10px;font-size:.8rem;font-weight:850;cursor:pointer}
+.season-action:disabled{opacity:.5;cursor:wait}
+.season-order-save{max-width:320px;margin:0}
+.season-order-workspace .season-stack{margin:15px 0}
+.season-order-workspace .season-two{gap:15px}
+.season-order-workspace .season-import-card{margin-bottom:0}
+.season-order-summary{margin:8px 0 13px;font-size:.76rem;color:#536a80;line-height:1.5}
+.season-order-table{width:100%;border-collapse:collapse;font-size:.74rem}
+.season-order-table th,.season-order-table td{border-bottom:1px solid #dce5ef;text-align:left;padding:8px 7px}
+.season-order-table th{font-size:.68rem;color:#4c647e;letter-spacing:.06em}
+.season-order-table td:first-child{font-weight:900;color:#082e53;width:45px}
+.season-order-table .is-traded{color:#956505;font-weight:850}
+.season-order-warning{color:#8c6020;background:#fff8e5;padding:10px 12px;border:1px solid #ead9a8;border-radius:10px;font-size:.77rem}
+.season-order-error{color:#a33442;font-size:.8rem;font-weight:850}
+.season-order-ok{color:#126d4f}
+.season-order-workspace a{color:#06477d}
+@media(max-width:700px){.season-order-actions{display:grid;grid-template-columns:1fr}.season-order-save{max-width:none;width:100%}.season-order-table{font-size:.7rem}}
