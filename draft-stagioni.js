@@ -241,4 +241,5 @@ document.querySelectorAll("[data-save-pool]").forEach(button=>{
     }finally{button.disabled=false;}
   });
 });
+document.addEventListener("season-order-staged",()=>loadStatuses().catch(err=>console.warn("Impossibile aggiornare lo stato proiezioni",err)));
 init();
