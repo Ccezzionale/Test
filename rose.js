@@ -3,6 +3,8 @@ import { supabase } from './supabase.js';
 const rose = {};
 let fpEligibilityByPlayerId = new Map();
 let injuryReserveByTeamId = new Map();
+const openRosterTeams = new Set();
+const quickRosterFilters = new Map();
 
 function escapeAttribute(value) {
   return String(value ?? "")
@@ -473,137 +475,182 @@ function aggiornaEmptyState() {
   empty.style.display = visibleCards.length === 0 ? "flex" : "none";
 }
 
+function renderRosterStats(stats, irRecord) {
+  const irText = irRecord ? (irRecord.status === "active" ? "Attiva" : "Usata") : "0/1";
+  const stat = (number, label, extra = "") =>
+    `<div class="rose-stat ${extra}"><strong>${number}</strong><small>${label}</small></div>`;
+  return `<div class="team-roster-meta" aria-label="Statistiche della rosa">
+    ${stat(stats.totale, "Giocatori")}
+    ${stat(stats.fp, "FP attivi")}
+    ${stat(stats.fpEleggibili, "FP eleggibili")}
+    ${stat(stats.u21, "U21")}
+    ${stat(stats.rfa, "RFA")}
+    ${stat(stats.protetti, "P6 protetti")}
+    ${stat(irText, "Injury Reserve", irRecord ? "has-ir" : "")}
+  </div>`;
+}
+
+function filterRosterPlayer(player, quick) {
+  if (quick === "FP") return player.fp || player.fpKeeper;
+  if (quick === "U21") return player.u21Slot || player.u21Keeper;
+  if (quick === "P6") return player.top6Protected;
+  if (quick === "IR") return false;
+  return true;
+}
+
+function highlightRosterName(name, query) {
+  const text = String(name || "");
+  if (!query) return escapeAttribute(text);
+  const index = text.toLocaleLowerCase("it").indexOf(query);
+  if (index < 0) return escapeAttribute(text);
+  return `${escapeAttribute(text.slice(0, index))}<mark class="evidenziato">${escapeAttribute(text.slice(index, index + query.length))}</mark>${escapeAttribute(text.slice(index + query.length))}`;
+}
+
+function renderGroupedRoster(players, query) {
+  const groups = [
+    {rank: 1, title: "Portieri"},
+    {rank: 2, title: "Difensori"},
+    {rank: 3, title: "Centrocampisti"},
+    {rank: 4, title: "Attaccanti"},
+    {rank: 99, title: "Altri ruoli"}
+  ];
+  return groups.map(group => {
+    const members = players.filter(player => getMainRoleRank(player.ruolo) === group.rank);
+    if (!members.length) return "";
+    return `<section class="roster-group" aria-label="${group.title}">
+      <h3 class="roster-group-title"><span>${group.title}</span><span class="roster-group-count">${members.length}</span></h3>
+      ${members.map(player => `<div class="roster-player-row">
+        <span class="roster-role">${escapeAttribute(player.ruolo)}</span>
+        <div class="roster-player-info nome"><span class="roster-person-name">${player.fpEligible
+          ? `<strong class="fp-eligible-next" title="${escapeAttribute(player.fpEligibilityReason || "Eleggibile FP per la prossima stagione")}">${highlightRosterName(player.nome, query)}</strong>`
+          : highlightRosterName(player.nome, query)}</span><span class="roster-player-badges">${renderPlayerBadges(player)}</span></div>
+        <span class="roster-seriea">${escapeAttribute(player.squadra)}</span>
+      </div>`).join("")}
+    </section>`;
+  }).join("");
+}
+
+function renderQuickFilters(nome, quick, hasIr) {
+  const options = [
+    ["all", "Tutti"],
+    ["FP", "FP"],
+    ["U21", "U21"],
+    ["P6", "P6"],
+    ["IR", "IR"]
+  ];
+  return `<div class="roster-quick-wrap">
+    <span class="roster-quick-title">Visualizza</span>
+    <div class="roster-quick-filters" role="group" aria-label="Filtra giocatori di ${escapeAttribute(nome)}">
+    ${options.map(([key, label]) => `<button type="button" class="roster-quick-filter" data-roster-filter="${key}" aria-pressed="${quick === key}" ${key === "IR" && !hasIr ? "disabled" : ""}>${label}</button>`).join("")}
+    </div>
+  </div>`;
+}
+
 function mostraRose() {
   const container = document.getElementById("contenitore-rose");
   if (!container) return;
-
   container.innerHTML = "";
 
-  const nomeCercato = document.getElementById("filtro-nome")?.value?.toLowerCase() || "";
+  const nomeCercato = (document.getElementById("filtro-nome")?.value || "").trim().toLocaleLowerCase("it");
+  const conference = document.getElementById("filtro-conference")?.value || "Tutte";
+  const squadra = document.getElementById("filtro-squadra")?.value || "Tutte";
 
   for (const [nome, data] of Object.entries(rose)) {
-    const stats = getTeamStats(data.giocatori);
-    const irRecord = data.injuryReserve;
+    if (conference !== "Tutte" && data.conference !== conference) continue;
+    if (squadra !== "Tutte" && nome !== squadra) continue;
 
-    const div = document.createElement("div");
-    div.className = "box-rosa giocatore";
+    const irRecord = data.injuryReserve;
+    const matchesIr = !!irRecord && String(irRecord.player_name || "").toLocaleLowerCase("it").includes(nomeCercato);
+    const matchesPlayer = data.giocatori.some(player => String(player.nome).toLocaleLowerCase("it").includes(nomeCercato));
+    if (nomeCercato && !matchesPlayer && !matchesIr) continue;
+
+    const quick = quickRosterFilters.get(nome) || "all";
+    const players = data.giocatori.filter(player =>
+      (!nomeCercato || String(player.nome).toLocaleLowerCase("it").includes(nomeCercato)) &&
+      filterRosterPlayer(player, quick)
+    );
+    const showIr = !!irRecord && (quick === "all" || quick === "IR") && (!nomeCercato || matchesIr);
+    const isOpen = openRosterTeams.has(nome) || !!nomeCercato;
+    const stats = getTeamStats(data.giocatori);
+
+    const div = document.createElement("article");
+    div.className = `box-rosa giocatore${isOpen ? " is-open" : ""}`;
     div.setAttribute("data-squadra", nome);
     div.setAttribute("data-conference", data.conference || "N/A");
 
     const header = document.createElement("div");
     header.className = "logo-nome";
-
     const iconsWrap = document.createElement("div");
     iconsWrap.className = "team-icons";
 
     const imgLogo = document.createElement("img");
-    imgLogo.alt = nome;
+    imgLogo.alt = `Logo ${nome}`;
     imgLogo.className = "team-logo";
+    imgLogo.loading = "lazy";
     applyImageFallback(imgLogo, data.logo, "img/default.png");
 
-    const imgMaglia = document.createElement("img");
-    imgMaglia.alt = `Maglia ${nome}`;
-    imgMaglia.className = "team-shirt";
-    applyImageFallback(imgMaglia, data.maglia);
+    const imgMascotte = document.createElement("img");
+    imgMascotte.alt = `Mascotte ${nome}`;
+    imgMascotte.className = "team-shirt";
+    imgMascotte.loading = "lazy";
+    applyImageFallback(imgMascotte, data.maglia);
+
+    iconsWrap.append(imgLogo, imgMascotte);
 
     const nameWrap = document.createElement("div");
     nameWrap.className = "team-title-wrap";
-
     const name = document.createElement("span");
     name.className = "team-name";
     name.textContent = nome;
-
     const conferenceBadge = document.createElement("small");
     conferenceBadge.className = "team-conference-badge";
     conferenceBadge.textContent = data.conference || "N/A";
 
     const meta = document.createElement("div");
-    meta.className = "team-roster-meta";
-    meta.innerHTML = `
-      <span>${stats.totale} giocatori</span>
-      <span>${stats.fp} FP</span>
-      <span>${stats.fpEleggibili} FP eleggibili</span>
-      <span>${stats.u21} U21</span>
-      <span>${stats.rfa} RFA</span>
-      <span>${stats.protetti} protetti</span>
-      <span class="${irRecord ? "has-ir" : ""}">${irRecord ? (irRecord.status === "active" ? "IR attiva" : "IR usata") : "IR 0/1"}</span>
-    `;
+    meta.innerHTML = renderRosterStats(stats, irRecord);
 
     const toggleBtn = document.createElement("button");
     toggleBtn.type = "button";
     toggleBtn.className = "roster-toggle";
-    toggleBtn.innerHTML = `
-      <span>Mostra rosa</span>
-      <strong>+</strong>
-    `;
-
+    const rosterId = `roster-${slug(nome)}`;
+    toggleBtn.setAttribute("aria-controls", rosterId);
+    toggleBtn.setAttribute("aria-expanded", String(isOpen));
+    function updateToggle() {
+      const opened = div.classList.contains("is-open");
+      toggleBtn.innerHTML = `<span>${opened ? "Chiudi rosa" : "Mostra rosa"}</span><strong aria-hidden="true">${opened ? "−" : "+"}</strong>`;
+      toggleBtn.setAttribute("aria-expanded", String(opened));
+    }
     toggleBtn.addEventListener("click", () => {
-      const isOpen = div.classList.toggle("is-open");
-      toggleBtn.innerHTML = isOpen
-        ? `<span>Chiudi rosa</span><strong>−</strong>`
-        : `<span>Mostra rosa</span><strong>+</strong>`;
+      const opened = div.classList.toggle("is-open");
+      if (opened) openRosterTeams.add(nome);
+      else openRosterTeams.delete(nome);
+      updateToggle();
     });
+    updateToggle();
 
-    iconsWrap.appendChild(imgLogo);
-    iconsWrap.appendChild(imgMaglia);
-
-    nameWrap.appendChild(name);
-    nameWrap.appendChild(conferenceBadge);
-    nameWrap.appendChild(meta);
-    nameWrap.appendChild(toggleBtn);
-
-    header.appendChild(iconsWrap);
-    header.appendChild(nameWrap);
+    nameWrap.append(name, conferenceBadge, meta.firstElementChild, toggleBtn);
+    header.append(iconsWrap, nameWrap);
     div.appendChild(header);
 
     const rosterBody = document.createElement("div");
     rosterBody.className = "roster-body";
+    rosterBody.id = rosterId;
+    const resultContent = renderGroupedRoster(players, nomeCercato);
+    rosterBody.innerHTML = `${renderQuickFilters(nome, quick, !!irRecord)}
+      ${showIr ? renderInjuryReserveSlot(irRecord) : ""}
+      ${resultContent || (!showIr ? '<div class="roster-empty-filter">Nessun giocatore con questo filtro.</div>' : "")}`;
 
-    if (irRecord) {
-      rosterBody.insertAdjacentHTML("beforeend", renderInjuryReserveSlot(irRecord));
-    }
+    rosterBody.querySelectorAll("[data-roster-filter]").forEach(button => {
+      button.addEventListener("click", () => {
+        quickRosterFilters.set(nome, button.getAttribute("data-roster-filter"));
+        openRosterTeams.add(nome);
+        mostraRose();
+      });
+    });
 
-    const table = document.createElement("table");
-
-    table.innerHTML = `
-      <thead>
-        <tr>
-          <th>Ruolo</th>
-          <th>Nome</th>
-          <th>Squadra</th>
-        </tr>
-      </thead>
-      <tbody>
-        ${data.giocatori.map(g => {
-          const nomeBasso = g.nome.toLowerCase();
-
-          const evidenziato = nomeCercato && nomeBasso.includes(nomeCercato)
-            ? g.nome.replace(new RegExp(`(${nomeCercato})`, "i"), '<span class="evidenziato">$1</span>')
-            : g.nome;
-
-          const nomeRenderizzato = g.fpEligible
-            ? `<strong class="fp-eligible-next" title="${escapeAttribute(g.fpEligibilityReason || "Eleggibile FP per la prossima stagione")}">${evidenziato}</strong>`
-            : evidenziato;
-
-          return `
-            <tr>
-              <td>${g.ruolo}</td>
-              <td class="nome">
-                ${nomeRenderizzato}
-                ${renderPlayerBadges(g)}
-              </td>
-              <td>${g.squadra}</td>
-            </tr>
-          `;
-        }).join("")}
-      </tbody>
-    `;
-
-    rosterBody.appendChild(table);
     div.appendChild(rosterBody);
     container.appendChild(div);
   }
-
   aggiornaEmptyState();
 }
 
@@ -640,37 +687,7 @@ function popolaFiltri() {
 }
 
 function filtraGiocatori() {
-  const nome = document.getElementById("filtro-nome")?.value?.toLowerCase() || "";
-  const conference = document.getElementById("filtro-conference")?.value || "Tutte";
-  const squadra = document.getElementById("filtro-squadra")?.value || "Tutte";
-
   mostraRose();
-
-  document.querySelectorAll(".giocatore").forEach(card => {
-    const nomiGiocatori = [...card.querySelectorAll(".nome, .ir-player-name")]
-      .map(e => e.textContent.toLowerCase());
-
-    const conf = card.getAttribute("data-conference");
-    const team = card.getAttribute("data-squadra");
-
-    const matchNome = !nome || nomiGiocatori.some(n => n.includes(nome));
-    const matchConf = conference === "Tutte" || conf === conference;
-    const matchTeam = squadra === "Tutte" || team === squadra;
-
-    const visible = matchNome && matchConf && matchTeam;
-    card.style.display = visible ? "" : "none";
-
-    if (visible && nome) {
-      card.classList.add("is-open");
-
-      const toggleBtn = card.querySelector(".roster-toggle");
-      if (toggleBtn) {
-        toggleBtn.innerHTML = `<span>Chiudi rosa</span><strong>−</strong>`;
-      }
-    }
-  });
-
-  aggiornaEmptyState();
 }
 
 function sortRoseByMantraLine(a, b) {
@@ -787,18 +804,18 @@ function resetFiltri() {
   const filtroNome = document.getElementById("filtro-nome");
   const filtroConference = document.getElementById("filtro-conference");
   const filtroSquadra = document.getElementById("filtro-squadra");
-
   if (filtroNome) filtroNome.value = "";
   if (filtroConference) filtroConference.value = "Tutte";
   if (filtroSquadra) filtroSquadra.value = "Tutte";
-
-  filtraGiocatori();
+  quickRosterFilters.clear();
+  openRosterTeams.clear();
+  mostraRose();
 }
 
 window.resetFiltri = resetFiltri;
 
 window.addEventListener("DOMContentLoaded", () => {
-  document.getElementById("filtro-nome")?.addEventListener("input", filtraGiocatori);
+  document.getElementById("filtro-nome")?.addEventListener("input", () => { quickRosterFilters.clear(); filtraGiocatori(); });
   document.getElementById("filtro-conference")?.addEventListener("change", filtraGiocatori);
   document.getElementById("filtro-squadra")?.addEventListener("change", filtraGiocatori);
 
