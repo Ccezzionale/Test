@@ -247,13 +247,13 @@ function bind(){
   $("ctModeClassic").addEventListener("click",()=>setMode("classic"));
   $("ctModeConditional").addEventListener("click",()=>setMode("conditional"));
   $("ctKind").addEventListener("change",refreshKind);
-  $("ctGrantorSide").addEventListener("change",refreshCandidates);
-  $("v2TargetTeam").addEventListener("change",refreshCandidates);
+  $("ctGrantorSide").addEventListener("change",()=>{$("ctRankedCandidates").innerHTML="";refreshCandidates();});
+  $("v2TargetTeam").addEventListener("change",()=>{$("ctRankedCandidates").innerHTML="";refreshCandidates();});
   $("ctStandingSubject").addEventListener("change",refreshScope);
   $("ctStandingScope").addEventListener("change",refreshScope);
   $("ctTopCount").addEventListener("change",refreshScope);
   $("ctBottomCount").addEventListener("change",refreshScope);
-  $("ctRankedRound").addEventListener("change",drawRanked);
+  $("ctRankedRound").addEventListener("change",()=>{$("ctRankedCandidates").innerHTML="";drawRanked();redrawSummary();});
   $("ctTrophySubject").addEventListener("change",refreshSpecificTrophy);
   $("ctTrophyMode").addEventListener("change",refreshSpecificTrophy);
   for(const id of ["ctTopPick","ctBottomPick","ctMiddlePick","ctWonPick","ctNotWonPick","ctTrophySpecific",
