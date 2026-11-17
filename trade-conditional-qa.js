@@ -51,6 +51,8 @@ function flash(message,isError=false){
 }
 function chooseTab(next){
  tab=next;
+ // Dopo un'accettazione aggiorna sempre pick e giocatori selezionabili.
+ if(next==="compose"&&model)refreshForm(false);
  document.querySelectorAll("[data-qa-tab]").forEach(node=>{
   const active=node.dataset.qaTab===next;
   node.classList.toggle("active",active);
@@ -346,6 +348,7 @@ function renderNotices(){
   '<div class="qa-empty">Nessun avviso simulato per '+esc(teamName(viewer))+
   '. Invia una proposta e cambia squadra per verificare la posta.</div>';
  model.messages.filter(n=>same(n.to_team_id,viewer)).forEach(n=>n.read=true);
+ renderMetrics();
 }
 function renderMetrics(){
  el("qaMetricOffers").textContent=model.offers.filter(o=>o.status==="pending").length;
