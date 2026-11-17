@@ -6785,3 +6785,106 @@ body { background:#fff; color:var(--waiver-v4-ink); }
   }
   .player-badges { font-size:.63rem !important; }
 }
+
+/* ============================================================
+   WAIVER MOBILE BANNER SEPARATED 17-11-2026
+   L'immagine e' interamente visibile: i dati della squadra
+   sono una fascia autonoma SOTTO al banner, non in overlay.
+   ============================================================ */
+.waiver-hero-banner-mobile { display:none; }
+@media (max-width:768px) {
+  .waiver-hero {
+    display:block !important;
+    background:#fff !important;
+    background-image:none !important;
+    padding:0 !important;
+    margin-bottom:12px !important;
+    min-height:0 !important;
+    overflow:hidden !important;
+    border:1px solid #c2cfdd !important;
+    border-radius:17px !important;
+    box-shadow:0 8px 23px rgba(7,30,58,.075) !important;
+  }
+  .waiver-hero::after { display:none !important; content:none !important; }
+  .waiver-hero-banner-mobile {
+    display:block;
+    width:100%;
+    height:auto;
+    max-width:100%;
+    border:0;
+    background:#071d37;
+  }
+  .waiver-hero-team {
+    position:relative;
+    display:flex !important;
+    flex-direction:column;
+    gap:9px !important;
+    margin:0 !important;
+    padding:12px 13px !important;
+    border:0 !important;
+    border-top:3px solid #f4c535 !important;
+    border-radius:0 !important;
+    background:#fff !important;
+    box-shadow:none !important;
+    color:#102c50 !important;
+  }
+  .hero-team-main { display:flex; align-items:center; gap:10px !important; }
+  .hero-team-logo-wrap {
+    width:48px !important;
+    height:48px !important;
+    border-radius:11px !important;
+    background:#fff !important;
+    border:1px solid #d6e1eb !important;
+  }
+  .hero-team-logo { width:43px !important; height:43px !important; }
+  .hero-team-text { min-width:0; }
+  .hero-team-kicker {
+    display:block;
+    color:#60738a !important;
+    font-size:.56rem !important;
+    letter-spacing:.08em;
+  }
+  .hero-team-text strong {
+    display:block;
+    color:#071d37 !important;
+    font-size:1.14rem !important;
+    line-height:1.18 !important;
+    word-break:normal;
+    overflow-wrap:normal;
+  }
+  .hero-team-conference {
+    margin-top:4px !important;
+    padding:3px 8px !important;
+    background:#fff8e4 !important;
+    border:1px solid #d8b43f !important;
+    color:#634b07 !important;
+    font-size:.65rem !important;
+  }
+  .hero-waiver-mini-stats {
+    display:grid;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:8px !important;
+  }
+  .hero-waiver-mini-stat {
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:8px;
+    padding:8px 10px !important;
+    border:1px solid #d9e3ed !important;
+    border-radius:10px !important;
+    background:#f8fafc !important;
+    box-shadow:none !important;
+  }
+  .hero-waiver-mini-stat span {
+    margin:0 !important;
+    color:#60738a !important;
+    font-size:.6rem !important;
+    letter-spacing:.04em !important;
+  }
+  .hero-waiver-mini-stat strong,
+  .hero-waiver-mini-stat:last-child strong {
+    color:#071d37 !important;
+    font-size:1rem !important;
+  }
+}
