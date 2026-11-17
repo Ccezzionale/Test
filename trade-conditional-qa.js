@@ -121,9 +121,9 @@ function refreshRanked(){
 }
 function refreshPlayers(){
  fill("qaPlayerFrom",[option("","Nessuno"),...qaOwnedPlayers(model,viewer)
-   .filter(p=>p.role!=="P"&&!p.is_u21_slot).map(p=>option(p.id,playerName(p)))]);
+   .filter(p=>p.role!=="P").map(p=>option(p.id,playerName(p)+(p.is_u21_slot?" · U21":"")))]);
  fill("qaPlayerTo",[option("","Nessuno"),...qaOwnedPlayers(model,el("qaToTeam").value)
-   .filter(p=>p.role!=="P"&&!p.is_u21_slot).map(p=>option(p.id,playerName(p)))]);
+   .filter(p=>p.role!=="P").map(p=>option(p.id,playerName(p)+(p.is_u21_slot?" · U21":"")))]);
 }
 function refreshForm(reset=false){
  const kind=el("qaKind").value,owner=readOwner(),holder=readHolder();
@@ -306,7 +306,7 @@ function rightHtml(right){
   esc(teamName(right.holder_team_id))+'</b></p>'+
   '<ul>'+branchLabels(right.rule_kind,right.rule_spec,right.candidate_pick_ids).map(x=>'<li>'+
   esc(x)+'</li>').join("")+'</ul>'+
-  '<p>Pick candidate: '+rights.map(x=>"🔐 "+esc(pickName(x))).join(" · ")+'</p>'+
+  '<p>Pick candidate: '+rights.map(x=>(active?"🔐 ":"🔓 ")+esc(pickName(x))).join(" · ")+'</p>'+
   (right.history.length?'<p>Rivendite: '+right.history.map(h=>
    esc(teamName(h.from))+" → "+esc(teamName(h.to))).join(" · ")+'</p>':'')+
   (active?'<div class="qa-resolution"><h4>📊 Esito ipotetico del contratto</h4>'+
