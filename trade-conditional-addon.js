@@ -546,6 +546,8 @@ async function init(){
   try{
     const user=await supabase.auth.getUser();
     if(user.error||!user.data?.user)return;
+    const qaLink=$("ctQaOnlyLink");
+    if(qaLink)qaLink.hidden=String(user.data.user.email||"").toLowerCase()!=="tringali0511@gmail.com";
     const [p,t,s]=await Promise.all([
       supabase.from("profiles").select("id,team_id").eq("id",user.data.user.id).maybeSingle(),
       supabase.from("teams").select("id,name,conference").order("name"),
