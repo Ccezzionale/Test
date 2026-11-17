@@ -357,6 +357,7 @@ if (teamLogoEl) {
 
  renderSelects();
 renderCurrentSelections();
+refreshChoiceStatuses();
 renderPredraftSummary();
 renderRosterFilters();
 renderRoster();
@@ -707,6 +708,30 @@ ${selection.actual_paid_round ? `· Round ${selection.actual_paid_round}` : ""}
   });
 }
 
+// Solo presentazione: lo stato mostrato sotto il titolo non modifica le scelte.
+function refreshChoiceStatuses() {
+  const types = [
+    ["FP", "select-fp"],
+    ["U21_KEEPER", "select-u21"],
+    ["RFA", "select-rfa"]
+  ];
+  for (const [type, id] of types) {
+    const card = document.getElementById(id)?.closest(".choice-card");
+    if (!card) continue;
+    const current = selections.find(selection => selection.selection_type === type);
+    let status = card.querySelector(".pd-choice-status");
+    if (!status) {
+      status = document.createElement("span");
+      status.className = "pd-choice-status";
+      card.querySelector("h3")?.insertAdjacentElement("afterend", status);
+    }
+    status.textContent = current
+      ? `✓ ${current.players?.name || "Selezionato"}`
+      : "Nessuna scelta salvata";
+    status.classList.toggle("is-selected", !!current);
+  }
+}
+
 function renderPredraftSummary() {
   const container = document.getElementById("predraft-summary");
   if (!container) return;
@@ -716,6 +741,12 @@ function renderPredraftSummary() {
     U21_KEEPER: selections.find(s => s.selection_type === "U21_KEEPER"),
     RFA: selections.find(s => s.selection_type === "RFA")
   };
+
+  const progress = document.getElementById("pd-choice-progress");
+  if (progress) {
+    const total = Object.values(selectionByType).filter(Boolean).length;
+    progress.textContent = `${total} di 3 scelte salvate`;
+  }
 
   const fpText = getSummaryPlayerText(selectionByType.FP);
   const u21Text = getSummaryPlayerText(selectionByType.U21_KEEPER);
@@ -1114,95 +1145,144 @@ async function saveKeeperSettings() {
 
 async function loadAdminSummary() {
   const container = document.getElementById("admin-summary");
+  const metrics = document.getElementById("pd-admin-metrics");
   if (!container) return;
 
-  const { data, error } = await supabase
-    .from("keeper_selections")
-    .select(`
-      id,
-      season,
-      selection_type,
-      confirmation_year,
-      actual_paid_round,
-      status,
-      teams (
-        name,
-        conference
-      ),
-      players (
-        name,
-        role,
-        role_mantra,
-        serie_a_team
-      )
-    `)
-    .eq("season", keeperSettings.season)
-    .eq("status", "active")
-    .order("selection_type", { ascending: true });
+  const [choicesResult, teamsResult] = await Promise.all([
+    supabase
+      .from("keeper_selections")
+      .select(`
+        id,
+        team_id,
+        season,
+        selection_type,
+        confirmation_year,
+        cost_round,
+        actual_paid_round,
+        status,
+        teams ( name, conference ),
+        players ( name, role, role_mantra, serie_a_team )
+      `)
+      .eq("season", keeperSettings.season)
+      .eq("status", "active")
+      .order("selection_type", { ascending: true }),
+    supabase
+      .from("teams")
+      .select("id, name, conference")
+      .order("name", { ascending: true })
+  ]);
 
+  const { data, error } = choicesResult;
   if (error) {
     console.error(error);
-    container.innerHTML = "Errore nel caricamento del riepilogo.";
+    container.innerHTML = "<p>Errore nel caricamento del riepilogo.</p>";
+    if (metrics) metrics.textContent = "Statistiche non disponibili";
     return;
   }
 
-  if (!data?.length) {
-    container.innerHTML = "<p>Nessuna scelta registrata.</p>";
-    return;
+  const entries = data || [];
+  const teamsFromDb = teamsResult.error ? null : (teamsResult.data || []);
+  if (teamsResult.error) {
+    console.warn("Elenco delle franchigie non disponibile:", teamsResult.error);
   }
 
-  container.innerHTML = `
+  // Sia i record esistenti sia le franchigie senza selezioni trovano spazio
+  // nell'elenco. Se fallisce la query teams, evitiamo conteggi 'mancanti' errati.
+  const teamMap = new Map();
+  (teamsFromDb || []).forEach(team => {
+    teamMap.set(String(team.id), {
+      id: String(team.id),
+      name: team.name || "Franchigia",
+      conference: team.conference || "-",
+      choices: []
+    });
+  });
+  entries.forEach(row => {
+    const id = String(row.team_id);
+    if (!teamMap.has(id)) {
+      teamMap.set(id, {
+        id,
+        name: row.teams?.name || "Franchigia",
+        conference: row.teams?.conference || "-",
+        choices: []
+      });
+    }
+    teamMap.get(id).choices.push(row);
+  });
+
+  const franchises = [...teamMap.values()].sort((a,b) =>
+    a.name.localeCompare(b.name, "it", { sensitivity: "base" })
+  );
+  const withChoices = franchises.filter(team => team.choices.length > 0).length;
+  const withoutChoices = teamsFromDb ? franchises.length - withChoices : null;
+  if (metrics) {
+    metrics.innerHTML = `
+      <div class="pd-admin-metric"><strong>${withChoices}</strong><span>Franchigie con scelte</span></div>
+      <div class="pd-admin-metric"><strong>${withoutChoices === null ? "—" : withoutChoices}</strong><span>Franchigie senza scelte</span></div>
+      <div class="pd-admin-metric"><strong>${entries.length}</strong><span>Scelte registrate</span></div>
+    `;
+    if (!teamsFromDb) metrics.title = "Elenco squadre non disponibile: conteggio squadre senza scelte omesso";
+    else metrics.removeAttribute("title");
+  }
+
+  const typeKeys = ["FP", "U21_KEEPER", "RFA"];
+  const shortLabels = { FP: "FP", U21_KEEPER: "U21", RFA: "RFA" };
+  const renderChoice = row => {
+    const name = escapeHtml(row.players?.name || "Giocatore");
+    const role = escapeHtml(row.players?.role_mantra || row.players?.role || "-");
+    const club = escapeHtml(row.players?.serie_a_team || "-");
+    const round = row.actual_paid_round ?? row.cost_round;
+    return `<div class="pd-admin-pick">
+      <strong>${name}</strong>
+      <small>${role} · ${club}${round != null ? ` · Round ${escapeHtml(round)}` : ""}</small>
+    </div>`;
+  };
+
+  const mobileCards = franchises.map(team => `
+    <details class="pd-admin-team">
+      <summary>
+        <span class="pd-admin-team-identity">
+          <strong>${escapeHtml(team.name)}</strong>
+          <small>${escapeHtml(team.conference)}</small>
+        </span>
+        <span class="pd-admin-team-count ${team.choices.length ? "has-choices" : ""}">${team.choices.length} ${team.choices.length === 1 ? "scelta" : "scelte"}</span>
+      </summary>
+      <div class="pd-admin-team-body">
+        ${typeKeys.map(type => {
+          const selected = team.choices.filter(row => row.selection_type === type);
+          return `<div class="pd-admin-team-line">
+            <span class="pd-admin-team-type type-${type.toLowerCase()}">${shortLabels[type]}</span>
+            <div class="pd-admin-team-line-content">${selected.length
+              ? selected.map(renderChoice).join("")
+              : '<span class="pd-admin-none">Nessuna scelta</span>'}</div>
+          </div>`;
+        }).join("")}
+      </div>
+    </details>
+  `).join("");
+
+  const table = entries.length ? `<div class="pd-admin-desktop-table">
     <table>
-      <thead>
-        <tr>
-          <th>Squadra</th>
-          <th>Conference</th>
-          <th>Tipo</th>
-          <th>Giocatore</th>
-          <th>Ruolo</th>
-          <th>Squadra Serie A</th>
-          <th>Round</th>
-        </tr>
-      </thead>
-
+      <thead><tr><th>Squadra</th><th>Conference</th><th>Tipo</th><th>Giocatore</th><th>Ruolo</th><th>Squadra Serie A</th><th>Round</th></tr></thead>
       <tbody>
-        ${data.map(row => `
-          <tr>
-            <td>${escapeHtml(row.teams?.name || "-")}</td>
-
-            <td>${escapeHtml(row.teams?.conference || "-")}</td>
-
-            <td>
-              ${escapeHtml(
-                TYPE_LABELS[row.selection_type] || row.selection_type
-              )}
-            </td>
-
-            <td>
-              <strong>${escapeHtml(row.players?.name || "-")}</strong>
-            </td>
-
-            <td>
-              ${escapeHtml(
-                row.players?.role ||
-                row.players?.role_mantra ||
-                "-"
-              )}
-            </td>
-
-            <td>${escapeHtml(row.players?.serie_a_team || "-")}</td>
-
-            <td>
-              ${
-                row.actual_paid_round
-                  ? escapeHtml(row.actual_paid_round)
-                  : "-"
-              }
-            </td>
-          </tr>
-        `).join("")}
+        ${[...entries].sort((a, b) =>
+          (a.teams?.name || "").localeCompare(b.teams?.name || "", "it", { sensitivity: "base" })
+        ).map(row => `<tr>
+          <td>${escapeHtml(row.teams?.name || "-")}</td>
+          <td>${escapeHtml(row.teams?.conference || "-")}</td>
+          <td>${escapeHtml(TYPE_LABELS[row.selection_type] || row.selection_type)}</td>
+          <td><strong>${escapeHtml(row.players?.name || "-")}</strong></td>
+          <td>${escapeHtml(row.players?.role_mantra || row.players?.role || "-")}</td>
+          <td>${escapeHtml(row.players?.serie_a_team || "-")}</td>
+          <td>${row.actual_paid_round ?? row.cost_round ?? "-"}</td>
+        </tr>`).join("")}
       </tbody>
     </table>
+  </div>` : '<p class="pd-admin-no-records">Nessuna scelta registrata.</p>';
+
+  container.innerHTML = `
+    <div class="pd-admin-mobile-teams">${mobileCards || '<p>Nessuna franchigia disponibile.</p>'}</div>
+    ${table}
   `;
 }
 
