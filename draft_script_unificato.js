@@ -2255,7 +2255,8 @@ owner_team_id,
       const nome = p.name || "";
       if (!nome) return;
 
-      const ruolo = p.role || p.role_mantra || "";
+      // Il Draft è Mantra: visualizza sempre il ruolo Mantra, con fallback solo se mancante.
+      const ruolo = String(p.role_mantra || "").trim() || String(p.role || "").trim();
       const squadra = p.serie_a_team || "";
       const quotazione = p.quotation ?? 0;
 
@@ -3099,7 +3100,9 @@ giocatoriOrdinati.forEach((player) => {
 
     const badges = renderDraftBadgeImages(player, { showEligibleU21: true });
 
-  if (ruolo) ruoliTrovati.add(ruolo);
+  // Le opzioni del filtro sono singoli ruoli Mantra, non combinazioni.
+  String(ruolo || "").split(/[,;\s]+/).map(x => x.trim()).filter(Boolean)
+    .forEach(token => ruoliTrovati.add(token));
   if (squadra) squadreTrovate.add(squadra);
 
 const tr = document.createElement("tr");
@@ -3187,8 +3190,12 @@ inviaPickAlFoglio(pick, fantaTeam, nome, ruolo, squadra, quotazione, {
   }
 
   // ricostruisci le <option> una volta sola
-  filtroRuolo.innerHTML = '<option value="">-- Tutti i Ruoli --</option>' +
-    Array.from(ruoliTrovati).map(r => `<option value="${r}">${r}</option>`).join("");
+  filtroRuolo.replaceChildren(new Option("-- Tutti i ruoli Mantra --", ""));
+  const mantraRoleOrder = ["Por","B","Dd","Ds","Dc","E","M","C","W","T","A","Pc"];
+  Array.from(ruoliTrovati).sort((a, b) => {
+    const ai = mantraRoleOrder.indexOf(a), bi = mantraRoleOrder.indexOf(b);
+    return (ai < 0 ? 99 : ai) - (bi < 0 ? 99 : bi) || a.localeCompare(b, "it");
+  }).forEach(role => filtroRuolo.add(new Option(role, role)));
 
   filtroSerieA.innerHTML = '<option value="">-- Tutte --</option>' +
     Array.from(squadreTrovate).sort((a, b) => a.localeCompare(b))
@@ -3206,6 +3213,14 @@ function debounce(fn, delay = 150) {
 
 function filtraLista() {
   const ruoloTesto = cercaRuolo.value.toLowerCase();
+  // Filtri rapidi per macroaree Mantra, senza equivalenze Classic approssimative.
+  const mantraQuickGroup = document.getElementById("pool-section")?.dataset.quickMantraGroup || "";
+  const mantraQuickRoleGroups = {
+    por: ["por", "p"],
+    defense: ["b", "dd", "ds", "dc", "e", "d"],
+    midfield: ["m", "c", "t", "w"],
+    attack: ["w", "t", "a", "pc"]
+  };
   const ruoloSelect = filtroRuolo.value.toLowerCase().split(/[,;\s]+/).filter(Boolean);
   const squadra = filtroSerieA.value.toLowerCase();
   const cerca = searchInput.value.toLowerCase();
@@ -3244,9 +3259,12 @@ const hasU21 = row.dataset.isU21 === "true";
       matchU21 = !hasU21;
     }
 
+const quickAllowed = !mantraQuickGroup || !mantraQuickRoleGroups[mantraQuickGroup] ||
+      ruoliGiocatore.some(token => mantraQuickRoleGroups[mantraQuickGroup].includes(token));
 const shouldShow =
   matchInput &&
   matchSelect &&
+  quickAllowed &&
   matchSquadra &&
   matchNome &&
   matchU21;
