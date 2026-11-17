@@ -91,13 +91,18 @@
           (item.traded ? " · Scambiata" : "");
         slot.title = fullLabel;
         slot.setAttribute("aria-label",fullLabel);
+        // Riutilizza il colore già assegnato alla trade nell'Overview per round.
+        const roundSlot = card.querySelector('.mobile-overview-rounds [data-overview-pick="' + item.pickNumber + '"]');
+        if (item.traded && roundSlot?.getAttribute("style")) {
+          slot.setAttribute("style", roundSlot.getAttribute("style"));
+        }
         slot.dataset.searchable = [item.pickNumber,item.team,item.player].join(" ").toLocaleLowerCase("it");
         const img = document.createElement("img");
         img.src = "img/" + item.team + ".webp";
         img.alt = "";
         const fallback = document.createElement("span");
         fallback.className = "mobile-overview-fallback";
-        fallback.textContent = item.team.split(/\\s+/).slice(0,2).map(x => x[0] || "").join("").toUpperCase() || "?";
+        fallback.textContent = item.team.split(/\s+/).slice(0,2).map(x => x[0] || "").join("").toUpperCase() || "?";
         img.addEventListener("error", () => {
           img.style.display = "none";
           fallback.style.display = "flex";
