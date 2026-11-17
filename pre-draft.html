@@ -7,7 +7,7 @@
   <title>Pre-Draft - Lega degli Eroi</title>
 
   <link rel="stylesheet" href="navbar.css">
-  <link rel="stylesheet" href="pre-draft.css">
+  <link rel="stylesheet" href="pre-draft.css?v=20261117-v2">
 
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#0b3d91">
@@ -198,10 +198,11 @@
 <section class="predraft-card roster-card predraft-summary-only">
   <div class="section-title-row">
     <div>
-      <h2>La tua rosa</h2>
+      <h2>Le tue scelte Pre-Draft</h2>
       <p>
-        Riepilogo delle scelte Pre-Draft salvate per la tua squadra.
+        I vincoli già salvati per la tua franchigia.
       </p>
+      <span id="pd-choice-progress" class="pd-choice-progress" aria-live="polite"></span>
     </div>
   </div>
 
@@ -211,48 +212,59 @@
 </section>
 
     <section id="keeper-admin" class="predraft-card hidden">
-      <h2>Admin Pre-Draft</h2>
+      <header class="pd-admin-heading">
+        <span class="pd-admin-kicker">COMMISSIONER · GESTIONE</span>
+        <h2>Centro di controllo Pre-Draft</h2>
+        <p>Impostazioni, scelte delle franchigie e verifica dei conflitti in un unico posto.</p>
+      </header>
 
-      <div class="admin-controls">
-        <label>
-          Stagione
-          <input id="admin-season" type="number" min="2026" step="1" />
-        </label>
+      <div class="pd-admin-config">
+        <section class="pd-admin-settings" aria-label="Impostazioni modulo">
+          <h3>Impostazioni del modulo</h3>
+          <div class="admin-controls">
+            <label for="admin-season">
+              Stagione
+              <input id="admin-season" type="number" min="2026" step="1" />
+            </label>
+            <label class="checkbox-row" for="admin-is-open">
+              <input id="admin-is-open" type="checkbox" />
+              <span>Modulo aperto</span>
+            </label>
+            <button id="btn-save-settings" class="predraft-btn" type="button">Salva impostazioni</button>
+          </div>
+        </section>
 
-        <label class="checkbox-row">
-  <input id="admin-is-open" type="checkbox" />
-  Modulo aperto
-</label>
-
-<button id="btn-apply-predraft" class="predraft-btn" type="button">
-  🚀 Applica Pre-Draft al Draft
-</button>
-
-<p id="admin-apply-status" style="font-weight:600;"></p>
-
-<button id="btn-save-settings" class="predraft-btn">Salva impostazioni</button>
+        <section class="pd-admin-apply" aria-label="Applicazione definitiva al Draft">
+          <div class="pd-admin-danger-heading"><span aria-hidden="true">⚠️</span><h3>Applica al Draft</h3></div>
+          <p>Operazione definitiva: assegna i costi in round e chiude il Pre-Draft. Controlla prima tutte le scelte.</p>
+          <button id="btn-apply-predraft" class="predraft-btn" type="button">Applica Pre-Draft al Draft</button>
+          <p id="admin-apply-status" class="pd-admin-apply-status" role="status"></p>
+        </section>
       </div>
 
-      <h3>Riepilogo scelte</h3>
-      <div id="admin-summary" class="predraft-table-wrap">
-        Caricamento riepilogo...
-      </div>
+      <section class="pd-admin-overview" aria-label="Riepilogo scelte delle franchigie">
+        <div class="pd-admin-section-heading">
+          <div><span class="pd-admin-kicker">MONITORAGGIO</span><h3>Riepilogo delle scelte</h3></div>
+          <small>Apri una franchigia per vedere FP, U21 e RFA</small>
+        </div>
+        <div id="pd-admin-metrics" class="pd-admin-metrics" aria-live="polite"></div>
+        <div id="admin-summary" class="predraft-table-wrap">Caricamento riepilogo...</div>
+      </section>
 
-      <h3>Conflitti Pre-Draft</h3>
-
-<div class="admin-controls" style="margin-bottom:12px;">
-  <button id="btn-scan-conflicts" class="predraft-btn" type="button">
-    🔎 Cerca conflitti
-  </button>
-</div>
-
-<div id="admin-conflicts" class="predraft-table-wrap">
-  Nessun controllo effettuato.
-</div>
+      <details class="pd-admin-conflicts">
+        <summary>
+          <span><strong>Conflitti Pre-Draft</strong><small>Controllo delle selezioni contese</small></span>
+          <span class="pd-admin-details-chevron" aria-hidden="true">⌄</span>
+        </summary>
+        <div class="pd-admin-conflict-content">
+          <button id="btn-scan-conflicts" class="predraft-btn" type="button">🔎 Cerca conflitti</button>
+          <div id="admin-conflicts" class="predraft-table-wrap">Nessun controllo effettuato.</div>
+        </div>
+      </details>
     </section>
   </main>
 <script src="mobile-nav.js"></script>
-  <script type="module" src="pre-draft.js"></script>
+  <script type="module" src="pre-draft.js?v=20261117-v2"></script>
   <script src="navbar.js"></script>
 </body>
 </html>
