@@ -6,9 +6,9 @@
 <meta name="robots" content="noindex,nofollow">
 <title>Gestione stagioni Draft · Lega degli Eroi</title>
 <link rel="stylesheet" href="navbar.css">
-<link rel="stylesheet" href="draft-stagioni.css?v=20261117-1">
+<link rel="stylesheet" href="draft-stagioni.css?v=20261117-dynamic-v2">
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js" defer></script>
-<script type="module" src="draft-stagioni.js?v=20261117-1"></script>
+<script type="module" src="draft-stagioni.js?v=20261117-dynamic-v2"></script>
 </head>
 <body>
 <header class="season-topbar">
@@ -56,6 +56,30 @@
       </article>
     </div>
     <p id="season-import-note" class="season-help" role="status">Ogni conferma salva il file per la sola Conference selezionata, senza cambiare le Rose.</p>
+  </section>
+
+  <section class="season-panel season-order-workspace" id="season-order-workspace">
+    <div class="season-heading">
+      <div><span class="season-kicker">DRAFT DINAMICO · SOLO PREPARAZIONE</span><h2>Ordine Draft 2027/28</h2></div>
+      <span class="season-pill">Proiezione</span>
+    </div>
+    <p class="season-description">Calcolo identico al Draft Dinamico: classifica della Regular Season, serpentina di 23 round, proprietari delle pick e trade. Durante il campionato l'ordine può cambiare. Il salvataggio è <strong>solo una fotografia provvisoria</strong>.</p>
+    <div class="season-order-actions">
+      <button id="season-order-generate" type="button" class="season-action">↻ Calcola proiezione aggiornata</button>
+      <button id="season-order-save" type="button" class="season-save season-order-save" disabled>Salva proiezioni in preparazione</button>
+    </div>
+    <p id="season-order-note" class="season-help" role="status">Nessun nuovo ordine è stato pubblicato nelle Draft Room.</p>
+    <div id="season-order-overview" class="season-stack" aria-live="polite"></div>
+    <div class="season-two" id="season-order-results">
+      <article class="season-import-card">
+        <div class="season-import-title"><img src="icons/nav/conf-league.webp" alt="" width="34" height="34"><strong>Conference League</strong></div>
+        <div id="season-order-league">Calcola l'anteprima per visualizzare le pick.</div>
+      </article>
+      <article class="season-import-card">
+        <div class="season-import-title"><img src="icons/nav/conf-championship.webp" alt="" width="34" height="34"><strong>Conference Championship</strong></div>
+        <div id="season-order-championship">Calcola l'anteprima per visualizzare le pick.</div>
+      </article>
+    </div>
   </section>
 
   <section class="season-panel">
