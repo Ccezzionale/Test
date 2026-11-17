@@ -10,6 +10,7 @@
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js" defer></script>
 <script type="module" src="draft-stagioni.js?v=20261117-dynamic-v2"></script>
 <script type="module" src="draft-stagioni-order.js?v=20261117-v1"></script>
+<script type="module" src="draft-stagioni-checks.js?v=20261117-v1"></script>
 </head>
 <body>
 <header class="season-topbar">
@@ -86,6 +87,8 @@
   <section class="season-panel">
     <div class="season-heading"><div><span class="season-kicker">SWITCH DI STAGIONE</span><h2>Attivazione ufficiale</h2></div><span class="season-pill season-pill-locked">Bloccata</span></div>
     <p class="season-description">Questo comando resterà bloccato finché non saranno completati e verificati: listoni, ordine definitivo dal Draft Dinamico, diritti condizionati, compensative e Pre-Draft 2027.</p>
+    <button id="season-switch-check" type="button" class="season-action">Verifica requisiti (simulazione)</button>
+    <div id="season-switch-report" class="season-stack" role="status" aria-live="polite"></div>
     <button type="button" class="season-locked" disabled>🔒 Attiva Draft 2027/28</button>
     <p class="season-help">Il vecchio Reset Draft non è una procedura per iniziare una nuova stagione.</p>
   </section>
