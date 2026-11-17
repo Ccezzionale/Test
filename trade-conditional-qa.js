@@ -134,7 +134,19 @@ function refreshPlayers(){
    .filter(p=>p.role!=="P").map(p=>option(p.id,playerName(p)+(p.is_u21_slot?" · U21":"")))]);
 }
 function refreshForm(reset=false){
- const kind=el("qaKind").value,owner=readOwner(),holder=readHolder();
+ const kind=el("qaKind").value;
+ if(kind==="right_transfer"){
+   el("qaGrantorSide").value="mine";
+   el("qaGrantorSide").disabled=true;
+   const owned=model.rights.find(r=>r.status==="active"&&same(r.holder_team_id,viewer));
+   if(owned&&(same(el("qaToTeam").value,owned.grantor_team_id)||
+     same(el("qaToTeam").value,viewer))){
+     const buyer=displayedTeams().find(t=>!same(t.id,viewer)&&
+       !same(t.id,owned.grantor_team_id)&&t.conference===getTeam(viewer)?.conference);
+     if(buyer)el("qaToTeam").value=buyer.id;
+   }
+ }else el("qaGrantorSide").disabled=false;
+ const owner=readOwner(),holder=readHolder();
  const ownerChanged=String(formOwner)!==String(owner);
  formOwner=owner;
  for(const [name,id] of [["standing","qaStandingFields"],["ranked","qaRankedFields"],
@@ -168,7 +180,9 @@ function refreshForm(reset=false){
  refreshRanked(reset||ownerChanged);
  const rights=model.rights.filter(r=>r.status==="active"&&same(r.holder_team_id,owner));
  fill("qaExistingRight",[option("","Scegli un diritto…"),
-  ...rights.map(r=>option(r.id,kindLabel(r.rule_kind)+" · "+teamName(r.grantor_team_id)))]);
+  ...rights.map(r=>option(r.id,"Diritto da "+teamName(r.grantor_team_id)+" → "+
+    teamName(r.holder_team_id)+" · "+kindLabel(r.rule_kind)))],
+   rights.length===1?rights[0].id:null);
  el("qaCounterInfo").textContent=teamName(holder)+" offre una pick per il diritto di "+teamName(owner)+".";
  refreshPlayers();
  updateStanding();
@@ -229,7 +243,9 @@ function resaleFlow(offer,right){
  const seller=offer.grantor_team_id;
  const buyer=same(seller,offer.from_team_id)?offer.to_team_id:offer.from_team_id;
  const price=qaPick(model,offer.counter_pick_id);
- const error=right&&!same(right.holder_team_id,seller)
+ const error=right&&right.status!=="active"
+   ?"Diritto già finalizzato: la pick è stata assegnata e non può essere rivenduta.":
+   right&&!same(right.holder_team_id,seller)
    ?"Attenzione: questa franchigia non è più titolare del diritto.":
    right&&same(buyer,right.grantor_team_id)
    ?"Attenzione: non puoi rivendere il diritto a chi deve già consegnare la pick.":
@@ -261,13 +277,29 @@ function updatePreview(){
    branchLabels(d.rule_kind,d.rule_spec,d.candidate_pick_ids);
  if(resale){
    el("qaResaleGuide").innerHTML=underlying?resaleInfo.summary:
-     '<p class="qa-resale-warning">Scegli un diritto attivo prima di preparare la rivendita.</p>';
+     '<p class="qa-resale-warning">Nessun diritto attivo rivendibile da '+esc(teamName(viewer))+
+     '. Una pick già assegnata non può essere rivenduta. Usa la prova guidata qui sotto.</p>';
  }
  el("qaSend").textContent=resale?"⇄ Invia proposta di rivendita simulata":"✉️ Invia proposta simulata";
  const ranked=d.rule_kind==="ranked",chosen=d.candidate_pick_ids.length;
  const eligible=ranked?eligibleRankedRounds(readOwner()):[];
  const rankedIssue=ranked&&(eligible.length===0||chosen<2);
- el("qaSend").disabled=Boolean(rankedIssue);
+ const activeOwn=model.rights.filter(r=>r.status==="active"&&same(r.holder_team_id,viewer));
+ const resaleIssue=resale&&(!underlying||underlying.status!=="active"||
+   !same(underlying.holder_team_id,viewer)||!!resaleInfo.error);
+ el("qaSend").disabled=Boolean(rankedIssue||resaleIssue);
+ el("qaResaleDemo").hidden=!resale||activeOwn.length>0;
+ if(resale&&!activeOwn.length){
+   const solved=model.rights.find(r=>r.status==="resolved"&&
+     (same(r.grantor_team_id,viewer)||same(r.holder_team_id,viewer)||
+      (r.history||[]).some(h=>same(h.from,viewer))));
+   const other=model.rights.find(r=>r.status==="active"&&!same(r.holder_team_id,viewer));
+   el("qaResaleNoRightsText").textContent=solved?
+     "Il diritto che stai guardando è già FINALIZZATO: la pick è stata assegnata e non è più rivendibile. Usa la prova guidata per ricominciare prima della finalizzazione.":
+     other?"Il diritto attivo appartiene a "+teamName(other.holder_team_id)+
+     ". Devi usare la vista del titolare per rivenderlo, oppure avviare la prova guidata.":
+     "Non hai diritti attivi. La prova guidata crea la trade Bartowski–Bayern accettata ma non ancora finalizzata.";
+ }
  el("qaRankedHint").textContent=!ranked?"":eligible.length===0?
   teamName(readOwner())+" non possiede due pick disponibili nello stesso round. "+
   "Prova a cedere un diritto da Bayern o Desperados, oppure scegli una clausola diversa.":
