@@ -1273,3 +1273,135 @@ tbody tr:last-child {
     font-size: .66rem;
   }
 }
+
+
+/* ============================================================
+   ROSE V3 - CLUB CARDS + ROLE ROSTER (17/11/2026)
+   Visual-only override: Supabase, FP, U21, P6 and IR logic intact.
+   ============================================================ */
+.rose-page { max-width: 1320px; padding: 20px 16px 48px; }
+.rose-hero-banner { margin-bottom: 14px; border-radius: 20px; box-shadow: 0 12px 30px rgba(0,30,65,.14); }
+.rose-banner-img { border-radius: inherit; }
+.rose-legend-details { padding: 0; margin-bottom: 14px; overflow: hidden; border-radius: 16px; }
+.rose-legend-summary { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 6px 12px; padding: 13px 18px; cursor: pointer; list-style: none; color: #0a3157; font-size: .9rem; font-weight: 850; }
+.rose-legend-summary::-webkit-details-marker { display: none; }
+.rose-legend-summary small { margin-left: auto; color: #6b8298; font-size: .74rem; font-weight: 700; }
+.rose-legend-summary::after { content: "⌄"; font-size: 1.4rem; line-height: .7; color: #005a9c; transition: transform .2s; }
+.rose-legend-details[open] .rose-legend-summary::after { transform: rotate(180deg); }
+.rose-legend-details #legenda { display: flex; flex-wrap: wrap; justify-content: flex-start; gap: 8px; padding: 0 16px 15px; }
+.rose-legend-details .legend-item { width: auto; max-width: 100%; white-space: normal; flex: 0 0 auto; font-size: .8rem; padding: 5px 10px; border-radius: 12px; }
+.rose-legend-details .badge-img { width: 24px; height: 24px; }
+.rose-filter-card { position: relative; top: auto; z-index: 1; padding: 15px 17px; margin-bottom: 20px; border-radius: 18px; }
+#filtri-rose { display: grid; grid-template-columns: minmax(220px, 1.7fr) minmax(155px, 1fr) minmax(155px, 1fr) auto; align-items: end; gap: 10px; }
+.rose-search-field, .rose-select-field { display: flex; flex-direction: column; min-width: 0; gap: 6px; }
+.rose-field-caption { color: #66809a; font-size: .67rem; font-weight: 850; letter-spacing: .09em; }
+#filtri-rose input, #filtri-rose select { width: 100%; min-width: 0; max-width: none; height: 46px; padding: 0 13px; box-sizing: border-box; border: 1px solid #d5e2ef; border-radius: 12px; background: #f8fbff; color: #163653; font-size: .92rem; box-shadow: none; }
+#filtri-rose input:focus, #filtri-rose select:focus { border-color: #006fbe; outline: 2px solid rgba(0,111,190,.14); outline-offset: 0; box-shadow: none; }
+.reset-rose-btn { flex: 0 0 auto; height: 46px; padding: 0 16px; border-radius: 12px; background: #e9f1fa; color: #07518c; border: 1px solid #d6e5f5; box-shadow: none; font-size: .83rem; font-weight: 850; }
+.reset-rose-btn:hover { background: #dbeafa; transform: none; box-shadow: none; filter: none; }
+.rose-content-card { border: 0; background: transparent; box-shadow: none; padding: 0; border-radius: 0; min-height: 0; }
+.rose-results-heading { display: flex; align-items: end; justify-content: space-between; gap: 12px; margin: 0 2px 14px; }
+.rose-eyebrow { font-size: .63rem; color: #0066ab; font-weight: 900; letter-spacing: .16em; }
+.rose-results-heading h2 { margin: 2px 0 0; font-size: 1.4rem; line-height: 1.2; color: #092d52; }
+.rose-results-heading p { margin: 0 0 2px; color: #687f95; font-size: .84rem; }
+#contenitore-rose { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 18px; align-items: start; }
+#contenitore-rose:not(:has(.box-rosa)) { padding: 30px 10px; }
+.box-rosa { min-width: 0; padding: 0 0 12px; border-radius: 20px; border-color: #d8e5f1; background: #fff; box-shadow: 0 8px 24px rgba(5,38,76,.07); }
+.box-rosa:hover { transform: none; box-shadow: 0 12px 27px rgba(5,38,76,.10); }
+.box-rosa::before { height: 80px; background: radial-gradient(circle at 12% 0%,rgba(99,185,244,.18),transparent 50%),linear-gradient(112deg,#05273b,#004c86); }
+.logo-nome { padding: 13px 16px 8px; }
+.team-icons { min-height: 94px; gap: 18px; margin-bottom: 0; }
+.team-logo { box-sizing: border-box; width: 78px; height: 78px; padding: 7px; border-radius: 17px; background: #fff; box-shadow: 0 6px 18px rgba(0,21,48,.13); }
+.team-shirt { width: 108px; height: 108px; }
+.team-title-wrap { gap: 5px; }
+.logo-nome .team-name { min-height: 0; padding: 0; border-radius: 0; background: transparent; box-shadow: none; font-size: 1.24rem; line-height: 1.2; overflow-wrap: anywhere; }
+.team-conference-badge { padding: 4px 10px; font-size: .64rem; letter-spacing: .03em; box-shadow: none; }
+.team-roster-meta { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap: 1px; width: 100%; position: relative; margin: 10px 0 0; padding: 1px; box-sizing: border-box; background: #dce8f3; border: 1px solid #dce8f3; border-radius: 13px; box-shadow: none; overflow: hidden; }
+.team-roster-meta::before { display: none; }
+.team-roster-meta .rose-stat { min-width: 0; min-height: 57px; padding: 8px 3px 6px; margin: 0; background: #f5f9fd; border: 0; border-radius: 0; box-shadow: none; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; text-align: center; color: #123b60; }
+.team-roster-meta .rose-stat strong { color: #062f58; font-size: 1.14rem; line-height: 1; font-weight: 900; }
+.team-roster-meta .rose-stat small { color: #5b7590; font-size: .64rem; line-height: 1.1; font-weight: 760; overflow-wrap: anywhere; }
+.team-roster-meta .rose-stat:last-child { grid-column: span 2; }
+.team-roster-meta .rose-stat.has-ir { background: #fff5d7; }
+.team-roster-meta .rose-stat.has-ir strong, .team-roster-meta .rose-stat.has-ir small { color: #795400; }
+.roster-toggle { display: flex; justify-content: center; gap: 11px; width: 100%; max-width: 380px; height: 43px; margin: 13px auto 0; padding: 0 15px; border: 0; border-radius: 12px; background: linear-gradient(105deg,#052e51,#0063a6); color: #fff; box-shadow: 0 5px 12px rgba(0,49,97,.13); font-size: .88rem; }
+.roster-toggle:hover { background: #004c86; }
+.roster-toggle strong { width: 22px; height: 22px; background: rgba(255,255,255,.16); font-size: 1rem; }
+.roster-body { padding: 4px 15px 12px; }
+.roster-quick-wrap { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 6px; margin: 4px 0 12px; }
+.roster-quick-title { color: #6d8296; font-size: .7rem; font-weight: 850; text-transform: uppercase; letter-spacing: .08em; }
+.roster-quick-filters { display: flex; flex-wrap: wrap; gap: 5px; }
+.roster-quick-filter { min-height: 31px; padding: 5px 10px; border: 1px solid #d5e3f1; border-radius: 999px; background: #f7faff; color: #4f6983; font: inherit; font-size: .74rem; font-weight: 850; cursor: pointer; }
+.roster-quick-filter[aria-pressed="true"] { background: #063b69; border-color: #063b69; color: #fff; }
+.roster-quick-filter:disabled { opacity: .42; cursor: not-allowed; }
+.roster-quick-filter:focus-visible, .roster-toggle:focus-visible { outline: 3px solid #f3b525; outline-offset: 2px; }
+.roster-group { margin-top: 10px; border: 1px solid #e0eaf4; border-radius: 13px; overflow: hidden; background: #fff; }
+.roster-group-title { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin: 0; padding: 9px 12px; background: #edf5fc; color: #0a416d; font-size: .81rem; font-weight: 900; letter-spacing: .015em; }
+.roster-group-count { display: inline-flex; justify-content: center; align-items: center; min-width: 23px; height: 23px; padding: 0 5px; border-radius: 8px; background: #d7e8f7; color: #275d87; font-size: .69rem; }
+.roster-player-row { display: grid; grid-template-columns: 77px minmax(0,1fr) minmax(78px,112px); align-items: center; column-gap: 7px; padding: 9px 11px; border-top: 1px solid #eaf0f6; min-width: 0; }
+.roster-player-row:nth-child(odd) { background: #fafcff; }
+.roster-role { font-size: .79rem; color: #0063a7; font-weight: 850; overflow-wrap: anywhere; }
+.roster-player-info { min-width: 0; display: flex; align-items: center; flex-wrap: wrap; gap: 2px 5px; }
+.roster-person-name { font-size: .88rem; color: #18324f; font-weight: 680; overflow-wrap: anywhere; }
+.roster-player-badges { display: inline-flex; align-items: center; gap: 2px; flex-wrap: wrap; }
+.roster-player-badges .badge-img, .roster-player-badges .badge-img-star, .roster-player-badges .badge-img-pill, .roster-player-badges .badge-img-protected { width: 23px !important; height: 23px !important; margin: 0 !important; transform: none !important; }
+.roster-seriea { min-width: 0; font-size: .77rem; color: #647b90; text-align: right; overflow-wrap: anywhere; }
+.roster-empty-filter { margin: 12px 0 0; padding: 18px; border: 1px dashed #b9d0e3; border-radius: 12px; color: #647e94; text-align: center; font-size: .86rem; }
+.roster-body .team-ir-slot { width: 100%; margin: 0 0 12px; }
+.roster-body .team-ir-slot .team-ir-copy strong { font-size: .9rem; }
+@media (min-width: 901px) {
+  .roster-toggle { display: none; }
+  .roster-body { display: block !important; }
+}
+@media (max-width: 900px) {
+  #contenitore-rose { grid-template-columns: 1fr; }
+  #filtri-rose { grid-template-columns: repeat(2,minmax(0,1fr)); }
+  .rose-search-field { grid-column: 1 / -1; }
+  .reset-rose-btn { grid-column: 1 / -1; justify-self: end; height: 34px; padding: 0 12px; }
+}
+@media (max-width: 600px) {
+  .rose-page { padding: 12px 10px 34px; }
+  .rose-hero-banner { margin-bottom: 12px; border-radius: 15px; }
+  .rose-legend-details { border-radius: 14px; margin-bottom: 12px; }
+  .rose-legend-summary { padding: 12px; font-size: .85rem; }
+  .rose-legend-summary small { font-size: .69rem; }
+  .rose-legend-details #legenda { flex-wrap: wrap; overflow: visible; padding: 0 10px 12px; }
+  .rose-legend-details .legend-item { white-space: normal; }
+  .rose-filter-card { padding: 12px; margin-bottom: 17px; border-radius: 15px; }
+  #filtri-rose { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 9px; }
+  #filtri-rose input, #filtri-rose select { height: 43px; font-size: .83rem; padding: 0 10px; }
+  .rose-field-caption { font-size: .61rem; }
+  .reset-rose-btn { margin-top: 0; font-size: .77rem; }
+  .rose-results-heading { align-items: start; margin-bottom: 11px; }
+  .rose-results-heading h2 { font-size: 1.2rem; }
+  .rose-results-heading p { max-width: 45%; font-size: .7rem; line-height: 1.35; text-align: right; }
+  #contenitore-rose { gap: 12px; }
+  .box-rosa { border-radius: 17px; padding-bottom: 10px; }
+  .box-rosa::before { height: 69px; }
+  .logo-nome { padding: 10px 12px 5px; }
+  .team-icons { min-height: 80px; gap: 16px; margin-bottom: 2px; }
+  .team-logo { width: 70px; height: 70px; border-radius: 14px; }
+  .team-shirt { width: 88px; height: 88px; }
+  .logo-nome .team-name { padding: 0; min-height: 0; font-size: 1.15rem; }
+  .team-conference-badge { font-size: .61rem; padding: 4px 9px; }
+  .team-roster-meta { width: 100%; margin-top: 10px; border-radius: 12px; }
+  .team-roster-meta .rose-stat { min-height: 52px; padding: 7px 2px 5px; }
+  .team-roster-meta .rose-stat strong { font-size: 1rem; }
+  .team-roster-meta .rose-stat small { font-size: .59rem; }
+  .roster-toggle { display: flex; width: calc(100% - 24px); margin-top: 10px; }
+  .roster-body { padding: 0 11px 8px; margin-top: 10px; }
+  .roster-quick-wrap { gap: 7px; }
+  .roster-quick-title { width: 100%; }
+  .roster-quick-filter { padding: 5px 9px; min-height: 30px; font-size: .7rem; }
+  .roster-group { border-radius: 12px; }
+  .roster-player-row { grid-template-columns: 57px minmax(0,1fr) minmax(55px,85px); column-gap: 6px; padding: 9px 8px; }
+  .roster-role { font-size: .72rem; }
+  .roster-person-name { font-size: .82rem; }
+  .roster-seriea { font-size: .7rem; }
+  .team-ir-slot { grid-template-columns: 38px minmax(0,1fr); }
+}
+@media (max-width: 350px) {
+  .rose-legend-summary small { display: none; }
+  .roster-player-row { grid-template-columns: 47px minmax(0,1fr) 51px; column-gap: 5px; }
+  .roster-player-badges .badge-img, .roster-player-badges .badge-img-star, .roster-player-badges .badge-img-pill, .roster-player-badges .badge-img-protected { width: 20px !important; height: 20px !important; }
+}
