@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Rose - Lega degli Eroi</title>
   <link rel="stylesheet" href="navbar.css?v=99">
-  <link rel="stylesheet" href="rose.css?v=101">
+  <link rel="stylesheet" href="rose.css?v=20261117-v3">
 <meta name="lega-app-build" content="v20261028-ef9f76dc3f25">
 <script defer src="./app-updates.js?bootstrap=v20261028-ef9f76dc3f25" data-eroi-update="1"></script>
 </head>
@@ -119,7 +119,8 @@
 </section>
 
     
-    <section class="rose-legend-card">
+    <details class="rose-legend-card rose-legend-details">
+      <summary class="rose-legend-summary"><span>Legenda badge e vincoli</span><small>FP · U21 · P6 · RFA · IR</small></summary>
       <div id="legenda">
 <span class="legend-item"><strong>In grassetto</strong> = eleggibile FP per la prossima stagione</span>
 
@@ -164,38 +165,33 @@
     </span>
         
       </div>
-    </section>
+    </details>
 
     <section class="rose-filter-card">
       <div id="filtri-rose">
-        <input id="filtro-nome" type="text" placeholder="Cerca giocatore..." />
-
-        <select id="filtro-conference">
-          <option value="Tutte">Tutte le Conference</option>
-          <option value="Conference League">Conference League</option>
-          <option value="Conference Championship">Conference Championship</option>
-        </select>
-
-        <select id="filtro-squadra">
-          <option value="Tutte">Tutte le squadre</option>
-          <option value="Real Mimmo">Real Mimmo</option>
-          <option value="Giody">Giody</option>
-          <option value="Desperados">Desperados</option>
-          <!-- aggiungi tutte le squadre -->
-        </select>
-
-        <button type="button" class="reset-rose-btn" onclick="resetFiltri()">
-  Reset filtri
-</button>
+        <label class="rose-search-field" for="filtro-nome">
+          <span class="rose-field-caption">CERCA GIOCATORE</span>
+          <input id="filtro-nome" type="search" autocomplete="off" placeholder="Nome del giocatore..." />
+        </label>
+        <label class="rose-select-field" for="filtro-conference">
+          <span class="rose-field-caption">CONFERENCE</span>
+          <select id="filtro-conference"><option value="Tutte">Tutte le Conference</option></select>
+        </label>
+        <label class="rose-select-field" for="filtro-squadra">
+          <span class="rose-field-caption">FRANCHIGIA</span>
+          <select id="filtro-squadra"><option value="Tutte">Tutte le squadre</option></select>
+        </label>
+        <button type="button" class="reset-rose-btn" onclick="resetFiltri()">Azzera filtri</button>
       </div>
     </section>
 
     <section class="rose-content-card">
+      <div class="rose-results-heading"><div><span class="rose-eyebrow">LEGA DEGLI EROI</span><h2>Le franchigie</h2></div><p>Apri una squadra per esplorare la rosa e i suoi vincoli.</p></div>
       <div id="contenitore-rose">Caricamento rose...</div>
     </section>
   </main>
 <script src="mobile-nav.js?v=2"></script>
-  <script type="module" src="rose.js?v=70"></script>
+  <script type="module" src="rose.js?v=20261117-v3"></script>
   <script src="navbar.js?v=100"></script>
 </body>
 </html>
