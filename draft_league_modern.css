@@ -1,9 +1,9 @@
 /* Draft Conference League · restyling mobile 2026-11-17
    Scoped: Championship e logica del Draft non vengono alterati. */
-body.draft-league-modern .mobile-bottom-nav { display: none !important; }
+/* La navbar Draft è stata rimossa dall’HTML. mobile-nav.js inserisce quella standard. */
 @media (max-width:768px) {
-  body.draft-league-modern { padding-bottom: 0 !important; }
-  body.draft-league-modern .page-shell { padding-bottom: 40px !important; }
+  body.draft-league-modern { padding-bottom: 96px !important; }
+  body.draft-league-modern .page-shell { padding-bottom: 104px !important; }
   body.draft-league-modern .mobile-draft-tabs {
     display: flex !important;
     position: relative;
@@ -80,7 +80,7 @@ body.draft-league-modern .mobile-bottom-nav { display: none !important; }
   .draft-overview-switch button:focus-visible,
   .draft-overview-pick:focus-visible { outline:3px solid #ffd54a; outline-offset:2px; }
   .draft-overview-picks.is-hidden,
-  .mobile-overview-rounds.is-hidden { display:none !important; }
+  .mobile-overview-rounds.is-hidden, .draft-overview-pick[hidden] { display:none !important; }
   .draft-overview-search {
     display:block; width:100%; box-sizing:border-box;
     min-height:40px; padding:10px 12px; margin:3px 0 10px;
@@ -245,4 +245,56 @@ body.draft-league-modern .mobile-bottom-nav { display: none !important; }
   body.draft-league-modern #riepilogo-squadre .team-player-row { border-radius:10px !important; }
   body.draft-league-modern #riepilogo-squadre .team-player-info strong { font-size:.83rem !important; }
   body.draft-league-modern #riepilogo-squadre .team-player-info small { font-size:.7rem !important; }
+}
+
+
+/* Ripristina la nav standard dell'app (Home / Rose / Mercato / Waiver). */
+@media (max-width:768px) {
+  body.draft-league-modern .mobile-bottom-nav {
+    display:grid !important;
+    grid-template-columns: repeat(4,minmax(0,1fr)) !important;
+    left:10px !important; right:10px !important;
+    bottom:calc(9px + env(safe-area-inset-bottom)) !important;
+    z-index:1400 !important;
+    min-height:64px !important;
+    height:64px !important;
+    padding:6px !important; gap:3px !important;
+    background:linear-gradient(180deg,rgba(8,20,38,.96),rgba(6,19,38,.96)) !important;
+    border:1px solid rgba(212,164,55,.28) !important;
+    border-radius:22px !important;
+    box-shadow:0 16px 35px rgba(6,19,38,.27) !important;
+  }
+  body.draft-league-modern .mobile-bottom-nav a {
+    display:flex !important;
+    flex-direction:column !important;
+    justify-content:center !important;
+    align-items:center !important;
+    gap:3px !important; min-width:0 !important;
+    padding:4px 2px !important;
+    color:rgba(255,248,232,.70) !important;
+    border-radius:15px !important;
+    font-size:.65rem !important;
+    line-height:1.1 !important;
+    text-decoration:none !important;
+  }
+  body.draft-league-modern .mobile-bottom-nav a.active {
+    background:linear-gradient(135deg,rgba(212,164,55,.24),rgba(255,255,255,.05)) !important;
+    color:#f4d27a !important;
+    border:1px solid rgba(212,164,55,.26) !important;
+  }
+  body.draft-league-modern .mobile-bottom-icon {
+    display:block !important;
+    width:25px !important; height:25px !important;
+    flex:0 0 25px !important;
+  }
+  body.draft-league-modern .mobile-bottom-icon img {
+    display:block !important; width:100% !important; height:100% !important; object-fit:contain !important;
+  }
+  body.draft-league-modern .mobile-bottom-nav a span:last-child {
+    font-size:.63rem !important; font-weight:850 !important;
+  }
+}
+@media (min-width:769px){
+  body.draft-league-modern .draft-board-tools,
+  body.draft-league-modern .draft-pool-quick-filters { display:none !important; }
 }
