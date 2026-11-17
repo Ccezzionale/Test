@@ -6012,56 +6012,97 @@ function renderWaiverTradeAssetList(container, assets, selectedKeys = new Set())
       const weekDiff = Number(a.week) - Number(b.week);
       if (weekDiff !== 0) return weekDiff;
       return String(a.original_team_name || "").localeCompare(
-        String(b.original_team_name || ""),
-        "it"
+        String(b.original_team_name || ""), "it"
       );
     });
 
-  if (tradableAssets.length === 0) {
-    container.innerHTML = "<p>Nessuna chiamata negoziabile in questo intervallo.</p>";
+  if (!tradableAssets.length) {
+    container.innerHTML = '<p class="waiver-trade-empty">Nessuna chiamata negoziabile in questo intervallo.</p>';
     return;
   }
 
-  let lastWeek = null;
+  container.innerHTML = tradableAssets.map(asset => {
+    const key = getWaiverTradeAssetKey(asset);
+    const week = Number(asset.week);
+    const checked = selectedKeys.has(key);
+    const originalName = escapeWaiverHtml(asset.original_team_name || "Squadra originale");
+    const ownerIsOriginal = String(asset.original_team_id) === String(asset.owner_team_id);
+    const disabled = isAdminViewingAsTeam() ? "disabled" : "";
 
-  container.innerHTML = tradableAssets
-    .map(asset => {
-      const week = Number(asset.week);
-      const key = getWaiverTradeAssetKey(asset);
-      const weekHeading = week !== lastWeek
-        ? `<div class="waiver-trade-week-label">Settimana ${week}</div>`
-        : "";
+    return `
+      <label class="waiver-trade-asset ${checked ? "is-selected" : ""}">
+        <input type="checkbox" value="${escapeWaiverHtml(key)}" ${checked ? "checked" : ""} ${disabled} />
+        <span class="waiver-trade-choice-indicator" aria-hidden="true">✓</span>
+        <span class="waiver-trade-asset-copy">
+          <strong>Settimana ${Number.isFinite(week) ? week : "-"}</strong>
+          <small>${escapeWaiverHtml(formatWaiverTradeAssetMeta(asset))}</small>
+          ${!ownerIsOriginal ? `<small class="waiver-trade-original">Originaria: ${originalName}</small>` : ""}
+          ${asset.has_saved_call ? '<small class="waiver-trade-saved-warning">Scelta già salvata: sarà cancellata se lo scambio viene accettato.</small>' : ""}
+        </span>
+      </label>`;
+  }).join("");
+}
 
-      lastWeek = week;
+function switchWaiverTradeView(view) {
+  if (!["new", "received", "sent"].includes(view)) return;
+  document.querySelectorAll("[data-waiver-trade-view-tab]").forEach(button => {
+    const active = button.dataset.waiverTradeViewTab === view;
+    button.classList.toggle("is-active", active);
+    button.setAttribute("aria-selected", String(active));
+    button.tabIndex = active ? 0 : -1;
+  });
+  document.querySelectorAll("[data-waiver-trade-view]").forEach(panel => {
+    const active = panel.dataset.waiverTradeView === view;
+    panel.hidden = !active;
+    panel.classList.toggle("is-active", active);
+  });
+}
 
-      const originalName = escapeWaiverHtml(
-        asset.original_team_name || "Squadra originale"
-      );
-      const checked = selectedKeys.has(key) ? "checked" : "";
-      const disabled = isAdminViewingAsTeam() ? "disabled" : "";
+function updateWaiverTradeSummary() {
+  const offerKeys = getSelectedWaiverTradeAssetKeys(waiverTradeOfferAssetsEl);
+  const requestKeys = getSelectedWaiverTradeAssetKeys(waiverTradeRequestAssetsEl);
+  const partnerSelected = Boolean(waiverTradePartnerSelect?.value);
+  const selectedAssets = waiverTradeAssets.filter(asset => 
+    offerKeys.has(getWaiverTradeAssetKey(asset)) ||
+    requestKeys.has(getWaiverTradeAssetKey(asset))
+  );
+  const formatChosen = keys => {
+    const assets = waiverTradeAssets
+      .filter(asset => keys.has(getWaiverTradeAssetKey(asset)))
+      .sort((a, b) => Number(a.week) - Number(b.week));
+    if (!assets.length) return "Nessuna chiamata";
+    const weeks = assets.map(asset => "sett. " + asset.week).join(", ");
+    return assets.length + (assets.length === 1 ? " chiamata" : " chiamate") + " · " + weeks;
+  };
 
-      return `
-        ${weekHeading}
-        <label class="waiver-trade-asset">
-          <input
-type="checkbox"
-            value="${escapeWaiverHtml(key)}"
-            ${checked}
-            ${disabled}
-          />
-          <span class="waiver-trade-asset-copy">
-            <strong>Chiamata di ${originalName}</strong>
-            <small>${escapeWaiverHtml(formatWaiverTradeAssetMeta(asset))}</small>
-            ${
-              asset.has_saved_call
-                ? '<small class="waiver-trade-saved-warning">Scelta già salvata: verrà cancellata se accetti lo scambio</small>'
-                : ""
-            }
-          </span>
-        </label>
-      `;
-    })
-    .join("");
+  const offerEl = document.getElementById("waiverTradeSummaryOffer");
+  const requestEl = document.getElementById("waiverTradeSummaryRequest");
+  const statusEl = document.getElementById("waiverTradeSummaryStatus");
+  const warningEl = document.getElementById("waiverTradeSummaryWarning");
+  const canSubmit = partnerSelected && offerKeys.size > 0 && requestKeys.size > 0 &&
+    !isAdminViewingAsTeam();
+
+  if (offerEl) offerEl.textContent = formatChosen(offerKeys);
+  if (requestEl) requestEl.textContent = formatChosen(requestKeys);
+  if (statusEl) {
+    statusEl.textContent = canSubmit ? "Pronta da inviare" : "Da completare";
+    statusEl.classList.toggle("is-ready", canSubmit);
+  }
+  if (warningEl) {
+    const hasSavedSelection = selectedAssets.some(asset => asset.has_saved_call);
+    warningEl.hidden = !hasSavedSelection;
+    warningEl.textContent = hasSavedSelection
+      ? "Attenzione: una scelta già salvata sarà cancellata solo se lo scambio viene accettato."
+      : "";
+  }
+  if (waiverTradeSubmitBtn) waiverTradeSubmitBtn.disabled = !canSubmit;
+}
+
+function handleWaiverTradeAssetChange(event) {
+  const input = event.target.closest('.waiver-trade-asset input[type="checkbox"]');
+  if (!input) return;
+  input.closest(".waiver-trade-asset")?.classList.toggle("is-selected", input.checked);
+  updateWaiverTradeSummary();
 }
 
 function populateWaiverTradePartnerSelect() {
@@ -6140,13 +6181,10 @@ function renderWaiverTradeBuilder() {
     );
   }
 
-  if (waiverTradeSubmitBtn) {
-    waiverTradeSubmitBtn.disabled = isAdminViewingAsTeam();
-  }
-
   if (waiverTradeNoteInput) {
     waiverTradeNoteInput.disabled = isAdminViewingAsTeam();
   }
+  updateWaiverTradeSummary();
 }
 
 function getWaiverTradeStatusLabel(status) {
@@ -6684,6 +6722,24 @@ addCompensatoryBtn?.addEventListener("click", () => {
 waiverTradePartnerSelect?.addEventListener("change", () => {
   renderWaiverTradeBuilder();
 });
+
+waiverTradeOfferAssetsEl?.addEventListener("change", handleWaiverTradeAssetChange);
+waiverTradeRequestAssetsEl?.addEventListener("change", handleWaiverTradeAssetChange);
+document.querySelectorAll("[data-waiver-trade-view-tab]").forEach(button => {
+  button.addEventListener("click", () => {
+    switchWaiverTradeView(button.dataset.waiverTradeViewTab);
+  });
+  button.addEventListener("keydown", event => {
+    if (!["ArrowLeft", "ArrowRight"].includes(event.key)) return;
+    const tabs = [...document.querySelectorAll("[data-waiver-trade-view-tab]")];
+    const index = tabs.indexOf(button);
+    const next = tabs[(index + (event.key === "ArrowRight" ? 1 : -1) + tabs.length) % tabs.length];
+    event.preventDefault();
+    switchWaiverTradeView(next.dataset.waiverTradeViewTab);
+    next.focus();
+  });
+});
+switchWaiverTradeView("new");
 
 waiverTradeSubmitBtn?.addEventListener("click", () => {
   createWaiverCallTradeProposal();
