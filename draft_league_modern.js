@@ -195,65 +195,6 @@
     filterBoard();
   }
 
-  function setupPoolQuickFilters() {
-    const pool = $("#pool-section");
-    const filters = $(".filters-wrap", pool || document);
-    if (!filters || $(".draft-pool-quick-filters",filters)) return;
-
-    // I chip sono macroaree Mantra (non i ruoli Classic P/D/C/A).
-    // Il menu "Altri filtri" permette poi il ruolo Mantra puntuale.
-    const choices = [
-      ["all","Tutti"],["por","Por"],["defense","Difesa"],
-      ["midfield","Centrocampo"],["attack","Attacco"],["U21","U21"]
-    ];
-    const wrap = document.createElement("div");
-    wrap.className = "draft-pool-quick-filters";
-    wrap.setAttribute("role","group");
-    wrap.setAttribute("aria-label","Macroaree Mantra e Under 21");
-    choices.forEach(([value,label]) => {
-      wrap.appendChild(button("",label,{
-        "data-pool-quick":value,
-        "aria-pressed":value==="all" ? "true":"false"
-      }));
-    });
-    $(".filters-toolbar",filters)?.insertAdjacentElement("beforebegin",wrap);
-
-    const roleSelect = $("#filtroRuolo"), roleSearch = $("#cercaRuolo"), u21 = $("#filtroU21");
-    const setActive = (choice) => {
-      wrap.querySelectorAll("[data-pool-quick]").forEach(btn =>
-        btn.setAttribute("aria-pressed", String(btn.dataset.poolQuick === choice))
-      );
-    };
-    wrap.addEventListener("click",event=>{
-      const el = event.target.closest("[data-pool-quick]");
-      if(!el) return;
-      const value = el.dataset.poolQuick;
-      if (roleSelect) roleSelect.value = "";
-      if (roleSearch) roleSearch.value = "";
-      if (u21) u21.value = value === "U21" ? "u21" : "";
-      if (pool) {
-        if (["por","defense","midfield","attack"].includes(value))
-          pool.dataset.quickMantraGroup = value;
-        else delete pool.dataset.quickMantraGroup;
-      }
-      setActive(value);
-      (roleSelect || u21 || roleSearch)?.dispatchEvent(new Event("change",{bubbles:true}));
-    });
-
-    // Se l'utente sceglie un ruolo Mantra preciso, la macroarea
-    // automatica si spegne: resta soltanto il filtro selezionato.
-    [roleSelect,roleSearch,u21].forEach(element=>{
-      ["input","change"].forEach(eventName => element?.addEventListener(eventName,event=>{
-        if (!event.isTrusted) return;
-        if (pool) delete pool.dataset.quickMantraGroup;
-        const explicitRole = !!roleSelect?.value || !!roleSearch?.value;
-        if (!explicitRole && !u21?.value) setActive("all");
-        else if (!explicitRole && u21?.value === "u21") setActive("U21");
-        else setActive("");
-      }));
-    });
-  }
-
   function setupCompactPool() {
     if (window.innerWidth > 768) return;
     const grid = document.querySelector("#pool-section .filters-grid");
@@ -299,7 +240,6 @@
 
   function setup() {
     setupBoard();
-    setupPoolQuickFilters();
     setupCompactPool();
     adminTabs();
     const host = $(".mobile-companion-actions");
