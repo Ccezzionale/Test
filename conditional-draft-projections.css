@@ -1,0 +1,22 @@
+
+/* Conditional pick overlays – the underlying Draft ownership is never mutated. */
+.ct-draft-projections{border:1px solid #6d9ccc;background:linear-gradient(135deg,#0a3061,#09234b);border-radius:16px;padding:13px;margin:12px 0 19px;color:#f0f7ff;box-shadow:0 6px 17px #0003}
+.ct-draft-projections[hidden]{display:none!important}
+.ct-draft-title{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:10px;flex-wrap:wrap}
+.ct-draft-title strong{font-size:16px;color:#ffdf5d}
+.ct-draft-title small{font-size:11px;color:#bcd8f0}
+.ct-draft-projection{border:1px solid #3579b6;background:#071f45;border-radius:12px;padding:11px 12px;margin-top:10px;font-size:12px;line-height:1.5}
+.ct-draft-projection-head{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.ct-draft-projection-head strong{font-weight:950;font-size:13px}
+.ct-draft-projection-head span{font-size:10px;font-weight:900;border:1px solid #ffde69;color:#ffda47;padding:3px 6px;border-radius:999px;white-space:nowrap}
+.ct-draft-projection p{margin:5px 0;color:#cfdef3;font-size:12px}
+.ct-draft-pick-result{background:#163a64;border:1px solid #4a7da8;color:#e5f3ff;padding:9px;border-radius:9px;margin:9px 0}
+.ct-draft-pick-result strong{color:#ffe17c}
+.ct-draft-projection details{color:#b7d5f0;font-size:11px}
+.ct-draft-projection details summary{cursor:pointer;font-weight:800;margin-top:8px}
+.ct-draft-projection details p{font-size:11px}
+.pick.ct-draft-locked,.draft-pick-board-cell.ct-draft-locked{outline:2px dashed #ffd459;outline-offset:-3px;position:relative}
+.pick.ct-draft-projected,.draft-pick-board-cell.ct-draft-projected{outline:3px solid #ffd459;outline-offset:-3px;position:relative}
+.pick.ct-draft-locked::after{content:"🔐";position:absolute;right:3px;top:3px;font-size:13px;background:#0b3268d9;border-radius:6px;padding:2px}
+.draft-pick-board-cell.ct-draft-locked::after{content:"🔐";position:absolute;right:2px;top:2px;font-size:11px}
+@media(max-width:600px){.ct-draft-title{align-items:flex-start;flex-direction:column;gap:2px}.ct-draft-projections{padding:10px}}
