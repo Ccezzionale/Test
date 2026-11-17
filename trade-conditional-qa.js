@@ -657,14 +657,23 @@ function startResaleDemo(){
   counter_pick_id:setup.bPick.id,mixed_assets:[]
  });
  const right=qaRespondOffer(next,bayern.id,initial.id,true);
+ const startAsBuyer=same(viewer,des.id);
  model=next;
  previews={};
- viewer=bayern.id;
  el("qaToTeam").innerHTML="";
- chooseViewer(bayern.id);
- openResaleComposer(right,des);
- flash("ESEMPIO PRONTO: il diritto Bartowski → Bayern è ATTIVO, non finalizzato. "+
-  "Sei Bayern: invia la rivendita a Desperados, poi passa a Desperados e premi Accetta.");
+ if(startAsBuyer){
+   // Chi avvia l'esempio come Desperados resta Desperados: propone l'acquisto.
+   chooseViewer(des.id);
+   openBuyComposer(right);
+   flash("ESEMPIO PRONTO: Desperados propone di COMPRARE da Bayern il diritto "+
+     "attivo che Bartowski deve onorare. Invia la proposta, passa a Bayern e Accetta.");
+ }else{
+   // Chi avvia da Bayern vede la normale proposta di vendita.
+   chooseViewer(bayern.id);
+   openResaleComposer(right,des);
+   flash("ESEMPIO PRONTO: Bayern propone di VENDERE a Desperados un diritto attivo "+
+     "su una pick di Bartowski. Invia, passa a Desperados e Accetta.");
+ }
 }
 function resetAll(){
  if(!window.confirm("Azzerare tutte le trade simulate, i lucchetti e le notifiche fittizie? I dati ufficiali non vengono toccati."))return;
