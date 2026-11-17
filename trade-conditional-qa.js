@@ -119,6 +119,7 @@ function paintResaleIntent(){
  el("qaResaleBuy").setAttribute("aria-pressed",String(resaleIntent==="buy"));
  el("qaResaleSell").classList.toggle("is-active",resaleIntent==="sell");
  el("qaResaleBuy").classList.toggle("is-active",resaleIntent==="buy");
+ el("qaGrantorLabel").textContent="Chi vende il diritto? (assegnato automaticamente)";
  el("qaExistingRightLabel").textContent=resaleIntent==="sell"?
   "Quale tuo diritto vuoi vendere?":"Quale diritto dell'altra squadra vuoi acquistare?";
  const partner=teamName(el("qaToTeam").value);
@@ -183,7 +184,10 @@ function refreshForm(reset=false){
    el("qaGrantorSide").value=resaleIntent==="sell"?"mine":"theirs";
    el("qaGrantorSide").disabled=true;
    paintResaleIntent();
- }else el("qaGrantorSide").disabled=false;
+ }else{
+   el("qaGrantorSide").disabled=false;
+   el("qaGrantorLabel").textContent="Chi cede il diritto?";
+ }
  const owner=readOwner(),holder=readHolder();
  const ownerChanged=String(formOwner)!==String(owner);
  formOwner=owner;
