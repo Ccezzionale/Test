@@ -47,3 +47,7 @@
 .ct-quick-pick{display:block;width:100%;margin:9px 0 12px;border:1px solid #f8cf5d;border-radius:11px;padding:12px 10px;background:linear-gradient(120deg,#173d75,#0a2757);color:#ffdd6d;font-size:12px;font-weight:950;cursor:pointer;min-height:44px;text-align:center}
 .ct-quick-pick:hover,.ct-quick-pick:focus-visible{border-color:#ffe49d;background:#164b93}
 .ct-mixed-note{border-left:3px solid #ffdc65;padding:7px 9px;background:#102c53;border-radius:6px;color:#fff0bd!important;font-size:11px!important;line-height:1.5!important;margin-top:10px!important}
+
+/* Contratto leggibile anche in mobile e nelle proposte ricevute */
+.ct-clause-list{margin:8px 0 12px 0;padding:9px 10px 9px 27px;border-radius:9px;border:1px solid #355e83;background:#061a37;color:#e9f3fd;font-size:12px;line-height:1.65}
+.ct-clause-list li{padding:3px 0}
