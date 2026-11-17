@@ -1425,3 +1425,190 @@ tbody tr:last-child {
 
 /* Su tablet/desktop la rosa è già visibile: nessun toggle ingannevole. */
 @media (min-width: 601px) { .roster-toggle { display: none !important; } }
+
+
+/* ============================================================
+   ROSE V4 · Tema Draft approvato | navy / bianco / oro
+   Solo aspetto: dati, badge, loghi, filtri e IR invariati.
+   ============================================================ */
+:root {
+  --rose-navy: #071d37;
+  --rose-navy-light: #0f3154;
+  --rose-ink: #102c50;
+  --rose-gold: #f4c535;
+  --rose-border: #bdcbdc;
+  --rose-shadow: 0 8px 23px rgba(7, 30, 58, .075);
+}
+body {
+  background: #fff;
+  color: var(--rose-ink);
+}
+.rose-page { background: transparent; }
+.rose-hero-banner {
+  border: 1px solid #c9d5e1;
+  box-shadow: var(--rose-shadow);
+}
+/* Legenda: testata navy, dettagli su superficie bianca */
+.rose-legend-card.rose-legend-details {
+  background: #fff;
+  border: 1px solid #cbd7e4;
+  box-shadow: var(--rose-shadow);
+  backdrop-filter: none;
+}
+.rose-legend-details .rose-legend-summary {
+  color: #fff;
+  background: linear-gradient(115deg, #061a32, #092849 70%, #0d3154);
+  border-bottom: 3px solid var(--rose-gold);
+}
+.rose-legend-details .rose-legend-summary small { color: #d7e3f0; }
+.rose-legend-details .rose-legend-summary::after { color: #ffd34e; }
+.rose-legend-details .legend-item {
+  color: #163654;
+  background: #fff;
+  border: 1px solid #d7e0ea;
+  box-shadow: none;
+}
+.rose-legend-details #legenda { background: #fff; }
+.legend-ir-badge { border-color: #dcaf2f; }
+/* Pannello ricerca: bianco e contorni blu discreti */
+.rose-filter-card {
+  background: #fff;
+  border: 1px solid var(--rose-border);
+  box-shadow: var(--rose-shadow);
+  backdrop-filter: none;
+}
+.rose-field-caption { color: #274968; }
+#filtri-rose input,
+#filtri-rose select {
+  color: var(--rose-ink);
+  background: #fff;
+  border: 1px solid #b6c8da;
+}
+#filtri-rose input::placeholder { color: #7d8a9a; }
+#filtri-rose input:focus,
+#filtri-rose select:focus {
+  border-color: #0d3154;
+  outline: 2px solid #e3bc46;
+  outline-offset: 1px;
+  background: #fff;
+}
+.reset-rose-btn,
+.reset-rose-btn:hover {
+  color: #fff;
+  background: var(--rose-navy);
+  border: 1px solid var(--rose-navy);
+  border-bottom: 3px solid var(--rose-gold);
+  box-shadow: none;
+}
+.reset-rose-btn:hover { background: #102f52; }
+.reset-rose-btn:focus-visible { outline: 3px solid var(--rose-gold); outline-offset: 2px; }
+/* Intestazione franchigie e stato vuoto */
+.rose-eyebrow { color: #9a6b08; }
+.rose-results-heading h2 { color: var(--rose-navy); }
+.rose-results-heading p { color: #52667d; }
+#rose-empty-state {
+  background: #fff;
+  border-color: #b5c8db;
+  color: var(--rose-ink);
+}
+#rose-empty-state strong { color: var(--rose-navy); }
+/* Scheda della franchigia: copertina identica al Draft, niente azzurrino */
+.box-rosa {
+  border: 1px solid #bfcfdf;
+  background: #fff;
+  box-shadow: var(--rose-shadow);
+}
+.box-rosa:hover { box-shadow: 0 12px 25px rgba(7, 30, 58, .11); }
+.box-rosa::before {
+  background: linear-gradient(115deg, #061a32, #092849 70%, #0d3154);
+  border-bottom: 3px solid var(--rose-gold);
+  box-sizing: border-box;
+}
+.team-logo {
+  background: #fff;
+  border: 1px solid #d6e1eb;
+}
+.logo-nome .team-name {
+  color: var(--rose-navy);
+  background: #fff;
+}
+.team-conference-badge {
+  color: #fff;
+  background: var(--rose-navy);
+  border-bottom: 2px solid var(--rose-gold);
+  box-shadow: none;
+}
+/* Statistiche chiare: numeri navy, divisioni sottili, accento solo IR */
+.team-roster-meta {
+  background: #c8d5e2;
+  border: 1px solid #c8d5e2;
+  box-shadow: none;
+}
+.team-roster-meta .rose-stat {
+  color: var(--rose-ink);
+  background: #fff;
+  border: 0;
+  box-shadow: none;
+}
+.team-roster-meta .rose-stat strong { color: var(--rose-navy); }
+.team-roster-meta .rose-stat small { color: #496078; }
+.team-roster-meta .rose-stat.has-ir {
+  background: #fff8e4;
+}
+.roster-toggle,
+.roster-toggle:hover {
+  color: #fff;
+  background: var(--rose-navy);
+  border: 1px solid var(--rose-navy);
+  border-bottom: 3px solid var(--rose-gold);
+  box-shadow: none;
+}
+.roster-toggle:hover { background: #102f52; }
+.roster-toggle strong { background: rgba(255,255,255,.16); }
+/* Selettori FP/U21/P6/IR in stile tab Draft */
+.roster-quick-title { color: #354f6b; }
+.roster-quick-filter {
+  background: #fff;
+  border-color: #b8c8d8;
+  color: var(--rose-ink);
+}
+.roster-quick-filter[aria-pressed="true"] {
+  background: var(--rose-navy);
+  border-color: var(--rose-navy);
+  border-bottom: 2px solid var(--rose-gold);
+  color: #fff;
+}
+/* Gruppi per ruolo: testata navy con linea oro; righe completamente bianche */
+.roster-group {
+  background: #fff;
+  border: 1px solid #c2cfdd;
+}
+.roster-group-title {
+  background: var(--rose-navy);
+  color: #fff;
+  border-bottom: 2px solid var(--rose-gold);
+}
+.roster-group-count {
+  background: #ffd34e;
+  color: var(--rose-navy);
+}
+.roster-player-row,
+.roster-player-row:nth-child(odd) {
+  background: #fff;
+  border-top-color: #e2e8ef;
+}
+.roster-role { color: #0c416d; }
+.roster-person-name { color: var(--rose-ink); }
+.roster-seriea { color: #51637a; }
+.roster-empty-filter {
+  background: #fff;
+  border-color: #bdcad9;
+  color: #536a80;
+}
+/* Colori di status originali mantenuti per FP, U21, RFA e Injury Reserve. */
+@media (max-width:600px) {
+  body { background:#fff; }
+  .rose-legend-details .rose-legend-summary { padding: 12px 13px; }
+  .team-roster-meta { border-radius:12px; }
+  .box-rosa::before { border-bottom-width: 3px; }
+}
