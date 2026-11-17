@@ -1722,3 +1722,147 @@ body{
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }
+
+
+/* =========================================================
+   PRE-DRAFT V3 · MODERN DASHBOARD / MOBILE ADMIN
+   Resta CSS di presentazione, nessuna modifica alle regole.
+   ========================================================= */
+.predraft-page { max-width: 1400px; }
+.predraft-hero-banner { margin-bottom: 16px; }
+.predraft-summary-only { padding: 22px; border-radius: 22px; }
+.predraft-summary-only .section-title-row { align-items: flex-start; }
+.predraft-summary-only .section-title-row h2 { font-size: 1.48rem; margin-bottom: 4px; }
+.predraft-summary-only .section-title-row p { font-size: .89rem; line-height: 1.4; }
+.pd-choice-progress { display: inline-flex; margin-top: 9px; padding: 5px 10px; border: 1px solid rgba(255,255,255,.17); border-radius: 999px; background: rgba(255,255,255,.09); color: #dcecff; font-size: .72rem; font-weight: 850; }
+.predraft-summary-only .predraft-summary-grid { gap: 10px; margin-top: 14px; }
+.predraft-summary-only .summary-card { min-width: 0; border-radius: 15px; padding: 13px; }
+.predraft-summary-only .summary-card strong { overflow-wrap: anywhere; }
+.predraft-summary-only .summary-label { letter-spacing: .04em; }
+.choice-card .pd-choice-status { display: block; max-width: 100%; width: fit-content; margin-bottom: 12px; padding: 4px 10px; border-radius: 99px; background: rgba(96,122,156,.12); border: 1px solid rgba(96,122,156,.16); color: #527091; font-size: .72rem; font-weight: 850; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.choice-card .pd-choice-status.is-selected { background: #e5f7ed; border-color: #bce7cf; color: #136242; }
+#keeper-selections .choice-card { border-radius: 20px; }
+#keeper-admin { min-width: 0; padding: 24px; border-radius: 22px; }
+#keeper-admin .pd-admin-heading { margin-bottom: 21px; }
+.pd-admin-kicker { display: block; color: #0065a9; font-size: .66rem; letter-spacing: .13em; font-weight: 900; }
+#keeper-admin .pd-admin-heading h2 { margin: 4px 0 6px; font-size: 1.7rem; letter-spacing: -.035em; }
+#keeper-admin .pd-admin-heading p { margin: 0; font-size: .87rem; color: #627a91; }
+.pd-admin-config { display: grid; grid-template-columns: minmax(0,1.2fr) minmax(0,1fr); align-items: stretch; gap: 14px; margin-bottom: 23px; }
+.pd-admin-settings, .pd-admin-apply { min-width: 0; border: 1px solid #d9e7f5; border-radius: 16px; padding: 16px; background: #f7faff; }
+#keeper-admin .pd-admin-settings h3, #keeper-admin .pd-admin-apply h3 { margin: 0 0 12px; color: #0b3155; font-size: 1.01rem; letter-spacing: -.01em; }
+#keeper-admin .pd-admin-settings .admin-controls { display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1fr); gap: 10px; align-items: center; margin: 0; }
+#keeper-admin .pd-admin-settings .admin-controls label { font-size: .83rem; font-weight: 850; }
+#keeper-admin #admin-season { height: 42px; padding: 0 12px; margin: 7px 0 0; background: white; }
+#keeper-admin .pd-admin-settings .checkbox-row { min-height: 42px; padding: 18px 0 0; align-self: center; font-size: .84rem; }
+#keeper-admin .checkbox-row input { width: 20px; height: 20px; flex: 0 0 20px; accent-color: #00599d; }
+#keeper-admin #btn-save-settings { grid-column: 1 / -1; width: fit-content; min-height: 42px; margin-top: 3px; padding: 10px 18px; font-size: .82rem; }
+#keeper-admin .pd-admin-apply { background: linear-gradient(135deg,#fff9eb,#fff); border-color: #f0dba8; }
+.pd-admin-danger-heading { display: flex; align-items: center; gap: 7px; }
+#keeper-admin .pd-admin-danger-heading h3 { margin-bottom: 0; }
+#keeper-admin .pd-admin-apply p { margin: 8px 0 12px; color: #705b32; font-size: .83rem; line-height: 1.5; }
+#keeper-admin #btn-apply-predraft { width: 100%; min-height: 43px; padding: 10px 12px; background: linear-gradient(110deg,#12395e,#0065b6); font-size: .84rem; }
+#keeper-admin .pd-admin-apply #admin-apply-status { margin: 10px 0 0; font-size: .8rem; overflow-wrap: anywhere; }
+#keeper-admin .pd-admin-apply #admin-apply-status:empty { display: none; }
+.pd-admin-overview { min-width: 0; margin: 0 0 20px; }
+.pd-admin-section-heading { display: flex; align-items: end; justify-content: space-between; gap: 12px; margin-bottom: 12px; }
+#keeper-admin .pd-admin-section-heading h3 { margin: 3px 0 0; font-size: 1.13rem; }
+.pd-admin-section-heading > small { color: #647e98; font-size: .78rem; text-align: right; }
+.pd-admin-metrics { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 9px; margin-bottom: 13px; }
+.pd-admin-metric { min-width: 0; display: flex; flex-direction: column; gap: 4px; padding: 13px 14px; border: 1px solid #dde8f4; border-radius: 13px; background: #f4f8fd; }
+.pd-admin-metric strong { font-size: 1.42rem; line-height: 1; color: #003d71; font-weight: 900; }
+.pd-admin-metric span { color: #5d738a; font-size: .74rem; font-weight: 750; }
+#keeper-admin #admin-summary { min-width: 0; border-radius: 14px; box-shadow: none; }
+#keeper-admin #admin-summary table { min-width: 770px; }
+#keeper-admin #admin-summary th { padding: 12px 10px; font-size: .7rem; }
+#keeper-admin #admin-summary td { padding: 11px 10px; font-size: .84rem; }
+#keeper-admin .pd-admin-mobile-teams { display: none; }
+.pd-admin-no-records { padding: 16px; color: #62788c; }
+.pd-admin-conflicts { border: 1px solid #dce8f3; border-radius: 15px; overflow: hidden; background: #fbfdff; }
+.pd-admin-conflicts > summary { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 15px; color: #0b3356; list-style: none; cursor: pointer; }
+.pd-admin-conflicts > summary::-webkit-details-marker { display: none; }
+.pd-admin-conflicts > summary strong { display: block; font-size: .95rem; }
+.pd-admin-conflicts > summary small { display: block; margin-top: 3px; color: #698198; font-size: .77rem; }
+.pd-admin-details-chevron { color: #005b9c; font-size: 1.2rem; transition: transform .2s; }
+.pd-admin-conflicts[open] .pd-admin-details-chevron { transform: rotate(180deg); }
+.pd-admin-conflict-content { padding: 2px 14px 14px; }
+#keeper-admin #btn-scan-conflicts { width: auto; min-height: 42px; margin-bottom: 12px; font-size: .84rem; }
+#keeper-admin #admin-conflicts { overflow-x: auto; padding: 12px; border-radius: 12px; font-size: .82rem; }
+.pd-admin-team { border: 1px solid #dce8f3; border-radius: 13px; margin-bottom: 9px; background: #fff; overflow: hidden; }
+.pd-admin-team > summary { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 12px; cursor: pointer; list-style: none; }
+.pd-admin-team > summary::-webkit-details-marker { display: none; }
+.pd-admin-team > summary::after { content: "⌄"; order: 3; font-size: 1.13rem; color: #577a99; transition: transform .2s; }
+.pd-admin-team[open] > summary::after { transform: rotate(180deg); }
+.pd-admin-team-identity { flex: 1; min-width: 0; }
+.pd-admin-team-identity strong { display: block; color: #0e3354; font-size: .87rem; line-height: 1.25; overflow-wrap: anywhere; }
+.pd-admin-team-identity small { display: block; margin-top: 3px; color: #6c8299; font-size: .7rem; }
+.pd-admin-team-count { flex: 0 0 auto; padding: 5px 7px; border-radius: 999px; color: #708297; background: #eff3f8; font-size: .7rem; font-weight: 850; }
+.pd-admin-team-count.has-choices { background: #e4f2ff; color: #075c9e; }
+.pd-admin-team-body { padding: 0 12px 11px; }
+.pd-admin-team-line { display: grid; grid-template-columns: 46px minmax(0,1fr); align-items: start; gap: 11px; padding: 10px 0; border-top: 1px solid #ecf1f6; }
+.pd-admin-team-type { display: inline-flex; min-height: 23px; align-items: center; justify-content: center; padding: 3px 6px; border-radius: 7px; background: #e8f1fb; color: #17598e; font-size: .68rem; font-weight: 900; }
+.pd-admin-team-type.type-fp { background: #fff2cd; color: #8a5a00; }
+.pd-admin-team-type.type-u21_keeper { background: #ede5ff; color: #7147b9; }
+.pd-admin-team-line-content { min-width: 0; }
+.pd-admin-pick + .pd-admin-pick { margin-top: 8px; border-top: 1px dashed #dce8f4; padding-top: 8px; }
+.pd-admin-pick strong { display: block; color: #123856; font-size: .84rem; overflow-wrap: anywhere; }
+.pd-admin-pick small { display: block; margin-top: 2px; color: #6b8194; font-size: .72rem; overflow-wrap: anywhere; }
+.pd-admin-none { font-size: .77rem; color: #8192a4; }
+@media (max-width: 900px) {
+  #keeper-admin { padding: 17px; }
+  .pd-admin-config { grid-template-columns: 1fr; gap: 10px; }
+}
+@media (max-width: 700px) {
+  .predraft-page { padding: 12px 10px 36px; }
+  .predraft-hero-banner { border-radius: 17px; margin-bottom: 15px; box-shadow: 0 12px 28px rgba(0,0,0,.18); }
+  .predraft-hero-banner .predraft-banner-img { border-radius: 17px; }
+  #keeper-selections { gap: 10px; margin-bottom: 14px; }
+  #keeper-selections .choice-card { display: grid; grid-template-columns: 52px minmax(0,1fr); grid-template-rows: auto auto; column-gap: 12px; align-items: center; min-height: 0; padding: 13px 14px; border-radius: 16px; }
+  #keeper-selections .choice-icon.badge-icon { grid-column: 1; grid-row: 1 / span 2; width: 51px; height: 51px; padding: 6px; margin: 0; border-radius: 13px; }
+  #keeper-selections .choice-card h3 { grid-column: 2; grid-row: 1; margin: 0; padding-right: 36px; font-size: .94rem; line-height: 1.25; letter-spacing: .025em; }
+  #keeper-selections .choice-card .pd-choice-status { grid-column: 2; grid-row: 2; margin: 5px 34px 0 0; padding: 0; width: auto; max-width: 100%; background: transparent; border: 0; color: #aebfd4; font-size: .72rem; }
+  #keeper-selections .choice-card .pd-choice-status.is-selected { color: #aee8d3; }
+  #keeper-selections .choice-card::after { top: 20px; right: 14px; width: 29px; height: 29px; }
+  #keeper-selections .choice-card p,
+  #keeper-selections .choice-card select,
+  #keeper-selections .choice-card .predraft-btn,
+  #keeper-selections .choice-card .current-selection { grid-column: 1 / -1; }
+  #keeper-selections .choice-card.is-open p { margin: 16px 0 10px; font-size: .85rem; line-height: 1.45; }
+  #keeper-selections .choice-card.is-open select { margin: 7px 0 8px; min-width: 0; width: 100%; }
+  #keeper-selections .choice-card.is-open .current-selection { margin-top: 12px; }
+  .predraft-summary-only { padding: 15px; margin-top: 0; border-radius: 18px; }
+  .predraft-summary-only .section-title-row h2 { font-size: 1.18rem; }
+  .predraft-summary-only .section-title-row p { margin: 4px 0 0; font-size: .78rem; }
+  .pd-choice-progress { padding: 4px 9px; margin-top: 8px; font-size: .7rem; }
+  .predraft-summary-only .predraft-summary-grid { display: grid; grid-template-columns: 1fr; gap: 8px; margin: 12px 0 0; }
+  .predraft-summary-only .summary-card { min-height: 63px; padding: 9px 11px; gap: 10px; border-radius: 13px; }
+  .predraft-summary-only .summary-icon.summary-badge-icon { width: 42px; height: 42px; flex: 0 0 42px; border-radius: 12px; padding: 5px; }
+  .predraft-summary-only .summary-label { font-size: .66rem; letter-spacing: .04em; }
+  .predraft-summary-only .summary-card strong { font-size: .9rem; }
+  .predraft-summary-only .summary-card small { font-size: .73rem; margin-top: 3px; }
+  #keeper-admin { padding: 14px; margin-top: 12px; border-radius: 18px; }
+  #keeper-admin .pd-admin-heading { margin-bottom: 15px; }
+  #keeper-admin .pd-admin-heading h2 { font-size: 1.32rem; }
+  #keeper-admin .pd-admin-heading p { font-size: .78rem; }
+  .pd-admin-config { margin-bottom: 18px; }
+  .pd-admin-settings,.pd-admin-apply { padding: 13px; border-radius: 14px; }
+  #keeper-admin .pd-admin-settings .admin-controls { grid-template-columns: minmax(0,1fr) minmax(0,1fr); gap: 8px; }
+  #keeper-admin #btn-save-settings { width: 100%; }
+  #keeper-admin .pd-admin-settings .checkbox-row { padding-top: 14px; gap: 6px; }
+  #keeper-admin .pd-admin-settings .checkbox-row span { line-height: 1.2; }
+  .pd-admin-section-heading { align-items: start; flex-direction: column; gap: 4px; }
+  .pd-admin-section-heading > small { text-align: left; }
+  .pd-admin-metrics { gap: 6px; }
+  .pd-admin-metric { padding: 10px 6px; border-radius: 11px; gap: 4px; text-align: center; }
+  .pd-admin-metric strong { font-size: 1.2rem; }
+  .pd-admin-metric span { font-size: .63rem; line-height: 1.3; }
+  #keeper-admin #admin-summary { border: 0; box-shadow: none; background: transparent; overflow: visible; }
+  #keeper-admin #admin-summary .pd-admin-desktop-table { display: none; }
+  #keeper-admin #admin-summary .pd-admin-mobile-teams { display: block; }
+  .pd-admin-conflict-content { padding: 0 10px 12px; }
+  #keeper-admin #btn-scan-conflicts { width: 100%; }
+}
+@media (max-width: 355px) {
+  #keeper-admin .pd-admin-settings .admin-controls { grid-template-columns: 1fr; }
+  #keeper-admin .pd-admin-settings .checkbox-row { padding-top: 0; }
+  #keeper-selections .choice-card h3 { font-size: .88rem; }
+}
