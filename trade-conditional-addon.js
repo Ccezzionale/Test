@@ -108,20 +108,71 @@ function refreshKind(){
   $("ctGrantorSide").disabled=kind==="right_transfer"&&false;
   refreshCandidates();
 }
+function pickText(id){
+  if(!id)return "Da selezionare";
+  const p=state.picks.find(x=>same(x.id,id));
+  return p?pickTitle(p):"Scelta "+String(id).slice(0,8)+"…";
+}
+function ruleDetails(kind,rule,ids=[]){
+  const r=rule||{};
+  if(kind==="standing"){
+    const out=[
+      "Se arriva nei primi "+r.top_count+" → "+pickText(r.top_pick_id),
+      "Se arriva negli ultimi "+r.bottom_count+" → "+pickText(r.bottom_pick_id)
+    ];
+    if(r.middle_pick_id)out.push("Posizioni intermedie → "+pickText(r.middle_pick_id));
+    return out;
+  }
+  if(kind==="ranked"){
+    return [(r.which==="best"?"Migliore":"Peggiore")+" tra: "+(ids||[]).map(pickText).join(" · ")];
+  }
+  if(kind==="trophy"){
+    const title=r.mode==="any_trophy"?"almeno un trofeo":
+      TROPHY_COMPETITIONS.find(c=>c.id===r.competition_id)?.name||"il trofeo indicato";
+    return ["Se "+name(r.subject_team_id)+" conquista "+title+" → "+pickText(r.won_pick_id),
+      "Se NON lo conquista → "+pickText(r.not_won_pick_id)];
+  }
+  if(kind==="right_transfer")return ["Il diritto e la clausola originale restano invariati."];
+  return [];
+}
+function editingRule(){
+  const kind=$("ctKind").value;
+  if(kind==="standing"){
+    const t=Number($("ctTopCount").value),b=Number($("ctBottomCount").value);
+    const subject=$("ctStandingSubject").value;
+    const count=$("ctStandingScope").value==="round_robin"?state.teams.length:
+      state.teams.filter(x=>x.conference===team(subject)?.conference).length;
+    return {rule:{top_count:t,bottom_count:b,top_pick_id:$("ctTopPick").value,
+      bottom_pick_id:$("ctBottomPick").value,
+      middle_pick_id:t+b<count?$("ctMiddlePick").value:null},ids:[]};
+  }
+  if(kind==="ranked")return {rule:{which:$("ctRankedWhich").value},ids:selectedCandidates()};
+  if(kind==="trophy")return {rule:{mode:$("ctTrophyMode").value,
+    subject_team_id:$("ctTrophySubject").value,
+    competition_id:$("ctTrophySpecific").value,
+    won_pick_id:$("ctWonPick").value,not_won_pick_id:$("ctNotWonPick").value},ids:[]};
+  return {rule:{},ids:[]};
+}
 function redrawSummary(){
   const kind=$("ctKind").value,owner=grantorId(),holder=holderId();
   const winner=kind==="trophy"?$("ctTrophyMode").value:null;
   let clause=kindLabel(kind);
-  if(kind==="standing")clause+=" · "+$("ctStandingScope").value+" · "+name($("ctStandingSubject").value);
-  if(kind==="ranked")clause+=" · "+$("ctRankedWhich").value+" · R"+$("ctRankedRound").value;
-  if(kind==="trophy")clause+=" · "+(winner==="any_trophy"?"Qualsiasi trofeo":$("ctTrophySpecific").selectedOptions?.[0]?.textContent||"")+
+  if(kind==="standing")clause+=" · "+($("ctStandingScope").value==="conference"?"Conference":"Round Robin")+
+    " · "+name($("ctStandingSubject").value);
+  if(kind==="ranked")clause+=" · "+($("ctRankedWhich").value==="best"?"migliore":"peggiore")+
+    " · R"+$("ctRankedRound").value;
+  if(kind==="trophy")clause+=" · "+(winner==="any_trophy"?"Qualsiasi trofeo":
+    $("ctTrophySpecific").selectedOptions?.[0]?.textContent||"")+
     " · "+name($("ctTrophySubject").value);
   if(kind==="right_transfer")clause+=" · "+$("ctExistingRight").selectedOptions?.[0]?.textContent;
+  const details=editingRule();
   $("ctTradeSummary").innerHTML="<strong>"+esc(name(owner))+" → "+esc(name(holder))+"</strong><br>"+
-    esc(clause)+"<br>Contropartita: "+esc(pickTitle(state.picks.find(p=>same(p.id,$("ctCounterPick").value))))+
-    "<br><small>Una clausola vale 1 pick futura. Le candidate restano vincolate fino alla risoluzione.</small>";
+    esc(clause)+"<ul class=\"ct-clause-list\">"+
+    ruleDetails(kind,details.rule,details.ids).map(x=>"<li>"+esc(x)+"</li>").join("")+"</ul>"+
+    "<strong>Contropartita 1:1:</strong> "+esc(pickText($("ctCounterPick").value))+
+    "<br><small>Una clausola vale una sola pick. Le candidate restano vincolate fino al verdetto ufficiale.</small>";
   const reason=!state.enabled
-    ?"Le trade condizionate sono in collaudo. L'invio reale sarà sbloccato dopo il collegamento completo ai risultati definitivi."
+    ?"Le trade condizionate sono in collaudo. L'invio reale sarà sbloccato solo dopo i test completi."
     :!marketOpen()?"Il mercato è chiuso."
     :!targetId()?"Scegli prima una franchigia con cui trattare."
     :team(owner)?.conference!==team(holder)?.conference?"Condizioni fra Conferences diverse non ancora supportate.":"";
@@ -208,7 +259,9 @@ function paintOffers(){
     const owner=name(o.grantor_team_id),holder=name(o.holder_team_id);
     return '<article class="ct-offer-card"><header><strong>'+esc(owner)+' → '+esc(holder)+'</strong>'+
       '<span class="ct-status">'+esc(({pending:"In attesa",accepted:"Accettata",rejected:"Rifiutata",cancelled:"Annullata"})[o.status]||o.status)+'</span></header>'+
-      '<p>'+esc(offerDescription(o))+'</p><p>In cambio: '+esc(pickTitle(state.picks.find(p=>same(p.id,o.counter_pick_id))))+'</p>'+
+      '<p>'+esc(offerDescription(o))+'</p>'+
+      '<ul class="ct-clause-list">'+ruleDetails(o.rule_kind,o.rule_spec,o.candidate_pick_ids).map(x=>'<li>'+esc(x)+'</li>').join("")+'</ul>'+
+      '<p>Contropartita: '+esc(pickText(o.counter_pick_id))+'</p>'+
       '<p>Proposta: '+esc(formatDate(o.created_at))+'</p>'+
       (awaiting?'<div class="ct-action-row">'+(incoming?
         '<button class="ct-action-primary" data-ct-accept="'+esc(o.id)+'"'+(!state.enabled?" disabled":"")+'>Accetta</button>'+
