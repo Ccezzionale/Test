@@ -51,3 +51,22 @@
 /* Contratto leggibile anche in mobile e nelle proposte ricevute */
 .ct-clause-list{margin:8px 0 12px 0;padding:9px 10px 9px 27px;border-radius:9px;border:1px solid #355e83;background:#061a37;color:#e9f3fd;font-size:12px;line-height:1.65}
 .ct-clause-list li{padding:3px 0}
+
+/* Extras belong to the SAME conditional trade, never a detached proposal. */
+.ct-mixed-fields{margin:15px 0;border-radius:14px;border:1px solid #6ba3d0;background:#08254c;padding:13px;color:#eef8ff}
+.ct-mixed-fields[hidden]{display:none!important}
+.ct-mixed-head strong{font-weight:950;color:#ffe17b;font-size:14px}
+.ct-mixed-head p,.ct-mixed-rules{color:#c3d9ee;font-size:11px;line-height:1.5;margin:6px 0 13px}
+.ct-mixed-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px}
+.ct-mixed-col{background:#103668;border:1px solid #4484c4;padding:12px;border-radius:12px;min-width:0}
+.ct-mixed-col h3{font-weight:900;font-size:12px;color:#fff0a8;margin:0 0 10px}
+.ct-mixed-col>label{display:block;font-size:11px;font-weight:750}
+.ct-mixed-col>label select{display:block;width:100%;margin:6px 0 8px;min-height:38px}
+.ct-mixed-col>input{display:block;width:100%;min-height:38px;margin:7px 0}
+.ct-mixed-list{display:flex;flex-direction:column;gap:5px;max-height:240px;overflow-y:auto;overscroll-behavior:contain;padding-right:3px}
+.ct-mixed-list label{display:flex;align-items:flex-start;gap:8px;border:1px solid #5279a1;border-radius:8px;padding:8px;background:#0b2d55;color:#f2f7ff;cursor:pointer;line-height:1.4;font-size:11px}
+.ct-mixed-list label:has(input:checked){border-color:#ffde67;background:#344667;color:#fff1aa}
+.ct-mixed-list input{margin-top:1px;accent-color:#f0bf40;width:15px;min-width:15px;height:15px}
+.ct-mixed-count{font-size:10px;text-align:right;color:#ffdf7a;font-weight:850;margin-top:8px}
+.ct-mixed-rules{border:1px solid #607b9d;border-radius:9px;padding:9px;margin-bottom:0;background:#0d345c}
+@media(max-width:650px){.ct-mixed-grid{grid-template-columns:1fr}.ct-mixed-fields{padding:10px}.ct-mixed-list{max-height:210px}}
