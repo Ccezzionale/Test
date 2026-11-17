@@ -474,16 +474,76 @@ function paintOffers(){
   }).join(""):'';
 }
 function paintRights(){
-  const panel=$("ctRightsPanel"),items=$("ctRightItems");if(!panel||!items)return;
+  const panel=$("ctRightsPanel"),items=$("ctRightItems"),buyPanel=$("ctBuyRightsPanel"),buyItems=$("ctBuyRightsItems");
+  if(!panel||!items||!buyPanel||!buyItems)return;
   const list=state.rights.filter(r=>r.status==="active"&&(
     same(r.grantor_team_id,myId())||same(r.holder_team_id,myId())));
-  panel.hidden=!list.length;
+  const available=state.rights.filter(r=>r.status==="active"&&
+    !same(r.grantor_team_id,myId())&&!same(r.holder_team_id,myId())&&
+    team(r.holder_team_id)?.conference===team(myId())?.conference&&
+    picksOf(myId()).some(p=>p.draft_name===r.draft_name));
+  panel.hidden=!list.length&&!available.length;
   items.innerHTML=list.map(r=>
-    '<article class="ct-right-card"><header><strong>'+esc(kindLabel(r.rule_kind))+'</strong><span class="ct-status">In attesa</span></header>'+
-    '<p>Diritto: '+esc(name(r.holder_team_id))+' · promesso da '+esc(name(r.grantor_team_id))+'</p>'+
+    '<article class="ct-right-card"><header><strong>'+esc(kindLabel(r.rule_kind))+
+    '</strong><span class="ct-status">Attivo · pick vincolate</span></header>'+
+    '<p>Titolare: <b>'+esc(name(r.holder_team_id))+'</b> · Promesse da '+esc(name(r.grantor_team_id))+'</p>'+
     '<p>Draft '+esc(r.season)+' · '+esc(r.draft_name)+'</p>'+
-    (same(r.holder_team_id,myId())?'<div class="ct-action-row"><button type="button" data-ct-resell="'+esc(r.id)+'">⇄ Rivendi il diritto</button></div>':'')+'</article>'
+    (same(r.holder_team_id,myId())?'<div class="ct-action-row"><button type="button" data-ct-resell="'+esc(r.id)+'">📤 Vendi il diritto</button></div>':'')+'</article>'
   ).join("");
+  buyPanel.hidden=!available.length;
+  buyItems.innerHTML=available.map(r=>{
+    const original=state.offers.find(o=>same(o.id,r.source_offer_id));
+    const clause=ruleDetails(r.rule_kind,r.rule_spec,original?.candidate_pick_ids||[]);
+    return '<article class="ct-right-card"><header><strong>🔐 '+esc(kindLabel(r.rule_kind))+
+      '</strong><span class="ct-status">Acquistabile</span></header>'+
+      '<p>Appartiene a <b>'+esc(name(r.holder_team_id))+'</b> · Pick promessa da '+
+       esc(name(r.grantor_team_id))+'</p>'+
+      '<ul class="ct-clause-list">'+clause.map(x=>'<li>'+esc(x)+'</li>').join("")+'</ul>'+
+      '<div class="ct-action-row"><button type="button" data-ct-buy="'+esc(r.id)+
+      '">📥 Proponi acquisto a '+esc(name(r.holder_team_id))+'</button></div></article>';
+  }).join("");
+}
+function paintReviews(){
+  const panel=$("ctReviewPanel"),items=$("ctReviewItems");
+  if(!panel||!items)return;
+  panel.hidden=!state.isAdmin;
+  if(!state.isAdmin)return;
+  const sorted=[...state.reviews].sort((a,b)=>
+    (a.status==="pending"?0:1)-(b.status==="pending"?0:1)||
+    new Date(b.created_at)-new Date(a.created_at));
+  items.innerHTML=sorted.length?sorted.map(r=>{
+    const snap=r.snapshot||{};
+    const offer=state.offers.find(o=>same(o.id,r.offer_id));
+    const right=state.rights.find(x=>same(x.id,r.right_id));
+    const kind=snap.rule_kind||offer?.rule_kind;
+    const desc=kind==="right_transfer"?
+       (right?ruleDetails(right.rule_kind,right.rule_spec,
+         state.offers.find(o=>same(o.id,right.source_offer_id))?.candidate_pick_ids||[]):[]):
+       ruleDetails(kind,snap.rule_spec||offer?.rule_spec,snap.candidate_pick_ids||[]);
+    const canReview=r.status==="pending"&&r.automatic_check==="ok";
+    const checks=[snap.counter_owner_verified?"✓ Contropartita controllata":"",
+      snap.right_holder_verified?"✓ Titolare verificato":"",
+      snap.candidate_locks_verified?"✓ Vincoli candidati controllati":""].filter(Boolean);
+    return '<article class="ct-offer-card ct-review-card"><header><strong>'+
+      esc(name(snap.from_team_id)+" ⇄ "+name(snap.to_team_id))+'</strong>'+
+      '<span class="ct-status">'+esc(r.status==="pending"?"Da verificare":"Verificata")+'</span></header>'+
+      '<p><b>'+esc(kindLabel(kind))+'</b> · '+esc(formatDate(r.created_at))+'</p>'+
+      '<ul class="ct-clause-list">'+desc.map(x=>'<li>'+esc(x)+'</li>').join("")+'</ul>'+
+      '<p>Contropartita trasferita: <b>'+esc(pickText(snap.counter_pick_id))+'</b></p>'+
+      '<p>Venditore: '+esc(name(snap.grantor_team_id))+
+        ' · Acquirente: '+esc(name(snap.holder_team_id))+'</p>'+
+      (Array.isArray(snap.mixed_assets)&&snap.mixed_assets.length?
+        '<p>Asset aggiuntivi: '+snap.mixed_assets.map(x=>esc(extraLabel(x))).join(" · ")+'</p>':'')+
+      '<p class="ct-review-auto">'+esc(checks.join(" · "))+'</p>'+
+      (right?'<p>Stato attuale diritto: <b>'+esc(right.status==="resolved"?"Risolto":"Attivo")+
+       '</b>'+(right.resolved_pick_id?' · Pick finale '+esc(pickText(right.resolved_pick_id)):'')+'</p>':'')+
+      (r.status==="reviewed"?
+        '<p>Controllata il '+esc(formatDate(r.reviewed_at))+
+         (r.review_note?' · '+esc(r.review_note):'')+'</p>':
+       (canReview?'<div class="ct-action-row"><button type="button" data-ct-review="'+
+         esc(r.offer_id)+'">✓ Ho verificato il contratto</button></div>':''))+
+      '</article>';
+  }).join(""):'<p class="ct-field-help">Nessuna trade condizionata reale da controllare.</p>';
 }
 
 function paintConditionalHistory(){
