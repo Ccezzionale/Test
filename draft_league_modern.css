@@ -1270,3 +1270,422 @@
     border:1px solid #a9bacb !important;
   }
 }
+
+
+/* ==============================================================
+   DRAFT CONFERENCE LEAGUE · UNIFIED NAVY/WHITE/GOLD V8
+   Per il mobile: Companion + navigazione + Board + Pool + Squadre + Admin
+   L'Overview V7 non viene sovrascritto; solo colori delle altre sezioni.
+   ============================================================== */
+@media (max-width: 768px) {
+  body.draft-league-modern {
+    --league-navy:#071d37;
+    --league-navy-2:#0f3154;
+    --league-ink:#0b2946;
+    --league-gold:#f4c535;
+    --league-border:#c8d3e0;
+    --league-soft:#f9fbfd;
+  }
+
+  /* La pagina è bianca, non grigia o azzurro acquario. */
+  body.draft-league-modern,
+  body.draft-league-modern.mobile-view-home,
+  body.draft-league-modern.mobile-view-draft,
+  body.draft-league-modern.mobile-view-pool,
+  body.draft-league-modern.mobile-view-rose,
+  body.draft-league-modern.mobile-view-admin {
+    background:#fff !important;
+  }
+  body.draft-league-modern .page-shell {background:transparent !important;}
+  body.draft-league-modern .mobile-draft-tabs {
+    background:#fff !important;
+    border:1px solid var(--league-border) !important;
+  }
+  body.draft-league-modern .mobile-draft-tabs a {
+    background:transparent !important;
+    color:var(--league-ink) !important;
+  }
+  body.draft-league-modern .mobile-draft-tabs a.active {
+    background:var(--league-navy) !important;
+    color:#fff !important;
+    box-shadow:inset 0 -3px 0 var(--league-gold) !important;
+  }
+
+  /* Companion: stessa testata blu notte e riga oro della Overview. */
+  body.draft-league-modern #mobile-live-draft.mobile-companion-hero {
+    padding:0 0 14px !important;
+    border:1px solid #d5e0ec !important;
+    border-radius:20px !important;
+    overflow:hidden !important;
+    background:#fff !important;
+    box-shadow:0 9px 22px rgba(7,30,58,.085) !important;
+  }
+  body.draft-league-modern #mobile-live-draft .mobile-live-top {
+    margin:0 0 13px !important;
+    padding:13px 15px 12px !important;
+    background:linear-gradient(115deg,#061a32 0%,#092849 70%,#0d3154 100%) !important;
+    border-bottom:3px solid var(--league-gold) !important;
+    min-height:56px !important;
+    display:flex !important;
+    justify-content:space-between !important;
+    align-items:center !important;
+    gap:12px !important;
+  }
+  body.draft-league-modern #mobile-live-draft .mobile-live-badge {
+    background:rgba(255,255,255,.08) !important;
+    border:1px solid rgba(255,213,74,.42) !important;
+    color:#fff !important;
+    letter-spacing:.055em !important;
+    font-size:.69rem !important;
+    min-width:0 !important;
+  }
+  body.draft-league-modern #mobile-live-draft .mobile-live-pick {
+    background:#ffd34e !important;
+    color:#071d37 !important;
+    border:1px solid #e6b936 !important;
+    box-shadow:none !important;
+    flex:0 0 auto !important;
+  }
+  body.draft-league-modern #mobile-live-draft .mobile-live-main {
+    padding:0 15px !important;
+    margin:0 !important;
+  }
+  body.draft-league-modern #mobile-live-draft .mobile-live-logo-wrap {
+    background:#fff !important;
+    border:1px solid #bfccdc !important;
+    box-shadow:0 2px 6px rgba(7,30,58,.06) !important;
+  }
+  body.draft-league-modern #mobile-live-draft .mobile-live-kicker {
+    color:#8b6507 !important;
+  }
+  body.draft-league-modern #mobile-live-draft .mobile-live-team {
+    color:#071d37 !important;
+  }
+  body.draft-league-modern #mobile-live-draft .mobile-live-sub {
+    color:#53647a !important;
+  }
+  body.draft-league-modern #mobile-live-draft .mobile-live-stats {
+    padding:0 15px !important;
+    margin:13px 0 0 !important;
+  }
+  body.draft-league-modern #mobile-live-draft .mobile-live-stats > div {
+    background:#fff !important;
+    border:1px solid #bac9da !important;
+    border-radius:12px !important;
+    box-shadow:0 2px 5px rgba(7,30,58,.035) !important;
+  }
+  body.draft-league-modern #mobile-live-draft .mobile-live-stats span {
+    color:#59697b !important;
+  }
+  body.draft-league-modern #mobile-live-draft .mobile-live-stats strong {
+    color:#071d37 !important;
+  }
+  body.draft-league-modern #mobile-live-draft::after {display:none !important;}
+
+  /* Un solo motivo su tutte le tab: header navy + accento oro. */
+  body.draft-league-modern #draft-board-panel,
+  body.draft-league-modern #pool-section,
+  body.draft-league-modern #summary-panel,
+  body.draft-league-modern #admin-panel,
+  body.draft-league-modern #admin-trade-panel {
+    min-width:0 !important;
+    overflow:hidden !important;
+    padding:0 0 13px !important;
+    background:#fff !important;
+    border:1px solid #d5e0ec !important;
+    border-radius:20px !important;
+    box-shadow:0 9px 22px rgba(7,30,58,.085) !important;
+  }
+  body.draft-league-modern #draft-board-panel .panel-header,
+  body.draft-league-modern #pool-section .panel-header,
+  body.draft-league-modern #admin-panel .panel-header,
+  body.draft-league-modern #admin-trade-panel .panel-header {
+    margin:0 !important;
+    padding:16px 16px 14px !important;
+    background:linear-gradient(115deg,#061a32 0%,#092849 70%,#0d3154 100%) !important;
+    border:0 !important;
+    border-bottom:3px solid var(--league-gold) !important;
+    border-radius:0 !important;
+  }
+  body.draft-league-modern #draft-board-panel .panel-title,
+  body.draft-league-modern #pool-section .panel-title,
+  body.draft-league-modern #admin-panel .panel-title,
+  body.draft-league-modern #admin-trade-panel .panel-title {
+    color:#fff !important;
+    font-size:1.13rem !important;
+    text-shadow:none !important;
+  }
+  body.draft-league-modern #draft-board-panel .panel-subtitle,
+  body.draft-league-modern #pool-section .panel-subtitle,
+  body.draft-league-modern #admin-panel .panel-subtitle,
+  body.draft-league-modern #admin-trade-panel .panel-subtitle {
+    color:#d7e3f0 !important;
+    font-size:.74rem !important;
+  }
+  body.draft-league-modern #draft-board-panel .panel-count,
+  body.draft-league-modern #pool-section .panel-count {
+    background:#ffd34e !important;
+    color:#071d37 !important;
+    border:1px solid #e9bd3b !important;
+    box-shadow:none !important;
+    font-weight:900 !important;
+  }
+
+  /* Board: niente fondi azzurrini sulle card, numeri e bordi navy. */
+  body.draft-league-modern #draft-board-panel .table-shell,
+  body.draft-league-modern #draft-board-panel .table-scroll,
+  body.draft-league-modern #draft-board-panel .draft-board-tools {
+    background:#fff !important;
+  }
+  body.draft-league-modern #draft-board-panel .draft-board-tools {
+    padding:12px 13px 8px !important;
+  }
+  body.draft-league-modern #draft-board-panel .draft-board-tools input,
+  body.draft-league-modern #draft-board-panel .draft-board-tools select {
+    background:#fff !important;
+    border:1px solid var(--league-border) !important;
+    color:var(--league-ink) !important;
+  }
+  body.draft-league-modern #tabella-pick tbody tr,
+  body.draft-league-modern #tabella-pick tbody tr:nth-child(odd) {
+    background:#fff !important;
+    border:1px solid #b7c7d7 !important;
+    border-radius:14px !important;
+    box-shadow:0 2px 6px rgba(7,30,58,.065) !important;
+  }
+  body.draft-league-modern #tabella-pick tbody td:nth-child(1) {
+    background:var(--league-navy) !important;
+    color:#ffd34e !important;
+    border:1px solid var(--league-navy) !important;
+  }
+  body.draft-league-modern #tabella-pick tbody td:nth-child(2) {
+    color:var(--league-ink) !important;
+    text-shadow:none !important;
+  }
+  body.draft-league-modern #tabella-pick tbody td:nth-child(3) {
+    color:#59687a !important;
+    text-shadow:none !important;
+  }
+  body.draft-league-modern #tabella-pick tbody tr.next-pick {
+    background:#fff9e9 !important;
+    border:1px solid #dfb642 !important;
+    box-shadow:inset 3px 0 0 #f1c139, 0 2px 8px rgba(142,105,5,.10) !important;
+  }
+
+  /* Pool: stesso contenitore bianco e filtro attivo navy/oro. */
+  body.draft-league-modern #pool-section .filters-wrap {
+    background:#fff !important;
+    padding:13px 13px 9px !important;
+  }
+  body.draft-league-modern #pool-section input[type="text"],
+  body.draft-league-modern #pool-section select,
+  body.draft-league-modern #pool-section #searchGiocatore {
+    background:#fff !important;
+    border:1px solid #b7c7d7 !important;
+    color:var(--league-ink) !important;
+    box-shadow:none !important;
+  }
+  body.draft-league-modern #pool-section .filter-label {
+    color:#233f5c !important;
+  }
+  body.draft-league-modern #pool-section .draft-pool-quick-filters button {
+    background:#fff !important;
+    color:#102c50 !important;
+    border:1px solid #a6bad0 !important;
+    box-shadow:none !important;
+  }
+  body.draft-league-modern #pool-section .draft-pool-quick-filters button[aria-pressed="true"] {
+    background:#071d37 !important;
+    color:#fff !important;
+    border:1px solid #071d37 !important;
+    box-shadow:inset 0 -2px 0 #f4c535 !important;
+  }
+  body.draft-league-modern #pool-section .draft-pool-advanced {
+    background:#fff !important;
+    border:1px solid #bac9da !important;
+  }
+  body.draft-league-modern #pool-section .draft-pool-advanced > summary {
+    color:#102c50 !important;
+  }
+  body.draft-league-modern #pool-section .draft-pool-advanced-grid {
+    border-top:1px solid #e0e5ec !important;
+  }
+  body.draft-league-modern #pool-section .results-pill {
+    color:#173858 !important;
+    background:#fff !important;
+    border:1px solid #c4cfdd !important;
+  }
+  body.draft-league-modern #pool-section #lista-giocatori-scroll {
+    background:#fff !important;
+    padding:8px 11px 14px !important;
+  }
+  body.draft-league-modern #pool-section #lista-giocatori-table tbody tr {
+    background:#fff !important;
+    border:1px solid #b7c7d7 !important;
+    border-radius:13px !important;
+    box-shadow:0 2px 6px rgba(7,30,58,.055) !important;
+  }
+  body.draft-league-modern #pool-section #lista-giocatori-table td:nth-child(1) {
+    color:#071d37 !important;
+  }
+  body.draft-league-modern #pool-section #lista-giocatori-table td:nth-child(2),
+  body.draft-league-modern #pool-section #lista-giocatori-table td:nth-child(3) {
+    color:#56687d !important;
+  }
+  body.draft-league-modern #pool-section #lista-giocatori-table td:nth-child(4) {
+    background:#fff !important;
+    color:#102c50 !important;
+    border:1px solid #b7c7d7 !important;
+  }
+  body.draft-league-modern #pool-section #lista-giocatori-table tr::after {
+    background:#071d37 !important;
+    color:#fff !important;
+    border:1px solid #071d37 !important;
+    box-shadow:inset 0 -2px 0 #f4c535 !important;
+  }
+
+  /* Squadre: testata principale come Overview e card dei club pulite. */
+  body.draft-league-modern #summary-panel .summary-topbar {
+    display:flex !important;
+    flex-direction:column !important;
+    align-items:stretch !important;
+    gap:11px !important;
+    padding:16px 15px 14px !important;
+    margin:0 0 13px !important;
+    background:linear-gradient(115deg,#061a32 0%,#092849 70%,#0d3154 100%) !important;
+    border-bottom:3px solid var(--league-gold) !important;
+  }
+  body.draft-league-modern #summary-panel .summary-title {
+    color:#fff !important;
+    font-size:1.17rem !important;
+    line-height:1.24 !important;
+  }
+  body.draft-league-modern #summary-panel .summary-subtitle {
+    color:#d7e3f0 !important;
+    font-size:.75rem !important;
+  }
+  body.draft-league-modern #summary-panel .btn-riepilogo {
+    width:100% !important;
+    min-height:37px !important;
+    padding:8px 11px !important;
+    background:#ffd34e !important;
+    color:#071d37 !important;
+    border:1px solid #e6b936 !important;
+    border-radius:10px !important;
+    box-shadow:none !important;
+    font-size:.76rem !important;
+  }
+  body.draft-league-modern #riepilogo-squadre {
+    padding:0 12px !important;
+    background:#fff !important;
+  }
+  body.draft-league-modern #riepilogo-squadre .team-accordion,
+  body.draft-league-modern #riepilogo-squadre .card-pick.team-accordion {
+    background:#fff !important;
+    border:1px solid #b7c7d7 !important;
+    border-radius:14px !important;
+    box-shadow:0 3px 8px rgba(7,30,58,.055) !important;
+  }
+  body.draft-league-modern #riepilogo-squadre .team-accordion-header {
+    background:#fff !important;
+    padding:11px 12px !important;
+    color:#071d37 !important;
+  }
+  body.draft-league-modern #riepilogo-squadre .team-accordion-left strong {
+    color:#071d37 !important;
+  }
+  body.draft-league-modern #riepilogo-squadre .team-accordion-left small {
+    color:#53647a !important;
+  }
+  body.draft-league-modern #riepilogo-squadre .team-accordion-body {
+    background:#fff !important;
+    border-top:1px solid #d7e0ea !important;
+  }
+  body.draft-league-modern #riepilogo-squadre .team-player-row {
+    background:#fff !important;
+    border:1px solid #d2dce7 !important;
+    color:#092641 !important;
+    box-shadow:none !important;
+  }
+  body.draft-league-modern #riepilogo-squadre .team-player-row:nth-child(even) {
+    background:#fff !important;
+  }
+  body.draft-league-modern #riepilogo-squadre .team-player-number {
+    background:#071d37 !important;
+    color:#ffd34e !important;
+  }
+  body.draft-league-modern #riepilogo-squadre .team-player-info strong {
+    color:#071d37 !important;
+  }
+
+  /* Admin: campi e pulsanti uniformi, pericoli sempre distinguibili. */
+  body.draft-league-modern #admin-panel > div:not(.panel-header),
+  body.draft-league-modern #admin-trade-panel > div:not(.panel-header) {
+    padding:15px !important;
+    max-width:none !important;
+    background:#fff !important;
+  }
+  body.draft-league-modern #admin-panel label,
+  body.draft-league-modern #admin-trade-panel label {
+    color:#102c50 !important;
+    font-size:.82rem !important;
+  }
+  body.draft-league-modern #admin-panel input,
+  body.draft-league-modern #admin-panel select,
+  body.draft-league-modern #admin-trade-panel input,
+  body.draft-league-modern #admin-trade-panel select {
+    min-height:43px !important;
+    padding:8px 11px !important;
+    background:#fff !important;
+    border:1px solid #b7c7d7 !important;
+    border-radius:11px !important;
+    color:#102c50 !important;
+    box-sizing:border-box !important;
+    font-size:.86rem !important;
+  }
+  body.draft-league-modern #admin-panel button:not(.danger-btn),
+  body.draft-league-modern #admin-trade-panel button:not(.danger-btn) {
+    min-height:40px !important;
+    padding:9px 12px !important;
+    border-radius:10px !important;
+    background:#071d37 !important;
+    border:1px solid #071d37 !important;
+    box-shadow:inset 0 -2px 0 #f4c535 !important;
+    color:#fff !important;
+    font-size:.77rem !important;
+  }
+  body.draft-league-modern #admin-panel .danger-btn {
+    background:#8b2630 !important;
+    border:1px solid #8b2630 !important;
+    box-shadow:none !important;
+    color:#fff !important;
+  }
+  body.draft-league-modern #admin-panel #admin-player-status-note {
+    background:#fff !important;
+    border:1px solid #c6d2e0 !important;
+    border-left:3px solid #e1b634 !important;
+    border-radius:11px !important;
+    color:#344962 !important;
+  }
+  body.draft-league-modern #admin-panel #admin-player-flags-panel {
+    border-top:1px solid #d3dce7 !important;
+    padding-top:12px !important;
+  }
+  body.draft-league-modern #admin-panel #admin-player-flags-panel h3 {
+    color:#071d37 !important;
+  }
+  body.draft-league-modern #admin-panel #admin-status,
+  body.draft-league-modern #admin-panel #admin-player-flags-status,
+  body.draft-league-modern #admin-trade-panel #admin-trade-status {
+    overflow-wrap:anywhere !important;
+  }
+
+  body.draft-league-modern .mobile-draft-tabs a:focus-visible,
+  body.draft-league-modern #pool-section button:focus-visible,
+  body.draft-league-modern #admin-panel button:focus-visible,
+  body.draft-league-modern #admin-trade-panel button:focus-visible,
+  body.draft-league-modern #summary-panel button:focus-visible {
+    outline:3px solid #e1b634 !important;
+    outline-offset:2px !important;
+  }
+}
