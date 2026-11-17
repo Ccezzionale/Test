@@ -1422,3 +1422,6 @@ tbody tr:last-child {
   font-weight: inherit;
   line-height: inherit;
 }
+
+/* Su tablet/desktop la rosa è già visibile: nessun toggle ingannevole. */
+@media (min-width: 601px) { .roster-toggle { display: none !important; } }
