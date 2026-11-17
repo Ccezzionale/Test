@@ -1110,3 +1110,13 @@ body.trade-v2-live .trade-modal-content{
   max-height:85dvh;
   overflow:auto;
 }
+
+
+/* Svincoli realmente effettuati, visibili nel recap di ogni trade conclusa. */
+.v2-trade-card .v2-trade-cuts{margin-top:10px;padding:11px 12px;border:1px solid #ebdba7;border-left:3px solid #d4a42f;border-radius:10px;background:#fff8e8;color:#20354b;font-size:12px;line-height:1.55}
+.v2-trade-card .v2-trade-cuts>strong{display:block;margin-bottom:6px;color:#775308;font-size:12px;font-weight:900}
+.v2-trade-card .v2-trade-cuts ul{margin:0;padding-left:17px}
+.v2-trade-card .v2-trade-cuts li{margin:4px 0}
+.v2-trade-card .v2-trade-cuts .v2-cut-team{font-weight:750}
+.v2-trade-card .v2-trade-cuts li>b{color:#102e50}
+.v2-trade-card .v2-cut-player-meta{color:#61738a;font-size:11px}
