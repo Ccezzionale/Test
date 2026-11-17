@@ -427,7 +427,8 @@ function rightHtml(right){
    active?'<p class="qa-history-note">La clausola è ancora aperta. La pick finale sarà assegnata a '+
     esc(teamName(right.holder_team_id))+' quando si conoscerà il risultato.</p>':
    '<p><b>Pick assegnata:</b> '+esc(pickName(qaPick(model,right.resolved_pick_id)))+
-   ' a '+esc(teamName(right.holder_team_id))+'</p>')+
+   ' a '+esc(teamName(right.holder_team_id))+'</p>'+
+   '<p class="qa-resale-warning">⛔ Diritto già finalizzato: non è più rivendibile. Per provare la vendita usa «Avvia esempio di rivendita» qui sotto.</p>')+
   '</article>';
 }
 function renderRights(){
