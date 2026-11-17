@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, minimum-scale=0.5, maximum-scale=3.0">
   <link rel="stylesheet" href="navbar.css">
   <link rel="stylesheet" href="dinamico-draft.css?v=36" />
+  <link rel="stylesheet" href="conditional-draft-projections.css?v=20261117-v1" />
   <title>Draft Dinamico</title>
 <meta name="lega-app-build" content="v20261028-ef9f76dc3f25">
 <script defer src="./app-updates.js?bootstrap=v20261028-ef9f76dc3f25" data-eroi-update="1"></script>
@@ -146,6 +147,7 @@
         <button type="button" class="board-refresh" onclick="window.location.reload()">↻ Ricarica</button>
       </div>
 
+<section id="ctProjectionLeague" class="ct-draft-projections" hidden aria-label="Diritti condizionati Conference League"></section>
 <div id="draft-pick-sequence-league" class="draft-pick-sequence"></div>
 <div id="draft-team-view-league" class="draft-team-view"></div>
 
@@ -169,6 +171,7 @@
         <button type="button" class="board-refresh" onclick="window.location.reload()">↻ Ricarica</button>
       </div>
 
+<section id="ctProjectionChampionship" class="ct-draft-projections" hidden aria-label="Diritti condizionati Conference Championship"></section>
 <div id="draft-pick-sequence-championship" class="draft-pick-sequence"></div>
 <div id="draft-team-view-championship" class="draft-team-view"></div>
 
@@ -185,6 +188,7 @@
   </main>
 <script src="mobile-nav.js"></script>
   <script type="module" src="dinamico-draft.js?v=36"></script>
+  <script type="module" src="conditional-draft-projections.js?v=20261117-v1"></script>
   <script src="navbar.js"></script>
 </body>
 </html>
