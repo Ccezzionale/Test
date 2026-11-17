@@ -22,7 +22,7 @@ async function check(){
    ["listoni",supabase.from("draft_season_listone_staging").select("pool,player_count").eq("season",SEASON)],
    ["proiezioni",supabase.from("draft_season_order_previews").select("draft_name,projected_picks,last_matchday,stage").eq("season",SEASON)],
    ["future",supabase.from("future_draft_picks").select("id,draft_name,owner_team_id,original_team_id,status").eq("season",SEASON)],
-   ["keepers",supabase.from("keeper_settings").select("season,is_applied").eq("id",1).maybeSingle()],
+   ["keepers",supabase.from("keeper_settings").select("season,is_applied,applied_at").eq("id",1).maybeSingle()],
    ["selezioni",supabase.from("keeper_selections").select("id,status,selection_type").eq("season",SEASON)],
    ["diritti",supabase.from("conditional_trade_rights").select("id,status").eq("season",SEASON)],
    ["live",supabase.from("draft_state").select("draft_name,current_pick,is_open")]
@@ -69,8 +69,9 @@ async function check(){
   add("Proiezioni collegate alle trade",ordersOK?pickTotal+" pick coerenti":"Ricalcolare e salvare il Draft Dinamico",ordersOK);
   add("Regular Season conclusa",fresh?"Proiezione da risultati finali":"Classifica ancora provvisoria o proiezione mancante",fresh);
 
-  const keeperOK=data.keepers?.season===SEASON&&data.keepers?.is_applied!==true;
-  add("Pre-Draft 2027",keeperOK?"Stato amministrativo verificabile":"Stato 2027 segnato come già applicato",keeperOK);
+  const keeperOK=data.keepers?.season===SEASON && data.keepers?.is_applied===true &&
+    String(data.keepers?.applied_at||"").startsWith(String(SEASON)+"-");
+  add("Pre-Draft 2027",keeperOK?"Conferme applicate nel 2027":"Conferme non applicate nel 2027, o data incoerente",keeperOK);
   const selections=Array.isArray(data.selezioni)?data.selezioni:[];
   const keepersPresent=selections.length>0;
   add("Conferme FP / U21 / RFA",keepersPresent?selections.length+" selezioni presenti":"Conferme Pre-Draft non ancora registrate",keepersPresent);
