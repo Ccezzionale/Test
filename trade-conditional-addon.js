@@ -53,6 +53,7 @@ function resaleRights(seller,buyer){
 }
 function chooseResaleIntent(intent,autoTarget=true){
  state.resaleIntent=intent==="buy"?"buy":"sell";
+ state.extraFrom.clear();state.extraTo.clear();
  if($("ctKind").value!=="right_transfer")$("ctKind").value="right_transfer";
  if(autoTarget){
   const choices=state.teams.filter(t=>!same(t.id,myId())&&
@@ -552,7 +553,12 @@ function paintConditionalHistory(){
   const accepted=state.offers.filter(o=>o.status==="accepted");
   panel.hidden=accepted.length===0;
   items.innerHTML=accepted.map(o=>{
-    const right=state.rights.find(r=>same(r.source_offer_id,o.id));
+    const right=state.rights.find(r=>same(r.source_offer_id,o.id))||
+      (o.rule_kind==="right_transfer"?state.rights.find(r=>same(r.id,o.existing_right_id)):null);
+    const original=right&&o.rule_kind==="right_transfer"?
+      state.offers.find(x=>same(x.id,right.source_offer_id)):null;
+    const details=original?ruleDetails(right.rule_kind,right.rule_spec,original.candidate_pick_ids):
+      ruleDetails(o.rule_kind,o.rule_spec,o.candidate_pick_ids);
     const status=right?.status==="resolved"?"Condizione risolta":
       o.rule_kind==="right_transfer"?"Diritto rivenduto":"Diritto attivo";
     const extras=Array.isArray(o.mixed_assets)?o.mixed_assets:[];
@@ -560,8 +566,7 @@ function paintConditionalHistory(){
       esc(name(o.from_team_id)+" ⇄ "+name(o.to_team_id))+'</strong>'+
       '<span class="ct-status">'+esc(status)+'</span></header>'+
       '<p>'+esc(offerDescription(o))+'</p>'+
-      '<ul class="ct-clause-list">'+ruleDetails(o.rule_kind,o.rule_spec,o.candidate_pick_ids)
-        .map(x=>'<li>'+esc(x)+'</li>').join("")+'</ul>'+
+      '<ul class="ct-clause-list">'+details.map(x=>'<li>'+esc(x)+'</li>').join("")+'</ul>'+
       '<p>Contropartita: '+esc(pickText(o.counter_pick_id))+'</p>'+
       (extras.length?'<p><strong>Altri asset scambiati:</strong></p><ul class="ct-clause-list">'+
         extras.map(x=>'<li>'+esc(name(x.side==="from"?o.from_team_id:o.to_team_id)+" offre "+extraLabel(x))+
@@ -641,6 +646,7 @@ function bind(){
     const sell=event.target.closest("[data-ct-resell]");
     if(!sell)return;
     document.querySelector("[data-v2-new]")?.click();
+    state.extraFrom.clear();state.extraTo.clear();
     setMode("conditional");
     chooseResaleIntent("sell",true);
     $("ctExistingRight").value=sell.dataset.ctResell;
@@ -653,6 +659,8 @@ function bind(){
     if(!right||right.status!=="active"||same(right.grantor_team_id,myId()))return;
     document.querySelector("[data-v2-new]")?.click();
     $("v2TargetTeam").value=right.holder_team_id;
+    $("v2TargetTeam").dispatchEvent(new Event("change",{bubbles:true}));
+    state.extraFrom.clear();state.extraTo.clear();
     setMode("conditional");
     chooseResaleIntent("buy",false);
     $("ctExistingRight").value=right.id;
