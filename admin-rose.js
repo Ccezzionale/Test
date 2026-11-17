@@ -293,33 +293,47 @@ async function loadTeams() {
 }
 
 async function loadPlayers() {
-  const { data, error } = await supabase
-    .from('players')
-    .select(`
-      id,
-      name,
-      role,
-      role_mantra,
-      serie_a_team,
-      quotation,
-      status,
-      owner_team_id,
-      is_fp,
-      is_fp_keeper,
-      fp_keeper_year,
-      is_u21,
-      is_u21_slot,
-      is_u21_keeper,
-      u21_keeper_year,
-      is_rfa_matched,
-      is_top6_protected,
-      top6_protected_team_id
-    `)
-    .eq('status', 'active')
-    .order('name', { ascending: true });
+  // Supabase/PostgREST caps individual responses (1,000 rows by default).
+  // The active player pool is larger, so one request silently hides names
+  // near the end of the alphabet (e.g. Yildiz) from the Admin Rose search.
+  // Fetch all pages with a deterministic tie-breaker for duplicate names.
+  const pageSize = 500;
+  const allPlayers = [];
+  for (let offset = 0; ; offset += pageSize) {
+    const { data, error } = await supabase
+      .from('players')
+      .select(`
+        id,
+        name,
+        role,
+        role_mantra,
+        serie_a_team,
+        quotation,
+        status,
+        owner_team_id,
+        is_fp,
+        is_fp_keeper,
+        fp_keeper_year,
+        is_u21,
+        is_u21_slot,
+        is_u21_keeper,
+        u21_keeper_year,
+        is_rfa_matched,
+        is_top6_protected,
+        top6_protected_team_id
+      `)
+      .eq('status', 'active')
+      .order('name', { ascending: true })
+      .order('id', { ascending: true })
+      .range(offset, offset + pageSize - 1);
 
-  if (error) throw error;
-  players = data || [];
+    if (error) throw error;
+    const page = data || [];
+    allPlayers.push(...page);
+    if (page.length < pageSize) break;
+  }
+
+  players = allPlayers;
   renderPlayers();
 }
 
