@@ -486,13 +486,51 @@ function rightHtml(right){
    '<p class="qa-resale-warning">⛔ Diritto già finalizzato: non è più rivendibile. Per provare la vendita usa «Avvia esempio di rivendita» qui sotto.</p>')+
   '</article>';
 }
+function openBuyComposer(right){
+ if(!right||right.status!=="active")throw new Error("Questo diritto è già stato assegnato.");
+ if(same(viewer,right.holder_team_id))throw new Error("Sei già il titolare: per venderlo usa «Vendi un diritto».");
+ if(same(viewer,right.grantor_team_id))
+   throw new Error("Non puoi acquistare il diritto che obbliga la tua stessa squadra a consegnare la pick.");
+ const seller=getTeam(right.holder_team_id);
+ if(!seller||seller.conference!==getTeam(viewer)?.conference||
+   !displayedTeams().some(t=>same(t.id,seller.id)))
+   throw new Error("Questa franchigia non è disponibile per il test.");
+ chooseTab("compose");
+ el("qaToTeam").value=seller.id;
+ chooseResaleIntent("buy",false);
+ el("qaExistingRight").value=right.id;
+ el("qaPlayerFrom").value="";
+ el("qaPlayerTo").value="";
+ el("qaMixedDetails").open=false;
+ updatePreview();
+ flash("Proposta di ACQUISTO preparata: "+teamName(viewer)+
+  " offre una pick per il diritto di "+seller.name+". "+
+  "Invia la proposta, poi passa a "+seller.name+" e premi Accetta.");
+ el("qaScreenCompose").scrollIntoView({behavior:"smooth",block:"start"});
+}
 function renderRights(){
  const current=model.rights.filter(r=>
   same(r.grantor_team_id,viewer)||same(r.holder_team_id,viewer)||
   (r.history||[]).some(h=>same(h.from,viewer)));
  el("qaRightsList").innerHTML=current.length?current.map(rightHtml).join(""):
-  '<div class="qa-empty">Nessun diritto per '+esc(teamName(viewer))+
-  '. Accetta una proposta finta come Bayern per crearne uno.</div>';
+  '<div class="qa-empty">Nessun diritto posseduto o promesso da '+esc(teamName(viewer))+
+  '. Puoi proporre di acquistare un diritto di un’altra franchigia qui sotto.</div>';
+ const available=model.rights.filter(r=>r.status==="active"&&
+   !same(r.holder_team_id,viewer)&&!same(r.grantor_team_id,viewer)&&
+   getTeam(r.holder_team_id)?.conference===getTeam(viewer)?.conference&&
+   displayedTeams().some(t=>same(t.id,r.holder_team_id)));
+ el("qaBuyRightsList").innerHTML=available.length?available.map(r=>
+  '<article class="qa-card"><div class="qa-card-head"><strong>🔐 '+esc(kindLabel(r.rule_kind))+
+  '</strong><span class="qa-pill">Disponibile alla trattativa</span></div>'+
+  '<p>Attualmente di <b>'+esc(teamName(r.holder_team_id))+
+  '</b>, con pick promesse da <b>'+esc(teamName(r.grantor_team_id))+'</b>.</p>'+
+  '<ul>'+branchLabels(r.rule_kind,r.rule_spec,r.candidate_pick_ids).map(x=>
+  '<li>'+esc(x)+'</li>').join("")+'</ul>'+
+  '<div class="qa-btn-row"><button type="button" class="qa-secondary" data-action="buy" data-id="'+
+  esc(r.id)+'">📥 Proponi acquisto a '+esc(teamName(r.holder_team_id))+
+  '</button></div></article>').join(""):
+  '<div class="qa-empty">Nessun diritto acquistabile in questo momento per '+esc(teamName(viewer))+
+  '. Non puoi acquistare un diritto già finalizzato né uno che obbliga la tua stessa squadra.</div>';
  const locked=qaLockedIds(model);
  const picks=qaOwnedPicks(model,viewer);
  el("qaPicksInventory").innerHTML=picks.map(p=>
@@ -544,9 +582,7 @@ function openResaleComposer(right,buyer){
  if(!same(viewer,right.holder_team_id))chooseViewer(right.holder_team_id);
  chooseTab("compose");
  el("qaToTeam").value=buyer.id;
- el("qaGrantorSide").value="mine";
- el("qaKind").value="right_transfer";
- refreshForm(true);
+ chooseResaleIntent("sell",false);
  el("qaExistingRight").value=right.id;
  el("qaPlayerFrom").value="";
  el("qaPlayerTo").value="";
@@ -624,7 +660,8 @@ function send(){
   const created=qaSendOffer(model,viewer,offer);
   render();
   flash(created.rule_kind==="right_transfer"?
-    "Rivendita PROPOSTA, non ancora conclusa. Passa a "+teamName(created.to_team_id)+
+    (same(created.from_team_id,created.grantor_team_id)?"VENDITA":"ACQUISTO")+
+    " proposto, non ancora concluso. Passa a "+teamName(created.to_team_id)+
     ", apri Proposte e premi Accetta per trasferire il diritto.":
     "Proposta "+created.id+" creata soltanto nel test. Passa a "+
     teamName(created.to_team_id)+" per rispondere.");
@@ -662,6 +699,8 @@ function handleAction(event){
    render();
    flash(kind==="preview"?"Anteprima calcolata, nessuna pick trasferita.":
     result.status==="pending"?"La condizione resta aperta.":explanation);
+  }else if(kind==="buy"){
+   openBuyComposer(findRight(id));
   }else if(kind==="resell"){
    const right=findRight(id);
    if(!right||right.status!=="active"||!same(right.holder_team_id,viewer))
