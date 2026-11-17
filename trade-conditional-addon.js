@@ -573,19 +573,22 @@ function paintConditionalHistory(){
 }
 
 async function reload(){
-  const [p,o,r,c,s,pl]=await Promise.all([
+  const [p,o,r,c,s,pl,reviews]=await Promise.all([
     supabase.from("future_draft_picks").select("id,season,draft_name,round,original_team_id,owner_team_id,pick_kind,status").eq("season",state.settings?.future_pick_season||2027).eq("status","active"),
     supabase.from("conditional_trade_offers").select("*").order("created_at",{ascending:false}).limit(150),
     supabase.from("conditional_trade_rights").select("*").order("created_at",{ascending:false}).limit(150),
     supabase.from("conditional_trade_candidates").select("pick_id,is_locked").eq("is_locked",true),
     supabase.from("conditional_feature_settings").select("enabled").eq("id",1).maybeSingle(),
-    supabase.from("players").select("id,name,owner_team_id,status,role_mantra,role,is_u21_slot").eq("status","active")
+    supabase.from("players").select("id,name,owner_team_id,status,role_mantra,role,is_u21_slot").eq("status","active"),
+    state.isAdmin?supabase.from("conditional_trade_reviews").select("*").order("created_at",{ascending:false}).limit(150):
+      Promise.resolve({data:[],error:null})
   ]);
-  for(const x of [p,o,r,c,s,pl])if(x.error)throw x.error;
+  for(const x of [p,o,r,c,s,pl,reviews])if(x.error)throw x.error;
   state.picks=p.data||[];state.players=pl.data||[];state.offers=o.data||[];state.rights=r.data||[];
+  state.reviews=reviews.data||[];
   state.locks=new Set((c.data||[]).map(x=>String(x.pick_id)));
   state.enabled=s.data?.enabled===true;
-  refreshCandidates();paintOffers();paintRights();paintConditionalHistory();
+  refreshCandidates();paintOffers();paintRights();paintConditionalHistory();paintReviews();
 }
 function bind(){
   $("ctModeClassic").addEventListener("click",()=>setMode("classic"));
@@ -705,13 +708,14 @@ async function init(){
     const qaLink=$("ctQaOnlyLink");
     if(qaLink)qaLink.hidden=String(user.data.user.email||"").toLowerCase()!=="tringali0511@gmail.com";
     const [p,t,s]=await Promise.all([
-      supabase.from("profiles").select("id,team_id").eq("id",user.data.user.id).maybeSingle(),
+      supabase.from("profiles").select("id,team_id,role").eq("id",user.data.user.id).maybeSingle(),
       supabase.from("teams").select("id,name,conference").order("name"),
       supabase.from("trade_settings").select("*").eq("id",1).maybeSingle()
     ]);
     for(const x of [p,t,s])if(x.error)throw x.error;
     if(!p.data?.team_id)return;
     state.me=p.data;state.teams=t.data||[];state.settings=s.data||{};
+    state.isAdmin=["admin","commissioner"].includes(String(p.data.role||"").toLowerCase());
     const teams=state.teams.map(t=>'<option value="'+esc(t.id)+'">'+esc(t.name)+'</option>').join("");
     fill("ctStandingSubject",teams,myId());
     fill("ctTrophySubject",teams,myId());
