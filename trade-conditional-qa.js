@@ -482,6 +482,74 @@ function render(){
  if(tab==="rights")renderRights();
  if(tab==="notices")renderNotices();
 }
+function openResaleComposer(right,buyer){
+ if(!right||right.status!=="active")
+   throw new Error("Un diritto già finalizzato non può essere venduto.");
+ if(!same(viewer,right.holder_team_id))chooseViewer(right.holder_team_id);
+ chooseTab("compose");
+ el("qaToTeam").value=buyer.id;
+ el("qaGrantorSide").value="mine";
+ el("qaKind").value="right_transfer";
+ refreshForm(true);
+ el("qaExistingRight").value=right.id;
+ el("qaPlayerFrom").value="";
+ el("qaPlayerTo").value="";
+ el("qaMixedDetails").open=false;
+ updatePreview();
+ flash("PASSO 1/3: "+teamName(right.holder_team_id)+
+  " vende a "+buyer.name+". Premi «Invia proposta», poi passa a "+buyer.name+
+  " e premi «Accetta». Non finalizzare il diritto prima della vendita.");
+ el("qaScreenCompose").scrollIntoView({behavior:"smooth",block:"start"});
+}
+function startResaleDemo(){
+ const hasProgress=model.offers.length>0||model.rights.length>0;
+ if(hasProgress&&!window.confirm("La prova guidata ricomincia da zero con dati SIMULATI e prepara un diritto Bartowski–Bayern non ancora finalizzato. Continuare?"))return;
+ const next=createQaState(snapshot);
+ const bart=next.teams.find(t=>t.name==="Team Bartowski");
+ const bayern=next.teams.find(t=>t.name==="Bayern Christiansen");
+ const des=next.teams.find(t=>t.name==="Desperados");
+ if(!bart||!bayern||!des)throw new Error("Mancano le franchigie necessarie al test.");
+ const groups=new Map();
+ for(const pick of qaOwnedPicks(next,bart.id)){
+  const key=String(pick.draft_name);
+  if(!groups.has(key))groups.set(key,[]);
+  groups.get(key).push(pick);
+ }
+ let setup=null;
+ for(const [draft,picks] of groups){
+  if(picks.length<2)continue;
+  const bPick=qaOwnedPicks(next,bayern.id).find(p=>p.draft_name===draft);
+  const dPick=qaOwnedPicks(next,des.id).find(p=>p.draft_name===draft);
+  if(!bPick||!dPick)continue;
+  const first=picks.find(p=>Number(p.round)===4)||picks[0];
+  const second=picks.find(p=>Number(p.round)===5&&!same(p.id,first.id))||
+    picks.find(p=>!same(p.id,first.id));
+  if(!second)continue;
+  setup={first,second,bPick,dPick};
+  break;
+ }
+ if(!setup)throw new Error("Non ci sono abbastanza pick normali dello stesso Draft per l'esempio.");
+ const count=next.teams.filter(t=>t.conference===bart.conference).length;
+ if(count<2)throw new Error("La Conference non contiene abbastanza squadre.");
+ const top=Math.floor(count/2),bottom=count-top;
+ const initial=qaSendOffer(next,bart.id,{
+  from_team_id:bart.id,to_team_id:bayern.id,grantor_team_id:bart.id,
+  rule_kind:"standing",
+  rule_spec:{scope:"conference",subject_team_id:bart.id,top_count:top,bottom_count:bottom,
+    top_pick_id:setup.first.id,bottom_pick_id:setup.second.id,middle_pick_id:null},
+  candidate_pick_ids:[setup.first.id,setup.second.id],
+  counter_pick_id:setup.bPick.id,mixed_assets:[]
+ });
+ const right=qaRespondOffer(next,bayern.id,initial.id,true);
+ model=next;
+ previews={};
+ viewer=bayern.id;
+ el("qaToTeam").innerHTML="";
+ chooseViewer(bayern.id);
+ openResaleComposer(right,des);
+ flash("ESEMPIO PRONTO: il diritto Bartowski → Bayern è ATTIVO, non finalizzato. "+
+  "Sei Bayern: invia la rivendita a Desperados, poi passa a Desperados e premi Accetta.");
+}
 function resetAll(){
  if(!window.confirm("Azzerare tutte le trade simulate, i lucchetti e le notifiche fittizie? I dati ufficiali non vengono toccati."))return;
  model=createQaState(snapshot);
@@ -541,24 +609,12 @@ function handleAction(event){
   }else if(kind==="resell"){
    const right=findRight(id);
    if(!right||right.status!=="active"||!same(right.holder_team_id,viewer))
-    throw new Error("Può rivendere il diritto solo il titolare attuale.");
+    throw new Error("Può rivendere soltanto il titolare, prima della finalizzazione.");
    const buyer=displayedTeams().find(t=>!same(t.id,viewer)&&!same(t.id,right.grantor_team_id));
-   if(!buyer)throw new Error("Nessun compratore disponibile per questa rivendita.");
-   chooseTab("compose");
-   el("qaToTeam").value=buyer.id;
-   el("qaGrantorSide").value="mine";
-   el("qaKind").value="right_transfer";
-   refreshForm(true);
-   el("qaExistingRight").value=right.id;
-   // Le selezioni dei giocatori da una precedente proposta non devono mai
-   // entrare automaticamente nella rivendita di un diritto.
-   el("qaPlayerFrom").value="";
-   el("qaPlayerTo").value="";
-   el("qaMixedDetails").open=false;
-   updatePreview();
-   flash("Rivendita preparata, NON conclusa. 1. Verifica il prezzo pagato da "+
-    buyer.name+". 2. Invia. 3. Passa a "+buyer.name+" e accetta la proposta.");
-   el("qaScreenCompose").scrollIntoView({behavior:"smooth",block:"start"});
+   if(!buyer)throw new Error("Nessun compratore disponibile.");
+   openResaleComposer(right,buyer);
+  }else if(kind==="demo-resale"){
+   startResaleDemo();
   }
  }catch(e){flash(e.message||"Operazione non consentita",true);}
 }
