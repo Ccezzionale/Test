@@ -1351,6 +1351,7 @@ async function renderAdminPanel() {
 
         button.disabled = true;
         adminMessage(`Finalizzo ${cfg.name}…`, 'loading');
+        const conditionalFinalizeStartedAt = new Date().toISOString();
 
         const { error } = await supabase.rpc('hof_finalize_competition', {
           p_season: season,
@@ -1373,6 +1374,33 @@ async function renderAdminPanel() {
           adminMessage(`Errore finalizzazione ${cfg.name}: ${error.message}`, 'error');
           button.disabled = false;
           return;
+        }
+
+        // Se un diritto condizionato è stato sbloccato proprio da questo
+        // verdetto, riusa le push e il centro notifiche della Lega.
+        // Le trade condizionate rimangono disabilitate in fase di collaudo.
+        try {
+          const { data: conditionalFlag } = await supabase
+            .from('conditional_feature_settings')
+            .select('enabled')
+            .eq('id', 1)
+            .maybeSingle();
+          if (conditionalFlag?.enabled) {
+            const { data: conditionalNotice, error: conditionalError } =
+              await supabase.functions.invoke('send-conditional-trade-notification', {
+                body: {
+                  event_type: 'resolved_since',
+                  season: Number(season.slice(-4)),
+                  since: conditionalFinalizeStartedAt
+                }
+              });
+            if (conditionalError || conditionalNotice?.success !== true) {
+              console.warn('Notifica diritti risolti non confermata:',
+                conditionalError || conditionalNotice);
+            }
+          }
+        } catch (conditionalError) {
+          console.warn('Notifica trade condizionata non disponibile:', conditionalError);
         }
 
         const notificationResult = await sendHallOfFameFinalizedNotification({
