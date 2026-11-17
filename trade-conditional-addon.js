@@ -245,6 +245,20 @@ async function reload(){
 }
 function bind(){
   $("ctModeClassic").addEventListener("click",()=>setMode("classic"));
+  for(const [buttonId,side,doneId] of [
+    ["ctQuickGive","mine","v2DoneGive"],
+    ["ctQuickWant","theirs","v2DoneWant"]
+  ]){
+    $(buttonId).addEventListener("click",()=>{
+      // Chiude il selettore standard prima di aprire il contratto condizionato.
+      $(doneId)?.click();
+      $("ctGrantorSide").value=side;
+      $("ctKind").value="standing";
+      setMode("conditional");
+      refreshKind();
+      $("ctConditionalComposer").scrollIntoView({behavior:"smooth",block:"start"});
+    });
+  }
   $("ctModeConditional").addEventListener("click",()=>setMode("conditional"));
   $("ctKind").addEventListener("change",refreshKind);
   $("ctGrantorSide").addEventListener("change",()=>{$("ctRankedCandidates").innerHTML="";refreshCandidates();});
