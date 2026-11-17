@@ -9,7 +9,7 @@
   <link rel="stylesheet" href="navbar.css">
   <link rel="stylesheet" href="trade-room.css?v=20261116-live-backup">
   <link rel="stylesheet" href="trade-room-v2.css?v=20261116-live-rollout-01">
-  <link rel="stylesheet" href="trade-conditional-addon.css?v=20261117-v8-mixed-assets">
+  <link rel="stylesheet" href="trade-conditional-addon.css?v=20261117-v9-mixed-history">
 </head>
 <body class="trade-v2-preview trade-v2-live">
 <nav class="site-nav">
@@ -308,6 +308,11 @@
         <div class="v2-section-title"><h2>Movimenti ufficiali</h2><small id="v2HistoryCount"></small></div>
         <p class="v2-sub">Gli scambi conclusi nella Lega degli Eroi.</p>
         <div id="v2HistoryItems"></div>
+        <section id="ctHistoryPanel" class="ct-list-panel" hidden>
+          <h3>🔐 Trade condizionate ufficiali</h3>
+          <p>Ogni contratto compare qui una sola volta, anche quando comprende giocatori o pick normali.</p>
+          <div id="ctHistoryItems"></div>
+        </section>
       </section>
 
       <section id="v2NewView" hidden>
@@ -736,7 +741,7 @@
   <script src="mobile-nav.js"></script>
   <script src="navbar.js"></script>
   <script type="module" src="trade-room.js?v=20261116-live-original"></script>
-  <script type="module" src="trade-room-live.js?v=20261117-conditional-protected-picks"></script>
-  <script type="module" src="trade-conditional-addon.js?v=20261117-v8-mixed-assets"></script>
+  <script type="module" src="trade-room-live.js?v=20261117-v9-hide-legacy-leg"></script>
+  <script type="module" src="trade-conditional-addon.js?v=20261117-v9-mixed-history"></script>
 </body>
 </html>
