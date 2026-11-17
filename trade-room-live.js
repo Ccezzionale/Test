@@ -207,7 +207,9 @@ async function loadExtraAssets(){
   const future=await supabase.from("future_draft_picks")
     .select("id,season,round,owner_team_id,original_team_id,draft_name,pick_kind,status")
     .eq("season",state.settings.future_pick_season||2027).eq("pick_kind","normal").eq("status","active");
-  if(!future.error)(future.data||[]).forEach(x=>items.push({
+  const blocked=await supabase.from("conditional_trade_candidates").select("pick_id").eq("is_locked",true);
+  const protectedPickIds=new Set((blocked.error?[]:blocked.data||[]).map(x=>str(x.pick_id)));
+  if(!future.error)(future.data||[]).filter(x=>!protectedPickIds.has(str(x.id))).forEach(x=>items.push({
     key:"future:"+str(x.id),name:"Pick "+x.season+" · R"+x.round+" ("+teamName(x.original_team_id)+")",
     ownerId:x.owner_team_id,kind:"pick",sortNumber:Number(x.round)
   }));
