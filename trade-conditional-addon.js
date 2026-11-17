@@ -3,8 +3,9 @@ import {TROPHY_COMPETITIONS} from "./conditional-trades-core.js";
 
 /*
  * Conditional Trade Room extension. Independent from trade-room.js.
- * A database feature gate prevents real writes until outcomes and E2E tests
- * are complete. No ordinary trade logic is replaced or monkey-patched.
+ * Real trades are protected by database feature gate, atomic ownership
+ * validation, and a post-acceptance admin review log.
+ * No ordinary trade logic is replaced or monkey-patched.
  */
 const $=id=>document.getElementById(id);
 const esc=v=>String(v??"").replace(/[&<>"']/g,ch=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[ch]));
@@ -358,7 +359,7 @@ function redrawSummary(){
     !same(state.picks.find(p=>same(p.id,$("ctCounterPick").value))?.owner_team_id,holder)||
     state.picks.find(p=>same(p.id,$("ctCounterPick").value))?.draft_name!==originalRight?.draft_name);
   const reason=!state.enabled
-    ?"Le trade condizionate sono in collaudo. L'invio reale sarà sbloccato solo dopo i test completi."
+    ?"Le trade condizionate sono temporaneamente sospese dall'amministrazione."
     :!marketOpen()?"Il mercato è chiuso."
     :!targetId()?"Scegli prima una franchigia con cui trattare."
     :team(owner)?.conference!==team(holder)?.conference?"Condizioni fra Conferences diverse non ancora supportate."
@@ -709,7 +710,7 @@ async function notifyConditionalTrade(eventType,proposalId){
 
 async function sendOffer(){
   try{
-    if(!state.enabled)throw new Error("Le trade condizionate sono ancora in collaudo.");
+    if(!state.enabled)throw new Error("Le trade condizionate sono temporaneamente sospese.");
     if(!marketOpen())throw new Error("Il mercato è chiuso.");
     const payload=conditionPayload();
     const extras=extraAssets();
