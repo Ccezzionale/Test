@@ -1122,3 +1122,151 @@
     border-color:#d5e5f5 !important;
   }
 }
+
+
+/* =============================================================
+   DRAFT LEAGUE · OVERVIEW V7 | Mockup approvato (navy/bianco/oro)
+   17 novembre 2026. Solo componente Overview, mobile.
+   Non modificare la leggibilità dei numeri, loghi o colori trade.
+   ============================================================= */
+@media (max-width:768px) {
+  body.draft-league-modern .mobile-draft-overview-card {
+    background:#fff !important;
+    border:1px solid #d9e2ed !important;
+    color:#092641 !important;
+    box-shadow:0 10px 25px rgba(7,32,65,.085) !important;
+  }
+  body.draft-league-modern .mobile-overview-header {
+    background:linear-gradient(115deg,#061a32 0%,#092849 70%,#0d3154 100%) !important;
+    border-bottom:3px solid #f3c53e !important;
+    border-radius:19px 19px 0 0 !important;
+  }
+  body.draft-league-modern .mobile-overview-heading strong {color:#fff !important;}
+  body.draft-league-modern .mobile-overview-heading small {color:#d9e4f3 !important;}
+  body.draft-league-modern .mobile-overview-icon {
+    background:rgba(255,255,255,.07) !important;
+    border:1px solid rgba(255,214,81,.55) !important;
+  }
+  body.draft-league-modern .mobile-overview-progress {
+    background:#ffd34e !important;
+    border:1px solid #ebbd39 !important;
+    color:#061e37 !important;
+  }
+
+  /* Legenda e selettore: sfondi neutri bianchi, contorni navy. */
+  body.draft-league-modern .mobile-overview-legend {
+    background:#fff !important;
+    border:1px solid #a7b6c7 !important;
+    box-shadow:0 1px 3px rgba(9,32,59,.035) !important;
+  }
+  body.draft-league-modern .mobile-overview-legend > span {
+    color:#132e49 !important;
+  }
+  body.draft-league-modern .mobile-overview-legend .legend-completed {
+    background:#fff !important;
+    border:1px solid #0b2c51 !important;
+  }
+  body.draft-league-modern .mobile-overview-legend .legend-current {
+    background:#ffce36 !important;
+  }
+  body.draft-league-modern .mobile-overview-legend .legend-future {
+    background:#fdfefe !important;
+    border:1px solid #c9d3df !important;
+  }
+  body.draft-league-modern .draft-overview-switch {
+    background:#fff !important;
+    border:1px solid #102f53 !important;
+  }
+  body.draft-league-modern .draft-overview-switch button {
+    background:transparent !important;
+    color:#082a4e !important;
+  }
+  body.draft-league-modern .draft-overview-switch button[aria-pressed="true"] {
+    background:linear-gradient(180deg,#0f3154 0%,#071d37 100%) !important;
+    color:#fff !important;
+    box-shadow:inset 0 -3px 0 #f4c535 !important;
+  }
+
+  /* Area round e pick: niente grigio, niente celeste. */
+  body.draft-league-modern .mobile-overview-rounds,
+  body.draft-league-modern .draft-overview-grid-list {
+    background:#fff !important;
+    border:1px solid #e1e7ee !important;
+    border-radius:15px !important;
+  }
+  body.draft-league-modern .mobile-overview-round + .mobile-overview-round {
+    border-top:1px solid #e8edf3 !important;
+  }
+  body.draft-league-modern .mobile-overview-round-label,
+  body.draft-league-modern .mobile-overview-round-label strong {
+    color:#071d39 !important;
+  }
+  body.draft-league-modern .mobile-overview-round-label span {
+    color:#57718e !important;
+  }
+  body.draft-league-modern .mobile-overview-round.is-current-round {
+    background:#fff9e9 !important;
+    border:1px solid #e8c76a !important;
+  }
+  body.draft-league-modern .mobile-overview-round.is-current-round .mobile-overview-round-label strong,
+  body.draft-league-modern .mobile-overview-round.is-current-round .mobile-overview-round-label span {
+    color:#7b5805 !important;
+  }
+
+  /* Completate: bianco e bordo blu notte, non riempimento colorato. */
+  body.draft-league-modern .mobile-overview-slot.is-completed {
+    background:#fff !important;
+    border:1.5px solid #102c50 !important;
+    color:#102c50 !important;
+    box-shadow:0 2px 4px rgba(7,30,58,.10) !important;
+  }
+  /* Future: bordi più tenui, ma sempre bianche. */
+  body.draft-league-modern .mobile-overview-slot.is-future {
+    background:#fff !important;
+    border:1px solid #c1cbd8 !important;
+    color:#74879d !important;
+    box-shadow:0 1px 3px rgba(7,30,58,.045) !important;
+  }
+  body.draft-league-modern .mobile-overview-slot.is-future img {
+    opacity:.66 !important;
+    filter:saturate(.76) !important;
+  }
+  /* Attuale: evidenza oro, volutamente distinta dalle concluse. */
+  body.draft-league-modern .mobile-overview-slot.is-current {
+    background:#ffe26a !important;
+    color:#082645 !important;
+    border:2px solid #d9a620 !important;
+    box-shadow:0 0 0 2px rgba(244,199,58,.24) !important;
+  }
+  /* Le trade conservano esattamente i colori dinamici assegnati dal JS. */
+  body.draft-league-modern .mobile-overview-slot.is-traded {
+    border-color:var(--overview-trade,#1e88e5) !important;
+    box-shadow:0 0 0 1px var(--overview-trade,#1e88e5),0 2px 4px rgba(7,30,58,.12) !important;
+  }
+  body.draft-league-modern .mobile-overview-slot.is-traded.is-future {
+    background:#fff !important;
+  }
+  body.draft-league-modern .mobile-overview-slot.is-traded.is-current {
+    background:#ffe26a !important;
+  }
+  /* I badge delle pick restano grandi quanto prima. */
+  body.draft-league-modern .mobile-overview-slot em {
+    background:#071e3b !important;
+    color:#fff !important;
+    border-color:#fff !important;
+  }
+  body.draft-league-modern .mobile-overview-slot.is-current em {
+    background:#071e3b !important;
+    color:#ffe26a !important;
+  }
+  body.draft-league-modern .mobile-overview-details {
+    background:#fff !important;
+    color:#102c50 !important;
+    border:1px solid #c8d2df !important;
+  }
+  body.draft-league-modern .draft-overview-search {
+    background:#fff !important;
+    color:#102c50 !important;
+    border:1px solid #a9bacb !important;
+  }
+}
