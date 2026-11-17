@@ -79,3 +79,6 @@
 .ct-qa-link strong{font-size:13px;font-weight:930;color:#ffe18b}
 .ct-qa-link small{font-size:10px;line-height:1.45;color:#c4dbf2}
 .ct-qa-link>span:last-child{font-size:22px;color:#ffdf80}
+
+#ctRankedHint{margin:10px 0;color:#d9f6df;font-size:11px;line-height:1.45;font-weight:800}
+#ctRankedRound:disabled{opacity:.65}
