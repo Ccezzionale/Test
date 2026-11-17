@@ -55,3 +55,11 @@ Il motore di rivendita eseguiva correttamente la cessione del diritto, ma la sch
 La modalità TEST ora illustra venditore, compratore, prezzo in pick, clausola originale invariata e quattro passaggi per confermare. Il venditore vede il diritto con badge «Venduto · ex titolare» e il suo storico, senza pulsanti per rivendere o liquidare un diritto che non possiede più. Sulle proposte di rivendita ricevute è riportata la clausola originale. La precompilazione svuota anche le vecchie selezioni dei giocatori per non includerle accidentalmente.
 
 La modifica riguarda esclusivamente `trade-conditional-qa.html/js/css`. Nessuna RPC di mercato, nessuna tabella, nessuna notifica push o pick reale è stata toccata. Test isolato della sequenza Bartowski → Bayern → Desperados con diritto ancora vincolato: **11/11 asserzioni superate** (proprietà finale, storico dell'ex titolare, blocco dei pulsanti non autorizzati, clausola originale, contropartita e passaggi guida). L'esecuzione manuale nel browser dell'utente resta da verificare.
+
+## Acquisto e vendita di diritti in entrambe le direzioni · 17/11/2026
+
+- In modalità TEST, il possessore può usare **Vendi un diritto**, oppure una franchigia terza può usare **Proponi acquisto** e inviare un'offerta al titolare. Il destinatario deve accettare in entrambi i casi.
+- Desperados vede i diritti attivi trattabili in **Diritti & Draft → Diritti che puoi proporre di acquistare**. Il pulsante di acquisto preimposta Bayern come venditore, seleziona il diritto e chiede una pick di Desperados come contropartita.
+- Le pick di pagamento devono appartenere al compratore, essere libere e dello stesso Draft del diritto. Non si può acquistare un diritto che obbliga la propria franchigia a consegnare la pick, né un diritto già finalizzato.
+- La prova guidata mantiene la franchigia attiva: avviandola da Desperados propone **acquisto**, avviandola da Bayern propone **vendita**. Non cambia le identità autentiche, le pick, le rose o le notifiche del sistema ufficiale.
+- Test del core di simulazione: **10/10** (vendita, acquisto, rifiuto, annullamento, permessi, divieti dopo finalizzazione, stato immutato). Test dei controlli di direzione UI: **8/8**. Test della preparazione guidata da entrambe le franchigie: **2/2**. Restano da verificare i clic manuali nel browser.
