@@ -107,6 +107,19 @@ function extraLabel(x){
   return call?"Chiamata sett. "+call.week+" · "+call.origin_team_name:"Chiamata "+x.asset_id;
 }
 
+
+async function loadExtraWaiverCalls(){
+  const owners=[...new Set([myId(),targetId()].filter(Boolean))];
+  const rows=await Promise.all(owners.map(owner=>
+    supabase.rpc("conditional_available_waiver_calls",
+      {p_owner_team_id:owner,p_weeks_ahead:14})
+      .then(result=>({owner,...result}))
+      .catch(error=>({owner,error}))
+  ));
+  state.waiverCalls=rows.flatMap(row=>row.error?[]:(row.data||[]).map(x=>({...x,owner_team_id:row.owner})));
+  paintMixedChoices();
+}
+
 function refreshScope(){
   const subject=team($("ctStandingSubject").value);
   const scope=$("ctStandingScope").value;
@@ -143,6 +156,7 @@ function refreshCandidates(){
   const resell=state.rights.filter(r=>r.status==="active"&&same(r.holder_team_id,grantorId()));
   fill("ctExistingRight",'<option value="">Seleziona il diritto...</option>'+
     resell.map(r=>'<option value="'+esc(r.id)+'">'+esc(kindLabel(r.rule_kind)+" · "+name(r.grantor_team_id)+" · "+r.season)+'</option>').join(""));
+  paintMixedChoices();
   redrawSummary();
 }
 function drawRanked(){
@@ -372,7 +386,7 @@ function bind(){
   $("ctModeConditional").addEventListener("click",()=>setMode("conditional"));
   $("ctKind").addEventListener("change",refreshKind);
   $("ctGrantorSide").addEventListener("change",()=>{$("ctRankedCandidates").innerHTML="";refreshCandidates();});
-  $("v2TargetTeam").addEventListener("change",()=>{$("ctRankedCandidates").innerHTML="";refreshCandidates();});
+  $("v2TargetTeam").addEventListener("change",()=>{$("ctRankedCandidates").innerHTML="";state.extraTo.clear();refreshCandidates();loadExtraWaiverCalls();});
   $("ctStandingSubject").addEventListener("change",refreshScope);
   $("ctStandingScope").addEventListener("change",refreshScope);
   $("ctTopCount").addEventListener("change",refreshScope);
@@ -383,6 +397,10 @@ function bind(){
   for(const id of ["ctTopPick","ctBottomPick","ctMiddlePick","ctWonPick","ctNotWonPick","ctTrophySpecific",
     "ctCounterPick","ctRankedWhich","ctExistingRight"]){
     $(id).addEventListener("change",redrawSummary);
+  }
+  for(const n of ["From","To"]){
+    $("ctMixed"+n+"Type").addEventListener("change",paintMixedChoices);
+    $("ctMixed"+n+"Search").addEventListener("input",paintMixedChoices);
   }
   $("ctSendOffer").addEventListener("click",sendOffer);
   $("ctOfferItems").addEventListener("click",offerAction);
@@ -474,6 +492,7 @@ async function init(){
     bind();
     await reload();
     refreshScope();refreshSpecificTrophy();refreshKind();setMode("classic");
+    await loadExtraWaiverCalls();
   }catch(err){console.error("Trade condizionate:",err);failure("ctFormNotice","Errore caricamento condizioni: "+(err.message||"errore sconosciuto"));}
 }
 document.addEventListener("DOMContentLoaded",init);
