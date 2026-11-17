@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <title>Trade Room · Modalità Test | Lega degli Eroi</title>
+  <link rel="stylesheet" href="trade-conditional-qa.css?v=20261117-qa-v1">
+</head>
+<body>
+  <div class="qa-shell">
+    <header class="qa-header">
+      <a href="trade-room.html" class="qa-back">← Trade Room ufficiale</a>
+      <div class="qa-overline">LEGA DEGLI EROI · COLLAUDO RISERVATO</div>
+      <h1>Trade Room <span>TEST</span></h1>
+      <p>Tu controlli entrambe le panchine. Nessuna pick o rosa reale verrà modificata.</p>
+    </header>
+    <section id="qaGate" class="qa-gate" role="status">
+      <div class="qa-spinner">🧪</div>
+      <h2>Verifica account e caricamento pick…</h2>
+      <p>Accesso consentito soltanto all'account autorizzato.</p>
+    </section>
+    <main id="qaApp" hidden>
+      <section class="qa-safe" role="note">
+        <span>🛡️</span>
+        <div><strong>SIMULAZIONE ISOLATA · nessuna operazione reale</strong>
+          <p>Leggiamo le pick e i giocatori del mercato soltanto per comporre gli esempi. Contratti, trasferimenti, lucchetti e notifiche sono finti e spariscono ricaricando la pagina.</p>
+        </div>
+      </section>
+      <section class="qa-role-box">
+        <div class="qa-role-label">
+          <div><span class="qa-overline">PANORAMICA ATTIVA</span><h2>Stai visualizzando come <strong id="qaViewTeamName">Team Bartowski</strong></h2></div>
+          <span class="qa-role-pill">🧪 Identità simulata</span>
+        </div>
+        <div id="qaTeamSwitcher" class="qa-switcher" role="group" aria-label="Scegli la franchigia da simulare"></div>
+        <p class="qa-hint">Passare a Bayern non significa entrare nel suo account: cambiano solo i dati e le proposte mostrati nella prova.</p>
+      </section>
+      <div class="qa-metrics" aria-label="Stato della simulazione">
+        <div><span>Proposte aperte</span><strong id="qaMetricOffers">0</strong></div>
+        <div><span>Diritti attivi</span><strong id="qaMetricRights">0</strong></div>
+        <div><span>Pick vincolate</span><strong id="qaMetricLocks">0</strong></div>
+        <div><span>Avvisi simulati</span><strong id="qaMetricNotices">0</strong></div>
+      </div>
+      <nav class="qa-tabs" aria-label="Sezioni del collaudo">
+        <button data-qa-tab="compose" class="active" aria-selected="true" type="button">⇄ <span>Nuova trade</span></button>
+        <button data-qa-tab="offers" aria-selected="false" type="button">✉️ <span>Proposte</span> <b id="qaPendingBadge" hidden>0</b></button>
+        <button data-qa-tab="rights" aria-selected="false" type="button">🔐 <span>Diritti & Draft</span></button>
+        <button data-qa-tab="notices" aria-selected="false" type="button">🔔 <span>Notifiche</span></button>
+      </nav>
+      <div id="qaToast" class="qa-toast" role="status" aria-live="polite" hidden></div>
+
+      <section id="qaScreenCompose" class="qa-screen">
+        <div class="qa-section-top"><div><h2>Costruisci una proposta condizionata</h2><p>Le pick sono reali in lettura. Tutto ciò che fai qui è una simulazione.</p></div></div>
+        <div class="qa-panel">
+          <div class="qa-form-grid">
+            <label>Destinatario della proposta
+              <select id="qaToTeam"></select>
+            </label>
+            <label>Chi cede il diritto?
+              <select id="qaGrantorSide">
+                <option value="mine">La franchigia che sto impersonando</option>
+                <option value="theirs">La franchigia destinataria</option>
+              </select>
+            </label>
+            <label>Tipologia di accordo
+              <select id="qaKind">
+                <option value="standing">Classifica Conference / Round Robin</option>
+                <option value="ranked">Migliore o peggiore pick</option>
+                <option value="trophy">Se vince un trofeo</option>
+                <option value="right_transfer">Rivendita di un diritto posseduto</option>
+              </select>
+            </label>
+          </div>
+
+          <div id="qaStandingFields" class="qa-conditional-fields">
+            <div class="qa-form-grid">
+              <label>Classifica di quale franchigia?<select id="qaStandingSubject"></select></label>
+              <label>Competizione
+                <select id="qaScope"><option value="conference">Conference</option><option value="round_robin">Round Robin</option></select>
+                <small id="qaStandingCount"></small>
+              </label>
+              <label>Nei primi N<input type="number" id="qaTopCount" min="1" value="4"></label>
+              <label>Negli ultimi N<input type="number" id="qaBottomCount" min="1" value="4"></label>
+              <label>Pick se arriva nei primi N<select id="qaTopPick"></select></label>
+              <label>Pick se arriva negli ultimi N<select id="qaBottomPick"></select></label>
+              <label id="qaMiddleField" hidden>Pick se arriva nelle posizioni intermedie<select id="qaMiddlePick"></select></label>
+            </div>
+          </div>
+
+          <div id="qaRankedFields" class="qa-conditional-fields" hidden>
+            <div class="qa-form-grid">
+              <label>Criterio<select id="qaRankedWhich"><option value="worst">La peggiore</option><option value="best">La migliore</option></select></label>
+              <label>Round delle pick candidate<select id="qaRankedRound"></select></label>
+            </div>
+            <p class="qa-hint">Scegli almeno due pick dello stesso round appartenenti alla squadra che le promette.</p>
+            <div id="qaRankedPicks" class="qa-check-grid"></div>
+          </div>
+
+          <div id="qaTrophyFields" class="qa-conditional-fields" hidden>
+            <div class="qa-form-grid">
+              <label>Risultato di quale franchigia?<select id="qaTrophySubject"></select></label>
+              <label>Tipo di premio
+                <select id="qaTrophyMode"><option value="any_trophy">Vince almeno un trofeo</option><option value="specific_trophy">Vince un trofeo specifico</option></select>
+              </label>
+              <label id="qaSpecificField" hidden>Quale trofeo?<select id="qaTrophySpecific"></select></label>
+              <label>Pick se vince<select id="qaWonPick"></select></label>
+              <label>Pick se non vince<select id="qaNotWonPick"></select></label>
+            </div>
+          </div>
+
+          <div id="qaResaleFields" class="qa-conditional-fields" hidden>
+            <label>Quale diritto vuoi rivendere?
+              <select id="qaExistingRight"></select>
+            </label>
+            <p class="qa-hint">La clausola e le candidate non cambiano. Il nuovo titolare acquista il diritto in cambio di una sua pick.</p>
+          </div>
+
+          <div class="qa-counter-box">
+            <strong>⇄ Contropartita 1:1</strong>
+            <p id="qaCounterInfo">Chi acquisisce il diritto offre una sua pick futura.</p>
+            <label>Pick scambiata per il diritto<select id="qaCounterPick"></select></label>
+          </div>
+
+          <details id="qaMixedDetails" class="qa-mixed">
+            <summary>⚽ Aggiungi anche due giocatori (test trade mista)</summary>
+            <p class="qa-hint">Un giocatore da ogni lato, senza portieri né svincoli differiti. Lo scambio è sempre simulato.</p>
+            <div class="qa-form-grid">
+              <label>Giocatore offerto da chi propone<select id="qaPlayerFrom"></select></label>
+              <label>Giocatore offerto da chi riceve<select id="qaPlayerTo"></select></label>
+            </div>
+          </details>
+
+          <div id="qaOfferPreview" class="qa-preview" aria-live="polite"></div>
+          <button id="qaSend" type="button" class="qa-primary">✉️ Invia proposta simulata</button>
+        </div>
+      </section>
+
+      <section id="qaScreenOffers" class="qa-screen" hidden>
+        <div class="qa-section-top"><div><h2>Proposte della franchigia selezionata</h2><p>Passa da Bartowski a Bayern per ritrovare la stessa proposta fra quelle ricevute.</p></div></div>
+        <div class="qa-panel"><h3>📥 Ricevute</h3><div id="qaReceived" class="qa-card-list"></div></div>
+        <div class="qa-panel"><h3>📤 Inviate</h3><div id="qaSent" class="qa-card-list"></div></div>
+      </section>
+
+      <section id="qaScreenRights" class="qa-screen" hidden>
+        <div class="qa-section-top"><div><h2>Diritti, lucchetti e Draft simulato</h2><p>I vincoli funzionano soltanto dentro questa pagina. Il mercato e il Draft ufficiali rimangono invariati.</p></div></div>
+        <div id="qaRightsList" class="qa-card-list"></div>
+        <div class="qa-panel"><h3>📋 Pick della franchigia selezionata</h3><div id="qaPicksInventory" class="qa-inventory"></div></div>
+        <div class="qa-panel"><h3>⚽ Giocatori interessati da trade miste</h3><div id="qaPlayersInventory" class="qa-inventory"></div></div>
+      </section>
+
+      <section id="qaScreenNotices" class="qa-screen" hidden>
+        <div class="qa-section-top"><div><h2>Centro notifiche simulato</h2><p>Nessuna push viene spedita. Qui puoi verificare il destinatario e il testo che apparirebbero nell'app.</p></div></div>
+        <div id="qaNotifications" class="qa-card-list"></div>
+      </section>
+
+      <div class="qa-footer-actions">
+        <button id="qaReset" type="button" class="qa-reset">↻ Ripristina la simulazione</button>
+        <a href="trade-room.html">Torna alla Trade Room ufficiale</a>
+      </div>
+      <footer>Prova privata · azioni soltanto in memoria · nessun account impersonato · nessuna notifica push · nessuna scrittura Supabase</footer>
+    </main>
+  </div>
+  <script type="module" src="trade-conditional-qa.js?v=20261117-qa-v1"></script>
+</body>
+</html>
