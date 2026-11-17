@@ -36,3 +36,7 @@ button,select,input{font:inherit}button{cursor:pointer}button:disabled{opacity:.
 .qa-resale-guide li{padding:4px 0}
 .qa-resale-warning{border-left:3px solid #ff8e97;padding:8px 10px;background:#502d40;border-radius:6px;color:#fff0ef!important}
 .qa-history-note{margin:10px 0;padding:10px 12px;border-left:3px solid #ffd16c;border-radius:8px;background:#263d54;color:#ffe6af!important}
+
+/* Informazione preventiva: la clausola migliore/peggiore richiede due pick dello stesso round. */
+.qa-ranked-hint{margin:10px 0 12px;padding:10px 12px;border:1px solid #68b4ae;background:#133f55;border-radius:10px;color:#d8fff0;font-size:12px;font-weight:800;line-height:1.5}
+.qa-ranked-hint.is-error{border-color:#e9a4aa;background:#53323e;color:#ffe9e9}
