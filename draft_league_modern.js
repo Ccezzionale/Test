@@ -43,15 +43,17 @@
     const legend = $(".mobile-overview-legend", card);
     legend?.insertAdjacentElement("afterend", switcher);
 
+    // Identica griglia grafica del Per round: 8 loghi per riga,
+    // ma qui ordinati in modo rigorosamente cronologico per pick.
     const picks = document.createElement("div");
     picks.className = "draft-overview-picks";
     const search = document.createElement("input");
     search.type = "search";
     search.className = "draft-overview-search";
-    search.placeholder = "Cerca pick, squadra o giocatore...";
-    search.setAttribute("aria-label", "Cerca tra le pick");
+    search.placeholder = "Cerca una pick o un giocatore...";
+    search.setAttribute("aria-label", "Cerca le pick in ordine");
     const list = document.createElement("div");
-    list.className = "draft-overview-pick-list";
+    list.className = "draft-overview-grid-list";
     const draftRows = Array.from(document.querySelectorAll("#tabella-pick tbody tr"));
     const pickRows = draftRows.map(row => {
       const cells = row.querySelectorAll("td");
@@ -59,28 +61,62 @@
       const team = String(cells[1]?.textContent || "").replace(/🔁/g, "").trim();
       const player = String(cells[2]?.textContent || "").trim();
       return { pickNumber, team, player, traded: row.dataset.tradedPick === "true", current: row.classList.contains("next-pick") };
-    }).filter(row => row.pickNumber > 0).sort((a,b) => a.pickNumber - b.pickNumber);
+    }).filter(row => row.pickNumber > 0).sort((x,y) => x.pickNumber - y.pickNumber);
 
-    pickRows.forEach(item => {
-      const row = button("draft-overview-pick" + (item.current ? " is-current" : ""), "", { "data-overview-pick": String(item.pickNumber) });
-      row.textContent = "";
-      const number = document.createElement("span");
-      number.className = "draft-overview-pick-number";
-      number.textContent = "#" + item.pickNumber;
-      const info = document.createElement("span");
-      info.className = "draft-overview-pick-info";
-      const name = document.createElement("strong");
-      name.textContent = item.player || "Da effettuare";
-      const team = document.createElement("small");
-      team.textContent = item.team || "Franchigia non disponibile";
-      info.append(name,team);
-      const status = document.createElement("span");
-      status.className = "draft-overview-pick-state" + (item.traded ? " is-traded" : "");
-      status.textContent = item.traded ? "↔ Scambiata" : item.current ? "In corso" : item.player ? "✓" : "Futura";
-      row.dataset.searchable = [item.pickNumber, item.team, item.player].join(" ").toLocaleLowerCase("it");
-      row.append(number,info,status);
-      list.appendChild(row);
-    });
+    const perLine = 8;
+    for (let index = 0; index < pickRows.length; index += perLine) {
+      const chunk = pickRows.slice(index, index + perLine);
+      const line = document.createElement("div");
+      line.className = "mobile-overview-round draft-overview-pick-round";
+      if (chunk.some(p => p.current)) line.classList.add("is-current-round");
+      const label = document.createElement("div");
+      label.className = "mobile-overview-round-label";
+      label.title = "Pick da #" + chunk[0].pickNumber + " a #" + chunk[chunk.length - 1].pickNumber;
+      const labelNumber = document.createElement("strong");
+      labelNumber.textContent = "#" + chunk[0].pickNumber;
+      const arrow = document.createElement("span");
+      arrow.textContent = "→";
+      arrow.setAttribute("aria-hidden", "true");
+      label.append(labelNumber,arrow);
+      const slots = document.createElement("div");
+      slots.className = "mobile-overview-slots";
+      chunk.forEach(item => {
+        const state = item.current ? "is-current" : item.player ? "is-completed" : "is-future";
+        const slot = button(
+          "mobile-overview-slot draft-overview-pick-slot " + state + (item.traded ? " is-traded" : ""),
+          "", {"data-overview-pick":String(item.pickNumber)}
+        );
+        const fullLabel = "Pick #" + item.pickNumber + " · " + item.team + " · " +
+          (item.player || (item.current ? "In corso" : "Da effettuare")) +
+          (item.traded ? " · Scambiata" : "");
+        slot.title = fullLabel;
+        slot.setAttribute("aria-label",fullLabel);
+        slot.dataset.searchable = [item.pickNumber,item.team,item.player].join(" ").toLocaleLowerCase("it");
+        const img = document.createElement("img");
+        img.src = "img/" + item.team + ".webp";
+        img.alt = "";
+        const fallback = document.createElement("span");
+        fallback.className = "mobile-overview-fallback";
+        fallback.textContent = item.team.split(/\\s+/).slice(0,2).map(x => x[0] || "").join("").toUpperCase() || "?";
+        img.addEventListener("error", () => {
+          img.style.display = "none";
+          fallback.style.display = "flex";
+        });
+        const number = document.createElement("em");
+        number.textContent = "#" + item.pickNumber;
+        number.setAttribute("aria-hidden", "true");
+        slot.append(img,fallback,number);
+        if(item.traded) {
+          const trade = document.createElement("i");
+          trade.textContent = "↔";
+          trade.setAttribute("aria-hidden","true");
+          slot.appendChild(trade);
+        }
+        slots.appendChild(slot);
+      });
+      line.append(label,slots);
+      list.appendChild(line);
+    }
     if (!pickRows.length) {
       const empty = document.createElement("p");
       empty.className = "draft-overview-empty";
@@ -88,9 +124,15 @@
       list.appendChild(empty);
     }
     search.addEventListener("input", () => {
-      const term = search.value.trim().toLocaleLowerCase("it");
-      list.querySelectorAll(".draft-overview-pick").forEach(row => {
-        row.hidden = !!term && !row.dataset.searchable.includes(term);
+      const term = search.value.trim().toLocaleLowerCase("it").replace(/^#/, "");
+      list.querySelectorAll(".draft-overview-pick-round").forEach(line => {
+        let matches = 0;
+        line.querySelectorAll(".draft-overview-pick-slot").forEach(slot => {
+          const found = !term || slot.dataset.searchable.includes(term);
+          slot.classList.toggle("is-dimmed",!found);
+          if(found) matches++;
+        });
+        line.hidden = matches === 0;
       });
     });
     picks.append(search,list);
@@ -191,6 +233,40 @@
     }));
   }
 
+  function setupCompactPool() {
+    if (window.innerWidth > 768) return;
+    const grid = document.querySelector("#pool-section .filters-grid");
+    if (!grid || grid.querySelector(".draft-pool-advanced")) return;
+    const searchField = grid.querySelector(".filter-field:has(#searchGiocatore)");
+    if (!searchField) return;
+
+    const detail = document.createElement("details");
+    detail.className = "draft-pool-advanced";
+    const summary = document.createElement("summary");
+    const label = document.createElement("span");
+    label.textContent = "Altri filtri";
+    const hint = document.createElement("small");
+    hint.textContent = "Squadra · Ruolo · U21";
+    summary.append(label,hint);
+    const advanced = document.createElement("div");
+    advanced.className = "draft-pool-advanced-grid";
+    Array.from(grid.children).filter(child => child !== searchField).forEach(child => {
+      advanced.appendChild(child);
+    });
+    detail.append(summary,advanced);
+    grid.appendChild(detail);
+    // Filtri selezionati restano visibili e funzionanti quando si torna sul mobile.
+    const updateMode = () => {
+      if (window.innerWidth > 768) detail.open = true;
+      else if (detail.dataset.wasDesktop === "1") {
+        detail.open = false;
+      }
+      detail.dataset.wasDesktop = window.innerWidth > 768 ? "1" : "0";
+    };
+    updateMode();
+    window.addEventListener("resize",updateMode);
+  }
+
   function adminTabs() {
     const tab = $('[data-mobile-view="admin"].draft-tab-admin');
     const panel = $("#admin-panel");
@@ -203,6 +279,7 @@
   function setup() {
     setupBoard();
     setupPoolQuickFilters();
+    setupCompactPool();
     adminTabs();
     const host = $(".mobile-companion-actions");
     if (host) {
