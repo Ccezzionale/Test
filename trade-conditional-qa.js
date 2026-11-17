@@ -209,24 +209,69 @@ function branchLabels(kind,r,ids){
  }
  return ["Il nuovo titolare riceve il diritto originale, senza cambiare la clausola."];
 }
+function resaleUnderlying(offer){
+ const right=findRight(offer?.existing_right_id);
+ return right&&right.status==="active"||right?.status==="resolved"?right:null;
+}
+function resaleFlow(offer,right){
+ const seller=offer.grantor_team_id;
+ const buyer=same(seller,offer.from_team_id)?offer.to_team_id:offer.from_team_id;
+ const price=qaPick(model,offer.counter_pick_id);
+ const error=right&&!same(right.holder_team_id,seller)
+   ?"Attenzione: questa franchigia non è più titolare del diritto.":
+   right&&same(buyer,right.grantor_team_id)
+   ?"Attenzione: non puoi rivendere il diritto a chi deve già consegnare la pick.":
+   !price?"Seleziona la pick con cui il compratore pagherà il diritto.":"";
+ return {
+  seller,buyer,price,error,
+  summary:'<strong>Il venditore è '+esc(teamName(seller))+'; il compratore è '+esc(teamName(buyer))+'.</strong>'+
+   (right?'<p><b>Obbligato originario:</b> '+esc(teamName(right.grantor_team_id))+
+     '. Le sue pick candidate restano vincolate fino al risultato finale.</p>':'')+
+   '<p><b>Prezzo immediato:</b> '+esc(teamName(buyer))+' consegna '+esc(pickName(price))+
+   ' a '+esc(teamName(seller))+' quando accetta.</p>'+
+   '<p><b>Nuovo titolare:</b> '+esc(teamName(buyer))+
+   ' riceverà la pick prevista dalla clausola, una volta conclusa la competizione.</p>'+
+   (error?'<p class="qa-resale-warning">'+esc(error)+'</p>':'')+
+   '<ol><li>Invia la proposta di rivendita simulata.</li>'+
+   '<li>Passa alla vista <b>'+esc(teamName(buyer))+'</b> e apri Proposte.</li>'+
+   '<li>Premi <b>Accetta</b>. Solo allora il diritto cambia proprietario.</li>'+
+   '<li>Torna a Diritti & Draft per vedere il nuovo titolare e lo storico.</li></ol>'
+ };
+}
 function updatePreview(){
  if(!model)return;
  const d=getFormOffer();
- const lines=branchLabels(d.rule_kind,d.rule_spec,d.candidate_pick_ids);
+ const resale=d.rule_kind==="right_transfer";
+ const underlying=resale?resaleUnderlying(d):null;
+ const resaleInfo=resale?resaleFlow(d,underlying):null;
+ const lines=underlying?
+   branchLabels(underlying.rule_kind,underlying.rule_spec,underlying.candidate_pick_ids):
+   branchLabels(d.rule_kind,d.rule_spec,d.candidate_pick_ids);
+ if(resale){
+   el("qaResaleGuide").innerHTML=underlying?resaleInfo.summary:
+     '<p class="qa-resale-warning">Scegli un diritto attivo prima di preparare la rivendita.</p>';
+ }
+ el("qaSend").textContent=resale?"⇄ Invia proposta di rivendita simulata":"✉️ Invia proposta simulata";
  const extra=(d.mixed_assets||[]).map(x=>(x.side==="from"?teamName(d.from_team_id):teamName(d.to_team_id))+
   " offre "+playerName(qaPlayer(model,x.asset_id)));
- el("qaOfferPreview").innerHTML="<strong>CONTRATTO DI PROVA · "+esc(teamName(d.from_team_id))+" → "+
-  esc(teamName(d.to_team_id))+"</strong><br>"+
+ el("qaOfferPreview").innerHTML="<strong>"+(resale?"RIVENDITA DI PROVA":"CONTRATTO DI PROVA")+
+  " · "+esc(teamName(d.from_team_id))+" → "+esc(teamName(d.to_team_id))+"</strong><br>"+
   "<small>"+esc(teamName(d.grantor_team_id))+" cede il diritto a "+esc(teamName(
    same(d.grantor_team_id,d.from_team_id)?d.to_team_id:d.from_team_id))+"</small>"+
+  (underlying?'<p><b>Clausola originale:</b> '+esc(kindLabel(underlying.rule_kind))+
+   '. Il debitore resta '+esc(teamName(underlying.grantor_team_id))+'.</p>':'')+
   "<ul>"+lines.map(x=>"<li>"+esc(x)+"</li>").join("")+"</ul>"+
-  "<strong>Contropartita:</strong> "+esc(pickName(qaPick(model,d.counter_pick_id)))+
+  "<strong>"+(resale?"Prezzo che paga il compratore":"Contropartita")+":</strong> "+
+  esc(pickName(qaPick(model,d.counter_pick_id)))+
   (extra.length?"<ul>"+extra.map(x=>"<li>"+esc(x)+"</li>").join("")+"</ul>":"")+
+  (resale?"<p class='qa-hint'>Attenzione: il diritto passerà al compratore solo dopo la sua accettazione.</p>":"")+
   "<p class='qa-hint'>Non verrà inviata nessuna proposta reale.</p>";
 }
 function offerHtml(offer,type){
  const isIncoming=type==="incoming",r=offer.rule_spec||{};
- const lines=branchLabels(offer.rule_kind,r,offer.candidate_pick_ids);
+ const underlying=offer.rule_kind==="right_transfer"?resaleUnderlying(offer):null;
+ const lines=underlying?branchLabels(underlying.rule_kind,underlying.rule_spec,underlying.candidate_pick_ids):
+  branchLabels(offer.rule_kind,r,offer.candidate_pick_ids);
  const extra=(offer.mixed_assets||[]).map(asset=>
   teamName(asset.side==="from"?offer.from_team_id:offer.to_team_id)+
   " offre "+playerName(qaPlayer(model,asset.asset_id)));
@@ -237,9 +282,14 @@ function offerHtml(offer,type){
    '<div class="qa-btn-row"><button type="button" class="qa-decline" data-action="cancel" data-id="'+esc(offer.id)+'">Annulla proposta</button></div>'):"";
  return '<article class="qa-card"><div class="qa-card-head"><strong>'+
   esc(teamName(offer.from_team_id))+' ⇄ '+esc(teamName(offer.to_team_id))+'</strong><span class="qa-pill">'+
-  esc(status)+'</span></div><p>🔐 '+esc(kindLabel(offer.rule_kind))+'</p><ul>'+
-  lines.map(x=>'<li>'+esc(x)+'</li>').join("")+'</ul>'+
-  '<p>Contropartita: <b>'+esc(pickName(qaPick(model,offer.counter_pick_id)))+'</b></p>'+
+  esc(status)+'</span></div><p>🔐 '+esc(kindLabel(offer.rule_kind))+'</p>'+
+  (underlying?'<p>📜 Diritto originale di <b>'+esc(teamName(underlying.grantor_team_id))+
+    '</b>. '+esc(teamName(offer.grantor_team_id))+' vende a '+esc(teamName(
+      same(offer.from_team_id,offer.grantor_team_id)?offer.to_team_id:offer.from_team_id))+
+    '. Le condizioni e le pick candidate non cambiano.</p>':'')+
+  '<ul>'+lines.map(x=>'<li>'+esc(x)+'</li>').join("")+'</ul>'+
+  '<p>'+(offer.rule_kind==="right_transfer"?"Prezzo pagato dal compratore":"Contropartita")+
+  ': <b>'+esc(pickName(qaPick(model,offer.counter_pick_id)))+'</b></p>'+
   (extra.length?'<p>Giocatori inclusi:</p><ul>'+extra.map(x=>'<li>'+esc(x)+'</li>').join("")+'</ul>':'')+
   actions+'</article>';
 }
@@ -292,36 +342,44 @@ function collectEvidence(card,right){
   elig.map(id=>({competition_id:id,status:"final",winner_team_id:other.id})))};
 }
 function rightHtml(right){
- const member=same(right.grantor_team_id,viewer)||same(right.holder_team_id,viewer);
+ const former=(right.history||[]).some(h=>same(h.from,viewer)&&!same(right.holder_team_id,viewer));
+ const member=same(right.grantor_team_id,viewer)||same(right.holder_team_id,viewer)||former;
  if(!member)return "";
  const active=right.status==="active";
+ const historical=former&&!same(right.grantor_team_id,viewer);
  const rights=right.candidate_pick_ids.map(id=>qaPick(model,id)).filter(Boolean);
  const result=previews[right.id];
  const resell=active&&same(viewer,right.holder_team_id)?
   '<button class="qa-secondary" data-action="resell" data-id="'+esc(right.id)+'">⇄ Rivendi il diritto</button>':"";
  return '<article class="qa-card qa-right-card" data-right="'+esc(right.id)+'">'+
   '<div class="qa-card-head"><strong>🔐 '+esc(kindLabel(right.rule_kind))+'</strong>'+
-  '<span class="qa-pill">'+(active?"Vincolato · attivo":"Condizione risolta")+'</span></div>'+
+  '<span class="qa-pill">'+(historical?"Venduto · ex titolare":
+   active?"Vincolato · attivo":"Condizione risolta")+'</span></div>'+
   '<p><b>'+esc(teamName(right.grantor_team_id))+'</b> promette una pick a <b>'+
   esc(teamName(right.holder_team_id))+'</b></p>'+
+  (historical?'<p class="qa-history-note">Hai venduto questo diritto. Adesso appartiene a <b>'+
+    esc(teamName(right.holder_team_id))+'</b>; puoi consultarne lo storico, ma non rivenderlo di nuovo.</p>':'')+
   '<ul>'+branchLabels(right.rule_kind,right.rule_spec,right.candidate_pick_ids).map(x=>'<li>'+
   esc(x)+'</li>').join("")+'</ul>'+
   '<p>Pick candidate: '+rights.map(x=>(active?"🔐 ":"🔓 ")+esc(pickName(x))).join(" · ")+'</p>'+
   (right.history.length?'<p>Rivendite: '+right.history.map(h=>
    esc(teamName(h.from))+" → "+esc(teamName(h.to))).join(" · ")+'</p>':'')+
-  (active?'<div class="qa-resolution"><h4>📊 Esito ipotetico del contratto</h4>'+
+  (active&&!historical?'<div class="qa-resolution"><h4>📊 Esito ipotetico del contratto</h4>'+
    evidenceForm(right)+
    '<p class="qa-result">'+(result?esc(result):"Inserisci un risultato di prova per vedere quale pick toccherebbe al titolare.")+'</p>'+
    '<div class="qa-btn-row"><button class="qa-secondary" data-action="preview" data-id="'+esc(right.id)+'">👁 Anteprima</button>'+
    '<button class="qa-accept" data-action="resolve" data-id="'+esc(right.id)+'">✓ Finalizza solo nel test</button>'+
    resell+'</div></div>':
+   active?'<p class="qa-history-note">La clausola è ancora aperta. La pick finale sarà assegnata a '+
+    esc(teamName(right.holder_team_id))+' quando si conoscerà il risultato.</p>':
    '<p><b>Pick assegnata:</b> '+esc(pickName(qaPick(model,right.resolved_pick_id)))+
    ' a '+esc(teamName(right.holder_team_id))+'</p>')+
   '</article>';
 }
 function renderRights(){
  const current=model.rights.filter(r=>
-  same(r.grantor_team_id,viewer)||same(r.holder_team_id,viewer));
+  same(r.grantor_team_id,viewer)||same(r.holder_team_id,viewer)||
+  (r.history||[]).some(h=>same(h.from,viewer)));
  el("qaRightsList").innerHTML=current.length?current.map(rightHtml).join(""):
   '<div class="qa-empty">Nessun diritto per '+esc(teamName(viewer))+
   '. Accetta una proposta finta come Bayern per crearne uno.</div>';
@@ -387,7 +445,10 @@ function send(){
   const offer=getFormOffer();
   const created=qaSendOffer(model,viewer,offer);
   render();
-  flash("Proposta "+created.id+" creata soltanto nel test. Passa a "+
+  flash(created.rule_kind==="right_transfer"?
+    "Rivendita PROPOSTA, non ancora conclusa. Passa a "+teamName(created.to_team_id)+
+    ", apri Proposte e premi Accetta per trasferire il diritto.":
+    "Proposta "+created.id+" creata soltanto nel test. Passa a "+
     teamName(created.to_team_id)+" per rispondere.");
   chooseTab("offers");
  }catch(e){flash(e.message||"Proposta non valida",true);}
@@ -398,9 +459,13 @@ function handleAction(event){
  const kind=button.dataset.action,id=button.dataset.id;
  try{
   if(kind==="accept"){
-   qaRespondOffer(model,viewer,id,true);
+   const accepted=model.offers.find(o=>same(o.id,id));
+   const right=qaRespondOffer(model,viewer,id,true);
    chooseTab("rights");
-   flash("Trade accettata nella simulazione: diritto creato e pick candidate vincolate.");
+   flash(accepted?.rule_kind==="right_transfer"?
+    "Rivendita conclusa nel test: il diritto appartiene ora a "+teamName(right.holder_team_id)+
+    ". "+teamName(accepted.from_team_id)+" ha ricevuto la pick di contropartita. Le candidate restano vincolate.":
+    "Trade accettata nella simulazione: diritto creato e pick candidate vincolate.");
   }else if(kind==="reject"){
    qaRespondOffer(model,viewer,id,false);
    render();flash("Proposta rifiutata soltanto nel test.");
@@ -431,8 +496,14 @@ function handleAction(event){
    el("qaKind").value="right_transfer";
    refreshForm(true);
    el("qaExistingRight").value=right.id;
+   // Le selezioni dei giocatori da una precedente proposta non devono mai
+   // entrare automaticamente nella rivendita di un diritto.
+   el("qaPlayerFrom").value="";
+   el("qaPlayerTo").value="";
+   el("qaMixedDetails").open=false;
    updatePreview();
-   flash("Precompilata la rivendita a "+buyer.name+". Ora invia la proposta fittizia.");
+   flash("Rivendita preparata, NON conclusa. 1. Verifica il prezzo pagato da "+
+    buyer.name+". 2. Invia. 3. Passa a "+buyer.name+" e accetta la proposta.");
    el("qaScreenCompose").scrollIntoView({behavior:"smooth",block:"start"});
   }
  }catch(e){flash(e.message||"Operazione non consentita",true);}
