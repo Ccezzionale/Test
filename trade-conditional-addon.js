@@ -173,9 +173,18 @@ function refreshCandidates(){
   fill("ctMiddlePick",options(available,true));
   fill("ctWonPick",options(available),pref4?.id);
   fill("ctNotWonPick",options(available),pref5?.id);
-  const rounds=[...new Set(available.map(p=>p.round))].sort((a,b)=>a-b);
-  fill("ctRankedRound",rounds.map(r=>'<option value="'+r+'">Round '+r+'</option>').join(""),$("ctRankedRound").value||"1");
-  drawRanked();
+  const counts=new Map();
+  for(const pick of available){
+    const round=Number(pick.round);
+    counts.set(round,(counts.get(round)||0)+1);
+  }
+  const rounds=[...counts].filter(([,n])=>n>=2).sort((a,b)=>a[0]-b[0]);
+  fill("ctRankedRound",rounds.length?
+    rounds.map(([round,count])=>'<option value="'+round+'">Round '+round+' · '+count+' pick disponibili</option>').join(""):
+    '<option value="">Nessun round con almeno due pick</option>',
+    $("ctRankedRound").value||String(rounds[0]?.[0]??""));
+  $("ctRankedRound").disabled=rounds.length===0;
+  drawRanked(true);
   const counter=picksOf(holderId());
   fill("ctCounterPick",options(counter,true));
   $("ctCounterDescription").textContent=name(holderId())+
@@ -186,14 +195,14 @@ function refreshCandidates(){
   paintMixedChoices();
   redrawSummary();
 }
-function drawRanked(){
+function drawRanked(selectDefaults=false){
   const p=picksOf(grantorId()).filter(p=>Number(p.round)===Number($("ctRankedRound").value));
   const existing=new Set(selectedCandidates());
-  const selected=existing.size?existing:new Set(p.map(x=>String(x.id)));
-  $("ctRankedCandidates").innerHTML=p.length?p.map(x=>
-    '<label><input type="checkbox" value="'+esc(x.id)+'"'+(selected.has(String(x.id))?' checked':'')+'>'+
+  $("ctRankedCandidates").innerHTML=p.length>=2?p.map((x,i)=>
+    '<label><input type="checkbox" value="'+esc(x.id)+'"'+
+    ((existing.has(String(x.id))||(selectDefaults&&i<2))?' checked':'')+'>'+
     '<span>'+esc(pickTitle(x))+'</span></label>').join(""):
-    '<p class="ct-field-help">Nessuna scelta disponibile per questo round.</p>';
+    '<p class="ct-field-help">Questa franchigia non ha almeno due pick libere nello stesso round. Prova con classifica o trofeo.</p>';
   $("ctRankedCandidates").querySelectorAll("input").forEach(e=>e.addEventListener("change",redrawSummary));
 }
 function refreshKind(){
@@ -275,11 +284,20 @@ function redrawSummary(){
     "<strong>Contropartita 1:1:</strong> "+esc(pickText($("ctCounterPick").value))+
     extraHtml+
     "<br><small>Un solo accordo: se gli asset aggiuntivi falliscono, anche il diritto condizionato viene annullato.</small>";
+  const rankedIssue=kind==="ranked"&&selectedCandidates().length<2;
+  if($("ctRankedHint")){
+    $("ctRankedHint").textContent=kind!=="ranked"?"":$("ctRankedRound").disabled?
+      name(owner)+" non ha almeno due pick disponibili nello stesso round. "+
+      "Usa una condizione sulla classifica o sui trofei, oppure chiedi il diritto a un'altra squadra.":
+      rankedIssue?"Seleziona almeno due pick del Round "+$("ctRankedRound").value+".":
+      "✓ "+selectedCandidates().length+" pick candidate dello stesso round selezionate.";
+  }
   const reason=!state.enabled
     ?"Le trade condizionate sono in collaudo. L'invio reale sarà sbloccato solo dopo i test completi."
     :!marketOpen()?"Il mercato è chiuso."
     :!targetId()?"Scegli prima una franchigia con cui trattare."
-    :team(owner)?.conference!==team(holder)?.conference?"Condizioni fra Conferences diverse non ancora supportate.":"";
+    :team(owner)?.conference!==team(holder)?.conference?"Condizioni fra Conferences diverse non ancora supportate."
+    :rankedIssue?"Seleziona almeno due pick candidate dello stesso round.":"";
   $("ctSendOffer").disabled=!!reason;
   failure("ctFormNotice",reason);
 }
@@ -455,7 +473,7 @@ function bind(){
   $("ctStandingScope").addEventListener("change",refreshScope);
   $("ctTopCount").addEventListener("change",refreshScope);
   $("ctBottomCount").addEventListener("change",refreshScope);
-  $("ctRankedRound").addEventListener("change",()=>{$("ctRankedCandidates").innerHTML="";drawRanked();redrawSummary();});
+  $("ctRankedRound").addEventListener("change",()=>{$("ctRankedCandidates").innerHTML="";drawRanked(true);redrawSummary();});
   $("ctTrophySubject").addEventListener("change",refreshSpecificTrophy);
   $("ctTrophyMode").addEventListener("change",refreshSpecificTrophy);
   for(const id of ["ctTopPick","ctBottomPick","ctMiddlePick","ctWonPick","ctNotWonPick","ctTrophySpecific",
