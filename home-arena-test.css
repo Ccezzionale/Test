@@ -1232,7 +1232,7 @@ body[data-view="league"]{
     linear-gradient(180deg,rgba(255,255,255,.01) 0%,rgba(255,255,255,.10) 27%,rgba(246,249,253,.76) 75%,#f5f8fb 100%),
     url("img/match-bg/arena-league-v12.webp");
   background-position:center top,center top;
-  background-size:100% 100%,100% auto;
+  background-size:100% 100%,100% 1450px;
   background-repeat:no-repeat,no-repeat;
   background-attachment:scroll;
 }
@@ -1250,7 +1250,7 @@ body[data-view="playoff"]{
     linear-gradient(180deg,rgba(2,11,30,.10) 0%,rgba(3,11,31,.25) 30%,rgba(4,12,33,.73) 77%,#07142d 100%),
     url("img/match-bg/arena-playoff-v12.webp");
   background-position:center top,center top;
-  background-size:100% 100%,100% auto;
+  background-size:100% 100%,100% 1450px;
   background-repeat:no-repeat,no-repeat;
   background-attachment:scroll;
 }
@@ -1268,7 +1268,7 @@ body[data-view="crashout"]{
     linear-gradient(180deg,rgba(20,6,45,.12) 0%,rgba(20,6,45,.22) 28%,rgba(14,4,31,.77) 76%,#100927 100%),
     url("img/match-bg/arena-crashout-v12.webp");
   background-position:center top,center top;
-  background-size:100% 100%,100% auto;
+  background-size:100% 100%,100% 1450px;
   background-repeat:no-repeat,no-repeat;
   background-attachment:scroll;
 }
