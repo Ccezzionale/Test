@@ -649,6 +649,16 @@ async function loadHighlanderCard(name){
   art:highlanderArt(name,eliminated),eliminated,url:"arena.html"
  };
 }
+function updateCompetitionBadges(){
+ document.querySelectorAll("[data-cup]").forEach(button=>{
+  const cup=button.dataset.cup;
+  const status=state.cupStatus[cup]||{};
+  button.dataset.seasonState=cup==="league"?"in":
+   status.eliminated?"out":
+   status.projection?"projection":
+   status.match||/IN CORSA|ANCORA IN GARA|QUALIFICATO|CAMPIONE|ULTIMO SOPRAVVISSUTO/i.test(status.label||"")?"in":"upcoming";
+ });
+}
 async function loadCupStatuses(){
  if(!state.team)return;
  const name=state.team.name;
@@ -659,6 +669,7 @@ async function loadCupStatuses(){
  if(c.status==="fulfilled"&&c.value)state.cupStatus.crashout=c.value;
  if(h.status==="fulfilled"&&h.value)state.cupStatus.highlander=h.value;
  for(const x of [p,c,h])if(x.status==="rejected")console.warn("Anteprima coppa:",x.reason);
+ updateCompetitionBadges();
  if(state.view!=="league"&&!state.demoAllActive)chooseView(state.view);
 }
 
