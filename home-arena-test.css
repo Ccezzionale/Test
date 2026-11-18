@@ -946,3 +946,19 @@ body{
 @media(prefers-reduced-motion:reduce){
  .comp-v8 .comp-cinematic{transition:none !important}
 }
+
+
+/* V9 preview patch: prevent the old compressed four-pose spritesheet from
+   painting its opaque dark rectangular cell onto each coloured poster.
+   Uses lighten rather than screen, plus a softer per-character edge mask.
+   When replacing with true-alpha cutouts, this temporary treatment can go. */
+.comp-v8 .comp-mini-titano {
+  mix-blend-mode:lighten !important;
+  opacity:1 !important;
+  background-color:transparent !important;
+  -webkit-mask-image:radial-gradient(ellipse 76% 84% at 50% 49%,#000 57%,rgba(0,0,0,.88) 68%,transparent 85%) !important;
+  mask-image:radial-gradient(ellipse 76% 84% at 50% 49%,#000 57%,rgba(0,0,0,.88) 68%,transparent 85%) !important;
+}
+@media(max-width:390px){
+ .comp-v8 .comp-mini-titano {width:72px;height:105px;left:calc(50% - 55px);top:7px}
+}
