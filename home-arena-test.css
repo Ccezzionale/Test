@@ -1617,3 +1617,12 @@ body.has-active-duel[data-view="playoff"] .stage-duel-art.is-right[data-duel-tea
     height:147px;
   }
 }
+
+
+/* ARENA TEST V19 · Face-to-face Real Legends (Playoff only).
+   Only the character cutout flips, not the VS, names or card layout.
+   The JS uses each character's original viewing direction, so the
+   orientation updates automatically if the home/away sides swap. */
+body.has-active-duel[data-view="playoff"] .stage-duel-art.faces-inward-flipped{
+  transform:scaleX(-1);
+}
