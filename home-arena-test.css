@@ -1626,3 +1626,37 @@ body.has-active-duel[data-view="playoff"] .stage-duel-art.is-right[data-duel-tea
 body.has-active-duel[data-view="playoff"] .stage-duel-art.faces-inward-flipped{
   transform:scaleX(-1);
 }
+
+
+/* ARENA TEST V20 · season state: the loser stays on the last card.
+   Only the eliminated franchise is desaturated; the opponent, VS,
+   typography and original playoff/Crash Out art remain identifiable. */
+body.has-active-duel.is-cup-eliminated .stage-duel-art.is-eliminated {
+  filter:grayscale(1) brightness(.60) contrast(.9) drop-shadow(0 4px 7px rgba(0,0,0,.5));
+  opacity:.88;
+}
+body.has-active-duel.is-cup-eliminated .stage-duel::after {
+  content:"";
+  position:absolute;
+  z-index:1;
+  inset:0;
+  pointer-events:none;
+  background:linear-gradient(180deg,rgba(5,8,19,.10),rgba(4,6,15,.24));
+}
+body.has-active-duel.is-cup-eliminated .stage-duel-center small {
+  color:#d8c9d0;
+}
+body.is-cup-eliminated .stage-bottom {
+  background:linear-gradient(110deg,#101a2c,#152337);
+}
+body.is-cup-eliminated .stage-bottom-copy>span {
+  color:#d5c5c9;
+}
+body[data-view="highlander"].is-cup-eliminated .stage-special > img {
+  filter:drop-shadow(0 7px 11px rgba(0,0,0,.65));
+}
+/* An ordinary Home visit uses official results and today's Playoff projection.
+   The explicit demo overlay remains accessible only via ?demo=all. */
+body:not(.demo-all-active) .arena-demo-controls {
+  display:none;
+}
