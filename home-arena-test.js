@@ -398,70 +398,251 @@ function chooseView(view){
  $("stage-cta").href=status.url||cup.url;
  $("stage-cta").innerHTML="VEDI LA COPPA <span>↗</span>";
 }
-async function loadCupStatuses(){
- if(!state.team)return;
- // Rely on the same read-only tables and season ids already used by the
- // official Home, without altering data, phases or competition settings.
- const name=state.team.name;
- const [crash,highState,highElims]=await Promise.allSettled([
-  supabase.from("crashout_rivalry_matches")
-   .select("matchday,match_index,home_team,away_team,home_goals,away_goals,is_played")
-   .eq("season","2026").order("matchday",{ascending:true}).order("match_index",{ascending:true}),
-  supabase.from("highlander_state").select("season,is_active").eq("season","2026").maybeSingle(),
-  supabase.from("highlander_eliminations").select("season,turno,team_name,magic_punti").eq("season","2026").order("turno",{ascending:true})
- ]);
- if(crash.status==="fulfilled"&&!crash.value?.error){
-  const rows=crash.value.data||[];
-  const teamRows=rows.filter(r=>norm(r.home_team)===norm(name)||norm(r.away_team)===norm(name));
-  const allFinished=rows.length>0&&rows.every(r=>!!r.is_played);
-  if(allFinished){
-   state.cupStatus.crashout={
-    round:"FASE FINALE",
-    label:"RIVALRY GAMES CONCLUSE",
-    title:"Crash Out Playoff",
-    description:"La prima fase è conclusa. Segui le serie del tabellone ufficiale.",
-    headline:"Crash Out · fase finale",url:"crashoutplayoff.html"
-   };
-  }else if(teamRows.length){
-   const next=teamRows.find(r=>!r.is_played)||teamRows.at(-1);
-   const home=canon(next.home_team),away=canon(next.away_team),gw=Number(next.matchday)||0;
-   state.cupStatus.crashout={
-    round:"GIORNATA "+gw,description:"Crash Out Cup · Rivalry Games",
-    match:{home,away,gw,score:next.is_played?[Number(next.home_goals)||0,Number(next.away_goals)||0]:null},
-    url:"match.html?"+new URLSearchParams({home,away,gw:String(gw),competition:"Crash Out Cup"})
-   };
-  }
+
+/* ARENA TEST V20: read-only season cards. The source of truth remains the
+   official Playoff / Crash Out / Highlander tables. All projections are
+   expressly marked as provisional, never as official outcomes. */
+const CUP_SEASON="2026";
+const HIGHLANDER_ELIMINATED_ART={
+ "atleticoleon":"rubinkebab","bayernchristiansen":"bayern","teambartowski":"bartowski",
+ "goldenknights":"golden","ibla":"ibla","fantaugusta":"fantaugusta",
+ "riverfilo":"riverfilo","desperados":"desperados","wildboys78":"wildboys",
+ "pandinicoccolosini":"pandini","pokermantra":"pokermantra",
+ "minnesodetimberland":"minnesode","minnesotasnakes":"minnesota",
+ "eintrachtfranco126":"franco","fcdisoneste":"disoneste","athleticpongao":"pongao"
+};
+function highlanderArt(name,eliminated=false){
+ const key=HIGHLANDER_ELIMINATED_ART[norm(name)];
+ return eliminated&&key
+  ?"img/maglie/"+key+"-higlander.webp"
+  :info(name)?.shirt||cups.highlander.art;
+}
+function stageRank(code){
+ if(/^WC\d/.test(code))return 0;
+ if(/^Q\d/.test(code))return 1;
+ if(/^S\d/.test(code))return 2;
+ if(code==="P3")return 3;
+ if(code==="F")return 4;
+ return 0;
+}
+function playoffRoundName(code){
+ return /^WC/.test(code)?"WILD CARD":/^Q/.test(code)?"QUARTI":/^S/.test(code)?"SEMIFINALE":code==="P3"?"3° POSTO":"FINALE";
+}
+function playoffRankingSnapshot(){
+ const seen=new Set(),table=new Map();
+ for(const r of state.rows){
+  if(r.Phase!=="Regular"||!["Conf A","Conf B","Unificata"].includes(r.Conference))continue;
+  const name=canon(r.Team),opponent=canon(r.Opponent),key=norm(name);
+  if(!key||!norm(opponent)||!done(r))continue;
+  const dedup=[r.Conference,r.GW_Stagionale||r.GW,key].join("|");
+  if(seen.has(dedup))continue;
+  seen.add(dedup);
+  if(!table.has(key))table.set(key,{name,pt:0,mp:0,gf:0,gs:0});
+  const row=table.get(key),pf=num(r.PointsFor),pa=num(r.PointsAgainst);
+  if(!pf&&!pa)continue;
+  const gf=goals(pf),ga=goals(pa);
+  row.pt+=gf>ga?3:gf===ga?1:0;
+  row.mp+=pf;row.gf+=gf;row.gs+=ga;
  }
- if(highState.status==="fulfilled"&&highElims.status==="fulfilled"
-   &&!highState.value?.error&&!highElims.value?.error){
-  const active=!!highState.value.data?.is_active;
-  const eliminated=highElims.value.data||[];
-  if(active){
-   const isOut=eliminated.some(r=>norm(r.team_name)===norm(name));
-   const survivors=Math.max(0,squadreBase.length-eliminated.length);
-   const last=eliminated.length?Math.max(...eliminated.map(x=>Number(x.turno)||0)):0;
-   const title=isOut?"Sei stato eliminato":survivors===1?"Ultimo sopravvissuto":"Ancora in gara";
-   state.cupStatus.highlander={
-    round:"TURNO "+Math.min(15,last+1),
-    label:"LA TUA SITUAZIONE",
-    title,
-    description:survivors+" squadre ancora in corsa · "+eliminated.length+" eliminate",
-    headline:"Highlander · situazione aggiornata",
-    art:info(name)?.shirt||cups.highlander.art,
-    url:"arena.html"
-   };
-  }else{
-   state.cupStatus.highlander={label:"STATO COMPETIZIONE",title:"Highlander",description:"Competizione non attiva. Consulta la pagina ufficiale per le prossime informazioni."};
-  }
+ return [...table.values()].sort((a,b)=>b.pt-a.pt||b.mp-a.mp||b.gf-a.gf||a.gs-b.gs||a.name.localeCompare(b.name))
+   .map((row,i)=>({...row,seed:i+1}));
+}
+function playoffWinner(match,code,scores){
+ if(!match?.home?.name||!match?.away?.name)return null;
+ const result=scores.get(code);
+ if(!result||result.home==null||result.away==null)return null;
+ if(result.home>result.away)return match.home;
+ if(result.away>result.home)return match.away;
+ if((code.startsWith("WC")||code.startsWith("Q"))&&Number.isFinite(match.home.seed)&&Number.isFinite(match.away.seed)){
+  return match.home.seed<match.away.seed?match.home:match.away;
  }
- if(String(state.phase||"").toLowerCase()==="playoff"){
-  state.cupStatus.playoff={
-   label:"FASE PLAYOFF",title:"Road to Glory",description:"I playoff del campionato sono attivi: segui il tabellone e le serie ufficiali.",
-   round:"PLAYOFF",headline:"Campionato · Playoff"
+ return null;
+}
+function playoffMatchStatus(name,scores){
+ const seeds=playoffRankingSnapshot();
+ if(seeds.length<12)return {round:"IN ATTESA",label:"PROIEZIONE PLAYOFF",title:"Road to Glory",description:"La classifica totale non è ancora disponibile.",url:"playoff.html"};
+ const top=seeds.slice(0,12),me=top.find(x=>norm(x.name)===norm(name));
+ if(!me)return {round:"CLASSIFICA",label:"PROIEZIONE ATTUALE",title:"Fuori dalla Top 12",description:"Al momento fuori dai posti playoff. Segui l'evoluzione della classifica totale.",url:"playoff.html"};
+ const participants={};
+ const wc={WC1:[8,9],WC2:[7,10],WC3:[5,12],WC4:[6,11]};
+ for(const [code,[h,a]] of Object.entries(wc))participants[code]={home:top[h-1],away:top[a-1]};
+ const winner=code=>playoffWinner(participants[code],code,scores);
+ const loser=code=>{
+  const win=winner(code),m=participants[code];
+  if(!win||!m?.home?.name||!m?.away?.name)return null;
+  return norm(win.name)===norm(m.home.name)?m.away:m.home;
+ };
+ participants.Q1={home:top[0],away:winner("WC1")};
+ participants.Q4={home:top[3],away:winner("WC3")};
+ participants.Q2={home:top[1],away:winner("WC2")};
+ participants.Q3={home:top[2],away:winner("WC4")};
+ participants.S1={home:winner("Q1"),away:winner("Q4")};
+ participants.S2={home:winner("Q2"),away:winner("Q3")};
+ participants.P3={home:loser("S1"),away:loser("S2")};
+ participants.F={home:winner("S1"),away:winner("S2")};
+ const codes=["WC1","WC2","WC3","WC4","Q1","Q2","Q3","Q4","S1","S2","P3","F"];
+ const played=codes.filter(code=>[participants[code]?.home,participants[code]?.away].some(t=>t&&norm(t.name)===norm(name)));
+ const ordered=played.sort((a,b)=>stageRank(a)-stageRank(b));
+ const lost=ordered.find(code=>{const w=winner(code);return w&&norm(w.name)!==norm(name)});
+ const last=lost||ordered.at(-1);
+ const realPlayoffs=String(state.phase||"").toLowerCase()==="playoff"||[...scores.values()].some(v=>v.home!=null&&v.away!=null);
+ const mapStage=code=>code.startsWith("WC")?"wildcard":code.startsWith("Q")?"quarti":code.startsWith("S")?"semifinali":"finale";
+ if(last&&participants[last]?.home?.name&&participants[last]?.away?.name){
+  const m=participants[last],finalWin=winner(last),eliminated=!!lost,completed=!!finalWin;
+  const title=playoffRoundName(last),provisional=!realPlayoffs&&!completed;
+  const label=eliminated?"ELIMINATO":completed?"RISULTATO UFFICIALE":provisional?"PROIEZIONE ATTUALE":"IN CORSA";
+  const finalLabel=eliminated?"Percorso concluso":completed&&(last==="F")?"Campione Playoff":completed?"Turno concluso":provisional?"Accoppiamento provvisorio":"Sfida playoff";
+  const score=scores.get(last);
+  return {
+   round:title+" · "+last.replace(/\D/g,""),
+   label,
+   match:{home:m.home.name,away:m.away.name,code:last,score:score?.home!=null&&score?.away!=null?[score.home,score.away]:null},
+   eliminated,eliminatedTeam:eliminated?name:null,projection:provisional,
+   description:finalLabel+(score?.home!=null&&score?.away!=null?" · "+score.home+"-"+score.away:"")+" · "+title,
+   url:"playoff.html?fase="+mapStage(last),headline:"Playoff · "+title
   };
  }
- if(state.view!=="league")chooseView(state.view);
-
+ // The best four seeds await a Wild Card winner. Do not invent that opponent
+ // once official playoffs are underway. For the pre-playoff snapshot only,
+ // show the higher-ranked Wild Card seed as a clearly labelled projection.
+ if(me.seed<=4){
+  const qCode={1:"Q1",2:"Q2",3:"Q3",4:"Q4"}[me.seed];
+  const wcCode={Q1:"WC1",Q2:"WC2",Q3:"WC4",Q4:"WC3"}[qCode];
+  const candidates=participants[wcCode];
+  const likely=[candidates.home,candidates.away].sort((a,b)=>a.seed-b.seed)[0];
+  if(!realPlayoffs&&likely){
+   return {
+    round:"QUARTI · PROIEZIONE",label:"ACCOPPIAMENTO IPOTETICO",
+    match:{home:me.name,away:likely.name,code:qCode},projection:true,
+    description:"Possibile avversario ai Quarti · in attesa della Wild Card",
+    url:"playoff.html?fase=quarti"
+   };
+  }
+  return {round:"QUARTI",label:"TESTA DI SERIE",title:"Qualificato ai Quarti",description:"Attesa della vincente della Wild Card.",art:highlanderArt(name),url:"playoff.html?fase=quarti"};
+ }
+ return {round:"PLAYOFF",label:"IN ATTESA",title:"Road to Glory",description:"Accoppiamenti in aggiornamento.",url:"playoff.html"};
+}
+async function loadPlayoffCard(name){
+ const {data,error}=await supabase.from("playoff_results").select("match_code,home_score,away_score");
+ if(error){console.warn("Anteprima Playoff:",error);return {round:"IN AGGIORNAMENTO",label:"PLAYOFF",title:"Road to Glory",description:"Risultati momentaneamente non disponibili.",url:"playoff.html"};}
+ const scores=new Map((data||[]).map(r=>[r.match_code,{
+  home:r.home_score==null?null:Number(r.home_score),
+  away:r.away_score==null?null:Number(r.away_score)
+ }]));
+ return playoffMatchStatus(name,scores);
+}
+/* Crash Out official bracket: 1-16/8-9/5-12/4-13 on the left,
+   3-14/6-11/7-10/2-15 on the right. A series advances only at
+   three victories, as in crashoutplayoff.js. */
+const CRASH_PAIRS={L1:[1,16],L2:[8,9],L3:[5,12],L4:[4,13],
+ R1:[3,14],R2:[6,11],R3:[7,10],R4:[2,15]};
+const CRASH_CHAIN={LSF1:["L1","L2"],LSF2:["L3","L4"],
+ RSF1:["R1","R2"],RSF2:["R3","R4"],LCF:["LSF1","LSF2"],RCF:["RSF1","RSF2"],F:["LCF","RCF"]};
+const CRASH_ORDER=["L1","L2","L3","L4","R1","R2","R3","R4","LSF1","LSF2","RSF1","RSF2","LCF","RCF","F"];
+function crashRound(code){
+ return /^[LR][1-4]$/.test(code)?"OTTAVI":/SF/.test(code)?"QUARTI":/CF/.test(code)?"SEMIFINALI":"FINALE";
+}
+function crashStandingsFromRivalry(rows){
+ const t=new Map(squadreBase.map((team,i)=>[norm(team.nome),{team:team.nome,order:i,points:0,magic:0,gd:0,gf:0}]));
+ for(const r of rows){
+  if(!r.is_played)continue;
+  const h=t.get(norm(r.home_team)),a=t.get(norm(r.away_team));
+  if(!h||!a)continue;
+  const hg=Number(r.home_goals),ag=Number(r.away_goals);
+  if(!Number.isFinite(hg)||!Number.isFinite(ag))continue;
+  h.gf+=hg;a.gf+=ag;h.gd+=hg-ag;a.gd+=ag-hg;
+  h.magic+=num(r.home_magic);a.magic+=num(r.away_magic);
+  if(hg>ag)h.points+=3;
+  else if(ag>hg)a.points+=3;
+  else{h.points++;a.points++;}
+ }
+ return [...t.values()].sort((a,b)=>b.points-a.points||b.magic-a.magic||b.gd-a.gd||b.gf-a.gf||a.order-b.order)
+  .map((row,i)=>({seed:i+1,team:row.team}));
+}
+function crashBracketStatus(name,seeds,scoreRows){
+ if(seeds.length<16)return null;
+ const positions=new Map(seeds.map(x=>[Number(x.seed),{seed:Number(x.seed),name:canon(x.team)}]));
+ const scores=new Map(scoreRows.map(r=>[r.series_id,{home:Number(r.home_score)||0,away:Number(r.away_score)||0}]));
+ const matches={};
+ for(const [id,pair] of Object.entries(CRASH_PAIRS))matches[id]={home:positions.get(pair[0]),away:positions.get(pair[1])};
+ const winner=id=>{
+  const s=scores.get(id),m=matches[id];
+  if(!s||!m?.home||!m?.away)return null;
+  return s.home>=3&&s.home>s.away?m.home:s.away>=3&&s.away>s.home?m.away:null;
+ };
+ for(const [id,[a,b]] of Object.entries(CRASH_CHAIN))matches[id]={home:winner(a),away:winner(b)};
+ const mine=CRASH_ORDER.filter(code=>[matches[code]?.home,matches[code]?.away].some(t=>t&&norm(t.name)===norm(name)));
+ if(!mine.length)return null;
+ const lost=mine.find(code=>{const win=winner(code);return win&&norm(win.name)!==norm(name)});
+ const last=lost||mine.at(-1),m=matches[last],result=scores.get(last)||{home:0,away:0};
+ const eliminated=!!lost,won=winner(last)&&norm(winner(last).name)===norm(name);
+ const desc=eliminated?"Eliminato "+crashRound(last).toLowerCase()+" · serie "+result.home+"-"+result.away:
+  won&&last==="F"?"Campione Crash Out Cup":
+  "Best of 5 · serie "+result.home+"-"+result.away;
+ return {round:crashRound(last)+" · "+last,label:eliminated?"ELIMINATO":won&&last==="F"?"CAMPIONE":"FASE FINALE",
+  eliminated,eliminatedTeam:eliminated?name:null,
+  match:{home:m.home.name,away:m.away.name,code:last,score:[result.home,result.away]},
+  description:desc,url:"crashoutplayoff.html",headline:"Crash Out · "+crashRound(last)};
+}
+async function loadCrashoutCard(name){
+ const {data:rr,error:err}=await supabase.from("crashout_rivalry_matches")
+  .select("matchday,match_index,home_team,away_team,home_goals,away_goals,home_magic,away_magic,is_played")
+  .eq("season",CUP_SEASON).order("matchday",{ascending:true}).order("match_index",{ascending:true});
+ if(err){console.warn("Crash Out Rivalry:",err);return null;}
+ const rows=rr||[];
+ const allFinished=rows.length>0&&rows.every(r=>!!r.is_played);
+ if(!allFinished){
+  const my=rows.filter(r=>norm(r.home_team)===norm(name)||norm(r.away_team)===norm(name));
+  if(!my.length)return null;
+  const next=my.find(r=>!r.is_played)||my.at(-1);
+  const home=canon(next.home_team),away=canon(next.away_team),gw=Number(next.matchday)||0;
+  return {round:"RIVALRY · G"+gw,label:"RIVALRY GAMES",match:{
+   home,away,gw,score:next.is_played?[Number(next.home_goals)||0,Number(next.away_goals)||0]:null},
+   description:"Crash Out · Rivalry Games",url:"match.html?"+new URLSearchParams({home,away,gw:String(gw),competition:"Crash Out Cup"})};
+ }
+ const [locked,sr]=await Promise.all([
+  supabase.from("crashout_playoff_seeds").select("seed_number,team_name").eq("season",CUP_SEASON).order("seed_number",{ascending:true}),
+  supabase.from("crashout_playoff_scores").select("series_id,home_score,away_score")
+ ]);
+ const seeds=!locked.error&&locked.data?.length===16&&locked.data.every(r=>r.seed_number&&r.team_name)
+  ?locked.data.map(r=>({seed:Number(r.seed_number),team:canon(r.team_name)}))
+  :crashStandingsFromRivalry(rows);
+ if(sr.error){console.warn("Crash Out Scores:",sr.error);return {round:"FASE FINALE",label:"CRASH OUT",title:"Crash Out Playoff",description:"Risultati non disponibili.",url:"crashoutplayoff.html"};}
+ return crashBracketStatus(name,seeds,sr.data||[])||{round:"FASE FINALE",label:"CRASH OUT",title:"Crash Out Playoff",description:"Consulta il tabellone della fase finale.",url:"crashoutplayoff.html"};
+}
+async function loadHighlanderCard(name){
+ const [a,b]=await Promise.all([
+  supabase.from("highlander_state").select("season,is_active").eq("season",CUP_SEASON).maybeSingle(),
+  supabase.from("highlander_eliminations").select("season,turno,team_name,magic_punti").eq("season",CUP_SEASON).order("turno",{ascending:true})
+ ]);
+ if(a.error||b.error){
+  return {round:"HIGHLANDER",label:"THE LAST SURVIVOR",title:"Highlander",description:"Stato in aggiornamento.",art:highlanderArt(name),url:"arena.html"};
+ }
+ const eliminations=b.data||[],myOut=eliminations.find(r=>norm(r.team_name)===norm(name));
+ const active=!!a.data?.is_active,lastTurn=eliminations.length?Math.max(...eliminations.map(r=>Number(r.turno)||0)):0;
+ const eliminated=myOut!=null,survivors=Math.max(0,squadreBase.length-new Set(eliminations.map(r=>norm(r.team_name))).size);
+ const winner=survivors===1&&!eliminated&&eliminations.length>0;
+ return {
+  round:"TURNO "+(eliminated?myOut.turno:Math.min(15,lastTurn+1)),
+  label:eliminated?"ELIMINATO":winner?"ULTIMO SOPRAVVISSUTO":active?"ANCORA IN GARA":"IN ATTESA",
+  title:eliminated?"Il tuo percorso è finito":winner?"Il campione Highlander":active?"Ancora in gara":"Highlander",
+  description:eliminated?"Eliminato al turno "+myOut.turno+" · "+survivors+" squadre rimaste":
+   winner?"L'ultimo sopravvissuto":active?survivors+" squadre ancora in gara":"Competizione non ancora attiva",
+  headline:eliminated?"Highlander · eliminato":winner?"Highlander · campione":"Highlander · la tua situazione",
+  art:highlanderArt(name,eliminated),eliminated,url:"arena.html"
+ };
+}
+async function loadCupStatuses(){
+ if(!state.team)return;
+ const name=state.team.name;
+ const [p,c,h]=await Promise.allSettled([
+  loadPlayoffCard(name),loadCrashoutCard(name),loadHighlanderCard(name)
+ ]);
+ if(p.status==="fulfilled"&&p.value)state.cupStatus.playoff=p.value;
+ if(c.status==="fulfilled"&&c.value)state.cupStatus.crashout=c.value;
+ if(h.status==="fulfilled"&&h.value)state.cupStatus.highlander=h.value;
+ for(const x of [p,c,h])if(x.status==="rejected")console.warn("Anteprima coppa:",x.reason);
+ if(state.view!=="league"&&!state.demoAllActive)chooseView(state.view);
 }
 
 function drawTable(code){
