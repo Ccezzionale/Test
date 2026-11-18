@@ -1660,3 +1660,58 @@ body[data-view="highlander"].is-cup-eliminated .stage-special > img {
 body:not(.demo-all-active) .arena-demo-controls {
   display:none;
 }
+
+
+/* ARENA TEST V20 · tab status: always clickable, never disappear.
+   Green = currently contesting, amber = provisional Playoff path,
+   grey = eliminated, neutral = not yet started / awaiting data. */
+body:not(.demo-all-active) .cup-tabs button[data-season-state] {
+  position:relative;
+  padding-right:9px!important;
+}
+body:not(.demo-all-active) .cup-tabs button[data-season-state]::after {
+  content:"";
+  position:absolute;
+  top:4px;
+  right:5px;
+  width:5px;
+  height:5px;
+  border-radius:50%;
+  background:#77889d;
+  opacity:.78;
+}
+body:not(.demo-all-active) .cup-tabs button[data-season-state="in"]::after{
+  background:#63e5a1;
+  opacity:1;
+  box-shadow:0 0 4px rgba(39,229,139,.42);
+}
+body:not(.demo-all-active) .cup-tabs button[data-season-state="projection"]::after{
+  background:#ffd278;
+  opacity:1;
+}
+body:not(.demo-all-active) .cup-tabs button[data-season-state="out"]::after{
+  background:#a5a5ad;
+  opacity:.9;
+}
+/* The Highlander hero uses the exact normal/eliminated mascot from
+   arena.js, with room for its characteristic silhouette. */
+body[data-view="highlander"] .stage-special {
+  grid-template-columns:minmax(80px,30%) minmax(0,1fr);
+  min-height:145px;
+  align-items:center;
+  gap:11px;
+}
+body[data-view="highlander"] .stage-special img{
+  width:100%;
+  max-width:130px;
+  height:132px;
+  object-fit:contain;
+  object-position:bottom center;
+}
+@media(max-width:360px){
+ body[data-view="highlander"] .stage-special {
+  grid-template-columns:85px minmax(0,1fr);
+  min-height:135px;
+ }
+ body[data-view="highlander"] .stage-special img{height:120px}
+}
