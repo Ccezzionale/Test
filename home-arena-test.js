@@ -443,12 +443,14 @@ function playoffRankingSnapshot(){
   if(r.Phase!=="Regular"||!["Conf A","Conf B","Unificata"].includes(r.Conference))continue;
   const name=canon(r.Team),opponent=canon(r.Opponent),key=norm(name);
   if(!key||!norm(opponent)||!done(r))continue;
-  const dedup=[r.Conference,r.GW_Stagionale||r.GW,key].join("|");
+  const pf=num(r.PointsFor),pa=num(r.PointsAgainst);
+  if(!pf&&!pa)continue;
+  // Deduplication uses the same match fields as the official playoff.js.
+  const dedup=[r.GW||"",r.GW_Stagionale||"",key,norm(opponent),pf,pa,r.Conference].join("|");
   if(seen.has(dedup))continue;
   seen.add(dedup);
   if(!table.has(key))table.set(key,{name,pt:0,mp:0,gf:0,gs:0});
-  const row=table.get(key),pf=num(r.PointsFor),pa=num(r.PointsAgainst);
-  if(!pf&&!pa)continue;
+  const row=table.get(key);
   const gf=goals(pf),ga=goals(pa);
   row.pt+=gf>ga?3:gf===ga?1:0;
   row.mp+=pf;row.gf+=gf;row.gs+=ga;
