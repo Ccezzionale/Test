@@ -1594,3 +1594,26 @@ body.has-active-duel[data-view="crashout"] .match-stage{border-color:#fa80e779}
  .stage-duel-center strong{font-size:10px}
  .stage-duel-center small{font-size:7px}
 }
+
+
+/* ARENA TEST V18 · optically balance Atlético Leon in the Playoff
+   compact horizontal duel: his raised arm previously crowded the
+   central matchup text. No changes to other mascot assets. */
+body.has-active-duel[data-view="playoff"] .stage-duel-art.is-right[data-duel-team="atleticoleon"]{
+  width:38%;
+  height:156px;
+  right:1px;
+  bottom:-3px;
+}
+@media(min-width:480px){
+  body.has-active-duel[data-view="playoff"] .stage-duel-art.is-right[data-duel-team="atleticoleon"]{
+    width:36%;
+    height:180px;
+  }
+}
+@media(max-width:360px){
+  body.has-active-duel[data-view="playoff"] .stage-duel-art.is-right[data-duel-team="atleticoleon"]{
+    width:38%;
+    height:147px;
+  }
+}
