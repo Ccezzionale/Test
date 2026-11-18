@@ -12,7 +12,15 @@ body.arena-home-test {
   --arena-picture:url("img/match-bg/campionato-bg.webp");
   margin:0;
   color:#f6f8ff !important;
-  background:#030e20 !important;
+  background-image:
+    linear-gradient(180deg,rgba(2,11,27,.52) 0%,rgba(2,12,29,.73) 30%,rgba(2,10,25,.91) 80%,#020a18 100%),
+    radial-gradient(ellipse at 50% 4%,var(--arena-highlight),transparent 63%),
+    var(--arena-picture) !important;
+  background-color:#030e20 !important;
+  background-position:top center,top center,top center !important;
+  background-size:cover,cover,cover !important;
+  background-repeat:no-repeat !important;
+  background-attachment:fixed !important;
   font-family:Inter,"Segoe UI",Arial,sans-serif;
 }
 body.arena-home-test[data-arena-preview="playoff"] {
@@ -34,6 +42,7 @@ body.arena-home-test[data-arena-preview="highlander"] {
   --arena-picture:url("img/match-bg/highlander-bg.webp");
 }
 body.arena-home-test::before {
+  display:none;
   position:fixed;
   inset:0;
   z-index:-1;
@@ -45,6 +54,7 @@ body.arena-home-test::before {
     var(--arena-picture) top center / cover no-repeat;
 }
 body.arena-home-test::after {
+  display:none;
   position:fixed;
   inset:0;
   z-index:-1;
