@@ -582,15 +582,21 @@ function crashBracketStatus(name,seeds,scoreRows){
   return s.home>=3&&s.home>s.away?m.home:s.away>=3&&s.away>s.home?m.away:null;
  };
  for(const [id,[a,b]] of Object.entries(CRASH_CHAIN))matches[id]={home:winner(a),away:winner(b)};
- const mine=CRASH_ORDER.filter(code=>[matches[code]?.home,matches[code]?.away].some(t=>t&&norm(t.name)===norm(name)));
+ // Don't show a future series until BOTH opponents are determined.
+ // A qualified team otherwise keeps its most recent completed matchup.
+ const mine=CRASH_ORDER.filter(code=>{
+  const m=matches[code];
+  return m?.home?.name&&m?.away?.name&&[m.home,m.away].some(t=>norm(t.name)===norm(name));
+ });
  if(!mine.length)return null;
  const lost=mine.find(code=>{const win=winner(code);return win&&norm(win.name)!==norm(name)});
  const last=lost||mine.at(-1),m=matches[last],result=scores.get(last)||{home:0,away:0};
  const eliminated=!!lost,won=winner(last)&&norm(winner(last).name)===norm(name);
- const desc=eliminated?"Eliminato "+crashRound(last).toLowerCase()+" · serie "+result.home+"-"+result.away:
+ const desc=eliminated?"Eliminato agli "+crashRound(last).toLowerCase()+" · serie "+result.home+"-"+result.away:
   won&&last==="F"?"Campione Crash Out Cup":
+  won?"Turno superato · in attesa del prossimo avversario":
   "Best of 5 · serie "+result.home+"-"+result.away;
- return {round:crashRound(last)+" · "+last,label:eliminated?"ELIMINATO":won&&last==="F"?"CAMPIONE":"FASE FINALE",
+ return {round:crashRound(last)+" · "+last,label:eliminated?"ELIMINATO":won&&last==="F"?"CAMPIONE":won?"QUALIFICATO":"FASE FINALE",
   eliminated,eliminatedTeam:eliminated?name:null,
   match:{home:m.home.name,away:m.away.name,code:last,score:[result.home,result.away]},
   description:desc,url:"crashoutplayoff.html",headline:"Crash Out · "+crashRound(last)};
