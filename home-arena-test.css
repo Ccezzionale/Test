@@ -398,3 +398,245 @@ body{
  .stage-personal:has(img.is-mascot){min-height:133px}
  .stage-team img.is-logo {width:57px;height:57px}
 }
+
+
+/* ============================================================
+   HOME ARENA V3 · LE COMPETIZIONI: POSTER / MAIN EVENT
+   Only home-arena-test.html imports this file.
+   Real existing stadium backgrounds and trophy artwork, no placeholders.
+   Mobile: large feature plus a readable 2x2 event grid.
+   Wider screens: concept 03 side-by-side layout.
+   ============================================================ */
+.comp-event-layout{
+  display:grid;
+  grid-template-columns:minmax(0,1fr);
+  gap:9px;
+  width:100%;
+  min-width:0;
+}
+.comp-event-layout .comp-cinematic{
+  --event-bg:url("img/match-bg/campionato-bg.webp");
+  --event-edge:rgba(247,198,82,.67);
+  --event-glow:rgba(244,187,47,.36);
+  --event-label:#ffe8a4;
+  position:relative;
+  isolation:isolate;
+  display:block;
+  min-width:0;
+  overflow:hidden;
+  color:#fff !important;
+  border:1px solid var(--event-edge);
+  background:
+    linear-gradient(180deg,rgba(3,12,31,.11) 0%,rgba(3,12,31,.17) 36%,rgba(1,8,24,.90) 100%),
+    var(--event-bg) center/cover no-repeat,
+    #0a213c;
+  border-radius:14px;
+  box-shadow:0 9px 23px #0009,inset 0 1px 0 #ffffff36;
+  text-decoration:none;
+  -webkit-tap-highlight-color:transparent;
+  transition:transform .18s ease,box-shadow .18s ease;
+}
+.comp-event-layout .comp-cinematic::before{
+  content:"";
+  position:absolute;
+  z-index:0;
+  pointer-events:none;
+  inset:0;
+  background:
+    radial-gradient(ellipse 80% 52% at 50% 35%,var(--event-glow),transparent 80%),
+    linear-gradient(130deg,rgba(255,255,255,.15),transparent 29%,rgba(0,0,0,.20));
+}
+.comp-event-layout .comp-cinematic::after{
+  content:"";
+  z-index:0;
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  border-radius:inherit;
+  box-shadow:inset 0 0 28px rgba(0,8,25,.38);
+}
+.comp-event-layout .comp-cinematic:active{
+  transform:scale(.984);
+}
+.comp-event-layout .comp-cinematic:focus-visible{
+  outline:2px solid #fff;outline-offset:3px;
+}
+.comp-event-layout .comp-cinematic-league{
+  --event-bg:url("img/match-bg/campionato-bg.webp");
+  --event-edge:rgba(249,193,59,.78);
+  --event-glow:rgba(253,191,45,.30);
+  --event-label:#ffda72;
+}
+.comp-event-layout .comp-cinematic-playoff{
+  --event-bg:url("img/match-bg/playoff-bg.webp");
+  --event-edge:rgba(165,203,255,.64);
+  --event-glow:rgba(58,154,255,.33);
+  --event-label:#c8e2ff;
+}
+.comp-event-layout .comp-cinematic-crashout{
+  --event-bg:url("img/match-bg/crashout-bg.webp");
+  --event-edge:rgba(232,103,255,.74);
+  --event-glow:rgba(217,59,249,.31);
+  --event-label:#ff9ef2;
+}
+.comp-event-layout .comp-cinematic-highlander{
+  --event-bg:url("img/match-bg/highlander-bg.webp");
+  --event-edge:rgba(202,168,111,.72);
+  --event-glow:rgba(216,157,63,.29);
+  --event-label:#ffe0a1;
+}
+.comp-event-layout .comp-cinematic-supercoppa{
+  --event-bg:url("img/match-bg/playoff-bg.webp");
+  --event-edge:rgba(87,171,235,.72);
+  --event-glow:rgba(54,137,231,.35);
+  --event-label:#b9e7ff;
+}
+.comp-event-hero{
+  height:212px;
+  min-height:212px;
+  display:flex !important;
+  align-items:center;
+  justify-content:center;
+}
+.comp-event-hero-kicker{
+  position:absolute;z-index:2;
+  top:11px;left:12px;
+  font-size:9px;font-weight:1000;letter-spacing:.14em;
+  color:var(--event-label);
+  background:rgba(3,14,31,.69);
+  border:1px solid rgba(255,255,255,.17);
+  padding:5px 7px;border-radius:6px;
+}
+.comp-event-hero-trophy{
+  position:absolute;
+  z-index:1;
+  top:7px;left:50%;
+  transform:translateX(-50%);
+  width:156px;height:147px;
+  max-width:82%;
+  object-fit:contain;
+  filter:drop-shadow(0 9px 13px #000b) drop-shadow(0 0 20px var(--event-glow));
+  pointer-events:none;
+}
+.comp-event-hero-footer{
+  position:absolute;
+  z-index:2;
+  left:9px;right:9px;bottom:10px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:4px;
+  text-align:center;
+  text-shadow:0 3px 9px #000e;
+}
+.comp-event-hero-footer strong{
+  color:#fff;
+  font-size:clamp(20px,6vw,27px);
+  font-weight:1000;
+  letter-spacing:.045em;
+  line-height:1;
+  font-style:italic;
+}
+.comp-event-hero-footer small{
+  display:inline-flex;
+  max-width:95%;
+  min-height:25px;
+  align-items:center;
+  justify-content:center;
+  padding:5px 12px;
+  border-radius:999px;
+  background:#f3c658;
+  color:#111a2d;
+  font-size:10px;
+  font-weight:950;
+  line-height:1.1;
+  text-shadow:none;
+  text-align:center;
+}
+.comp-event-arrow{
+  position:absolute;
+  z-index:3;
+  top:12px;right:12px;
+  width:25px;height:25px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border-radius:8px;
+  border:1px solid #ffffff3e;
+  background:#03172ab8;
+  font-size:15px;font-weight:950;
+  color:#ffe0a1;
+}
+.comp-event-minis{
+  display:grid;
+  min-width:0;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:9px;
+}
+.comp-event-mini{
+  height:147px;
+  min-height:147px;
+}
+.comp-event-mini img{
+  position:absolute;
+  z-index:1;
+  top:5px;
+  left:50%;
+  transform:translateX(-50%);
+  display:block;
+  width:88%;
+  max-width:115px;
+  height:92px;
+  object-fit:contain;
+  filter:drop-shadow(0 7px 10px #000a) drop-shadow(0 0 12px var(--event-glow));
+  pointer-events:none;
+}
+.comp-mini-footer{
+  position:absolute;
+  z-index:2;
+  bottom:0;left:0;right:0;
+  padding:21px 4px 9px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:end;
+  gap:4px;
+  text-align:center;
+  background:linear-gradient(180deg,transparent,rgba(1,9,23,.86) 45%,rgba(1,9,23,.91));
+  text-shadow:0 2px 8px #000c;
+}
+.comp-mini-footer strong{
+  color:#fff;
+  font-size:12px;
+  font-weight:1000;
+  letter-spacing:.01em;
+  line-height:1.06;
+}
+.comp-mini-footer small{
+  color:var(--event-label);
+  font-size:9px;
+  line-height:1.15;
+  font-weight:850;
+  max-width:100%;
+  overflow-wrap:anywhere;
+}
+@media (min-width:540px){
+  .comp-event-layout{
+    grid-template-columns:minmax(0,1.04fr) minmax(0,1fr);
+    align-items:stretch;
+  }
+  .comp-event-hero{height:312px;min-height:312px}
+  .comp-event-hero-trophy{top:27px;height:216px;width:218px}
+  .comp-event-hero-footer{bottom:15px;gap:6px}
+  .comp-event-hero-footer strong{font-size:clamp(21px,4vw,27px)}
+  .comp-event-mini{height:151px;min-height:151px}
+}
+@media (max-width:390px){
+  .comp-event-hero{height:198px;min-height:198px}
+  .comp-event-hero-trophy{height:139px;width:144px;top:3px}
+  .comp-event-mini{height:135px;min-height:135px}
+  .comp-event-mini img{height:80px;max-width:94px}
+  .comp-mini-footer strong{font-size:11px}
+  .comp-mini-footer small{font-size:8px}
+}
