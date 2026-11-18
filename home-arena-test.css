@@ -1385,7 +1385,7 @@ body[data-view="highlander"] {
 body[data-view="playoff"] .stage-visual {
   background:
     linear-gradient(90deg,rgba(3,14,35,.20),rgba(3,14,35,.33)),
-    url("img/match-bg/arena-playoff-v14.webp") center 50%/cover no-repeat,
+    url("img/match-bg/arena-playoff-v15.webp") center 50%/cover no-repeat,
     #092650;
 }
 body[data-view="playoff"] .stage-visual::before {display:none}
