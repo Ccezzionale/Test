@@ -1476,3 +1476,121 @@ body.demo-all-active .cup-tabs button::after {
   .arena-demo-controls span{font-size:9px}
   .arena-demo-controls button{font-size:9px;padding:6px 7px}
 }
+
+
+
+/* ==========================================================
+   ARENA TEST V17 · REAL LEGENDS / MIAMI VICE HOME DUELS
+   Adapts the official competition character art to the existing
+   compact match card. Only shown when two teams are present.
+   No extra page-length posters, no duplicated trophy overlays.
+   ========================================================== */
+body.has-active-duel[data-view="playoff"] .stage-visual{
+  background:
+    linear-gradient(90deg,rgba(3,13,31,.52),rgba(5,19,44,.30) 48%,rgba(4,13,33,.56)),
+    url("img/playoff-real-legends/colosseo-champions-arena-v7.webp") center 49%/cover no-repeat,
+    #0b2950;
+}
+body.has-active-duel[data-view="crashout"] .stage-visual{
+  background:
+    linear-gradient(90deg,rgba(17,4,36,.49),rgba(29,7,52,.26) 48%,rgba(19,5,35,.49)),
+    url("img/crashout-miami/miami-skyline-night.webp") center 50%/cover no-repeat,
+    #250a42;
+}
+.stage-duel{
+  position:relative;
+  display:block;
+  isolation:isolate;
+  overflow:hidden;
+  min-height:156px;
+  height:156px;
+}
+.stage-duel[hidden]{display:none!important}
+.stage-duel::before{
+  content:"";
+  position:absolute;
+  pointer-events:none;
+  z-index:1;
+  inset:0;
+  background:radial-gradient(ellipse 49% 95% at 50% 49%,rgba(4,14,35,.69),transparent 100%);
+}
+.stage-duel-art{
+  position:absolute;
+  z-index:2;
+  pointer-events:none;
+  width:42%;
+  height:168px;
+  max-width:210px;
+  bottom:-4px;
+  object-fit:contain;
+  object-position:center bottom;
+  filter:drop-shadow(0 4px 8px rgba(0,0,0,.47));
+}
+.stage-duel-art.is-left{left:-9px}
+.stage-duel-art.is-right{right:-9px}
+.stage-duel-center{
+  position:relative;
+  z-index:3;
+  width:58%;
+  min-height:156px;
+  margin:0 auto;
+  padding:12px 1px 10px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:3px;
+  text-align:center;
+  color:white;
+  text-shadow:0 2px 8px #030b1f,0 1px 3px #000;
+}
+.stage-duel-center > span{
+  font-size:9px;
+  font-weight:950;
+  letter-spacing:.13em;
+  color:#f6d58a;
+}
+body[data-view="crashout"] .stage-duel-center > span{color:#f5afea}
+.stage-duel-center strong{
+  display:block;
+  font-weight:1000;
+  font-size:clamp(11px,3.5vw,15px);
+  line-height:1.08;
+  max-width:100%;
+  overflow-wrap:break-word;
+}
+.stage-duel-center em{
+  display:block;
+  color:#f6ca69;
+  font-size:clamp(25px,7vw,31px);
+  line-height:1;
+  font-weight:1000;
+  letter-spacing:-.05em;
+  font-style:italic;
+}
+body[data-view="crashout"] .stage-duel-center em{color:#ff8eea}
+.stage-duel-center small{
+  display:block;
+  margin-top:3px;
+  font-size:clamp(7px,1.9vw,9px);
+  line-height:1.15;
+  font-weight:850;
+  letter-spacing:.03em;
+  color:#cde5f7;
+}
+body[data-view="crashout"] .stage-duel-center small{color:#ffd3f4}
+body.has-active-duel[data-view="playoff"] .match-stage{border-color:#b3d0f183}
+body.has-active-duel[data-view="crashout"] .match-stage{border-color:#fa80e779}
+@media(min-width:480px){
+ .stage-duel{height:183px;min-height:183px}
+ .stage-duel-art{height:193px;width:39%}
+ .stage-duel-center{min-height:183px;width:57%}
+ .stage-duel-center strong{font-size:17px}
+}
+@media(max-width:360px){
+ .stage-duel{height:146px;min-height:146px}
+ .stage-duel-art{height:154px;width:41%}
+ .stage-duel-center{min-height:146px;width:58%;gap:2px}
+ .stage-duel-center strong{font-size:10px}
+ .stage-duel-center small{font-size:7px}
+}
