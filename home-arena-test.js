@@ -74,7 +74,7 @@ const confName = code => code==="Conf B"?"Conference Championship":code==="Unifi
 const set = (id,v) => { if($(id)) $(id).textContent=v; };
 const img = (id,src,alt="") => {if($(id)){$(id).src=src;$(id).alt=alt;}};
 const href = (f,code) => "match.html?"+new URLSearchParams({home:f.home,away:f.away,gw:String(f.gw),competition:code});
-const state = {team:null,rows:[],phase:"",standings:{},slides:[],index:0,view:"league"};
+const state = {team:null,rows:[],phase:"",standings:{},slides:[],index:0,view:"league",cupStatus:{}};
 function completed(code){
  const used=new Set();
  return state.rows.filter(r=>r.Conference===code&&done(r)).filter(r=>{
@@ -169,15 +169,102 @@ const cups={
 };
 function chooseView(view){
  state.view=view;document.body.dataset.view=view;
- document.querySelectorAll("[data-cup]").forEach(b=>{const on=b.dataset.cup===view;b.classList.toggle("on",on);b.setAttribute("aria-pressed",String(on));});
+ document.querySelectorAll("[data-cup]").forEach(b=>{
+  const on=b.dataset.cup===view;b.classList.toggle("on",on);b.setAttribute("aria-pressed",String(on));
+ });
  if(view==="league"){set("matchday-mark","PARTITA ATTUALE");drawMatch();return;}
- const cup=cups[view];$("stage-personal").hidden=true;$("stage-special").hidden=false;$("fixture-control").hidden=true;
- set("matchday-mark",cup.label);set("stage-competition",cup.label);set("stage-round","LA TUA LEGA");
- set("stage-match-title",cup.label);
- img("stage-cup-art",cup.art,"Trofeo "+cup.label);set("stage-special-kicker","COMPETIZIONE UFFICIALE");
- set("stage-special-title",cup.title);set("stage-special-desc",cup.description);
- set("stage-context","Apri la pagina dedicata");$("stage-cta").href=cup.url;
- $("stage-cta").innerHTML="ENTRA NELLA COPPA <span>↗</span>";
+ const cup=cups[view], status=state.cupStatus[view]||{};
+ set("matchday-mark",cup.label);
+ set("stage-competition",cup.label);
+ set("stage-round",status.round||"LA TUA LEGA");
+ $("fixture-control").hidden=true;
+ if(status.match){
+  const f=status.match;
+  $("stage-personal").hidden=false;$("stage-special").hidden=true;
+  img("stage-left-logo",logo(f.home),"Logo "+f.home);
+  img("stage-right-logo",logo(f.away),"Logo "+f.away);
+  set("stage-left-name",f.home);set("stage-right-name",f.away);
+  set("stage-score-value",f.score?f.score.join(" : "):"VS");
+  set("stage-score-label",f.score?"RISULTATO UFFICIALE":"RIVALRY GAME");
+  set("stage-match-title",f.home+" vs "+f.away);
+  set("stage-context",status.description||"Crash Out Cup · Rivalry Games");
+  $("stage-cta").href=status.url||cup.url;
+  $("stage-cta").innerHTML=(f.score?"MATCH REPORT":"MATCH CENTER")+" <span>↗</span>";
+  return;
+ }
+ $("stage-personal").hidden=true;$("stage-special").hidden=false;
+ img("stage-cup-art",status.art||cup.art,"Trofeo "+cup.label);
+ set("stage-special-kicker",status.label||"COMPETIZIONE UFFICIALE");
+ set("stage-special-title",status.title||cup.title);
+ set("stage-special-desc",status.description||cup.description);
+ set("stage-match-title",status.headline||cup.label);
+ set("stage-context",status.bottom||"Apri la pagina dedicata");
+ $("stage-cta").href=status.url||cup.url;
+ $("stage-cta").innerHTML="VEDI LA COPPA <span>↗</span>";
+}
+async function loadCupStatuses(){
+ if(!state.team)return;
+ // Rely on the same read-only tables and season ids already used by the
+ // official Home, without altering data, phases or competition settings.
+ const name=state.team.name;
+ const [crash,highState,highElims]=await Promise.allSettled([
+  supabase.from("crashout_rivalry_matches")
+   .select("matchday,match_index,home_team,away_team,home_goals,away_goals,is_played")
+   .eq("season","2026").order("matchday",{ascending:true}).order("match_index",{ascending:true}),
+  supabase.from("highlander_state").select("season,is_active").eq("season","2026").maybeSingle(),
+  supabase.from("highlander_eliminations").select("season,turno,team_name,magic_punti").eq("season","2026").order("turno",{ascending:true})
+ ]);
+ if(crash.status==="fulfilled"&&!crash.value?.error){
+  const rows=crash.value.data||[];
+  const teamRows=rows.filter(r=>norm(r.home_team)===norm(name)||norm(r.away_team)===norm(name));
+  const allFinished=rows.length>0&&rows.every(r=>!!r.is_played);
+  if(allFinished){
+   state.cupStatus.crashout={
+    round:"FASE FINALE",
+    label:"RIVALRY GAMES CONCLUSE",
+    title:"Crash Out Playoff",
+    description:"La prima fase è conclusa. Segui le serie del tabellone ufficiale.",
+    headline:"Crash Out · fase finale",url:"crashoutplayoff.html"
+   };
+  }else if(teamRows.length){
+   const next=teamRows.find(r=>!r.is_played)||teamRows.at(-1);
+   const home=canon(next.home_team),away=canon(next.away_team),gw=Number(next.matchday)||0;
+   state.cupStatus.crashout={
+    round:"GIORNATA "+gw,description:"Crash Out Cup · Rivalry Games",
+    match:{home,away,gw,score:next.is_played?[Number(next.home_goals)||0,Number(next.away_goals)||0]:null},
+    url:"match.html?"+new URLSearchParams({home,away,gw:String(gw),competition:"Crash Out Cup"})
+   };
+  }
+ }
+ if(highState.status==="fulfilled"&&highElims.status==="fulfilled"
+   &&!highState.value?.error&&!highElims.value?.error){
+  const active=!!highState.value.data?.is_active;
+  const eliminated=highElims.value.data||[];
+  if(active){
+   const isOut=eliminated.some(r=>norm(r.team_name)===norm(name));
+   const survivors=Math.max(0,squadreBase.length-eliminated.length);
+   const last=eliminated.length?Math.max(...eliminated.map(x=>Number(x.turno)||0)):0;
+   const title=isOut?"Sei stato eliminato":survivors===1?"Ultimo sopravvissuto":"Ancora in gara";
+   state.cupStatus.highlander={
+    round:"TURNO "+Math.min(15,last+1),
+    label:"LA TUA SITUAZIONE",
+    title,
+    description:survivors+" squadre ancora in corsa · "+eliminated.length+" eliminate",
+    headline:"Highlander · situazione aggiornata",
+    art:isOut?"img/maglie/"+norm(name)+"-higlander.webp":info(name)?.shirt||cups.highlander.art,
+    url:"arena.html"
+   };
+  }else{
+   state.cupStatus.highlander={label:"STATO COMPETIZIONE",title:"Highlander",description:"Competizione non attiva. Consulta la pagina ufficiale per le prossime informazioni."};
+  }
+ }
+ if(String(state.phase||"").toLowerCase()==="playoff"){
+  state.cupStatus.playoff={
+   label:"FASE PLAYOFF",title:"Road to Glory",description:"I playoff del campionato sono attivi: segui il tabellone e le serie ufficiali.",
+   round:"PLAYOFF",headline:"Campionato · Playoff"
+  };
+ }
+ if(state.view!=="league")chooseView(state.view);
 }
 function drawTable(code){
  $("standings-label").innerHTML=esc(confName(code).toUpperCase())+" <span>FORMA · PT</span>";
@@ -273,5 +360,6 @@ async function init(){
  ["Conf A","Conf B","Unificata"].forEach(c=>state.standings[c]=table(c));
  buildSlides();identity();drawTicker();drawWeeklyNews();drawTable("Conf A");chooseView("league");
  if(state.team?.conf==="Conf B")document.querySelector('[data-conf="Conf B"]')?.click();
+ loadCupStatuses().catch(err=>console.warn("Anteprima coppe Arena:",err));
 }
 init();
