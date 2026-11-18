@@ -320,6 +320,7 @@ function renderCompetitionPosters(){
   hero.className="comp-event-hero comp-cinematic comp-cinematic-playoff";
   hero.href="playoff.html";hero.setAttribute("aria-label","Apri Playoff");
   img("comp-hero-art","img/cups/playoff-cup.webp","");
+  img("comp-hero-character","img/home/competizioni/playoff.webp","");
   set("comp-hero-name","PLAYOFF");
   set("comp-hero-status","Tabellone attivo");
   set("comp-hero-kicker","IL MAIN EVENT");
@@ -327,11 +328,13 @@ function renderCompetitionPosters(){
   playoff.href="classifica.html";
   set("comp-mini-name-playoff","CAMPIONATO");
   img("comp-mini-art-playoff","img/cups/campionato-cup.webp","");
+  img("comp-mini-character-playoff","img/home/competizioni/classifiche.webp","");
   set("comp-mini-status-playoff","Classifiche e risultati");
  }else{
   hero.className="comp-event-hero comp-cinematic comp-cinematic-league";
   hero.href="classifica.html";hero.setAttribute("aria-label","Apri Campionato");
   img("comp-hero-art","img/cups/campionato-cup.webp","");
+  img("comp-hero-character","img/home/competizioni/classifiche.webp","");
   set("comp-hero-name","CAMPIONATO");
   set("comp-hero-status",regularLabel);
   set("comp-hero-kicker","IL MAIN EVENT");
@@ -339,6 +342,7 @@ function renderCompetitionPosters(){
   playoff.href="playoff.html";
   set("comp-mini-name-playoff","PLAYOFF");
   img("comp-mini-art-playoff","img/cups/playoff-cup.webp","");
+  img("comp-mini-character-playoff","img/home/competizioni/playoff.webp","");
   set("comp-mini-status-playoff","Road to Glory");
  }
 
