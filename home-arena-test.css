@@ -962,3 +962,25 @@ body{
 @media(max-width:390px){
  .comp-v8 .comp-mini-titano {width:72px;height:105px;left:calc(50% - 55px);top:7px}
 }
+
+/* V9 readability: miniature characters should not be enlarged beyond their
+   deliberately lightweight source texture. Keep the cup as secondary art. */
+.comp-v8 .comp-mini-titano{
+  width:67px !important;
+  height:97px !important;
+  top:9px !important;
+  left:calc(50% - 47px) !important;
+}
+.comp-v8 .comp-event-mini > img.comp-event-cup{
+  opacity:.76 !important;
+  right:9px !important;
+}
+@media(min-width:540px){
+ .comp-v8 .comp-mini-titano{top:12px !important}
+}
+@media(max-width:390px){
+ .comp-v8 .comp-mini-titano{
+   width:62px !important;height:90px !important;
+   top:8px !important;left:calc(50% - 43px) !important;
+ }
+}
