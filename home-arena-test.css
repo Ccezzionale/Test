@@ -984,3 +984,82 @@ body{
    top:8px !important;left:calc(50% - 43px) !important;
  }
 }
+
+
+/* ARENA TEST V10: 4 competitions live all season via Matchday Central.
+   No separate Competi​zioni gallery. The same tabs remain accessible even if
+   the team is eliminated, or Highlander/Playoff has not started yet. */
+.cup-tabs {
+  display:grid !important;
+  grid-template-columns:repeat(4,minmax(0,1fr)) !important;
+  gap:5px !important;
+  overflow:visible !important;
+  scrollbar-width:none;
+}
+.cup-tabs button {
+  width:100% !important;
+  min-width:0 !important;
+  flex:auto !important;
+  white-space:nowrap;
+  text-align:center;
+  padding:9px 3px !important;
+  font-size:clamp(9px,2.65vw,11px) !important;
+}
+.stage-bottom {
+  display:flex !important;
+  flex-direction:column;
+  align-items:stretch !important;
+  justify-content:stretch;
+  gap:7px !important;
+  padding:9px 11px 10px !important;
+}
+.stage-bottom-copy{width:100%;min-width:0;}
+.stage-actions{
+  display:grid;
+  grid-template-columns:1fr;
+  gap:7px;
+  width:100%;
+  min-width:0;
+}
+.stage-actions.has-ranking{grid-template-columns:repeat(2,minmax(0,1fr));}
+.stage-actions .stage-cta,
+.stage-actions .stage-ranking-link{
+  box-sizing:border-box;
+  max-width:none !important;
+  width:100%;
+  min-width:0;
+  min-height:36px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:5px;
+  padding:8px 7px !important;
+  border-radius:8px;
+  text-decoration:none;
+  text-align:center;
+  white-space:normal;
+  font-size:clamp(9px,2.6vw,11px) !important;
+  font-weight:950;
+  line-height:1.12;
+}
+.stage-actions .stage-cta{
+  background:var(--accent);
+  color:#0d1d36;
+}
+.stage-actions .stage-ranking-link{
+  background:#163963;
+  border:1px solid #d7b96099;
+  color:#f8db91;
+}
+.stage-actions .stage-ranking-link span{
+  font-size:13px;
+}
+.stage-actions .stage-ranking-link[hidden]{
+  display:none !important;
+}
+@media(max-width:360px){
+ .cup-tabs{gap:4px !important}
+ .cup-tabs button{font-size:9px !important;padding:8px 2px !important}
+ .stage-actions .stage-cta,
+ .stage-actions .stage-ranking-link{font-size:9px !important;min-height:33px}
+}
