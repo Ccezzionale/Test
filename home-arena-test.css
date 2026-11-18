@@ -9,12 +9,19 @@ body {
  --glow:rgba(19,94,190,.32);
  --wall:url("img/match-bg/campionato-bg.webp");
  margin:0; min-width:320px; color:#f7fbff; font-family:inherit;
- background:#030d1d;
+ background-color:#030d1d;
+ background-image:linear-gradient(180deg,rgba(3,12,27,.38),rgba(3,13,29,.82) 42%,#030c1c 95%),
+ radial-gradient(ellipse at 50% 4%,var(--glow),transparent 70%),var(--wall);
+ background-position:center,center,center 35%;
+ background-size:cover,cover,cover;
+ background-repeat:no-repeat;
+ background-attachment:fixed;
 }
 body[data-view="playoff"] {--accent:#f7c85d;--glow:rgba(213,146,21,.28);--wall:url("img/match-bg/playoff-bg.webp")}
 body[data-view="crashout"] {--accent:#e78dff;--glow:rgba(157,31,217,.29);--wall:url("img/match-bg/crashout-bg.webp")}
 body[data-view="highlander"] {--accent:#eac18b;--glow:rgba(17,174,204,.28);--wall:url("img/match-bg/highlander-bg.webp")}
 body::before {
+ display:none;
  content:"";position:fixed;z-index:-1;inset:0;pointer-events:none;
  background:
  linear-gradient(180deg,rgba(3,12,27,.38),rgba(3,13,29,.82) 42%,#030c1c 95%),
