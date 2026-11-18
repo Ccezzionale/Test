@@ -640,3 +640,126 @@ body{
   .comp-mini-footer strong{font-size:11px}
   .comp-mini-footer small{font-size:8px}
 }
+
+
+/* ============================================================
+   HOME ARENA · IL MINI TITANO TORNA PROTAGONISTA
+   Trofeo = obiettivo, mascotte = volto della competizione.
+   Riusiamo gli artwork presenti in img/home/competizioni.
+   ============================================================ */
+.comp-event-layout .comp-event-hero{
+ background:
+  linear-gradient(180deg,rgba(1,9,23,.04),rgba(1,9,23,.09) 46%,rgba(1,9,23,.92) 100%),
+  var(--event-bg) center/cover no-repeat,
+  #061c3a;
+}
+.comp-event-layout .comp-event-hero::before{
+ background:
+  radial-gradient(ellipse 62% 67% at 33% 29%,rgba(27,120,251,.21),transparent 85%),
+  radial-gradient(ellipse 60% 70% at 79% 37%,var(--event-glow),transparent 85%);
+}
+.comp-event-layout .comp-event-hero-trophy{
+ left:auto !important;
+ right:3% !important;
+ top:23px !important;
+ transform:none !important;
+ height:138px !important;
+ width:42% !important;
+ max-width:165px !important;
+ opacity:.76;
+ z-index:1;
+ filter:drop-shadow(0 9px 15px #000c) drop-shadow(0 0 16px var(--event-glow));
+}
+.comp-event-layout .comp-event-character{
+ position:absolute;
+ z-index:2;
+ object-fit:contain;
+ object-position:center bottom;
+ pointer-events:none;
+ filter:drop-shadow(0 7px 13px rgba(0,0,0,.83));
+ -webkit-mask-image:radial-gradient(ellipse 79% 79% at 50% 49%,#000 66%,transparent 100%);
+ mask-image:radial-gradient(ellipse 79% 79% at 50% 49%,#000 66%,transparent 100%);
+}
+.comp-event-layout .comp-event-hero > .comp-event-character{
+ left:1%;
+ top:9px;
+ height:159px;
+ width:64%;
+ max-width:275px;
+ object-position:center bottom;
+ filter:drop-shadow(0 6px 12px #000e) drop-shadow(0 0 12px rgba(12,107,255,.30));
+}
+.comp-event-layout .comp-event-hero-footer{
+ bottom:9px;
+ gap:4px;
+ z-index:3;
+ padding:4px 0 0;
+ text-shadow:0 3px 8px #000f;
+}
+.comp-event-layout .comp-event-hero-footer strong{
+ font-style:normal;
+ font-size:clamp(20px,6vw,27px);
+ letter-spacing:.035em;
+}
+.comp-event-layout .comp-event-mini{
+ background:
+  linear-gradient(180deg,rgba(0,10,29,.03),rgba(0,10,29,.07) 40%,rgba(0,9,25,.90) 100%),
+  var(--event-bg) center/cover no-repeat,
+  #081e3d;
+}
+.comp-event-layout .comp-event-mini > img.comp-event-cup{
+ position:absolute;
+ top:21px;
+ left:auto;
+ right:2px;
+ transform:none;
+ width:48%;
+ max-width:64px;
+ height:80px;
+ object-fit:contain;
+ z-index:1;
+ opacity:.66;
+ filter:drop-shadow(0 3px 7px #000d) drop-shadow(0 0 13px var(--event-glow));
+}
+.comp-event-layout .comp-event-mini > .comp-event-character{
+ left:-5%;
+ top:3px;
+ width:84%;
+ max-width:130px;
+ height:98px;
+ z-index:2;
+ object-position:center bottom;
+ filter:drop-shadow(0 4px 7px #000e);
+}
+.comp-event-layout .comp-mini-footer{
+ z-index:3;
+ background:linear-gradient(180deg,transparent,rgba(1,9,23,.95) 34%,rgba(1,9,23,.97));
+ padding:18px 4px 8px;
+ gap:4px;
+}
+.comp-event-layout .comp-mini-footer strong{
+ letter-spacing:.02em;
+ font-size:12px;
+}
+.comp-event-layout .comp-mini-footer small{
+ display:block;
+ color:var(--event-label);
+ font-size:9px;
+ min-height:13px;
+}
+@media(min-width:540px){
+ .comp-event-layout .comp-event-hero-trophy{
+  top:51px !important;
+  width:42% !important;
+  height:190px !important;
+ }
+ .comp-event-layout .comp-event-hero > .comp-event-character{
+  top:20px;height:236px;max-width:none;width:66%;
+ }
+}
+@media(max-width:390px){
+ .comp-event-layout .comp-event-hero > .comp-event-character{height:146px}
+ .comp-event-layout .comp-event-hero-trophy{height:132px !important;top:19px !important}
+ .comp-event-layout .comp-event-mini > .comp-event-character{height:89px}
+ .comp-event-layout .comp-event-mini > img.comp-event-cup{height:71px;top:17px}
+}
