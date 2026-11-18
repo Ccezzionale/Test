@@ -1281,3 +1281,78 @@ body[data-view="crashout"] .stage-visual{
 body[data-view="crashout"] .stage-visual::before{display:none}
 
 /* Highlander remains exactly as approved in previous versions. */
+
+
+/* =============================================================
+   HOME ARENA TEST V13 · STADIUM ART ONLY INSIDE THE MATCH CARD
+   Mobile-first, light WebPs. Keep Crash Out / Highlander card
+   artwork, all four permanent tabs and existing JS untouched.
+   ============================================================= */
+/* Outside the card: only a soft hint of the active competition's
+   palette; no giant photographic wallpaper across the entire Home. */
+body[data-view="league"] {
+  background-color:#f6f7f8;
+  background-image:
+    radial-gradient(ellipse 110% 34% at 50% 0%,rgba(231,194,119,.19),transparent 82%),
+    radial-gradient(ellipse 76% 44% at 91% 44%,rgba(162,185,206,.09),transparent 76%),
+    linear-gradient(180deg,#fffdf8 0%,#f6f7f9 52%,#edf2f7 100%);
+  background-position:center;
+  background-size:cover;
+  background-repeat:no-repeat;
+  background-attachment:scroll;
+}
+body[data-view="playoff"] {
+  background-color:#07172e;
+  background-image:
+    radial-gradient(ellipse 108% 37% at 50% 7%,rgba(56,122,198,.23),transparent 78%),
+    linear-gradient(180deg,#0a2446 0%,#07172f 56%,#061124 100%);
+  background-position:center;
+  background-size:cover;
+  background-repeat:no-repeat;
+  background-attachment:scroll;
+}
+body[data-view="crashout"] {
+  background-color:#120d2a;
+  background-image:
+    radial-gradient(ellipse 110% 36% at 52% 9%,rgba(151,51,192,.23),transparent 78%),
+    linear-gradient(180deg,#26133e 0%,#150e2d 55%,#0d1028 100%);
+  background-position:center;
+  background-size:cover;
+  background-repeat:no-repeat;
+  background-attachment:scroll;
+}
+body[data-view="highlander"] {
+  background-color:#0c1626;
+  background-image:
+    radial-gradient(ellipse 108% 34% at 50% 7%,rgba(92,103,123,.17),transparent 82%),
+    linear-gradient(180deg,#162235 0%,#0d182a 55%,#080e1d 100%);
+  background-position:center;
+  background-size:cover;
+  background-repeat:no-repeat;
+  background-attachment:scroll;
+}
+/* No extra hidden large wallpaper under the first three visuals. */
+body[data-view="league"] .match-stage::before,
+body[data-view="playoff"] .match-stage::before,
+body[data-view="crashout"] .match-stage::before {
+  background:none;
+}
+/* Campionato: sporting champagne arena, no clouds or fantasy trophies. */
+body[data-view="league"] .stage-visual {
+  background:
+    linear-gradient(180deg,rgba(255,255,255,.07),rgba(246,242,232,.10)),
+    url("img/match-bg/arena-league-v13.webp") center 53%/cover no-repeat,
+    #f5f1e9;
+}
+body[data-view="league"] .stage-visual::before {display:none}
+/* Playoff: nocturnal, steel-blue arena with soft floodlights. */
+body[data-view="playoff"] .stage-visual {
+  background:
+    linear-gradient(90deg,rgba(4,13,31,.19),rgba(2,11,26,.07) 50%,rgba(4,13,31,.19)),
+    url("img/match-bg/arena-playoff-v13.webp") center 49%/cover no-repeat,
+    #0d294b;
+}
+body[data-view="playoff"] .stage-visual::before {display:none}
+/* Crash Out keeps its approved Miami Vice V12 match-card art.
+   Highlander keeps its approved dark-fantasy match-card art.
+   No overrides to either stage-visual. */
