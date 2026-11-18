@@ -376,3 +376,25 @@ body{
  .standing-row{grid-template-columns:15px 23px minmax(0,1fr) 51px 20px;gap:3px}
  .form-chip{height:15px;width:15px;font-size:7px}
 }
+
+/* Matchday states aligned with the official Home:
+   past = winning/draw/losing characters; future = standard characters. */
+.stage-team img.is-mascot {
+ width:88px;
+ height:90px;
+ max-width:100%;
+ object-fit:contain;
+ object-position:center bottom;
+ filter:drop-shadow(0 7px 10px rgba(0,0,0,.65));
+}
+.stage-personal:has(img.is-mascot) {
+ min-height:142px;
+ padding-top:2px;
+ padding-bottom:9px;
+}
+.stage-team img.is-logo {width:65px;height:65px}
+@media (max-width:380px){
+ .stage-team img.is-mascot {width:72px;height:81px}
+ .stage-personal:has(img.is-mascot){min-height:133px}
+ .stage-team img.is-logo {width:57px;height:57px}
+}
