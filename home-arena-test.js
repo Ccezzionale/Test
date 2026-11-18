@@ -251,7 +251,7 @@ async function loadCupStatuses(){
     title,
     description:survivors+" squadre ancora in corsa · "+eliminated.length+" eliminate",
     headline:"Highlander · situazione aggiornata",
-    art:isOut?"img/maglie/"+norm(name)+"-higlander.webp":info(name)?.shirt||cups.highlander.art,
+    art:info(name)?.shirt||cups.highlander.art,
     url:"arena.html"
    };
   }else{
