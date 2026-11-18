@@ -1396,3 +1396,83 @@ body[data-view="playoff"] .stage-visual::before {display:none}
 body[data-view="playoff"] .stage-special > img {
   visibility:hidden;
 }
+
+
+/* ==========================================================
+   ARENA TEST V16 · ALL FOUR ACTIVE (VISUAL DEMO ONLY)
+   Controls live exclusively on the standalone test page.
+   No heavy new assets or filtering of the real competition tabs.
+   ========================================================== */
+.arena-demo-controls {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:9px;
+  min-height:43px;
+  margin:0 0 10px;
+  padding:6px 8px 6px 11px;
+  border-radius:11px;
+  background:rgba(7,25,48,.95);
+  border:1px solid rgba(196,218,246,.25);
+  color:#deeaf8;
+  font-size:10px;
+  font-weight:780;
+  box-shadow:0 4px 12px rgba(1,9,22,.12);
+}
+.arena-demo-controls span {line-height:1.35}
+.arena-demo-controls span b {
+  color:#ffcf72;
+  font-size:9px;
+  letter-spacing:.08em;
+  margin-right:5px;
+}
+.arena-demo-controls button {
+  flex-shrink:0;
+  min-height:31px;
+  max-width:52%;
+  padding:6px 10px;
+  border-radius:8px;
+  border:1px solid rgba(246,199,100,.7);
+  background:#21446c;
+  color:#f7e4bc;
+  font-size:10px;
+  font-weight:900;
+  line-height:1.17;
+}
+.arena-demo-controls button[aria-pressed="true"] {
+  background:#f7c864;
+  color:#102443;
+  border-color:#ffe2a1;
+}
+.arena-demo-disclaimer {
+  margin:0 0 10px;
+  padding:9px 11px;
+  border:1px solid rgba(250,198,85,.55);
+  border-left:3px solid #f7c864;
+  border-radius:9px;
+  background:rgba(7,22,42,.96);
+  color:#e0eaf8;
+  font-size:10px;
+  line-height:1.45;
+}
+.arena-demo-disclaimer b {color:#ffcd6c}
+body.demo-all-active .cup-tabs button {
+  position:relative;
+  padding-right:10px !important;
+}
+body.demo-all-active .cup-tabs button::after {
+  content:"";
+  position:absolute;
+  top:4px;
+  right:5px;
+  width:5px;
+  height:5px;
+  border-radius:50%;
+  background:#65e7a5;
+  box-shadow:0 0 4px rgba(42,232,137,.7);
+}
+@media(max-width:390px) {
+  .arena-demo-controls{gap:5px;padding:6px 7px}
+  .arena-demo-controls span{font-size:9px}
+  .arena-demo-controls button{font-size:9px;padding:6px 7px}
+}
