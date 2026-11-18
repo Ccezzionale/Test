@@ -230,12 +230,41 @@ function getDuelArt(view,name){
   ? "img/"+(view==="playoff"?"playoff-real-legends/":"crashout-miami/")+file+".webp"
   : info(name)?.shirt||logo(name);
 }
+/* Direction metadata for original Real Legends portraits.
+   An image looking right belongs on the LEFT, and vice versa.
+   Frontal portraits remain untouched to avoid needless mirrored badges.
+   These are the orientations of the existing source images, not team assignments. */
+const PLAYOFF_ART_DIRECTION = {
+ "atleticoleon":"right",
+ "fantaugusta":"right",
+ "riverfilo":"right",
+ "eintrachtfranco126":"right",
+ "ibla":"right",
+ "goldenknights":"left",
+ "bayernchristiansen":"left",
+ "athleticpongao":"left",
+ "desperados":"left"
+};
+function orientDuelArt(el,view,name){
+ const natural=PLAYOFF_ART_DIRECTION[norm(name)]||"front";
+ const onLeft=el.id==="stage-duel-left-art";
+ const wanted=onLeft?"right":"left";
+ // Keep Miami Vice portraits unchanged: their card is already approved.
+ const flip=view==="playoff" && natural!=="front" && natural!==wanted;
+ el.classList.toggle("faces-inward-flipped",flip);
+ el.dataset.originalFacing=natural;
+}
+
 function showDuelArt(id,view,name){
  const el=$(id);
  if(!el)return;
  const fallback=info(name)?.shirt||logo(name);
+ orientDuelArt(el,view,name);
  el.onerror=()=>{
   el.onerror=null;
+  // If the art is unavailable, fall back to the standard mascot,
+  // whose native viewing direction may differ from the Real Legends art.
+  el.classList.remove("faces-inward-flipped");
   if(el.getAttribute("src")!==fallback)el.src=fallback;
  };
  el.alt="Personaggio "+name;
