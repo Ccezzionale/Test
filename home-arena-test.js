@@ -202,6 +202,58 @@ const cups={
  * Never writes to Supabase. All hypothetical results are explicitly labelled.
  * Campionato remains linked to the real match carousel.
  */
+
+/* ARENA TEST V17: graphics from the existing Playoff Real Legends
+   and Crash Out Miami Vice asset registries. No Supabase writes. */
+const ARENA_DUEL_ART = {
+ "team bartowski":["team-bartowski","team-bartowski"],
+ "golden knights":["golden-knights","golden-knights"],
+ "atletico leon":["atletico-leon","atletico-leon"],
+ "bayern christiansen":["bayern-christiansen","bayern-christiansen"],
+ "ibla":["ibla-fc","ibla"],
+ "fantaugusta":["fantaugusta","fantaugusta"],
+ "riverfilo":["riverfilo","riverfilo"],
+ "desperados":["desperados","desperados"],
+ "wildboys 78":["wild-boys","wildboys"],
+ "pandinicoccolosini":["pandini","pandini"],
+ "pokermantra":["pokermantra","pokermantra"],
+ "minnesode timberland":["minnesode-timberland","minnesode"],
+ "minnesota snakes":["minnesota-snakes","minnesota-snakes"],
+ "eintracht franco 126":["eintracht-franco-126","eintracht-franco"],
+ "fc disoneste":["fc-disoneste","fc-disoneste"],
+ "athletic pongao":["athletic-pongao","athletic-pongao"]
+};
+function getDuelArt(view,name){
+ const item=Object.entries(ARENA_DUEL_ART).find(([key])=>norm(key)===norm(name))?.[1];
+ const file=item?.[view==="playoff"?0:1];
+ return file
+  ? "img/"+(view==="playoff"?"playoff-real-legends/":"crashout-miami/")+file+".webp"
+  : info(name)?.shirt||logo(name);
+}
+function showDuelArt(id,view,name){
+ const el=$(id);
+ if(!el)return;
+ const fallback=info(name)?.shirt||logo(name);
+ el.onerror=()=>{
+  el.onerror=null;
+  if(el.getAttribute("src")!==fallback)el.src=fallback;
+ };
+ el.alt="Personaggio "+name;
+ el.src=getDuelArt(view,name);
+}
+function renderArenaDuel(view,home,away,{round="",note=""}={}){
+ $("stage-personal").hidden=true;
+ $("stage-special").hidden=true;
+ $("stage-duel").hidden=false;
+ document.body.classList.add("has-active-duel");
+ showDuelArt("stage-duel-left-art",view,home);
+ showDuelArt("stage-duel-right-art",view,away);
+ set("stage-duel-home",home.toUpperCase());
+ set("stage-duel-away",away.toUpperCase());
+ set("stage-duel-round",round||(view==="playoff"?"PLAYOFF":"CRASH OUT"));
+ set("stage-duel-note",note||(view==="playoff"?"APRI L'ARENA DELL'INCONTRO":"BEST OF 5 · ROAD TO THE CRASH"));
+}
+
 function renderDemoCup(view){
  if(view==="league"){
   set("matchday-mark","CAMPIONATO · ATTIVO");
@@ -212,24 +264,20 @@ function renderDemoCup(view){
  const isPlayoff=view==="playoff",isCrashout=view==="crashout";
  $("fixture-control").hidden=true;
  if(isPlayoff||isCrashout){
-  const opponent=isPlayoff?"Golden Knights":"FC Disoneste";
+  const opponent=isPlayoff?"Atlético Leon":"FC Disoneste";
   const label=isPlayoff?"PLAYOFF":"CRASH OUT CUP";
-  const roundLabel=isPlayoff?"QUARTI · G2":"OTTAVI · G3";
+  const roundLabel=isPlayoff?"WILD CARD · 3":"OTTAVI · G3";
   const context=isPlayoff
-    ?"Serie Bo5 · "+me+" avanti 1–0 (esempio)"
+    ?"Sfida Wild Card · anteprima grafica (esempio)"
     :"Crash Out Fase Finale · serie sull'1–1 (esempio)";
   const target=isPlayoff?"playoff.html":"crashoutplayoff.html";
   set("matchday-mark",label+" · IN CORSA");
   set("stage-competition",label);
   set("stage-round",roundLabel);
-  $("stage-personal").hidden=false;
-  $("stage-special").hidden=true;
-  showMatchdayImage("stage-left-logo",{src:logo(me),fallback:"icon-192.png",className:"is-logo",alt:"Logo "+me});
-  showMatchdayImage("stage-right-logo",{src:logo(opponent),fallback:"icon-192.png",className:"is-logo",alt:"Logo "+opponent});
-  set("stage-left-name",me);
-  set("stage-right-name",opponent);
-  set("stage-score-label","PROSSIMA GARA · DEMO");
-  set("stage-score-value","VS");
+  renderArenaDuel(view,me,opponent,{
+   round:roundLabel,
+   note:isPlayoff?"APRI L'ARENA DELL'INCONTRO":"BEST OF 5 · ROAD TO THE CRASH"
+  });
   set("stage-match-title",me+" vs "+opponent);
   set("stage-context",context);
   $("stage-cta").href=target;
@@ -272,6 +320,8 @@ function setDemoMode(active,updateUrl=false){
 
 function chooseView(view){
  state.view=view;document.body.dataset.view=view;
+ document.body.classList.remove("has-active-duel");
+ $("stage-duel").hidden=true;
  // Four permanent navigation tabs: never hide on elimination or inactive phases.
  const hasRanking=view==="league";
  $("stage-ranking-link").hidden=!hasRanking;
@@ -288,12 +338,19 @@ function chooseView(view){
  $("fixture-control").hidden=true;
  if(status.match){
   const f=status.match;
-  $("stage-personal").hidden=false;$("stage-special").hidden=true;
-  showMatchdayImage("stage-left-logo",{src:logo(f.home),fallback:"icon-192.png",className:"is-logo",alt:"Logo "+f.home});
-  showMatchdayImage("stage-right-logo",{src:logo(f.away),fallback:"icon-192.png",className:"is-logo",alt:"Logo "+f.away});
-  set("stage-left-name",f.home);set("stage-right-name",f.away);
-  set("stage-score-value",f.score?f.score.join(" : "):"VS");
-  set("stage-score-label",f.score?"RISULTATO UFFICIALE":"RIVALRY GAME");
+  if(view==="crashout"||view==="playoff"){
+   renderArenaDuel(view,f.home,f.away,{
+    round:status.round||cup.label,
+    note:f.score?"RISULTATO · "+f.score.join(" - "):"APRI L'ARENA DELL'INCONTRO"
+   });
+  }else{
+   $("stage-personal").hidden=false;$("stage-special").hidden=true;
+   showMatchdayImage("stage-left-logo",{src:logo(f.home),fallback:"icon-192.png",className:"is-logo",alt:"Logo "+f.home});
+   showMatchdayImage("stage-right-logo",{src:logo(f.away),fallback:"icon-192.png",className:"is-logo",alt:"Logo "+f.away});
+   set("stage-left-name",f.home);set("stage-right-name",f.away);
+   set("stage-score-value",f.score?f.score.join(" : "):"VS");
+   set("stage-score-label",f.score?"RISULTATO UFFICIALE":"RIVALRY GAME");
+  }
   set("stage-match-title",f.home+" vs "+f.away);
   set("stage-context",status.description||"Crash Out Cup · Rivalry Games");
   $("stage-cta").href=status.url||cup.url;
