@@ -421,8 +421,11 @@ const HIGHLANDER_ELIMINATED_ART={
  "eintrachtfranco126":"franco","fcdisoneste":"disoneste","athleticpongao":"pongao"
 };
 function highlanderArt(name,eliminated=false){
+ // Same source as the mobile Highlander survivors and eliminated lists
+ // in arena.js: the dedicated Highlander portrait is ALWAYS used.
+ // Elimination affects its CSS state (grayscale), not the asset path.
  const key=HIGHLANDER_ELIMINATED_ART[norm(name)];
- return eliminated&&key
+ return key
   ?"img/maglie/"+key+"-higlander.webp"
   :info(name)?.shirt||cups.highlander.art;
 }
