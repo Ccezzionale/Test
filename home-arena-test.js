@@ -74,7 +74,7 @@ const confName = code => code==="Conf B"?"Conference Championship":code==="Unifi
 const set = (id,v) => { if($(id)) $(id).textContent=v; };
 const img = (id,src,alt="") => {if($(id)){$(id).src=src;$(id).alt=alt;}};
 const href = (f,code) => "match.html?"+new URLSearchParams({home:f.home,away:f.away,gw:String(f.gw),competition:code});
-const state = {team:null,rows:[],phase:"",standings:{},slides:[],index:0,view:"league",cupStatus:{}};
+const state = {team:null,rows:[],phase:"",standings:{},slides:[],index:0,view:"league",cupStatus:{},demoAllActive:false};
 function completed(code){
  const used=new Set();
  return state.rows.filter(r=>r.Conference===code&&done(r)).filter(r=>{
@@ -197,6 +197,79 @@ const cups={
  crashout:{label:"CRASH OUT CUP",title:"Rivalry & fase finale",description:"Risultati, rivalità e fase finale della Crash Out Cup.",url:"crashoutcup.html",art:"img/cups/crashout-cup.webp"},
  highlander:{label:"HIGHLANDER",title:"The Last Survivor",description:"Sopravvissute ed eliminazioni della Highlander.",url:"arena.html",art:"img/cups/highlander-cup.webp"}
 };
+/**
+ * TEST-ONLY all-four-active visual preview.
+ * Never writes to Supabase. All hypothetical results are explicitly labelled.
+ * Campionato remains linked to the real match carousel.
+ */
+function renderDemoCup(view){
+ if(view==="league"){
+  set("matchday-mark","CAMPIONATO · ATTIVO");
+  drawMatch();
+  return;
+ }
+ const me=state.team?.name||"Team Bartowski";
+ const isPlayoff=view==="playoff",isCrashout=view==="crashout";
+ $("fixture-control").hidden=true;
+ if(isPlayoff||isCrashout){
+  const opponent=isPlayoff?"Golden Knights":"FC Disoneste";
+  const label=isPlayoff?"PLAYOFF":"CRASH OUT CUP";
+  const roundLabel=isPlayoff?"QUARTI · G2":"OTTAVI · G3";
+  const context=isPlayoff
+    ?"Serie Bo5 · "+me+" avanti 1–0 (esempio)"
+    :"Crash Out Fase Finale · serie sull'1–1 (esempio)";
+  const target=isPlayoff?"playoff.html":"crashoutplayoff.html";
+  set("matchday-mark",label+" · IN CORSA");
+  set("stage-competition",label);
+  set("stage-round",roundLabel);
+  $("stage-personal").hidden=false;
+  $("stage-special").hidden=true;
+  showMatchdayImage("stage-left-logo",{src:logo(me),fallback:"icon-192.png",className:"is-logo",alt:"Logo "+me});
+  showMatchdayImage("stage-right-logo",{src:logo(opponent),fallback:"icon-192.png",className:"is-logo",alt:"Logo "+opponent});
+  set("stage-left-name",me);
+  set("stage-right-name",opponent);
+  set("stage-score-label","PROSSIMA GARA · DEMO");
+  set("stage-score-value","VS");
+  set("stage-match-title",me+" vs "+opponent);
+  set("stage-context",context);
+  $("stage-cta").href=target;
+  $("stage-cta").innerHTML=(isPlayoff?"VEDI PLAYOFF REALI":"VEDI FASE FINALE REALE")+" <span>↗</span>";
+  return;
+ }
+ if(view==="highlander"){
+  set("matchday-mark","HIGHLANDER · IN CORSA");
+  set("stage-competition","HIGHLANDER");
+  set("stage-round","TURNO 10");
+  $("stage-personal").hidden=true;
+  $("stage-special").hidden=false;
+  img("stage-cup-art",info(me)?.shirt||cups.highlander.art,"Mascotte "+me);
+  set("stage-special-kicker","ANCORA IN GARA · DEMO");
+  set("stage-special-title","Tra i superstiti");
+  set("stage-special-desc",me+" è ancora in corsa · 6 franchigie rimaste (esempio)");
+  set("stage-match-title","Highlander · sei ancora in gara");
+  set("stage-context","Turno 10 · nessuna eliminazione (esempio)");
+  $("stage-cta").href="arena.html";
+  $("stage-cta").innerHTML="VEDI HIGHLANDER REALE <span>↗</span>";
+ }
+}
+function setDemoMode(active,updateUrl=false){
+ state.demoAllActive=!!active;
+ document.body.classList.toggle("demo-all-active",state.demoAllActive);
+ const button=$("arena-demo-toggle");
+ if(button){
+  button.setAttribute("aria-pressed",String(state.demoAllActive));
+  button.textContent=state.demoAllActive?"Torna ai dati reali":"Simula 4 coppe";
+ }
+ $("arena-demo-disclaimer").hidden=!state.demoAllActive;
+ if(updateUrl){
+  const url=new URL(window.location.href);
+  if(state.demoAllActive)url.searchParams.set("demo","all");
+  else url.searchParams.delete("demo");
+  window.history.replaceState(null,"",url.toString());
+ }
+ chooseView(state.view);
+}
+
 function chooseView(view){
  state.view=view;document.body.dataset.view=view;
  // Four permanent navigation tabs: never hide on elimination or inactive phases.
@@ -206,6 +279,7 @@ function chooseView(view){
  document.querySelectorAll("[data-cup]").forEach(b=>{
   const on=b.dataset.cup===view;b.classList.toggle("on",on);b.setAttribute("aria-pressed",String(on));
  });
+ if(state.demoAllActive){renderDemoCup(view);return;}
  if(view==="league"){set("matchday-mark","PARTITA ATTUALE");drawMatch();return;}
  const cup=cups[view], status=state.cupStatus[view]||{};
  set("matchday-mark",cup.label);
@@ -380,6 +454,7 @@ async function team(){
  }catch(e){console.warn("Profilo Arena:",e);}
 }
 function bind(){
+ $("arena-demo-toggle").addEventListener("click",()=>setDemoMode(!state.demoAllActive,true));
  document.querySelectorAll("[data-cup]").forEach(b=>b.addEventListener("click",()=>chooseView(b.dataset.cup)));
  document.querySelectorAll("[data-conf]").forEach(b=>b.addEventListener("click",()=>{
   document.querySelectorAll("[data-conf]").forEach(el=>{const yes=b===el;el.classList.toggle("on",yes);el.setAttribute("aria-pressed",String(yes));});
@@ -395,6 +470,7 @@ async function init(){
  else console.warn("Risultati Arena non disponibili",r.reason);
  ["Conf A","Conf B","Unificata"].forEach(c=>state.standings[c]=table(c));
  buildSlides();identity();drawTicker();drawWeeklyNews();drawTable("Conf A");chooseView("league");
+ setDemoMode(new URLSearchParams(window.location.search).get("demo")==="all");
  if(state.team?.conf==="Conf B")document.querySelector('[data-conf="Conf B"]')?.click();
  loadCupStatuses().catch(err=>console.warn("Anteprima coppe Arena:",err));
 }
