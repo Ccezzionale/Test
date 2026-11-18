@@ -1212,3 +1212,10 @@ body[data-view="crashout"] .stage-visual::before {
 }
 /* Intentionally NO override for Highlander. Its current illustrated
    background and readability were explicitly approved. */
+
+/* Elements on dark surfaces retain their intended contrast in league mode. */
+body[data-view="league"] .topbar,
+body[data-view="league"] .league-ticker,
+body[data-view="league"] .media-tile {
+  color:#f7fbff;
+}
