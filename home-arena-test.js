@@ -295,7 +295,82 @@ async function loadCupStatuses(){
   };
  }
  if(state.view!=="league")chooseView(state.view);
+ renderCompetitionPosters();
 }
+
+/**
+ * Exhibition-only competition posters. Uses the same waiver phase, calendar,
+ * personal Crash Out / Highlander state already retrieved by this test page.
+ * No backend writes and no imagined rounds or live statuses.
+ */
+function renderCompetitionPosters(){
+ const hero=$("comp-hero");
+ const playoff=$("comp-mini-playoff");
+ if(!hero||!playoff)return;
+ const phase=String(state.phase||"").trim().toLowerCase();
+ const inPlayoff=phase==="playoff";
+ const isRoundRobin=["round_robin","round robin"].includes(phase)
+   ||state.rows.some(x=>x.Conference==="Unificata"&&done(x));
+ const leagueRound=round(isRoundRobin?"Unificata":codeNow());
+ const regularLabel=isRoundRobin
+   ? (leagueRound?"Round Robin · Turno "+leagueRound:"Round Robin")
+   : (leagueRound?"Regular Season · G"+leagueRound:"Le due Conference");
+
+ if(inPlayoff){
+  hero.className="comp-event-hero comp-cinematic comp-cinematic-playoff";
+  hero.href="playoff.html";hero.setAttribute("aria-label","Apri Playoff");
+  img("comp-hero-art","img/cups/playoff-cup.webp","");
+  set("comp-hero-name","PLAYOFF");
+  set("comp-hero-status","Tabellone attivo");
+  set("comp-hero-kicker","IL MAIN EVENT");
+  playoff.className="comp-event-mini comp-cinematic comp-cinematic-league";
+  playoff.href="classifica.html";
+  set("comp-mini-name-playoff","CAMPIONATO");
+  img("comp-mini-art-playoff","img/cups/campionato-cup.webp","");
+  set("comp-mini-status-playoff","Classifiche e risultati");
+ }else{
+  hero.className="comp-event-hero comp-cinematic comp-cinematic-league";
+  hero.href="classifica.html";hero.setAttribute("aria-label","Apri Campionato");
+  img("comp-hero-art","img/cups/campionato-cup.webp","");
+  set("comp-hero-name","CAMPIONATO");
+  set("comp-hero-status",regularLabel);
+  set("comp-hero-kicker","IL MAIN EVENT");
+  playoff.className="comp-event-mini comp-cinematic comp-cinematic-playoff";
+  playoff.href="playoff.html";
+  set("comp-mini-name-playoff","PLAYOFF");
+  img("comp-mini-art-playoff","img/cups/playoff-cup.webp","");
+  set("comp-mini-status-playoff","Road to Glory");
+ }
+
+ const crash=state.cupStatus.crashout;
+ const crashLink=$("comp-mini-crashout");
+ if(crashLink){
+  crashLink.href=crash?.url && /^(?:crashoutcup|crashoutplayoff)\.html$/.test(crash.url)
+    ? crash.url
+    : "crashoutcup.html";
+ }
+ if(crash?.round==="FASE FINALE"){
+  set("comp-mini-status-crashout","Fase finale");
+ }else if(crash?.match){
+  const gw=Number(crash.match.gw);
+  set("comp-mini-status-crashout",gw?("Rivalry Games · G"+gw):"Rivalry Games");
+ }else{
+  set("comp-mini-status-crashout","Rivalry Games");
+ }
+
+ const high=state.cupStatus.highlander;
+ if(high?.label==="STATO COMPETIZIONE"){
+  set("comp-mini-status-highlander","Non attiva");
+ }else if(high){
+  const survivors=String(high.description||"").match(/^(\d+)\s+squadre\s+ancora/i);
+  const eliminated=String(high.title||"").toLowerCase().includes("eliminato");
+  set("comp-mini-status-highlander",eliminated?"Eliminato":
+    survivors?(survivors[1]+" superstiti"):(high.round||"Ultimo in piedi"));
+ }else{
+  set("comp-mini-status-highlander","Ultimo in piedi");
+ }
+}
+
 function drawTable(code){
  $("standings-label").innerHTML=esc(confName(code).toUpperCase())+" <span>FORMA · PT</span>";
  const rows=state.standings[code]||[];
@@ -388,7 +463,7 @@ async function init(){
  if(r.status==="fulfilled"&&Array.isArray(r.value))state.rows=r.value;
  else console.warn("Risultati Arena non disponibili",r.reason);
  ["Conf A","Conf B","Unificata"].forEach(c=>state.standings[c]=table(c));
- buildSlides();identity();drawTicker();drawWeeklyNews();drawTable("Conf A");chooseView("league");
+ buildSlides();identity();drawTicker();drawWeeklyNews();drawTable("Conf A");chooseView("league");renderCompetitionPosters();
  if(state.team?.conf==="Conf B")document.querySelector('[data-conf="Conf B"]')?.click();
  loadCupStatuses().catch(err=>console.warn("Anteprima coppe Arena:",err));
 }
