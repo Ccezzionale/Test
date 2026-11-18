@@ -1356,3 +1356,43 @@ body[data-view="playoff"] .stage-visual::before {display:none}
 /* Crash Out keeps its approved Miami Vice V12 match-card art.
    Highlander keeps its approved dark-fantasy match-card art.
    No overrides to either stage-visual. */
+
+
+/* =============================================================
+   HOME ARENA TEST V14 · EPIC PLAYOFF / CLASSIC HIGHLANDER
+   Restore approved fullscreen Highlander fantasy art.
+   Playoff: stadium epic with the trophy to the left, only in
+   Matchday visual; no second trophy on static summary cards.
+   League and Crash Out remain untouched.
+   ============================================================= */
+
+/* The fullscreen Highlander artwork was replaced by the V13 soft
+   background. Restore the original background layers and placement. */
+body[data-view="highlander"] {
+  background-color:#030d1d;
+  background-image:
+    linear-gradient(180deg,rgba(3,12,27,.38),rgba(3,13,29,.82) 42%,#030c1c 95%),
+    radial-gradient(ellipse at 50% 4%,var(--glow),transparent 70%),
+    url("img/match-bg/highlander-bg.webp");
+  background-position:center,center,center 35%;
+  background-size:cover,cover,cover;
+  background-repeat:no-repeat;
+  background-attachment:fixed;
+}
+
+/* Newly approved playoff artwork: spotlight stadium, trophy at left.
+   Image stays inside the visual card (page exterior stays calm blue). */
+body[data-view="playoff"] .stage-visual {
+  background:
+    linear-gradient(90deg,rgba(3,14,35,.20),rgba(3,14,35,.33)),
+    url("img/match-bg/arena-playoff-v14.webp") center 50%/cover no-repeat,
+    #092650;
+}
+body[data-view="playoff"] .stage-visual::before {display:none}
+
+/* On the generic playoff intro, the trophy is already in the
+   background illustration. Preserve its column, avoiding duplication.
+   Live match and result crests (.stage-personal) are unaffected. */
+body[data-view="playoff"] .stage-special > img {
+  visibility:hidden;
+}
