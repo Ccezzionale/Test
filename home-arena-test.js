@@ -320,7 +320,7 @@ function renderCompetitionPosters(){
   hero.className="comp-event-hero comp-cinematic comp-cinematic-playoff";
   hero.href="playoff.html";hero.setAttribute("aria-label","Apri Playoff");
   img("comp-hero-art","img/cups/playoff-cup.webp","");
-  img("comp-hero-character","img/home/competizioni/playoff.webp","");
+  img("comp-hero-character","img/home/esplora/playoffs-challenge.webp","");
   set("comp-hero-name","PLAYOFF");
   set("comp-hero-status","Tabellone attivo");
   set("comp-hero-kicker","IL MAIN EVENT");
@@ -342,7 +342,7 @@ function renderCompetitionPosters(){
   playoff.href="playoff.html";
   set("comp-mini-name-playoff","PLAYOFF");
   img("comp-mini-art-playoff","img/cups/playoff-cup.webp","");
-  img("comp-mini-character-playoff","img/home/competizioni/playoff.webp","");
+  img("comp-mini-character-playoff","img/home/esplora/playoffs-challenge.webp","");
   set("comp-mini-status-playoff","Road to Glory");
  }
 
