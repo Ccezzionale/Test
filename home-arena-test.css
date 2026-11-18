@@ -790,3 +790,159 @@ body{
 .comp-event-layout .comp-cinematic::after {
   box-shadow:none;
 }
+
+
+/* =============================================================
+   ARENA TEST V8 · CLEAN COMPETITION ART / MINI TITANO UFFICIALE
+   One clearly readable mascot and at most one small trophy per
+   card. No cropped event banners, no heavy image backgrounds.
+   Scoped to .comp-v8, leaving the entire official Home untouched.
+   ============================================================= */
+.comp-v8 .comp-cinematic,
+.comp-v8 .comp-event-hero,
+.comp-v8 .comp-event-mini {
+  background:
+    radial-gradient(ellipse 90% 70% at 50% 20%,var(--event-glow),transparent 83%),
+    radial-gradient(ellipse 80% 45% at 50% 110%,rgba(45,117,203,.24),transparent 80%),
+    linear-gradient(145deg,#0b315b,#071831 54%,#040e24 100%) !important;
+  overflow:hidden;
+}
+.comp-v8 .comp-cinematic::before {
+  content:"";
+  display:block;
+  background:
+    linear-gradient(116deg,transparent 6%,rgba(177,220,255,.065) 24%,transparent 37%,rgba(255,255,255,.035) 54%,transparent 66%),
+    radial-gradient(ellipse 83% 28% at 50% 100%,rgba(114,174,228,.16),transparent);
+  pointer-events:none;
+}
+.comp-v8 .comp-cinematic::after {
+  content:"";
+  display:block;
+  box-shadow:inset 0 0 25px rgba(0,0,0,.27);
+  background:linear-gradient(180deg,transparent 53%,rgba(2,9,24,.68) 100%);
+  pointer-events:none;
+}
+.comp-v8 .comp-cinematic-crashout {
+ background:
+  radial-gradient(ellipse 92% 68% at 46% 21%,rgba(170,61,224,.35),transparent 81%),
+  linear-gradient(145deg,#2c1557,#141534 55%,#090c24 100%) !important;
+}
+.comp-v8 .comp-cinematic-highlander {
+ background:
+  radial-gradient(ellipse 80% 75% at 45% 28%,rgba(206,136,64,.33),transparent 82%),
+  linear-gradient(145deg,#3b2a29,#1d1b2c 59%,#0b1427 100%) !important;
+}
+.comp-v8 .comp-cinematic-supercoppa {
+ background:
+  radial-gradient(ellipse 85% 70% at 48% 25%,rgba(73,174,250,.32),transparent 80%),
+  linear-gradient(145deg,#143c69,#092845 55%,#051426 100%) !important;
+}
+.comp-v8 .comp-cinematic-playoff {
+ background:
+  radial-gradient(ellipse 87% 72% at 45% 20%,rgba(90,155,245,.32),transparent 83%),
+  linear-gradient(145deg,#173c6d,#102846 57%,#06152d 100%) !important;
+}
+.comp-v8 .comp-event-hero-kicker {
+ z-index:6;
+ font-size:8px;
+ background:rgba(2,14,31,.74);
+}
+.comp-v8 .comp-event-hero > .comp-event-character {
+ top:3px !important;
+ bottom:auto;
+ left:50% !important;
+ width:74% !important;
+ max-width:265px !important;
+ height:172px !important;
+ transform:translateX(-50%) !important;
+ object-fit:contain !important;
+ object-position:center 40% !important;
+ opacity:1;
+ z-index:2;
+ -webkit-mask-image:radial-gradient(ellipse 77% 68% at 50% 46%,#000 65%,transparent 100%);
+ mask-image:radial-gradient(ellipse 77% 68% at 50% 46%,#000 65%,transparent 100%);
+ filter:none !important;
+}
+.comp-v8 .comp-event-hero-footer {
+ z-index:6;
+ bottom:10px;
+}
+.comp-v8 .comp-event-hero-footer strong{
+ font-size:clamp(21px,6vw,26px);
+ text-shadow:0 2px 12px #000d;
+}
+.comp-v8 .comp-event-mini > img.comp-event-cup {
+ position:absolute;
+ z-index:1;
+ right:6px;
+ left:auto;
+ top:21px;
+ width:47px;
+ height:76px;
+ max-width:39%;
+ opacity:.67;
+ transform:none;
+ object-fit:contain;
+ filter:drop-shadow(0 2px 5px rgba(0,0,0,.52)) !important;
+}
+.comp-v8 .comp-mini-titano {
+ display:block;
+ position:absolute;
+ z-index:3;
+ top:7px;
+ left:calc(50% - 63px);
+ width:82px;
+ height:118px;
+ background-image:url("img/home/competizioni/mini-titano-v8-poses.webp");
+ background-position:0% center;
+ background-size:400% 100%;
+ background-repeat:no-repeat;
+ mix-blend-mode:screen;
+ -webkit-mask-image:radial-gradient(ellipse 86% 83% at 50% 47%,#000 66%,transparent 98%);
+ mask-image:radial-gradient(ellipse 86% 83% at 50% 47%,#000 66%,transparent 98%);
+ filter:none !important;
+ pointer-events:none;
+}
+.comp-v8 .pose-leader{background-position:0% center}
+.comp-v8 .pose-victory{background-position:33.3333% center}
+.comp-v8 .pose-action{background-position:66.6667% center}
+.comp-v8 .pose-survivor{background-position:100% center}
+.comp-v8 .comp-mini-footer {
+ z-index:6;
+ padding-top:16px;
+ padding-bottom:8px;
+ background:linear-gradient(180deg,transparent,rgba(3,11,29,.95) 37%,rgba(3,11,29,.98));
+}
+.comp-v8 .comp-event-mini {
+ min-height:142px;
+ height:142px;
+}
+.comp-v8 .comp-mini-footer strong{
+ font-size:12px;
+ letter-spacing:.03em;
+}
+.comp-v8 .comp-mini-footer small{
+ font-size:9px;
+}
+.comp-v8 .comp-event-hero {
+ min-height:207px;
+ height:207px;
+}
+@media (min-width:540px){
+ .comp-v8 .comp-event-hero{height:300px;min-height:300px}
+ .comp-v8 .comp-event-hero > .comp-event-character{
+   top:18px !important;height:224px !important;width:85% !important;max-width:320px !important;
+ }
+ .comp-v8 .comp-event-mini{min-height:145px;height:145px}
+ .comp-v8 .comp-mini-titano{top:8px}
+}
+@media (max-width:390px){
+ .comp-v8 .comp-event-hero{min-height:196px;height:196px}
+ .comp-v8 .comp-event-hero > .comp-event-character{height:164px !important}
+ .comp-v8 .comp-event-mini{min-height:133px;height:133px}
+ .comp-v8 .comp-mini-titano{top:4px;left:calc(50% - 56px);width:75px;height:108px}
+ .comp-v8 .comp-event-mini > img.comp-event-cup{width:42px;height:65px;right:5px}
+}
+@media(prefers-reduced-motion:reduce){
+ .comp-v8 .comp-cinematic{transition:none !important}
+}
