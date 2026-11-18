@@ -1219,3 +1219,65 @@ body[data-view="league"] .league-ticker,
 body[data-view="league"] .media-tile {
   color:#f7fbff;
 }
+
+
+/* =============================================================
+   HOME ARENA TEST V12 · ILLUSTRATED SKY & MIAMI VICE BACKGROUNDS
+   Three tiny, locally hosted WebP assets. Existing Highlander
+   background and every data/competition control stay unchanged.
+   ============================================================= */
+body[data-view="league"]{
+  background-color:#f5f7fb;
+  background-image:
+    linear-gradient(180deg,rgba(255,255,255,.01) 0%,rgba(255,255,255,.10) 27%,rgba(246,249,253,.76) 75%,#f5f8fb 100%),
+    url("img/match-bg/arena-league-v12.webp");
+  background-position:center top,center top;
+  background-size:100% 100%,100% auto;
+  background-repeat:no-repeat,no-repeat;
+  background-attachment:scroll;
+}
+body[data-view="league"] .stage-visual{
+  background:
+    linear-gradient(90deg,rgba(255,255,255,.15),rgba(255,255,255,.21)),
+    url("img/match-bg/arena-league-v12.webp") center 40%/cover no-repeat,
+    #f7f4ec;
+}
+body[data-view="league"] .stage-visual::before{display:none}
+
+body[data-view="playoff"]{
+  background-color:#07162f;
+  background-image:
+    linear-gradient(180deg,rgba(2,11,30,.10) 0%,rgba(3,11,31,.25) 30%,rgba(4,12,33,.73) 77%,#07142d 100%),
+    url("img/match-bg/arena-playoff-v12.webp");
+  background-position:center top,center top;
+  background-size:100% 100%,100% auto;
+  background-repeat:no-repeat,no-repeat;
+  background-attachment:scroll;
+}
+body[data-view="playoff"] .stage-visual{
+  background:
+    linear-gradient(90deg,rgba(4,12,32,.43),rgba(3,12,36,.29)),
+    url("img/match-bg/arena-playoff-v12.webp") center 41%/cover no-repeat,
+    #071b39;
+}
+body[data-view="playoff"] .stage-visual::before{display:none}
+
+body[data-view="crashout"]{
+  background-color:#100827;
+  background-image:
+    linear-gradient(180deg,rgba(20,6,45,.12) 0%,rgba(20,6,45,.22) 28%,rgba(14,4,31,.77) 76%,#100927 100%),
+    url("img/match-bg/arena-crashout-v12.webp");
+  background-position:center top,center top;
+  background-size:100% 100%,100% auto;
+  background-repeat:no-repeat,no-repeat;
+  background-attachment:scroll;
+}
+body[data-view="crashout"] .stage-visual{
+  background:
+    linear-gradient(90deg,rgba(22,5,46,.57),rgba(22,5,46,.37)),
+    url("img/match-bg/arena-crashout-v12.webp") center 32%/cover no-repeat,
+    #240a42;
+}
+body[data-view="crashout"] .stage-visual::before{display:none}
+
+/* Highlander remains exactly as approved in previous versions. */
