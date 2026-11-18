@@ -7,8 +7,8 @@
 <meta name="robots" content="noindex,nofollow">
 <title>Home Arena · Concept 3 | Lega degli Eroi</title>
 <link rel="icon" href="icon-192.png">
-<link rel="stylesheet" href="home-arena-test.css?v=20261118-v3-mascots">
-<script type="module" src="home-arena-test.js?v=20261118-v3-mascots"></script>
+<link rel="stylesheet" href="home-arena-test.css?v=20261118-v3-events">
+<script type="module" src="home-arena-test.js?v=20261118-v3-events"></script>
 </head>
 <body class="arena-reboot" data-view="league">
 <header class="topbar">
@@ -140,14 +140,40 @@
       </a>
     </div>
   </section>
+
   <section class="section competitions-section" aria-labelledby="comps-head">
-    <div class="sec-heading"><div><span class="eyebrow">TUTTE LE SFIDE</span><h2 id="comps-head">LE COMPETIZIONI</h2></div><span class="scroll-hint">SCORRI →</span></div>
-    <div class="competition-rail">
-      <a class="comp-card" href="classifica.html"><img src="img/cups/campionato-cup.webp" alt=""><strong>Campionato</strong><small>Le due Conference</small></a>
-      <a class="comp-card" href="playoff.html"><img src="img/cups/playoff-cup.webp" alt=""><strong>Playoff</strong><small>Road to glory</small></a>
-      <a class="comp-card" href="crashoutcup.html"><img src="img/cups/crashout-cup.webp" alt=""><strong>Crash Out</strong><small>Rivalry & coppa</small></a>
-      <a class="comp-card" href="arena.html"><img src="img/cups/highlander-cup.webp" alt=""><strong>Highlander</strong><small>Ultimo in piedi</small></a>
-      <a class="comp-card" href="supercoppa.html"><img src="img/home/competizioni/supercoppa.webp" alt=""><strong>Supercoppa</strong><small>La sfida finale</small></a>
+    <div class="sec-heading">
+      <div><span class="eyebrow">TUTTE LE SFIDE</span><h2 id="comps-head">LE COMPETIZIONI</h2></div>
+      <span class="scroll-hint">MAIN EVENT</span>
+    </div>
+    <div class="comp-event-layout" aria-label="Le cinque competizioni della Lega">
+      <a class="comp-event-hero comp-cinematic comp-cinematic-league" id="comp-hero" href="classifica.html" aria-label="Apri Campionato">
+        <span class="comp-event-hero-kicker" id="comp-hero-kicker">IL MAIN EVENT</span>
+        <img class="comp-event-hero-trophy" id="comp-hero-art" src="img/cups/campionato-cup.webp" alt="" loading="lazy">
+        <span class="comp-event-hero-footer">
+          <strong id="comp-hero-name">CAMPIONATO</strong>
+          <small id="comp-hero-status">Le due Conference</small>
+        </span>
+        <span class="comp-event-arrow" aria-hidden="true">↗</span>
+      </a>
+      <div class="comp-event-minis" aria-label="Altre competizioni">
+        <a class="comp-event-mini comp-cinematic comp-cinematic-playoff" id="comp-mini-playoff" href="playoff.html">
+          <img id="comp-mini-art-playoff" src="img/cups/playoff-cup.webp" alt="" loading="lazy">
+          <span class="comp-mini-footer"><strong id="comp-mini-name-playoff">PLAYOFF</strong><small id="comp-mini-status-playoff">Road to Glory</small></span>
+        </a>
+        <a class="comp-event-mini comp-cinematic comp-cinematic-crashout" id="comp-mini-crashout" href="crashoutcup.html">
+          <img src="img/cups/crashout-cup.webp" alt="" loading="lazy">
+          <span class="comp-mini-footer"><strong>CRASH OUT</strong><small id="comp-mini-status-crashout">Rivalry Games</small></span>
+        </a>
+        <a class="comp-event-mini comp-cinematic comp-cinematic-highlander" id="comp-mini-highlander" href="arena.html">
+          <img src="img/cups/highlander-cup.webp" alt="" loading="lazy">
+          <span class="comp-mini-footer"><strong>HIGHLANDER</strong><small id="comp-mini-status-highlander">Ultimo in piedi</small></span>
+        </a>
+        <a class="comp-event-mini comp-cinematic comp-cinematic-supercoppa" id="comp-mini-supercoppa" href="supercoppa.html">
+          <img src="img/home/competizioni/supercoppa.webp" alt="" loading="lazy">
+          <span class="comp-mini-footer"><strong>SUPERCOPPA</strong><small>Finale secca</small></span>
+        </a>
+      </div>
     </div>
   </section>
 
