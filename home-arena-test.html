@@ -5,27 +5,21 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#061328">
 <meta name="robots" content="noindex,nofollow">
-<title>Home Arena · Concept 2 | Lega degli Eroi</title>
+<title>Home Arena · Concept 3 | Lega degli Eroi</title>
 <link rel="icon" href="icon-192.png">
-<link rel="stylesheet" href="home-arena-test.css?v=20261118-2">
-<script type="module" src="home-arena-test.js?v=20261118-2"></script>
+<link rel="stylesheet" href="home-arena-test.css?v=20261118-v3">
+<script type="module" src="home-arena-test.js?v=20261118-v3"></script>
 </head>
 <body class="arena-reboot" data-view="league">
 <header class="topbar">
   <a class="topbrand" href="index.html" aria-label="Apri la Home ufficiale">
     <img src="icon-192.png" alt="">
-    <span><strong>LEGA DEGLI EROI</strong><small>THE ARENA / CONCEPT 02</small></span>
+    <span><strong>LEGA DEGLI EROI</strong><small>THE ARENA · V3</small></span>
   </a>
+  <span class="test-pill" aria-label="Pagina di prova">TEST</span>
   <a class="top-return" href="index.html" aria-label="Torna alla Home originale"><span>Home originale</span><b>↗</b></a>
 </header>
 <main class="shell">
-  <div class="beta-line"><span>● PAGINA TEST, NON UFFICIALE</span><span id="phase-label">Stagione 2026/27</span></div>
-  <section class="league-ticker" aria-label="Panoramica della Lega">
-    <span class="ticker-title">LDE <b>NOW</b></span>
-    <div id="ticker-text" aria-live="polite">Caricamento ultime informazioni...</div>
-    <a href="classifica.html" aria-label="Vedi le classifiche">›</a>
-  </section>
-
   <section class="personal-strip">
     <div class="personal-label">IL TUO QUARTIER GENERALE</div>
     <div class="personal-flex">
@@ -41,7 +35,7 @@
 
   <section class="section hero-section" aria-labelledby="matchday-head">
     <div class="sec-heading">
-      <div><span class="eyebrow">IL CUORE DELLA LEGA</span><h1 id="matchday-head">MATCHDAY CENTRAL</h1></div>
+      <div><span class="eyebrow">MATCHDAY CENTRAL</span><h1 id="matchday-head">IL TUO MATCH</h1></div>
       <span class="section-mark" id="matchday-mark">PROSSIMA SFIDA</span>
     </div>
     <nav class="cup-tabs" aria-label="Cambia competizione e atmosfera">
@@ -51,6 +45,7 @@
       <button type="button" data-cup="highlander" aria-pressed="false">Highlander</button>
     </nav>
     <article class="match-stage" aria-live="polite">
+      <div class="stage-visual">
       <div class="stage-top"><span id="stage-competition">CONFERENCE LEAGUE</span><b id="stage-round">CALENDARIO</b></div>
       <div class="stage-personal" id="stage-personal">
         <div class="stage-team">
@@ -70,48 +65,26 @@
         <img id="stage-cup-art" src="img/cups/playoff-cup.webp" alt="">
         <div><span id="stage-special-kicker">COMPETIZIONE</span><strong id="stage-special-title">Playoff</strong><p id="stage-special-desc">Segui risultati e tabellone ufficiali.</p></div>
       </div>
+      </div>
       <div class="stage-bottom">
-        <span id="stage-context">I numeri della prossima sfida</span>
-        <a id="stage-cta" class="stage-cta" href="match.html">APRI MATCH CENTER <span>↗</span></a>
+        <div class="stage-bottom-copy">
+          <strong id="stage-match-title">La tua prossima sfida</strong>
+          <span id="stage-context">I numeri della prossima sfida</span>
+        </div>
+        <a id="stage-cta" class="stage-cta" href="match.html">MATCH CENTER <span>↗</span></a>
+      </div>
+      <div class="fixture-control" id="fixture-control">
+        <button type="button" id="fixture-prev" aria-label="Partita precedente">‹</button>
+        <span id="fixture-caption">Giornata in aggiornamento</span>
+        <button type="button" id="fixture-next" aria-label="Partita successiva">›</button>
       </div>
     </article>
-    <div class="fixture-control" id="fixture-control">
-      <button type="button" id="fixture-prev" aria-label="Partita precedente">‹</button>
-      <span id="fixture-caption">Giornata in aggiornamento</span>
-      <button type="button" id="fixture-next" aria-label="Partita successiva">›</button>
-    </div>
   </section>
 
-  <section class="section editorial" aria-labelledby="editorial-head">
-    <div class="sec-heading">
-      <div><span class="eyebrow">IL MATCH DA SEGUIRE</span><h2 id="editorial-head">SOTTO I RIFLETTORI</h2></div>
-      <a href="match.html" id="editorial-all">Match Center ↗</a>
-    </div>
-    <a href="classifica.html" class="spotlight" id="spotlight-link">
-      <div class="spotlight-image">
-        <span class="small-tag" id="spotlight-tag">LA SFIDA DELLA SETTIMANA</span>
-        <div class="spotlight-versus">
-          <img id="spotlight-left-logo" src="icon-192.png" alt="">
-          <span>VS</span>
-          <img id="spotlight-right-logo" src="icon-192.png" alt="">
-        </div>
-      </div>
-      <div class="spotlight-copy">
-        <span id="spotlight-kicker">DALLA LEGA · MATCHDAY</span>
-        <strong id="spotlight-title">Il prossimo big match</strong>
-        <p id="spotlight-sub">La partita di cartello comparirà con i dati aggiornati.</p>
-        <span class="read-arrow">LEGGI LA SCHEDA <b>↗</b></span>
-      </div>
-    </a>
-    <div class="media-strip">
-      <a class="media-tile" href="giornale.html"><img src="img/maglie/evidenzagazzetta-v2.webp" alt="La Gazzetta degli Eroi"><span>LA GAZZETTA <b>↗</b></span></a>
-      <a class="media-tile" href="allstar.html"><img src="img/maglie/evidenzaallstar.webp" alt="All-Star Game"><span>ALL-STAR GAME <b>↗</b></span></a>
-    </div>
-  </section>
 
   <section class="section standings-section" aria-labelledby="standings-head">
     <div class="sec-heading">
-      <div><span class="eyebrow">I NUMERI DELLA STAGIONE</span><h2 id="standings-head">AROUND THE LEAGUE</h2></div>
+      <div><span class="eyebrow">CLASSIFICHE E FORMA RECENTE</span><h2 id="standings-head">AROUND THE LEAGUE</h2></div>
       <a href="classifica.html">Classifiche ↗</a>
     </div>
     <div class="standings-panel">
@@ -119,14 +92,14 @@
         <button type="button" data-conf="Conf A" class="on" aria-pressed="true">League</button>
         <button type="button" data-conf="Conf B" aria-pressed="false">Championship</button>
       </div>
-      <div id="standings-label" class="table-title">CONFERENCE LEAGUE <span>PT</span></div>
+      <div id="standings-label" class="table-title">CONFERENCE LEAGUE <span>FORMA · PT</span></div>
       <div id="standings-list" class="standings-list"><div class="loading">Classifica in caricamento…</div></div>
       <a class="panel-footer" href="classifica.html">CLASSIFICA COMPLETA <b>↗</b></a>
     </div>
   </section>
 
   <section class="section pulse-section" aria-labelledby="pulse-head">
-    <div class="sec-heading"><div><span class="eyebrow">AGGIORNAMENTI UTILI</span><h2 id="pulse-head">LEGA INSIDER</h2></div></div>
+    <div class="sec-heading"><div><span class="eyebrow">QUELLO CHE CONTA ADESSO</span><h2 id="pulse-head">LEGA INSIDER</h2></div></div>
     <div class="pulse-grid">
       <a class="pulse-card" href="waiver.html">
         <span class="pulse-icon">⏳</span><span class="pulse-label">PROSSIMO WAIVER</span>
@@ -139,6 +112,34 @@
     </div>
   </section>
 
+  <section class="section editorial" aria-labelledby="editorial-head">
+    <div class="sec-heading">
+      <div><span class="eyebrow">NEWS, STORIE E RIVALITÀ</span><h2 id="editorial-head">DALLA REDAZIONE</h2></div>
+      <a href="giornale.html">Gazzetta ↗</a>
+    </div>
+    <a href="giornale.html" class="editorial-lead">
+      <div class="editorial-lead-art">
+        <img src="img/maglie/evidenzagazzetta-v2.webp" loading="lazy" alt="La Gazzetta degli Eroi">
+        <span>IL GIORNALE DELLA LEGA</span>
+      </div>
+      <div class="editorial-lead-copy">
+        <span class="editorial-type">LA GAZZETTA DEGLI EROI</span>
+        <strong>Le storie della nostra Lega</strong>
+        <p>Risultati, rivalità, sorprese e polemiche. Quelle non mancano mai.</p>
+        <span class="read-arrow">LEGGI LA GAZZETTA <b>↗</b></span>
+      </div>
+    </a>
+    <div class="editorial-minis">
+      <a class="editorial-mini" href="allstar.html">
+        <img src="img/maglie/evidenzaallstar.webp" loading="lazy" alt="All-Star Game">
+        <span><small>EVENTO DELLA LEGA</small><strong>All-Star Game</strong><em>Votazioni e convocazioni</em></span><b>↗</b>
+      </a>
+      <a class="editorial-mini editorial-weekly" id="weekly-story" href="match.html">
+        <span class="weekly-mini-logos"><img id="weekly-left-logo" src="icon-192.png" alt=""><img id="weekly-right-logo" src="icon-192.png" alt=""></span>
+        <span><small id="weekly-tag">BIG MATCH DELLA SETTIMANA</small><strong id="weekly-title">In aggiornamento</strong><em id="weekly-sub">Un'altra sfida da seguire</em></span><b>↗</b>
+      </a>
+    </div>
+  </section>
   <section class="section competitions-section" aria-labelledby="comps-head">
     <div class="sec-heading"><div><span class="eyebrow">TUTTE LE SFIDE</span><h2 id="comps-head">LE COMPETIZIONI</h2></div><span class="scroll-hint">SCORRI →</span></div>
     <div class="competition-rail">
