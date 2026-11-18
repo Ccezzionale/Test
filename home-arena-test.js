@@ -239,6 +239,8 @@ function showDuelArt(id,view,name){
   if(el.getAttribute("src")!==fallback)el.src=fallback;
  };
  el.alt="Personaggio "+name;
+ // Optical adjustments are applied per character, never to other matchups.
+ el.dataset.duelTeam=norm(name);
  el.src=getDuelArt(view,name);
 }
 function renderArenaDuel(view,home,away,{round="",note=""}={}){
