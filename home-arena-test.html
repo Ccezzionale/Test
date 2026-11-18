@@ -7,8 +7,8 @@
 <meta name="robots" content="noindex,nofollow">
 <title>Home Arena · Concept 3 | Lega degli Eroi</title>
 <link rel="icon" href="icon-192.png">
-<link rel="stylesheet" href="home-arena-test.css?v=20261118-v15-playoff-third">
-<script type="module" src="home-arena-test.js?v=20261118-v10-tabs"></script>
+<link rel="stylesheet" href="home-arena-test.css?v=20261118-v16-allactive">
+<script type="module" src="home-arena-test.js?v=20261118-v16-allactive"></script>
 </head>
 <body class="arena-reboot" data-view="league">
 <header class="topbar">
@@ -44,6 +44,13 @@
       <button type="button" data-cup="crashout" aria-pressed="false">Crash Out</button>
       <button type="button" data-cup="highlander" aria-pressed="false">Highlander</button>
     </nav>
+    <div class="arena-demo-controls" role="group" aria-label="Anteprima delle quattro competizioni attive">
+      <span><b>PROVA</b> Tutte e 4 le coppe attive</span>
+      <button type="button" id="arena-demo-toggle" aria-pressed="false">Attiva simulazione</button>
+    </div>
+    <p class="arena-demo-disclaimer" id="arena-demo-disclaimer" hidden>
+      <b>SIMULAZIONE ATTIVA:</b> Playoff, Crash Out e Highlander mostrano esempi inventati. Il Campionato mantiene i dati reali. Nessun dato viene modificato.
+    </p>
     <article class="match-stage" aria-live="polite">
       <div class="stage-visual">
       <div class="stage-top"><span id="stage-competition">CONFERENCE LEAGUE</span><b id="stage-round">CALENDARIO</b></div>
