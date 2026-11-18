@@ -272,13 +272,16 @@ function showDuelArt(id,view,name){
  el.dataset.duelTeam=norm(name);
  el.src=getDuelArt(view,name);
 }
-function renderArenaDuel(view,home,away,{round="",note=""}={}){
+function renderArenaDuel(view,home,away,{round="",note="",eliminatedTeam=null}={}){
  $("stage-personal").hidden=true;
  $("stage-special").hidden=true;
  $("stage-duel").hidden=false;
  document.body.classList.add("has-active-duel");
+ document.body.classList.toggle("is-cup-eliminated",!!eliminatedTeam);
  showDuelArt("stage-duel-left-art",view,home);
  showDuelArt("stage-duel-right-art",view,away);
+ $("stage-duel-left-art").classList.toggle("is-eliminated",!!eliminatedTeam&&norm(home)===norm(eliminatedTeam));
+ $("stage-duel-right-art").classList.toggle("is-eliminated",!!eliminatedTeam&&norm(away)===norm(eliminatedTeam));
  set("stage-duel-home",home.toUpperCase());
  set("stage-duel-away",away.toUpperCase());
  set("stage-duel-round",round||(view==="playoff"?"PLAYOFF":"CRASH OUT"));
@@ -321,7 +324,7 @@ function renderDemoCup(view){
   set("stage-round","TURNO 10");
   $("stage-personal").hidden=true;
   $("stage-special").hidden=false;
-  img("stage-cup-art",info(me)?.shirt||cups.highlander.art,"Mascotte "+me);
+  img("stage-cup-art",highlanderArt(me,false),"Mascotte "+me);
   set("stage-special-kicker","ANCORA IN GARA · DEMO");
   set("stage-special-title","Tra i superstiti");
   set("stage-special-desc",me+" è ancora in corsa · 6 franchigie rimaste (esempio)");
@@ -351,7 +354,7 @@ function setDemoMode(active,updateUrl=false){
 
 function chooseView(view){
  state.view=view;document.body.dataset.view=view;
- document.body.classList.remove("has-active-duel");
+ document.body.classList.remove("has-active-duel","is-cup-eliminated");
  $("stage-duel").hidden=true;
  // Four permanent navigation tabs: never hide on elimination or inactive phases.
  const hasRanking=view==="league";
@@ -363,7 +366,7 @@ function chooseView(view){
  if(state.demoAllActive){renderDemoCup(view);return;}
  if(view==="league"){set("matchday-mark","PARTITA ATTUALE");drawMatch();return;}
  const cup=cups[view], status=state.cupStatus[view]||{};
- set("matchday-mark",cup.label);
+ set("matchday-mark",status.label||cup.label);
  set("stage-competition",cup.label);
  set("stage-round",status.round||"LA TUA LEGA");
  $("fixture-control").hidden=true;
@@ -372,7 +375,10 @@ function chooseView(view){
   if(view==="crashout"||view==="playoff"){
    renderArenaDuel(view,f.home,f.away,{
     round:status.round||cup.label,
-    note:f.score?"RISULTATO · "+f.score.join(" - "):"APRI L'ARENA DELL'INCONTRO"
+    note:status.eliminated?"ELIMINATO · PERCORSO CONCLUSO":
+     status.projection?"PROIEZIONE · ACCOPPIAMENTO PROVVISORIO":
+     f.score?"SERIE · "+f.score.join(" - "):"APRI L'ARENA DELL'INCONTRO",
+    eliminatedTeam:status.eliminatedTeam||null
    });
   }else{
    $("stage-personal").hidden=false;$("stage-special").hidden=true;
@@ -385,11 +391,14 @@ function chooseView(view){
   set("stage-match-title",f.home+" vs "+f.away);
   set("stage-context",status.description||"Crash Out Cup · Rivalry Games");
   $("stage-cta").href=status.url||cup.url;
-  $("stage-cta").innerHTML=(f.score?"MATCH REPORT":"MATCH CENTER")+" <span>↗</span>";
+  $("stage-cta").innerHTML=(status.eliminated?"VEDI IL TABELLONE":
+   status.projection?"VEDI PROIEZIONE":
+   f.code?"VEDI LA COPPA":f.score?"MATCH REPORT":"MATCH CENTER")+" <span>↗</span>";
   return;
  }
  $("stage-personal").hidden=true;$("stage-special").hidden=false;
- img("stage-cup-art",status.art||cup.art,"Trofeo "+cup.label);
+ img("stage-cup-art",status.art||cup.art,view==="highlander"?"Mascotte "+(state.team?.name||""):"Trofeo "+cup.label);
+ document.body.classList.toggle("is-cup-eliminated",!!status.eliminated);
  set("stage-special-kicker",status.label||"COMPETIZIONE UFFICIALE");
  set("stage-special-title",status.title||cup.title);
  set("stage-special-desc",status.description||cup.description);
