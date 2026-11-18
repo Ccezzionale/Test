@@ -1715,3 +1715,15 @@ body[data-view="highlander"] .stage-special img{
  }
  body[data-view="highlander"] .stage-special img{height:120px}
 }
+
+
+/* ARENA TEST V21 · Highlander card uses the official dedicated
+   Highlander portrait for everyone, just like the mobile survivor
+   gallery. Only eliminated teams receive the cemetery treatment. */
+body[data-view="highlander"] .stage-special > img {
+  filter:drop-shadow(0 7px 11px rgba(0,0,0,.65));
+}
+body[data-view="highlander"].is-cup-eliminated .stage-special > img {
+  filter:grayscale(.88) brightness(.67) drop-shadow(0 7px 11px rgba(0,0,0,.65));
+  opacity:.78;
+}
