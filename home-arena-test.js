@@ -134,13 +134,43 @@ function buildSlides(){
  const next=fixture(code,gw?gw+1:null,name);if(next)state.slides.push({...next,kind:"next"});
  state.index=Math.max(0,state.slides.findIndex(x=>x.kind==="current"));
 }
+// Same selection used by the official Home: last result mascots,
+// current fixture logos, and next fixture standard mascots.
+function matchdayImage(item, side) {
+ const name=side==="left"?item.home:item.away;
+ const team=info(name);
+ if(item.kind==="current"){
+   return {src:logo(name),fallback:"icon-192.png",className:"is-logo",alt:"Logo "+name};
+ }
+ const standard=team?.shirt||"img/maglie/default-shirt.png";
+ if(item.kind==="next"){
+   return {src:standard,fallback:"img/maglie/default-shirt.png",className:"is-mascot is-standard-mascot",alt:"Mascotte "+name};
+ }
+ // The previous result is stored from the signed-in team's perspective,
+ // as on the original Home. Its opponent must show the opposite result.
+ const outcome=String(item.result||"").toUpperCase();
+ const state=outcome==="N"?"draw":side==="left"?(outcome==="V"?"win":"loss"):(outcome==="V"?"loss":"win");
+ const asset=state==="win"?team?.mascotWin:state==="loss"?team?.mascotLoss:team?.mascotDraw;
+ return {src:asset||standard,fallback:standard,className:"is-mascot is-result-mascot is-"+state,alt:"Mascotte "+name+" · "+({win:"vittoria",draw:"pareggio",loss:"sconfitta"}[state])};
+}
+function showMatchdayImage(id,visual){
+ const element=$(id);
+ if(!element)return;
+ element.className=visual.className;
+ element.alt=visual.alt;
+ element.onerror=()=>{
+   element.onerror=null;
+   if(element.getAttribute("src")!==visual.fallback)element.src=visual.fallback;
+ };
+ element.src=visual.src;
+}
 function drawMatch(){
  const c=codeNow(),item=state.slides[state.index];
  $("stage-special").hidden=true;$("stage-personal").hidden=false;$("fixture-control").hidden=false;
  set("stage-competition",confName(c).toUpperCase());
  set("stage-match-title",state.team?.name||"La tua squadra");
  if(!item){
-  set("stage-round","IN ATTESA");img("stage-left-logo",logo(state.team?.name),"");img("stage-right-logo","icon-192.png","");
+  set("stage-round","IN ATTESA");showMatchdayImage("stage-left-logo",{src:logo(state.team?.name),fallback:"icon-192.png",className:"is-logo",alt:"Logo squadra"});showMatchdayImage("stage-right-logo",{src:"icon-192.png",fallback:"icon-192.png",className:"is-logo",alt:"Calendario in aggiornamento"});
   set("stage-left-name",state.team?.name||"La tua squadra");set("stage-right-name","Calendario in aggiornamento");
   set("stage-match-title","Prossima sfida in aggiornamento");
   set("stage-score-value","VS");set("stage-score-label","MATCHDAY");
@@ -149,7 +179,7 @@ function drawMatch(){
   set("fixture-caption","Calendario in aggiornamento");
  }else{
   set("stage-round","GIORNATA "+item.gw);
-  img("stage-left-logo",logo(item.home),"Logo "+item.home);img("stage-right-logo",logo(item.away),"Logo "+item.away);
+  showMatchdayImage("stage-left-logo",matchdayImage(item,"left"));showMatchdayImage("stage-right-logo",matchdayImage(item,"right"));
   set("stage-left-name",item.home);set("stage-right-name",item.away);
   set("stage-match-title",item.home+" vs "+item.away);
   set("stage-score-value",item.score?item.score.join(" : "):"VS");
@@ -181,8 +211,8 @@ function chooseView(view){
  if(status.match){
   const f=status.match;
   $("stage-personal").hidden=false;$("stage-special").hidden=true;
-  img("stage-left-logo",logo(f.home),"Logo "+f.home);
-  img("stage-right-logo",logo(f.away),"Logo "+f.away);
+  showMatchdayImage("stage-left-logo",{src:logo(f.home),fallback:"icon-192.png",className:"is-logo",alt:"Logo "+f.home});
+  showMatchdayImage("stage-right-logo",{src:logo(f.away),fallback:"icon-192.png",className:"is-logo",alt:"Logo "+f.away});
   set("stage-left-name",f.home);set("stage-right-name",f.away);
   set("stage-score-value",f.score?f.score.join(" : "):"VS");
   set("stage-score-label",f.score?"RISULTATO UFFICIALE":"RIVALRY GAME");
