@@ -1063,3 +1063,152 @@ body{
  .stage-actions .stage-cta,
  .stage-actions .stage-ranking-link{font-size:9px !important;min-height:33px}
 }
+
+
+/* ==========================================================
+   HOME ARENA TEST V11 · FOUR DISTINCT MATCHDAY ATMOSPHERES
+   Painted with lightweight CSS rather than giant stadium art.
+   League: ivory/white/gold; Playoff: cold blue/silver;
+   Crash Out: violet/magenta; Highlander: untouched.
+   Applied to the page and the Matchday card only.
+   ========================================================== */
+
+/* Campionato: pearl-white throughout the page. Navy cards, header and
+   navigation remain dark to retain the Lega degli Eroi identity. */
+body[data-view="league"] {
+  --accent:#f2c65a;
+  --accent-text:#142039;
+  background-color:#f5f7fa;
+  background-image:
+    radial-gradient(ellipse 100% 22% at 12% 5%,rgba(235,191,85,.23),transparent 87%),
+    radial-gradient(ellipse 82% 27% at 92% 35%,rgba(174,194,214,.20),transparent 80%),
+    linear-gradient(170deg,#fffefb 0%,#f7f9fc 42%,#edf2f7 100%);
+  background-position:center;
+  background-size:cover;
+  background-repeat:no-repeat;
+  background-attachment:scroll;
+  color:#112849;
+}
+body[data-view="league"] .sec-heading h1,
+body[data-view="league"] .sec-heading h2 {
+  color:#0b2445;
+  text-shadow:none;
+}
+body[data-view="league"] .eyebrow,
+body[data-view="league"] .personal-label {
+  color:#a16d0a;
+}
+body[data-view="league"] .sec-heading>a,
+body[data-view="league"] .section-mark,
+body[data-view="league"] .scroll-hint {
+  color:#344f70;
+}
+body[data-view="league"] .cup-tabs {
+  border-bottom-color:rgba(29,53,88,.16);
+}
+body[data-view="league"] .cup-tabs button:not(.on) {
+  background:#153357;
+  color:#f1f6ff;
+  border-color:#0b24422b;
+}
+body[data-view="league"] .cup-tabs button.on {
+  background:#f2c65a;
+  color:#152644;
+  border-color:#dab153;
+}
+body[data-view="league"] .match-stage {
+  border-color:#ccac67;
+  box-shadow:0 10px 28px rgba(19,45,75,.14);
+}
+body[data-view="league"] .stage-visual {
+  background:
+    radial-gradient(ellipse 90% 85% at 47% 36%,rgba(255,255,255,.94),transparent 79%),
+    radial-gradient(ellipse 52% 82% at 92% 10%,rgba(222,181,85,.23),transparent 88%),
+    repeating-linear-gradient(133deg,transparent 0,transparent 48px,rgba(173,151,111,.048) 48px,rgba(173,151,111,.048) 49px),
+    linear-gradient(135deg,#fffdf6 0%,#f2f5f9 65%,#e7edf4 100%);
+}
+body[data-view="league"] .stage-visual::before {
+  display:none;
+}
+body[data-view="league"] .stage-top {
+  color:#906010;
+}
+body[data-view="league"] .stage-top b {
+  color:#314661;
+  background:rgba(255,255,255,.73);
+  border-color:#a6b4c4a6;
+}
+body[data-view="league"] .stage-team strong {
+  color:#132b4c;
+  text-shadow:none;
+}
+body[data-view="league"] .stage-score small {
+  color:#526984;
+}
+body[data-view="league"] .stage-score strong {
+  color:#b98717;
+  text-shadow:0 2px 6px rgba(138,111,60,.13);
+}
+/* Text inside the dark content cards must remain light on the white page. */
+body[data-view="league"] .personal-strip,
+body[data-view="league"] .standings-panel,
+body[data-view="league"] .editorial-lead,
+body[data-view="league"] .editorial-mini,
+body[data-view="league"] .pulse-card,
+body[data-view="league"] .links-grid a,
+body[data-view="league"] .draft-banner {
+  color:#f7fbff;
+}
+body[data-view="league"] .personal-label {
+  color:#f4cf7d;
+}
+
+/* Playoff: cool blue energy, no crop of a full stadium panorama. */
+body[data-view="playoff"] {
+  --accent:#a8d3ff;
+  --accent-text:#0b2547;
+  background-color:#081831;
+  background-image:
+    radial-gradient(ellipse 110% 34% at 54% 8%,rgba(64,148,243,.38),transparent 80%),
+    radial-gradient(ellipse 85% 35% at 3% 44%,rgba(22,92,197,.19),transparent 78%),
+    linear-gradient(155deg,#0a2450 0%,#071a37 55%,#050c1e 100%);
+  background-position:center;
+  background-size:cover;
+  background-repeat:no-repeat;
+  background-attachment:scroll;
+}
+body[data-view="playoff"] .stage-visual {
+  background:
+    radial-gradient(ellipse 75% 82% at 50% 37%,rgba(74,152,249,.34),transparent 74%),
+    linear-gradient(118deg,rgba(134,196,245,.09),transparent 38%,rgba(155,207,254,.09) 70%,transparent),
+    linear-gradient(140deg,#091a3d 0%,#17416d 51%,#071732 100%);
+}
+body[data-view="playoff"] .stage-visual::before {
+  display:none;
+}
+
+/* Crash Out: punchier magenta-violet glow but no huge scenery. */
+body[data-view="crashout"] {
+  --accent:#e78dff;
+  --accent-text:#1d0a33;
+  background-color:#160e2e;
+  background-image:
+    radial-gradient(ellipse 105% 33% at 54% 8%,rgba(183,45,224,.35),transparent 83%),
+    radial-gradient(ellipse 92% 30% at 4% 47%,rgba(251,50,169,.17),transparent 78%),
+    linear-gradient(158deg,#31134f 0%,#190f35 52%,#070b22 100%);
+  background-position:center;
+  background-size:cover;
+  background-repeat:no-repeat;
+  background-attachment:scroll;
+}
+body[data-view="crashout"] .stage-visual {
+  background:
+    radial-gradient(ellipse 78% 92% at 48% 37%,rgba(197,48,217,.31),transparent 73%),
+    radial-gradient(ellipse 58% 60% at 92% 12%,rgba(255,74,160,.17),transparent 77%),
+    linear-gradient(135deg,#1b0d3a 0%,#461966 50%,#110b2d 100%);
+}
+body[data-view="crashout"] .stage-visual::before {
+  display:none;
+}
+/* Intentionally NO override for Highlander. Its current illustrated
+   background and readability were explicitly approved. */
