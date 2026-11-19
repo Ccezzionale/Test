@@ -70,3 +70,18 @@
 }
 .draft-trade-conditional-box small{display:block;color:#b9d3ec;font-size:10px}
 .draft-trade-card.is-conditional-trade{border-color:#cca447}
+
+/* Un gruppo per ciascun round anche quando una franchigia ha due R1.
+   Tutte le colonne e la numerazione R1...R23 rimangono allineate. */
+@media(min-width:769px){
+  .draft-picks .draft-round-slot{
+    display:flex;
+    flex-direction:column;
+    gap:7px;
+  }
+  .draft-picks .draft-round-slot>.pick{
+    flex:0 0 46px;
+    height:46px;
+    min-height:46px;
+  }
+}
