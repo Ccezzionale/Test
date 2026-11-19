@@ -9,7 +9,7 @@
   <link rel="stylesheet" href="navbar.css">
   <link rel="stylesheet" href="trade-room.css?v=20261116-live-backup">
   <link rel="stylesheet" href="trade-room-v2.css?v=20261117-trade-cuts-restored">
-  <link rel="stylesheet" href="trade-conditional-addon.css?v=20261119-send-confirm-v15">
+  <link rel="stylesheet" href="trade-conditional-addon.css?v=20261119-mixed-balance-v17">
 </head>
 <body class="trade-v2-preview trade-v2-live">
 <nav class="site-nav">
@@ -480,8 +480,9 @@
         </div>
       </div>
       <p id="ctMixedRules" class="ct-mixed-rules">
-        La clausola e la sua contropartita valgono già come 1:1. Le altre pick future devono essere pari sui due lati. Anche i giocatori devono essere bilanciati: niente svincoli differiti. I portieri, che seguono regole di blocco speciali, non sono ancora inclusi nelle trade miste.
+        La clausola e la sua contropartita valgono già come 1:1. Le altre pick future devono essere pari sui due lati. Le trade miste condizionate richiedono lo stesso numero di giocatori per squadra: gli svincoli e le chiamate compensative delle trade classiche non sono ancora integrati. I portieri restano esclusi.
       </p>
+      <p id="ctMixedPlayerBalance" class="ct-mixed-balance" role="status" aria-live="polite" hidden></p>
     </section>
     <div class="ct-counter">
       <strong>⇄ Contropartita obbligatoria · 1:1</strong>
@@ -771,6 +772,6 @@
   <script src="navbar.js?v=20261119-global33"></script>
   <script type="module" src="trade-room.js?v=20261116-live-original"></script>
   <script type="module" src="trade-room-live.js?v=20261117-trade-cuts-restored"></script>
-  <script type="module" src="trade-conditional-addon.js?v=20261119-submit-feedback-v16"></script>
+  <script type="module" src="trade-conditional-addon.js?v=20261119-mixed-balance-v17"></script>
 </body>
 </html>
