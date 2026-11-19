@@ -2138,3 +2138,35 @@ body[data-view="highlander"].is-cup-eliminated .stage-special > img {
     box-shadow:0 13px 27px rgba(1,13,37,.32);
   }
 }
+
+
+/* ARENA TEST V29 · EXPLORE TEXT LINKS
+   No mascot/icon requests: four compact, readable shortcuts.
+   The arrow stays flush right across mobile widths. */
+.explore-text-links a {
+  grid-template-columns:minmax(0,1fr) 18px;
+  gap:10px;
+  min-height:52px;
+  padding:11px 14px;
+  align-items:center;
+}
+.explore-text-links a span {
+  font-size:13px;
+  line-height:1.2;
+  font-weight:850;
+}
+.explore-text-links a b {
+  justify-self:end;
+  font-size:16px;
+  line-height:1;
+}
+@media(max-width:380px){
+  .explore-text-links a{
+    grid-template-columns:minmax(0,1fr) 16px;
+    gap:7px;
+    min-height:48px;
+    padding:10px 10px;
+  }
+  .explore-text-links a span{font-size:12px}
+  .explore-text-links a b{font-size:14px}
+}
