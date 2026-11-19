@@ -651,6 +651,8 @@ function bind(){
     $("ctMixed"+n+"Search").addEventListener("input",paintMixedChoices);
   }
   $("ctSendOffer").addEventListener("click",sendOffer);
+  $("ctConfirmSubmit").addEventListener("click",confirmSendOffer);
+  $("ctCancelSubmit").addEventListener("click",cancelSendOffer);
   $("ctOfferItems").addEventListener("click",offerAction);
   $("ctRightItems").addEventListener("click",event=>{
     const sell=event.target.closest("[data-ct-resell]");
@@ -717,46 +719,94 @@ async function notifyConditionalTrade(eventType,proposalId){
   }
 }
 
-async function sendOffer(){
+function validatedOfferDraft(){
+  if(!state.enabled)throw new Error("Le trade condizionate sono temporaneamente sospese.");
+  if(!marketOpen())throw new Error("Il mercato è chiuso.");
+  const payload=conditionPayload();
+  const extras=extraAssets();
+  validateMixedExtras(extras,payload);
+  return {payload,extras};
+}
+function displaySendNotice(message,error=false){
+  failure("ctFormNotice",message);
+  $("ctFormNotice").classList.toggle("is-error",error);
+  if(message)$("ctFormNotice").scrollIntoView({behavior:"smooth",block:"nearest"});
+}
+function hideSendConfirmation(){
+  $("ctSendConfirmPanel").hidden=true;
+  state.confirmOfferSnapshot=null;
+}
+function sendOffer(){
   if(state.sending)return;
-  let resultMessage="";
-  let isError=false;
   try{
-    if(!state.enabled)throw new Error("Le trade condizionate sono temporaneamente sospese.");
-    if(!marketOpen())throw new Error("Il mercato è chiuso.");
-    const payload=conditionPayload();
-    const extras=extraAssets();
-    validateMixedExtras(extras,payload);
-    if(!window.confirm("Inviare "+(extras.length?"una trade MISTA con "+extras.length+" asset aggiuntivi":"una proposta condizionata")+" a "+name(targetId())+"? Tutte le parti saranno vincolanti dopo l'accettazione."))return;
+    const draft=validatedOfferDraft();
+    state.confirmOfferSnapshot=JSON.stringify(draft);
+    $("ctSendConfirmText").textContent="Inviare davvero a "+name(targetId())+" "+
+      (draft.extras.length?"una trade MISTA con "+draft.extras.length+" asset aggiuntivi":
+        "una trade condizionata")+"? La proposta sarà vincolante dopo l'accettazione. "+
+      "Verifica la clausola e la pick di contropartita nel riepilogo.";
+    $("ctSendConfirmPanel").hidden=false;
+    displaySendNotice("Controlla il riepilogo e premi «Conferma e invia». Nessuna proposta è ancora stata inviata.");
+    $("ctConfirmSubmit").focus();
+    $("ctSendConfirmPanel").scrollIntoView({behavior:"smooth",block:"nearest"});
+  }catch(err){
+    hideSendConfirmation();
+    displaySendNotice("⚠️ "+(err?.message||"Completa i dati mancanti nella proposta."),true);
+  }
+}
+function cancelSendOffer(){
+  if(state.sending)return;
+  hideSendConfirmation();
+  displaySendNotice("Invio annullato: nessuna proposta è stata registrata.");
+}
+async function confirmSendOffer(){
+  if(state.sending)return;
+  let resultMessage="",isError=false,savedOfferId=null;
+  try{
+    if($("ctSendConfirmPanel").hidden||!state.confirmOfferSnapshot)
+      throw new Error("Apri prima la conferma con «Invia proposta condizionata».");
+    const draft=validatedOfferDraft();
+    if(JSON.stringify(draft)!==state.confirmOfferSnapshot)
+      throw new Error("La proposta è stata modificata. Premi di nuovo «Invia proposta» per confermare i dati aggiornati.");
+    hideSendConfirmation();
     state.sending=true;
     $("ctSendOffer").disabled=true;
+    $("ctConfirmSubmit").disabled=true;
+    $("ctCancelSubmit").disabled=true;
     $("ctSendOffer").textContent="Invio in corso…";
-    failure("ctFormNotice","Sto registrando la proposta nel mercato ufficiale…");
-    $("ctFormNotice").classList.remove("is-error");
-    const method=extras.length?"conditional_create_mixed_offer":"conditional_create_offer";
-    const params=extras.length?{...payload,p_extra_assets:extras}:payload;
+    displaySendNotice("Sto registrando la proposta nel mercato ufficiale…");
+    const method=draft.extras.length?"conditional_create_mixed_offer":"conditional_create_offer";
+    const params=draft.extras.length?{...draft.payload,p_extra_assets:draft.extras}:draft.payload;
     const {data:offerId,error}=await supabase.rpc(method,params);
     if(error)throw error;
-    // Se la notifica fallisce, il contratto resta comunque salvato.
-    failure("ctFormNotice","Proposta registrata! Aggiorno le proposte e invio la notifica…");
+    savedOfferId=offerId;
+    displaySendNotice("Proposta registrata! Aggiorno le proposte e invio la notifica…");
     const noticeSent=await notifyConditionalTrade("proposal",offerId);
-    await reload();
-    resultMessage="✅ Proposta condizionata inviata. "+(noticeSent
-      ?"Il destinatario è stato avvisato.":"Il destinatario la vede in Proposte; la notifica non è stata confermata.");
+    try{
+      await reload();
+      resultMessage="✅ Proposta condizionata inviata. "+(noticeSent
+        ?"Il destinatario è stato avvisato.":"Il destinatario la vede in Proposte; la notifica non è stata confermata.");
+    }catch(refreshError){
+      console.warn("Trade inviata, ma aggiornamento Trade Room fallito:",refreshError);
+      resultMessage="✅ Proposta registrata sul mercato. Non sono riuscito ad aggiornare l'elenco: ricarica la Trade Room per vederla.";
+    }
   }catch(err){
     console.error("Invio trade condizionata:",err);
     isError=true;
-    resultMessage="⚠️ "+(err?.message||"Invio non riuscito. Nessuna proposta confermata.");
+    resultMessage="⚠️ "+(err?.message||"Invio non riuscito.");
+    if(savedOfferId){
+      // La RPC ha già salvato la proposta: non suggerire di riprovare e duplicarla.
+      isError=false;
+      resultMessage="✅ Proposta registrata nel database, ma un passaggio successivo non è riuscito. Ricarica l'elenco prima di inviarne altre.";
+    }
   }finally{
     state.sending=false;
+    $("ctConfirmSubmit").disabled=false;
+    $("ctCancelSubmit").disabled=false;
+    // redrawSummary può ricalcolare i campi, ma non deve cancellare
+    // errori o conferme di salvataggio appena mostrate.
     redrawSummary();
-    // Non cancellare conferme e messaggi di errore: il vecchio finally
-    // chiamava redrawSummary e faceva sparire subito ogni avviso.
-    if(resultMessage){
-      failure("ctFormNotice",resultMessage);
-      $("ctFormNotice").classList.toggle("is-error",isError);
-      $("ctFormNotice").scrollIntoView({behavior:"smooth",block:"nearest"});
-    }
+    if(resultMessage)displaySendNotice(resultMessage,isError);
   }
 }
 async function offerAction(event){
