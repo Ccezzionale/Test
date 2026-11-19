@@ -2170,3 +2170,49 @@ body[data-view="highlander"].is-cup-eliminated .stage-special > img {
   .explore-text-links a span{font-size:12px}
   .explore-text-links a b{font-size:14px}
 }
+
+
+/* ==========================================================
+   ARENA TEST V32 · OFFICIAL TOP NAVBAR
+   Header, dropdowns, authentication and notification controls
+   use navbar.css and the same scripts as index.html. These
+   rules only style the test marker, preserving the native nav.
+   ========================================================== */
+.arena-reboot .arena-test-ribbon{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  min-height:27px;
+  padding:5px 10px;
+  margin:2px 0 9px;
+  background:rgba(4,18,41,.93);
+  border:1px solid rgba(237,192,98,.38);
+  border-radius:9px;
+  box-shadow:0 3px 11px rgba(0,0,0,.12);
+}
+.arena-reboot .arena-test-ribbon>span{
+  color:#f1cb78;
+  font-size:9px;
+  font-weight:900;
+  letter-spacing:.09em;
+  line-height:1.25;
+}
+.arena-reboot .arena-test-ribbon>a{
+  color:#d5e5fa;
+  font-size:10px;
+  font-weight:800;
+  white-space:nowrap;
+}
+.arena-reboot .arena-test-ribbon>a:hover,
+.arena-reboot .arena-test-ribbon>a:focus-visible{
+  color:#ffe1a1;
+}
+/* Never create the legacy mobile bottom navigation in Arena Test.
+   Its dedicated Premium 3D dock is retained unchanged. */
+body.arena-reboot .mobile-bottom-nav{
+  display:none!important;
+}
+@media(min-width:901px){
+  .arena-reboot .arena-test-ribbon{max-width:700px;margin-left:auto;margin-right:auto}
+}
