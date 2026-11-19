@@ -1041,7 +1041,7 @@ function generaTabellaVerticale(containerId, draftData, squadreOrdine) {
     for (let r = 1; r <= maxRounds; r++) {
       const picksInRound = draftPerSquadra[squadra][r] || [];
       const capacity=maxPicksByRound[r];
-      html += `<div class="draft-round-slot" data-count="${capacity}" style="--round-pick-count:${capacity}">`;
+      html += `<div class="draft-round-slot" data-count="${capacity}" style="min-height:${46*capacity+7*(capacity-1)}px">`;
       if(!picksInRound.length){
         html += '<div class="pick pick-empty" aria-hidden="true"></div></div>';
         continue;
@@ -1116,7 +1116,8 @@ function renderRounds(draftContainerId,roundsColId){
     const row=document.createElement("div");
     row.className="round";
     row.textContent="R"+(index+1);
-    row.style.setProperty("--round-pick-count",slot.dataset.count||"1");
+    row.style.height=slot.style.minHeight;
+    row.style.minHeight=slot.style.minHeight;
     roundsCol.appendChild(row);
   });
 }
