@@ -967,6 +967,7 @@ function generaTabellaVerticale(containerId, draftData, squadreOrdine) {
         displayRound,
         displayOrder: p.displayOrder,
         source_trade_id: p.source_trade_id || null,
+        conditionalProjection: p.conditionalProjection || null,
         protection_note: p.protection_note,
         notes: p.notes
       });
@@ -994,11 +995,12 @@ function generaTabellaVerticale(containerId, draftData, squadreOrdine) {
       picksInRound.forEach(pick => {
         const tradedClass = pick.traded ? "pick-traded" : "";
         const bonusClass = pick.bonus ? "pick-bonus" : "";
+        const projectedClass = pick.conditionalProjection ? "is-conditional-projected" : "";
         const source = pick.traded || pick.bonus
        ? `<span class="pick-source">da ${shortDesktopTeamName(pick.originalTeam)}</span>`
           : "";
 
-        const title = pick.traded
+        const title = pick.conditionalProjection ? `Proiezione condizionata: ${pick.conditionalProjection.holderTeam} se finisse oggi; pick originale di ${pick.originalTeam}. NON definitiva.` : pick.traded
           ? `Round visualizzato ${pick.displayRound}. Round originale ${pick.round}. Pick originale di ${pick.originalTeam}. ${pick.notes || ""} ${pick.protection_note || ""}`.trim()
           : `Round ${pick.displayRound}`;
 
@@ -1028,13 +1030,14 @@ const tradeKeyAttribute = tradeKey
 
  html += `
   <div
-    class="pick ${tradedClass} ${bonusClass} ${tradeTypeClass}"
+    class="pick ${tradedClass} ${bonusClass} ${tradeTypeClass} ${projectedClass}"
     ${tradeKeyAttribute}
     title="${escapeDraftHtml(title)}"
   >
             <span class="pick-bubble">${pick.pickNumber}</span>
             <strong>Pick #${pick.pickNumber}</strong>
             ${source}
+            ${pick.conditionalProjection ? `<span class="ct-draft-preview-label">🔐 Provvisoria</span>` : ""}
           </div>`;
       });
     }
@@ -1134,6 +1137,8 @@ function buildDraftPerSquadra(draftData, squadreOrdine) {
         round: p.round,
         displayRound,
         displayOrder: p.displayOrder,
+        source_trade_id: p.source_trade_id || null,
+        conditionalProjection: p.conditionalProjection || null,
         protection_note: p.protection_note,
         notes: p.notes
       });
@@ -1801,8 +1806,12 @@ function renderDraftByPickDetail(container, pickIndex) {
       ].join(";")
     : "";
 
-  let originText = "Pick originale della squadra";
-  if (isBonus) {
+  let originText = pick.conditionalProjection
+    ? "🔐 Proiezione condizionata da "+shortDesktopTeamName(originalTeam)+" (non definitiva)"
+    : "Pick originale della squadra";
+  if (pick.conditionalProjection) {
+    // La proiezione prevale sulla dicitura di trade ufficiale.
+  } else if (isBonus) {
     originText = `Pick bonus proveniente da ${shortDesktopTeamName(originalTeam)}`;
   } else if (isTraded) {
     originText = `Pick ricevuta da ${shortDesktopTeamName(originalTeam)}`;
@@ -1918,6 +1927,7 @@ function generaDraftByPick(containerId, draftData, conferenceTitle) {
       "draft-pick-board-cell",
       isTraded ? "is-traded" : "",
       isBonus ? "is-bonus" : "",
+      pick.conditionalProjection ? "is-conditional-projected" : "",
       absoluteIndex === 0 ? "is-selected" : ""
     ].filter(Boolean).join(" ");
 
@@ -1984,6 +1994,7 @@ function generaDraftByPick(containerId, draftData, conferenceTitle) {
           "dynamic-mobile-pick-slot",
           isTraded ? "is-traded" : "",
           isBonus ? "is-bonus" : "",
+          pick.conditionalProjection ? "is-conditional-projected" : "",
           absoluteIndex === 0 ? "is-selected" : ""
         ].filter(Boolean).join(" ");
 
@@ -2191,11 +2202,13 @@ function generaDraftByTeam(containerId, draftData, squadreOrdine, conferenceTitl
       const classes = [
         "draft-team-pick",
         isTraded ? "is-traded" : "",
-        isBonus ? "is-bonus" : ""
+        isBonus ? "is-bonus" : "",
+        pick.conditionalProjection ? "is-conditional-projected" : ""
       ].filter(Boolean).join(" ");
 
       let origin = "Pick originale";
-      if (isBonus) origin = `Bonus da ${shortDesktopTeamName(originalTeam)}`;
+      if (pick.conditionalProjection) origin = `🔐 Proiezione condizionata da ${shortDesktopTeamName(originalTeam)}`;
+      else if (isBonus) origin = `Bonus da ${shortDesktopTeamName(originalTeam)}`;
       else if (isTraded) origin = `da ${shortDesktopTeamName(originalTeam)}`;
 
       return `
@@ -2212,6 +2225,8 @@ function generaDraftByTeam(containerId, draftData, squadreOrdine, conferenceTitl
           ${
             isBonus
               ? `<span class="draft-team-pick-badge bonus">★ Bonus</span>`
+              : pick.conditionalProjection
+                ? `<span class="draft-team-pick-badge trade">🔐 Provvisoria</span>`
               : isTraded
                 ? `<span class="draft-team-pick-badge trade">↔ Trade</span>`
                 : `<span class="draft-team-pick-badge original">Originale</span>`
