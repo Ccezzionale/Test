@@ -347,8 +347,7 @@ BEGIN
   RETURN jsonb_build_object('status','accepted','offer_id',p_offer_id,
      'right_id',v_new_right_id);
 END
-$function$
-
+$function$;
 
 -- Counterpick is reserved while the normal player trade awaits a cut.
 -- Candidate picks already use conditional_trade_candidates locks.
