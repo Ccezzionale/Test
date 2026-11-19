@@ -488,9 +488,12 @@ function paintOffers(){
   panel.hidden=list.length===0;
   items.innerHTML=list.length?list.map(o=>{
     const incoming=same(o.to_team_id,myId()),awaiting=o.status==="pending";
+    const awaitingCuts=o.status==="accepted_pending_cuts";
+    const playerBalance=mixedPlayerBalance(Array.isArray(o.mixed_assets)?o.mixed_assets:[]);
+    const cutTeam=playerBalance.from>playerBalance.to?o.to_team_id:o.from_team_id;
     const owner=name(o.grantor_team_id),holder=name(o.holder_team_id);
     return '<article class="ct-offer-card"><header><strong>'+esc(owner)+' → '+esc(holder)+'</strong>'+
-      '<span class="ct-status">'+esc(({pending:"In attesa",accepted:"Accettata",rejected:"Rifiutata",cancelled:"Annullata"})[o.status]||o.status)+'</span></header>'+
+      '<span class="ct-status">'+esc(({pending:"In attesa",accepted_pending_cuts:"Accettata · svincolo richiesto",accepted:"Accettata",rejected:"Rifiutata",cancelled:"Annullata"})[o.status]||o.status)+'</span></header>'+
       '<p>'+esc(offerDescription(o))+'</p>'+
       '<ul class="ct-clause-list">'+(()=>{
         const orig=o.rule_kind==="right_transfer"?state.rights.find(r=>same(r.id,o.existing_right_id)):null;
@@ -503,6 +506,12 @@ function paintOffers(){
         o.mixed_assets.map(x=>'<li>'+esc((x.side==="from"?name(o.from_team_id):name(o.to_team_id))+
           " offre "+extraLabel(x))+'</li>').join("")+'</ul>':'')+
       '<p>Proposta: '+esc(formatDate(o.created_at))+'</p>'+
+      (awaitingCuts?'<p class="ct-cuts-pending">✂️ <b>In attesa dello svincolo di '+
+        esc(name(cutTeam))+'</b> ('+playerBalance.difference+' giocator'+
+        (playerBalance.difference===1?'e':'i')+'). I giocatori verranno trasferiti e la chiamata compensativa assegnata appena si completa lo svincolo. '+
+        'Le pick restano riservate; solo la scelta finale dipenderà dalla condizione.'+
+        (same(cutTeam,myId())?' Vai in <b>Trade classica → Proposte</b> e premi «Svincola '+
+          playerBalance.difference+' e completa».':'')+'</p>':'')+
       (awaiting?'<div class="ct-action-row">'+(incoming?
         '<button class="ct-action-primary" data-ct-accept="'+esc(o.id)+'"'+(!state.enabled?" disabled":"")+'>Accetta</button>'+
         '<button class="ct-action-red" data-ct-reject="'+esc(o.id)+'"'+(!state.enabled?" disabled":"")+'>Rifiuta</button>':
@@ -513,7 +522,7 @@ function paintOffers(){
 function paintRights(){
   const panel=$("ctRightsPanel"),items=$("ctRightItems"),buyPanel=$("ctBuyRightsPanel"),buyItems=$("ctBuyRightsItems");
   if(!panel||!items||!buyPanel||!buyItems)return;
-  const list=state.rights.filter(r=>r.status==="active"&&(
+  const list=state.rights.filter(r=>["active","pending_cuts"].includes(r.status)&&(
     same(r.grantor_team_id,myId())||same(r.holder_team_id,myId())));
   const available=state.rights.filter(r=>r.status==="active"&&
     !same(r.grantor_team_id,myId())&&!same(r.holder_team_id,myId())&&
@@ -522,10 +531,11 @@ function paintRights(){
   panel.hidden=!list.length&&!available.length;
   items.innerHTML=list.map(r=>
     '<article class="ct-right-card"><header><strong>'+esc(kindLabel(r.rule_kind))+
-    '</strong><span class="ct-status">Attivo · pick vincolate</span></header>'+
+    '</strong><span class="ct-status">'+esc(r.status==="pending_cuts"?
+       "In attesa di svincolo · pick riservate":"Attivo · pick vincolate")+'</span></header>'+
     '<p>Titolare: <b>'+esc(name(r.holder_team_id))+'</b> · Promesse da '+esc(name(r.grantor_team_id))+'</p>'+
     '<p>Draft '+esc(r.season)+' · '+esc(r.draft_name)+'</p>'+
-    (same(r.holder_team_id,myId())?'<div class="ct-action-row"><button type="button" data-ct-resell="'+esc(r.id)+'">📤 Vendi il diritto</button></div>':'')+'</article>'
+    (r.status==="active"&&same(r.holder_team_id,myId())?'<div class="ct-action-row"><button type="button" data-ct-resell="'+esc(r.id)+'">📤 Vendi il diritto</button></div>':'')+'</article>'
   ).join("");
   buyPanel.hidden=!available.length;
   buyItems.innerHTML=available.map(r=>{
@@ -586,7 +596,7 @@ function paintReviews(){
 function paintConditionalHistory(){
   const panel=$("ctHistoryPanel"),items=$("ctHistoryItems");
   if(!panel||!items)return;
-  const accepted=state.offers.filter(o=>o.status==="accepted");
+  const accepted=state.offers.filter(o=>["accepted","accepted_pending_cuts"].includes(o.status));
   panel.hidden=accepted.length===0;
   items.innerHTML=accepted.map(o=>{
     const right=state.rights.find(r=>same(r.source_offer_id,o.id))||
@@ -595,7 +605,8 @@ function paintConditionalHistory(){
       state.offers.find(x=>same(x.id,right.source_offer_id)):null;
     const details=original?ruleDetails(right.rule_kind,right.rule_spec,original.candidate_pick_ids):
       ruleDetails(o.rule_kind,o.rule_spec,o.candidate_pick_ids);
-    const status=right?.status==="resolved"?"Condizione risolta":
+    const status=o.status==="accepted_pending_cuts"?"Accettata · svincoli da completare":
+      right?.status==="resolved"?"Condizione risolta":
       o.rule_kind==="right_transfer"?"Diritto rivenduto":"Diritto attivo";
     const extras=Array.isArray(o.mixed_assets)?o.mixed_assets:[];
     return '<article class="ct-offer-card"><header><strong>'+
@@ -609,7 +620,9 @@ function paintConditionalHistory(){
           '</li>').join("")+'</ul>':'')+
       (right?.status==="resolved"?'<p>Pick assegnata: <strong>'+
         esc(pickText(right.resolved_pick_id))+'</strong> a '+esc(name(right.holder_team_id))+'</p>':'')+
-      '<p>Confermata il '+esc(formatDate(o.accepted_at))+'</p></article>';
+      '<p>'+(o.status==="accepted_pending_cuts"?
+        "Attesa svincolo per completare lo scambio normale di giocatori e la pick di contropartita.":
+        "Confermata il "+esc(formatDate(o.accepted_at)))+'</p></article>';
   }).join("");
 }
 
