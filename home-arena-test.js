@@ -692,33 +692,6 @@ function drawTicker(){
  const a=state.standings["Conf A"]?.[0],b=state.standings["Conf B"]?.[0];
  set("ticker-text",a&&b?"League: "+a.name+" ("+a.pt+" pt) · Championship: "+b.name+" ("+b.pt+" pt)":"Classifiche e risultati in aggiornamento");
 }
-function drawWeeklyNews(){
- // Exclude current personal fixture: never show the same matchup twice.
- const current=state.slides[state.slides.findIndex(x=>x.kind==="current")]||state.slides[state.index];
- const pair=f=>[norm(f.home),norm(f.away)].sort().join("|");
- const candidates=["Conf A","Conf B"].flatMap(code=>{
-   const gw=round(code);
-   return fixtures(code,gw).filter(f=>!current||pair(f)!==pair(current))
-    .map(f=>({...f,code,rank:(standing(f.home,code)||99)+(standing(f.away,code)||99)}));
- }).sort((a,b)=>a.rank-b.rank);
- const f=candidates[0];
- if(!f){
-  $("weekly-story").href="statistiche.html";
-  set("weekly-tag","NUMERI E TENDENZE");
-  set("weekly-title","Power Ranking");
-  set("weekly-sub","Le statistiche della stagione");
-  img("weekly-left-logo","icons/nav/statistiche.webp");
-  img("weekly-right-logo","icons/nav/classifiche.webp");
-  return;
- }
- img("weekly-left-logo",logo(f.home),"Logo "+f.home);
- img("weekly-right-logo",logo(f.away),"Logo "+f.away);
- set("weekly-tag",confName(f.code).toUpperCase()+" · G"+f.gw);
- set("weekly-title",f.home+" vs "+f.away);
- const h=standing(f.home,f.code),a=standing(f.away,f.code);
- set("weekly-sub",h&&a?h+"ª contro "+a+"ª in classifica":"Un'altra sfida da seguire");
- $("weekly-story").href=href(f,f.code);
-}
 // Waiver settings still define the active season phase used by the Playoff card.
 // The Insider-specific countdown and latest trade queries are no longer needed.
 async function settings(){
@@ -758,7 +731,7 @@ async function init(){
  if(r.status==="fulfilled"&&Array.isArray(r.value))state.rows=r.value;
  else console.warn("Risultati Arena non disponibili",r.reason);
  ["Conf A","Conf B","Unificata"].forEach(c=>state.standings[c]=table(c));
- buildSlides();identity();drawTicker();drawWeeklyNews();drawTable("Conf A");chooseView("league");
+ buildSlides();identity();drawTicker();drawTable("Conf A");chooseView("league");
  setDemoMode(new URLSearchParams(window.location.search).get("demo")==="all");
  if(state.team?.conf==="Conf B")document.querySelector('[data-conf="Conf B"]')?.click();
  loadCupStatuses().catch(err=>console.warn("Anteprima coppe Arena:",err));
