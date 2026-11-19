@@ -1025,6 +1025,9 @@ function generaTabellaVerticale(containerId, draftData, squadreOrdine) {
     });
   });
 
+  const maxPicksByRound={};
+  for(let r=1;r<=maxRounds;r++)
+    maxPicksByRound[r]=Math.max(1,...squadre.map(team=>(draftPerSquadra[team]?.[r]||[]).length));
   let html = '<div class="draft-columns">';
 
   squadre.forEach(squadra => {
@@ -1037,12 +1040,12 @@ function generaTabellaVerticale(containerId, draftData, squadreOrdine) {
 
     for (let r = 1; r <= maxRounds; r++) {
       const picksInRound = draftPerSquadra[squadra][r] || [];
-
-      if (!picksInRound.length) {
-        html += `<div class="pick pick-empty" aria-hidden="true"></div>`;
+      const capacity=maxPicksByRound[r];
+      html += `<div class="draft-round-slot" data-count="${capacity}" style="--round-pick-count:${capacity}">`;
+      if(!picksInRound.length){
+        html += '<div class="pick pick-empty" aria-hidden="true"></div></div>';
         continue;
       }
-
       picksInRound.forEach(pick => {
         const tradedClass = pick.traded ? "pick-traded" : "";
         const bonusClass = pick.bonus ? "pick-bonus" : "";
@@ -1091,6 +1094,7 @@ const tradeKeyAttribute = tradeKey
             ${pick.conditionalProjection ? `<span class="ct-draft-preview-label">🔐 Provvisoria</span>` : ""}
           </div>`;
       });
+      html += "</div>";
     }
 
     html += `</div></article>`;
@@ -1102,29 +1106,19 @@ const tradeKeyAttribute = tradeKey
 }
 
 
-function renderRounds(draftContainerId, roundsColId) {
-  const container = document.getElementById(draftContainerId);
-  const roundsCol = document.getElementById(roundsColId);
-  if (!container || !roundsCol) return;
-
-  const cards = container.querySelectorAll(".draft-card");
-  if (!cards.length) return;
-
-  // quante pick/righe (prendo il massimo per sicurezza)
-  let maxRounds = 0;
-  cards.forEach(card => {
-    const n = card.querySelectorAll(".draft-picks .pick").length;
-    if (n > maxRounds) maxRounds = n;
-  });
-
-  // costruisco colonna: spacer (per allinearla sotto header) + Round 1..N
-  roundsCol.innerHTML = `<div class="rounds-spacer"></div>`;
-  for (let r = 1; r <= maxRounds; r++) {
-    const row = document.createElement("div");
-    row.className = "round";
-    row.textContent = `R${r}`;
+function renderRounds(draftContainerId,roundsColId){
+  const container=document.getElementById(draftContainerId);
+  const roundsCol=document.getElementById(roundsColId);
+  if(!container||!roundsCol)return;
+  const slots=container.querySelectorAll(".draft-card:first-child .draft-round-slot");
+  roundsCol.innerHTML='<div class="rounds-spacer"></div>';
+  slots.forEach((slot,index)=>{
+    const row=document.createElement("div");
+    row.className="round";
+    row.textContent="R"+(index+1);
+    row.style.setProperty("--round-pick-count",slot.dataset.count||"1");
     roundsCol.appendChild(row);
-  }
+  });
 }
 
 function escapeDraftHtml(value) {
