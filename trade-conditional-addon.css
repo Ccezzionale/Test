@@ -98,3 +98,15 @@
 #ctReviewPanel>p{font-size:12px;line-height:1.5}
 #ctReviewPanel .ct-action-row button{background:#d6ecad;color:#173e33;border-color:#a8cc8d}
 @media(max-width:540px){.ct-resale-modes{grid-template-columns:1fr}.ct-resale-modes button{text-align:left}}
+
+/* Safe two-step submission: works also in installed PWAs without native JS dialogs. */
+.ct-send-confirm[hidden]{display:none!important}
+.ct-send-confirm{border:1px solid #ffe187;border-radius:13px;background:linear-gradient(120deg,#203e60,#183656);padding:15px;margin:13px 0;color:#fff1c3}
+.ct-send-confirm strong{font-size:14px;color:#ffe28b}
+.ct-send-confirm p{font-size:12px;line-height:1.6;color:#eaf4ff;margin:9px 0 12px}
+.ct-send-confirm-actions{display:grid;grid-template-columns:2fr 1fr;gap:9px}
+.ct-send-confirm-actions button{padding:13px 10px;min-height:46px;border-radius:10px;border:1px solid #b6cbdb;font-weight:900;cursor:pointer;font-size:12px}
+#ctConfirmSubmit{background:linear-gradient(115deg,#ffeb9e,#ffc744);border-color:#ffea9c;color:#0d3154}
+#ctCancelSubmit{background:#122d4d;color:#e3f1ff}
+.ct-send-confirm-actions button:disabled{opacity:.55;cursor:wait}
+@media(max-width:440px){.ct-send-confirm-actions{grid-template-columns:1fr}.ct-send-confirm-actions button{width:100%}}
