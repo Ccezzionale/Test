@@ -1185,6 +1185,33 @@ function updateDynamicMobileTradeCount(containerId, value) {
   }
 }
 
+
+function renderMobileRoundPick(pick,ownerTeam) {
+  const original=pick.originalTeam||ownerTeam;
+  const traded=!!pick.traded,bonus=!!pick.bonus;
+  const key=traded?getDynamicTradeKeyForPick({...pick,team:ownerTeam,ownerTeam}):"";
+  const palette=traded?registerDynamicTradePalette(key):null;
+  const style=palette?[
+    `--dynamic-trade-color:${palette.solid}`,
+    `--dynamic-trade-soft:${palette.soft}`,
+    `--dynamic-trade-text:${palette.text}`
+  ].join(";"):"";
+  const note=pick.conditionalProjection?" · PROIEZIONE, non definitiva":"";
+  const title="Pick #"+pick.pickNumber+" · "+ownerTeam+" · da "+original+note;
+  return `<div class="dynamic-mobile-overview-slot ${traded?"is-traded":""}
+    ${bonus?"is-bonus":""} ${pick.conditionalProjection?"is-conditional-projected":""}"
+    style="${style}" title="${escapeDraftHtml(title)}"
+    aria-label="${escapeDraftHtml(title)}">
+    <img src="img/${escapeDraftHtml(ownerTeam)}.webp" alt="" loading="lazy"
+      onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
+    <span class="dynamic-mobile-overview-fallback">${escapeDraftHtml(getDynamicMobileInitials(ownerTeam))}</span>
+    <em aria-hidden="true">#${pick.pickNumber}</em>
+    ${pick.conditionalProjection?'<i class="ct-projected-pin" aria-hidden="true">🔐</i>':
+      bonus?'<i class="bonus" aria-hidden="true">★</i>':
+      traded?'<i class="trade" aria-hidden="true">↔</i>':""}
+  </div>`;
+}
+
 function generaMobileDraftCards(containerId, draftData, squadreOrdine) {
   const container = document.getElementById(containerId);
   if (!container) return;
@@ -1272,6 +1299,13 @@ const fixedTeamOrder = squadre.slice();
         });
 
       const pick = picksInRound[0] || null;
+      // Una franchigia può avere più scelte nello stesso round. Non nascondere
+      // la pick condizionata (né la pick originale) dietro la prima card.
+      if(picksInRound.length>1) {
+        return '<div class="dynamic-mobile-overview-stack">'+
+          picksInRound.map(p=>renderMobileRoundPick(p,squadra)).join("")+
+          '</div>';
+      }
 
       if (!pick) {
         return `
@@ -1322,7 +1356,8 @@ const fixedTeamOrder = squadre.slice();
       const classes = [
         "dynamic-mobile-overview-slot",
         isTraded ? "is-traded" : "",
-        isBonus ? "is-bonus" : ""
+        isBonus ? "is-bonus" : "",
+        pick.conditionalProjection ? "is-conditional-projected" : ""
       ].filter(Boolean).join(" ");
 
       const titleParts = [
@@ -1338,6 +1373,7 @@ const fixedTeamOrder = squadre.slice();
       if (isBonus) {
         titleParts.push("Pick bonus");
       }
+      if(pick.conditionalProjection)titleParts.push("Proiezione condizionata, non definitiva");
 
       return `
         <div
@@ -1360,7 +1396,9 @@ const fixedTeamOrder = squadre.slice();
           <em aria-hidden="true">#${pick.pickNumber}</em>
 
           ${
-            isBonus
+            pick.conditionalProjection
+              ? `<i class="ct-projected-pin" aria-hidden="true">🔐</i>`
+              : isBonus
               ? `<i class="bonus" aria-hidden="true">★</i>`
               : isTraded
                 ? `<i class="trade" aria-hidden="true">↔</i>`
