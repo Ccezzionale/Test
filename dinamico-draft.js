@@ -1462,151 +1462,95 @@ const fixedTeamOrder = squadre.slice();
   }
 }
 
-async function loadDraftTradeSummary() {
-  const containers = [
+async function loadDraftTradeSummary(context={}) {
+  const containers=[
     document.getElementById("draft-trades-league"),
     document.getElementById("draft-trades-championship")
   ];
-
-  containers.forEach(container => {
-    if (container) {
-      container.innerHTML = `<div class="draft-trades-loading">Caricamento trade draft...</div>`;
-    }
-  });
-
-  const { data: teamsData, error: teamsError } = await supabase
-    .from("teams")
-    .select("id, name, conference");
-
-  if (teamsError) {
-    console.error("Errore caricamento teams per trade summary:", teamsError);
-    renderDraftTradeError();
-    return;
-  }
-
-  const teamsById = new Map((teamsData || []).map(team => [team.id, team]));
-
-  const { data: proposals, error: proposalsError } = await supabase
-    .from("trade_proposals")
-    .select("*")
-    .eq("status", "accepted")
-    .order("accepted_at", { ascending: false });
-
-  if (proposalsError) {
-    console.error("Errore caricamento trade_proposals:", proposalsError);
-    renderDraftTradeError();
-    return;
-  }
-
-  if (!proposals || !proposals.length) {
-    renderDraftTrades([], "draft-trades-league", "Conference League");
-    renderDraftTrades([], "draft-trades-championship", "Conference Championship");
-    return;
-  }
-
-  const proposalIds = proposals.map(proposal => proposal.id);
-
-  const { data: assets, error: assetsError } = await supabase
-    .from("trade_assets")
-    .select("*")
-    .in("proposal_id", proposalIds);
-
-  if (assetsError) {
-    console.error("Errore caricamento trade_assets:", assetsError);
-    renderDraftTradeError();
-    return;
-  }
-
-  const futurePickAssetIds = [
-    ...new Set(
-      (assets || [])
-        .filter(asset => asset.asset_type === "future_pick")
-        .map(asset => asset.asset_id)
-        .filter(Boolean)
-    )
-  ];
-
-  if (!futurePickAssetIds.length) {
-    renderDraftTrades([], "draft-trades-league", "Conference League");
-    renderDraftTrades([], "draft-trades-championship", "Conference Championship");
-    return;
-  }
-
-  const { data: futurePicks, error: futurePicksError } = await supabase
-    .from("future_draft_picks")
-    .select("id, season, draft_name, round, pick_kind, status")
-    .eq("season", FUTURE_PICK_SEASON)
-    .in("id", futurePickAssetIds);
-
-  if (futurePicksError) {
-    console.error("Errore caricamento future_draft_picks trade:", futurePicksError);
-    renderDraftTradeError();
-    return;
-  }
-
-  const validFuturePickIds = new Set(
-    (futurePicks || []).map(pick => String(pick.id))
-  );
-
-  const draftTrades = proposals
-    .map(proposal => {
-      const tradeAssets = (assets || []).filter(asset => asset.proposal_id === proposal.id);
-
-      const hasDraft2027Pick = tradeAssets.some(asset =>
-        asset.asset_type === "future_pick" &&
-        validFuturePickIds.has(String(asset.asset_id))
-      );
-
-      if (!hasDraft2027Pick) return null;
-
-      const fromTeam = teamsById.get(proposal.from_team);
-      const toTeam = teamsById.get(proposal.to_team);
-
-      if (!fromTeam || !toTeam) return null;
-
-      const futureAssets = tradeAssets.filter(asset =>
-        asset.asset_type === "future_pick" &&
-        validFuturePickIds.has(String(asset.asset_id))
-      );
-
-      const involvedDraftNames = new Set(
-        futureAssets
-          .map(asset => {
-            const futurePick = (futurePicks || []).find(fp => String(fp.id) === String(asset.asset_id));
-            return futurePick?.draft_name || "";
-          })
-          .filter(Boolean)
-      );
-
+  containers.forEach(c=>{if(c)c.innerHTML='<div class="draft-trades-loading">Caricamento trade draft...</div>';});
+  try {
+    const [teamResult, proposalResult]=await Promise.all([
+      supabase.from("teams").select("id,name,conference"),
+      supabase.from("trade_proposals").select("*").eq("status","accepted")
+        .order("accepted_at",{ascending:false})
+    ]);
+    if(teamResult.error||proposalResult.error)throw teamResult.error||proposalResult.error;
+    const teamsById=new Map((teamResult.data||[]).map(t=>[String(t.id),t]));
+    const proposals=proposalResult.data||[];
+    const proposalIds=proposals.map(p=>p.id);
+    const assetsResult=proposalIds.length
+      ?await supabase.from("trade_assets").select("*").in("proposal_id",proposalIds)
+      :{data:[],error:null};
+    if(assetsResult.error)throw assetsResult.error;
+    const assets=assetsResult.data||[];
+    const futurePickAssetIds=[...new Set(assets.filter(x=>x.asset_type==="future_pick")
+      .map(x=>String(x.asset_id)).filter(Boolean))];
+    const futureResult=futurePickAssetIds.length
+      ?await supabase.from("future_draft_picks")
+        .select("id,season,draft_name,round,pick_kind,status")
+        .eq("season",FUTURE_PICK_SEASON).in("id",futurePickAssetIds)
+      :{data:[],error:null};
+    if(futureResult.error)throw futureResult.error;
+    const validFuturePickIds=new Set((futureResult.data||[]).map(x=>String(x.id)));
+    const offers=context.offers||[];
+    const linkedLegacyIds=new Set(offers.map(o=>String(o.mixed_legacy_trade_id||"")).filter(Boolean));
+    // Gli scambi misti hanno già una rappresentazione completa nella trade
+    // condizionata; non mostrare una seconda card per la gamba classica.
+    const regularTrades=proposals.filter(p=>!linkedLegacyIds.has(String(p.id)))
+      .map(proposal=>{
+        const tradeAssets=assets.filter(x=>x.proposal_id===proposal.id);
+        const futureAssets=tradeAssets.filter(x=>x.asset_type==="future_pick"&&
+          validFuturePickIds.has(String(x.asset_id)));
+        if(!futureAssets.length)return null;
+        const fromTeam=teamsById.get(String(proposal.from_team));
+        const toTeam=teamsById.get(String(proposal.to_team));
+        if(!fromTeam||!toTeam)return null;
+        const involvedDraftNames=new Set(futureAssets.map(x=>
+          (futureResult.data||[]).find(p=>String(p.id)===String(x.asset_id))?.draft_name
+        ).filter(Boolean));
+        return {proposal,assets:tradeAssets,futureAssets,fromTeam,toTeam,
+          type:getDraftTradeType(fromTeam,toTeam),involvedDraftNames,
+          date:proposal.accepted_at||proposal.created_at};
+      }).filter(Boolean);
+    const rights=context.rights||[];
+    const futureById=context.futureById||new Map();
+    const entries=context.entries||[];
+    const conditionalTrades=offers.map(offer=>{
+      const fromTeam=teamsById.get(String(offer.from_team_id));
+      const toTeam=teamsById.get(String(offer.to_team_id));
+      if(!fromTeam||!toTeam)return null;
+      const right=rights.find(r=>String(r.source_offer_id)===String(offer.id)||
+        (offer.rule_kind==="right_transfer"&&String(r.id)===String(offer.existing_right_id)));
+      const projections=entries.find(e=>String(e.right?.id)===String(right?.id));
+      const candidatePicks=(offer.candidate_pick_ids||[]).map(id=>futureById.get(String(id))).filter(Boolean);
+      const counterPick=futureById.get(String(offer.counter_pick_id));
+      const draftName=right?.draft_name||counterPick?.draft_name||candidatePicks[0]?.draft_name;
+      if(!draftName||(!candidatePicks.some(p=>Number(p.season)===FUTURE_PICK_SEASON)&&
+        Number(counterPick?.season)!==FUTURE_PICK_SEASON))return null;
       return {
-        proposal,
-        assets: tradeAssets,
-        futureAssets,
-        fromTeam,
-        toTeam,
-        type: getDraftTradeType(fromTeam, toTeam),
-        involvedDraftNames,
-        date: proposal.accepted_at || proposal.created_at
+        proposal:{id:offer.id,accepted_at:offer.accepted_at,created_at:offer.created_at},
+        assets:assets.filter(x=>String(x.proposal_id)===String(offer.mixed_legacy_trade_id)),
+        fromTeam,toTeam,type:getDraftTradeType(fromTeam,toTeam),
+        involvedDraftNames:new Set([draftName]),
+        date:offer.accepted_at||offer.created_at,
+        conditional:{offer,right,projection:projections,candidatePicks,counterPick,
+          futureById,teamsById}
       };
-    })
-    .filter(Boolean);
-
-  const leagueTrades = draftTrades.filter(trade =>
-    trade.involvedDraftNames.has("Draft Conference") ||
-    trade.fromTeam.conference === "Conference League" ||
-    trade.toTeam.conference === "Conference League" ||
-    trade.type === "interconference"
-  );
-
-  const championshipTrades = draftTrades.filter(trade =>
-    trade.involvedDraftNames.has("Draft Championship") ||
-    trade.fromTeam.conference === "Conference Championship" ||
-    trade.toTeam.conference === "Conference Championship" ||
-    trade.type === "interconference"
-  );
-
-  renderDraftTrades(leagueTrades, "draft-trades-league", "Conference League");
-  renderDraftTrades(championshipTrades, "draft-trades-championship", "Conference Championship");
+    }).filter(Boolean);
+    const allTrades=[...regularTrades,...conditionalTrades]
+      .sort((x,y)=>Date.parse(y.date||0)-Date.parse(x.date||0));
+    const byConference=(name)=>allTrades.filter(t=>
+      t.involvedDraftNames.has(name)||
+      t.fromTeam.conference===(name==="Draft Conference"?"Conference League":"Conference Championship")||
+      t.toTeam.conference===(name==="Draft Conference"?"Conference League":"Conference Championship")||
+      t.type==="interconference"
+    );
+    renderDraftTrades(byConference("Draft Conference"),"draft-trades-league","Conference League");
+    renderDraftTrades(byConference("Draft Championship"),"draft-trades-championship","Conference Championship");
+  }catch(err){
+    console.error("Trade Draft: caricamento non riuscito",err);
+    renderDraftTradeError();
+  }
 }
 
 function getDraftTradeType(fromTeam, toTeam) {
