@@ -1693,49 +1693,66 @@ function renderDraftTrades(trades, containerId, conferenceTitle) {
 }
 
 function renderDraftTradeCard(trade) {
-  const tradePalette = registerDynamicTradePalette(
-    trade?.proposal?.id || ""
-  ) || getDynamicTradePaletteByIndex(0);
-
-  const tradeStyle = [
-    `--dynamic-trade-color:${tradePalette.solid}`,
-    `--dynamic-trade-soft:${tradePalette.soft}`,
-    `--dynamic-trade-text:${tradePalette.text}`
+  const palette=registerDynamicTradePalette(trade?.proposal?.id||"")||
+    getDynamicTradePaletteByIndex(0);
+  const tradeStyle=[
+    `--dynamic-trade-color:${palette.solid}`,
+    `--dynamic-trade-soft:${palette.soft}`,
+    `--dynamic-trade-text:${palette.text}`
   ].join(";");
-
-  const fromAssets = trade.assets.filter(asset => asset.side === "from");
-  const toAssets = trade.assets.filter(asset => asset.side === "to");
-
-  const fromName = trade.fromTeam?.name || "Squadra";
-  const toName = trade.toTeam?.name || "Squadra";
-
+  const fromAssets=trade.assets.filter(x=>x.side==="from").slice();
+  const toAssets=trade.assets.filter(x=>x.side==="to").slice();
+  const fromName=trade.fromTeam?.name||"Squadra",toName=trade.toTeam?.name||"Squadra";
+  const conditional=trade.conditional;
+  let conditionalHtml="";
+  if(conditional){
+    const {offer,right,projection,counterPick,futureById,teamsById}=conditional;
+    const grantorFrom=String(offer.grantor_team_id)===String(trade.fromTeam?.id);
+    const giving=grantorFrom?fromAssets:toAssets;
+    const paying=grantorFrom?toAssets:fromAssets;
+    const holderName=teamsById.get(String(right?.holder_team_id||offer.holder_team_id))?.name||"Franchigia";
+    giving.push({asset_type:"future_pick",asset_label:"🔐 Diritto condizionato sulla scelta futura"});
+    if(counterPick)paying.push({asset_type:"future_pick",
+      asset_label:"🎯 "+conditionalPickText(counterPick,teamsById)});
+    const clause=conditionalOfferSummary(offer,right,futureById,teamsById);
+    const finalPick=right?.status==="resolved"?
+      futureById.get(String(right.resolved_pick_id)):null;
+    const result=finalPick
+      ?"✅ Esito definitivo: "+conditionalPickText(finalPick,teamsById)+" assegnata a "+holderName
+      :projection?.status==="provisional"&&projection.chosen
+        ?"Se finisse oggi: Pick #"+projection.pickNumber+" · "+
+          conditionalPickText(projection.chosen,teamsById)+" → "+holderName
+        :"Scelta ancora da determinare · candidate vincolate";
+    conditionalHtml=`
+      <div class="draft-trade-conditional-box">
+        <strong>🔐 Trade con pick condizionata</strong>
+        <p>${escapeDraftHtml(clause)}</p>
+        <div class="draft-trade-conditional-result">${escapeDraftHtml(result)}</div>
+        <small>${finalPick?"Assegnazione ufficiale":"Proiezione non definitiva. La pick reale rimane vincolata fino al verdetto."}</small>
+      </div>`;
+  }
   return `
-    <article
-      class="draft-trade-card ${escapeDraftHtml(trade.type)} is-color-coded"
-      style="${tradeStyle}"
-    >
+    <article class="draft-trade-card ${escapeDraftHtml(trade.type)} is-color-coded ${conditional?"is-conditional-trade":""}"
+      style="${tradeStyle}">
       <div class="draft-trade-top">
         <span class="draft-trade-dot"></span>
-
         <div class="draft-trade-title">
           <strong>${escapeDraftHtml(shortTeamName(fromName))} ↔ ${escapeDraftHtml(shortTeamName(toName))}</strong>
-          <small>${escapeDraftHtml(getDraftTradeTypeLabel(trade.type))}</small>
+          <small>${escapeDraftHtml(getDraftTradeTypeLabel(trade.type))}${conditional?" · 🔐 Clausola":""}</small>
         </div>
       </div>
-
       <div class="draft-trade-body">
         <div class="draft-trade-side">
           <span>${escapeDraftHtml(shortTeamName(fromName))} offre</span>
           <p>${renderDraftTradeAssets(fromAssets)}</p>
         </div>
-
         <div class="draft-trade-side">
           <span>${escapeDraftHtml(shortTeamName(toName))} offre</span>
           <p>${renderDraftTradeAssets(toAssets)}</p>
         </div>
       </div>
-    </article>
-  `;
+      ${conditionalHtml}
+    </article>`;
 }
 
 function renderDraftTradeAssets(assets) {
