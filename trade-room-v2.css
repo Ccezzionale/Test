@@ -1120,3 +1120,14 @@ body.trade-v2-live .trade-modal-content{
 .v2-trade-card .v2-trade-cuts .v2-cut-team{font-weight:750}
 .v2-trade-card .v2-trade-cuts li>b{color:#102e50}
 .v2-trade-card .v2-cut-player-meta{color:#61738a;font-size:11px}
+
+
+/* Recap unico degli scambi misti con clausola, in Movimenti. */
+.v2-trade-card.v2-trade-conditional{border-color:#d8b75c;background:linear-gradient(140deg,#fffefa,#fff9ea);box-shadow:0 6px 19px rgba(10,43,78,.12)}
+.v2-conditional-kicker{display:inline-flex;align-items:center;gap:5px;margin-top:11px;padding:6px 10px;border:1px solid #e9c866;border-radius:999px;background:#092e57;color:#ffdf70;font-size:10px;font-weight:950;letter-spacing:.035em}
+.v2-conditional-recap{margin-top:12px;padding:13px;border:1px solid #d2b55f;border-left:4px solid #ffc928;border-radius:13px;background:linear-gradient(140deg,#0b335d,#072440);color:#f9fcff;font-size:12px;line-height:1.55;overflow-wrap:anywhere}
+.v2-conditional-recap>strong{display:block;color:#ffde72;font-size:11px;letter-spacing:.05em}
+.v2-conditional-recap p{margin:8px 0 0;color:#f7f9ff}
+.v2-conditional-recap p b{color:#ffe28b}
+.v2-conditional-recap small{display:block;color:#d5e6f6;margin-top:9px;font-size:11px;font-weight:750}
+.v2-trade-conditional .trade-duel li{line-height:1.5}
