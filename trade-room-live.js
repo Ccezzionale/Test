@@ -3,7 +3,7 @@ import { supabase } from "./supabase.js";
 
 /* Trade Room ufficiale V2: la logica degli scambi è delegata al motore classico. */
 const state = {
-  user:null,me:null,isAdmin:false,teams:[],players:[],extra:[],trades:[],assets:[],cuts:[],cutHistory:[],legacyReady:false,
+  user:null,me:null,isAdmin:false,teams:[],players:[],extra:[],trades:[],assets:[],cuts:[],cutHistory:[],conditionalTrades:[],conditionalPicks:[],conditionalRights:[],legacyReady:false,
   settings:{active_phase:"draft",market_open:true},
   allShown:16,tab:"market",subtab:"received",
   targetId:"",give:[],want:[],currentDraft:"Draft Conference"
@@ -236,21 +236,39 @@ async function loadTrades(){
   state.cuts=cuts.error?[]:(cuts.data||[]);
   state.trades=[...new Map([...(r.data||[]),...(s.data||[]),...(o.data||[]),
     ...state.cuts.map(x=>x.proposal).filter(Boolean)].map(x=>[str(x.id),x])).values()];
-  // The legacy leg of a mixed conditional trade is an implementation detail:
-  // only the complete contract should appear in the public Movimenti list.
+  // A conditional mixed trade has a legacy leg for players/cuts, but is
+  // ONE official movement. Load the complete contract to enrich that card.
   const linked=await supabase.from("conditional_trade_offers")
-    .select("mixed_legacy_trade_id")
-    .eq("status","accepted")
-    .not("mixed_legacy_trade_id","is",null);
-  if(!linked.error){
-    const internalIds=new Set((linked.data||[]).map(x=>str(x.mixed_legacy_trade_id)));
-    state.trades=state.trades.filter(t=>!internalIds.has(str(t.id)));
+    .select("*").eq("status","accepted")
+    .order("accepted_at",{ascending:false}).limit(100);
+  if(linked.error)console.warn("Movimenti condizionati non disponibili:",linked.error);
+  state.conditionalTrades=linked.data||[];
+  const linkedIds=state.conditionalTrades.map(o=>o.mixed_legacy_trade_id).filter(Boolean);
+  const ids=[...new Set([...state.trades.map(x=>x.id),...linkedIds])];
+  state.conditionalPicks=[];
+  state.conditionalRights=[];
+  if(state.conditionalTrades.length){
+    const pickIds=[...new Set(state.conditionalTrades.flatMap(o=>[
+      ...(o.candidate_pick_ids||[]),o.counter_pick_id,
+      o.rule_spec?.top_pick_id,o.rule_spec?.bottom_pick_id,
+      o.rule_spec?.middle_pick_id,o.rule_spec?.won_pick_id,o.rule_spec?.not_won_pick_id
+    ]).filter(Boolean))];
+    const [picks,rights]=await Promise.all([
+      pickIds.length?supabase.from("future_draft_picks")
+        .select("id,round,season,draft_name,original_team_id,owner_team_id")
+        .in("id",pickIds):Promise.resolve({data:[],error:null}),
+      supabase.from("conditional_trade_rights")
+        .select("id,source_offer_id,status,resolved_pick_id").limit(500)
+    ]);
+    if(picks.error)console.warn("Dettagli pick condizionate non disponibili:",picks.error);
+    else state.conditionalPicks=picks.data||[];
+    if(rights.error)console.warn("Stato diritti condizionati non disponibile:",rights.error);
+    else state.conditionalRights=rights.data||[];
   }
-  const ids=state.trades.map(x=>x.id);
   state.assets=[];
   state.cutHistory=[];
   if(ids.length){
-    const acceptedIds=state.trades.filter(t=>t.status==="accepted").map(t=>t.id);
+    const acceptedIds=[...new Set([...state.trades.filter(t=>t.status==="accepted").map(t=>t.id),...linkedIds])];
     const [asset,cutRows]=await Promise.all([
       supabase.from("trade_assets")
         .select("proposal_id,side,asset_label,asset_type,asset_id")
@@ -801,10 +819,44 @@ const statusName = x=>({
   rejected:"Rifiutata",cancelled:"Annullata"
 })[x]||str(x);
 const niceDate=x=>{if(!x)return "";const d=new Date(x);return isNaN(d.getTime())?"":d.toLocaleDateString("it-IT",{day:"numeric",month:"short",year:"numeric"});};
+function conditionalPickLabel(id){
+  const p=state.conditionalPicks.find(x=>same(x.id,id));
+  return p?"R"+p.round+" "+p.season+" ("+teamName(p.original_team_id)+")":"Pick futura";
+}
+function conditionalClauseText(o){
+  const r=o.rule_spec||{};
+  const candidates=(o.candidate_pick_ids||[]).map(conditionalPickLabel);
+  if(o.rule_kind==="ranked")
+    return "Diritto alla pick "+(r.which==="worst"?"peggiore":"migliore")+" tra "+candidates.join(", ")+".";
+  if(o.rule_kind==="standing")
+    return "Classifica di "+teamName(r.subject_team_id)+
+      ": prime "+r.top_count+" posizioni → "+conditionalPickLabel(r.top_pick_id)+
+      "; ultime "+r.bottom_count+" → "+conditionalPickLabel(r.bottom_pick_id)+
+      (r.middle_pick_id?"; posizioni intermedie → "+conditionalPickLabel(r.middle_pick_id):"")+".";
+  if(o.rule_kind==="trophy")
+    return "Se "+teamName(r.subject_team_id)+(r.mode==="any_trophy"?" conquista un trofeo":" conquista il trofeo previsto")+
+      " → "+conditionalPickLabel(r.won_pick_id)+"; altrimenti → "+conditionalPickLabel(r.not_won_pick_id)+".";
+  return "Cessione di un diritto condizionato già acquisito: si applica la clausola originale.";
+}
 function tradeHTML(t){
   const from=teamName(t.from_team),to=teamName(t.to_team);
+  const conditional=state.conditionalTrades.find(o=>same(o.mixed_legacy_trade_id,t.id)||
+    (!o.mixed_legacy_trade_id&&same(o.id,t.id)));
+  const right=conditional&&state.conditionalRights.find(r=>same(r.source_offer_id,conditional.id)||
+    (conditional.rule_kind==="right_transfer"&&same(r.id,conditional.existing_right_id)));
+  const clause=conditional?conditionalClauseText(conditional):"";
+  const rightSide=conditional?.rule_kind==="right_transfer"?"from":
+    same(conditional?.grantor_team_id,conditional?.from_team_id)?"from":"to";
   const parts=state.assets.filter(x=>same(x.proposal_id,t.id));
-  const assets=side=>parts.filter(x=>x.side===side).map(x=>"<li>"+tradeV2StoredAssetHtml(x.asset_label)+"</li>").join("")||"<li>Nessun asset</li>";
+  const assets=side=>{
+    const rows=parts.filter(x=>x.side===side)
+      .map(x=>"<li>"+tradeV2StoredAssetHtml(x.asset_label)+"</li>");
+    if(conditional){
+      if(side===rightSide)rows.push('<li><b>🔐 Diritto condizionato</b> sulla pick futura</li>');
+      else rows.push('<li><b>🎯 Pick di contropartita</b>: '+esc(conditionalPickLabel(conditional.counter_pick_id))+'</li>');
+    }
+    return rows.join("")||"<li>Nessun asset</li>";
+  };
   const cut=state.cuts.find(x=>same(x.proposal_id,t.id));
   const remaining=cut?Math.max(0,Number(cut.cuts_required||0)-Number(cut.cuts_done||0)):0;
   const released=t.status==="accepted"
@@ -820,6 +872,12 @@ function tradeHTML(t){
           esc(playerName)+'</b>'+(meta?' <span class="v2-cut-player-meta">('+esc(meta)+')</span>':'')+'</li>';
       }).join("")+'</ul></div>'
     :'';
+  const conditionalHtml=conditional?
+    '<div class="v2-conditional-recap"><strong>🔐 CLAUSOLA SULLA PICK FUTURA</strong>'+
+    '<p>'+esc(clause)+'</p>'+
+    '<p>Contropartita già ceduta: <b>'+esc(conditionalPickLabel(conditional.counter_pick_id))+'</b></p>'+
+    '<small>'+(right?.status==="resolved"?"✅ Condizione risolta. Pick assegnata: "+esc(conditionalPickLabel(right.resolved_pick_id)):
+       "🔒 Diritto attivo. Le candidate restano vincolate fino al verdetto.")+'</small></div>':'';
   const receivedMe=same(t.to_team,state.me.id),sentMe=same(t.from_team,state.me.id);
   const actions=[];
   if(t.status==="pending"&&receivedMe){
@@ -832,10 +890,11 @@ function tradeHTML(t){
   if(t.status==="accepted_pending_cuts"&&remaining>0){
     actions.push('<button type="button" class="v2-trade-accept" data-trade-action="cuts" data-trade-id="'+esc(t.id)+'">Svincola '+remaining+' e completa</button>');
   }
-  return '<article class="v2-trade-card"><div class="meta"><strong>'+esc(from)+' → '+esc(to)+'</strong><span>'+esc(niceDate(t.accepted_at||t.created_at))+'</span></div>'+
+  return '<article class="v2-trade-card'+(conditional?' v2-trade-conditional':'')+'"><div class="meta"><strong>'+esc(from)+' → '+esc(to)+'</strong><span>'+esc(niceDate(t.accepted_at||t.created_at))+'</span></div>'+
+  (conditional?'<div class="v2-conditional-kicker">🔐 SCAMBIO CON PICK CONDIZIONATA</div>':'')+
   '<div class="trade-duel"><div><b>'+esc(from)+' offre</b><ul>'+assets("from")+'</ul></div><div><b>'+esc(to)+' offre</b><ul>'+assets("to")+'</ul></div></div>'+
-  cutsHtml+
-  (t.message?'<p class="v2-trade-message">'+esc(t.message)+'</p>':'')+
+  cutsHtml+conditionalHtml+
+  (t.message&&!conditional?'<p class="v2-trade-message">'+esc(t.message)+'</p>':'')+
   '<span class="v2-status">'+esc(statusName(t.status))+'</span>'+
   (actions.length?'<div class="v2-trade-actions">'+actions.join("")+'</div>':'')+'</article>';
 }
@@ -849,6 +908,17 @@ function drawProposals(){
 }
 function drawHistory(){
   const data=official();
+  const visibleIds=new Set(data.map(t=>str(t.id)));
+  // Pure conditional trades have no classic leg. Mixed trades only need a
+  // synthetic card if the legacy trade is outside the latest 100 rows.
+  for(const o of state.conditionalTrades){
+    const id=o.mixed_legacy_trade_id||o.id;
+    if(visibleIds.has(str(id)))continue;
+    data.push({id,from_team:o.from_team_id,to_team:o.to_team_id,
+      status:"accepted",accepted_at:o.accepted_at,created_at:o.created_at});
+    visibleIds.add(str(id));
+  }
+  data.sort((a,b)=>Date.parse(b.accepted_at||b.created_at||0)-Date.parse(a.accepted_at||a.created_at||0));
   el("v2HistoryCount").textContent=data.length+" movimenti ufficiali recenti";
   el("v2HistoryItems").innerHTML=data.length?data.map(tradeHTML).join(""):
     '<div class="v2-empty">Nessun movimento ufficiale da mostrare.</div>';
