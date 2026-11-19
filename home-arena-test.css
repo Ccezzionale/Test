@@ -1727,3 +1727,166 @@ body[data-view="highlander"].is-cup-eliminated .stage-special > img {
   filter:grayscale(.88) brightness(.67) drop-shadow(0 7px 11px rgba(0,0,0,.65));
   opacity:.78;
 }
+
+
+/* ==========================================================
+   ARENA TEST V22 · PREDICTIONS & CHALLENGES
+   Two compact mascot-led launch cards instead of the duplicate
+   Waiver/Market Insider. Independent of the active cup palette.
+   ========================================================== */
+.predictions-grid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:11px;
+}
+.prediction-card{
+  --challenge-accent:#f5ca69;
+  position:relative;
+  isolation:isolate;
+  display:flex;
+  flex-direction:column;
+  min-width:0;
+  min-height:204px;
+  padding:11px 11px 12px;
+  border:1px solid rgba(255,223,144,.44);
+  border-radius:17px;
+  overflow:hidden;
+  text-decoration:none;
+  color:#f9fbff;
+  background:radial-gradient(ellipse at 55% 26%,rgba(245,185,66,.25),transparent 63%),linear-gradient(145deg,#173657,#08192f 75%);
+  box-shadow:0 9px 20px rgba(0,7,22,.23);
+  -webkit-tap-highlight-color:transparent;
+}
+.prediction-card::before{
+  content:"";position:absolute;inset:0;z-index:-1;
+  background:linear-gradient(140deg,rgba(255,255,255,.055),transparent 48%);
+  pointer-events:none;
+}
+.prediction-playoffs{
+  --challenge-accent:#aad4ff;
+  border-color:rgba(119,181,253,.58);
+  background:radial-gradient(ellipse at 55% 26%,rgba(48,116,236,.36),transparent 67%),linear-gradient(145deg,#132f5e,#08172f 77%);
+}
+.prediction-top{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:4px;
+  font-size:8px;
+  font-weight:950;
+  letter-spacing:.1em;
+  color:var(--challenge-accent);
+}
+.prediction-top b{
+  display:grid;
+  place-items:center;
+  width:23px;height:23px;
+  border-radius:8px;
+  border:1px solid rgba(255,255,255,.2);
+  background:rgba(3,15,35,.35);
+  color:var(--challenge-accent);
+  font-size:15px;
+  font-weight:950;
+  line-height:1;
+}
+.prediction-art{
+  position:relative;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  height:100px;
+  flex-shrink:0;
+  margin:-1px auto 0;
+  width:100%;
+}
+.prediction-art::before{
+  content:"";position:absolute;
+  inset:19px 10px 5px;
+  border-radius:50%;
+  background:rgba(244,190,74,.19);
+  filter:blur(17px);
+  pointer-events:none;
+}
+.prediction-playoffs .prediction-art::before{background:rgba(53,136,255,.25)}
+.prediction-art img{
+  display:block;
+  position:relative;
+  width:100%;
+  max-width:140px;
+  height:108px;
+  object-fit:contain;
+  filter:drop-shadow(0 6px 7px rgba(0,0,0,.38));
+}
+.prediction-content{
+  display:flex;
+  flex:1;
+  flex-direction:column;
+  align-items:flex-start;
+  gap:3px;
+}
+.prediction-content strong{
+  display:block;
+  font-size:clamp(13px,3.9vw,17px);
+  font-weight:1000;
+  letter-spacing:-.025em;
+  line-height:1.08;
+  overflow-wrap:break-word;
+  text-wrap:balance;
+}
+.prediction-content small{
+  display:block;
+  font-size:10px;
+  font-weight:600;
+  color:#c0d3e9;
+  line-height:1.2;
+}
+.prediction-action{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  width:100%;
+  margin-top:auto;
+  padding-top:10px;
+  border-top:1px solid rgba(255,255,255,.16);
+  color:var(--challenge-accent);
+  font-size:9px;
+  font-weight:1000;
+  letter-spacing:.04em;
+  line-height:1.12;
+}
+.prediction-action b{font-size:15px;line-height:1}
+.prediction-card:focus-visible{
+  outline:2px solid var(--challenge-accent);
+  outline-offset:3px;
+}
+@media(hover:hover){
+  .prediction-card:hover{
+    transform:translateY(-2px);
+    border-color:var(--challenge-accent);
+  }
+}
+@media(min-width:680px){
+  .predictions-grid{gap:15px}
+  .prediction-card{
+    min-height:190px;
+    display:grid;
+    grid-template-columns:minmax(100px,32%) minmax(0,1fr);
+    grid-template-rows:auto 1fr;
+    column-gap:10px;
+    align-items:center;
+  }
+  .prediction-top{grid-column:1/-1}
+  .prediction-art{height:126px}
+  .prediction-art img{height:130px}
+  .prediction-content{height:100%;justify-content:center}
+  .prediction-action{margin-top:auto}
+}
+@media(max-width:355px){
+  .predictions-grid{gap:8px}
+  .prediction-card{padding:9px 8px 10px;min-height:202px}
+  .prediction-art{height:94px}
+  .prediction-art img{height:101px}
+  .prediction-top{font-size:7px}
+  .prediction-content small{font-size:9px}
+  .prediction-action{font-size:8px}
+}
