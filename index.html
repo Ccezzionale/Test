@@ -1,271 +1,67 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="it">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Lega degli Eroi</title>
-  
-
-  <link rel="stylesheet" href="navbar.css?v=20261007-bottom4">
-
-  <!-- PWA -->
-  <link rel="manifest" href="manifest.json">
-
-  <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
-  <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png">
-  <link rel="apple-touch-icon" href="apple-touch-icon.png">
-
-  <meta name="theme-color" content="#061326">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="Lega Eroi">
-
-  <style>
-    * {
-      box-sizing: border-box;
-    }
-
-    html,
-    body {
-      margin: 0;
-      padding: 0;
-      overflow-x: hidden;
-    }
-
-    body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      color: #222;
-      background:
-        radial-gradient(900px 500px at 15% 0%, rgba(0, 116, 217, .25), transparent 60%),
-        radial-gradient(900px 500px at 85% 15%, rgba(255, 204, 0, .10), transparent 55%),
-        #001f3f;
-    }
-
-    a {
-      text-decoration: none;
-    }
-
-    #app-content {
-      min-height: 100vh;
-      transition: opacity 0.18s ease;
-    }
-
-    #app-content.page-loading {
-      opacity: 0.96;
-    }
-
-    .home-wrap {
-      overflow-x: hidden;
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 20px 16px 30px;
-      background: transparent;
-    }
-
-    @media (min-width: 1200px) {
-      .home-wrap {
-        max-width: none;
-        width: 100%;
-        margin: 0;
-        padding: 20px 12px 30px;
-      }
-    }
-
-    .gazzetta-frame {
-      width: 100%;
-      max-width: 100%;
-      border: 0;
-      border-radius: 14px;
-      background: transparent;
-      box-shadow: none;
-      overflow: hidden;
-      display: block;
-    }
-
-    @media (max-width: 900px) {
-      .home-wrap {
-        padding: 14px 10px 20px;
-      }
-
-      .gazzetta-frame {
-        height: 88vh;
-        border-radius: 12px;
-      }
-
-      .splash-logo {
-        width: 150px;
-        height: 150px;
-        border-radius: 28px;
-      }
-
-      .splash-content h1 {
-        font-size: 1.35rem;
-        letter-spacing: 0.10em;
-      }
-    }
-
-    .gazzetta-frame {
-  display: block;
-  width: 100%;
-  min-height: 0;
-}
-
-    @media (max-width: 768px) {
-  .splash-intro {
-    position: fixed;
-    inset: 0;
-    z-index: 99999;
-    background:
-      radial-gradient(circle at center, rgba(0, 123, 255, .35) 0%, transparent 38%),
-      linear-gradient(180deg, #071b3a 0%, #020817 100%);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    overflow: hidden;
-    animation: splashExit .7s ease forwards;
-    animation-delay: 2.5s;
-  }
-
-  .splash-energy {
-    position: absolute;
-    width: 210px;
-    height: 210px;
-    border-radius: 999px;
-    background: rgba(0, 153, 255, .22);
-    box-shadow:
-      0 0 35px rgba(0, 153, 255, .9),
-      0 0 90px rgba(0, 153, 255, .65);
-    animation: energyPulse 1.55s ease-in-out infinite;
-  }
-
-  .splash-logo {
-    position: relative;
-    z-index: 2;
-    width: min(76vw, 330px);
-    height: auto;
-    border-radius: 0;
-    opacity: 0;
-    transform: scale(.62) rotate(-3deg);
-    filter:
-      drop-shadow(0 0 18px rgba(0, 153, 255, .9))
-      drop-shadow(0 0 34px rgba(255, 193, 7, .38));
-    animation: logoIntro 2.25s ease forwards;
-  }
-
-      .splash-hidden {
-  display: none !important;
-  opacity: 0 !important;
-  visibility: hidden !important;
-  pointer-events: none !important;
-}
-
-  @keyframes logoIntro {
-    0% {
-      opacity: 0;
-      transform: scale(.55) rotate(-4deg);
-    }
-
-    38% {
-      opacity: 1;
-      transform: scale(1.08) rotate(1deg);
-    }
-
-    68% {
-      transform: scale(.96) rotate(0deg);
-    }
-
-    100% {
-      opacity: 1;
-      transform: scale(1) rotate(0deg);
-    }
-  }
-
-  @keyframes energyPulse {
-    0%, 100% {
-      transform: scale(.75);
-      opacity: .45;
-    }
-
-    50% {
-      transform: scale(1.35);
-      opacity: .95;
-    }
-  }
-
-  @keyframes splashExit {
-    to {
-      opacity: 0;
-      visibility: hidden;
-      pointer-events: none;
-    }
-  }
-}
-
-    @media (min-width: 769px) {
-  .splash-intro {
-    display: none !important;
-  }
-}
-
-    /* =========================================================
-   DESKTOP NAV FIX
-   ========================================================= */
-
-@media (min-width: 901px) {
-  .mobile-nav-title,
-  .hamburger {
-    display: none !important;
-  }
-
-  .desktop-home-link {
-    display: inline-flex !important;
-  }
-
-  .site-nav .nav-inner {
-    align-items: center;
-  }
-}
-
-    @media (max-width: 768px) {
-
-  .universe-heading {
-    margin-top: 22px !important;
-  }
-
-  .competitions-home-section {
-    margin-top: 22px !important;
-  }
-
-}
-  </style>
-<meta name="lega-app-build" content="v20261028-ef9f76dc3f25">
-<script defer src="./app-updates.js?bootstrap=v20261028-ef9f76dc3f25" data-eroi-update="1"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#061328">
+<meta name="theme-color" content="#061326">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Lega Eroi">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" type="image/png" sizes="512x512" href="icon-512.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<script defer src="./app-updates.js?bootstrap=v20261119-arena33" data-eroi-update="1"></script>
+<title>Lega degli Eroi | The Arena</title>
+<link rel="icon" href="icon-192.png">
+<link rel="stylesheet" href="navbar.css?v=20261007-bottom4">
+<link rel="stylesheet" href="home-arena-live.css?v=20261119-live33">
+<script type="module" src="home-arena-live.js?v=20261119-live33"></script>
 </head>
+<body class="arena-reboot" data-view="league">
 
-<body>
-<div id="splashIntro" class="splash-intro">
-  <div class="splash-energy"></div>
-  <img src="img/logo-lega-eroi.png" class="splash-logo" alt="Lega degli Eroi">
-</div>
-  <nav class="site-nav">
-    <div class="nav-inner">
-<div class="nav-left">
-  <span id="hamburger" class="hamburger" aria-label="Apri menu">☰</span>
-
-  <button type="button" class="mobile-nav-title" id="mobile-nav-title" aria-label="Apri menu">
-    <span class="mobile-nav-logo">
-      <img src="icon-192.png" alt="">
-    </span>
-    <span>Lega degli Eroi</span>
-    <span class="mobile-nav-caret">▾</span>
-  </button>
-
-  <a href="index.html" class="brand-home desktop-home-link" aria-label="Home">
-    <img src="icons/nav/home.webp" alt="" class="nav-home-icon">
-  </a>
-</div>
-
+<!-- HOME ARENA V33: Home ufficiale della Lega degli Eroi. -->
+<nav class="site-nav arena-v33-header" aria-label="Barra superiore Home Arena">
+  <div class="nav-inner">
+    <div class="nav-left">
+      <a href="index.html" class="arena-top-brand" aria-label="Home Arena">
+        <img src="icon-192.png" alt="">
+        <span class="arena-top-brand-copy"><strong>LEGA DEGLI EROI</strong><small>THE ARENA</small></span>
+      </a>
+    </div>
+    <div class="nav-right hero-actions">
+      <button id="attiva-notifiche-btn" type="button" class="btn-hero warning arena-top-action" aria-label="Centro notifiche">
+        <img src="icons/nav/notifications.webp" class="action-icon" alt="">
+        <span class="btn-label">Notifiche</span>
+      </button>
+      <button id="arena-menu-toggle" type="button" class="arena-top-action arena-menu-trigger" aria-label="Apri menu Arena" aria-controls="arena-menu-panel" aria-expanded="false">
+        <svg viewBox="0 0 24 24" width="23" height="23" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+          <path d="M4 7h16M4 12h16M4 17h16"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+</nav>
+<div class="arena-menu-backdrop" id="arena-menu-backdrop" aria-hidden="true"></div>
+<aside class="arena-menu-panel" id="arena-menu-panel" role="dialog" aria-modal="true" aria-label="Menu Arena" aria-hidden="true">
+  <div class="arena-menu-head">
+    <div><small>NAVIGAZIONE</small><strong>MENU ARENA</strong></div>
+    <button type="button" id="arena-menu-close" aria-label="Chiudi menu">
+      <svg viewBox="0 0 24 24" width="23" height="23" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M5 5l14 14M19 5L5 19"/></svg>
+    </button>
+  </div>
+  <div class="arena-menu-scroll">
+    <div class="arena-menu-profile">
+      <img id="arena-menu-team-logo" src="icon-192.png" alt="">
+      <div class="arena-menu-profile-copy">
+        <span>IL TUO QUARTIER GENERALE</span>
+        <strong id="arena-menu-team-name">La tua franchigia</strong>
+        <small id="arena-menu-team-detail">Dati della squadra in aggiornamento</small>
+      </div>
+    </div>
+    <div class="arena-menu-section-heading">ESPLORA LA LEGA</div>
+    <nav class="arena-drawer-nav" aria-label="Sezioni Lega degli Eroi">
 <ul class="navbar" id="mainMenu">
 
 <!-- ROSE NORMALE: visibile ai non-admin -->
@@ -430,759 +226,186 @@
 
         <li><a href="regolamento.html">Regolamento</a></li>
       </ul>
-
-      <div class="nav-right hero-actions">
-        <a id="trade-badge" href="trade-room.html" class="btn-hero trade-badge" aria-label="Trade Room">
-          <img src="icons/nav/trade-room.webp" class="action-icon" alt="">
-          <span class="btn-label">Trade Room</span>
-        </a>
-
-        <a id="login-btn" href="login.html" class="btn-hero" style="display:none;" aria-label="Login">
-          <img src="icons/nav/login-logout.webp" class="action-icon" alt="">
-          <span class="btn-label">Login</span>
-        </a>
-
-        <button id="logout-btn" type="button" class="btn-hero" style="display:none;" aria-label="Logout">
-          <img src="icons/nav/login-logout.webp" class="action-icon" alt="">
-          <span class="btn-label">Logout</span>
-        </button>
-
-        <button id="attiva-notifiche-btn" type="button" class="btn-hero warning" aria-label="Centro notifiche">
-          <img src="icons/nav/notifications.webp" class="action-icon" alt="">
-          <span class="btn-label">Notifiche</span>
-        </button>
-      </div>
-    </div>
-  </nav>
-
-<main class="home-wrap home-dashboard">
-
-  <!-- =======================================================
-       HOME DESKTOP FUN · solo desktop
-       Mobile resta invariato nella sezione home-app-v2 sotto.
-       ======================================================= -->
-  <section class="desktop-fun-home" aria-label="Home desktop Lega degli Eroi">
-    <header class="desktop-fun-hero desktop-fun-hero-banner" aria-label="Hero Lega degli Eroi">
-      <img src="img/home-desktop/hero-main.png?v=20261002-hero2" alt="Lega degli Eroi - Stessi amici. Più eroi.">
-    </header>
-
-    <div class="desktop-fun-grid desktop-fun-grid-top">
-      <section class="desktop-fun-card desktop-fun-personal-card" aria-labelledby="desktop-fun-personal-title">
-        <div class="desktop-fun-card-head desktop-fun-personal-head">
-          <h2 id="desktop-fun-personal-title">⚔ Il tuo Match Center</h2>
-          <span id="desktop-fun-personal-state">Campionato</span>
-        </div>
-        <div class="desktop-fun-match-tabs" id="desktop-fun-match-tabs" role="tablist" aria-label="Le tue competizioni">
-          <button type="button" class="is-active" data-desktop-fun-match-tab="league" aria-selected="true">🏆 Campionato</button>
-          <button type="button" id="desktop-fun-tab-crashout" data-desktop-fun-match-tab="crashout" aria-selected="false" hidden>💥 Crash Out</button>
-          <button type="button" id="desktop-fun-tab-highlander" data-desktop-fun-match-tab="highlander" aria-selected="false" hidden>⚔ Highlander</button>
-        </div>
-        <div id="desktop-fun-personal-match" class="desktop-fun-personal-match">
-          <div class="desktop-fun-loading">Caricamento del tuo match…</div>
-        </div>
-        <div id="desktop-fun-personal-rounds" class="desktop-fun-personal-rounds" aria-label="Navigazione partite"></div>
-      </section>
-
-      <section class="desktop-fun-card desktop-fun-standings-card" aria-labelledby="desktop-fun-standings-title">
-        <div class="desktop-fun-card-head">
-          <h2 id="desktop-fun-standings-title">👑 Classifiche</h2>
-          <a href="classifica.html">Vedi tutto →</a>
-        </div>
-        <div class="desktop-fun-conference-grid">
-          <div class="desktop-fun-conference is-league">
-            <h3>Conference League</h3>
-            <div id="desktop-fun-standings-a" class="desktop-fun-table"><div class="desktop-fun-loading">Caricamento…</div></div>
-          </div>
-          <div class="desktop-fun-conference is-championship">
-            <h3>Conference Championship</h3>
-            <div id="desktop-fun-standings-b" class="desktop-fun-table"><div class="desktop-fun-loading">Caricamento…</div></div>
-          </div>
-        </div>
-      </section>
-
-      <section class="desktop-fun-card desktop-fun-power-card" aria-labelledby="desktop-fun-power-title">
-        <div class="desktop-fun-card-head">
-          <h2 id="desktop-fun-power-title">⚡ Power Ranking</h2>
-          <a href="statistiche.html">Statistiche →</a>
-        </div>
-        <div class="desktop-fun-power-layout">
-          <div id="desktop-fun-power" class="desktop-fun-power-list"><div class="desktop-fun-loading">Caricamento…</div></div>
-          <img src="img/home-desktop/power-mascot.png?v=20261002-power1" alt="" aria-hidden="true">
-        </div>
-      </section>
-    </div>
-
-    <div class="desktop-fun-grid desktop-fun-grid-middle">
-      <a href="giornale.html" class="desktop-fun-card desktop-fun-gazzetta-card">
-        <div class="desktop-fun-gazzetta-art">
-          <img src="img/home-desktop/gazzetta-banner.png?v=20261002-gazz1" alt="" aria-hidden="true">
-        </div>
-        <div class="desktop-fun-gazzetta-copy">
-          <span>📰 Dalla Gazzetta</span>
-          <h2>La lega parla.<br>Qualcuno purtroppo ascolta.</h2>
-          <p>Editoriali, pagelle, polemiche e sentenze completamente non richieste.</p>
-          <strong>APRI LA GAZZETTA →</strong>
-        </div>
+    </nav>
+    <div class="arena-menu-section-heading arena-menu-account-heading">ACCOUNT E COLLEGAMENTI</div>
+    <div class="arena-menu-account-actions">
+      <a id="trade-badge" href="trade-room.html" class="btn-hero trade-badge" aria-label="Trade Room">
+        <img src="icons/nav/trade-room.webp" class="action-icon" alt="">
+        <span class="btn-label">Trade Room</span>
       </a>
-
-      <section class="desktop-fun-card desktop-fun-week-card" aria-labelledby="desktop-fun-match-title">
-        <div class="desktop-fun-card-head">
-          <h2 id="desktop-fun-match-title">🔥 Match della settimana</h2>
-          <span id="desktop-fun-match-gw">Giornata</span>
-        </div>
-        <div id="desktop-fun-featured-match" class="desktop-fun-featured-match is-compact">
-          <div class="desktop-fun-loading">Calcolo della sfida più cattiva…</div>
-        </div>
-      </section>
-
-      <section class="desktop-fun-card desktop-fun-events-card" aria-labelledby="desktop-fun-events-title">
-        <div class="desktop-fun-card-head">
-          <h2 id="desktop-fun-events-title">📅 Prossimi eventi</h2>
-          <span>Segna, eroe</span>
-        </div>
-        <div class="desktop-fun-events-list">
-          <a href="waiver.html"><span>01</span><div><b>Waiver Wire</b><small id="desktop-fun-event-waiver">Controlla la prossima chiusura</small></div></a>
-          <a href="crashoutcup.html"><span>02</span><div><b>Crash Out Cup</b><small>Rivalry Games e fase finale</small></div></a>
-          <a href="arena.html"><span>03</span><div><b>Highlander</b><small>Ne resterà soltanto uno</small></div></a>
-          <a href="allstar.html"><span>04</span><div><b>All-Star Game</b><small>Voti, stelle e zero modestia</small></div></a>
-        </div>
-      </section>
+      <a id="login-btn" href="login.html" class="btn-hero" style="display:none;" aria-label="Login">
+        <img src="icons/nav/login-logout.webp" class="action-icon" alt="">
+        <span class="btn-label">Login</span>
+      </a>
+      <button id="logout-btn" type="button" class="btn-hero" style="display:none;" aria-label="Logout">
+        <img src="icons/nav/login-logout.webp" class="action-icon" alt="">
+        <span class="btn-label">Esci dall'account</span>
+      </button>
     </div>
-
-    <section class="desktop-fun-competitions" aria-labelledby="desktop-fun-competitions-title">
-      <div class="desktop-fun-competitions-head">
-        <div>
-          <span>🏆</span>
-          <h2 id="desktop-fun-competitions-title">Le competizioni</h2>
-          <p>Quattro modi diversi di rovinarsi il weekend.</p>
-        </div>
-        <a href="classifica.html">Scopri tutto →</a>
+  </div>
+</aside>
+<main class="shell">
+  <section class="personal-strip">
+    <div class="personal-label">IL TUO QUARTIER GENERALE</div>
+    <div class="personal-flex">
+      <img id="my-mascot" class="personal-mascot" src="img/maglie/default-shirt.png" alt="Mascotte della tua squadra">
+      <div class="personal-copy">
+        <small id="my-coach">Coach</small>
+        <strong id="my-team">La tua franchigia</strong>
+        <span id="my-details">Accesso e classifica in aggiornamento</span>
       </div>
-      <div class="desktop-fun-competition-grid">
-        <a href="classifica.html" class="desktop-fun-competition-tile is-campionato">
-          <img src="img/home-desktop/mascot-trophy.webp" alt="" aria-hidden="true">
-          <div><span>La gloria più lunga</span><h3>Campionato</h3><b>VAI →</b></div>
-        </a>
-        <a href="crashoutcup.html" class="desktop-fun-competition-tile is-crashout">
-          <img src="img/home-desktop/mascot-action.webp" alt="" aria-hidden="true">
-          <div><span>Una sola partita</span><h3>Crash Out Cup</h3><b>VAI →</b></div>
-        </a>
-        <a href="arena.html" class="desktop-fun-competition-tile is-highlander">
-          <img src="img/home-desktop/mascot-determined.webp" alt="" aria-hidden="true">
-          <div><span>Un solo sopravvissuto</span><h3>Highlander</h3><b>VAI →</b></div>
-        </a>
-        <a href="allstar.html" class="desktop-fun-competition-tile is-allstar">
-          <img src="img/home-desktop/mascot-sticker.webp" alt="" aria-hidden="true">
-          <div><span>I migliori contro i migliori</span><h3>All-Star Game</h3><b>VAI →</b></div>
-        </a>
-      </div>
-    </section>
+      <img id="my-logo" class="personal-logo" src="icon-192.png" alt="Logo squadra">
+    </div>
   </section>
 
-  <section class="mobile-app-hero home-app-v2" aria-label="Dashboard squadra">
-    <section class="app-identity-card" aria-label="La tua squadra">
-      <img id="dashboard-team-bg-logo" class="app-identity-watermark" src="icon-192.png" alt="">
-      <img id="dashboard-team-shirt" class="app-identity-mascot" src="img/maglie/default-shirt.png" alt="Mascotte squadra">
-      <div class="app-identity-copy">
-        <span class="app-identity-kicker">La tua squadra</span>
-        <h1 id="dashboard-team-name">Lega degli Eroi</h1>
-        <p><span id="dashboard-team-coach">Coach</span> · <span id="dashboard-team-position">Classifica in caricamento</span></p>
-        <small id="dashboard-team-conference">Conference League</small>
-      </div>
-      <img id="dashboard-team-logo" class="app-identity-logo" src="icon-192.png" alt="Logo squadra">
-      <span class="app-role-chip" id="dashboard-user-role">Coach</span>
-    </section>
-
-    <section class="match-carousel-section" id="dashboard-match-carousel" aria-label="Il tuo match">
-      <div class="match-carousel-heading">
-        <span>Il tuo match</span>
-        <small id="dashboard-match-carousel-state">Calendario</small>
-      </div>
-
-      <div class="match-competition-tabs" id="dashboard-match-tabs" role="tablist" aria-label="Competizioni della tua squadra">
-        <button type="button" class="match-competition-tab is-active" id="dashboard-match-tab-league" data-match-tab="league" role="tab" aria-selected="true" aria-controls="dashboard-league-match-panel">
-          <span aria-hidden="true">🏆</span> Campionato
-        </button>
-        <button type="button" class="match-competition-tab is-crashout" id="dashboard-match-tab-crashout" data-match-tab="crashout" role="tab" aria-selected="false" aria-controls="dashboard-crashout-match-panel" hidden>
-          <span aria-hidden="true">🏆</span> Crash Out Cup
-        </button>
-        <button type="button" class="match-competition-tab is-highlander" id="dashboard-match-tab-highlander" data-match-tab="highlander" role="tab" aria-selected="false" aria-controls="dashboard-highlander-match-panel" hidden>
-          <span aria-hidden="true">⚔</span> Highlander
-        </button>
-      </div>
-
-      <div class="match-competition-panel is-active" id="dashboard-league-match-panel" data-match-panel="league" role="tabpanel" aria-labelledby="dashboard-match-tab-league">
-        <div class="match-carousel-round-nav" aria-label="Navigazione partite">
-          <button type="button" class="match-carousel-arrow" id="dashboard-match-prev" aria-label="Partita precedente">‹</button>
-          <div class="match-carousel-rounds" id="dashboard-match-rounds" aria-label="Giornate disponibili"></div>
-          <button type="button" class="match-carousel-arrow" id="dashboard-match-next" aria-label="Partita successiva">›</button>
+  <section class="section hero-section" aria-labelledby="matchday-head">
+    <div class="sec-heading">
+      <div><span class="eyebrow">MATCHDAY CENTRAL</span><h1 id="matchday-head">IL TUO MATCH</h1></div>
+      <span class="section-mark" id="matchday-mark">PROSSIMA SFIDA</span>
+    </div>
+    <nav class="cup-tabs" aria-label="Competizioni sempre disponibili">
+      <button type="button" data-cup="league" class="on" aria-pressed="true">Campionato</button>
+      <button type="button" data-cup="playoff" aria-pressed="false">Playoff</button>
+      <button type="button" data-cup="crashout" aria-pressed="false">Crash Out</button>
+      <button type="button" data-cup="highlander" aria-pressed="false">Highlander</button>
+    </nav>
+    <article class="match-stage" aria-live="polite">
+      <div class="stage-visual">
+      <div class="stage-top"><span id="stage-competition">CONFERENCE LEAGUE</span><b id="stage-round">CALENDARIO</b></div>
+      <div class="stage-personal" id="stage-personal">
+        <div class="stage-team">
+          <img id="stage-left-logo" src="icon-192.png" alt="">
+          <strong id="stage-left-name">Squadra di casa</strong>
         </div>
-
-        <div class="match-carousel-viewport" id="dashboard-match-viewport" tabindex="0" aria-live="polite">
-          <div class="match-carousel-track" id="dashboard-match-track">
-            <article class="match-carousel-slide is-loading">
-              <div class="match-carousel-card">
-                <span class="match-carousel-loading">Caricamento partita…</span>
-              </div>
-            </article>
-          </div>
+        <div class="stage-score">
+          <small id="stage-score-label">MATCH PREVIEW</small>
+          <strong id="stage-score-value">VS</strong>
         </div>
-
-        <div class="match-carousel-dots" id="dashboard-match-dots" aria-hidden="true"></div>
-      </div>
-
-      <div class="match-competition-panel" id="dashboard-crashout-match-panel" data-match-panel="crashout" role="tabpanel" aria-labelledby="dashboard-match-tab-crashout" hidden>
-        <article class="crashout-home-card is-loading" id="dashboard-crashout-card">
-          <div class="crashout-home-head">
-            <div>
-              <span>Crash Out Cup</span>
-              <strong id="dashboard-crashout-stage">Caricamento…</strong>
-            </div>
-            <b id="dashboard-crashout-badge">SFIDA ATTUALE</b>
-          </div>
-          <div class="crashout-home-versus">
-            <div class="crashout-home-team">
-              <img id="dashboard-crashout-home-logo" src="icon-192.png" alt="">
-              <strong id="dashboard-crashout-home-name">Squadra A</strong>
-            </div>
-            <div class="crashout-home-middle" id="dashboard-crashout-score">VS</div>
-            <div class="crashout-home-team">
-              <img id="dashboard-crashout-away-logo" src="icon-192.png" alt="">
-              <strong id="dashboard-crashout-away-name">Squadra B</strong>
-            </div>
-          </div>
-          <div class="crashout-home-meta">
-            <span id="dashboard-crashout-meta">Rivalry Games</span>
-            <strong id="dashboard-crashout-status">In programma</strong>
-          </div>
-          <a class="crashout-home-cta" id="dashboard-crashout-cta" href="crashoutcup.html">
-            <span>APRI LA COPPA</span><b>→</b>
-          </a>
-        </article>
-      </div>
-
-      <div class="match-competition-panel" id="dashboard-highlander-match-panel" data-match-panel="highlander" role="tabpanel" aria-labelledby="dashboard-match-tab-highlander" hidden>
-        <article class="highlander-home-card is-loading" id="dashboard-highlander-card">
-          <div class="highlander-home-head">
-            <div>
-              <span>Highlander Cup</span>
-              <strong id="dashboard-highlander-stage">Arena</strong>
-            </div>
-            <b id="dashboard-highlander-badge">IN CORSO</b>
-          </div>
-
-          <div class="highlander-home-focus">
-            <img id="dashboard-highlander-image" src="icon-192.png" alt="">
-            <div class="highlander-home-copy">
-              <strong id="dashboard-highlander-team">La tua squadra</strong>
-              <span id="dashboard-highlander-status">Ancora in gara</span>
-            </div>
-          </div>
-
-          <div class="highlander-home-stats">
-            <div><span>Sopravvissute</span><strong id="dashboard-highlander-survivors">16</strong></div>
-            <div><span>Eliminate</span><strong id="dashboard-highlander-eliminated">0</strong></div>
-          </div>
-
-          <a class="highlander-home-cta" id="dashboard-highlander-cta" href="arena.html">
-            <span>VAI ALLA HIGHLANDER</span><b>→</b>
-          </a>
-        </article>
-      </div>
-    </section>
-
-
-    <aside class="desktop-dashboard-sidebar" aria-label="Panoramica della lega">
-      <section class="desktop-side-card desktop-standings-card">
-        <div class="desktop-side-head">
-          <h2>Classifica</h2>
-          <a href="classifica.html">Vai alla lega →</a>
-        </div>
-        <div id="desktop-home-standings" class="desktop-home-standings">
-          <div class="desktop-side-loading">Caricamento classifica…</div>
-        </div>
-      </section>
-
-      <section class="desktop-side-card desktop-status-card">
-        <div class="desktop-side-head">
-          <h2>Il tuo stato</h2>
-          <a href="statistiche.html">Dettagli →</a>
-        </div>
-        <div class="desktop-status-grid">
-          <div><span>🏆</span><strong id="desktop-status-position">–</strong><small>Posizione</small></div>
-          <div><span>★</span><strong id="desktop-status-points">–</strong><small>Punti</small></div>
-          <div><span>▥</span><strong id="desktop-status-average">–</strong><small>Media FP</small></div>
-          <div><span>◕</span><strong id="desktop-status-winrate">–</strong><small>Win rate</small></div>
-        </div>
-      </section>
-
-      <section class="desktop-side-card desktop-alerts-card">
-        <div class="desktop-side-head">
-          <h2>Avvisi &amp; notizie</h2>
-        </div>
-        <a href="waiver.html" class="desktop-alert-row">
-          <span class="desktop-alert-icon">⏱</span>
-          <span><strong id="desktop-waiver-title">Waiver Wire</strong><small id="desktop-waiver-note">Controlla la prossima scadenza</small></span>
-        </a>
-        <a href="trade-room.html" class="desktop-alert-row">
-          <span class="desktop-alert-icon">🤝</span>
-          <span><strong>Trade Room</strong><small>Proposte e movimenti della lega</small></span>
-        </a>
-        <a href="giornale.html" class="desktop-alert-row">
-          <span class="desktop-alert-icon">📰</span>
-          <span><strong>La Gazzetta degli Eroi</strong><small>Leggi l'ultima edizione</small></span>
-        </a>
-        <a href="statistiche.html" class="desktop-alert-row">
-          <span class="desktop-alert-icon">📊</span>
-          <span><strong>Statistiche</strong><small>Power Ranking e numeri della stagione</small></span>
-        </a>
-      </section>
-
-      <a href="allstar.html" class="desktop-side-banner" aria-label="Vai all'All-Star Game">
-        <img src="img/maglie/evidenzaallstar.webp?v=20260915-2" alt="All-Star Game">
-      </a>
-    </aside>
-
-    <section class="home-app-section home-weekly-match-section" aria-labelledby="league-now-title">
-      <div class="home-app-heading">
-        <h2 id="league-now-title">Match della settimana</h2>
-      </div>
-      <div class="home-horizontal-track matchup-track" id="dashboard-matchups">
-        <article class="league-matchup-card loading-card">Calcolo matchup…</article>
-      </div>
-    </section>
-
-
-    <section class="home-app-section" aria-labelledby="featured-title">
-      <div class="home-app-heading">
-        <h2 id="featured-title">In evidenza</h2>
-        <span>Scorri</span>
-      </div>
-      <div class="home-horizontal-track featured-track">
-        <a href="giornale.html" class="home-image-card featured-card">
-          <img src="img/maglie/evidenzagazzetta-v2.webp?v=20260915-2" alt="La Gazzetta degli Eroi">
-        </a>
-        <a href="allstar.html" class="home-image-card featured-card">
-          <img src="img/maglie/evidenzaallstar.webp?v=20260915-2" alt="All-Star Game">
-        </a>
-      </div>
-    </section>
-
-    <section class="home-app-section home-league-pulse-section" aria-labelledby="league-pulse-title">
-      <div class="home-app-heading">
-        <h2 id="league-pulse-title">Dalla lega</h2>
-      </div>
-      <div class="league-live-grid">
-        <a id="tradeV2HomeEntry" href="trade-room-v2.html" class="league-mini-card trade-preview-mini" style="display:none!important;grid-column:1/-1;background:linear-gradient(125deg,#09345f,#135887);border:1px solid #ffd447;color:#fff;padding:14px 18px;border-radius:18px">
-          <span style="color:#ffdc4c;font-weight:900">🧪 ANTEPRIMA PERSONALE</span>
-          <strong style="color:#fff;font-size:17px">Trade Room V2</strong>
-          <small style="color:#e3f1ff">Prova il nuovo listone e la grafica mobile →</small>
-        </a>
-        <a href="trade-room.html" class="league-mini-card trade-mini-card">
-          <span>Ultima trade</span>
-          <strong id="dashboard-latest-trade">Caricamento…</strong>
-          <small id="dashboard-latest-trade-note">Movimento ufficiale</small>
-        </a>
-        <div class="league-mini-card record-mini-card">
-          <span>Record</span>
-          <strong id="dashboard-record-value">–</strong>
-          <small id="dashboard-record-team">Dati in aggiornamento</small>
+        <div class="stage-team">
+          <img id="stage-right-logo" src="icon-192.png" alt="">
+          <strong id="stage-right-name">Avversario</strong>
         </div>
       </div>
-    </section>
-
-    <section class="home-app-section home-compact-competitions" aria-labelledby="competitions-title">
-      <div class="home-app-heading">
-        <h2 id="competitions-title">Competizioni</h2>
-        <span>Tutto a portata</span>
+      <!-- Riquadro orizzontale: immagini ufficiali Real Legends / Miami Vice, senza duplicare le schermate interne delle coppe. -->
+      <div class="stage-duel" id="stage-duel" hidden>
+        <img id="stage-duel-left-art" class="stage-duel-art is-left" alt="" loading="lazy" decoding="async">
+        <div class="stage-duel-center">
+          <span id="stage-duel-round">WILD CARD · 3</span>
+          <strong id="stage-duel-home">TEAM BARTOWSKI</strong>
+          <em>VS</em>
+          <strong id="stage-duel-away">ATLETICO LEON</strong>
+          <small id="stage-duel-note">L'ARENA DELL'INCONTRO</small>
+        </div>
+        <img id="stage-duel-right-art" class="stage-duel-art is-right" alt="" loading="lazy" decoding="async">
       </div>
-
-      <div class="competition-track competition-compact-grid">
-        <a href="classifica.html" class="competition-compact-card is-classifica">
-          <span class="competition-compact-art">
-            <img src="img/home/competizioni/classifiche.webp" alt="">
-          </span>
-          <span class="competition-compact-copy">
-            <strong>Classifiche</strong>
-            <small>Standings</small>
-          </span>
-          <span class="competition-compact-arrow" aria-hidden="true">›</span>
-        </a>
-
-        <a href="playoff.html" class="competition-compact-card is-playoff">
-          <span class="competition-compact-art">
-            <img src="img/home/competizioni/playoff.webp" alt="">
-          </span>
-          <span class="competition-compact-copy">
-            <strong>Playoff</strong>
-            <small>Road to Glory</small>
-          </span>
-          <span class="competition-compact-arrow" aria-hidden="true">›</span>
-        </a>
-
-        <a href="crashoutcup.html" class="competition-compact-card is-crashout">
-          <span class="competition-compact-art">
-            <img src="img/home/competizioni/crashout-rivalry.webp" alt="">
-          </span>
-          <span class="competition-compact-copy">
-            <strong>Crash Out Cup</strong>
-            <small>Rivalry Games</small>
-          </span>
-          <span class="competition-compact-arrow" aria-hidden="true">›</span>
-        </a>
-
-        <a href="arena.html" class="competition-compact-card is-highlander">
-          <span class="competition-compact-art">
-            <img src="img/home/competizioni/highlander.webp" alt="">
-          </span>
-          <span class="competition-compact-copy">
-            <strong>Highlander</strong>
-            <small>Ultimo in piedi</small>
-          </span>
-          <span class="competition-compact-arrow" aria-hidden="true">›</span>
-        </a>
-
-        <a href="crashoutplayoff.html" class="competition-compact-card is-crashout-final">
-          <span class="competition-compact-art">
-            <img src="img/home/competizioni/crashout-finale.webp" alt="">
-          </span>
-          <span class="competition-compact-copy">
-            <strong>Fase finale</strong>
-            <small>Crash Out Playoff</small>
-          </span>
-          <span class="competition-compact-arrow" aria-hidden="true">›</span>
-        </a>
-
-        <a href="supercoppa.html" class="competition-compact-card is-supercoppa">
-          <span class="competition-compact-art">
-            <img src="img/home/competizioni/supercoppa.webp" alt="">
-          </span>
-          <span class="competition-compact-copy">
-            <strong>Supercoppa</strong>
-            <small>La sfida finale</small>
-          </span>
-          <span class="competition-compact-arrow" aria-hidden="true">›</span>
-        </a>
+      <div class="stage-special" id="stage-special" hidden>
+        <img id="stage-cup-art" src="img/cups/playoff-cup.webp" alt="">
+        <div><span id="stage-special-kicker">COMPETIZIONE</span><strong id="stage-special-title">Playoff</strong><p id="stage-special-desc">Segui risultati e tabellone ufficiali.</p></div>
       </div>
-    </section>
-
-    <section class="home-app-section explore-section home-compact-explore" aria-labelledby="explore-title">
-      <div class="home-app-heading">
-        <h2 id="explore-title">Esplora</h2>
       </div>
-      <div class="explore-grid explore-compact-grid">
-        <a href="franchigie.html" class="explore-compact-card">
-          <span class="explore-compact-art"><img src="img/home/esplora/franchigie.webp" alt=""></span>
-          <span class="explore-compact-copy"><strong>Franchigie</strong><small>Squadre e identità</small></span>
-          <span class="explore-compact-arrow" aria-hidden="true">›</span>
-        </a>
-
-        <a href="statistiche.html" class="explore-compact-card">
-          <span class="explore-compact-art"><img src="img/home/esplora/statistiche.webp" alt=""></span>
-          <span class="explore-compact-copy"><strong>Statistiche</strong><small>Power Ranking</small></span>
-          <span class="explore-compact-arrow" aria-hidden="true">›</span>
-        </a>
-
-        <a href="hall-of-fame.html" class="explore-compact-card">
-          <span class="explore-compact-art"><img src="img/home/esplora/hall-of-fame.webp" alt=""></span>
-          <span class="explore-compact-copy"><strong>Hall of Fame</strong><small>Sala dei trofei</small></span>
-          <span class="explore-compact-arrow" aria-hidden="true">›</span>
-        </a>
-
-        <!-- TotoEroi: visibile a tutti. Accesso alla pagina riservato agli account della Lega. -->
-        <a id="explore-totoeroi" href="totoeroi.html" class="explore-compact-card" aria-label="Apri TotoEroi, La Caccia all'8">
-          <span class="explore-compact-art"><img src="img/home/esplora/totoeroi.webp" alt=""></span>
-          <span class="explore-compact-copy"><strong>TotoEroi</strong><small>La Caccia all'8</small></span>
-          <span class="explore-compact-arrow" aria-hidden="true">›</span>
-        </a>
-
-        <!-- Playoffs Challenge · visibile a tutti; login richiesto per partecipare. -->
-        <a id="explore-playoffs-challenge"
-           href="playoffs-challenge.html"
-           class="explore-compact-card"
-           aria-label="Apri Playoffs Challenge, pronostici e classifiche">
-          <span class="explore-compact-art"><img src="img/home/esplora/playoffs-challenge.webp?v=20261029-B" alt=""></span>
-          <span class="explore-compact-copy"><strong>Playoffs Challenge</strong><small>Pronostici e classifiche</small></span>
-          <span class="explore-compact-arrow" aria-hidden="true">›</span>
-        </a>
-
-        <a href="regolamento.html" class="explore-compact-card">
-          <span class="explore-compact-art"><img src="img/home/esplora/regolamento.webp" alt=""></span>
-          <span class="explore-compact-copy"><strong>Regolamento</strong><small>Regole ufficiali</small></span>
-          <span class="explore-compact-arrow" aria-hidden="true">›</span>
-        </a>
+      <div class="stage-bottom">
+        <div class="stage-bottom-copy">
+          <strong id="stage-match-title">La tua prossima sfida</strong>
+          <span id="stage-context">I numeri della prossima sfida</span>
+        </div>
+        <div class="stage-actions has-ranking" id="stage-actions">
+          <a id="stage-cta" class="stage-cta" href="match.html">MATCH CENTER <span>↗</span></a>
+          <a id="stage-ranking-link" class="stage-ranking-link" href="classifica.html">CLASSIFICHE <span>↗</span></a>
+        </div>
       </div>
-    </section>
-
-    <section class="home-app-section home-future-season-section" aria-labelledby="next-season-title">
-      <div class="home-app-heading">
-        <h2 id="next-season-title">Verso il prossimo anno</h2>
-        <span>Guarda avanti</span>
+      <div class="fixture-control" id="fixture-control">
+        <button type="button" id="fixture-prev" aria-label="Partita precedente">‹</button>
+        <span id="fixture-caption">Giornata in aggiornamento</span>
+        <button type="button" id="fixture-next" aria-label="Partita successiva">›</button>
       </div>
-
-      <div class="future-season-grid">
-        <a href="dinamico-draft.html" class="future-season-card is-dynamic">
-          <span class="future-season-art"><img src="img/home/prossimo-anno/draft-dinamico.webp" alt=""></span>
-          <span class="future-season-copy"><strong>Draft dinamico</strong><small>Le prossime stagioni</small></span>
-          <span class="future-season-arrow" aria-hidden="true">›</span>
-        </a>
-
-        <a id="quick-draft-link" href="draft_conference.html" class="future-season-card is-conference">
-          <span class="future-season-art"><img src="img/home/prossimo-anno/draft-conference.webp" alt=""></span>
-          <span class="future-season-copy"><strong>Il tuo draft</strong><small id="quick-draft-sub">La tua conference</small></span>
-          <span class="future-season-arrow" aria-hidden="true">›</span>
-        </a>
-
-        <a href="pre-draft.html" class="future-season-card is-predraft">
-          <span class="future-season-art"><img src="img/home/prossimo-anno/pre-draft.webp" alt=""></span>
-          <span class="future-season-copy"><strong>Pre-Draft</strong><small>Keeper e liste</small></span>
-          <span class="future-season-arrow" aria-hidden="true">›</span>
-        </a>
-      </div>
-    </section>
-
+    </article>
   </section>
 
-    <section class="desktop-gazzetta-section">
-      <iframe
-        id="gazzettaFrame"
-        class="gazzetta-frame"
-        src="giornale.html"
-        title="La Gazzetta degli Eroi"
-        scrolling="no">
-      </iframe>
-    </section>
 
-    
+  <section class="section standings-section" aria-labelledby="standings-head">
+    <div class="sec-heading">
+      <div><span class="eyebrow">CLASSIFICHE E FORMA RECENTE</span><h2 id="standings-head">AROUND THE LEAGUE</h2></div>
+      <a href="classifica.html">Classifiche ↗</a>
+    </div>
+    <div class="standings-panel">
+      <div class="standing-switch" role="group" aria-label="Scegli Conference">
+        <button type="button" data-conf="Conf A" class="on" aria-pressed="true">League</button>
+        <button type="button" data-conf="Conf B" aria-pressed="false">Championship</button>
+      </div>
+      <div id="standings-label" class="table-title">CONFERENCE LEAGUE <span>FORMA · PT</span></div>
+      <div id="standings-list" class="standings-list"><div class="loading">Classifica in caricamento…</div></div>
+      <a class="panel-footer" href="classifica.html">CLASSIFICA COMPLETA <b>↗</b></a>
+    </div>
+  </section>
 
+  <section class="section predictions-section" aria-labelledby="predictions-head">
+    <div class="sec-heading">
+      <div><span class="eyebrow">PRONOSTICI E CHALLENGE</span><h2 id="predictions-head">GIOCA LA LEGA</h2></div>
+    </div>
+    <div class="predictions-grid">
+      <a class="prediction-card prediction-toto" href="totoeroi.html" aria-label="Apri TotoEroi e compila la schedina">
+        <span class="prediction-top"><span>LA SCHEDINA</span><b aria-hidden="true">↗</b></span>
+        <span class="prediction-art"><img src="img/home/esplora/totoeroi-mascotte-v24.webp" alt="" loading="lazy" decoding="async"></span>
+        <span class="prediction-content">
+          <strong>TotoEroi</strong>
+          <small>La caccia all’8</small>
+          <span class="prediction-action">FAI LA SCHEDINA <b aria-hidden="true">↗</b></span>
+        </span>
+      </a>
+      <a class="prediction-card prediction-playoffs" href="playoffs-challenge.html" aria-label="Apri Playoffs Challenge e fai i tuoi pronostici">
+        <span class="prediction-top"><span>ROAD TO GLORY</span><b aria-hidden="true">↗</b></span>
+        <span class="prediction-art"><img src="img/home/esplora/playoffs-challenge.webp" alt="" loading="lazy" decoding="async"></span>
+        <span class="prediction-content">
+          <strong>Playoffs Challenge</strong>
+          <small>Pronostica il tabellone</small>
+          <span class="prediction-action">APRI LA CHALLENGE <b aria-hidden="true">↗</b></span>
+        </span>
+      </a>
+    </div>
+  </section>
 
-  </main>
+  <section class="section editorial" aria-labelledby="editorial-head">
+    <div class="sec-heading">
+      <div><span class="eyebrow">NOTIZIE, EVENTI E STATISTICHE</span><h2 id="editorial-head">IN EVIDENZA</h2></div>
+    </div>
+    <a href="giornale.html" class="editorial-lead editorial-full-art" aria-label="Leggi La Gazzetta degli Eroi">
+      <img class="editorial-full-image" src="img/home/editorial/gazzetta-home-v26.webp" loading="lazy" decoding="async" alt="La Gazzetta degli Eroi: il Mini Titano legge il giornale della Lega">
+    </a>
+    <div class="editorial-spotlights">
+      <a class="allstar-full-banner" href="allstar.html" aria-label="Apri All-Star Game e vota le tue stelle">
+        <img class="allstar-full-image" src="img/home/editorial/allstar-banner-v28.webp" loading="lazy" decoding="async" alt="All-Star Game: due Mini Titani, stelle e coppa. Scegli le tue stelle. Vota ora!">
+      </a>
+      <a class="editorial-mini editorial-stats editorial-stats-wide" href="statistiche.html" aria-label="Apri Statistiche e Power Ranking">
+        <img src="img/home/esplora/statistiche.webp" loading="lazy" decoding="async" alt="">
+        <span><small>NUMERI DELLA LEGA</small><strong>Statistiche</strong><em>Power Ranking e record</em></span><b>↗</b>
+      </a>
+    </div>
+  </section>
 
-  <script>
-function resizeGazzetta() {
-  const iframe = document.getElementById("gazzettaFrame");
-  if (!iframe) return;
-
-  try {
-    const doc = iframe.contentDocument || iframe.contentWindow.document;
-
-    /* Nasconde elementi della pagina Gazzetta quando è dentro la home */
-    const embeddedNav = doc.querySelector("nav.site-nav");
-    if (embeddedNav) embeddedNav.remove();
-
-    const embeddedSplash = doc.querySelector("#splashIntro");
-    if (embeddedSplash) embeddedSplash.remove();
-
-    const embeddedMobileHero = doc.querySelector(".mobile-app-hero");
-    if (embeddedMobileHero) embeddedMobileHero.remove();
-
-    doc.documentElement.style.overflow = "hidden";
-    doc.body.style.margin = "0";
-    doc.body.style.padding = "0";
-    doc.body.style.overflow = "hidden";
-
-    iframe.style.height = "1px";
-
-    const body = doc.body;
-    const html = doc.documentElement;
-
-    const h = Math.max(
-      body.offsetHeight,
-      body.scrollHeight,
-      html.offsetHeight,
-      html.scrollHeight
-    );
-
-    iframe.style.height = Math.ceil(h + 12) + "px";
-  } catch (e) {
-    console.warn("Impossibile auto-resize iframe:", e);
-  }
-}
-
-document.addEventListener("DOMContentLoaded", function () {
-  const iframe = document.getElementById("gazzettaFrame");
-
-  if (iframe) {
-    iframe.addEventListener("load", function () {
-      resizeGazzetta();
-      setTimeout(resizeGazzetta, 400);
-      setTimeout(resizeGazzetta, 1200);
-      setTimeout(resizeGazzetta, 2500);
-    });
-  }
-
-  window.addEventListener("resize", resizeGazzetta);
-});
-</script>
-
-<script>
-  window.addEventListener("load", function () {
-    const splash = document.getElementById("splashIntro");
-    if (!splash) return;
-
-    const splashAlreadySeen = sessionStorage.getItem("legaEroiSplashSeen");
-
-    if (splashAlreadySeen === "true") {
-      splash.classList.add("splash-hidden");
-      return;
-    }
-
-    sessionStorage.setItem("legaEroiSplashSeen", "true");
-
-    setTimeout(function () {
-      splash.classList.add("splash-hidden");
-    }, 3000);
-  });
-</script>
-
-  <script>
-    if ("serviceWorker" in navigator) {
-      window.addEventListener("load", async function () {
-        try {
-          const registration = await navigator.serviceWorker.register(
-            "./sw.js",
-            {
-              scope: "./",
-              updateViaCache: "none"
-            }
-          );
-
-          console.log("SW registrato:", registration.scope);
-
-          // Forza subito un controllo della versione disponibile.
-          await registration.update();
-
-          navigator.serviceWorker.addEventListener("message", function (event) {
-            if (event.data?.type !== "SW_UPDATED") return;
-
-            const version = event.data?.version || "unknown";
-            const key = `legaEroiSwReloaded:${version}`;
-
-            // Una sola ricarica per versione, per evitare loop.
-            if (sessionStorage.getItem(key) === "true") return;
-
-            sessionStorage.setItem(key, "true");
-            window.location.reload();
-          });
-        } catch (err) {
-          console.log("Errore SW:", err);
-        }
-      });
-    }
-  </script>
-
-  <script>
-  /* Match della settimana: aggiunge watermark e badge classifica
-     senza toccare la logica che carica i matchup. */
-  (function () {
-    function decorateMatchupCards() {
-      const track = document.getElementById('dashboard-matchups');
-      if (!track) return;
-
-      track.querySelectorAll('.league-matchup-card:not(.loading-card)').forEach(function (card) {
-        const teams = card.querySelectorAll('.league-matchup-versus > div');
-        if (teams.length < 2) return;
-
-        teams.forEach(function (team) {
-          const originalLogo = team.querySelector('img:not(.matchup-watermark)');
-          if (originalLogo && !team.querySelector('.matchup-watermark')) {
-            const watermark = originalLogo.cloneNode(true);
-            watermark.className = 'matchup-watermark';
-            watermark.alt = '';
-            watermark.setAttribute('aria-hidden', 'true');
-            team.prepend(watermark);
-          }
-        });
-
-        const meta = card.querySelector('small');
-        if (meta) {
-          const match = meta.textContent.match(/(\d+°).*?(\d+°)/i);
-          if (match) {
-            teams[0].setAttribute('data-rank', match[1]);
-            teams[1].setAttribute('data-rank', match[2]);
-          }
-        }
-      });
-    }
-
-    document.addEventListener('DOMContentLoaded', function () {
-      const track = document.getElementById('dashboard-matchups');
-      if (!track) return;
-
-      decorateMatchupCards();
-      const observer = new MutationObserver(decorateMatchupCards);
-      observer.observe(track, { childList: true, subtree: true });
-    });
-  })();
-  </script>
-
-  <script type="module">
-    import { supabase as previewAuth } from "./supabase.js";
-    // Visibile esclusivamente all'account proprietario dell'anteprima.
-    previewAuth.auth.getUser().then(({data,error}) => {
-      if(error || String(data?.user?.email || "").toLowerCase() !== "tringali0511@gmail.com") return;
-      const home=document.getElementById("tradeV2HomeEntry");
-      if(home)home.style.setProperty("display","flex","important");
-    }).catch(err=>console.warn("Preview V2 non disponibile:",err));
-  </script>
-  <script type="module" src="home-dashboard.js?v=20261112-playoffs-everyone"></script>
-  <script type="module" src="home_auth.js?v=20261005-center6"></script>
-  <script type="module" src="notifications-center.js?v=20261113-destinations"></script>
-  <script src="mobile-nav.js?v=20261007-bottom4"></script>
-  <script src="navbar.js?v=20261113-destinations"></script>
-  <script type="module" src="admin-nav.js?v=1"></script>
-  <script type="module">
-  import { supabase as sb } from "./supabase.js";
-
-  async function setQuickDraftLinkByConference() {
-    const draftLink = document.getElementById("quick-draft-link");
-    const draftSub = document.getElementById("quick-draft-sub");
-
-    if (!draftLink || !sb) return;
-
-    try {
-      const { data: authData } = await sb.auth.getUser();
-      const user = authData?.user;
-
-      if (!user) {
-        draftLink.href = "draft_conference.html";
-        if (draftSub) draftSub.textContent = "Board";
-        return;
-      }
-
-      const { data: profile, error } = await sb
-        .from("profiles")
-        .select(`
-          team_id,
-          teams (
-            conference
-          )
-        `)
-        .eq("id", user.id)
-        .single();
-
-      if (error) throw error;
-
-      const conference = profile?.teams?.conference || "";
-
-      if (conference === "Conference Championship") {
-        draftLink.href = "draft_championship.html";
-        if (draftSub) draftSub.textContent = "Championship";
-      } else {
-        draftLink.href = "draft_conference.html";
-        if (draftSub) draftSub.textContent = "League";
-      }
-
-    } catch (err) {
-      console.warn("Errore link Draft rapido:", err);
-      draftLink.href = "draft_conference.html";
-      if (draftSub) draftSub.textContent = "Board";
-    }
-  }
-
-  document.addEventListener("DOMContentLoaded", setQuickDraftLinkByConference);
-</script>
+  <section class="section explore-section" aria-labelledby="explore-head">
+    <div class="sec-heading"><div><span class="eyebrow">OLTRE IL CAMPO</span><h2 id="explore-head">ESPLORA LA LEGA</h2></div></div>
+    <div class="links-grid explore-text-links">
+      <a href="franchigie.html"><span>Franchigie</span><b aria-hidden="true">↗</b></a>
+      <a href="hall-of-fame.html"><span>Hall of Fame</span><b aria-hidden="true">↗</b></a>
+      <a href="timeline.html"><span>La Stagione</span><b aria-hidden="true">↗</b></a>
+      <a href="regolamento.html"><span>Regolamento</span><b aria-hidden="true">↗</b></a>
+    </div>
+    <a class="draft-banner" href="dinamico-draft.html"><img src="img/home/prossimo-anno/draft-dinamico.webp" alt=""><span><small>VERSO IL 2027/28</small><strong>IL PROSSIMO DRAFT</strong><em>Keeper, listoni e nuova stagione</em></span><b>↗</b></a>
+  </section>
+</main>
+<nav class="dock" aria-label="Navigazione rapida">
+  <a class="active" href="index.html" aria-current="page"><img src="img/home/navbar/premium3d-home-v31.webp" alt=""><span>Home</span></a>
+  <a href="rose.html"><img src="img/home/navbar/premium3d-rose-v31.webp" alt=""><span>Rose</span></a>
+  <a href="trade-room.html"><img src="img/home/navbar/premium3d-mercato-v31.webp" alt=""><span>Mercato</span></a>
+  <a href="waiver.html"><img src="img/home/navbar/premium3d-waiver-v31.webp" alt=""><span>Waiver</span></a>
+</nav>
+<!-- Stessi controller della navbar ufficiale: autenticazione, badge trade,
+     notifiche, dropdown e ruoli admin. Non importiamo mobile-nav.js:
+     aggiungerebbe una seconda barra inferiore alla dock Premium 3D test. -->
+<script type="module" src="home_auth.js?v=20261005-center6"></script>
+<script type="module" src="notifications-center.js?v=20261113-destinations"></script>
+<script src="navbar.js?v=20261113-destinations"></script>
+<script type="module" src="admin-nav.js?v=1"></script>
+<script src="home-arena-v33.js?v=20261119-live33"></script>
 </body>
 </html>
-
-<!-- force deploy 2026-05-26 -->
