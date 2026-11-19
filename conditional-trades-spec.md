@@ -118,3 +118,14 @@ La Trade Room reale adesso ha il flag `conditional_feature_settings.enabled = tr
 - Restrizioni iniziali: niente inter-Conference; niente portieri o svincoli differiti negli scambi misti; il sistema segue sempre l'apertura e chiusura del mercato classico.
 
 Le indicazioni di collaudo e di feature disabilitata nelle sezioni storiche precedenti di questo documento descrivono lo **stato antecedente al 17/11/2026**.
+
+## Correzione 19/11/2026: giocatori sempre secondo il mercato normale
+
+**Regola confermata:** soltanto la pick futura assegnata dalla clausola è condizionata. Giocatori, altre pick scambiabili e chiamate waiver seguono le procedure del mercato classico. Le trade miste possono essere 3↔2, 2↔1 ecc. Senza svincoli i giocatori passano immediatamente all'accettazione; con svincoli obbligatori seguono lo stato `accepted_pending_cuts` del motore classico, si trasferiscono automaticamente alla chiusura degli svincoli e generano le chiamate compensative previste.
+
+- SQL: `conditional_mixed_classic_cuts_bridge_v10.sql` + fix trigger `conditional_mixed_classic_cuts_bridge_v10b_fix_guard.sql`. Il contratto condizionato entra in `accepted_pending_cuts`, il diritto resta `pending_cuts`, le pick candidate sono bloccate e la contropartita è riservata. Il diritto non può essere liquidato o rivenduto mentre si attendono svincoli.
+- App: se è richiesta una cessione di giocatori con numeri differenti, il destinatario accetta e chi deve svincolare può aprire direttamente il modal della trade normale da «Proposte»; l'UI del mercato classico mostra anche la procedura e aggiorna entrambe le sezioni quando lo svincolo termina.
+- Chiusura atomica: `cut_trade_players` richiama `complete_trade_after_cuts`; il nuovo trigger collega l'accettazione del mercato classico con trasferimento della R di contropartita, attivazione del diritto, audit admin e sblocco solo futuro della pick condizionata. L'esito concreto della scelta attende ancora la classifica, il Draft o la Hall of Fame.
+- **Test rollback**: dati reali Golden Knights→PokerMantra 3 giocatori contro 2 (Ederson D.S., Simeone, Conceição / Calò, Thuram), migliore fra tre R1 contro R4, svincolo PokerMantra; risultato **PASS** con 3 giocatori Golden trasferiti, 2 Poker trasferiti, compensativa Golden, 3 R1 vincolate, R4 assegnata al venditore e audit, nessuna modifica persistita. **PASS** anche scegliendo come svincolato un giocatore appena ricevuto, come nel mercato classico. Test 2↔2 immediato **PASS**, senza svincoli o compensative. File rollback: `sql/qa_conditional_mixed_3v2_rollback_v10.sql`.
+
+Il blocco «niente svincoli differiti» descritto in `conditional_trade_mixed_assets_v8.sql` è uno stato storico superato da v10. La sicurezza delle trade ufficiali resta transazionale, con verifiche automatiche e revisione admin già presente.
