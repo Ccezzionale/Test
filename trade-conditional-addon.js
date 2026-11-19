@@ -943,4 +943,7 @@ async function init(){
     await loadExtraWaiverCalls();
   }catch(err){console.error("Trade condizionate:",err);failure("ctFormNotice","Errore caricamento condizioni: "+(err.message||"errore sconosciuto"));}
 }
+// Il modal degli svincoli classici richiama questo aggiornamento dopo la
+// conclusione della parte giocatori. Nessuna scrittura, solo una nuova lettura.
+window.refreshConditionalTradeRoom=reload;
 document.addEventListener("DOMContentLoaded",init);
