@@ -1890,3 +1890,12 @@ body[data-view="highlander"].is-cup-eliminated .stage-special > img {
   .prediction-content small{font-size:9px}
   .prediction-action{font-size:8px}
 }
+
+
+/* ARENA TEST V23 · EDITORIAL STATS
+   Match the existing All-Star mini-card, using the official statistics
+   mascot without cropping its helmet, tablet or chart. */
+.editorial-mini.editorial-stats > img {
+  object-fit:contain;
+  background:radial-gradient(circle,rgba(29,110,220,.16),transparent 75%);
+}
