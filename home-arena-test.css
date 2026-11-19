@@ -2683,3 +2683,48 @@ body.arena-reboot .arena-menu-official-link span {color:#f5c66b;font-size:17px}
   body.arena-reboot .arena-menu-backdrop,
   body.arena-reboot .arena-top-action {transition:none !important}
 }
+
+
+/* HOME ARENA V34 · HIGHLANDER MATCHDAY MASCOT PROPORTIONS
+   Preview only: a much more imposing throne character, comparable
+   to the Playoff and Crash Out portraits. Other three tabs untouched.
+*/
+body.arena-reboot[data-view="highlander"] .stage-special {
+  grid-template-columns:minmax(105px,34%) minmax(0,1fr);
+  min-height:166px;
+  gap:2px;
+  align-items:center;
+}
+body.arena-reboot[data-view="highlander"] .stage-special > img {
+  position:relative;
+  z-index:1;
+  width:100%;
+  max-width:150px;
+  height:156px;
+  object-fit:contain;
+  object-position:bottom left;
+  transform:translate(-9px,10px) scale(1.25);
+  transform-origin:left bottom;
+}
+body.arena-reboot[data-view="highlander"] .stage-special > div {
+  position:relative;
+  z-index:2;
+  min-width:0;
+  padding-left:9px;
+  text-shadow:0 3px 12px rgba(1,10,29,.84);
+}
+@media(max-width:380px) {
+  body.arena-reboot[data-view="highlander"] .stage-special {
+    grid-template-columns:100px minmax(0,1fr);
+    min-height:150px;
+    gap:0;
+  }
+  body.arena-reboot[data-view="highlander"] .stage-special > img {
+    max-width:135px;
+    height:143px;
+    transform:translate(-6px,10px) scale(1.22);
+  }
+  body.arena-reboot[data-view="highlander"] .stage-special > div {
+    padding-left:7px;
+  }
+}
