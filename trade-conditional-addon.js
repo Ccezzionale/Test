@@ -149,6 +149,27 @@ function extraAssets(){
   return result;
 }
 
+function mixedPlayerBalance(extras){
+  const from=extras.filter(x=>x.asset_type==="player"&&x.side==="from").length;
+  const to=extras.filter(x=>x.asset_type==="player"&&x.side==="to").length;
+  return {from,to,difference:Math.abs(from-to)};
+}
+function mixedPlayerBalanceMessage(from,to){
+  if(from===to)return "";
+  const giver=from>to?name(myId()):name(targetId());
+  const cutter=from>to?name(targetId()):name(myId());
+  const extra=Math.abs(from-to);
+  return name(myId())+" offre "+from+" giocator"+(from===1?"e":"i")+
+    ", "+name(targetId())+" ne offre "+to+". Per completare uno scambio "+
+    "così, "+cutter+" dovrebbe svincolare "+extra+
+    " giocator"+(extra===1?"e":"i")+" e "+giver+
+    " riceverebbe "+extra+" chiamat"+(extra===1?"a":"e")+
+    " compensativ"+(extra===1?"a":"e")+". "+
+    "Gli svincoli differiti non sono ancora abilitati nelle trade condizionate. "+
+    "Per inviare adesso serve lo stesso numero di giocatori su entrambi i lati "+
+    "(per esempio "+Math.min(from,to)+" contro "+Math.min(from,to)+
+    " oppure "+Math.max(from,to)+" contro "+Math.max(from,to)+").";
+}
 function validateMixedExtras(extras,payload){
   if(!extras.length)return;
   if(!["conference_market","round_robin_market"].includes(state.settings?.active_phase))
@@ -168,7 +189,7 @@ function validateMixedExtras(extras,payload){
     if(asset.asset_type==="future_pick")counts[asset.side].future_pick++;
   }
   if(counts.from.player!==counts.to.player)
-    throw new Error("Nella versione mista il numero di giocatori deve essere uguale sui due lati: gli svincoli differiti non sono ancora integrati.");
+    throw new Error(mixedPlayerBalanceMessage(counts.from.player,counts.to.player));
   if(counts.from.u21!==counts.to.u21)
     throw new Error("Gli U21 slot devono essere bilanciati 1:1.");
   if(counts.from.future_pick!==counts.to.future_pick)
@@ -335,6 +356,14 @@ function redrawSummary(){
     details.ids=state.offers.find(o=>same(o.id,originalRight.source_offer_id))?.candidate_pick_ids||[];
   }
   const extras=extraAssets();
+  const balance=mixedPlayerBalance(extras);
+  const balanceHint=$("ctMixedPlayerBalance");
+  if(balanceHint){
+    const mismatch=balance.difference>0;
+    balanceHint.hidden=!mismatch;
+    balanceHint.textContent=mismatch?
+      "⚠️ "+mixedPlayerBalanceMessage(balance.from,balance.to):"";
+  }
   const extraHtml=extras.length?
     '<p><strong>Altri asset nello stesso contratto:</strong></p><ul class="ct-clause-list">'+
     extras.map(x=>'<li>'+esc((x.side==="from"?name(myId()):name(targetId()))+
