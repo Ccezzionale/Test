@@ -160,15 +160,14 @@ function mixedPlayerBalanceMessage(from,to){
   const cutter=from>to?name(targetId()):name(myId());
   const extra=Math.abs(from-to);
   return name(myId())+" offre "+from+" giocator"+(from===1?"e":"i")+
-    ", "+name(targetId())+" ne offre "+to+". Per completare uno scambio "+
-    "così, "+cutter+" dovrebbe svincolare "+extra+
-    " giocator"+(extra===1?"e":"i")+" e "+giver+
-    " riceverebbe "+extra+" chiamat"+(extra===1?"a":"e")+
+    ", "+name(targetId())+" ne offre "+to+". "+
+    "Come nelle trade classiche, dopo l'accettazione "+cutter+
+    " dovrà svincolare "+extra+" giocator"+(extra===1?"e":"i")+
+    " e "+giver+" riceverà "+extra+" chiamat"+(extra===1?"a":"e")+
     " compensativ"+(extra===1?"a":"e")+". "+
-    "Gli svincoli differiti non sono ancora abilitati nelle trade condizionate. "+
-    "Per inviare adesso serve lo stesso numero di giocatori su entrambi i lati "+
-    "(per esempio "+Math.min(from,to)+" contro "+Math.min(from,to)+
-    " oppure "+Math.max(from,to)+" contro "+Math.max(from,to)+").";
+    "Al completamento dello svincolo i giocatori si trasferiranno subito; "+
+    "solo la scelta futura resterà subordinata alla condizione concordata. "+
+    "Fino allo svincolo, tutte le pick coinvolte rimangono riservate.";
 }
 function validateMixedExtras(extras,payload){
   if(!extras.length)return;
@@ -188,8 +187,6 @@ function validateMixedExtras(extras,payload){
     }
     if(asset.asset_type==="future_pick")counts[asset.side].future_pick++;
   }
-  if(counts.from.player!==counts.to.player)
-    throw new Error(mixedPlayerBalanceMessage(counts.from.player,counts.to.player));
   if(counts.from.u21!==counts.to.u21)
     throw new Error("Gli U21 slot devono essere bilanciati 1:1.");
   if(counts.from.future_pick!==counts.to.future_pick)
@@ -630,7 +627,12 @@ async function reload(){
   for(const x of [p,o,r,c,s,pl,reviews])if(x.error)throw x.error;
   state.picks=p.data||[];state.players=pl.data||[];state.offers=o.data||[];state.rights=r.data||[];
   state.reviews=reviews.data||[];
-  state.locks=new Set((c.data||[]).map(x=>String(x.pick_id)));
+  // Durante gli svincoli, anche la pick di contropartita è riservata
+  // (le candidate sono già protette dalla tabella conditional_trade_candidates).
+  state.locks=new Set([
+    ...(c.data||[]).map(x=>String(x.pick_id)),
+    ...state.offers.filter(o=>o.status==="accepted_pending_cuts").map(o=>String(o.counter_pick_id))
+  ]);
   state.enabled=s.data?.enabled===true;
   refreshCandidates();paintOffers();paintRights();paintConditionalHistory();paintReviews();
 }
