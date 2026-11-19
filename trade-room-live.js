@@ -764,7 +764,13 @@ function watchLegacyCutModal(){
   let wasOpen=modal.style.display!=="none";
   const observer=new MutationObserver(()=>{
     const nowOpen=modal.style.display!=="none";
-    if(wasOpen&&!nowOpen)refreshLiveData().catch(console.error);
+    if(wasOpen&&!nowOpen){
+      refreshLiveData().catch(console.error);
+      // Lo stesso svincolo può completare anche una trade condizionata:
+      // aggiorna subito il diritto e il blocco delle scelte.
+      if(typeof window.refreshConditionalTradeRoom==="function")
+        window.refreshConditionalTradeRoom().catch(console.error);
+    }
     wasOpen=nowOpen;
   });
   observer.observe(modal,{attributes:true,attributeFilter:["style"]});
