@@ -103,7 +103,12 @@
     if (!right) { right=makeNode("div",{class:"nav-right hero-actions"}); inner.append(right); }
     const existingMain = document.getElementById("mainMenu");
     const mainMenu = existingMain || makeNode("ul", { id:"mainMenu", class:"navbar" });
-    if (!existingMain || !mainMenu.children.length) mainMenu.innerHTML=mainMenuFallbackHTML;
+    if (!existingMain || !mainMenu.children.length) {
+      const template = document.createElement("template");
+      template.innerHTML = mainMenuFallbackHTML;
+      const fallback = template.content.querySelector("#mainMenu");
+      mainMenu.innerHTML = fallback ? fallback.innerHTML : "";
+    }
     mainMenu.classList.remove("show");
     mainMenu.setAttribute("aria-label","Sezioni Lega degli Eroi");
 
