@@ -445,3 +445,21 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   }, 0);
 });
+
+
+/* Global Arena V33 navigation: one shared boot for all legacy pages.
+   Only the official Home retains its own exact V33 prototype header. */
+(function () {
+  if (window.__LEGA_ARENA_SHARED_NAV_BOOTSTRAP__) return;
+  if (document.body?.classList.contains("arena-reboot")) return;
+  window.__LEGA_ARENA_SHARED_NAV_BOOTSTRAP__ = true;
+
+  const style = document.createElement("link");
+  style.rel = "stylesheet";
+  style.href = "arena-global-nav.css?v=20261119-global-v33";
+  document.head.appendChild(style);
+
+  const script = document.createElement("script");
+  script.src = "arena-global-nav.js?v=20261119-global-v33";
+  document.head.appendChild(script);
+})();
