@@ -1950,3 +1950,151 @@ body[data-view="highlander"].is-cup-eliminated .stage-special > img {
    height:53px;
  }
 }
+
+
+/* ==========================================================
+   ARENA TEST V27 · ALL-STAR SPOTLIGHT
+   A strong mobile voting CTA that stands out from the editorial
+   Gazzetta and the secondary Statistics navigation item.
+   The original image stays fully visible (no cover/crop).
+   ========================================================== */
+.editorial-spotlights {
+  display:grid;
+  grid-template-columns:minmax(0,1fr);
+  gap:10px;
+  margin-top:12px;
+}
+.allstar-spotlight{
+  display:grid;
+  grid-template-columns:minmax(110px,39%) minmax(0,1fr);
+  position:relative;
+  isolation:isolate;
+  min-height:174px;
+  overflow:hidden;
+  border-radius:17px;
+  border:1px solid rgba(253,202,97,.87);
+  background:
+    radial-gradient(ellipse 55% 80% at 13% 40%,rgba(18,109,255,.62),transparent 85%),
+    radial-gradient(ellipse 56% 80% at 90% 9%,rgba(247,186,64,.16),transparent 90%),
+    linear-gradient(135deg,#073673,#061934 82%);
+  color:#f8fbff;
+  text-decoration:none;
+  box-shadow:0 10px 22px rgba(1,13,37,.27),inset 0 0 16px rgba(57,133,250,.15);
+  -webkit-tap-highlight-color:transparent;
+}
+.allstar-spotlight::before{
+  content:"★";
+  position:absolute;
+  z-index:-1;
+  pointer-events:none;
+  font-size:142px;
+  color:rgba(233,192,77,.075);
+  top:-59px;
+  right:-18px;
+  line-height:1;
+}
+.allstar-spotlight-art{
+  position:relative;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  min-width:0;
+  min-height:174px;
+  padding:6px 0 5px 5px;
+  background:radial-gradient(circle at 45% 58%,rgba(27,123,255,.38),transparent 70%);
+}
+.allstar-spotlight-art img{
+  display:block;
+  width:100%;
+  height:162px;
+  object-fit:contain;
+  object-position:center;
+  filter:drop-shadow(0 7px 9px rgba(0,0,0,.46));
+}
+.allstar-spotlight-copy{
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:flex-start;
+  gap:7px;
+  min-width:0;
+  padding:14px 14px 14px 8px;
+}
+.allstar-spotlight-copy>small{
+  color:#f8d67c;
+  font-size:9px;
+  letter-spacing:.065em;
+  font-weight:950;
+  line-height:1.25;
+}
+.allstar-spotlight-copy>strong{
+  font-size:clamp(22px,6vw,31px);
+  line-height:.98;
+  letter-spacing:-.04em;
+  font-weight:1000;
+  color:white;
+  text-shadow:0 3px 8px rgba(0,6,24,.4);
+}
+.allstar-spotlight-copy>em{
+  font-style:normal;
+  font-size:clamp(10px,2.9vw,13px);
+  line-height:1.23;
+  color:#cde2ff;
+  font-weight:650;
+}
+.allstar-spotlight-cta{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  width:100%;
+  max-width:210px;
+  padding:10px 12px;
+  margin-top:4px;
+  border-radius:10px;
+  color:#09203e;
+  background:linear-gradient(135deg,#ffe083,#e9b547);
+  border:1px solid #ffe8a3;
+  font-size:11px;
+  letter-spacing:.04em;
+  font-weight:1000;
+  box-shadow:0 3px 12px rgba(250,191,74,.28);
+}
+.allstar-spotlight-cta b{font-size:18px;line-height:1}
+.allstar-spotlight:focus-visible{
+  outline:3px solid #f7d36c;
+  outline-offset:3px;
+}
+@media(hover:hover){
+  .allstar-spotlight:hover{
+    border-color:#ffe6a3;
+    box-shadow:0 13px 26px rgba(1,13,37,.34),inset 0 0 24px rgba(57,133,250,.22);
+  }
+}
+.editorial-mini.editorial-stats-wide{
+  grid-template-columns:44px minmax(0,1fr) 18px;
+  gap:10px;
+  min-height:66px;
+  padding:8px 13px;
+  background:linear-gradient(140deg,#122c4d,#07192e);
+  border-color:rgba(121,153,194,.3);
+}
+.editorial-mini.editorial-stats-wide >img{
+  width:44px;
+  height:46px;
+  object-fit:contain;
+}
+.editorial-mini.editorial-stats-wide strong{font-size:13px}
+.editorial-mini.editorial-stats-wide small{font-size:9px}
+.editorial-mini.editorial-stats-wide em{font-size:10px}
+@media(max-width:360px){
+  .allstar-spotlight{grid-template-columns:minmax(104px,38%) minmax(0,1fr);min-height:166px}
+  .allstar-spotlight-art{min-height:166px}
+  .allstar-spotlight-art img{height:155px}
+  .allstar-spotlight-copy{padding:11px 10px 11px 5px;gap:6px}
+  .allstar-spotlight-copy>small{font-size:8px}
+  .allstar-spotlight-copy>strong{font-size:22px}
+  .allstar-spotlight-cta{padding:9px 10px;font-size:10px}
+  .editorial-mini.editorial-stats-wide{grid-template-columns:41px minmax(0,1fr) 14px}
+  .editorial-mini.editorial-stats-wide >img{width:41px;height:44px}
+}
