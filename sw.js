@@ -1,7 +1,7 @@
 /* LEGA DEGLI EROI - Unico Service Worker per TUTTE le pagine.
  * Il comando prepara_sito.py sostituisce il segnaposto con la release reale.
  */
-const SW_VERSION = "v20261113-push-route-v2";
+const SW_VERSION = "v20261119-arena-v33";
 const APP_CACHE_PREFIX = "lega-eroi-";
 
 self.addEventListener("install", (event) => {
