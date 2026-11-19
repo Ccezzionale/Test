@@ -1,9 +1,13 @@
-/* Diritti condizionati nel Draft Dinamico.
-   Questi marcatori sono proiezioni, MAI passaggi di proprietà nel database. */
+/* Contratti condizionati: pick vincente PROVVISORIA e contropartita DEFINITIVA.
+   Stesso lucchetto, nessuna mutazione del database da questa pagina. */
 .pick.is-conditional-projected,
 .draft-pick-board-cell.is-conditional-projected,
 .dynamic-mobile-overview-slot.is-conditional-projected,
-.draft-team-pick.is-conditional-projected {
+.draft-team-pick.is-conditional-projected,
+.pick.is-conditional-counterpart,
+.draft-pick-board-cell.is-conditional-counterpart,
+.dynamic-mobile-overview-slot.is-conditional-counterpart,
+.draft-team-pick.is-conditional-counterpart {
   position:relative;
   outline:2px solid #ffda55!important;
   outline-offset:-2px;
@@ -12,7 +16,10 @@
 }
 .pick.is-conditional-projected::before,
 .draft-pick-board-cell.is-conditional-projected::after,
-.draft-team-pick.is-conditional-projected::after {
+.draft-team-pick.is-conditional-projected::after,
+.pick.is-conditional-counterpart::before,
+.draft-pick-board-cell.is-conditional-counterpart::after,
+.draft-team-pick.is-conditional-counterpart::after {
   content:"🔐";
   position:absolute;
   top:1px;
@@ -85,3 +92,5 @@
     min-height:46px;
   }
 }
+
+.ct-draft-counter-owner{color:#ffe073;font-weight:900;}
