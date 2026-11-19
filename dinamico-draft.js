@@ -842,6 +842,24 @@ async function projectConditionalDraftRights(draft, futurePicks, statsRows=[]) {
     const item={right,offer:sourceOffer,candidates,chosen:null,pickNumber:null,
       draftName,status:right.status==="resolved"?"final":"pending"};
     entries.push(item);
+    // Contropartita definitiva: visualizzazione collegata alla clausola,
+    // senza spostare l'ownership ufficiale né scrivere nel database.
+    const counterPick=futureById.get(String(sourceOffer.counter_pick_id));
+    const counterDraft=counterPick?.draft_name==="Draft Conference"?draft.league:
+      counterPick?.draft_name==="Draft Championship"?draft.championship:null;
+    const counterRow=counterDraft?.find(row=>Number(row.Round)===Number(counterPick.round));
+    const counterCell=counterRow?.Picks.find(cell=>String(cell.future_pick_id)===String(counterPick.id)&&!cell.bonus);
+    const counterOwner=teamsById.get(String(counterPick?.owner?.id));
+    if(counterCell&&counterOwner&&
+      String(counterPick.owner.id)===String(sourceOffer.grantor_team_id)&&
+      String(counterPick.original?.id)!==String(counterPick.owner.id)){
+      counterCell.conditionalCounterpart={
+        rightId:right.id,ownerTeam:counterOwner.name,sourceTeam:counterCell.originalTeam
+      };
+      counterCell.source_trade_id="conditional:"+right.id;
+      counterCell.displayRound=Number(counterPick.round);
+      counterCell.displayOrder=counterCell.pickNumber;
+    }
     if(right.status!=="active")continue;
     // Nessuna scelta se i vincoli sono incompleti: non inventare una vincitrice.
     if(candidates.length!==(sourceOffer.candidate_pick_ids||[]).length||!candidates.length)continue;
@@ -995,7 +1013,8 @@ function generaTabellaVerticale(containerId, draftData, squadreOrdine) {
 
   draftData.forEach(round => {
     round.Picks.forEach(p => {
-      const ownerCanonical = getCanonicalTeamName(p.team, squadre);
+      const ownerCanonical = getCanonicalTeamName(
+        p.conditionalCounterpart ? p.originalTeam : p.team, squadre);
       const originalCanonical = getCanonicalTeamName(p.originalTeam, squadre);
       const displayRound = Number(p.displayRound || p.round || round.Round);
 
@@ -1019,6 +1038,7 @@ function generaTabellaVerticale(containerId, draftData, squadreOrdine) {
         displayOrder: p.displayOrder,
         source_trade_id: p.source_trade_id || null,
         conditionalProjection: p.conditionalProjection || null,
+        conditionalCounterpart: p.conditionalCounterpart || null,
         protection_note: p.protection_note,
         notes: p.notes
       });
@@ -1049,14 +1069,18 @@ function generaTabellaVerticale(containerId, draftData, squadreOrdine) {
       picksInRound.forEach(pick => {
         const tradedClass = (pick.traded || pick.conditionalProjection) ? "pick-traded" : "";
         const bonusClass = pick.bonus ? "pick-bonus" : "";
-        const projectedClass = pick.conditionalProjection ? "is-conditional-projected" : "";
+        const projectedClass = pick.conditionalProjection ? "is-conditional-projected" :
+          pick.conditionalCounterpart ? "is-conditional-counterpart" : "";
         const source = pick.conditionalProjection
           ? `<span class="pick-source ct-draft-projected-owner">🔐 ${escapeDraftHtml(shortDesktopTeamName(pick.conditionalProjection.holderTeam))} (provv.)</span>`
+          : pick.conditionalCounterpart
+            ? `<span class="pick-source ct-draft-counter-owner">🔐 ${escapeDraftHtml(shortDesktopTeamName(pick.conditionalCounterpart.ownerTeam))} (def.)</span>`
           : (pick.traded || pick.bonus)
             ? `<span class="pick-source">da ${shortDesktopTeamName(pick.originalTeam)}</span>`
             : "";
 
-        const title = pick.conditionalProjection ? `Proiezione condizionata: ${pick.conditionalProjection.holderTeam} se finisse oggi; pick originale di ${pick.originalTeam}. NON definitiva.` : pick.traded
+        const title = pick.conditionalProjection ? `Proiezione condizionata: ${pick.conditionalProjection.holderTeam} se finisse oggi; pick originale di ${pick.originalTeam}. NON definitiva.` :
+          pick.conditionalCounterpart ? `Pick di contropartita già ceduta a ${pick.conditionalCounterpart.ownerTeam} da ${pick.originalTeam}. Trasferimento definitivo, collegato al diritto condizionato.` : pick.traded
           ? `Round visualizzato ${pick.displayRound}. Round originale ${pick.round}. Pick originale di ${pick.originalTeam}. ${pick.notes || ""} ${pick.protection_note || ""}`.trim()
           : `Round ${pick.displayRound}`;
 
@@ -1157,7 +1181,8 @@ function buildDraftPerSquadra(draftData, squadreOrdine) {
 
   draftData.forEach(round => {
     round.Picks.forEach(p => {
-      const ownerCanonical = getCanonicalTeamName(p.team, squadre);
+      const ownerCanonical = getCanonicalTeamName(
+        p.conditionalCounterpart ? p.originalTeam : p.team, squadre);
       const originalCanonical = getCanonicalTeamName(p.originalTeam, squadre);
 
       const displayRound = Number(
@@ -1186,6 +1211,7 @@ function buildDraftPerSquadra(draftData, squadreOrdine) {
         displayOrder: p.displayOrder,
         source_trade_id: p.source_trade_id || null,
         conditionalProjection: p.conditionalProjection || null,
+        conditionalCounterpart: p.conditionalCounterpart || null,
         protection_note: p.protection_note,
         notes: p.notes
       });
@@ -1243,17 +1269,18 @@ function renderMobileRoundPick(pick,ownerTeam) {
     `--dynamic-trade-soft:${palette.soft}`,
     `--dynamic-trade-text:${palette.text}`
   ].join(";"):"";
-  const note=pick.conditionalProjection?" · PROIEZIONE, non definitiva":"";
+  const note=pick.conditionalProjection?" · PROIEZIONE, non definitiva":
+    pick.conditionalCounterpart?" · CONTROPARTITA definitiva":"";
   const title="Pick #"+pick.pickNumber+" · "+ownerTeam+" · da "+original+note;
   return `<div class="dynamic-mobile-overview-slot ${traded?"is-traded":""}
-    ${bonus?"is-bonus":""} ${pick.conditionalProjection?"is-conditional-projected":""}"
+    ${bonus?"is-bonus":""} ${pick.conditionalProjection?"is-conditional-projected":""} ${pick.conditionalCounterpart?"is-conditional-counterpart":""}"
     style="${style}" title="${escapeDraftHtml(title)}"
     aria-label="${escapeDraftHtml(title)}">
     <img src="img/${escapeDraftHtml(ownerTeam)}.webp" alt="" loading="lazy"
       onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
     <span class="dynamic-mobile-overview-fallback">${escapeDraftHtml(getDynamicMobileInitials(ownerTeam))}</span>
     <em aria-hidden="true">#${pick.pickNumber}</em>
-    ${pick.conditionalProjection?'<i class="ct-projected-pin" aria-hidden="true">🔐</i>':
+    ${pick.conditionalProjection||pick.conditionalCounterpart?'<i class="ct-projected-pin" aria-hidden="true">🔐</i>':
       bonus?'<i class="bonus" aria-hidden="true">★</i>':
       traded?'<i class="trade" aria-hidden="true">↔</i>':""}
   </div>`;
@@ -1350,7 +1377,7 @@ const fixedTeamOrder = squadre.slice();
       // la pick condizionata (né la pick originale) dietro la prima card.
       if(picksInRound.length>1) {
         return '<div class="dynamic-mobile-overview-stack">'+
-          picksInRound.map(p=>renderMobileRoundPick(p,p.conditionalProjection?.holderTeam||squadra)).join("")+
+          picksInRound.map(p=>renderMobileRoundPick(p,p.conditionalProjection?.holderTeam||p.conditionalCounterpart?.ownerTeam||squadra)).join("")+
           '</div>';
       }
 
@@ -1375,7 +1402,7 @@ const fixedTeamOrder = squadre.slice();
         `;
       }
 
-      const ownerTeam = pick.conditionalProjection?.holderTeam || pick.ownerTeam || squadra;
+      const ownerTeam = pick.conditionalProjection?.holderTeam || pick.conditionalCounterpart?.ownerTeam || pick.ownerTeam || squadra;
       const originalTeam = pick.originalTeam || ownerTeam;
       const isTraded = !!(pick.traded || pick.conditionalProjection);
       const isBonus = !!pick.bonus;
@@ -1404,7 +1431,8 @@ const fixedTeamOrder = squadre.slice();
         "dynamic-mobile-overview-slot",
         isTraded ? "is-traded" : "",
         isBonus ? "is-bonus" : "",
-        pick.conditionalProjection ? "is-conditional-projected" : ""
+        pick.conditionalProjection ? "is-conditional-projected" : "",
+        pick.conditionalCounterpart ? "is-conditional-counterpart" : ""
       ].filter(Boolean).join(" ");
 
       const titleParts = [
@@ -1421,6 +1449,7 @@ const fixedTeamOrder = squadre.slice();
         titleParts.push("Pick bonus");
       }
       if(pick.conditionalProjection)titleParts.push("Proiezione condizionata, non definitiva");
+      if(pick.conditionalCounterpart)titleParts.push("Contropartita già ceduta · definitiva · 🔐");
 
       return `
         <div
@@ -1443,7 +1472,7 @@ const fixedTeamOrder = squadre.slice();
           <em aria-hidden="true">#${pick.pickNumber}</em>
 
           ${
-            pick.conditionalProjection
+            pick.conditionalProjection || pick.conditionalCounterpart
               ? `<i class="ct-projected-pin" aria-hidden="true">🔐</i>`
               : isBonus
               ? `<i class="bonus" aria-hidden="true">★</i>`
@@ -1870,7 +1899,7 @@ function renderDraftByPickDetail(container, pickIndex) {
 
   if (!pick || !details.length) return;
 
-  const ownerTeam = cleanTeamName(pick.conditionalProjection?.holderTeam || pick.team || pick.ownerTeam || "Squadra");
+  const ownerTeam = cleanTeamName(pick.conditionalProjection?.holderTeam || pick.conditionalCounterpart?.ownerTeam || pick.team || pick.ownerTeam || "Squadra");
   const originalTeam = cleanTeamName(pick.originalTeam || ownerTeam);
   const isTraded = !!(pick.traded || pick.conditionalProjection);
   const isBonus = !!pick.bonus;
@@ -1893,9 +1922,11 @@ function renderDraftByPickDetail(container, pickIndex) {
 
   let originText = pick.conditionalProjection
     ? "🔐 Proiezione condizionata da "+shortDesktopTeamName(originalTeam)+" (non definitiva)"
-    : "Pick originale della squadra";
-  if (pick.conditionalProjection) {
-    // La proiezione prevale sulla dicitura di trade ufficiale.
+    : pick.conditionalCounterpart
+      ? "🔐 Contropartita definitiva da "+shortDesktopTeamName(originalTeam)
+      : "Pick originale della squadra";
+  if (pick.conditionalProjection || pick.conditionalCounterpart) {
+    // La clausola prevale sulla dicitura generica di trade.
   } else if (isBonus) {
     originText = `Pick bonus proveniente da ${shortDesktopTeamName(originalTeam)}`;
   } else if (isTraded) {
@@ -1987,7 +2018,7 @@ function generaDraftByPick(containerId, draftData, conferenceTitle) {
   container.__draftByPickPicks = picks;
 
   const desktopCellsHtml = picks.map((pick, absoluteIndex) => {
-    const ownerTeam = cleanTeamName(pick.conditionalProjection?.holderTeam || pick.team || pick.ownerTeam || "Squadra");
+    const ownerTeam = cleanTeamName(pick.conditionalProjection?.holderTeam || pick.conditionalCounterpart?.ownerTeam || pick.team || pick.ownerTeam || "Squadra");
     const originalTeam = cleanTeamName(pick.originalTeam || ownerTeam);
     const isTraded = !!(pick.traded || pick.conditionalProjection);
     const isBonus = !!pick.bonus;
@@ -2013,6 +2044,7 @@ function generaDraftByPick(containerId, draftData, conferenceTitle) {
       isTraded ? "is-traded" : "",
       isBonus ? "is-bonus" : "",
       pick.conditionalProjection ? "is-conditional-projected" : "",
+      pick.conditionalCounterpart ? "is-conditional-counterpart" : "",
       absoluteIndex === 0 ? "is-selected" : ""
     ].filter(Boolean).join(" ");
 
@@ -2052,7 +2084,7 @@ function generaDraftByPick(containerId, draftData, conferenceTitle) {
 
       const slotsHtml = rowPicks.map((pick, localIndex) => {
         const absoluteIndex = rowIndex * 8 + localIndex;
-        const ownerTeam = cleanTeamName(pick.conditionalProjection?.holderTeam || pick.team || pick.ownerTeam || "Squadra");
+        const ownerTeam = cleanTeamName(pick.conditionalProjection?.holderTeam || pick.conditionalCounterpart?.ownerTeam || pick.team || pick.ownerTeam || "Squadra");
         const originalTeam = cleanTeamName(pick.originalTeam || ownerTeam);
         const isTraded = !!(pick.traded || pick.conditionalProjection);
         const isBonus = !!pick.bonus;
@@ -2080,6 +2112,7 @@ function generaDraftByPick(containerId, draftData, conferenceTitle) {
           isTraded ? "is-traded" : "",
           isBonus ? "is-bonus" : "",
           pick.conditionalProjection ? "is-conditional-projected" : "",
+          pick.conditionalCounterpart ? "is-conditional-counterpart" : "",
           absoluteIndex === 0 ? "is-selected" : ""
         ].filter(Boolean).join(" ");
 
@@ -2259,7 +2292,7 @@ function generaDraftByTeam(containerId, draftData, squadreOrdine, conferenceTitl
     }
 
     const teamPicks = picks
-      .filter(pick => teamKey(pick.conditionalProjection?.holderTeam || pick.team || pick.ownerTeam || "") === teamKey(selectedTeam))
+      .filter(pick => teamKey(pick.conditionalProjection?.holderTeam || pick.conditionalCounterpart?.ownerTeam || pick.team || pick.ownerTeam || "") === teamKey(selectedTeam))
       .sort((a, b) => Number(a.pickNumber || 0) - Number(b.pickNumber || 0));
 
     const rowsHtml = teamPicks.map(pick => {
@@ -2288,11 +2321,13 @@ function generaDraftByTeam(containerId, draftData, squadreOrdine, conferenceTitl
         "draft-team-pick",
         isTraded ? "is-traded" : "",
         isBonus ? "is-bonus" : "",
-        pick.conditionalProjection ? "is-conditional-projected" : ""
+        pick.conditionalProjection ? "is-conditional-projected" : "",
+        pick.conditionalCounterpart ? "is-conditional-counterpart" : ""
       ].filter(Boolean).join(" ");
 
       let origin = "Pick originale";
       if (pick.conditionalProjection) origin = `🔐 Proiezione condizionata da ${shortDesktopTeamName(originalTeam)}`;
+      else if (pick.conditionalCounterpart) origin = `🔐 Contropartita definitiva da ${shortDesktopTeamName(originalTeam)}`;
       else if (isBonus) origin = `Bonus da ${shortDesktopTeamName(originalTeam)}`;
       else if (isTraded) origin = `da ${shortDesktopTeamName(originalTeam)}`;
 
@@ -2312,6 +2347,8 @@ function generaDraftByTeam(containerId, draftData, squadreOrdine, conferenceTitl
               ? `<span class="draft-team-pick-badge bonus">★ Bonus</span>`
               : pick.conditionalProjection
                 ? `<span class="draft-team-pick-badge trade">🔐 Provvisoria</span>`
+              : pick.conditionalCounterpart
+                ? `<span class="draft-team-pick-badge trade">🔐 Definitiva</span>`
               : isTraded
                 ? `<span class="draft-team-pick-badge trade">↔ Trade</span>`
                 : `<span class="draft-team-pick-badge original">Originale</span>`
