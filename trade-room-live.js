@@ -847,5 +847,9 @@ function drawHistory(){
   el("v2HistoryItems").innerHTML=data.length?data.map(tradeHTML).join(""):
     '<div class="v2-empty">Nessun movimento ufficiale da mostrare.</div>';
 }
+// La Trade Room condizionata usa lo stesso elenco dei tagli della versione
+// classica. Aggiorna i due pannelli dopo l'accettazione senza ricaricare l'app.
+window.refreshTradeRoomV2=refreshLiveData;
+
 // Il motore ufficiale viene incluso nella pagina, ma non nella preview separata.
 document.addEventListener("DOMContentLoaded",init);
