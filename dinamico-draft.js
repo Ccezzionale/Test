@@ -812,33 +812,39 @@ if (slotIndex === -1) {
 
 /* SOLO proiezione read-only del Draft: il proprietario reale resta in Supabase
    fino al verdetto ufficiale della condizione. */
-async function projectConditionalDraftRights(draft, futurePicks) {
-  const [rightsResult, offersResult, locksResult, teamsResult] = await Promise.all([
-    supabase.from("conditional_trade_rights").select("*").in("status", ["active","resolved"]).limit(500),
+async function projectConditionalDraftRights(draft, futurePicks, statsRows=[]) {
+  const [rightsResult,offersResult,locksResult,teamsResult]=await Promise.all([
+    supabase.from("conditional_trade_rights").select("*").in("status",["active","resolved"]).limit(500),
     supabase.from("conditional_trade_offers").select("*").eq("status","accepted").limit(500),
     supabase.from("conditional_trade_candidates").select("right_id,pick_id,is_locked").eq("is_locked",true),
     supabase.from("teams").select("id,name,conference")
   ]);
-  for (const response of [rightsResult, offersResult, locksResult, teamsResult])
-    if (response.error) throw response.error;
+  for(const response of [rightsResult,offersResult,locksResult,teamsResult])
+    if(response.error)throw response.error;
+  const [standingsResult,trophyResult]=await Promise.all([
+    supabase.from("conditional_official_standings").select("*").eq("is_final",true)
+      .then(x=>x,()=>({data:[]})),
+    supabase.from("conditional_official_trophies").select("*")
+      .then(x=>x,()=>({data:[]}))
+  ]);
+  const standings=standingsResult.data||[],trophies=trophyResult.data||[];
   const rights=rightsResult.data||[],offers=offersResult.data||[],
     locks=locksResult.data||[],teams=teamsResult.data||[];
   const teamsById=new Map(teams.map(t=>[String(t.id),t]));
   const futureById=new Map(futurePicks.map(p=>[String(p.id),p]));
   const entries=[],projectedIds=new Set();
-  for (const right of rights) {
+  for(const right of rights) {
     const sourceOffer=offers.find(o=>String(o.id)===String(right.source_offer_id));
     if(!sourceOffer)continue;
-    const draftName=right.draft_name||sourceOffer.draft_name||
-      futureById.get(String(sourceOffer.counter_pick_id))?.draft_name;
+    const draftName=right.draft_name||futureById.get(String(sourceOffer.counter_pick_id))?.draft_name;
     const candidates=locks.filter(c=>c.is_locked&&String(c.right_id)===String(right.id))
       .map(c=>futureById.get(String(c.pick_id))).filter(Boolean);
     const item={right,offer:sourceOffer,candidates,chosen:null,pickNumber:null,
       draftName,status:right.status==="resolved"?"final":"pending"};
     entries.push(item);
-    if(right.status!=="active"||right.rule_kind!=="ranked")continue;
-    // Evita di proiettare una scelta se una candidata o la sua posizione manca.
-    if(candidates.length<2 || candidates.length!==(sourceOffer.candidate_pick_ids||[]).length)continue;
+    if(right.status!=="active")continue;
+    // Nessuna scelta se i vincoli sono incompleti: non inventare una vincitrice.
+    if(candidates.length!==(sourceOffer.candidate_pick_ids||[]).length||!candidates.length)continue;
     const draftRows=draftName==="Draft Conference"?draft.league:
       draftName==="Draft Championship"?draft.championship:null;
     if(!draftRows)continue;
@@ -848,15 +854,60 @@ async function projectConditionalDraftRights(draft, futurePicks) {
       return {future:p,cell,number:Number(cell?.pickNumber)};
     });
     if(ranking.some(x=>!x.cell||!Number.isInteger(x.number)||x.number<=0))continue;
-    ranking.sort((a,b)=>a.number-b.number);
-    const selected=right.rule_spec?.which==="best"?ranking[0]:
-      right.rule_spec?.which==="worst"?ranking[ranking.length-1]:null;
+    const rule=right.rule_spec||{};
+    let selected=null;
+    if(right.rule_kind==="ranked"){
+      if(ranking.length<2)continue;
+      ranking.sort((x,y)=>x.number-y.number);
+      selected=rule.which==="best"?ranking[0]:
+        rule.which==="worst"?ranking[ranking.length-1]:null;
+    }else if(right.rule_kind==="standing"){
+      const subject=teamsById.get(String(rule.subject_team_id));
+      if(!subject)continue;
+      const scope=rule.scope;
+      const cohort=scope==="round_robin"?teams:
+        teams.filter(t=>t.conference===subject.conference);
+      const final=standings.find(x=>x.is_final&&Number(x.season)===Number(right.season)
+        &&x.scope===scope&&String(x.team_id)===String(subject.id));
+      let place=Number(final?.position);
+      if(!final){
+        const rows=(statsRows||[]).filter(r=>r.Phase==="Regular"&&
+          (scope==="round_robin"?r.Conference==="Unificata":
+            r.Conference!=="Unificata"&&cohort.some(t=>teamKey(t.name)===teamKey(r.Team))));
+        if(!rows.length)continue;
+        const ranked=buildTotalRankingFromStats(rows);
+        const index=ranked.findIndex(x=>teamKey(x.squadra)===teamKey(subject.name));
+        if(index<0)continue;
+        place=index+1;
+      }
+      const top=Number(rule.top_count),bottom=Number(rule.bottom_count);
+      const selectedId=place<=top?rule.top_pick_id:
+        place>cohort.length-bottom?rule.bottom_pick_id:rule.middle_pick_id;
+      selected=ranking.find(x=>String(x.future.id)===String(selectedId));
+    }else if(right.rule_kind==="trophy"){
+      const relevant=trophies.filter(x=>Number(x.season)===Number(right.season));
+      let won=null;
+      if(rule.mode==="specific_trophy"){
+        const trophy=relevant.find(x=>x.competition_id===rule.competition_id);
+        if(trophy?.status==="final")won=String(trophy.winner_team_id)===String(rule.subject_team_id);
+      }else if(rule.mode==="any_trophy"){
+        const choices=rule.eligible_competition_ids||[];
+        const final=relevant.filter(x=>choices.includes(x.competition_id)&&x.status==="final");
+        if(final.some(x=>String(x.winner_team_id)===String(rule.subject_team_id)))won=true;
+        else if(choices.length&&final.length===choices.length)won=false;
+      }
+      if(won!==null){
+        const selectedId=won?rule.won_pick_id:rule.not_won_pick_id;
+        selected=ranking.find(x=>String(x.future.id)===String(selectedId));
+      }
+    }
     const holder=teamsById.get(String(right.holder_team_id));
     if(!selected||!holder||projectedIds.has(String(selected.future.id)))continue;
     projectedIds.add(String(selected.future.id));
     item.chosen=selected.future;
     item.pickNumber=selected.number;
     item.status="provisional";
+    // SOLO modello in RAM, pick reali e vincoli in database non cambiano.
     selected.cell.team=holder.name;
     selected.cell.traded=teamKey(holder.name)!==teamKey(selected.cell.originalTeam);
     selected.cell.conditionalProjection={
@@ -2371,7 +2422,7 @@ Promise.all([
   const draft = generaDraftDaCSV(statsRows, futurePicks);
   let conditionalContext={entries:[],offers:[],rights:[],teamsById:new Map(),futureById:new Map()};
   try{
-    conditionalContext=await projectConditionalDraftRights(draft,futurePicks);
+    conditionalContext=await projectConditionalDraftRights(draft,futurePicks,statsRows);
   }catch(error){console.warn("Draft: proiezione condizionata non disponibile",error);}
 
   generaTabellaVerticale("draft-league", draft.league, draft.leagueTeams);
