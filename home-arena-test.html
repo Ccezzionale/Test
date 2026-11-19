@@ -8,29 +8,52 @@
 <title>Home Arena · Concept 3 | Lega degli Eroi</title>
 <link rel="icon" href="icon-192.png">
 <link rel="stylesheet" href="navbar.css?v=20261007-bottom4">
-<link rel="stylesheet" href="home-arena-test.css?v=20261119-v32-real-top-navbar">
-<script type="module" src="home-arena-test.js?v=20261119-v32-real-top-navbar"></script>
+<link rel="stylesheet" href="home-arena-test.css?v=20261119-v33-side-drawer">
+<script type="module" src="home-arena-test.js?v=20261119-v33-side-drawer"></script>
 </head>
 <body class="arena-reboot" data-view="league">
-<!-- Navbar superiore ufficiale in anteprima: markup identico a index.html. -->
-<nav class="site-nav">
-    <div class="nav-inner">
-<div class="nav-left">
-  <span id="hamburger" class="hamburger" aria-label="Apri menu">☰</span>
 
-  <button type="button" class="mobile-nav-title" id="mobile-nav-title" aria-label="Apri menu">
-    <span class="mobile-nav-logo">
-      <img src="icon-192.png" alt="">
-    </span>
-    <span>Lega degli Eroi</span>
-    <span class="mobile-nav-caret">▾</span>
-  </button>
-
-  <a href="index.html" class="brand-home desktop-home-link" aria-label="Home">
-    <img src="icons/nav/home.webp" alt="" class="nav-home-icon">
-  </a>
-</div>
-
+<!-- HOME ARENA V33: solo anteprima. Nessuna modifica a index.html/navbar.css. -->
+<nav class="site-nav arena-v33-header" aria-label="Barra superiore Home Arena">
+  <div class="nav-inner">
+    <div class="nav-left">
+      <a href="home-arena-test.html" class="arena-top-brand" aria-label="Home Arena">
+        <img src="icon-192.png" alt="">
+        <span class="arena-top-brand-copy"><strong>LEGA DEGLI EROI</strong><small>THE ARENA</small></span>
+      </a>
+    </div>
+    <div class="nav-right hero-actions">
+      <button id="attiva-notifiche-btn" type="button" class="btn-hero warning arena-top-action" aria-label="Centro notifiche">
+        <img src="icons/nav/notifications.webp" class="action-icon" alt="">
+        <span class="btn-label">Notifiche</span>
+      </button>
+      <button id="arena-menu-toggle" type="button" class="arena-top-action arena-menu-trigger" aria-label="Apri menu Arena" aria-controls="arena-menu-panel" aria-expanded="false">
+        <svg viewBox="0 0 24 24" width="23" height="23" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+          <path d="M4 7h16M4 12h16M4 17h16"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+</nav>
+<div class="arena-menu-backdrop" id="arena-menu-backdrop" aria-hidden="true"></div>
+<aside class="arena-menu-panel" id="arena-menu-panel" role="dialog" aria-modal="true" aria-label="Menu Arena" aria-hidden="true">
+  <div class="arena-menu-head">
+    <div><small>NAVIGAZIONE</small><strong>MENU ARENA</strong></div>
+    <button type="button" id="arena-menu-close" aria-label="Chiudi menu">
+      <svg viewBox="0 0 24 24" width="23" height="23" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M5 5l14 14M19 5L5 19"/></svg>
+    </button>
+  </div>
+  <div class="arena-menu-scroll">
+    <div class="arena-menu-profile">
+      <img id="arena-menu-team-logo" src="icon-192.png" alt="">
+      <div class="arena-menu-profile-copy">
+        <span>IL TUO QUARTIER GENERALE</span>
+        <strong id="arena-menu-team-name">La tua franchigia</strong>
+        <small id="arena-menu-team-detail">Dati della squadra in aggiornamento</small>
+      </div>
+    </div>
+    <div class="arena-menu-section-heading">ESPLORA LA LEGA</div>
+    <nav class="arena-drawer-nav" aria-label="Sezioni Lega degli Eroi">
 <ul class="navbar" id="mainMenu">
 
 <!-- ROSE NORMALE: visibile ai non-admin -->
@@ -195,30 +218,25 @@
 
         <li><a href="regolamento.html">Regolamento</a></li>
       </ul>
-
-      <div class="nav-right hero-actions">
-        <a id="trade-badge" href="trade-room.html" class="btn-hero trade-badge" aria-label="Trade Room">
-          <img src="icons/nav/trade-room.webp" class="action-icon" alt="">
-          <span class="btn-label">Trade Room</span>
-        </a>
-
-        <a id="login-btn" href="login.html" class="btn-hero" style="display:none;" aria-label="Login">
-          <img src="icons/nav/login-logout.webp" class="action-icon" alt="">
-          <span class="btn-label">Login</span>
-        </a>
-
-        <button id="logout-btn" type="button" class="btn-hero" style="display:none;" aria-label="Logout">
-          <img src="icons/nav/login-logout.webp" class="action-icon" alt="">
-          <span class="btn-label">Logout</span>
-        </button>
-
-        <button id="attiva-notifiche-btn" type="button" class="btn-hero warning" aria-label="Centro notifiche">
-          <img src="icons/nav/notifications.webp" class="action-icon" alt="">
-          <span class="btn-label">Notifiche</span>
-        </button>
-      </div>
+    </nav>
+    <div class="arena-menu-section-heading arena-menu-account-heading">ACCOUNT E COLLEGAMENTI</div>
+    <div class="arena-menu-account-actions">
+      <a id="trade-badge" href="trade-room.html" class="btn-hero trade-badge" aria-label="Trade Room">
+        <img src="icons/nav/trade-room.webp" class="action-icon" alt="">
+        <span class="btn-label">Trade Room</span>
+      </a>
+      <a id="login-btn" href="login.html" class="btn-hero" style="display:none;" aria-label="Login">
+        <img src="icons/nav/login-logout.webp" class="action-icon" alt="">
+        <span class="btn-label">Login</span>
+      </a>
+      <button id="logout-btn" type="button" class="btn-hero" style="display:none;" aria-label="Logout">
+        <img src="icons/nav/login-logout.webp" class="action-icon" alt="">
+        <span class="btn-label">Esci dall'account</span>
+      </button>
+      <a class="arena-menu-official-link" href="index.html">Home ufficiale <span aria-hidden="true">↗</span></a>
     </div>
-  </nav>
+  </div>
+</aside>
 <main class="shell">
   <div class="arena-test-ribbon" role="note">
     <span>ANTEPRIMA · HOME ARENA</span>
@@ -392,5 +410,6 @@
 <script type="module" src="notifications-center.js?v=20261113-destinations"></script>
 <script src="navbar.js?v=20261113-destinations"></script>
 <script type="module" src="admin-nav.js?v=1"></script>
+<script src="home-arena-v33.js?v=20261119-v33-side-drawer"></script>
 </body>
 </html>
