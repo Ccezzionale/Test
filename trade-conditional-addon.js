@@ -791,6 +791,8 @@ async function confirmSendOffer(){
       resultMessage="✅ Proposta registrata sul mercato. Non sono riuscito ad aggiornare l'elenco: ricarica la Trade Room per vederla.";
     }
   }catch(err){
+    // Una modifica o una validazione fallita invalida la conferma precedente.
+    hideSendConfirmation();
     console.error("Invio trade condizionata:",err);
     isError=true;
     resultMessage="⚠️ "+(err?.message||"Invio non riuscito.");
