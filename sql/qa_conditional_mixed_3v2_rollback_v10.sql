@@ -52,7 +52,7 @@ SELECT set_config('app.qa_cut',public.cut_trade_players(
 )::text,true);
 RESET ROLE;
 DO $$
-DECLARE o record;
+DECLARE v_summary record;
 BEGIN
  SELECT o.status AS offer_status,t.status AS classic_status,r.status AS right_status,
    (SELECT count(*) FROM public.conditional_trade_reviews z WHERE z.offer_id=o.id) reviewer_rows,
@@ -70,17 +70,17 @@ BEGIN
    (SELECT count(*) FROM public.waiver_compensatory_calls WHERE source_trade_id=t.id
       AND team_id='99ff32eb-10ae-4631-be7c-f45bf672b178'::uuid) compensative_calls,
    (SELECT count(*) FROM public.trade_cut_players WHERE proposal_id=t.id) cut_history
- INTO o
+ INTO v_summary
  FROM public.conditional_trade_offers o
  JOIN public.trade_proposals t ON t.id=o.mixed_legacy_trade_id
  JOIN public.conditional_trade_rights r ON r.source_offer_id=o.id
  WHERE o.id=current_setting('app.qa_offer')::uuid;
- IF o.offer_status<>'accepted' OR o.classic_status<>'accepted'
-   OR o.right_status<>'active' OR o.reviewer_rows<>1 OR o.locks<>3
-   OR o.counter_owner<>'99ff32eb-10ae-4631-be7c-f45bf672b178'::uuid
-   OR o.golden_players_moved<>3 OR o.poker_players_moved<>2
-   OR o.compensative_calls<>1 OR o.cut_history<>1
- THEN RAISE EXCEPTION 'POST-CUT FAILED: %',row_to_json(o); END IF;
+ IF v_summary.offer_status<>'accepted' OR v_summary.classic_status<>'accepted'
+   OR v_summary.right_status<>'active' OR v_summary.reviewer_rows<>1 OR v_summary.locks<>3
+   OR v_summary.counter_owner<>'99ff32eb-10ae-4631-be7c-f45bf672b178'::uuid
+   OR v_summary.golden_players_moved<>3 OR v_summary.poker_players_moved<>2
+   OR v_summary.compensative_calls<>1 OR v_summary.cut_history<>1
+ THEN RAISE EXCEPTION 'POST-CUT FAILED: %',row_to_json(v_summary); END IF;
 END $$;
 SELECT 'PASS: Golden Knights 3 vs PokerMantra 2; cut, players, compensative, right, three pick locks (ROLLBACK)' AS test;
 ROLLBACK;
