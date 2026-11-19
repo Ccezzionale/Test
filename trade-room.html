@@ -9,7 +9,7 @@
   <link rel="stylesheet" href="navbar.css">
   <link rel="stylesheet" href="trade-room.css?v=20261116-live-backup">
   <link rel="stylesheet" href="trade-room-v2.css?v=20261117-trade-cuts-restored">
-  <link rel="stylesheet" href="trade-conditional-addon.css?v=20261119-mixed-balance-v17">
+  <link rel="stylesheet" href="trade-conditional-addon.css?v=20261119-conditional-classic-cuts-v18">
 </head>
 <body class="trade-v2-preview trade-v2-live">
 <nav class="site-nav">
@@ -449,7 +449,7 @@
     <section class="ct-mixed-fields" id="ctMixedFields">
       <div class="ct-mixed-head">
         <strong>⚽ Aggiungi altri asset allo stesso scambio</strong>
-        <p>Giocatori, altre pick future e chiamate waiver. Verranno trasferiti insieme al diritto, mai separatamente.</p>
+        <p>I giocatori e gli altri asset si scambiano con le regole normali del mercato. Solo la scelta futura è condizionata: eventuali svincoli e chiamate compensative funzionano come nelle trade classiche.</p>
       </div>
       <div class="ct-mixed-grid">
         <div class="ct-mixed-col">
@@ -480,7 +480,7 @@
         </div>
       </div>
       <p id="ctMixedRules" class="ct-mixed-rules">
-        La clausola e la sua contropartita valgono già come 1:1. Le altre pick future devono essere pari sui due lati. Le trade miste condizionate richiedono lo stesso numero di giocatori per squadra: gli svincoli e le chiamate compensative delle trade classiche non sono ancora integrati. I portieri restano esclusi.
+        La scelta condizionata e la sua contropartita rispettano già il rapporto 1:1, come le altre pick extra. I giocatori NON devono essere pari: negli scambi 3 contro 2 si applicano gli svincoli obbligatori e le chiamate compensative del mercato classico. Dopo lo svincolo i giocatori si trasferiscono immediatamente; solo il diritto sulla scelta futura rimane condizionato. Gli U21 slot rimangono 1:1 e i portieri non sono inclusi.
       </p>
       <p id="ctMixedPlayerBalance" class="ct-mixed-balance" role="status" aria-live="polite" hidden></p>
     </section>
@@ -500,7 +500,7 @@
         <button type="button" id="ctCancelSubmit">Annulla</button>
       </div>
     </div>
-    <p class="ct-field-help">Questa è una proposta REALE: il destinatario deve accettarla. Una condizione in attesa non trasferisce subito le pick candidate.</p>
+    <p class="ct-field-help">Questa è una proposta REALE. Dopo l'accettazione i giocatori seguono il mercato normale, compreso lo svincolo se necessario; le pick candidate restano vincolate fino all'esito della clausola.</p>
   </div>
 </section>
 <div id="v2DrawerBackdrop" class="v2-picker-backdrop" hidden></div>
@@ -771,7 +771,7 @@
   <script src="mobile-nav.js?v=20261119-global33"></script>
   <script src="navbar.js?v=20261119-global33"></script>
   <script type="module" src="trade-room.js?v=20261116-live-original"></script>
-  <script type="module" src="trade-room-live.js?v=20261117-trade-cuts-restored"></script>
-  <script type="module" src="trade-conditional-addon.js?v=20261119-mixed-balance-v17"></script>
+  <script type="module" src="trade-room-live.js?v=20261119-conditional-classic-cuts-v18"></script>
+  <script type="module" src="trade-conditional-addon.js?v=20261119-conditional-classic-cuts-v18"></script>
 </body>
 </html>
