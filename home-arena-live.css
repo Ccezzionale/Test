@@ -2685,6 +2685,100 @@ body.arena-reboot .arena-menu-official-link span {color:#f5c66b;font-size:17px}
 }
 
 
+/* HOME ARENA V34 · HIGHLANDER MATCHDAY MASCOT PROPORTIONS
+   Preview only: a much more imposing throne character, comparable
+   to the Playoff and Crash Out portraits. Other three tabs untouched.
+*/
+body.arena-reboot[data-view="highlander"] .stage-special {
+  grid-template-columns:minmax(105px,34%) minmax(0,1fr);
+  min-height:166px;
+  gap:2px;
+  align-items:center;
+}
+body.arena-reboot[data-view="highlander"] .stage-special > img {
+  position:relative;
+  z-index:1;
+  width:100%;
+  max-width:150px;
+  height:156px;
+  object-fit:contain;
+  object-position:bottom left;
+  transform:translate(-9px,10px) scale(1.25);
+  transform-origin:left bottom;
+}
+body.arena-reboot[data-view="highlander"] .stage-special > div {
+  position:relative;
+  z-index:2;
+  min-width:0;
+  padding-left:9px;
+  text-shadow:0 3px 12px rgba(1,10,29,.84);
+}
+@media(max-width:380px) {
+  body.arena-reboot[data-view="highlander"] .stage-special {
+    grid-template-columns:100px minmax(0,1fr);
+    min-height:150px;
+    gap:0;
+  }
+  body.arena-reboot[data-view="highlander"] .stage-special > img {
+    max-width:135px;
+    height:143px;
+    transform:translate(-6px,10px) scale(1.22);
+  }
+  body.arena-reboot[data-view="highlander"] .stage-special > div {
+    padding-left:7px;
+  }
+}
+
+
+/* =============================================================
+   HOME ARENA V35 · HIGHLANDER COPY / QUARTIER GENERALE CONTRAST
+   Shift the Highlander status to the right of its larger mascot.
+   Keep all four tabs' franchise names readable on the navy card.
+   ============================================================= */
+body.arena-reboot .personal-strip .personal-copy #my-team {
+  color:#fff !important;
+  -webkit-text-fill-color:#fff !important;
+  text-shadow:0 2px 7px rgba(1,12,29,.45) !important;
+}
+body.arena-reboot[data-view="highlander"] .stage-special {
+  grid-template-columns:minmax(148px,41%) minmax(0,1fr);
+  gap:5px;
+}
+body.arena-reboot[data-view="highlander"] .stage-special > div {
+  padding-left:13px;
+  padding-right:3px;
+  transform:none;
+}
+body.arena-reboot[data-view="highlander"] #stage-special-kicker {
+  color:#ecc48b;
+  text-shadow:0 2px 8px rgba(0,0,0,.8);
+}
+body.arena-reboot[data-view="highlander"] #stage-special-title {
+  color:#fff !important;
+  -webkit-text-fill-color:#fff !important;
+  font-size:clamp(17px,2.8vw,22px);
+  text-shadow:0 3px 12px rgba(0,0,0,.84);
+}
+body.arena-reboot[data-view="highlander"] #stage-special-desc {
+  color:#e6edf8;
+  font-size:clamp(10px,2vw,12px);
+  line-height:1.3;
+}
+@media (max-width:380px) {
+  body.arena-reboot[data-view="highlander"] .stage-special {
+    grid-template-columns:132px minmax(0,1fr);
+    gap:2px;
+    min-height:150px;
+  }
+  body.arena-reboot[data-view="highlander"] .stage-special > div {
+    padding-left:11px;
+    padding-right:1px;
+  }
+  body.arena-reboot[data-view="highlander"] #stage-special-title {
+    font-size:18px;
+  }
+}
+
 /* HOME ARENA V36 · CONTRASTO DELLE CARD SCURE IN TUTTE LE COPPE
    Nelle viste Playoff/Crash Out/Highlander la pagina esterna è chiara,
    ma le card restano blu notte: il testo deve restare bianco.
