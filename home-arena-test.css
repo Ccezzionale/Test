@@ -2728,3 +2728,53 @@ body.arena-reboot[data-view="highlander"] .stage-special > div {
     padding-left:7px;
   }
 }
+
+
+/* =============================================================
+   HOME ARENA V35 · HIGHLANDER COPY / QUARTIER GENERALE CONTRAST
+   Shift the Highlander status to the right of its larger mascot.
+   Keep all four tabs' franchise names readable on the navy card.
+   ============================================================= */
+body.arena-reboot .personal-strip .personal-copy #my-team {
+  color:#fff !important;
+  -webkit-text-fill-color:#fff !important;
+  text-shadow:0 2px 7px rgba(1,12,29,.45) !important;
+}
+body.arena-reboot[data-view="highlander"] .stage-special {
+  grid-template-columns:minmax(148px,41%) minmax(0,1fr);
+  gap:5px;
+}
+body.arena-reboot[data-view="highlander"] .stage-special > div {
+  padding-left:13px;
+  padding-right:3px;
+  transform:none;
+}
+body.arena-reboot[data-view="highlander"] #stage-special-kicker {
+  color:#ecc48b;
+  text-shadow:0 2px 8px rgba(0,0,0,.8);
+}
+body.arena-reboot[data-view="highlander"] #stage-special-title {
+  color:#fff !important;
+  -webkit-text-fill-color:#fff !important;
+  font-size:clamp(17px,2.8vw,22px);
+  text-shadow:0 3px 12px rgba(0,0,0,.84);
+}
+body.arena-reboot[data-view="highlander"] #stage-special-desc {
+  color:#e6edf8;
+  font-size:clamp(10px,2vw,12px);
+  line-height:1.3;
+}
+@media (max-width:380px) {
+  body.arena-reboot[data-view="highlander"] .stage-special {
+    grid-template-columns:132px minmax(0,1fr);
+    gap:2px;
+    min-height:150px;
+  }
+  body.arena-reboot[data-view="highlander"] .stage-special > div {
+    padding-left:11px;
+    padding-right:1px;
+  }
+  body.arena-reboot[data-view="highlander"] #stage-special-title {
+    font-size:18px;
+  }
+}
