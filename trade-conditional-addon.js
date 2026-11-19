@@ -9,7 +9,7 @@ import {TROPHY_COMPETITIONS} from "./conditional-trades-core.js";
  */
 const $=id=>document.getElementById(id);
 const esc=v=>String(v??"").replace(/[&<>"']/g,ch=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[ch]));
-const state={me:null,teams:[],picks:[],players:[],waiverCalls:[],extraFrom:new Set(),extraTo:new Set(),rights:[],offers:[],locks:new Set(),settings:null,enabled:false,mode:"classic",resaleIntent:"sell",isAdmin:false,reviews:[]};
+const state={me:null,teams:[],picks:[],players:[],waiverCalls:[],extraFrom:new Set(),extraTo:new Set(),rights:[],offers:[],locks:new Set(),settings:null,enabled:false,mode:"classic",resaleIntent:"sell",isAdmin:false,reviews:[],sending:false};
 const team=id=>state.teams.find(t=>String(t.id)===String(id));
 const name=id=>team(id)?.name||"Franchigia";
 const myId=()=>state.me?.team_id;
@@ -358,15 +358,24 @@ function redrawSummary(){
     !same(originalRight.holder_team_id,owner)||
     !same(state.picks.find(p=>same(p.id,$("ctCounterPick").value))?.owner_team_id,holder)||
     state.picks.find(p=>same(p.id,$("ctCounterPick").value))?.draft_name!==originalRight?.draft_name);
-  const reason=!state.enabled
+  let reason=!state.enabled
     ?"Le trade condizionate sono temporaneamente sospese dall'amministrazione."
     :!marketOpen()?"Il mercato è chiuso."
     :!targetId()?"Scegli prima una franchigia con cui trattare."
     :team(owner)?.conference!==team(holder)?.conference?"Condizioni fra Conferences diverse non ancora supportate."
     :rankedIssue?"Seleziona almeno due pick candidate dello stesso round."
     :resaleIssue?"Nessun diritto attivo acquistabile da questa franchigia oppure manca una pick di pagamento dello stesso Draft. Usa «Vendi» o «Proponi acquisto».":"";
-  $("ctSendOffer").disabled=!!reason;
-  failure("ctFormNotice",reason);
+  if(!reason){
+    try{
+      const payload=conditionPayload();
+      validateMixedExtras(extras,payload);
+    }catch(err){reason=err?.message||"Completa la clausola e la pick di contropartita.";}
+  }
+  // Lascia il pulsante cliccabile anche se manca un campo: al clic
+  // apparirà la spiegazione precisa, invece di un pulsante morto.
+  $("ctSendOffer").disabled=state.sending;
+  $("ctSendOffer").textContent=state.sending?"Invio in corso…":"🔐 Invia proposta condizionata";
+  if(!state.sending)failure("ctFormNotice",reason);
 }
 function conditionPayload(){
   const owner=grantorId(),holder=holderId(),kind=$("ctKind").value;
@@ -709,6 +718,9 @@ async function notifyConditionalTrade(eventType,proposalId){
 }
 
 async function sendOffer(){
+  if(state.sending)return;
+  let resultMessage="";
+  let isError=false;
   try{
     if(!state.enabled)throw new Error("Le trade condizionate sono temporaneamente sospese.");
     if(!marketOpen())throw new Error("Il mercato è chiuso.");
@@ -716,19 +728,36 @@ async function sendOffer(){
     const extras=extraAssets();
     validateMixedExtras(extras,payload);
     if(!window.confirm("Inviare "+(extras.length?"una trade MISTA con "+extras.length+" asset aggiuntivi":"una proposta condizionata")+" a "+name(targetId())+"? Tutte le parti saranno vincolanti dopo l'accettazione."))return;
-    $("ctSendOffer").disabled=true;failure("ctFormNotice","Invio della proposta...");
+    state.sending=true;
+    $("ctSendOffer").disabled=true;
+    $("ctSendOffer").textContent="Invio in corso…";
+    failure("ctFormNotice","Sto registrando la proposta nel mercato ufficiale…");
+    $("ctFormNotice").classList.remove("is-error");
     const method=extras.length?"conditional_create_mixed_offer":"conditional_create_offer";
     const params=extras.length?{...payload,p_extra_assets:extras}:payload;
     const {data:offerId,error}=await supabase.rpc(method,params);
     if(error)throw error;
+    // Se la notifica fallisce, il contratto resta comunque salvato.
+    failure("ctFormNotice","Proposta registrata! Aggiorno le proposte e invio la notifica…");
     const noticeSent=await notifyConditionalTrade("proposal",offerId);
-    failure("ctFormNotice","");
     await reload();
-    $("ctFormNotice").textContent="Proposta condizionata inviata. "+(noticeSent
-      ?"Il destinatario è stato avvisato.":"Il destinatario può vederla in Proposte; la notifica non è stata confermata.");
-    $("ctFormNotice").classList.remove("is-error");
-  }catch(err){failure("ctFormNotice",err.message||"Impossibile inviare la proposta.");}
-  finally{redrawSummary();}
+    resultMessage="✅ Proposta condizionata inviata. "+(noticeSent
+      ?"Il destinatario è stato avvisato.":"Il destinatario la vede in Proposte; la notifica non è stata confermata.");
+  }catch(err){
+    console.error("Invio trade condizionata:",err);
+    isError=true;
+    resultMessage="⚠️ "+(err?.message||"Invio non riuscito. Nessuna proposta confermata.");
+  }finally{
+    state.sending=false;
+    redrawSummary();
+    // Non cancellare conferme e messaggi di errore: il vecchio finally
+    // chiamava redrawSummary e faceva sparire subito ogni avviso.
+    if(resultMessage){
+      failure("ctFormNotice",resultMessage);
+      $("ctFormNotice").classList.toggle("is-error",isError);
+      $("ctFormNotice").scrollIntoView({behavior:"smooth",block:"nearest"});
+    }
+  }
 }
 async function offerAction(event){
   const btn=event.target.closest("[data-ct-accept],[data-ct-reject],[data-ct-cancel]");
