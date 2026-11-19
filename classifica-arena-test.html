@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Classifiche Arena · Anteprima | Lega degli Eroi</title>
+  <meta name="robots" content="noindex,nofollow">
+  <link rel="stylesheet" href="navbar.css">
+  <link rel="stylesheet" href="classifica.css">
+  <link rel="stylesheet" href="classifica-risultati.css?v=20261111-finale">
+  <link rel="stylesheet" href="classifica-arena-preview.css?v=20261119-01">
+<meta name="lega-app-build" content="v20261119-arena-v33">
+<script defer src="./app-updates.js?bootstrap=v20261119-arena-v33" data-eroi-update="1"></script>
+</head>
+<body class="classifica-arena-v2">
+  <nav class="site-nav">
+    <div class="nav-inner">
+      <div class="nav-left">
+        <span id="hamburger" class="hamburger" aria-label="Apri menu">☰</span>
+        <a href="index.html" class="brand-home" aria-label="Home">
+          <img src="icons/nav/home.webp" alt="" class="nav-home-icon">
+        </a>
+      </div>
+
+      <ul class="navbar" id="mainMenu">
+        <li class="dropdown">
+  <a href="#" class="toggle-submenu">
+    Rose <span class="caret">▾</span>
+  </a>
+
+  <ul class="submenu">
+    <li>
+      <a href="rose.html">
+        Rose Squadre
+      </a>
+    </li>
+
+    <li>
+      <a href="franchigie.html">
+        Franchigie
+      </a>
+    </li>
+  </ul>
+</li>
+
+        <li class="dropdown">
+          <a href="#" class="toggle-submenu">
+            Draft <span class="caret">▾</span>
+          </a>
+          <ul class="submenu">
+            <li><a href="pre-draft.html"><img src="icons/nav/pre-draft.webp" class="menu-icon" alt="">Pre-Draft</a></li>
+            <li><a href="draft_championship.html"><img src="icons/nav/conf-championship.webp" class="menu-icon" alt="">Conf. Championship</a></li>
+            <li><a href="draft_conference.html"><img src="icons/nav/conf-league.webp" class="menu-icon" alt="">Conf. League</a></li>
+            <li><a href="dinamico-draft.html"><img src="icons/nav/draft-2026.webp" class="menu-icon" alt="">Draft 2027-28</a></li>
+          </ul>
+        </li>
+
+        <li class="dropdown competizioni">
+          <a href="#" class="toggle-submenu">
+            Competizioni <span class="caret">▾</span>
+          </a>
+          <ul class="submenu">
+            <li><a href="classifica.html"><img src="icons/nav/classifiche.webp" class="menu-icon" alt="">Classifiche</a></li>
+            <li><a href="playoff.html"><img src="icons/nav/playoff.webp" class="menu-icon" alt="">Playoff</a></li>
+            <li><a href="arena.html"><img src="icons/nav/highlander.webp" class="menu-icon" alt="">Highlander</a></li>
+            <li><a href="crashoutcup.html"><img src="icons/nav/crashout-cup.webp" class="menu-icon" alt="">Crash Out Cup</a></li>
+            <li><a href="crashoutplayoff.html"><img src="icons/nav/crashout-playoff.webp" class="menu-icon" alt="">Crash Out Cup - Playoff</a></li>
+            <li><a href="supercoppa.html"><img src="icons/nav/supercoppa.webp" class="menu-icon" alt="">Supercoppa</a></li>
+                                    <li>
+              <a href="allstar.html">
+                <img src="icons/nav/allstar.webp" class="menu-icon" alt="">
+                All-Star Game
+              </a>
+            </li>
+            <li><a href="statistiche.html"><img src="icons/nav/statistiche.webp" class="menu-icon" alt="">Statistiche</a></li>
+          </ul>
+        </li>
+
+
+        <li><a href="waiver.html">Waiver Wire</a></li>
+
+<li>
+  <a href="hall-of-fame.html">Hall of Fame</a>
+</li>
+
+        <li><a href="regolamento.html">Regolamento</a></li>
+      </ul>
+
+      <div class="nav-right hero-actions">
+        <a id="trade-badge" href="trade-room.html" class="btn-hero trade-badge" aria-label="Trade Room">
+          <img src="icons/nav/trade-room.webp" class="action-icon" alt="">
+          <span class="btn-label">Trade Room</span>
+        </a>
+
+        <a id="login-btn" href="login.html" class="btn-hero" style="display:none;" aria-label="Login">
+          <img src="icons/nav/login-logout.webp" class="action-icon" alt="">
+          <span class="btn-label">Login</span>
+        </a>
+
+        <button id="logout-btn" type="button" class="btn-hero" style="display:none;" aria-label="Logout">
+          <img src="icons/nav/login-logout.webp" class="action-icon" alt="">
+          <span class="btn-label">Logout</span>
+        </button>
+
+        <button id="attiva-notifiche-btn" type="button" class="btn-hero warning" aria-label="Attiva notifiche">
+          <img src="icons/nav/notifications.webp" class="action-icon" alt="">
+          <span class="btn-label">Attiva notifiche</span>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <main class="classifica-page">
+    <div class="arena-preview-label" role="note"><span>ANTEPRIMA · CLASSIFICHE ARENA</span><a href="classifica.html">Versione ufficiale ↗</a></div>
+<section class="classifica-hero">
+  <div class="hero-banner" id="heroBanner">
+    <div class="hero-copy">
+      <span class="eyebrow">Lega degli Eroi</span>
+      <h1>Classifica Conference League</h1>
+      <p class="classifica-subtitle">Panoramica completa della stagione regolare</p>
+    </div>
+  </div>
+</section>
+
+    <section class="classifica-card">
+      <div class="arena-rank-panel" aria-label="Navigazione classifiche">
+        <div class="arena-rank-overline">
+          <span><span class="arena-rank-live-dot"></span> SEASON 2026/27 · THE ARENA</span>
+          <span class="arena-rank-current" id="arena-rank-current">CONFERENCE LEAGUE</span>
+        </div>
+        <div class="arena-rank-head">
+          <div>
+            <span class="arena-rank-kicker">REGULAR SEASON</span>
+            <h2>Classifiche & Risultati</h2>
+          </div>
+          <span class="arena-rank-head-icon" aria-hidden="true">★</span>
+        </div>
+        <div class="arena-rank-label">SCEGLI LA CLASSIFICA</div>
+        <div class="switcher" aria-label="Seleziona classifica">
+          <button type="button" class="active">Conf.League</button>
+          <button type="button">Conf. Championship</button>
+          <button type="button">Round Robin</button>
+          <button type="button">Totale</button>
+          <button type="button" class="arena-original-results" data-classifica-view="results" tabindex="-1" aria-label="Risultati">Risultati</button>
+        </div>
+        <div class="arena-rank-label arena-rank-display-label">COSA VUOI VEDERE?</div>
+        <div class="arena-view-switch" role="group" aria-label="Classifiche o risultati">
+          <button type="button" id="arena-show-standings" class="is-active" aria-pressed="true">
+            <span class="arena-tab-icon" aria-hidden="true">▤</span> Classifica
+          </button>
+          <button type="button" id="arena-show-results" aria-pressed="false">
+            <span class="arena-tab-icon" aria-hidden="true">⚽</span> Risultati
+          </button>
+        </div>
+        <div class="race-entry-wrap">
+          <button type="button" class="race-entry-btn" data-classifica-view="race" aria-label="Apri Race to number one">
+            <span class="race-entry-flag">🏁</span>
+            <span class="race-entry-copy"><small>ROAD TO PLAYOFFS</small><strong>RACE TO #1</strong></span>
+            <span class="race-entry-arrow">›</span>
+          </button>
+        </div>
+      </div>
+
+      <div id="classifica-container">
+        <div class="arena-rank-list-heading">
+          <div><span>LA CORSA AL VERTICE</span><h2 id="arena-rank-list-title">Conference League</h2></div>
+          <small>Apri una squadra per vedere le statistiche</small>
+        </div>
+        <section id="podio-classifica" class="podio-classifica" aria-label="Podio classifica"></section>
+
+        <div class="table-shell">
+          <table id="tabella-classifica">
+            <thead></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+
+        <div id="classifica-mobile"></div>
+      </div>
+
+      <section id="risultati-tab-panel" class="risultati-panel" hidden aria-label="Risultati delle giornate">
+        <header class="res-intro">
+          <span class="res-kicker">STAGIONE 2026/27</span>
+          <h2>Risultati delle giornate</h2>
+          <p>Gol e fantapunti di tutte le partite, divisi per Conference.</p>
+        </header>
+        <div class="res-toolbar">
+          <button type="button" id="risultati-prev" aria-label="Giornata precedente">‹ Precedente</button>
+          <label for="risultati-giornata">Giornata</label>
+          <select id="risultati-giornata" aria-label="Seleziona giornata">
+            <option>Caricamento…</option>
+          </select>
+          <button type="button" id="risultati-next" aria-label="Giornata successiva">Successiva ›</button>
+          <button type="button" id="risultati-refresh" class="res-refresh">↻ Aggiorna</button>
+        </div>
+        <div class="res-current">
+          <strong id="risultati-current">Risultati</strong>
+          <span id="risultati-phase">Fase Conference</span>
+        </div>
+        <div id="risultati-sezioni" class="res-conferences">
+          <div class="res-empty">Apri Risultati per caricare le partite.</div>
+        </div>
+      </section>
+
+      <section id="race-tab-panel" class="race-page race-embedded" hidden aria-label="Race">
+
+<section id="race-loading" class="race-state-card">
+    <div class="race-loader"></div>
+    <div>
+      <strong>Sto leggendo la stagione…</strong>
+      <span>Classifica, calendario e Power Ranking. Perché una tabella sola sarebbe stata troppo semplice.</span>
+    </div>
+  </section>
+
+  <section id="conference-view" class="race-view" hidden>
+    <div class="race-intro">
+      <div>
+        <span class="section-kicker">OBIETTIVO DELLA FASE</span>
+        <h2>Road to #1</h2>
+        <p>Le prime quattro di ogni Conference, la forma, le prossime partite e la probabilità stimata di vittoria. WIN %: 80% rendimento Conference, 20% Power Ranking.</p>
+      </div>
+      <div class="race-legend">
+        <span><i class="difficulty-dot easy"></i> Strada favorevole</span>
+        <span><i class="difficulty-dot medium"></i> Media</span>
+        <span><i class="difficulty-dot hard"></i> Dura</span>
+      </div>
+    </div>
+
+    <div class="mobile-conference-tabs" role="tablist" aria-label="Seleziona Conference">
+      <button type="button" class="active" data-mobile-conference="league" aria-selected="true">
+        <span>CONF A</span>
+        Conference League
+      </button>
+      <button type="button" data-mobile-conference="championship" aria-selected="false">
+        <span>CONF B</span>
+        Championship
+      </button>
+    </div>
+
+    <div class="conference-grid">
+      <article class="conference-panel league-panel" data-conference-panel="league">
+        <header class="conference-head">
+          <div>
+            <span>CONF A</span>
+            <h3>Conference League</h3>
+          </div>
+          <div class="conference-leader" id="leader-a">Leader: —</div>
+        </header>
+        <div id="race-conf-a" class="contender-list"></div>
+
+        <div class="mobile-conference-tabs pulse-mobile-tabs" role="tablist" aria-label="Seleziona Conference per Conference Pulse">
+          <button type="button" class="active" data-mobile-conference="league" aria-selected="true">
+            <span>CONF A</span>
+            Conference League
+          </button>
+          <button type="button" data-mobile-conference="championship" aria-selected="false">
+            <span>CONF B</span>
+            Championship
+          </button>
+        </div>
+
+        <div id="conference-pulse-a" class="conference-pulse"></div>
+      </article>
+
+      <article class="conference-panel championship-panel" data-conference-panel="championship">
+        <header class="conference-head">
+          <div>
+            <span>CONF B</span>
+            <h3>Conference Championship</h3>
+          </div>
+          <div class="conference-leader" id="leader-b">Leader: —</div>
+        </header>
+        <div id="race-conf-b" class="contender-list"></div>
+
+        <div class="mobile-conference-tabs pulse-mobile-tabs" role="tablist" aria-label="Seleziona Conference per Conference Pulse">
+          <button type="button" data-mobile-conference="league" aria-selected="false">
+            <span>CONF A</span>
+            Conference League
+          </button>
+          <button type="button" class="active" data-mobile-conference="championship" aria-selected="true">
+            <span>CONF B</span>
+            Championship
+          </button>
+        </div>
+
+        <div id="conference-pulse-b" class="conference-pulse"></div>
+      </article>
+    </div>
+
+    <section class="road-summary">
+      <div class="section-heading">
+        <span class="section-kicker">PROSSIME PARTITE</span>
+        <h2>Road Difficulty</h2>
+        <p id="road-summary-copy">Le quattro contender vengono confrontate solo con le rivali della propria Conference. Difficoltà basata sul Power Ranking attuale.</p>
+      </div>
+
+      <div class="mobile-conference-tabs road-mobile-tabs" role="tablist" aria-label="Seleziona Conference per Road Difficulty">
+        <button type="button" class="active" data-mobile-conference="league" aria-selected="true">
+          <span>CONF A</span>
+          Conference League
+        </button>
+        <button type="button" data-mobile-conference="championship" aria-selected="false">
+          <span>CONF B</span>
+          Championship
+        </button>
+      </div>
+
+      <div id="road-ranking" class="road-ranking"></div>
+    </section>
+  </section>
+
+  <section id="transition-view" class="race-view" hidden>
+    <article class="transition-card">
+      <div class="transition-badge">CONFERENCE STAGE COMPLETE</div>
+      <h2>La prima fase è finita.</h2>
+      <p>I vincitori delle Conference sono definiti. La Race ripartirà automaticamente appena verrà caricato il calendario del Round Robin.</p>
+      <div id="conference-winners" class="winner-grid"></div>
+      <div class="calendar-waiting">
+        <span>ROUND ROBIN</span>
+        <strong>Calendario in definizione</strong>
+      </div>
+    </article>
+  </section>
+
+  <section id="roundrobin-view" class="race-view" hidden>
+    <div class="race-intro">
+      <div>
+        <span class="section-kicker">FASE UNIFICATA</span>
+        <h2 id="rr-heading">Race to Playoffs</h2>
+        <p id="rr-copy">La classifica totale conta. La linea playoff non perdona.</p>
+      </div>
+      <a class="playoff-link" href="playoff.html">Vedi Playoff Bracket →</a>
+    </div>
+
+    <div class="rr-grid">
+      <article class="playoff-race-panel">
+        <header class="panel-head">
+          <span>CLASSIFICA TOTALE</span>
+          <h3>Playoff Race</h3>
+        </header>
+        <div id="overall-race" class="overall-race"></div>
+      </article>
+
+      <article class="bubble-panel">
+        <header class="panel-head">
+          <span>ZONA PRESSIONE</span>
+          <h3>Bubble Watch</h3>
+        </header>
+        <div id="bubble-watch"></div>
+      </article>
+    </div>
+
+    <section class="road-summary">
+      <div class="section-heading">
+        <span class="section-kicker">CALENDARIO</span>
+        <h2 id="rr-schedule-title">Next 4</h2>
+        <p>Gli avversari che possono cambiare la corsa playoff.</p>
+      </div>
+      <div id="rr-road-ranking" class="road-ranking"></div>
+    </section>
+  </section>
+
+  <section id="finished-view" class="race-view" hidden>
+    <article class="transition-card finished">
+      <div class="transition-badge">REGULAR SEASON COMPLETE</div>
+      <h2>La Race è finita. Adesso si gioca davvero.</h2>
+      <p>La fase regolare è conclusa: il quadro definitivo è nella pagina Playoff.</p>
+      <a class="playoff-link big" href="playoff.html">APRI I PLAYOFF →</a>
+    </article>
+  </section>
+
+  <section id="race-error" class="race-state-card error" hidden></section>
+      </section>
+
+    </section>
+
+    <section id="results-admin-panel" class="results-admin-panel" hidden>
+      <details class="results-admin-details">
+        <summary>⚙️ Gestione risultati <span>solo Admin</span></summary>
+
+        <div id="results-admin-body" class="results-admin-body" hidden>
+          <div class="results-admin-heading">
+            <div>
+              <span class="results-admin-kicker">Aggiornamento automatico</span>
+              <h2>Classifiche & Statistiche</h2>
+              <p>Carica i file calendario scaricati da Fantacalcio. Le giornate non ancora disputate (0-0) vengono ignorate.</p>
+            </div>
+          </div>
+
+          <div class="results-phase-card">
+            <div class="results-phase-head">
+              <div>
+                <span>FASE 1</span>
+                <h3>Conference</h3>
+              </div>
+              <p>Durante le Conference carica entrambi i file e poi aggiorna.</p>
+            </div>
+
+            <div class="results-upload-grid">
+              <label class="results-upload-box" for="file-conf-a">
+                <strong>Conference League</strong>
+                <span>Conf A</span>
+                <input id="file-conf-a" type="file" accept=".xlsx,.xls" />
+                <small id="status-conf-a" class="results-file-status">Nessun file selezionato.</small>
+              </label>
+
+              <label class="results-upload-box" for="file-conf-b">
+                <strong>Conference Championship</strong>
+                <span>Conf B</span>
+                <input id="file-conf-b" type="file" accept=".xlsx,.xls" />
+                <small id="status-conf-b" class="results-file-status">Nessun file selezionato.</small>
+              </label>
+            </div>
+
+            <button id="import-conference-btn" type="button" class="results-import-btn">
+              Aggiorna Conference
+            </button>
+          </div>
+
+          <div class="results-phase-separator"><span>poi, quando parte il Round Robin</span></div>
+
+          <div class="results-phase-card round-robin">
+            <div class="results-phase-head">
+              <div>
+                <span>FASE 2</span>
+                <h3>Round Robin</h3>
+              </div>
+              <p>Da qui in poi carichi solo il file unico con tutte le squadre.</p>
+            </div>
+
+            <label class="results-upload-box single" for="file-round-robin">
+              <strong>Round Robin</strong>
+              <span>Unificata</span>
+              <input id="file-round-robin" type="file" accept=".xlsx,.xls" />
+              <small id="status-round-robin" class="results-file-status">Nessun file selezionato.</small>
+            </label>
+
+            <button id="import-roundrobin-btn" type="button" class="results-import-btn secondary">
+              Aggiorna Round Robin
+            </button>
+          </div>
+
+          <div id="results-admin-summary" class="results-admin-summary">
+            Nessun aggiornamento in corso.
+          </div>
+        </div>
+      </details>
+    </section>
+
+  </main>
+
+  <script type="module" src="classifiche-auto.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const table = document.getElementById("tabella-classifica");
+      const podium = document.getElementById("podio-classifica");
+      const mobileList = document.getElementById("classifica-mobile");
+      const heroTitle = document.querySelector(".classifica-hero h1");
+      const heroCrest = document.querySelector(".hero-crest");
+      const switcher = document.querySelector(".switcher");
+
+      if (!table || !podium || !mobileList) return;
+
+      const leagueAssets = {
+        "conf.league": {
+          title: "Classifica Conference League",
+          crest: "img/conference-league.png",
+          alt: "Conference League"
+        },
+        "conf. championship": {
+          title: "Classifica Championship League",
+          crest: "img/championship-league.png",
+          alt: "Championship League"
+        },
+        "round robin": {
+          title: "Classifica Round Robin",
+          crest: "img/roundrobin.png",
+          alt: "Round Robin"
+        },
+        "totale": {
+          title: "Classifica Totale",
+          crest: "img/roundrobin.png",
+          alt: "Classifica Totale"
+        }
+      };
+
+      function cleanText(value) {
+        return (value || "").replace(/\s+/g, " ").trim();
+      }
+
+      function getActiveKey() {
+        const activeButton = switcher?.querySelector("button.active");
+        return cleanText(activeButton?.textContent).toLowerCase();
+      }
+
+      function updateHero() {
+        const data = leagueAssets[getActiveKey()];
+        if (!data) return;
+
+        if (heroTitle) heroTitle.textContent = data.title;
+        if (heroCrest) {
+          heroCrest.src = data.crest;
+          heroCrest.alt = data.alt;
+        }
+      }
+
+      function getColumnIndex(label, fallback) {
+        const headers = Array.from(table.querySelectorAll("thead th"));
+        const found = headers.findIndex((th) => cleanText(th.textContent).toUpperCase() === label);
+        return found >= 0 ? found : fallback;
+      }
+
+      function getTeamName(teamCell) {
+        const clone = teamCell.cloneNode(true);
+        clone.querySelectorAll("img").forEach((img) => img.remove());
+        return cleanText(clone.textContent);
+      }
+
+      function rowToData(row) {
+        const cells = row.querySelectorAll("td");
+        const teamCell = cells[1] || document.createElement("td");
+        const img = teamCell.querySelector("img");
+        const get = (label, fallback) => cleanText(cells[getColumnIndex(label, fallback)]?.textContent);
+
+        const position = cleanText(cells[0]?.textContent).replace("👑", "");
+
+return {
+  rank: parseInt(position, 10) || 0,
+  position,
+  logo: img ? img.getAttribute("src") : "",
+  team: getTeamName(teamCell),
+  g: get("G", 2),
+  v: get("V", 3),
+  n: get("N", 4),
+  p: get("P", 5),
+  gf: get("GF", 6),
+  gs: get("GS", 7),
+  pt: get("PT", 8),
+  mp: get("MP", 9),
+  isTop4: row.classList.contains("top4"),
+  isBottom4: row.classList.contains("ultime4")
+};
+            }
+
+      function detailGrid(data) {
+        return `
+          <div class="ranking-details">
+            <span><b>G</b>${data.g}</span>
+            <span><b>V</b>${data.v}</span>
+            <span><b>N</b>${data.n}</span>
+            <span><b>P</b>${data.p}</span>
+            <span><b>GF</b>${data.gf}</span>
+            <span><b>GS</b>${data.gs}</span>
+          </div>
+        `;
+      }
+
+      function buildPodium() {
+        const rows = Array.from(table.querySelectorAll("tbody tr"));
+        if (rows.length < 3) {
+          podium.innerHTML = "";
+          podium.classList.remove("is-visible");
+          return;
+        }
+
+        const topThree = rows.slice(0, 3).map(rowToData);
+        const desktopOrder = [topThree[1], topThree[0], topThree[2]];
+
+        podium.innerHTML = desktopOrder.map((data) => `
+        <article class="podio-card rank-${data.rank} ${data.isTop4 ? "mobile-top4" : ""} ${data.isBottom4 ? "mobile-bottom4" : ""}" tabindex="0" role="button" aria-label="Apri dettagli ${data.team}">
+            <div class="podio-ribbon">${data.position}</div>
+            <div class="podio-logo-wrap">
+              ${data.logo ? `<img src="${data.logo}" alt="${data.team}" class="podio-logo">` : ""}
+            </div>
+            <div class="podio-info">
+              <h3>${data.team}</h3>
+              <p><strong>${data.pt}</strong> PT</p>
+               ${detailGrid(data)}
+              <span>${data.mp} MP</span>
+            </div>
+          </article>
+        `).join("");
+
+        podium.classList.add("is-visible");
+      }
+
+      function buildMobileRanking() {
+        const rows = Array.from(table.querySelectorAll("tbody tr"));
+        const mobileTeams = rows.map(rowToData);
+
+        mobileList.innerHTML = mobileTeams.map((data) => `
+<article class="mobile-standing-card rank-${data.rank} ${data.isTop4 ? "mobile-top4" : ""} ${data.isBottom4 ? "mobile-bottom4" : ""}" tabindex="0" role="button" aria-expanded="false" aria-label="Apri dettagli ${data.team}">
+            <div class="mobile-rank">${data.position}</div>
+            <div class="mobile-logo-wrap">
+              ${data.logo ? `<img src="${data.logo}" alt="${data.team}">` : ""}
+            </div>
+            <div class="mobile-main">
+              <h3>${data.team}</h3>
+              <span>${data.mp} MP</span>
+            </div>
+            <div class="mobile-points"><strong>${data.pt}</strong><span>PT</span></div>
+            <span class="mobile-chevron" aria-hidden="true">⌄</span>
+            ${detailGrid(data)}
+          </article>
+        `).join("");
+      }
+
+      function bindExpandableCards() {
+        document.querySelectorAll(".podio-card, .mobile-standing-card").forEach((card) => {
+          const toggleCard = () => {
+            const isOpen = card.classList.toggle("is-open");
+            card.setAttribute("aria-expanded", String(isOpen));
+          };
+
+          card.addEventListener("click", toggleCard);
+          card.addEventListener("keydown", (event) => {
+            if (event.key === "Enter" || event.key === " ") {
+              event.preventDefault();
+              toggleCard();
+            }
+          });
+        });
+      }
+
+      function refreshDashboard() {
+        updateHero();
+        window.requestAnimationFrame(() => {
+          buildPodium();
+          buildMobileRanking();
+          bindExpandableCards();
+        });
+      }
+
+      const observer = new MutationObserver(() => {
+        window.clearTimeout(window.__classificaPodiumTimer);
+        window.__classificaPodiumTimer = window.setTimeout(refreshDashboard, 80);
+      });
+
+      const tbody = table.querySelector("tbody");
+      if (tbody) observer.observe(tbody, { childList: true, subtree: true });
+
+      switcher?.addEventListener("click", () => {
+        window.setTimeout(refreshDashboard, 200);
+      });
+
+      refreshDashboard();
+    });
+  </script>
+  <script type="module" src="classifica-race.js?v=20261111-finale"></script>
+  <script type="module" src="classifica-risultati.js?v=20261111-finale"></script>
+  <script src="classifica-arena-preview.js?v=20261119-01" defer></script>
+  <script type="module" src="classifica-admin.js"></script>
+  <script src="mobile-nav.js?v=20261119-global33"></script>
+   <script src="navbar.js?v=20261119-global33"></script>
+
+</body>
+</html>
