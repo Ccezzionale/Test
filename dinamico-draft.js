@@ -809,6 +809,82 @@ if (slotIndex === -1) {
   });
 }
 
+
+/* SOLO proiezione read-only del Draft: il proprietario reale resta in Supabase
+   fino al verdetto ufficiale della condizione. */
+async function projectConditionalDraftRights(draft, futurePicks) {
+  const [rightsResult, offersResult, locksResult, teamsResult] = await Promise.all([
+    supabase.from("conditional_trade_rights").select("*").in("status", ["active","resolved"]).limit(500),
+    supabase.from("conditional_trade_offers").select("*").eq("status","accepted").limit(500),
+    supabase.from("conditional_trade_candidates").select("right_id,pick_id,is_locked").eq("is_locked",true),
+    supabase.from("teams").select("id,name,conference")
+  ]);
+  for (const response of [rightsResult, offersResult, locksResult, teamsResult])
+    if (response.error) throw response.error;
+  const rights=rightsResult.data||[],offers=offersResult.data||[],
+    locks=locksResult.data||[],teams=teamsResult.data||[];
+  const teamsById=new Map(teams.map(t=>[String(t.id),t]));
+  const futureById=new Map(futurePicks.map(p=>[String(p.id),p]));
+  const entries=[],projectedIds=new Set();
+  for (const right of rights) {
+    const sourceOffer=offers.find(o=>String(o.id)===String(right.source_offer_id));
+    if(!sourceOffer)continue;
+    const draftName=right.draft_name||sourceOffer.draft_name||
+      futureById.get(String(sourceOffer.counter_pick_id))?.draft_name;
+    const candidates=locks.filter(c=>c.is_locked&&String(c.right_id)===String(right.id))
+      .map(c=>futureById.get(String(c.pick_id))).filter(Boolean);
+    const item={right,offer:sourceOffer,candidates,chosen:null,pickNumber:null,
+      draftName,status:right.status==="resolved"?"final":"pending"};
+    entries.push(item);
+    if(right.status!=="active"||right.rule_kind!=="ranked")continue;
+    // Evita di proiettare una scelta se una candidata o la sua posizione manca.
+    if(candidates.length<2 || candidates.length!==(sourceOffer.candidate_pick_ids||[]).length)continue;
+    const draftRows=draftName==="Draft Conference"?draft.league:
+      draftName==="Draft Championship"?draft.championship:null;
+    if(!draftRows)continue;
+    const ranking=candidates.map(p=>{
+      const row=draftRows.find(r=>Number(r.Round)===Number(p.round));
+      const cell=row?.Picks.find(x=>String(x.future_pick_id)===String(p.id)&&!x.bonus);
+      return {future:p,cell,number:Number(cell?.pickNumber)};
+    });
+    if(ranking.some(x=>!x.cell||!Number.isInteger(x.number)||x.number<=0))continue;
+    ranking.sort((a,b)=>a.number-b.number);
+    const selected=right.rule_spec?.which==="best"?ranking[0]:
+      right.rule_spec?.which==="worst"?ranking[ranking.length-1]:null;
+    const holder=teamsById.get(String(right.holder_team_id));
+    if(!selected||!holder||projectedIds.has(String(selected.future.id)))continue;
+    projectedIds.add(String(selected.future.id));
+    item.chosen=selected.future;
+    item.pickNumber=selected.number;
+    item.status="provisional";
+    selected.cell.team=holder.name;
+    selected.cell.traded=teamKey(holder.name)!==teamKey(selected.cell.originalTeam);
+    selected.cell.conditionalProjection={
+      rightId:right.id,holderTeam:holder.name,sourceTeam:selected.cell.originalTeam
+    };
+    selected.cell.source_trade_id=selected.cell.source_trade_id||"conditional:"+right.id;
+  }
+  return {entries,offers,rights,teamsById,futureById};
+}
+function conditionalPickText(p, teamsById) {
+  const original=p?.original?.name||
+    teamsById?.get(String(p?.original_team_id))?.name||"franchigia";
+  return p?"R"+p.round+" "+p.season+" ("+original+")":"pick futura";
+}
+function conditionalOfferSummary(o,right,futureById,teamsById) {
+  if(!o)return "Diritto condizionato";
+  const r=right?.rule_spec||o.rule_spec||{};
+  const ids=(o.candidate_pick_ids||[]).map(id=>futureById.get(String(id))).filter(Boolean);
+  if((right?.rule_kind||o.rule_kind)==="ranked")
+    return "La "+(r.which==="worst"?"peggiore":"migliore")+" tra "+
+      ids.map(p=>conditionalPickText(p,teamsById)).join(", ");
+  if((right?.rule_kind||o.rule_kind)==="standing")
+    return "Condizione sulla classifica: la pick si determinerà a fine stagione";
+  if((right?.rule_kind||o.rule_kind)==="trophy")
+    return "Condizione legata alla conquista del trofeo";
+  return "Rivendita di un diritto condizionato";
+}
+
 function shortTeamName(name) {
   return cleanTeamName(name);
 }
@@ -2274,11 +2350,15 @@ Promise.all([
   loadResultsRows(),
   loadFutureDraftPicks()
 ])
-.then(([statsRows, futurePicks]) => {
+.then(async ([statsRows, futurePicks]) => {
   console.log("RISULTATI DRAFT DA RESULTS-SOURCE:", statsRows);
   console.log("FUTURE PICKS DA SUPABASE:", futurePicks);
 
   const draft = generaDraftDaCSV(statsRows, futurePicks);
+  let conditionalContext={entries:[],offers:[],rights:[],teamsById:new Map(),futureById:new Map()};
+  try{
+    conditionalContext=await projectConditionalDraftRights(draft,futurePicks);
+  }catch(error){console.warn("Draft: proiezione condizionata non disponibile",error);}
 
   generaTabellaVerticale("draft-league", draft.league, draft.leagueTeams);
   generaTabellaVerticale("draft-championship", draft.championship, draft.champTeams);
@@ -2313,7 +2393,7 @@ Promise.all([
     "Conference Championship"
   );
 
-  loadDraftTradeSummary();
+  loadDraftTradeSummary(conditionalContext);
 })
 .catch(err => {
   console.error("Errore nel caricamento del draft:", err);
