@@ -113,6 +113,9 @@
 
 /* Spiega perché una trade condizionata 3v2 non può essere conclusa senza svincoli. */
 .ct-mixed-balance[hidden]{display:none!important}
-.ct-mixed-balance{margin:11px 0 2px;padding:12px 13px;border:1px solid #ef9f9b;
- border-left:4px solid #ffb079;border-radius:10px;background:#442d40;
- color:#fff2e8;font-size:12px;line-height:1.6;font-weight:750}
+.ct-mixed-balance{margin:11px 0 2px;padding:12px 13px;border:1px solid #efc45b;
+ border-left:4px solid #ffdd84;border-radius:10px;background:#394051;
+ color:#fff2d7;font-size:12px;line-height:1.6;font-weight:750}
+.ct-cuts-pending{padding:13px;border-left:4px solid #ffd47a;border-radius:10px;
+ background:#233d5a;color:#fff0cb;font-size:12px;line-height:1.55}
+.ct-cuts-pending b{color:#ffe29d}
