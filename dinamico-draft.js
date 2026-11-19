@@ -1093,7 +1093,6 @@ const tradeKeyAttribute = tradeKey
             <span class="pick-bubble">${pick.pickNumber}</span>
             <strong>Pick #${pick.pickNumber}</strong>
             ${source}
-            ${pick.conditionalProjection ? `<span class="ct-draft-preview-label">🔐 Provvisoria</span>` : ""}
           </div>`;
       });
       html += "</div>";
@@ -1351,7 +1350,7 @@ const fixedTeamOrder = squadre.slice();
       // la pick condizionata (né la pick originale) dietro la prima card.
       if(picksInRound.length>1) {
         return '<div class="dynamic-mobile-overview-stack">'+
-          picksInRound.map(p=>renderMobileRoundPick(p,squadra)).join("")+
+          picksInRound.map(p=>renderMobileRoundPick(p,p.conditionalProjection?.holderTeam||squadra)).join("")+
           '</div>';
       }
 
@@ -1871,7 +1870,7 @@ function renderDraftByPickDetail(container, pickIndex) {
 
   if (!pick || !details.length) return;
 
-  const ownerTeam = cleanTeamName(pick.team || pick.ownerTeam || "Squadra");
+  const ownerTeam = cleanTeamName(pick.conditionalProjection?.holderTeam || pick.team || pick.ownerTeam || "Squadra");
   const originalTeam = cleanTeamName(pick.originalTeam || ownerTeam);
   const isTraded = !!(pick.traded || pick.conditionalProjection);
   const isBonus = !!pick.bonus;
@@ -1988,7 +1987,7 @@ function generaDraftByPick(containerId, draftData, conferenceTitle) {
   container.__draftByPickPicks = picks;
 
   const desktopCellsHtml = picks.map((pick, absoluteIndex) => {
-    const ownerTeam = cleanTeamName(pick.team || pick.ownerTeam || "Squadra");
+    const ownerTeam = cleanTeamName(pick.conditionalProjection?.holderTeam || pick.team || pick.ownerTeam || "Squadra");
     const originalTeam = cleanTeamName(pick.originalTeam || ownerTeam);
     const isTraded = !!(pick.traded || pick.conditionalProjection);
     const isBonus = !!pick.bonus;
@@ -2053,7 +2052,7 @@ function generaDraftByPick(containerId, draftData, conferenceTitle) {
 
       const slotsHtml = rowPicks.map((pick, localIndex) => {
         const absoluteIndex = rowIndex * 8 + localIndex;
-        const ownerTeam = cleanTeamName(pick.team || pick.ownerTeam || "Squadra");
+        const ownerTeam = cleanTeamName(pick.conditionalProjection?.holderTeam || pick.team || pick.ownerTeam || "Squadra");
         const originalTeam = cleanTeamName(pick.originalTeam || ownerTeam);
         const isTraded = !!(pick.traded || pick.conditionalProjection);
         const isBonus = !!pick.bonus;
@@ -2260,7 +2259,7 @@ function generaDraftByTeam(containerId, draftData, squadreOrdine, conferenceTitl
     }
 
     const teamPicks = picks
-      .filter(pick => teamKey(pick.team || pick.ownerTeam || "") === teamKey(selectedTeam))
+      .filter(pick => teamKey(pick.conditionalProjection?.holderTeam || pick.team || pick.ownerTeam || "") === teamKey(selectedTeam))
       .sort((a, b) => Number(a.pickNumber || 0) - Number(b.pickNumber || 0));
 
     const rowsHtml = teamPicks.map(pick => {
