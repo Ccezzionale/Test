@@ -1899,3 +1899,54 @@ body[data-view="highlander"].is-cup-eliminated .stage-special > img {
   object-fit:contain;
   background:radial-gradient(circle,rgba(29,110,220,.16),transparent 75%);
 }
+
+
+/* ==========================================================
+   ARENA TEST V26 · IN EVIDENZA
+   New dedicated Gazzetta artwork is a complete, accessible
+   clickable cover: never crop it or place duplicate text on top.
+   For the small All-Star card, show a mobile-optimized close-up
+   of the official image with the title as live, readable text.
+   ========================================================== */
+.editorial-lead.editorial-full-art {
+  display:block;
+  padding:0;
+  background:#071b38;
+  border:1px solid rgba(236,188,83,.64);
+  border-radius:17px;
+  overflow:hidden;
+  box-shadow:0 10px 24px rgba(0,0,0,.23);
+}
+.editorial-lead.editorial-full-art .editorial-full-image {
+  display:block;
+  width:100%;
+  height:auto;
+  max-width:100%;
+  object-fit:contain;
+  aspect-ratio:1100/758;
+  background:#071b38;
+}
+.editorial-mini.editorial-allstar {
+  border-color:rgba(245,194,85,.67);
+  background:radial-gradient(ellipse at 15% 22%,rgba(52,122,228,.37),transparent 63%),linear-gradient(135deg,#12355f,#081a37 80%);
+  box-shadow:0 6px 16px rgba(0,8,27,.20);
+}
+.editorial-mini.editorial-allstar > img {
+  display:block;
+  width:55px;
+  height:67px;
+  object-fit:contain;
+  object-position:center;
+  border-radius:8px;
+  border:1px solid rgba(255,220,138,.36);
+  background:#09214a;
+}
+.editorial-mini.editorial-allstar strong{color:#fff8e8}
+.editorial-mini.editorial-allstar small{color:#ffd885}
+.editorial-mini.editorial-allstar > b{color:#ffcc67}
+@media(max-width:360px){
+ .editorial-mini.editorial-allstar > img {
+   width:38px;
+   height:53px;
+ }
+}
