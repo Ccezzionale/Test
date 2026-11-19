@@ -510,8 +510,10 @@ function paintOffers(){
         esc(name(cutTeam))+'</b> ('+playerBalance.difference+' giocator'+
         (playerBalance.difference===1?'e':'i')+'). I giocatori verranno trasferiti e la chiamata compensativa assegnata appena si completa lo svincolo. '+
         'Le pick restano riservate; solo la scelta finale dipenderà dalla condizione.'+
-        (same(cutTeam,myId())?' Vai in <b>Trade classica → Proposte</b> e premi «Svincola '+
-          playerBalance.difference+' e completa».':'')+'</p>':'')+
+        (same(cutTeam,myId())?' Puoi completare lo svincolo qui sotto, come nelle trade normali.':'')+'</p>': '')+
+      (awaitingCuts&&same(cutTeam,myId())&&o.mixed_legacy_trade_id?
+        '<div class="ct-action-row"><button type="button" class="ct-action-primary" data-ct-complete-cuts="'+
+        esc(o.id)+'">✂️ Svincola '+playerBalance.difference+' e completa</button></div>':'')+
       (awaiting?'<div class="ct-action-row">'+(incoming?
         '<button class="ct-action-primary" data-ct-accept="'+esc(o.id)+'"'+(!state.enabled?" disabled":"")+'>Accetta</button>'+
         '<button class="ct-action-red" data-ct-reject="'+esc(o.id)+'"'+(!state.enabled?" disabled":"")+'>Rifiuta</button>':
@@ -856,6 +858,27 @@ async function confirmSendOffer(){
   }
 }
 async function offerAction(event){
+  const cutBtn=event.target.closest("[data-ct-complete-cuts]");
+  if(cutBtn){
+    const offer=state.offers.find(o=>same(o.id,cutBtn.dataset.ctCompleteCuts));
+    const balance=offer?mixedPlayerBalance(Array.isArray(offer.mixed_assets)?offer.mixed_assets:[]):null;
+    const cutter=offer&&balance?.from>balance?.to?offer.to_team_id:offer?.from_team_id;
+    if(!offer||offer.status!=="accepted_pending_cuts"||!same(cutter,myId())||
+      !offer.mixed_legacy_trade_id||!balance?.difference)return;
+    cutBtn.disabled=true;
+    try{
+      if(typeof window.refreshTradeRoomV2==="function")await window.refreshTradeRoomV2();
+      const legacy=[...document.querySelectorAll("#v2ProposalItems [data-trade-action='cuts']")]
+        .find(b=>same(b.dataset.tradeId,offer.mixed_legacy_trade_id));
+      if(legacy)legacy.click();
+      else if(typeof window.openPendingCutModal==="function")
+        await window.openPendingCutModal(offer.mixed_legacy_trade_id,balance.difference);
+      else throw new Error("La finestra di svincolo non è ancora disponibile: riapri la Trade Room.");
+    }catch(err){
+      failure("ctOfferNotice",err?.message||"Impossibile aprire la selezione dello svincolo.");
+    }finally{cutBtn.disabled=false;}
+    return;
+  }
   const btn=event.target.closest("[data-ct-accept],[data-ct-reject],[data-ct-cancel]");
   if(!btn)return;
   const action=btn.dataset.ctAccept?"accept":btn.dataset.ctReject?"reject":"cancel";
