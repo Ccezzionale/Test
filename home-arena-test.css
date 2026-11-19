@@ -2098,3 +2098,43 @@ body[data-view="highlander"].is-cup-eliminated .stage-special > img {
   .editorial-mini.editorial-stats-wide{grid-template-columns:41px minmax(0,1fr) 14px}
   .editorial-mini.editorial-stats-wide >img{width:41px;height:44px}
 }
+
+
+/* ==========================================================
+   ARENA TEST V28 · ALLSTAR CONCEPT 3
+   Full-width, uncropped artwork chosen for the All-Star Game.
+   Click/tap anywhere on the banner to enter voting.
+   ========================================================== */
+.allstar-full-banner{
+  display:block;
+  position:relative;
+  min-width:0;
+  width:100%;
+  overflow:hidden;
+  border-radius:17px;
+  border:1px solid rgba(250,192,80,.78);
+  background:#071d39;
+  box-shadow:0 10px 24px rgba(0,0,0,.23);
+  text-decoration:none;
+  -webkit-tap-highlight-color:transparent;
+}
+.allstar-full-image{
+  display:block;
+  width:100%;
+  height:auto;
+  max-width:100%;
+  aspect-ratio:2/1;
+  object-fit:contain;
+  object-position:center;
+  background:#071d39;
+}
+.allstar-full-banner:focus-visible{
+  outline:3px solid #f8d66b;
+  outline-offset:3px;
+}
+@media(hover:hover){
+  .allstar-full-banner:hover{
+    border-color:#ffe5a2;
+    box-shadow:0 13px 27px rgba(1,13,37,.32);
+  }
+}
