@@ -7,19 +7,223 @@
 <meta name="robots" content="noindex,nofollow">
 <title>Home Arena · Concept 3 | Lega degli Eroi</title>
 <link rel="icon" href="icon-192.png">
-<link rel="stylesheet" href="home-arena-test.css?v=20261119-v31-premium3d-navbar">
-<script type="module" src="home-arena-test.js?v=20261119-v31-premium3d-navbar"></script>
+<link rel="stylesheet" href="navbar.css?v=20261007-bottom4">
+<link rel="stylesheet" href="home-arena-test.css?v=20261119-v32-real-top-navbar">
+<script type="module" src="home-arena-test.js?v=20261119-v32-real-top-navbar"></script>
 </head>
 <body class="arena-reboot" data-view="league">
-<header class="topbar">
-  <a class="topbrand" href="index.html" aria-label="Apri la Home ufficiale">
-    <img src="icon-192.png" alt="">
-    <span><strong>LEGA DEGLI EROI</strong><small>THE ARENA · V3</small></span>
+<!-- Navbar superiore ufficiale in anteprima: markup identico a index.html. -->
+<nav class="site-nav">
+    <div class="nav-inner">
+<div class="nav-left">
+  <span id="hamburger" class="hamburger" aria-label="Apri menu">☰</span>
+
+  <button type="button" class="mobile-nav-title" id="mobile-nav-title" aria-label="Apri menu">
+    <span class="mobile-nav-logo">
+      <img src="icon-192.png" alt="">
+    </span>
+    <span>Lega degli Eroi</span>
+    <span class="mobile-nav-caret">▾</span>
+  </button>
+
+  <a href="index.html" class="brand-home desktop-home-link" aria-label="Home">
+    <img src="icons/nav/home.webp" alt="" class="nav-home-icon">
   </a>
-  <span class="test-pill" aria-label="Pagina di prova">TEST</span>
-  <a class="top-return" href="index.html" aria-label="Torna alla Home originale"><span>Home originale</span><b>↗</b></a>
-</header>
+</div>
+
+<ul class="navbar" id="mainMenu">
+
+<!-- ROSE NORMALE: visibile ai non-admin -->
+<li id="nav-rose-normal" class="dropdown">
+  <a href="#" class="toggle-submenu">
+    Rose <span class="caret">▾</span>
+  </a>
+
+  <ul class="submenu">
+    <li>
+      <a href="rose.html">
+        Rose Squadre
+      </a>
+    </li>
+
+    <li>
+      <a href="franchigie.html">
+        Franchigie
+      </a>
+    </li>
+  </ul>
+</li>
+
+<!-- ROSE ADMIN: visibile solo agli admin -->
+<li id="nav-rose-admin" class="dropdown" style="display:none;">
+  <a href="#" class="toggle-submenu">
+    Rose <span class="caret">▾</span>
+  </a>
+
+  <ul class="submenu">
+    <li>
+      <a href="rose.html">
+        Rose Squadre
+      </a>
+    </li>
+
+    <li>
+      <a href="franchigie.html">
+        Franchigie
+      </a>
+    </li>
+
+    <li>
+      <a href="admin-rose.html">
+        Admin Rose
+      </a>
+    </li>
+
+    <li>
+      <a href="admin-gazzetta.html">
+        Admin Gazzetta
+      </a>
+    </li>
+  </ul>
+</li>
+
+        <li class="dropdown">
+          <a href="#" class="toggle-submenu">
+            Draft <span class="caret">▾</span>
+          </a>
+
+          <ul class="submenu">
+            <li>
+              <a href="pre-draft.html">
+                <img src="icons/nav/pre-draft.webp" class="menu-icon" alt="">
+                Pre-Draft
+              </a>
+            </li>
+
+            <li>
+              <a href="draft_championship.html">
+                <img src="icons/nav/conf-championship.webp" class="menu-icon" alt="">
+                Conf. Championship
+              </a>
+            </li>
+
+            <li>
+              <a href="draft_conference.html">
+                <img src="icons/nav/conf-league.webp" class="menu-icon" alt="">
+                Conf. League
+              </a>
+            </li>
+
+            <li>
+              <a href="dinamico-draft.html">
+                <img src="icons/nav/draft-2026.webp" class="menu-icon" alt="">
+                Draft 2027-28
+              </a>
+            </li>
+          </ul>
+        </li>
+
+        <li class="dropdown competizioni">
+          <a href="#" class="toggle-submenu">
+            Competizioni <span class="caret">▾</span>
+          </a>
+
+          <ul class="submenu">
+            <li>
+              <a href="classifica.html">
+                <img src="icons/nav/classifiche.webp" class="menu-icon" alt="">
+                Classifiche
+              </a>
+            </li>
+
+            <li>
+              <a href="playoff.html">
+                <img src="icons/nav/playoff.webp" class="menu-icon" alt="">
+                Playoff
+              </a>
+            </li>
+
+            <li>
+              <a href="arena.html">
+                <img src="icons/nav/highlander.webp" class="menu-icon" alt="">
+                Highlander
+              </a>
+            </li>
+
+            <li>
+              <a href="crashoutcup.html">
+                <img src="icons/nav/crashout-cup.webp" class="menu-icon" alt="">
+                Crash Out Cup
+              </a>
+            </li>
+
+            <li>
+              <a href="crashoutplayoff.html">
+                <img src="icons/nav/crashout-playoff.webp" class="menu-icon" alt="">
+                Crash Out Cup - Playoff
+              </a>
+            </li>
+
+            <li>
+              <a href="supercoppa.html">
+                <img src="icons/nav/supercoppa.webp" class="menu-icon" alt="">
+                Supercoppa
+              </a>
+            </li>
+
+                        <li>
+              <a href="allstar.html">
+                <img src="icons/nav/allstar.webp" class="menu-icon" alt="">
+                All-Star Game
+              </a>
+            </li>
+
+            <li>
+              <a href="statistiche.html">
+                <img src="icons/nav/statistiche.webp" class="menu-icon" alt="">
+                Statistiche
+              </a>
+            </li>
+          </ul>
+        </li>
+
+        <li><a href="waiver.html">Waiver Wire</a></li>
+
+<li>
+  <a href="hall-of-fame.html">Hall of Fame</a>
+</li>
+
+        <li><a href="regolamento.html">Regolamento</a></li>
+      </ul>
+
+      <div class="nav-right hero-actions">
+        <a id="trade-badge" href="trade-room.html" class="btn-hero trade-badge" aria-label="Trade Room">
+          <img src="icons/nav/trade-room.webp" class="action-icon" alt="">
+          <span class="btn-label">Trade Room</span>
+        </a>
+
+        <a id="login-btn" href="login.html" class="btn-hero" style="display:none;" aria-label="Login">
+          <img src="icons/nav/login-logout.webp" class="action-icon" alt="">
+          <span class="btn-label">Login</span>
+        </a>
+
+        <button id="logout-btn" type="button" class="btn-hero" style="display:none;" aria-label="Logout">
+          <img src="icons/nav/login-logout.webp" class="action-icon" alt="">
+          <span class="btn-label">Logout</span>
+        </button>
+
+        <button id="attiva-notifiche-btn" type="button" class="btn-hero warning" aria-label="Centro notifiche">
+          <img src="icons/nav/notifications.webp" class="action-icon" alt="">
+          <span class="btn-label">Notifiche</span>
+        </button>
+      </div>
+    </div>
+  </nav>
 <main class="shell">
+  <div class="arena-test-ribbon" role="note">
+    <span>ANTEPRIMA · HOME ARENA</span>
+    <a href="index.html">Home ufficiale ↗</a>
+  </div>
   <section class="personal-strip">
     <div class="personal-label">IL TUO QUARTIER GENERALE</div>
     <div class="personal-flex">
@@ -181,5 +385,12 @@
   <a href="trade-room.html"><img src="img/home/navbar/premium3d-mercato-v31.webp" alt=""><span>Mercato</span></a>
   <a href="waiver.html"><img src="img/home/navbar/premium3d-waiver-v31.webp" alt=""><span>Waiver</span></a>
 </nav>
+<!-- Stessi controller della navbar ufficiale: autenticazione, badge trade,
+     notifiche, dropdown e ruoli admin. Non importiamo mobile-nav.js:
+     aggiungerebbe una seconda barra inferiore alla dock Premium 3D test. -->
+<script type="module" src="home_auth.js?v=20261005-center6"></script>
+<script type="module" src="notifications-center.js?v=20261113-destinations"></script>
+<script src="navbar.js?v=20261113-destinations"></script>
+<script type="module" src="admin-nav.js?v=1"></script>
 </body>
 </html>
