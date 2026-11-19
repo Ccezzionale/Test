@@ -719,30 +719,19 @@ function drawWeeklyNews(){
  set("weekly-sub",h&&a?h+"ª contro "+a+"ª in classifica":"Un'altra sfida da seguire");
  $("weekly-story").href=href(f,f.code);
 }
-function countdown(date){
- const minutes=Math.max(0,Math.ceil((date.getTime()-Date.now())/60000));
- return minutes>=1440?Math.floor(minutes/1440)+"g "+Math.floor(minutes%1440/60)+"h":minutes>=60?Math.floor(minutes/60)+"h "+minutes%60+"m":minutes+"m";
-}
+// Waiver settings still define the active season phase used by the Playoff card.
+// The Insider-specific countdown and latest trade queries are no longer needed.
 async function settings(){
  try{
- const {data,error}=await supabase.from("waiver_settings").select("active_phase,slot1_close_at,slot1s_close_at,slot2_close_at,slot2s_close_at,compensatory_close_at").order("id",{ascending:false}).limit(1);
- if(error)throw error;const s=data?.[0];state.phase=s?.active_phase||"";
- const values=[["Slot 1",s?.slot1_close_at],["Slot 1S",s?.slot1s_close_at],["Slot 2",s?.slot2_close_at],["Slot 2S",s?.slot2s_close_at],["Compensative",s?.compensatory_close_at]]
- .map(([label,x])=>({label,date:x?new Date(x):null})).filter(x=>x.date&&!Number.isNaN(x.date.getTime())&&x.date.getTime()>Date.now()).sort((a,b)=>a.date-b.date);
- set("waiver-value",values[0]?countdown(values[0].date):"Nessuna scadenza");
- set("waiver-detail",values[0]?values[0].label+" · alla chiusura":"Controlla le prossime finestre");
- }catch(e){console.warn("Waiver Arena:",e);set("waiver-value","Apri Waiver");set("waiver-detail","Orari non disponibili");}
+  const {data,error}=await supabase.from("waiver_settings")
+    .select("active_phase").order("id",{ascending:false}).limit(1);
+  if(error)throw error;
+  state.phase=data?.[0]?.active_phase||"";
+ }catch(e){
+  console.warn("Fase stagione Arena non disponibile:",e);
+ }
 }
-async function trades(){
- try{
- const {data,error}=await supabase.from("trade_proposals").select("id,from_team,to_team,accepted_at,created_at").eq("status","accepted").order("accepted_at",{ascending:false}).limit(1);
- if(error)throw error;if(!data?.length){set("trade-value","Nessuna trade");set("trade-detail","Storico in attesa");return;}
- const {data:teams,error:e}=await supabase.from("teams").select("id,name");if(e)throw e;
- const labels=new Map((teams||[]).map(t=>[String(t.id),canon(t.name)]));const t=data[0];
- set("trade-value","Scambio concluso");
- set("trade-detail",(labels.get(String(t.from_team))||"Squadra A")+" ↔ "+(labels.get(String(t.to_team))||"Squadra B"));
- }catch(e){console.warn("Trade Arena:",e);set("trade-value","Apri il mercato");set("trade-detail","Storico non disponibile");}
-}
+
 async function team(){
  try{
  const {data}=await supabase.auth.getUser();if(!data?.user)return;
@@ -765,7 +754,7 @@ function bind(){
 }
 async function init(){
  bind();
- const [t,r,s]=await Promise.allSettled([team(),loadResultsRows(),settings(),trades()]);
+ const [t,r,s]=await Promise.allSettled([team(),loadResultsRows(),settings()]);
  if(r.status==="fulfilled"&&Array.isArray(r.value))state.rows=r.value;
  else console.warn("Risultati Arena non disponibili",r.reason);
  ["Conf A","Conf B","Unificata"].forEach(c=>state.standings[c]=table(c));
