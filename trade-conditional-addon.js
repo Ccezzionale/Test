@@ -860,19 +860,40 @@ async function offerAction(event){
   if(!btn)return;
   const action=btn.dataset.ctAccept?"accept":btn.dataset.ctReject?"reject":"cancel";
   const id=btn.dataset.ctAccept||btn.dataset.ctReject||btn.dataset.ctCancel;
-  if(!window.confirm(action==="accept"?"Accettare questa trade condizionata REALE? La contropartita sarà ceduta subito e le pick candidate verranno vincolate.":action==="reject"?"Rifiutare questa proposta?":"Annullare questa proposta?"))return;
+  if(!window.confirm(action==="accept"?
+    "Accettare questa trade condizionata REALE? I giocatori seguono le regole normali del mercato, compresi eventuali svincoli e chiamate compensative. Solo la pick finale rimane condizionata.":
+    action==="reject"?"Rifiutare questa proposta?":"Annullare questa proposta?"))return;
   btn.disabled=true;
   try{
     const response=action==="cancel"?
       await supabase.rpc("conditional_cancel_offer",{p_offer_id:id}):
       await supabase.rpc("conditional_respond_offer",{p_offer_id:id,p_accept:action==="accept"});
     if(response.error)throw response.error;
+    const pendingCuts=action==="accept"&&response.data?.status==="accepted_pending_cuts";
+    // Una trade 3v2 è ACCETTATA ma attende lo svincolo della squadra
+    // che riceve il giocatore extra, come il mercato classico.
+    // Il diritto condizionato rimane riservato ma non ancora trasferibile.
     const eventType=action==="accept"?"accepted":action==="reject"?"rejected":"cancelled";
-    const noticeSent=await notifyConditionalTrade(eventType,id);
-    failure("ctOfferNotice","");
+    const noticeSent=pendingCuts?false:await notifyConditionalTrade(eventType,id);
     await reload();
-    $("ctOfferNotice").textContent="Proposta "+(action==="accept"?"accettata":action==="reject"?"rifiutata":"annullata")+
-      " correttamente."+(noticeSent?" Notifica inviata.":" Notifica non confermata.");
+    if(typeof window.refreshTradeRoomV2==="function"){
+      try{await window.refreshTradeRoomV2();}catch(refreshErr){
+        console.warn("Impossibile aggiornare gli svincoli classici:",refreshErr);
+      }
+    }
+    failure("ctOfferNotice","");
+    if(pendingCuts){
+      const num=Number(response.data?.cuts_required)||1;
+      const cutTeam=response.data?.cut_team_id;
+      $("ctOfferNotice").textContent="✅ Proposta accettata, in attesa di svincolo. "+
+        name(cutTeam)+" deve svincolare "+num+" giocator"+(num===1?"e":"i")+
+        " nella sezione Proposte delle trade classiche. "+
+        "I giocatori verranno scambiati come nel mercato normale al completamento; "+
+        "le pick restano riservate e soltanto la scelta finale è condizionata.";
+    }else{
+      $("ctOfferNotice").textContent="Proposta "+(action==="accept"?"accettata":action==="reject"?"rifiutata":"annullata")+
+        " correttamente."+(noticeSent?" Notifica inviata.":" Notifica non confermata.");
+    }
   }catch(err){failure("ctOfferNotice",err.message||"Impossibile completare l'operazione.");btn.disabled=false;}
 }
 async function init(){
