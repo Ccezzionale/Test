@@ -3,14 +3,15 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Classifica - Lega degli Eroi</title>
+  <title>Classifiche Arena | Lega degli Eroi</title>
   <link rel="stylesheet" href="navbar.css">
   <link rel="stylesheet" href="classifica.css">
   <link rel="stylesheet" href="classifica-risultati.css?v=20261111-finale">
+  <link rel="stylesheet" href="classifica-arena-preview.css?v=20261119-live1">
 <meta name="lega-app-build" content="v20261119-arena-v33">
 <script defer src="./app-updates.js?bootstrap=v20261119-arena-v33" data-eroi-update="1"></script>
 </head>
-<body>
+<body class="classifica-arena-v2">
   <nav class="site-nav">
     <div class="nav-inner">
       <div class="nav-left">
@@ -109,6 +110,7 @@
   </nav>
 
   <main class="classifica-page">
+    
 <section class="classifica-hero">
   <div class="hero-banner" id="heroBanner">
     <div class="hero-copy">
@@ -120,26 +122,49 @@
 </section>
 
     <section class="classifica-card">
-      <div class="switcher" aria-label="Seleziona classifica">
-        <button class="active">Conf.League</button>
-        <button>Conf. Championship</button>
-        <button>Round Robin</button>
-        <button>Totale</button>
-        <button type="button" data-classifica-view="results">Risultati</button>
-      </div>
-
-      <div class="race-entry-wrap">
-        <button type="button" class="race-entry-btn" data-classifica-view="race" aria-label="Apri Race to number one">
-          <span class="race-entry-flag">🏁</span>
-          <span class="race-entry-copy">
-            <small>ROAD TO PLAYOFFS</small>
-            <strong>RACE TO #1</strong>
-          </span>
-          <span class="race-entry-arrow">›</span>
-        </button>
+      <div class="arena-rank-panel" aria-label="Navigazione classifiche">
+        <div class="arena-rank-overline">
+          <span><span class="arena-rank-live-dot"></span> SEASON 2026/27 · THE ARENA</span>
+          <span class="arena-rank-current" id="arena-rank-current">CONFERENCE LEAGUE</span>
+        </div>
+        <div class="arena-rank-head">
+          <div>
+            <span class="arena-rank-kicker">REGULAR SEASON</span>
+            <h2>Classifiche & Risultati</h2>
+          </div>
+          <span class="arena-rank-head-icon" aria-hidden="true">★</span>
+        </div>
+        <div class="arena-rank-label">SCEGLI LA CLASSIFICA</div>
+        <div class="switcher" aria-label="Seleziona classifica">
+          <button type="button" class="active">Conf.League</button>
+          <button type="button">Conf. Championship</button>
+          <button type="button">Round Robin</button>
+          <button type="button">Totale</button>
+          <button type="button" class="arena-original-results" data-classifica-view="results" tabindex="-1" aria-label="Risultati">Risultati</button>
+        </div>
+        <div class="arena-rank-label arena-rank-display-label">COSA VUOI VEDERE?</div>
+        <div class="arena-view-switch" role="group" aria-label="Classifiche o risultati">
+          <button type="button" id="arena-show-standings" class="is-active" aria-pressed="true">
+            <span class="arena-tab-icon" aria-hidden="true">▤</span> Classifica
+          </button>
+          <button type="button" id="arena-show-results" aria-pressed="false">
+            <span class="arena-tab-icon" aria-hidden="true">⚽</span> Risultati
+          </button>
+        </div>
+        <div class="race-entry-wrap">
+          <button type="button" class="race-entry-btn" data-classifica-view="race" aria-label="Apri Race to number one">
+            <span class="race-entry-flag">🏁</span>
+            <span class="race-entry-copy"><small>ROAD TO PLAYOFFS</small><strong>RACE TO #1</strong></span>
+            <span class="race-entry-arrow">›</span>
+          </button>
+        </div>
       </div>
 
       <div id="classifica-container">
+        <div class="arena-rank-list-heading">
+          <div><span>LA CORSA AL VERTICE</span><h2 id="arena-rank-list-title">Conference League</h2></div>
+          <small>Apri una squadra per vedere le statistiche</small>
+        </div>
         <section id="podio-classifica" class="podio-classifica" aria-label="Podio classifica"></section>
 
         <div class="table-shell">
@@ -622,6 +647,7 @@ return {
   </script>
   <script type="module" src="classifica-race.js?v=20261111-finale"></script>
   <script type="module" src="classifica-risultati.js?v=20261111-finale"></script>
+  <script src="classifica-arena-preview.js?v=20261119-live1" defer></script>
   <script type="module" src="classifica-admin.js"></script>
   <script src="mobile-nav.js?v=20261119-global33"></script>
    <script src="navbar.js?v=20261119-global33"></script>
