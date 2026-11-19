@@ -110,3 +110,9 @@
 #ctCancelSubmit{background:#122d4d;color:#e3f1ff}
 .ct-send-confirm-actions button:disabled{opacity:.55;cursor:wait}
 @media(max-width:440px){.ct-send-confirm-actions{grid-template-columns:1fr}.ct-send-confirm-actions button{width:100%}}
+
+/* Spiega perché una trade condizionata 3v2 non può essere conclusa senza svincoli. */
+.ct-mixed-balance[hidden]{display:none!important}
+.ct-mixed-balance{margin:11px 0 2px;padding:12px 13px;border:1px solid #ef9f9b;
+ border-left:4px solid #ffb079;border-radius:10px;background:#442d40;
+ color:#fff2e8;font-size:12px;line-height:1.6;font-weight:750}
