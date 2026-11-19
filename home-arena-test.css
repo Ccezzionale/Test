@@ -2778,3 +2778,44 @@ body.arena-reboot[data-view="highlander"] #stage-special-desc {
     font-size:18px;
   }
 }
+
+
+/* HOME ARENA V36 · CONTRASTO DELLE CARD SCURE IN TUTTE LE COPPE
+   Nelle viste Playoff/Crash Out/Highlander la pagina esterna è chiara,
+   ma le card restano blu notte: il testo deve restare bianco.
+   Nessuna variazione ai colori di accento, badge o pulsanti attivi. */
+body.arena-reboot:not([data-view="league"]) .personal-strip,
+body.arena-reboot:not([data-view="league"]) .standings-panel,
+body.arena-reboot:not([data-view="league"]) .pulse-card,
+body.arena-reboot:not([data-view="league"]) .comp-card,
+body.arena-reboot:not([data-view="league"]) .editorial-mini,
+body.arena-reboot:not([data-view="league"]) .links-grid > a,
+body.arena-reboot:not([data-view="league"]) .draft-banner,
+body.arena-reboot:not([data-view="league"]) .prediction-card {
+  color:#f6f9ff !important;
+}
+body.arena-reboot:not([data-view="league"]) .standing-row .name,
+body.arena-reboot:not([data-view="league"]) .pulse-card strong,
+body.arena-reboot:not([data-view="league"]) .comp-card strong,
+body.arena-reboot:not([data-view="league"]) .editorial-mini strong,
+body.arena-reboot:not([data-view="league"]) .editorial-mini.editorial-stats-wide strong,
+body.arena-reboot:not([data-view="league"]) .links-grid > a span,
+body.arena-reboot:not([data-view="league"]) .draft-banner strong,
+body.arena-reboot:not([data-view="league"]) .prediction-content strong {
+  color:#f6f9ff !important;
+  -webkit-text-fill-color:#f6f9ff !important;
+}
+body.arena-reboot:not([data-view="league"]) .standing-row .place,
+body.arena-reboot:not([data-view="league"]) .table-title {
+  color:#afc5e0 !important;
+}
+body.arena-reboot:not([data-view="league"]) .editorial-mini em,
+body.arena-reboot:not([data-view="league"]) .draft-banner em,
+body.arena-reboot:not([data-view="league"]) .prediction-content small {
+  color:#bdcfe7 !important;
+}
+/* Il quartier generale rimane leggibile anche passando tra tutte le coppe. */
+body.arena-reboot .personal-strip .personal-copy #my-team {
+  color:#fff !important;
+  -webkit-text-fill-color:#fff !important;
+}
