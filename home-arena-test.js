@@ -77,10 +77,57 @@ const href = (f,code) => "match.html?"+new URLSearchParams({home:f.home,away:f.a
 const state = {team:null,rows:[],phase:"",standings:{},slides:[],index:0,view:"league",cupStatus:{},demoAllActive:false};
 function completed(code){
  const used=new Set();
- return state.rows.filter(r=>r.Conference===code&&done(r)).filter(r=>{
-  const key=code+"|"+r.GW+"|"+norm(r.Team);
+ const isSeasonTotal=code==="Totale";
+ return state.rows.filter(r=>{
+  const conference=String(r.Conference||"");
+  const regular=String(r.Phase||"Regular").trim().toLowerCase()==="regular";
+  if(isSeasonTotal){
+   // Mirror the official Total classification: both Conferences + Round Robin.
+   return regular&&["Conf A","Conf B","Unificata"].includes(conference)
+    &&(num(r.PointsFor)!==0||num(r.PointsAgainst)!==0);
+  }
+  if(conference==="Unificata"){
+   // The Round Robin ranking includes this phase only.
+   return code==="Unificata"&&regular&&(num(r.PointsFor)!==0||num(r.PointsAgainst)!==0);
+  }
+  return conference===code&&done(r);
+ }).filter(r=>{
+  const key=r.Conference+"|"+r.GW+"|"+norm(r.Team);
   if(used.has(key))return false;used.add(key);return true;
  });
+}
+function roundRobinStandingsActive(){
+ const phase=String(state.phase||"").trim().toLowerCase().replace(/[\s-]+/g,"_");
+ const isActivePhase=["round_robin","roundrobin"].includes(phase);
+ // Keep the change automatic even when the first Round Robin scores
+ // are imported before waiver_settings.active_phase gets updated.
+ const hasOfficialRR=state.rows.some(r=>r.Conference==="Unificata"
+  &&String(r.Phase||"Regular").trim().toLowerCase()==="regular"
+  &&(num(r.PointsFor)!==0||num(r.PointsAgainst)!==0));
+ // Visual testing is isolated to this standalone test page, never saves data.
+ const preview=new URLSearchParams(window.location.search).get("standings")==="rr";
+ return preview||isActivePhase||hasOfficialRR;
+}
+function configureStandingsTabs(isRR){
+ const tabs=[...document.querySelectorAll("[data-conf]")];
+ const data=isRR
+  ?[["Totale","Totale"],["Unificata","Round Robin"]]
+  :[["Conf A","League"],["Conf B","Championship"]];
+ tabs.forEach((button,i)=>{
+  const [code,label]=data[i];
+  button.dataset.conf=code;
+  button.textContent=label;
+ });
+ const switcher=document.querySelector(".standing-switch");
+ if(switcher)switcher.setAttribute("aria-label",isRR?"Scegli tra Classifica Totale e Round Robin":"Scegli Conference");
+}
+function selectStandings(code){
+ document.querySelectorAll("[data-conf]").forEach(button=>{
+  const active=button.dataset.conf===code;
+  button.classList.toggle("on",active);
+  button.setAttribute("aria-pressed",String(active));
+ });
+ drawTable(code);
 }
 function table(code){
  const all=new Map();
@@ -677,7 +724,7 @@ async function loadCupStatuses(){
 }
 
 function drawTable(code){
- $("standings-label").innerHTML=esc(confName(code).toUpperCase())+" <span>FORMA · PT</span>";
+ $("standings-label").innerHTML=esc((code==="Totale"?"Classifica Totale":confName(code)).toUpperCase())+" <span>FORMA · PT</span>";
  const rows=state.standings[code]||[];
  $("standings-list").innerHTML=rows.length?rows.slice(0,5).map((r,i)=>{
   const recent=completed(code).filter(x=>norm(x.Team)===norm(r.name))
@@ -686,7 +733,7 @@ function drawTable(code){
   const form=[...Array(Math.max(0,3-recent.length)).fill("-"),...recent];
   const badges=form.map(v=>'<span class="form-chip '+(v==="-"?"":v)+'" aria-label="'+({V:"Vittoria",N:"Pareggio",P:"Sconfitta","-":"Non disputata"}[v])+'">'+(v==="-"?"·":v)+'</span>').join("");
   return '<div class="standing-row '+(state.team&&norm(r.name)===norm(state.team.name)?"mine":"")+'"><span class="place">'+(i+1)+'.</span><img src="'+esc(logo(r.name))+'" alt=""><span class="name">'+esc(r.name)+'</span><span class="standing-form" aria-label="Ultime tre partite">'+badges+'</span><span class="points">'+r.pt+"</span></div>";
- }).join(""):'<div class="loading">Classifica non disponibile</div>';
+ }).join(""):'<div class="loading">'+(code==="Unificata"?"Nessun risultato del Round Robin":"Classifica non disponibile")+'</div>';
 }
 function drawTicker(){
  const a=state.standings["Conf A"]?.[0],b=state.standings["Conf B"]?.[0];
@@ -718,10 +765,7 @@ async function team(){
 function bind(){
  $("arena-demo-toggle").addEventListener("click",()=>setDemoMode(!state.demoAllActive,true));
  document.querySelectorAll("[data-cup]").forEach(b=>b.addEventListener("click",()=>chooseView(b.dataset.cup)));
- document.querySelectorAll("[data-conf]").forEach(b=>b.addEventListener("click",()=>{
-  document.querySelectorAll("[data-conf]").forEach(el=>{const yes=b===el;el.classList.toggle("on",yes);el.setAttribute("aria-pressed",String(yes));});
-  drawTable(b.dataset.conf);
- }));
+ document.querySelectorAll("[data-conf]").forEach(button=>button.addEventListener("click",()=>selectStandings(button.dataset.conf)));
  $("fixture-prev").addEventListener("click",()=>{state.index=Math.max(0,state.index-1);drawMatch();});
  $("fixture-next").addEventListener("click",()=>{state.index=Math.min(state.slides.length-1,state.index+1);drawMatch();});
 }
@@ -731,9 +775,13 @@ async function init(){
  if(r.status==="fulfilled"&&Array.isArray(r.value))state.rows=r.value;
  else console.warn("Risultati Arena non disponibili",r.reason);
  ["Conf A","Conf B","Unificata"].forEach(c=>state.standings[c]=table(c));
- buildSlides();identity();drawTicker();drawTable("Conf A");chooseView("league");
+ const isRR=roundRobinStandingsActive();
+ if(isRR)state.standings.Totale=table("Totale");
+ configureStandingsTabs(isRR);
+ buildSlides();identity();drawTicker();
+ selectStandings(isRR?"Totale":state.team?.conf==="Conf B"?"Conf B":"Conf A");
+ chooseView("league");
  setDemoMode(new URLSearchParams(window.location.search).get("demo")==="all");
- if(state.team?.conf==="Conf B")document.querySelector('[data-conf="Conf B"]')?.click();
  loadCupStatuses().catch(err=>console.warn("Anteprima coppe Arena:",err));
 }
 init();
