@@ -9,7 +9,7 @@
   <link rel="stylesheet" href="navbar.css">
   <link rel="stylesheet" href="trade-room.css?v=20261116-live-backup">
   <link rel="stylesheet" href="trade-room-v2.css?v=20261117-trade-cuts-restored">
-  <link rel="stylesheet" href="trade-conditional-addon.css?v=20261117-monitored-live-v14">
+  <link rel="stylesheet" href="trade-conditional-addon.css?v=20261119-send-confirm-v15">
 </head>
 <body class="trade-v2-preview trade-v2-live">
 <nav class="site-nav">
@@ -491,6 +491,14 @@
     <div id="ctTradeSummary" class="ct-summary" role="status" aria-live="polite"></div>
     <div id="ctFormNotice" class="ct-notice" role="alert" aria-live="polite"></div>
     <button type="button" id="ctSendOffer" class="ct-submit">🔐 Invia proposta condizionata</button>
+    <div id="ctSendConfirmPanel" class="ct-send-confirm" hidden role="group" aria-label="Conferma invio trade condizionata">
+      <strong>🔐 Conferma la proposta reale</strong>
+      <p id="ctSendConfirmText">Controlla la clausola e la pick di contropartita prima di inviare.</p>
+      <div class="ct-send-confirm-actions">
+        <button type="button" id="ctConfirmSubmit">✓ Conferma e invia</button>
+        <button type="button" id="ctCancelSubmit">Annulla</button>
+      </div>
+    </div>
     <p class="ct-field-help">Questa è una proposta REALE: il destinatario deve accettarla. Una condizione in attesa non trasferisce subito le pick candidate.</p>
   </div>
 </section>
@@ -763,6 +771,6 @@
   <script src="navbar.js?v=20261119-global33"></script>
   <script type="module" src="trade-room.js?v=20261116-live-original"></script>
   <script type="module" src="trade-room-live.js?v=20261117-trade-cuts-restored"></script>
-  <script type="module" src="trade-conditional-addon.js?v=20261117-monitored-live-v14"></script>
+  <script type="module" src="trade-conditional-addon.js?v=20261119-send-confirm-v15"></script>
 </body>
 </html>
