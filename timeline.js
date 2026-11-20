@@ -1379,6 +1379,8 @@ function buildChallengeEvents(data) {
   };
   return rounds.slice(-5).map(row => {
     const done = row.status === "finalized";
+    const expired = !done && Boolean(row.closes_at) &&
+      parseDateLike(row.closes_at)?.getTime() <= Date.now();
     const name = labels[String(row.stage || "").toLowerCase()] ||
       String(row.stage || "fase Playoff").replace(/[_-]/g," ");
     return makeEvent({
@@ -1389,13 +1391,15 @@ function buildChallengeEvents(data) {
         row.updated_at
       ),
       badge: "Playoffs Challenge",
-      extra: done ? "Risultati ufficiali" : "Pronostici aperti",
+      extra: done ? "Risultati ufficiali" : expired ? "Schedine chiuse" : "Pronostici aperti",
       title: done
         ? "Playoffs Challenge: " + name + " omologata"
         : "Playoffs Challenge: " + name + " pubblicata",
       text: done
         ? "Il turno della Challenge è stato omologato. La classifica ora comprende anche questi risultati."
-        : "Le quote e le sfide ufficiali del turno sono pubblicate. La caccia ai pronostici continua.",
+        : expired
+          ? "Le schedine del turno sono chiuse. Si attendono risultati e omologazione ufficiale."
+          : "Le quote e le sfide del turno sono pubblicate: è possibile inviare i pronostici entro la scadenza.",
       image: "img/home/competizioni/playoff.webp",
       meta: ['GW ' + row.gw, name, done ? "Omologata" : "Pubblicata"],
       href: "playoffs-challenge.html",
