@@ -1,5 +1,5 @@
 import { createClient } from 'jsr:@supabase/supabase-js@2'
-import webpush from 'npm:web-push'
+import * as webpush from 'npm:web-push@3.6.7'
 
 const headers = {
   'Content-Type': 'application/json',
