@@ -180,6 +180,16 @@ function applyImageFallback(imgEl, candidates, fallback = "") {
 }
 
 function trovaLogo(nomeSquadra) {
+  // Il logo Minnesode esiste con nome misto e spazi: usa il percorso certo,
+  // codificato, prima dei tentativi generici. La versione evita cache di 404.
+  const normalized = slug(nomeSquadra);
+  if (normalized === "minnesode-timberland" || normalized === "minnesode") {
+    return [
+      "img/Minnesode%20Timberland.webp?v=20261120-minnesode-logo",
+      "img/Minnesode%20Timberland.webp",
+      ...buildImageCandidates("img/", nomeSquadra)
+    ];
+  }
   return buildImageCandidates("img/", nomeSquadra);
 }
 
