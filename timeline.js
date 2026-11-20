@@ -1294,7 +1294,7 @@ function buildTotoEroiEvents(data) {
       extra: "La caccia all'8",
       title: "Toto Eroi entra nella storia della stagione",
       text: 'È arrivato il primo verdetto ufficiale del Toto Eroi: pronostici, risultati e punti diventano parte della corsa.',
-      image: "img/home/competizioni/toto-eroi.webp",
+      image: "img/home/esplora/totoeroi-mascotte-v24.webp",
       meta: ['GW ' + first.gw, 'Prima omologazione'],
       href: "totoeroi.html",
       source: "TOTO EROI",
@@ -1312,7 +1312,7 @@ function buildTotoEroiEvents(data) {
       extra: "Risultati ufficiali",
       title: 'Toto Eroi: omologata la giornata ' + latest.gw,
       text: 'Un altro turno è stato omologato. I punteggi e la classifica generale della Caccia all’8 sono aggiornati.',
-      image: "img/home/competizioni/toto-eroi.webp",
+      image: "img/home/esplora/totoeroi-mascotte-v24.webp",
       meta: ['GW ' + latest.gw, homologated.length + ' giornate omologate'],
       href: "totoeroi.html",
       source: "TOTO EROI"
@@ -1338,7 +1338,7 @@ function buildTotoEroiEvents(data) {
       text: count === 1
         ? 'Nella giornata ' + winGw + ' una franchigia ha indovinato tutti e otto i pronostici.'
         : 'Nella giornata ' + winGw + ' ben ' + count + ' franchigie hanno centrato tutti gli otto pronostici.',
-      image: "img/home/competizioni/toto-eroi.webp",
+      image: "img/home/esplora/totoeroi-mascotte-v24.webp",
       meta: ['GW ' + winGw, count + (count === 1 ? ' vincitore' : ' vincitori'), award],
       href: "totoeroi.html",
       major: true,
@@ -1358,7 +1358,7 @@ function buildTotoEroiEvents(data) {
       extra: "Schedine aperte",
       title: 'La caccia all’8 continua: GW ' + upcoming.gw,
       text: 'Pronostici aperti per la giornata ' + upcoming.gw + '. Solo le schedine inviate entro la scadenza saranno valide.',
-      image: "img/home/competizioni/toto-eroi.webp",
+      image: "img/home/esplora/totoeroi-mascotte-v24.webp",
       meta: ['GW ' + upcoming.gw, 'Pronostici aperti'],
       href: "totoeroi.html",
       source: "TOTO EROI"
