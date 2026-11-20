@@ -293,6 +293,7 @@
 }
 
 /* Hall of Fame · V2: medagliere a card e record compatti, senza cambiare la Panoramica. */
+.hall-of-fame-page #tab-record .hof-records-intro{display:none}
 @media (max-width:760px) {
   /* Le franchigie diventano tessere autonome: la tabella resta la fonte dei dati. */
   body.hall-of-fame-page #tab-medagliere .tabella-section{
@@ -388,7 +389,7 @@
 
   /* Record dedicati: medesimo linguaggio grafico della nuova Panoramica. */
   body.hall-of-fame-page #tab-record .hof-records-intro{
-    margin:0 2px 12px;padding:2px 3px 0;
+    display:block!important;margin:0 2px 12px;padding:2px 3px 0;
   }
   body.hall-of-fame-page #tab-record .hof-records-intro span{
     display:block;color:#e5bc70;font-size:.63rem;font-weight:900;letter-spacing:.15em;
