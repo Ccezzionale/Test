@@ -1,5 +1,5 @@
 import { createClient } from 'jsr:@supabase/supabase-js@2';
-import webpush from 'npm:web-push';
+import * as webpush from 'npm:web-push@3.6.7';
 
 // Isolated adapter: sends to the EXISTING app_notifications & push_subscriptions.
 // Never accepts arbitrary recipient/team IDs or client-authored text.
