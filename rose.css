@@ -1612,3 +1612,14 @@ body {
   .team-roster-meta { border-radius:12px; }
   .box-rosa::before { border-bottom-width: 3px; }
 }
+
+/* IR concessa ma non utilizzata: stato distinto dall'IR conclusa. */
+.team-ir-slot.is-pending {
+  border-color: #b9d2e8;
+  border-left-color: #0b6cae;
+  background: linear-gradient(180deg, #f7fbff, #edf5fc);
+}
+.team-ir-phase.pending { background: #e5f1fc; color: #0c4d78; }
+.team-roster-meta .rose-stat.has-ir.ir-pending { background: #edf5fc; }
+.team-roster-meta .rose-stat.has-ir.ir-pending strong,
+.team-roster-meta .rose-stat.has-ir.ir-pending small { color: #0c4d78; }
