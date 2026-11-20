@@ -1,0 +1,293 @@
+/* Hall of Fame · Museo compatto mobile V1 — solo Panoramica + Medagliere.
+   I dati, i loghi, i record ufficiali e le altre schede restano invariati. */
+.hall-of-fame-page .hof-museum-intro,
+.hall-of-fame-page .hof-medal-mobile-intro,
+.hall-of-fame-page .hof-medal-sort { display:none; }
+
+@media (max-width:760px) {
+  /* Panoramica: leggibile senza un chilometro di scrolling. */
+  body.hall-of-fame-page #tab-overview.is-active {
+    display:flex!important;flex-direction:column;gap:13px;padding-bottom:20px!important;
+  }
+  body.hall-of-fame-page #tab-overview > .hof-museum-intro {order:0}
+  body.hall-of-fame-page #tab-overview > #overview-metrics {order:1}
+  body.hall-of-fame-page #tab-overview > .hof-podium-feature {order:2}
+  body.hall-of-fame-page #tab-overview > .hof-champions-feature {order:3}
+  body.hall-of-fame-page #tab-overview > .hof-trophy-feature {order:4}
+  body.hall-of-fame-page #tab-overview > .hof-records-feature {order:5}
+  body.hall-of-fame-page .hof-museum-intro {
+    display:block;margin:0 2px 0;padding:2px 3px 0;
+  }
+  body.hall-of-fame-page .hof-museum-intro span,
+  body.hall-of-fame-page .hof-medal-mobile-intro span {
+    display:block;color:#e4b967;letter-spacing:.16em;font-size:.63rem;font-weight:900;
+  }
+  body.hall-of-fame-page .hof-museum-intro h2,
+  body.hall-of-fame-page .hof-medal-mobile-intro h2 {
+    margin:3px 0 0;color:#fff0cb;font:700 clamp(1.23rem,5vw,1.65rem)/1.14 Georgia,serif;
+  }
+  body.hall-of-fame-page #tab-overview > .overview-panel {
+    margin:0!important;padding:14px 13px!important;border-radius:17px!important;
+  }
+  body.hall-of-fame-page #tab-overview .overview-heading {
+    display:flex!important;flex-direction:row!important;align-items:center!important;
+    justify-content:space-between!important;flex-wrap:wrap;gap:6px 9px;
+    margin:0 0 9px!important;padding:0 0 9px!important;
+  }
+  body.hall-of-fame-page #tab-overview .overview-heading > div:first-child {min-width:0;flex:1 1 165px}
+  body.hall-of-fame-page #tab-overview .hof-overview-kicker {font-size:.57rem;letter-spacing:.11em}
+  body.hall-of-fame-page #tab-overview .overview-heading h2 {
+    margin:2px 0 0!important;font-size:clamp(1.11rem,4.4vw,1.37rem)!important;line-height:1.17!important;
+  }
+  body.hall-of-fame-page #tab-overview .overview-heading p {display:none!important}
+  body.hall-of-fame-page #tab-overview .hof-overview-link {
+    min-height:30px!important;padding:5px 9px!important;font-size:.67rem!important;
+    border-radius:99px!important;white-space:nowrap;
+  }
+  /* Il leader è già nel podio. I KPI non devono ripeterlo. */
+  body.hall-of-fame-page #tab-overview #overview-metrics {
+    display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;
+    gap:7px!important;margin:0!important;
+  }
+  body.hall-of-fame-page #tab-overview #overview-metrics .metric-card:first-child {display:none!important}
+  body.hall-of-fame-page #tab-overview #overview-metrics .metric-card {
+    display:flex!important;flex-direction:column-reverse!important;justify-content:center!important;
+    align-items:center!important;gap:4px!important;min-width:0;min-height:69px!important;
+    padding:10px 5px!important;text-align:center;border-radius:13px!important;
+    background:linear-gradient(155deg,#113353,#071c39)!important;
+  }
+  body.hall-of-fame-page #tab-overview .hof-metrics-bar .metric-emoji,
+  body.hall-of-fame-page #tab-overview .hof-metrics-bar .metric-icon-wrap,
+  body.hall-of-fame-page #tab-overview .hof-metrics-bar small {display:none!important}
+  body.hall-of-fame-page #tab-overview .hof-metrics-bar .metric-card > div:last-child {
+    display:flex;flex-direction:column-reverse;align-items:center;gap:3px;min-width:0;
+  }
+  body.hall-of-fame-page #tab-overview .hof-metrics-bar .metric-value {
+    margin:0!important;font-size:1.55rem!important;line-height:1!important;
+    color:#ffda80!important;-webkit-text-fill-color:#ffda80!important;
+  }
+  body.hall-of-fame-page #tab-overview .hof-metrics-bar .metric-label {
+    margin:0!important;font-size:clamp(.54rem,2.25vw,.68rem)!important;line-height:1.25;
+    letter-spacing:0!important;text-transform:none!important;color:#c9d9e9!important;
+  }
+  /* Podio: tre righe con logo e conteggi, niente card monumentali. */
+  body.hall-of-fame-page .hof-podium-feature .overview-heading {margin-bottom:9px!important}
+  body.hall-of-fame-page .hof-podium-stage {
+    padding:0!important;border:0!important;border-radius:0!important;background:none!important;
+    box-shadow:none!important;overflow:visible!important;
+  }
+  body.hall-of-fame-page .hof-podium-stage::before,
+  body.hall-of-fame-page .hof-podium-backlight,
+  body.hall-of-fame-page .hof-podium-floor {display:none!important}
+  body.hall-of-fame-page .hof-podium-stage .mini-podium {
+    display:grid!important;grid-template-columns:minmax(0,1fr)!important;
+    gap:7px!important;padding:0!important;margin:0!important;width:100%!important;
+  }
+  body.hall-of-fame-page .hof-podium-stage .mini-podium-card,
+  body.hall-of-fame-page .hof-podium-stage .mini-podium-card.position-1,
+  body.hall-of-fame-page .hof-podium-stage .mini-podium-card.position-2,
+  body.hall-of-fame-page .hof-podium-stage .mini-podium-card.position-3 {
+    display:grid!important;grid-template-columns:30px 42px minmax(0,1fr) 62px!important;
+    align-items:center!important;justify-items:stretch!important;gap:7px!important;
+    width:100%!important;min-width:0!important;min-height:69px!important;
+    padding:8px 9px!important;margin:0!important;border-radius:13px!important;
+    grid-column:auto!important;order:0!important;transform:none!important;
+    background:linear-gradient(105deg,#143556,#071b35 80%)!important;
+    box-shadow:inset 0 1px 0 #ffffff14,0 4px 11px #0004!important;
+    text-align:left!important;
+  }
+  body.hall-of-fame-page .hof-podium-stage .mini-podium-card.position-1 {
+    border:1px solid #dbb866!important;
+    background:linear-gradient(105deg,#3d3624,#102c49 55%,#071b35)!important;
+  }
+  body.hall-of-fame-page .hof-podium-stage .mini-podium-card.position-2 {border:1px solid #91a8c27a!important}
+  body.hall-of-fame-page .hof-podium-stage .mini-podium-card.position-3 {border:1px solid #c190767a!important}
+  body.hall-of-fame-page .hof-podium-stage .mini-podium-shine {display:none!important}
+  body.hall-of-fame-page .hof-podium-stage .mini-podium-head {
+    grid-column:1;grid-row:1;width:auto!important;display:flex!important;align-items:center;justify-content:center!important;
+  }
+  body.hall-of-fame-page .hof-podium-stage .mini-podium-head .mini-crown {display:none!important}
+  body.hall-of-fame-page .hof-podium-stage .mini-rank {
+    min-width:28px!important;width:28px!important;height:28px!important;
+    padding:0!important;font-size:.79rem!important;border-radius:9px!important;
+  }
+  body.hall-of-fame-page .hof-podium-stage .mini-logo-shell,
+  body.hall-of-fame-page .hof-podium-stage .position-1 .mini-logo-shell,
+  body.hall-of-fame-page .hof-podium-stage .position-2 .mini-logo-shell,
+  body.hall-of-fame-page .hof-podium-stage .position-3 .mini-logo-shell {
+    grid-column:2;grid-row:1;width:42px!important;height:42px!important;
+    margin:0!important;padding:0!important;border:0!important;overflow:hidden!important;
+    border-radius:50%;background:#08172b80!important;box-shadow:none!important;
+  }
+  body.hall-of-fame-page .hof-podium-stage .mini-logo-shell img,
+  body.hall-of-fame-page .hof-podium-stage .mini-logo-shell img[data-team-logo],
+  body.hall-of-fame-page .hof-podium-stage .position-1 .mini-logo-shell img,
+  body.hall-of-fame-page .hof-podium-stage .position-1 .mini-logo-shell img[data-team-logo],
+  body.hall-of-fame-page .hof-podium-stage .position-2 .mini-logo-shell img,
+  body.hall-of-fame-page .hof-podium-stage .position-2 .mini-logo-shell img[data-team-logo],
+  body.hall-of-fame-page .hof-podium-stage .position-3 .mini-logo-shell img,
+  body.hall-of-fame-page .hof-podium-stage .position-3 .mini-logo-shell img[data-team-logo] {
+    display:block!important;width:40px!important;height:40px!important;
+    max-width:40px!important;max-height:40px!important;margin:1px auto!important;object-fit:contain!important;
+  }
+  body.hall-of-fame-page .hof-podium-stage .mini-team-name,
+  body.hall-of-fame-page .hof-podium-stage .position-1 .mini-team-name,
+  body.hall-of-fame-page .hof-podium-stage .position-2 .mini-team-name,
+  body.hall-of-fame-page .hof-podium-stage .position-3 .mini-team-name {
+    grid-column:3;grid-row:1;min-width:0;min-height:0!important;
+    margin:0!important;font:900 clamp(.72rem,3.3vw,.9rem)/1.15 system-ui,sans-serif!important;
+    overflow-wrap:anywhere!important;text-align:left!important;color:#f5f8ff!important;
+  }
+  body.hall-of-fame-page .hof-podium-stage .position-1 .mini-team-name {color:#ffe19a!important}
+  body.hall-of-fame-page .hof-podium-stage .mini-podium-stats,
+  body.hall-of-fame-page .hof-podium-stage .position-2 .mini-podium-stats,
+  body.hall-of-fame-page .hof-podium-stage .position-3 .mini-podium-stats {
+    grid-column:4;grid-row:1;display:flex!important;flex-direction:column!important;
+    align-items:stretch!important;justify-content:center!important;gap:3px!important;
+    grid-template-columns:none!important;margin:0!important;min-width:0;
+  }
+  body.hall-of-fame-page .hof-podium-stage .mini-podium-stats span {
+    display:flex!important;justify-content:center!important;width:100%!important;
+    min-height:23px!important;padding:3px 1px!important;gap:3px!important;
+    font-size:.63rem!important;line-height:1.05!important;color:#d1dfee!important;
+    border:1px solid #d0a95d34!important;border-radius:8px!important;
+  }
+  body.hall-of-fame-page .hof-podium-stage .mini-podium-stats b {color:#ffe4a3!important}
+  /* Anteprime: pochi pezzi scelti, il resto vive nelle schede dedicate. */
+  body.hall-of-fame-page .hof-champions-feature .champions-grid {
+    display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    gap:7px!important;overflow:visible!important;padding:0!important;
+  }
+  body.hall-of-fame-page .hof-champions-feature .champion-card:nth-child(n+3) {display:none!important}
+  body.hall-of-fame-page .hof-champions-feature .champion-card {
+    display:flex!important;flex-direction:column!important;flex:initial!important;
+    align-items:center!important;text-align:center!important;gap:4px!important;
+    min-width:0!important;min-height:115px!important;padding:9px 7px!important;
+    border-radius:12px!important;
+  }
+  body.hall-of-fame-page .hof-champions-feature .champion-trophy {
+    width:100%!important;height:50px!important;flex:0 0 50px!important;margin:0!important;
+  }
+  body.hall-of-fame-page .hof-champions-feature .champion-trophy img {max-height:49px!important;max-width:85px!important}
+  body.hall-of-fame-page .hof-champions-feature .champion-copy {gap:3px!important;align-items:center!important}
+  body.hall-of-fame-page .hof-champions-feature .champion-competition {font-size:.74rem!important;font-weight:900!important}
+  body.hall-of-fame-page .hof-champions-feature .champion-season {font-size:.68rem!important}
+  body.hall-of-fame-page .hof-champions-feature .champion-team-wrap {gap:3px!important;justify-content:center!important}
+  body.hall-of-fame-page .hof-champions-feature .champion-team-wrap img {display:none!important}
+  body.hall-of-fame-page .hof-champions-feature .champion-team-wrap strong {font-size:.72rem!important;line-height:1.12!important}
+  body.hall-of-fame-page .hof-trophy-feature .trophy-showcase {
+    display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:8px!important;
+  }
+  body.hall-of-fame-page .hof-trophy-feature .trophy-card-lite:nth-child(n+5) {display:none!important}
+  body.hall-of-fame-page .hof-trophy-feature .trophy-card-lite,
+  body.hall-of-fame-page .hof-trophy-feature .trophy-card-lite.is-major {
+    min-height:117px!important;padding:10px 6px!important;border-radius:12px!important;
+  }
+  body.hall-of-fame-page .hof-trophy-feature .trophy-card-lite img,
+  body.hall-of-fame-page .hof-trophy-feature .trophy-card-lite.is-major img {
+    max-height:64px!important;margin:0 auto 6px!important;
+  }
+  body.hall-of-fame-page .hof-trophy-feature .trophy-name {font-size:.76rem!important}
+  body.hall-of-fame-page .hof-trophy-feature .trophy-cta {display:none!important}
+  body.hall-of-fame-page .hof-trophy-feature .major-badge {font-size:.55rem!important;padding:2px 5px!important}
+  body.hall-of-fame-page .hof-records-feature .records-preview {display:grid!important;grid-template-columns:1fr!important;gap:7px!important}
+  body.hall-of-fame-page .hof-records-feature .preview-record-row:nth-child(n+3) {display:none!important}
+  body.hall-of-fame-page .hof-records-feature .preview-record-row {
+    display:flex!important;flex-direction:row!important;align-items:center!important;
+    min-height:54px!important;padding:9px 12px!important;border-radius:12px!important;
+  }
+  body.hall-of-fame-page .hof-records-feature .preview-record-row strong {font-size:.79rem!important}
+  body.hall-of-fame-page .hof-records-feature .preview-record-row em {font-size:1.25rem!important;margin:auto 0 auto auto!important}
+
+  /* Medagliere: una tabella a colpo d'occhio, senza accordion per ogni franchigia. */
+  body.hall-of-fame-page #tab-medagliere .hof-medal-mobile-intro {display:block;padding:4px 1px 7px}
+  body.hall-of-fame-page #tab-medagliere .hof-medal-mobile-intro p {font-size:.75rem;color:#b7c9df;margin:5px 0 0}
+  body.hall-of-fame-page #tab-medagliere .hof-medal-sort {
+    display:flex;align-items:center;gap:6px;padding:3px 0 10px;
+  }
+  body.hall-of-fame-page #tab-medagliere .hof-medal-sort span {font-size:.7rem;color:#b7c9df;font-weight:800;margin-right:auto}
+  body.hall-of-fame-page #tab-medagliere .hof-medal-sort button {
+    cursor:pointer;min-height:31px;padding:5px 11px;border-radius:999px;
+    border:1px solid #537292;background:#0a2442;color:#e5effb;font-size:.73rem;font-weight:900;
+  }
+  body.hall-of-fame-page #tab-medagliere .hof-medal-sort button.is-active {
+    color:#211b10;background:linear-gradient(180deg,#ffe69c,#f4b840);border-color:#ffebad;
+  }
+  body.hall-of-fame-page #tab-medagliere .hof-medagliere-wrapper {
+    display:block!important;width:100%!important;margin:0!important;padding:0!important;
+  }
+  body.hall-of-fame-page #tab-medagliere .podio-section {display:none!important}
+  body.hall-of-fame-page #tab-medagliere .tabella-section {
+    margin:0!important;padding:8px 7px!important;border-radius:16px!important;
+    border-color:#a98b514d!important;
+  }
+  body.hall-of-fame-page #tab-medagliere .tabella-section > .section-title {display:none!important}
+  body.hall-of-fame-page #tab-medagliere .table-shell {
+    padding:0!important;border:0!important;border-radius:0!important;box-shadow:none!important;background:none!important;
+  }
+  body.hall-of-fame-page #tab-medagliere #accordion {display:none!important}
+  body.hall-of-fame-page #tab-medagliere #medagliere {
+    display:table!important;width:100%!important;table-layout:fixed!important;
+    border-collapse:separate!important;border-spacing:0 5px!important;font-size:.71rem!important;
+  }
+  body.hall-of-fame-page #tab-medagliere #medagliere th {
+    width:auto;padding:7px 1px!important;text-align:center!important;
+    font-size:0!important;line-height:1.1!important;letter-spacing:0!important;
+    border-radius:0!important;background:#061a35!important;
+  }
+  body.hall-of-fame-page #tab-medagliere #medagliere th::after {font-size:.72rem!important}
+  body.hall-of-fame-page #tab-medagliere #medagliere th:nth-child(1) {width:26px}
+  body.hall-of-fame-page #tab-medagliere #medagliere th:nth-child(1)::after {content:'#'}
+  body.hall-of-fame-page #tab-medagliere #medagliere th:nth-child(2) {text-align:left!important;font-size:.67rem!important;padding-left:5px!important}
+  body.hall-of-fame-page #tab-medagliere #medagliere th:nth-child(3),
+  body.hall-of-fame-page #tab-medagliere #medagliere th:nth-child(4),
+  body.hall-of-fame-page #tab-medagliere #medagliere th:nth-child(5) {width:30px}
+  body.hall-of-fame-page #tab-medagliere #medagliere th:nth-child(3)::after {content:'🥇'}
+  body.hall-of-fame-page #tab-medagliere #medagliere th:nth-child(4)::after {content:'🥈'}
+  body.hall-of-fame-page #tab-medagliere #medagliere th:nth-child(5)::after {content:'🥉'}
+  body.hall-of-fame-page #tab-medagliere #medagliere th:nth-child(6) {width:34px}
+  body.hall-of-fame-page #tab-medagliere #medagliere th:nth-child(6)::after {content:'TOT'}
+  body.hall-of-fame-page #tab-medagliere #medagliere td {
+    padding:7px 2px!important;min-width:0!important;font-size:.72rem!important;
+    line-height:1.25!important;vertical-align:middle!important;
+    color:#ebf2fb!important;
+  }
+  body.hall-of-fame-page #tab-medagliere #medagliere td:nth-child(n+3) {text-align:center!important;font-variant-numeric:tabular-nums}
+  body.hall-of-fame-page #tab-medagliere #medagliere td:nth-child(2) {padding:7px 3px!important}
+  body.hall-of-fame-page #tab-medagliere #medagliere .rank-badge {
+    min-width:22px!important;width:22px!important;height:22px!important;
+    margin:0!important;padding:0!important;font-size:.67rem!important;
+  }
+  body.hall-of-fame-page #tab-medagliere #medagliere .squadra-wrapper {gap:4px!important;min-width:0!important}
+  body.hall-of-fame-page #tab-medagliere #medagliere .logo-squadra {
+    flex:0 0 24px!important;width:24px!important;height:24px!important;
+    max-width:24px!important;max-height:24px!important;
+  }
+  body.hall-of-fame-page #tab-medagliere #medagliere .nome-squadra {
+    min-width:0!important;font-size:clamp(.65rem,2.9vw,.77rem)!important;
+    font-weight:800!important;line-height:1.15!important;overflow-wrap:anywhere!important;
+  }
+  body.hall-of-fame-page #tab-medagliere #medagliere .totale-pill {
+    min-width:0!important;width:auto!important;padding:4px 1px!important;
+    border-radius:7px!important;font-size:.7rem!important;
+  }
+  body.hall-of-fame-page #tab-medagliere #medagliere tbody tr:hover {transform:none!important}
+}
+@media (max-width:370px) {
+  body.hall-of-fame-page .hof-podium-stage .mini-podium-card,
+  body.hall-of-fame-page .hof-podium-stage .mini-podium-card.position-1,
+  body.hall-of-fame-page .hof-podium-stage .mini-podium-card.position-2,
+  body.hall-of-fame-page .hof-podium-stage .mini-podium-card.position-3 {
+    grid-template-columns:27px 36px minmax(0,1fr) 57px!important;gap:5px!important;padding:7px 6px!important;
+  }
+  body.hall-of-fame-page .hof-podium-stage .mini-logo-shell,
+  body.hall-of-fame-page .hof-podium-stage .position-1 .mini-logo-shell,
+  body.hall-of-fame-page .hof-podium-stage .position-2 .mini-logo-shell,
+  body.hall-of-fame-page .hof-podium-stage .position-3 .mini-logo-shell {width:36px!important;height:36px!important}
+  body.hall-of-fame-page .hof-podium-stage .mini-logo-shell img,
+  body.hall-of-fame-page .hof-podium-stage .mini-logo-shell img[data-team-logo] {width:35px!important;height:35px!important}
+  body.hall-of-fame-page #tab-medagliere #medagliere th:nth-child(3),
+  body.hall-of-fame-page #tab-medagliere #medagliere th:nth-child(4),
+  body.hall-of-fame-page #tab-medagliere #medagliere th:nth-child(5) {width:27px}
+  body.hall-of-fame-page #tab-medagliere #medagliere th:nth-child(6) {width:31px}
+}
