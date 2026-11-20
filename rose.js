@@ -39,7 +39,20 @@ function getIrDay(record) {
   return Math.max(1, Math.floor((today - start) / 86400000) + 1);
 }
 
+function isIrPending(record) {
+  return record?.status === "offered" ||
+    (record?.status === "active" && record?.compensatory_status !== "used");
+}
+
 function getIrPhase(record) {
+  if (record?.status === "offered") {
+    return { label: "Da attivare", className: "pending" };
+  }
+
+  if (record?.status === "active" && record?.compensatory_status !== "used") {
+    return { label: "In attesa esito", className: "pending" };
+  }
+
   if (!record || record.status !== "active") {
     const labels = {
       reinstated: "Reintegrato",
@@ -65,18 +78,26 @@ function renderInjuryReserveSlot(record) {
     ? escapeAttribute(record.medical_source_url)
     : "";
 
+  const isActive = record.status === "active";
+  const statusClass = isIrPending(record) ? "is-pending" : isActive ? "is-active" : "is-closed";
+  const statusDescription = record.status === "offered"
+    ? `Concessa il ${formatIrDate(record.offered_on || record.created_at)} · chiamata ancora da attivare`
+    : isActive && record.compensatory_status !== "used"
+      ? `Chiamata salvata · esito Waiver in attesa`
+      : isActive
+        ? `Giorno ${day} di 104 · scadenza ${formatIrDate(record.expires_on)}`
+        : `${phase.label} · ${formatIrDate(record.resolved_at)}`;
+
   return `
-    <section class="team-ir-slot ${record.status === "active" ? "is-active" : "is-closed"}">
+    <section class="team-ir-slot ${statusClass}">
       <div class="team-ir-icon" aria-hidden="true">IR</div>
       <div class="team-ir-copy">
         <span class="team-ir-kicker">Injury Reserve · ${escapeAttribute(record.season_key)}</span>
         <strong class="ir-player-name">${escapeAttribute(record.player_name)}</strong>
-        <small>
-          ${record.status === "active"
-            ? `Giorno ${day} di 104 · scadenza ${formatIrDate(record.expires_on)}`
-            : `${phase.label} · ${formatIrDate(record.resolved_at)}`}
-        </small>
-        ${record.status === "active" ? `<div class="team-ir-progress"><span style="width:${progress}%"></span></div>` : ""}
+        <small>${statusDescription}</small>
+        ${isActive && record.compensatory_status === "used"
+          ? `<div class="team-ir-progress"><span style="width:${progress}%"></span></div>`
+          : ""}
         ${safeUrl ? `<a href="${safeUrl}" target="_blank" rel="noopener noreferrer">Fonte medica</a>` : ""}
       </div>
       <span class="team-ir-phase ${phase.className}">${phase.label}</span>
@@ -487,7 +508,14 @@ function aggiornaEmptyState() {
 }
 
 function renderRosterStats(stats, irRecord) {
-  const irText = irRecord ? (irRecord.status === "active" ? "Attiva" : "Usata") : "0/1";
+  const irText = !irRecord
+    ? "0/1"
+    : irRecord.status === "offered"
+      ? "Da attivare"
+      : irRecord.status === "active"
+        ? irRecord.compensatory_status === "used" ? "Attiva" : "In attesa"
+        : "Usata";
+  const irClass = !irRecord ? "" : isIrPending(irRecord) ? "has-ir ir-pending" : "has-ir";
   const stat = (number, label, extra = "") =>
     `<div class="rose-stat ${extra}"><strong>${number}</strong><small>${label}</small></div>`;
   return `<div class="team-roster-meta" aria-label="Statistiche della rosa">
@@ -497,7 +525,7 @@ function renderRosterStats(stats, irRecord) {
     ${stat(stats.u21, "U21")}
     ${stat(stats.rfa, "RFA")}
     ${stat(stats.protetti, "P6 protetti")}
-    ${stat(irText, "Injury Reserve", irRecord ? "has-ir" : "")}
+    ${stat(irText, "Injury Reserve", irClass)}
   </div>`;
 }
 
