@@ -79,3 +79,73 @@
 /* Cinque schede desktop; gli elementi hidden non devono essere forzati visibili. */
 @media(min-width:651px){.hall-of-fame-page .hof-tabs{grid-template-columns:repeat(5,minmax(0,1fr))}}
 .hof-alumni-carousel[hidden],.hof-alumni-empty[hidden],.hof-alumni-nav[hidden]{display:none!important}
+
+/* Alumni · palette Arena blu notte/oro, nessuna modifica al layout o ai dati. */
+.hall-of-fame-page .hof-alumni{
+  --alumni-gold:#ebc577;--alumni-light:#f1f6ff;color:#eff6ff;
+}
+.hall-of-fame-page .hof-alumni-hero{
+  background:radial-gradient(ellipse at 50% 0%,rgba(66,144,211,.19),transparent 68%),
+             linear-gradient(155deg,#11385c,#061b38 68%,#04142c)!important;
+  border:1px solid rgba(109,156,193,.34);
+}
+.hall-of-fame-page .hof-alumni-hero p{color:#bcd1e7}
+.hall-of-fame-page .hof-alumni-card{
+  border:1px solid rgba(105,161,205,.58)!important;
+  background:radial-gradient(ellipse at 50% 0%,rgba(77,151,209,.16),transparent 51%),
+             linear-gradient(150deg,#12395d 0%,#081f3e 54%,#04162f 100%)!important;
+  box-shadow:0 16px 38px rgba(0,0,0,.35),
+             inset 0 1px 0 rgba(187,223,255,.11)!important;
+}
+.hall-of-fame-page .hof-alumni-card:before{
+  background:repeating-linear-gradient(155deg,transparent 0 73px,rgba(173,217,255,.026) 75px 76px,transparent 78px 155px);
+}
+.hall-of-fame-page .hof-alumni-logo-shell{
+  background:radial-gradient(circle at 50% 38%,#1d4c75,#081b36 75%)!important;
+  border-color:rgba(239,197,109,.79)!important;
+  box-shadow:0 0 24px rgba(84,163,231,.19)!important;
+}
+.hall-of-fame-page .hof-alumni-team{color:#fff6e8}
+.hall-of-fame-page .hof-alumni-mark{
+  background:linear-gradient(120deg,#d1a149,#f6dc94,#c6923c)!important;
+  color:#1a2230!important;
+}
+.hall-of-fame-page .hof-alumni-stats{
+  border-color:rgba(112,167,204,.40)!important;
+  background:rgba(3,18,40,.63)!important;
+}
+.hall-of-fame-page .hof-alumni-stat+.hof-alumni-stat{
+  border-top-color:rgba(154,192,225,.18)!important;
+}
+.hall-of-fame-page .hof-alumni-stat span{color:#edf5ff}
+.hall-of-fame-page .hof-alumni-description{color:#c9ddf2}
+.hall-of-fame-page .hof-alumni-epitaph{
+  color:#f3d396;border-top-color:rgba(145,189,218,.26)!important;
+}
+.hall-of-fame-page .hof-alumni-arrow{
+  background:rgba(22,65,105,.70)!important;
+  border-color:rgba(112,164,206,.55)!important;
+  color:#ffdf9b!important;
+}
+.hall-of-fame-page .hof-alumni-dot{background:#557798}
+.hall-of-fame-page .hof-alumni-dot.is-active{background:#f5c974}
+.hall-of-fame-page .hof-alumni-empty{border-color:#6f93b278;color:#bcd1e7}
+.hall-of-fame-page .hof-alumni-notice{color:#bcd1e7}
+.hall-of-fame-page .hof-alumni-admin{
+  border-color:#4d7da5;background:linear-gradient(150deg,#0d3154,#061b35);
+}
+.hall-of-fame-page .hof-alumni-field{color:#f3d9a4}
+.hall-of-fame-page .hof-alumni-field input,
+.hall-of-fame-page .hof-alumni-field select,
+.hall-of-fame-page .hof-alumni-field textarea{
+  background:#061a34;border-color:#4d7393;
+}
+.hall-of-fame-page .hof-alumni-secondary,
+.hall-of-fame-page .hof-alumni-manage-row button{
+  border-color:#587d9e;background:#102d4b;color:#f8e4bc;
+}
+.hall-of-fame-page .hof-alumni-dialog{
+  background:linear-gradient(145deg,#143b5d,#061a34)!important;
+  border-color:#6a96b6!important;color:#edf6ff!important;
+}
+.hall-of-fame-page .hof-alumni-dialog h3{color:#f5d18c}
