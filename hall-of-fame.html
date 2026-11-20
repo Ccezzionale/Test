@@ -10,6 +10,7 @@
   <link rel="stylesheet" href="hall-of-fame.css">
   <link rel="stylesheet" href="hall-of-fame-alumni.css">
   <link rel="stylesheet" href="hall-of-fame-overview.css?v=20261111-museum1">
+  <link rel="stylesheet" href="hall-of-fame-museum-compact.css?v=20261120-museumcompact1">
 <meta name="lega-app-build" content="v20261119-arena-v33">
 <script defer src="./app-updates.js?bootstrap=v20261119-arena-v33" data-eroi-update="1"></script>
 </head>
@@ -113,6 +114,7 @@
     </section>
 
     <section class="hof-tab-panel is-active" id="tab-overview" role="tabpanel" aria-label="Panoramica Hall of Fame">
+      <div class="hof-museum-intro"><span>HALL OF FAME</span><h2>Le leggende della Lega</h2></div>
       <section class="overview-panel hof-podium-feature" aria-labelledby="hof-overview-podium-title">
         <div class="overview-heading">
           <div>
@@ -455,6 +457,8 @@
     </section>
 
     <section class="hof-tab-panel" id="tab-medagliere" role="tabpanel" hidden>
+      <div class="hof-medal-mobile-intro"><span>MEDAGLIERE STORICO</span><h2>Tutte le franchigie</h2><p>Ori, argenti, bronzi e podi: tutta la classifica in un colpo d’occhio.</p></div>
+      <div class="hof-medal-sort" role="group" aria-label="Ordina il medagliere"><span>Ordina per</span><button type="button" class="is-active" data-hof-medal-sort="ori" aria-pressed="true">🥇 Ori</button><button type="button" data-hof-medal-sort="totale" aria-pressed="false">🏆 Podi</button></div>
       <main class="hall-wrapper hof-medagliere-wrapper">
         <section class="podio-section hall-panel">
           <div class="section-title">
@@ -996,6 +1000,7 @@
 
   <script type="module" src="hall-of-fame-live.js?v=20261117-conditional-notices"></script>
   <script type="module" src="hall-of-fame-alumni.js?v=20261111-alumni12"></script>
+   <script src="hall-of-fame-medal-sort.js?v=20261120-museumcompact1"></script>
   <script src="mobile-nav.js?v=20261119-global33"></script>
   <script src="navbar.js?v=20261119-global33"></script>
 </body>
