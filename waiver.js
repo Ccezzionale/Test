@@ -671,6 +671,11 @@ function getCompensatoryPositionLabel(callOrPriority, tierValue = null) {
   return `${tier === "high" ? "P" : "C"}${priority}`;
 }
 
+function isInjuryCompensatoryCall(call) {
+  return Boolean(call?.injury_reserve_id) ||
+    String(call?.reason_type || "").toLowerCase() === "injury_reserve";
+}
+
 function isCompensatoryOrderEditable(calls = []) {
   if (isAdminViewingAsTeam() || calls.length < 2) return false;
   if (!calls.every(call => String(call.status || "pending") === "pending")) {
@@ -685,11 +690,15 @@ function buildCompensatoryOrderManager(tier, calls = []) {
   if (calls.length < 2) return null;
 
   const sortedCalls = calls.slice().sort(sortCompensatoryCalls);
-  const positions = sortedCalls
-    .map(call => Number(call.priority_order))
+  // Le IR vanno sempre dopo tutte le altre compensative dello stesso tier.
+  // Il manager può invertire solo posizioni del medesimo tipo.
+  const positionsForCall = call => sortedCalls
+    .filter(other => isInjuryCompensatoryCall(other) === isInjuryCompensatoryCall(call))
+    .map(other => Number(other.priority_order))
     .filter(Number.isFinite)
     .sort((a, b) => a - b);
-  const canEdit = isCompensatoryOrderEditable(sortedCalls);
+  const hasSwappablePositions = sortedCalls.some(call => positionsForCall(call).length >= 2);
+  const canEdit = isCompensatoryOrderEditable(sortedCalls) && hasSwappablePositions;
   const hasSubmittedCall = sortedCalls.some(
     call => String(call.status || "pending") !== "pending"
   );
@@ -701,7 +710,7 @@ function buildCompensatoryOrderManager(tier, calls = []) {
     <div class="my-compensatory-order-head">
       <div>
         <strong>Scegli come usare le tue priorità</strong>
-        <span>Assegna ogni diritto a una delle tue posizioni ${tier === "high" ? "prioritarie" : "compensative"}.</span>
+        <span>Assegna ogni diritto a una delle tue posizioni ${tier === "high" ? "prioritarie" : "compensative"}. Le IR rimangono dopo le altre compensative.</span>
       </div>
       <span class="my-compensatory-order-count">${sortedCalls.length} diritti</span>
     </div>
@@ -720,9 +729,9 @@ function buildCompensatoryOrderManager(tier, calls = []) {
               data-tier="${tier}"
               data-call-id="${call.id}"
               data-selected-priority="${call.priority_order}"
-              ${canEdit ? "" : "disabled"}
+              ${canEdit && positionsForCall(call).length > 1 ? "" : "disabled"}
             >
-              ${positions.map(priority => `
+              ${positionsForCall(call).map(priority => `
                 <option value="${priority}" ${Number(call.priority_order) === priority ? "selected" : ""}>
                   ${getCompensatoryPositionLabel(priority, tier)}
                 </option>
@@ -737,10 +746,12 @@ function buildCompensatoryOrderManager(tier, calls = []) {
       <small>
         ${
           canEdit
-            ? "Puoi cambiare soltanto l’ordine delle tue chiamate: le altre squadre non vengono spostate."
+            ? "Puoi cambiare l’ordine solo tra chiamate dello stesso tipo, senza spostare le altre squadre."
             : hasSubmittedCall
               ? "Ordine bloccato perché almeno una chiamata è già stata inviata."
-              : "Ordine non modificabile dopo la chiusura della finestra."
+              : !hasSwappablePositions
+                ? "Le Injury Reserve rimangono dopo le compensative ordinarie."
+                : "Ordine non modificabile dopo la chiusura della finestra."
         }
       </small>
       <button
