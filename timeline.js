@@ -324,7 +324,12 @@ async function loadSources() {
     finalizations,
     draftStates,
     draftPicks,
-    manualEvents
+    manualEvents,
+    totoRounds,
+    totoJackpot,
+    challengeRounds,
+    gazzettaEditions,
+    waiverWinners
   ] = await Promise.all([
     resultsPromise,
 
@@ -439,6 +444,46 @@ async function loadSources() {
         .eq("season", CONFIG.season)
         .eq("is_published", true)
         .order("occurred_at", { ascending: true })
+    ),
+
+    // TotoEroi: soltanto stato pubblico della giornata e jackpot ufficiale.
+    // NON leggiamo le schedine private degli allenatori.
+    safeRows("totoRounds", () =>
+      supabase.from("totoeroi_rounds")
+        .select("id,season,gw,status,closes_at,created_at,updated_at")
+        .eq("season", CONFIG.season)
+        .order("gw", { ascending: true })
+    ),
+
+    safeSingle("totoJackpot", () =>
+      supabase.rpc("totoeroi_jackpot_status", { p_season: CONFIG.season })
+    ),
+
+    // Challenge: le bozze del Commissioner non diventano notizie pubbliche.
+    safeRows("challengeRounds", () =>
+      supabase.from("pc_rounds")
+        .select("id,season,stage,gw,status,closes_at,published_at,finalized_at,updated_at")
+        .eq("season", CONFIG.season)
+        .order("gw", { ascending: true })
+    ),
+
+    // Solo edizioni effettivamente pubblicate della Gazzetta.
+    safeRows("gazzettaEditions", () =>
+      supabase.from("gazzetta_editions")
+        .select("id,gw,title,deck,hero_image_url,edition_date,updated_at,is_published")
+        .eq("is_published", true)
+        .order("gw", { ascending: false })
+        .limit(40)
+    ),
+
+    // Solo waiver vinti, mai richieste pending/submitted o chiamate private.
+    safeRows("waiverWinners", () =>
+      supabase.from("waiver_calls")
+        .select("id,week,phase,status,updated_at")
+        .eq("status", "won")
+        .gte("updated_at", "2026-07-01")
+        .order("updated_at", { ascending: false })
+        .limit(1000)
     )
   ]);
 
@@ -478,7 +523,12 @@ async function loadSources() {
     finalizations,
     draftStates,
     draftPicks,
-    manualEvents
+    manualEvents,
+    totoRounds,
+    totoJackpot,
+    challengeRounds,
+    gazzettaEditions,
+    waiverWinners
   };
 }
 
@@ -1213,6 +1263,207 @@ function buildFinalizationEvents(data) {
   });
 }
 
+
+/* =========================================================
+   NUOVE FONTI LIVE 2026/27
+   Cronaca sintetica: solo eventi pubblici e verificabili.
+   Nessun accesso a schedine Toto/Challenge private o waiver pendenti.
+   ========================================================= */
+function inCurrentSeason(date) {
+  const parsed = parseDateLike(date);
+  return Boolean(parsed &&
+    parsed >= new Date("2026-07-01T00:00:00") &&
+    parsed < new Date("2027-07-01T00:00:00"));
+}
+
+function buildTotoEroiEvents(data) {
+  const rounds = (data.totoRounds || [])
+    .filter(row => ["open", "homologated"].includes(String(row.status || "").toLowerCase()))
+    .sort((a,b) => Number(a.gw) - Number(b.gw));
+  if (!rounds.length) return [];
+
+  const events = [];
+  const homologated = rounds.filter(row => row.status === "homologated");
+  const first = homologated[0];
+  if (first) {
+    events.push(makeEvent({
+      id: "totoeroi-first-homologated",
+      chapter: "regular",
+      occurredAt: firstValidDate(first.updated_at, first.closes_at),
+      badge: "Toto Eroi",
+      extra: "La caccia all'8",
+      title: "Toto Eroi entra nella storia della stagione",
+      text: 'È arrivato il primo verdetto ufficiale del Toto Eroi: pronostici, risultati e punti diventano parte della corsa.',
+      image: "img/home/competizioni/toto-eroi.webp",
+      meta: ['GW ' + first.gw, 'Prima omologazione'],
+      href: "totoeroi.html",
+      source: "TOTO EROI",
+      major: true
+    }));
+  }
+
+  const latest = homologated[homologated.length - 1];
+  if (latest && Number(latest.gw) !== Number(first?.gw)) {
+    events.push(makeEvent({
+      id: "totoeroi-latest-result",
+      chapter: "regular",
+      occurredAt: firstValidDate(latest.updated_at, latest.closes_at),
+      badge: "Toto Eroi",
+      extra: "Risultati ufficiali",
+      title: 'Toto Eroi: omologata la giornata ' + latest.gw,
+      text: 'Un altro turno è stato omologato. I punteggi e la classifica generale della Caccia all’8 sono aggiornati.',
+      image: "img/home/competizioni/toto-eroi.webp",
+      meta: ['GW ' + latest.gw, homologated.length + ' giornate omologate'],
+      href: "totoeroi.html",
+      source: "TOTO EROI"
+    }));
+  }
+
+  const jackpot = data.totoJackpot;
+  const winGw = Number(jackpot?.last_win_gw || 0);
+  const winRound = homologated.find(row => Number(row.gw) === winGw);
+  if (winGw > 0 && winRound && Number(jackpot?.last_winner_count) > 0) {
+    const count = Number(jackpot.last_winner_count);
+    const cents = Number(jackpot.last_award_cents);
+    const award = Number.isFinite(cents) && cents > 0
+      ? (cents / 100).toLocaleString("it-IT", { style:"currency", currency:"EUR" })
+      : "";
+    events.push(makeEvent({
+      id: 'totoeroi-jackpot-' + winGw,
+      chapter: "regular",
+      occurredAt: firstValidDate(winRound.updated_at, winRound.closes_at),
+      badge: "Toto Eroi",
+      extra: "8 su 8",
+      title: count === 1 ? "L'8/8 è realtà!" : "Un 8/8 da dividere!",
+      text: count === 1
+        ? 'Nella giornata ' + winGw + ' una franchigia ha indovinato tutti e otto i pronostici.'
+        : 'Nella giornata ' + winGw + ' ben ' + count + ' franchigie hanno centrato tutti gli otto pronostici.',
+      image: "img/home/competizioni/toto-eroi.webp",
+      meta: ['GW ' + winGw, count + (count === 1 ? ' vincitore' : ' vincitori'), award],
+      href: "totoeroi.html",
+      major: true,
+      source: "TOTO EROI",
+      sortBump: 10
+    }));
+  }
+
+  const upcoming = rounds.find(row =>
+    row.status === "open" && parseDateLike(row.closes_at)?.getTime() > Date.now());
+  if (upcoming) {
+    events.push(makeEvent({
+      id: 'totoeroi-open-' + upcoming.gw,
+      chapter: "regular",
+      occurredAt: firstValidDate(upcoming.updated_at, upcoming.created_at),
+      badge: "Toto Eroi",
+      extra: "Schedine aperte",
+      title: 'La caccia all’8 continua: GW ' + upcoming.gw,
+      text: 'Pronostici aperti per la giornata ' + upcoming.gw + '. Solo le schedine inviate entro la scadenza saranno valide.',
+      image: "img/home/competizioni/toto-eroi.webp",
+      meta: ['GW ' + upcoming.gw, 'Pronostici aperti'],
+      href: "totoeroi.html",
+      source: "TOTO EROI"
+    }));
+  }
+
+  return events;
+}
+
+function buildChallengeEvents(data) {
+  const rounds = (data.challengeRounds || [])
+    .filter(row => ["open", "finalized"].includes(String(row.status || "").toLowerCase()))
+    .sort((a,b) => Number(a.gw) - Number(b.gw));
+  const labels = {
+    wildcard:"Wildcard", wild_card:"Wildcard", quarti:"Quarti",
+    quarterfinals:"Quarti", semifinali:"Semifinali", semifinals:"Semifinali",
+    finale:"Finale", final:"Finale"
+  };
+  return rounds.slice(-5).map(row => {
+    const done = row.status === "finalized";
+    const name = labels[String(row.stage || "").toLowerCase()] ||
+      String(row.stage || "fase Playoff").replace(/[_-]/g," ");
+    return makeEvent({
+      id: "challenge-" + row.id,
+      chapter: done ? "finale" : "playoff",
+      occurredAt: firstValidDate(
+        done ? row.finalized_at : row.published_at,
+        row.updated_at
+      ),
+      badge: "Playoffs Challenge",
+      extra: done ? "Risultati ufficiali" : "Pronostici aperti",
+      title: done
+        ? "Playoffs Challenge: " + name + " omologata"
+        : "Playoffs Challenge: " + name + " pubblicata",
+      text: done
+        ? "Il turno della Challenge è stato omologato. La classifica ora comprende anche questi risultati."
+        : "Le quote e le sfide ufficiali del turno sono pubblicate. La caccia ai pronostici continua.",
+      image: "img/home/competizioni/playoff.webp",
+      meta: ['GW ' + row.gw, name, done ? "Omologata" : "Pubblicata"],
+      href: "playoffs-challenge.html",
+      major: done,
+      source: "PLAYOFFS CHALLENGE"
+    });
+  });
+}
+
+function buildGazzettaEvents(data) {
+  const editions = (data.gazzettaEditions || [])
+    .filter(row => row.is_published === true &&
+      inCurrentSeason(firstValidDate(row.edition_date, row.updated_at)))
+    .sort((a,b) => Number(a.gw || 0) - Number(b.gw || 0));
+  // Le ultime edizioni, non tutta l'edicola: la Timeline resta un racconto.
+  return editions.slice(-3).map(row => makeEvent({
+    id: "gazzetta-gw-" + row.gw,
+    chapter: "regular",
+    occurredAt: firstValidDate(row.edition_date, row.updated_at),
+    badge: "La Gazzetta",
+    extra: "Nuova edizione",
+    title: row.title || "È uscita la Gazzetta · GW " + row.gw,
+    text: row.deck || "La nuova edizione racconta le imprese, le rivalità e i protagonisti della Lega.",
+    image: row.hero_image_url || "",
+    meta: ["GW " + row.gw, "Edizione pubblicata"],
+    href: "giornale.html",
+    source: "GAZZETTA"
+  }));
+}
+
+function buildWaiverEvents(data) {
+  const winners = (data.waiverWinners || [])
+    .filter(row => row.status === "won" && Number(row.week) > 0 &&
+      inCurrentSeason(row.updated_at));
+  const byWeek = new Map();
+  for (const row of winners) {
+    const key = String(row.phase || "conference") + "|" + row.week;
+    if (!byWeek.has(key)) byWeek.set(key, []);
+    byWeek.get(key).push(row);
+  }
+
+  return [...byWeek.entries()]
+    .sort((a,b) => {
+      const dateA = maxDate(a[1].map(r=>r.updated_at))?.getTime() || 0;
+      const dateB = maxDate(b[1].map(r=>r.updated_at))?.getTime() || 0;
+      return dateA-dateB;
+    })
+    .slice(-2)
+    .map(([key,rows]) => {
+      const [phase,week] = key.split("|");
+      const count = rows.length;
+      return makeEvent({
+        id: "waiver-" + phase + "-" + week,
+        chapter: "regular",
+        occurredAt: maxDate(rows.map(r=>r.updated_at)),
+        badge: "Waiver",
+        extra: "Esiti definitivi",
+        title: "Waiver: " + count + " chiamat" + (count === 1 ? "a" : "e") + " a segno",
+        text: "Nella settimana " + week + " sono state assegnate " + count +
+          (count === 1 ? " chiamata" : " chiamate") + ". Il mercato dei free agent muove ancora le rose.",
+        image: "img/home/bottom-nav/waiver.webp",
+        meta: ["Settimana " + week, phase === "conference" ? "Conference" : phase],
+        href: "waiver.html",
+        source: "WAIVER"
+      });
+    });
+}
+
 function buildManualEvents(data) {
   return (data.manualEvents || []).map(row =>
     makeEvent({
@@ -1264,6 +1515,21 @@ function addLockedFutureEvents(events) {
       title: "All-Star Game",
       text: "Le stelle della Lega devono ancora essere scelte.",
       image: "img/maglie/evidenzaallstar.webp",
+      locked: true,
+      source: "FUTURO"
+    }));
+  }
+
+  if (!hasSource("PLAYOFFS CHALLENGE")) {
+    events.push(makeEvent({
+      id: "locked-playoffs-challenge",
+      chapter: "playoff",
+      dateLabel: "IN ARRIVO",
+      badge: "Playoffs Challenge",
+      extra: "In preparazione",
+      title: "La Playoffs Challenge",
+      text: "La Challenge entrerà nella Timeline quando il Commissioner pubblicherà il primo turno ufficiale.",
+      image: "img/home/competizioni/playoff.webp",
       locked: true,
       source: "FUTURO"
     }));
@@ -1345,6 +1611,10 @@ function buildAllEvents(data) {
     ...buildDraftEvents(data),
     ...buildLeagueEvents(data),
     ...buildTradeEvents(data),
+    ...buildWaiverEvents(data),
+    ...buildTotoEroiEvents(data),
+    ...buildGazzettaEvents(data),
+    ...buildChallengeEvents(data),
     ...buildCrashOutEvents(data),
     ...buildHighlanderEvents(data),
     ...buildAllStarEvents(data),
@@ -1561,7 +1831,7 @@ function updateLiveState() {
     return;
   }
 
-  const usableSources = 16 - errorCount;
+  const usableSources = 21 - errorCount;
   els.liveState.textContent = `${Math.max(1, usableSources)} fonti attive`;
   live?.classList.add("is-partial");
   live?.classList.remove("is-live");
