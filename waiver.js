@@ -263,12 +263,17 @@ function beginWaiverPlayerSelection(orderId) {
 
   const savedCall = getCallByOrderId(orderId);
 
-  if (
-    !orderRow ||
-    !isSlotOpen(orderRow.slot) ||
-    isFinalizedWaiverCall(savedCall)
-  ) {
-    setMessage("Questa chiamata non è disponibile in questo momento.", true);
+  if (!orderRow) {
+    setMessage("Chiamata non trovata: ricarica il waiver.", true);
+    return;
+  }
+  if (!isSlotOpen(orderRow.slot)) {
+    setMessage(getRegularSlotStatusMessage(orderRow.slot), true);
+    syncRegularWaiverCallAvailability();
+    return;
+  }
+  if (isFinalizedWaiverCall(savedCall)) {
+    setMessage("Questa chiamata è già stata elaborata.", true);
     return;
   }
 
@@ -1133,6 +1138,21 @@ function isSlotOpen(slot) {
   if (!openAt || !closeAt) return true;
 
   return now >= new Date(openAt) && now < new Date(closeAt);
+}
+
+// Usato sia al clic sia durante l'aggiornamento della UI per evitare pulsanti
+// ancora attivi dopo la chiusura effettiva dello slot.
+function getRegularSlotStatusMessage(slot) {
+  const normalizedSlot = normalizeSlot(slot);
+  const { openAt, closeAt } = getSlotTimes(slot);
+  const now = Date.now();
+  if (closeAt && now >= new Date(closeAt).getTime()) {
+    return `Slot ${normalizedSlot} chiuso alle ${formatWaiverDateTime(closeAt)}.`;
+  }
+  if (openAt && now < new Date(openAt).getTime()) {
+    return `Slot ${normalizedSlot} non ancora aperto: apre ${formatWaiverDateTime(openAt)}.`;
+  }
+  return `Slot ${normalizedSlot} non disponibile in questo momento.`;
 }
 
 function isSlotPublic(slot) {
@@ -2942,6 +2962,42 @@ slotContent.appendChild(card);
       resetDynamicCall(button.dataset.orderId);
     });
   });
+  syncRegularWaiverCallAvailability();
+}
+
+// Aggiorna lo stato delle chiamate normali senza ricostruire le card:
+// un render periodico cancellerebbe i giocatori scelti ma non ancora salvati.
+function syncRegularWaiverCallAvailability() {
+  if (!myWaiverCallsEl || !currentSettings) return;
+  myWaiverCallsEl.querySelectorAll(".dynamic-call-card[data-order-id]").forEach(card => {
+    const row = myOrderRows.find(item => String(item.id) === String(card.dataset.orderId));
+    if (!row) return;
+    const savedCall = getCallByOrderId(row.id);
+    const isOpen = isSlotOpen(row.slot);
+    const editable = isOpen && !isAdminViewingAsTeam() && !isFinalizedWaiverCall(savedCall);
+    card.querySelectorAll(
+      ".dynamic-player-in, .dynamic-player-out, .select-dynamic-call-btn, .save-dynamic-call-btn, .reset-dynamic-call-btn"
+    ).forEach(control => { control.disabled = !editable; });
+    const messageEl = card.querySelector(".call-message");
+    if (!messageEl || isAdminViewingAsTeam() || isFinalizedWaiverCall(savedCall)) return;
+    if (!isOpen) {
+      const timingMessage = getRegularSlotStatusMessage(row.slot);
+      messageEl.textContent = savedCall
+        ? `Chiamata salvata · ${timingMessage}`
+        : timingMessage;
+    } else if (!savedCall) {
+      messageEl.textContent = "Nessuna chiamata salvata.";
+    }
+  });
+
+  if (activeWaiverOrderId) {
+    const selectedOrder = myOrderRows.find(item => String(item.id) === String(activeWaiverOrderId));
+    if (selectedOrder && !isSlotOpen(selectedOrder.slot)) {
+      const message = getRegularSlotStatusMessage(selectedOrder.slot);
+      clearPlayerSelectionState();
+      setMessage(message, true);
+    }
+  }
 }
 
 let compensatoryRefreshBusy = false;
@@ -2968,6 +3024,7 @@ async function refreshCompensatorySlots(force = false) {
         playerId: input?.dataset.playerId || "", out: card.querySelector(".compensatory-player-out")?.value || "" };
     });
     currentSettings = settings;
+    syncRegularWaiverCallAvailability();
     const snapshot = JSON.stringify([currentTeam.id, data, settings,
       ["high", "normal"].map(tier => [isCompensatoryOpen(tier, 1), isCompensatoryOpen(tier, 2)])]);
     if (!force && snapshot === compensatorySnapshot) return;
@@ -6805,6 +6862,7 @@ document.getElementById("calculateCompensatorySlot2Btn")?.addEventListener("clic
 });
 document.getElementById("refreshCompensatorySlotsBtn")?.addEventListener("click", () => refreshCompensatorySlots(true));
 setInterval(() => refreshCompensatorySlots(), 30000);
+setInterval(syncRegularWaiverCallAvailability, 5000);
 setupFreeAgentsSorting();
 setupMobileWaiverTabs();
 setupAdminWorkspace();
