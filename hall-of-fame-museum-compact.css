@@ -309,10 +309,10 @@
   }
   body.hall-of-fame-page #tab-medagliere #medagliere tbody tr{
     display:grid!important;grid-template-columns:32px repeat(3,minmax(0,1fr)) 48px!important;
-    grid-template-rows:minmax(39px,auto) 29px!important;
+    grid-template-rows:minmax(38px,auto) 26px!important;
     align-items:center!important;column-gap:5px!important;row-gap:3px!important;
-    position:relative;overflow:hidden;min-height:91px!important;
-    padding:9px 10px!important;border:1px solid rgba(96,143,180,.38)!important;
+    position:relative;overflow:hidden;min-height:82px!important;
+    padding:7px 9px!important;border:1px solid rgba(96,143,180,.38)!important;
     border-radius:15px!important;
     background:linear-gradient(115deg,#123957,#0b2746 50%,#071b36 100%)!important;
     box-shadow:inset 0 1px 0 #ffffff13,0 5px 13px #0004!important;
@@ -374,7 +374,7 @@
   body.hall-of-fame-page #tab-medagliere #medagliere td:nth-child(4),
   body.hall-of-fame-page #tab-medagliere #medagliere td:nth-child(5){
     display:flex!important;align-items:center!important;justify-content:center!important;
-    gap:5px!important;grid-row:2;height:28px!important;min-width:0!important;
+    gap:5px!important;grid-row:2;height:26px!important;min-width:0!important;
     border-radius:8px!important;border:1px solid rgba(177,205,228,.13)!important;
     background:#03152bc9!important;font-size:.79rem!important;
     font-weight:850!important;color:#ebf4ff!important;
