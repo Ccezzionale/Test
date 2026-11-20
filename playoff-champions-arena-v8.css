@@ -12,7 +12,19 @@ body.rl-duel-page .rl-duel-shell{
   background:radial-gradient(ellipse 110% 35% at 50% 27%,#123460 0%,#061b3b 52%,#020b1b 100%)!important;
 }
 body.rl-duel-page .rl-duel-shell a{text-decoration:none}
-body.rl-duel-page .rl-return{position:absolute!important;width:1px!important;height:1px!important;overflow:hidden!important;clip-path:inset(100%)!important}
+/* Il ritorno all'overview deve restare visibile anche nella veste Champions Arena. */
+body.rl-duel-page .rl-return{
+  position:relative!important;display:inline-flex!important;align-items:center!important;gap:7px!important;
+  width:auto!important;height:auto!important;overflow:visible!important;clip-path:none!important;
+  min-height:34px;margin:8px 0 7px!important;padding:6px 13px!important;
+  border-radius:24px!important;border:1px solid #e6bb70!important;
+  background:linear-gradient(180deg,#10385f,#061b39)!important;
+  color:#ffe6b0!important;-webkit-text-fill-color:#ffe6b0!important;
+  font:800 12px/1.1 'Barlow Condensed',Arial,sans-serif!important;
+  letter-spacing:.045em!important;box-shadow:0 3px 9px #0007,inset 0 1px 0 #ffd78625!important;
+}
+body.rl-duel-page .rl-return span{font-size:21px!important;line-height:10px!important;color:#ffd47e!important;-webkit-text-fill-color:#ffd47e!important}
+body.rl-duel-page .rl-return:focus-visible{outline:2px solid #ffe9af!important;outline-offset:3px!important}
 body.rl-duel-page .rl-event-head{
   padding:8px 0 0!important;margin:0!important;text-align:center;position:relative;overflow:visible;
   background:none!important;border:0!important;
