@@ -4,6 +4,57 @@
 const SW_VERSION = "v20261119-arena-v33";
 const APP_CACHE_PREFIX = "lega-eroi-";
 
+// Solo immagini pubbliche dell'app: nessun dato di gioco, token o richiesta Supabase.
+// 60 immagini da massimo 512 KiB: budget teorico <= 30 MiB per questo cache.
+const IMAGE_CACHE_NAME = APP_CACHE_PREFIX + "images-" + SW_VERSION;
+const IMAGE_CACHE_MAX_ENTRIES = 60;
+const IMAGE_CACHE_MAX_BYTES = 512 * 1024;
+
+function isPublicAppImage(request, url) {
+  if (request.destination !== "image") return false;
+  const appPath = new URL(self.registration.scope).pathname;
+  if (!url.pathname.startsWith(appPath)) return false;
+  const path = url.pathname.slice(appPath.length);
+  return /^(?:img|icons)\//.test(path) ||
+    /^(?:icon-(?:192|512)|apple-touch-icon)\.png$/.test(path);
+}
+
+// Stale-while-revalidate: usa subito l'immagine salvata e aggiorna la copia
+// in background. Le immagini sostituite sul server si vedono dal prossimo accesso.
+async function savePublicImage(request, response) {
+  if (!response.ok || response.type !== "basic") return;
+  if (!/^image\//i.test(response.headers.get("content-type") || "")) return;
+  const copy = response.clone();
+  const bytes = (await copy.clone().blob()).size;
+  if (!bytes || bytes > IMAGE_CACHE_MAX_BYTES) return;
+
+  const cache = await caches.open(IMAGE_CACHE_NAME);
+  await cache.put(request, copy);
+  const keys = await cache.keys();
+  for (const key of keys.slice(0, Math.max(0, keys.length - IMAGE_CACHE_MAX_ENTRIES))) {
+    await cache.delete(key);
+  }
+}
+
+async function loadPublicImage(event, request) {
+  const cache = await caches.open(IMAGE_CACHE_NAME);
+  const saved = await cache.match(request);
+  const fresh = fetch(request).then(response => {
+    if (response.ok) {
+      event.waitUntil(savePublicImage(request, response).catch(err => {
+        console.warn("Lega: immagine non inserita in cache", err);
+      }));
+    }
+    return response;
+  });
+
+  if (saved) {
+    event.waitUntil(fresh.catch(() => {}));
+    return saved;
+  }
+  return fresh;
+}
+
 self.addEventListener("install", (event) => {
   event.waitUntil(self.skipWaiting());
 });
@@ -33,6 +84,11 @@ self.addEventListener("fetch", (event) => {
   if (request.method !== "GET") return;
   const url = new URL(request.url);
   if (url.origin !== self.location.origin) return;
+  // Cache limitata alle immagini statiche pubbliche dell'app.
+  if (isPublicAppImage(request, url)) {
+    event.respondWith(loadPublicImage(event, request));
+    return;
+  }
   // Non toccare le fetch verso Supabase, servizi di pagamento o domini esterni.
   // Le risorse essenziali non devono mai provenire da una cache obsoleta.
   const essential = request.mode === "navigate" ||
