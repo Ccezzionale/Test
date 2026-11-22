@@ -22,13 +22,21 @@ function isPublicAppImage(request, url) {
 // Stale-while-revalidate: usa subito l'immagine salvata e aggiorna la copia
 // in background. Le immagini sostituite sul server si vedono dal prossimo accesso.
 async function savePublicImage(request, response) {
+  // Un file rimosso o diventato troppo grande non deve restare vecchio in cache.
+  if (response.status === 404 || response.status === 410) {
+    const cache = await caches.open(IMAGE_CACHE_NAME);
+    await cache.delete(request);
+    return;
+  }
   if (!response.ok || response.type !== "basic") return;
   if (!/^image\//i.test(response.headers.get("content-type") || "")) return;
   const copy = response.clone();
   const bytes = (await copy.clone().blob()).size;
-  if (!bytes || bytes > IMAGE_CACHE_MAX_BYTES) return;
-
   const cache = await caches.open(IMAGE_CACHE_NAME);
+  if (!bytes || bytes > IMAGE_CACHE_MAX_BYTES) {
+    await cache.delete(request);
+    return;
+  }
   await cache.put(request, copy);
   const keys = await cache.keys();
   for (const key of keys.slice(0, Math.max(0, keys.length - IMAGE_CACHE_MAX_ENTRIES))) {
@@ -40,11 +48,9 @@ async function loadPublicImage(event, request) {
   const cache = await caches.open(IMAGE_CACHE_NAME);
   const saved = await cache.match(request);
   const fresh = fetch(request).then(response => {
-    if (response.ok) {
-      event.waitUntil(savePublicImage(request, response).catch(err => {
-        console.warn("Lega: immagine non inserita in cache", err);
-      }));
-    }
+    event.waitUntil(savePublicImage(request, response).catch(err => {
+      console.warn("Lega: immagine non inserita in cache", err);
+    }));
     return response;
   });
 
@@ -86,7 +92,9 @@ self.addEventListener("fetch", (event) => {
   if (url.origin !== self.location.origin) return;
   // Cache limitata alle immagini statiche pubbliche dell'app.
   if (isPublicAppImage(request, url)) {
-    event.respondWith(loadPublicImage(event, request));
+    const responsePromise = loadPublicImage(event, request);
+    event.respondWith(responsePromise);
+    event.waitUntil(responsePromise.catch(() => {}));
     return;
   }
   // Non toccare le fetch verso Supabase, servizi di pagamento o domini esterni.
