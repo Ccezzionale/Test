@@ -122,6 +122,10 @@
         if (bySource.has(key)) duplicates.add(key);
         else bySource.set(key,player);
       }
+      const clubsInFeed=new Set(payload.players.map(p=>norm(p?.team?.name)).filter(Boolean));
+      const missingClubs=[...new Set(Object.values(CLUBS))]
+        .filter(club=>!clubsInFeed.has(norm(club)));
+      const coverage=20-missingClubs.length;
       const votes={};
       let matched=0,withoutVote=0;
       for (const [key,originalKeys] of index) {
@@ -142,17 +146,20 @@
       DATA.voti_certi=votes;
       button.textContent='Ripristina Highlightly';
       const heading=snapshot.querySelector('span b');
-      if (heading) heading.textContent='Fonte Fantazone (test).';
+      if (heading) heading.textContent=missingClubs.length?'Fantazone · DATI INCOMPLETI':'Fonte Fantazone (test).';
       const sub=snapshot.querySelector('span:not(.update-time)');
       if (sub) sub.innerHTML='<b>Fonte Fantazone (test).</b> Voti provvisori Fantacalcio.it, fantavoti stimati e non ufficiali.';
       const stamp=snapshot.querySelector('.update-time');
       if (stamp) stamp.textContent='G'+safeDay;
       render();
-      info.textContent=Object.keys(votes).length+' voti utilizzabili su '+matched+
+      info.textContent=(missingClubs.length
+        ? 'ATTENZIONE: ARCHIVIO PARZIALE, NON LIVE AFFIDABILE. Copertura '+coverage+'/20 squadre; mancano '+missingClubs.join(', ')+'. '
+        : 'Copertura 20/20 squadre (non garantisce freschezza live). ')+
+        Object.keys(votes).length+' voti utilizzabili su '+matched+
         ' calciatori riconosciuti ('+withoutVote+' senza voto). '+
-        (changed?'Dati letti':'Nessuna differenza rilevata')+' alle '+
+        (changed?'File letto':'Contenuto invariato')+' alle '+
         new Date().toLocaleTimeString('it-IT',{hour:'2-digit',minute:'2-digit',timeZone:'Europe/Brussels'})+
-        '. Ora di lettura, NON di aggiornamento della fonte. File GitHub potenzialmente vecchio; bonus e sostituzioni non ufficiali.';
+        ". Questa è l’ora del controllo, NON dell’ultimo aggiornamento Fantazone. Bonus e sostituzioni non ufficiali.";
     } catch (error) {
       info.textContent='Test non riuscito: '+(error.message||'errore sconosciuto')+
         '. '+(wasEnabled?'Rimangono i precedenti dati Fantazone.':'Restano i dati Highlightly.');
