@@ -20,7 +20,7 @@
   const url = 'https://raw.githubusercontent.com/KeyserDSoze/Fantazone/main/data/serie-a/votes/live/15/' + safeDay + '.json';
   const originalVotes = {...DATA.voti_certi};
   const originalCaption = snapshot.querySelector('span b')?.textContent || 'Snapshot Highlightly.';
-  const originalLine = snapshot.querySelector('span:not(.update-time)')?.textContent || '';
+  const originalLine = snapshot.querySelector('span:not(.update-time)')?.innerHTML || '';
   const originalStamp = snapshot.querySelector('.update-time')?.textContent || '';
   const norm = value => String(value ?? '').trim().normalize('NFD')
     .replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]/g,'');
@@ -92,7 +92,7 @@
     const heading = snapshot.querySelector('span b');
     if (heading) heading.textContent=originalCaption;
     const sub = snapshot.querySelector('span:not(.update-time)');
-    if (sub) sub.textContent=originalLine;
+    if (sub) sub.innerHTML=originalLine;
     const stamp = snapshot.querySelector('.update-time');
     if (stamp) stamp.textContent=originalStamp;
     button.textContent='Prova voti Fantazone';
@@ -144,7 +144,7 @@
       const heading=snapshot.querySelector('span b');
       if (heading) heading.textContent='Fonte Fantazone (test).';
       const sub=snapshot.querySelector('span:not(.update-time)');
-      if (sub) sub.textContent='Fonte Fantazone/Fantacalcio.it: voti provvisori e fantavoti stimati, NON ufficiali.';
+      if (sub) sub.innerHTML='<b>Fonte Fantazone (test).</b> Voti provvisori Fantacalcio.it, fantavoti stimati e non ufficiali.';
       const stamp=snapshot.querySelector('.update-time');
       if (stamp) stamp.textContent='G'+safeDay;
       render();
