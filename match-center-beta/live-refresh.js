@@ -92,16 +92,20 @@
           DATA.voti_certi[key] = vote;
           updated++;
         }
-        newest = date;
-        if (updated) render();
+        if (updated) {
+          newest = date;
+          render();
+        }
       }
       const age = Date.now() - date;
       const isStale = age > 20 * 60 * 1000;
       const stamp = shell.querySelector('.update-time');
       if (stamp) stamp.textContent = label;
+      const summary = old ? 'Nessun nuovo dato.' : updated === 0 ? 'Nessuna valutazione valida nel feed.' :
+        updated === 1 ? '1 valutazione aggiornata.' : updated + ' valutazioni aggiornate.';
       state.textContent = isStale
-        ? 'ARCHIVIO ' + label + ' · Fonte non aggiornata in tempo reale. ' + (old ? 'Nessun nuovo dato.' : updated + ' valutazioni verificate.')
-        : 'SNAPSHOT ' + label + ' · ' + (old ? 'Nessun nuovo dato.' : updated + ' valutazioni aggiornate.');
+        ? 'ARCHIVIO ' + label + ' · Fonte non aggiornata in tempo reale. ' + summary
+        : 'SNAPSHOT ' + label + ' · ' + summary;
     } catch (err) {
       state.textContent = 'Restano visibili i dati salvati. ' + (err.message || 'Aggiornamenti non disponibili.');
     } finally {
