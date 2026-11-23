@@ -1,0 +1,70 @@
+{
+  "schema": 1,
+  "season": "2026/27",
+  "gw": 12,
+  "source": "highlightly-sandbox",
+  "as_of": "2026-11-23T08:49:04.316Z",
+  "label": "Snapshot sperimentale: dati già presenti nella beta, non live",
+  "votes": {
+    "McTominay|NAP": {
+      "base": 8,
+      "goal": 1,
+      "assists": 0,
+      "yellow": 0,
+      "red": 0,
+      "penalties_missed": 0,
+      "bonus": 3,
+      "fantavote": 11,
+      "source": "Highlightly - Serie A G12, import manuale 22/11/2026",
+      "rating_highlightly_originale": 8.21
+    },
+    "Dimarco|INT": {
+      "base": 7.5,
+      "goal": 0,
+      "assists": 1,
+      "yellow": 0,
+      "red": 0,
+      "penalties_missed": 0,
+      "bonus": 1,
+      "fantavote": 8.5,
+      "source": "Highlightly - Serie A G12, import manuale 23/11/2026",
+      "rating_highlightly_originale": 7.66
+    },
+    "Bastoni|INT": {
+      "base": 6,
+      "goal": 0,
+      "assists": 0,
+      "yellow": 0,
+      "red": 0,
+      "penalties_missed": 0,
+      "bonus": 0,
+      "fantavote": 6,
+      "source": "Highlightly - Serie A G12, import manuale 23/11/2026",
+      "rating_highlightly_originale": 6.23
+    },
+    "Barella|INT": {
+      "base": 6,
+      "goal": 0,
+      "assists": 0,
+      "yellow": 0,
+      "red": 0,
+      "penalties_missed": 0,
+      "bonus": 0,
+      "fantavote": 6,
+      "source": "Highlightly - Serie A G12, import manuale 23/11/2026",
+      "rating_highlightly_originale": 6.13
+    },
+    "Akanji|INT": {
+      "base": 6,
+      "goal": 0,
+      "assists": 0,
+      "yellow": 0,
+      "red": 0,
+      "penalties_missed": 0,
+      "bonus": 0,
+      "fantavote": 6,
+      "source": "Highlightly - Serie A G12, import manuale 23/11/2026",
+      "rating_highlightly_originale": 5.9
+    }
+  }
+}
