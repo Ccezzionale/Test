@@ -64,7 +64,7 @@ button:focus-visible{outline:2px solid var(--cyan);outline-offset:3px}
 <header class="shell-top"><div class="brand"><a class="crest beta-home-link" href="../index.html" aria-label="Torna alla Home della Lega degli Eroi">⚔</a><div class="brand-label"><strong>LEGA DEGLI EROI</strong><small>THE ARENA / 2026–27</small></div></div><span class="top-status">G12<br>ANTEPRIMA</span></header>
 <main class="content" id="main">
 <section class="hero-heading"><p class="eyebrow"><span class="mini-spark">✦</span>CAMPIONATO · 12ª GIORNATA</p><h1 class="page-title">MATCH<br><span class="accent">CENTER</span></h1><span class="heading-float"><b>LIVE</b><small>VOTI DI PROVA</small></span><p class="subtitle">Tutte le sfide, un solo campo. Cambia incontro con uno swipe.</p></section>
-<div class="snapshot-strip" role="note"><i class="snapshot-dot" aria-hidden="true"></i><span><b>Snapshot Highlightly.</b> Voti reali importati, proiezioni non ufficiali.</span><span class="update-time">23 NOV</span></div>
+<div class="snapshot-strip" role="note"><i class="snapshot-dot" aria-hidden="true"></i><span><b>Snapshot Highlightly.</b> Rating statistici importati, proiezioni non ufficiali.</span><span class="update-time">23 NOV</span></div>
 <div class="beta-links" aria-label="Navigazione beta e app">
  <a class="beta-link-primary" href="../index.html" title="Apri la Home Arena">⌂ &nbsp; Arena</a>
  <a href="../match.html" title="Apri il Match Center classico">⚔ &nbsp; Match Center ufficiale</a>
@@ -129,6 +129,7 @@ let startX=null,startY=null;$('match-hero').addEventListener('touchstart',e=>{if
 render();
 const initial=$('fixture-strip').querySelector('[data-match="'+selected+'"]');if(initial)initial.scrollIntoView({block:'nearest',inline:'center'});
 </script>
+<script defer src="./live-refresh.js?v=20261123-1"></script>
 
 <script>
 (() => {
