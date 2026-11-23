@@ -31,7 +31,8 @@
       for (const player of side.players) permitted.add(player.name + '|' + player.club);
     }
   }
-  let newest = 0;
+  const baseline = Date.parse(shell.dataset.snapshotAsOf || '');
+  let newest = Number.isFinite(baseline) ? baseline : 0;
   let checking = false;
 
   function validate(feed) {
