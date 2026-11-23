@@ -1,0 +1,26 @@
+{
+  "name": "Lega degli Eroi | Match Center LIVE Beta",
+  "short_name": "Eroi LIVE Beta",
+  "description": "Anteprima separata del Match Center della Lega degli Eroi, giornata 12.",
+  "id": "/Test/match-center-beta/",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#091a2b",
+  "theme_color": "#081929",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "../icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "../icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}
