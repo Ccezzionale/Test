@@ -148,7 +148,7 @@
       const heading=snapshot.querySelector('span b');
       if (heading) heading.textContent=missingClubs.length?'Fantazone · DATI INCOMPLETI':'Fonte Fantazone (test).';
       const sub=snapshot.querySelector('span:not(.update-time)');
-      if (sub) sub.innerHTML='<b>Fonte Fantazone (test).</b> Voti provvisori Fantacalcio.it, fantavoti stimati e non ufficiali.';
+      if (sub) sub.innerHTML='<b>'+(missingClubs.length?'Fantazone · DATI INCOMPLETI':'Fonte Fantazone (test)')+'.</b> Voti provvisori Fantacalcio.it, fantavoti stimati e non ufficiali.';
       const stamp=snapshot.querySelector('.update-time');
       if (stamp) stamp.textContent='G'+safeDay;
       render();
