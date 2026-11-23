@@ -68,7 +68,7 @@
   }
 
   async function check(silent = false) {
-    if (checking || document.visibilityState === 'hidden') return;
+    if (checking || document.visibilityState === 'hidden' || DATA.__fantazonePreviewActive) return;
     checking = true;
     button.disabled = true;
     if (!silent) state.textContent = 'Controllo del file di prova…';
