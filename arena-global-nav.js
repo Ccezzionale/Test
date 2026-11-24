@@ -4,6 +4,7 @@
  */
 (function () {
   "use strict";
+  if (window.matchMedia("(min-width: 901px)").matches) return;
   if (window.__LEGA_GLOBAL_ARENA_NAV_INIT__) return;
   window.__LEGA_GLOBAL_ARENA_NAV_INIT__ = true;
 
@@ -83,6 +84,7 @@
   }
 
   function init() {
+    if (window.matchMedia("(min-width: 901px)").matches) return;
     if (document.body.classList.contains("arena-reboot")) return;
     if (document.body.classList.contains("arena-global-v33")) return;
 
