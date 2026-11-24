@@ -57,7 +57,7 @@ const labels={
   unsupported:'Browser non supportato', 'opted-out':'Disattivate volontariamente'
 };
 const validStates=new Set(Object.keys(labels));
-let started=false, running=false, lastRun=0, lastReport='', lastReportTime=0, adminMounted=false, lastState='';
+let started=false, running=false, pendingForce=false, lastRun=0, lastReport='', lastReportTime=0, adminMounted=false, lastState='', lastPermission='';
 const stamp = date => date ? new Date(date).toLocaleString('it-IT',{dateStyle:'short',timeStyle:'short'}) : 'Mai';
 function el(tag,text,style) {
   const n=document.createElement(tag); if(text!==undefined)n.textContent=text;
@@ -78,13 +78,17 @@ function renderBanner(state,api) {
   copy.append(el('strong',state==='check-error'?'🔔 Notifiche da controllare':'🔔 Notifiche push non attive','display:block;font-size:14px'));
   const note=state==='permission-denied'?'Riabilita le notifiche nelle impostazioni del telefono o del browser, poi torna nell’app.':state==='check-error'?'Non siamo riusciti a verificare la registrazione. Riprova.':'Potresti perdere aggiornamenti su waiver, mercato e scambi.';
   copy.append(el('small',note,'display:block;margin-top:4px;line-height:1.4;color:#42536a'));
-  const action=el('button',state==='permission-denied'||state==='check-error'?'Ricontrolla':'Riattiva notifiche','border:0;border-radius:9px;padding:10px 13px;font:600 13px inherit;font-family:inherit;background:#192c48;color:white;cursor:pointer');
+  const action=el('button',state==='permission-denied'||state==='check-error'?'Ricontrolla':'Riattiva notifiche','border:0;border-radius:9px;padding:10px 13px;font-size:13px;font-weight:600;font-family:inherit;background:#192c48;color:white;cursor:pointer');
   action.type='button';
   action.onclick=async()=>{action.disabled=true;try{if(!['permission-denied','check-error'].includes(state))await api.enable();await run(true);}catch(err){alert(err.message||'Controllo non riuscito');}finally{action.disabled=false;}};
   banner.replaceChildren(copy,action);
 }
 async function run(force=false) {
-  if(running||document.hidden||(!force&&Date.now()-lastRun<60000))return;
+  if(document.hidden)return;
+  if(running){pendingForce ||= force;return;}
+  const permission=window.Notification?.permission || 'unsupported';
+  if(!force&&permission===lastPermission&&Date.now()-lastRun<60000)return;
+  lastPermission=permission;
   const api=window.LegaPush;
   if(!api?.check)return;
   running=true;lastRun=Date.now();
@@ -104,7 +108,10 @@ async function run(force=false) {
     }
     // Repaint existing bell/footer; do not change notification delivery.
     if (force) await api.refreshButton?.();
-  } finally {running=false;}
+  } finally {
+    running=false;
+    if(pendingForce){pendingForce=false;setTimeout(()=>void run(true).catch(console.warn),0);}
+  }
 }
 export function startPushHealth() {
   if(started)return;
