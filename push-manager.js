@@ -1,4 +1,5 @@
 import { supabase, supabaseUrl, supabaseKey } from './supabase.js';
+import { optedOut, setPushOptOut, queuePushCheck, pushRegistration } from './push-health.js';
 
 const VAPID_PUBLIC_KEY = 'BLVVpSFZr0IUiuc4B-7eYQjFMnYvWlvHgxaaSyAo5LOvOD3wrypSJRDuVKMKucCpgMD8Sz9X7nTwFrYtCHsJWcc';
 
@@ -49,17 +50,21 @@ async function regenerateSubscription(registration, oldSubscription) {
   return subscription;
 }
 
-async function check({ autoRepair = false } = {}) {
+function check(options = {}) {
+  return queuePushCheck(() => checkInternal(options));
+}
+async function checkInternal({ autoRepair = false } = {}) {
   if (!('serviceWorker' in navigator) || !('PushManager' in window) || !('Notification' in window)) {
     return { status: 'unsupported', subscription: null };
   }
 
   const { data: { user }, error } = await supabase.auth.getUser();
   if (error || !user) return { status: 'logged-out', subscription: null };
+  if (optedOut(user.id)) return { status: 'opted-out', subscription: null };
   if (Notification.permission === 'denied') return { status: 'permission-denied', subscription: null };
   if (Notification.permission !== 'granted') return { status: 'permission-default', subscription: null };
 
-  const registration = await navigator.serviceWorker.ready;
+  const registration = await pushRegistration();
   const subscription = await registration.pushManager.getSubscription();
   if (!subscription) return { status: 'local-missing', subscription: null };
 
@@ -101,7 +106,7 @@ async function enable() {
     return;
   }
 
-  const registration = await navigator.serviceWorker.ready;
+  const registration = await pushRegistration();
   let subscription = await registration.pushManager.getSubscription();
 
   if (!subscription) {
@@ -117,12 +122,16 @@ async function enable() {
     }
   }
 
+  setPushOptOut(user.id, false);
   alert('Notifiche attivate con successo.');
 }
 
 async function disable() {
   if (!('serviceWorker' in navigator)) return;
-  const registration = await navigator.serviceWorker.ready;
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return;
+  setPushOptOut(user.id, true);
+  const registration = await pushRegistration();
   const subscription = await registration.pushManager.getSubscription();
   if (!subscription) return;
 
