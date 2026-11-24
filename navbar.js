@@ -451,15 +451,18 @@ document.addEventListener("DOMContentLoaded", function () {
    Only the official Home retains its own exact V33 prototype header. */
 (function () {
   if (window.__LEGA_ARENA_SHARED_NAV_BOOTSTRAP__) return;
+  // Desktop retains the original horizontal navigation and its dropdowns.
+  // The Arena side drawer and 3D bottom dock belong exclusively to mobile.
+  if (window.matchMedia("(min-width: 901px)").matches) return;
   if (document.body?.classList.contains("arena-reboot")) return;
   window.__LEGA_ARENA_SHARED_NAV_BOOTSTRAP__ = true;
 
   const style = document.createElement("link");
   style.rel = "stylesheet";
-  style.href = "arena-global-nav.css?v=20261119-global-v33";
+  style.href = "arena-global-nav.css?v=20261124-responsive-nav";
   document.head.appendChild(style);
 
   const script = document.createElement("script");
-  script.src = "arena-global-nav.js?v=20261119-global-v33";
+  script.src = "arena-global-nav.js?v=20261124-responsive-nav";
   document.head.appendChild(script);
 })();
