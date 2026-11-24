@@ -3,10 +3,12 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <!-- Preserve the original desktop navbar; global V33 bottom/menu is mobile-only on this page. -->
+  <script>window.__LEGA_ARENA_SHARED_NAV_BOOTSTRAP__ = true;</script>
   <!-- Desktop view: keep the approved Arena mobile home on phones/narrow screens. -->
   <script>
   (function () {
-    var desktop = window.matchMedia("(min-width: 901px) and (pointer: fine)");
+    var desktop = window.matchMedia("(min-width: 901px)");
     function goMobile() {
       if (desktop.matches) return;
       var url = new URL("index.html", location.href);
