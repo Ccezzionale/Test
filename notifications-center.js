@@ -1,8 +1,9 @@
 import { supabase } from './supabase.js';
+import { startPushHealth, mountPushHealthAdmin } from './push-health.js';
 
 const NOTIFICATION_TABLE = 'app_notifications';
 const REFRESH_MS = 45000;
-const CENTER_VERSION = '20261010-center7-expand';
+const CENTER_VERSION = '20261124-push-health1';
 
 let currentUser = null;
 let currentFilter = 'all';
@@ -271,6 +272,7 @@ async function setupAdminComposer() {
     entry.classList.add('is-visible');
     adminComposerReady = true;
     fillAdminTargetSelect();
+    mountPushHealthAdmin(document.getElementById('notification-admin-composer'));
   } catch (error) {
     console.warn('Composer admin non disponibile:', error);
   }
@@ -884,6 +886,11 @@ function pushStateCopy(status) {
         note: 'Accedi per gestire le notifiche push.',
         action: ''
       };
+    case 'opted-out':
+      return {
+        className: 'is-off', title: 'Push disattivate',
+        note: 'Hai disattivato le push su questo dispositivo.', action: 'Attiva push'
+      };
     case 'permission-default':
     case 'local-missing':
     default:
@@ -1129,6 +1136,11 @@ function bindUi() {
 async function init() {
   injectCenter4Styles();
   bindUi();
+  window.addEventListener('lega-push-health-state', () => {
+    void refreshTriggerPushState();
+    if (panelOpen) void refreshPushCard();
+  });
+  void ensurePushApi().then(api => { if (api?.check) startPushHealth(); }).catch(console.warn);
 
   try {
     await Promise.all([
