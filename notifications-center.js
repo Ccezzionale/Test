@@ -3,7 +3,7 @@ import { startPushHealth, mountPushHealthAdmin } from './push-health.js';
 
 const NOTIFICATION_TABLE = 'app_notifications';
 const REFRESH_MS = 45000;
-const CENTER_VERSION = '20261124-push-health1';
+const CENTER_VERSION = '20261124-push-health2';
 
 let currentUser = null;
 let currentFilter = 'all';
@@ -718,11 +718,26 @@ async function deleteNotificationForCurrentUser(id, item) {
 
     if (error) throw error;
     if (!data?.some(record => String(record.id) === String(id))) {
-      throw new Error('Notifica non aggiornata. Verifica i permessi UPDATE su app_notifications.');
+      // Another tab/gesture may already have dismissed the same notification.
+      // Verify ownership and persisted state instead of treating zero rows as an error.
+      const { data: existing, error: checkError } = await supabase
+        .from(NOTIFICATION_TABLE)
+        .select('id, dismissed_at')
+        .eq('id', id)
+        .eq('user_id', user.id)
+        .maybeSingle();
+      if (checkError) throw checkError;
+      if (!existing?.dismissed_at) {
+        throw new Error('Impossibile confermare l’eliminazione. Riprova.');
+      }
     }
 
     item.remove();
+    // A background refresh may have replaced the original DOM element.
     const list = document.getElementById('notification-center-list');
+    for (const candidate of list?.querySelectorAll('.notification-swipe-item') || []) {
+      if (String(candidate.querySelector('.notification-row')?.dataset.notificationId) === String(id)) candidate.remove();
+    }
     const empty = document.getElementById('notification-center-empty');
     const remaining = list?.querySelectorAll('.notification-swipe-item').length || 0;
     if (!remaining && empty) {
@@ -1158,14 +1173,15 @@ async function init() {
   }, REFRESH_MS);
 }
 
-window.addEventListener('beforeunload', () => {
-  if (refreshTimer) window.clearInterval(refreshTimer);
-});
-
-window.__LEGA_NOTIFICATION_CENTER_VERSION = CENTER_VERSION;
-
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', init, { once: true });
-} else {
-  init();
+// Module URLs can have different cache-busting queries. Bind only once per page.
+if (!window.__LEGA_NOTIFICATION_CENTER_VERSION) {
+  window.__LEGA_NOTIFICATION_CENTER_VERSION = CENTER_VERSION;
+  window.addEventListener('beforeunload', () => {
+    if (refreshTimer) window.clearInterval(refreshTimer);
+  });
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init, { once: true });
+  } else {
+    init();
+  }
 }
