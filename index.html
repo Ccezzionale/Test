@@ -9,7 +9,8 @@
 (function () {
   var desktop = window.matchMedia("(min-width: 901px)");
   function goDesktop() {
-    if (!desktop.matches) return;
+    var preferred = new URL(location.href).searchParams.get("view");
+    if (preferred === "mobile" || (preferred !== "desktop" && !desktop.matches)) return;
     var url = new URL("home-desktop.html", location.href);
     url.search = location.search;
     url.hash = location.hash;
