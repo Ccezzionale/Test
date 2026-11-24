@@ -3,7 +3,7 @@ import { startPushHealth, mountPushHealthAdmin } from './push-health.js';
 
 const NOTIFICATION_TABLE = 'app_notifications';
 const REFRESH_MS = 45000;
-const CENTER_VERSION = '20261124-push-health2';
+const CENTER_VERSION = '20261124-push-health3';
 
 let currentUser = null;
 let currentFilter = 'all';
@@ -123,7 +123,12 @@ function injectCenter4Styles() {
     .notification-swipe-item .notification-expand-toggle:focus-visible{outline:2px solid #0864b6;outline-offset:2px;border-radius:5px;}
     @media(max-width:900px){.notification-swipe-item .notification-expand-toggle{margin-left:69px;}}
     .notification-admin-entry{padding:0 18px 12px;display:none}
-    .notification-admin-entry.is-visible{display:block}
+    .notification-admin-entry.is-visible{display:grid;grid-template-columns:1fr 1fr;gap:8px;flex:0 0 auto}
+    .notification-admin-entry .notification-admin-open{min-width:0;white-space:normal;line-height:1.25;touch-action:manipulation}
+    .notification-admin-entry .notification-admin-open[aria-expanded="true"]{background:#0b5da8;color:white}
+    #notification-admin-composer[hidden],#notification-health-composer[hidden]{display:none!important}
+    #notification-admin-composer.is-open,#notification-health-composer.is-open{display:block!important;flex:1 1 auto;min-height:0;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
+    .notification-center-panel.is-admin-composer-open .notification-center-content{display:none!important}
     .notification-admin-open{width:100%;border:1px solid rgba(22,104,191,.24);border-radius:12px;padding:10px 12px;background:#eef6ff;color:#0b4f91;font-weight:900;cursor:pointer}
     .notification-admin-composer{margin:0 18px 14px;padding:14px;border:1px solid #d8e5f2;border-radius:14px;background:#f8fbff;display:none}
     .notification-admin-composer.is-open{display:block}
@@ -268,11 +273,16 @@ async function setupAdminComposer() {
     const profile = await resolveProfile();
     if (profile?.role !== 'admin') return;
 
-    await loadAdminTeams();
+    const health = document.getElementById('notification-health-composer');
+    mountPushHealthAdmin(health);
     entry.classList.add('is-visible');
     adminComposerReady = true;
-    fillAdminTargetSelect();
-    mountPushHealthAdmin(document.getElementById('notification-admin-composer'));
+    try {
+      await loadAdminTeams();
+      fillAdminTargetSelect();
+    } catch (error) {
+      console.warn('Destinatari comunicazione non disponibili:', error);
+    }
   } catch (error) {
     console.warn('Composer admin non disponibile:', error);
   }
@@ -522,6 +532,33 @@ function ensureUi() {
     `);
   }
 
+  // The existing communication panel and Push Health are independent views.
+  const adminEntry = document.getElementById('notification-admin-entry');
+  const composer = document.getElementById('notification-admin-composer');
+  if (adminEntry && composer) {
+    const communicationButton = adminEntry.querySelector('#notification-admin-open');
+    communicationButton?.setAttribute('aria-controls', 'notification-admin-composer');
+    communicationButton?.setAttribute('aria-expanded', 'false');
+    if (!document.getElementById('notification-health-open')) {
+      const healthButton = document.createElement('button');
+      healthButton.type = 'button';
+      healthButton.id = 'notification-health-open';
+      healthButton.className = 'notification-admin-open';
+      healthButton.textContent = '🔔 Push Health';
+      healthButton.setAttribute('aria-controls', 'notification-health-composer');
+      healthButton.setAttribute('aria-expanded', 'false');
+      adminEntry.append(healthButton);
+    }
+    if (!document.getElementById('notification-health-composer')) {
+      const health = document.createElement('section');
+      health.id = 'notification-health-composer';
+      health.className = 'notification-admin-composer';
+      health.setAttribute('aria-label', 'Push Health');
+      health.hidden = true;
+      composer.insertAdjacentElement('afterend', health);
+    }
+    composer.hidden = true;
+  }
   return trigger;
 }
 
@@ -1020,13 +1057,53 @@ function closePanel() {
   backdrop.classList.remove('is-open');
   backdrop.setAttribute('aria-hidden', 'true');
 
-  const panel = document.getElementById('notification-center-panel');
-  const composer = document.getElementById('notification-admin-composer');
-  panel?.classList.remove('is-admin-composer-open');
-  composer?.classList.remove('is-open');
+  setAdminView(null);
   trigger?.setAttribute('aria-expanded', 'false');
   document.body.classList.remove('notification-center-open');
   trigger?.focus();
+}
+
+function setAdminView(view) {
+  const panel = document.getElementById('notification-center-panel');
+  if (!panel) return;
+  const views = [
+    ['communication', 'notification-admin-composer', 'notification-admin-open'],
+    ['health', 'notification-health-composer', 'notification-health-open']
+  ];
+  for (const [name, sectionId, buttonId] of views) {
+    const section = document.getElementById(sectionId);
+    const active = name === view && Boolean(section);
+    if (section) {
+      section.hidden = !active;
+      section.classList.toggle('is-open', active);
+      if (active) {
+        section.scrollTop = 0;
+        if (name === 'health') {
+          const details = section.querySelector('details');
+          if (details) details.open = true;
+        }
+      }
+    }
+    document.getElementById(buttonId)?.setAttribute('aria-expanded', String(active));
+  }
+  panel.classList.toggle('is-admin-composer-open', Boolean(view));
+  panel.dataset.adminView = view || '';
+}
+
+function bindAdminNavigation() {
+  const panel = document.getElementById('notification-center-panel');
+  if (!panel || panel.dataset.legaAdminNavigationBound === '1') return;
+  panel.dataset.legaAdminNavigationBound = '1';
+  // Capture delegation keeps the controls reliable if their markup is rebuilt,
+  // and prevents older bubble-phase handlers from toggling the same panel twice.
+  panel.addEventListener('click', (event) => {
+    const button = event.target.closest?.('#notification-admin-open, #notification-health-open');
+    if (!button || !panel.contains(button) || !adminComposerReady) return;
+    event.preventDefault();
+    event.stopImmediatePropagation();
+    const view = button.id === 'notification-health-open' ? 'health' : 'communication';
+    setAdminView(panel.dataset.adminView === view ? null : view);
+  }, { capture: true });
 }
 
 function bindUi() {
@@ -1050,21 +1127,7 @@ function bindUi() {
   document.getElementById('notification-mark-all')?.addEventListener('click', markAllRead);
   document.getElementById('notification-push-action')?.addEventListener('click', handlePushAction);
 
-  document.getElementById('notification-admin-open')?.addEventListener('click', () => {
-    const composer = document.getElementById('notification-admin-composer');
-    const panel = document.getElementById('notification-center-panel');
-    if (!composer || !panel) return;
-
-    const willOpen = !composer.classList.contains('is-open');
-    composer.classList.toggle('is-open', willOpen);
-    panel.classList.toggle('is-admin-composer-open', willOpen);
-
-    if (willOpen) {
-      requestAnimationFrame(() => {
-        composer.scrollTop = 0;
-      });
-    }
-  });
+  bindAdminNavigation();
 
   document.getElementById('notification-admin-scope')?.addEventListener('change', fillAdminTargetSelect);
   document.getElementById('notification-admin-send')?.addEventListener('click', sendAdminCommunication);
