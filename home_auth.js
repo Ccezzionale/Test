@@ -1,4 +1,5 @@
 import { supabase, supabaseUrl, supabaseKey } from './supabase.js';
+import { optedOut, setPushOptOut, queuePushCheck, pushRegistration } from './push-health.js';
 
 const VAPID_PUBLIC_KEY = 'BLVVpSFZr0IUiuc4B-7eYQjFMnYvWlvHgxaaSyAo5LOvOD3wrypSJRDuVKMKucCpgMD8Sz9X7nTwFrYtCHsJWcc';
 
@@ -145,7 +146,10 @@ async function rigeneraPushSubscription(registration, oldSubscription) {
  * viene rigenerata automaticamente. Non viene invece creata una subscription
  * dal nulla: così una disattivazione volontaria dell'utente resta rispettata.
  */
-async function controllaStatoNotifiche({ autoRepair = false } = {}) {
+function controllaStatoNotifiche(options = {}) {
+  return queuePushCheck(() => controllaStatoNotificheInterno(options));
+}
+async function controllaStatoNotificheInterno({ autoRepair = false } = {}) {
   if (!('serviceWorker' in navigator) || !('PushManager' in window) || !('Notification' in window)) {
     return { status: 'unsupported', subscription: null };
   }
@@ -156,6 +160,8 @@ async function controllaStatoNotifiche({ autoRepair = false } = {}) {
     return { status: 'logged-out', subscription: null };
   }
 
+  if (optedOut(user.id)) return { status: 'opted-out', subscription: null };
+
   if (Notification.permission === 'denied') {
     return { status: 'permission-denied', subscription: null };
   }
@@ -164,7 +170,7 @@ async function controllaStatoNotifiche({ autoRepair = false } = {}) {
     return { status: 'permission-default', subscription: null };
   }
 
-  const registration = await navigator.serviceWorker.ready;
+  const registration = await pushRegistration();
   const subscription = await registration.pushManager.getSubscription();
 
   if (!subscription) {
@@ -249,7 +255,7 @@ async function attivaNotifichePush() {
       return;
     }
 
-    const registration = await navigator.serviceWorker.ready;
+    const registration = await pushRegistration();
     let subscription = await registration.pushManager.getSubscription();
 
     if (!subscription) {
@@ -273,6 +279,7 @@ async function attivaNotifichePush() {
       }
     }
 
+    setPushOptOut(user.id, false);
     alert('Notifiche attivate con successo.');
     await aggiornaBottoneNotifiche();
   } catch (err) {
@@ -284,7 +291,10 @@ async function attivaNotifichePush() {
 
 async function disattivaNotifichePush() {
   try {
-    const registration = await navigator.serviceWorker.ready;
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+    setPushOptOut(user.id, true);
+    const registration = await pushRegistration();
     const subscription = await registration.pushManager.getSubscription();
 
     if (!subscription) {
@@ -474,6 +484,7 @@ function applicaStatoBottoneNotifiche(notifBtn, state) {
       });
       break;
 
+    case 'opted-out':
     case 'permission-default':
     case 'local-missing':
     case 'logged-out':
