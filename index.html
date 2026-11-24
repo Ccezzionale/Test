@@ -7,7 +7,7 @@
      phones retain the approved Arena V36 layout. -->
 <script>
 (function () {
-  var desktop = window.matchMedia("(min-width: 901px) and (pointer: fine)");
+  var desktop = window.matchMedia("(min-width: 901px)");
   function goDesktop() {
     if (!desktop.matches) return;
     var url = new URL("home-desktop.html", location.href);
