@@ -57,7 +57,7 @@ const labels={
   unsupported:'Browser non supportato', 'opted-out':'Disattivate volontariamente'
 };
 const validStates=new Set(Object.keys(labels));
-let started=false, running=false, lastRun=0, lastReport='', lastReportTime=0, adminMounted=false;
+let started=false, running=false, lastRun=0, lastReport='', lastReportTime=0, adminMounted=false, lastState='';
 const stamp = date => date ? new Date(date).toLocaleString('it-IT',{dateStyle:'short',timeStyle:'short'}) : 'Mai';
 function el(tag,text,style) {
   const n=document.createElement(tag); if(text!==undefined)n.textContent=text;
@@ -92,6 +92,7 @@ async function run(force=false) {
     let state;
     try { state=(await api.check({autoRepair:true})).status; } catch { state='check-error'; }
     renderBanner(state,api);
+    if (state!==lastState) { lastState=state; window.dispatchEvent(new CustomEvent('lega-push-health-state',{detail:state})); }
     if (validStates.has(state)) {
       const {data:{user}}=await supabase.auth.getUser();
       if(user){
