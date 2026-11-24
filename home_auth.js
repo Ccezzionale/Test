@@ -236,14 +236,14 @@ async function attivaNotifichePush() {
       return;
     }
 
-    const { data: { user } } = await supabase.auth.getUser();
+    const permission = Notification.permission === 'granted'
+      ? 'granted' : await Notification.requestPermission();
 
+    const { data: { user } } = await supabase.auth.getUser();
     if (!user) {
       alert('Utente non loggato.');
       return;
     }
-
-    const permission = await Notification.requestPermission();
 
     if (permission !== 'granted') {
       alert(
