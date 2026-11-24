@@ -3,6 +3,22 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<!-- Home responsive router: desktop restores the original wide dashboard,
+     phones retain the approved Arena V36 layout. -->
+<script>
+(function () {
+  var desktop = window.matchMedia("(min-width: 901px) and (pointer: fine)");
+  function goDesktop() {
+    if (!desktop.matches) return;
+    var url = new URL("home-desktop.html", location.href);
+    url.search = location.search;
+    url.hash = location.hash;
+    location.replace(url.href);
+  }
+  goDesktop();
+  if (desktop.addEventListener) desktop.addEventListener("change", goDesktop);
+})();
+</script>
 <meta name="theme-color" content="#061326">
 <meta name="lega-app-build" content="v20261119-arena-v33">
 <meta name="apple-mobile-web-app-capable" content="yes">
