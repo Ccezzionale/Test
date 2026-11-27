@@ -199,7 +199,7 @@ async function broadcast(
             await supabaseAdmin
               .from('push_subscriptions')
               .update({
-                is_active: false,
+                is_active: false, disabled_reason: `provider_${statusCode}`, disabled_source: 'scheduled-league-notifications',
                 updated_at: new Date().toISOString(),
               })
               .eq('id', sub.id)

@@ -146,7 +146,12 @@ export function startPushHealth() {
       void run(true).catch(console.warn);
   });
   window.addEventListener('storage', event => {
-    if (event.key?.startsWith('lega.push.optout.v1.')) void run(true).catch(console.warn);
+    if (event.key?.startsWith('lega.push.optout.v1.')) {
+      const id=event.key.slice('lega.push.optout.v1.'.length);
+      memory.set(id,event.newValue==='1');
+      if(event.newValue==='1')consentMemory.delete(id);
+      void run(true).catch(console.warn);
+    }
   });
   window.addEventListener('lega-push-changed',()=>{setTimeout(()=>void run(true).catch(console.warn),250);});
   void run(true).catch(console.warn);
@@ -176,6 +181,13 @@ export function mountPushHealthAdmin(composer) {
         if(!a.devices.length)card.append(el('small','Nessun controllo del dispositivo ancora registrato','display:block;font-size:11px;color:#64748b;margin-top:4px;'));
         for(const d of a.devices.slice(0,8))card.append(el('small',d.device_kind+' · '+(labels[d.status]||d.status)+' · '+stamp(d.checked_at),'display:block;margin-top:3px;font-size:11px;'));
         if(a.devices.length>8)card.append(el('small','Altri '+(a.devices.length-8)+' controlli storici','font-size:11px;'));
+        const last=a.last_disabled;
+        if(last){
+          const reasons={provider_404:'Provider: registrazione non trovata (404)',provider_410:'Provider: registrazione non più valida (410)',user_disabled:'Disattivazione richiesta dall’utente',unknown:'Causa non classificata'};
+          card.append(el('small','Ultima disattivazione '+stamp(last.disabled_at)+' · '+(reasons[last.disabled_reason]||'Causa non classificata')+' · '+(last.disabled_source||'Origine sconosciuta'),'display:block;margin-top:5px;font-size:11px;color:#92400e'));
+        }else if(a.inactive){
+          card.append(el('small','Registrazioni inattive precedenti alla diagnostica: causa non disponibile.','display:block;margin-top:5px;font-size:11px;color:#64748b'));
+        }
         const t=a.last_test;
         if(t)card.append(el('small','Ultimo test '+stamp(t.requested_at)+': '+(t.completed_at?t.accepted+' accettate / '+t.failed+' fallite ('+t.expired+' scadute)':'esito non ancora registrato'),'display:block;margin-top:5px;font-size:11px;'));
         const test=el('button','Invia push di prova','margin-top:7px;padding:6px 10px;border:0;border-radius:7px;background:#192c48;color:white;font:inherit;font-size:12px;cursor:pointer;');

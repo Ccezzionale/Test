@@ -51,17 +51,20 @@ Deno.serve(async req => {
       const results = await Promise.all([
         db.from('profiles').select('id,email,team_id,role').not('team_id','is',null),
         db.from('teams').select('id,name'),
-        db.from('push_subscriptions').select('user_id,is_active,updated_at'),
+        db.from('push_subscriptions').select('user_id,is_active,updated_at,disabled_reason,disabled_source,disabled_at'),
         db.from('push_health_devices').select('user_id,device_id,device_kind,status,checked_at').order('checked_at',{ascending:false}),
-        db.from('push_health_tests').select('target_user_id,requested_at,completed_at,accepted,failed,expired').order('requested_at',{ascending:false}).limit(500)
+        db.from('push_health_tests').select('target_user_id,requested_at,completed_at,accepted,failed,expired').order('requested_at',{ascending:false}).limit(500),
+        db.from('push_subscription_events').select('user_id,occurred_at,reason,source').order('occurred_at',{ascending:false}).limit(1000)
       ])
       if (results.some(r=>r.error)) throw results.find(r=>r.error)?.error
-      const [profiles,teams,subs,devices,tests] = results.map(r=>r.data||[])
+      const [profiles,teams,subs,devices,tests,events] = results.map(r=>r.data||[])
       const accounts = profiles.map((p:any)=>{
         const own = subs.filter((s:any)=>s.user_id===p.id)
+        const lastEvent = events.find((e:any)=>e.user_id===p.id)
         return {id:p.id,email:p.email,role:p.role,team:teams.find((t:any)=>t.id===p.team_id)?.name||'Senza squadra',
           active:own.filter((s:any)=>s.is_active===true).length,
           inactive:own.filter((s:any)=>s.is_active===false).length,
+          last_disabled:lastEvent?{disabled_reason:lastEvent.reason,disabled_source:lastEvent.source,disabled_at:lastEvent.occurred_at}:null,
           devices:devices.filter((d:any)=>d.user_id===p.id).map(({device_kind,status,checked_at}:any)=>({device_kind,status,checked_at})),
           last_test:tests.find((t:any)=>t.target_user_id===p.id)||null}
       }).sort((a:any,b:any)=>a.team.localeCompare(b.team)||a.email.localeCompare(b.email))
@@ -88,7 +91,7 @@ Deno.serve(async req => {
       } catch(e:any) {
         if (e?.statusCode===404 || e?.statusCode===410) {
           // Same invalidation rule as the existing senders; no reactivation.
-          await db.from('push_subscriptions').update({is_active:false,updated_at:new Date().toISOString()}).eq('id',sub.id).eq('user_id',target).eq('endpoint',sub.endpoint)
+          await db.from('push_subscriptions').update({is_active:false, disabled_reason: `provider_${e.statusCode}`, disabled_source: 'push-health',updated_at:new Date().toISOString()}).eq('id',sub.id).eq('user_id',target).eq('endpoint',sub.endpoint)
           return 'expired'
         }
         return 'failed'

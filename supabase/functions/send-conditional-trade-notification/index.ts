@@ -146,7 +146,7 @@ Deno.serve(async (req:Request)=>{
         }catch(err:any){
           totals.pushFailed++;
           if(err?.statusCode===404||err?.statusCode===410)
-            await db.from('push_subscriptions').update({is_active:false,updated_at:new Date().toISOString()}).eq('id',sub.id);
+            await db.from('push_subscriptions').update({is_active:false, disabled_reason: `provider_${err.statusCode}`, disabled_source: 'send-conditional-trade-notification',updated_at:new Date().toISOString()}).eq('id',sub.id);
         }
       }
     }
