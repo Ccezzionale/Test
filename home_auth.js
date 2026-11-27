@@ -1,5 +1,5 @@
 import { supabase, supabaseUrl, supabaseKey } from './supabase.js';
-import { optedOut, setPushOptOut, queuePushCheck, pushRegistration } from './push-health.js';
+import { optedOut, setPushOptOut, queuePushCheck, pushRegistration, rememberPushConsent, hadPushConsent } from './push-health.js';
 
 const VAPID_PUBLIC_KEY = 'BLVVpSFZr0IUiuc4B-7eYQjFMnYvWlvHgxaaSyAo5LOvOD3wrypSJRDuVKMKucCpgMD8Sz9X7nTwFrYtCHsJWcc';
 
@@ -143,8 +143,8 @@ async function rigeneraPushSubscription(registration, oldSubscription) {
  * - permission-default / permission-denied
  *
  * Se autoRepair=true, una subscription locale marcata inattiva sul server
- * viene rigenerata automaticamente. Non viene invece creata una subscription
- * dal nulla: così una disattivazione volontaria dell'utente resta rispettata.
+ * viene rigenerata automaticamente. Una subscription mancante viene ripristinata
+ * solo se questo account aveva già attivato le push sul dispositivo.
  */
 function controllaStatoNotifiche(options = {}) {
   return queuePushCheck(() => controllaStatoNotificheInterno(options));
@@ -174,9 +174,25 @@ async function controllaStatoNotificheInterno({ autoRepair = false } = {}) {
   const subscription = await registration.pushManager.getSubscription();
 
   if (!subscription) {
+    // Restore only a previously enabled account on this browser, never request permission here.
+    if (autoRepair && hadPushConsent(user.id) && Notification.permission === 'granted') {
+      try {
+        const recovered = await creaPushSubscription(registration);
+        if (optedOut(user.id)) {
+          await recovered.unsubscribe();
+          return { status: 'opted-out', subscription: null };
+        }
+        await salvaPushSubscription(recovered);
+        rememberPushConsent(user.id);
+        return { status: 'active', subscription: recovered, repaired: true, repairType: 'local-restored' };
+      } catch (repairError) {
+        console.warn('Ripristino registrazione push assente non riuscito:', repairError);
+      }
+    }
     return { status: 'local-missing', subscription: null };
   }
 
+  rememberPushConsent(user.id);
   try {
     const serverStatus = await leggiStatoPushSubscription(subscription.endpoint);
 

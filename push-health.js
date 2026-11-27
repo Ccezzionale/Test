@@ -2,6 +2,18 @@ import { supabase } from './supabase.js';
 
 const key = id => 'lega.push.optout.v1.' + id;
 const memory = new Map();
+const consentKey = id => 'lega.push.consent.v1.' + id;
+const consentMemory = new Set();
+export function rememberPushConsent(id) {
+  if (!id || optedOut(id)) return;
+  consentMemory.add(id);
+  try { localStorage.setItem(consentKey(id), '1'); } catch {}
+}
+export function hadPushConsent(id) {
+  if (!id || optedOut(id)) return false;
+  try { return localStorage.getItem(consentKey(id)) === '1' || consentMemory.has(id); }
+  catch { return consentMemory.has(id); }
+}
 export function optedOut(id) {
   try { return localStorage.getItem(key(id)) === '1' || memory.get(id) === true; }
   catch { return memory.get(id) === true; }
@@ -10,6 +22,12 @@ export function setPushOptOut(id, off) {
   if (!id) return;
   memory.set(id, off);
   try { if (off) localStorage.setItem(key(id),'1'); else localStorage.removeItem(key(id)); } catch {}
+  if (off) {
+    consentMemory.delete(id);
+    try { localStorage.removeItem(consentKey(id)); } catch {}
+  } else {
+    rememberPushConsent(id);
+  }
   window.dispatchEvent(new Event('lega-push-changed'));
 }
 // Two notification UIs can ask for a check simultaneously. Serialize checks.
@@ -121,6 +139,15 @@ export function startPushHealth() {
   window.addEventListener('focus',onReturn);
   window.addEventListener('pageshow',onReturn);
   window.addEventListener('online',onReturn);
+  // Recover while the app remains open, not only after navigating back to it.
+  setInterval(onReturn, 120000);
+  navigator.serviceWorker?.addEventListener('message', event => {
+    if (event.data?.type === 'LEGA_PUSH_SUBSCRIPTION_CHANGED' && !document.hidden)
+      void run(true).catch(console.warn);
+  });
+  window.addEventListener('storage', event => {
+    if (event.key?.startsWith('lega.push.optout.v1.')) void run(true).catch(console.warn);
+  });
   window.addEventListener('lega-push-changed',()=>{setTimeout(()=>void run(true).catch(console.warn),250);});
   void run(true).catch(console.warn);
 }

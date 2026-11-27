@@ -1,5 +1,5 @@
 import { supabase, supabaseUrl, supabaseKey } from './supabase.js';
-import { optedOut, setPushOptOut, queuePushCheck, pushRegistration } from './push-health.js';
+import { optedOut, setPushOptOut, queuePushCheck, pushRegistration, rememberPushConsent, hadPushConsent } from './push-health.js';
 
 const VAPID_PUBLIC_KEY = 'BLVVpSFZr0IUiuc4B-7eYQjFMnYvWlvHgxaaSyAo5LOvOD3wrypSJRDuVKMKucCpgMD8Sz9X7nTwFrYtCHsJWcc';
 
@@ -66,8 +66,26 @@ async function checkInternal({ autoRepair = false } = {}) {
 
   const registration = await pushRegistration();
   const subscription = await registration.pushManager.getSubscription();
-  if (!subscription) return { status: 'local-missing', subscription: null };
+  if (!subscription) {
+    // Restore only a previously enabled account on this browser, never request permission here.
+    if (autoRepair && hadPushConsent(user.id) && Notification.permission === 'granted') {
+      try {
+        const recovered = await createSubscription(registration);
+        if (optedOut(user.id)) {
+          await recovered.unsubscribe();
+          return { status: 'opted-out', subscription: null };
+        }
+        await callApi({ action: 'save', subscription: recovered });
+        rememberPushConsent(user.id);
+        return { status: 'active', subscription: recovered, repaired: true, repairType: 'local-restored' };
+      } catch (repairError) {
+        console.warn('Ripristino registrazione push assente non riuscito:', repairError);
+      }
+    }
+    return { status: 'local-missing', subscription: null };
+  }
 
+  rememberPushConsent(user.id);
   try {
     const serverStatus = await callApi({ action: 'status', endpoint: subscription.endpoint });
     if (!serverStatus?.found) {

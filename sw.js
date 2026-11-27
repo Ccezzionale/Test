@@ -117,6 +117,15 @@ self.addEventListener("fetch", (event) => {
   })());
 });
 
+// Ask an authenticated foreground page to reconcile changed subscriptions.
+// No auth token or account information is stored in the service worker.
+self.addEventListener('pushsubscriptionchange', event => {
+  event.waitUntil((async () => {
+    const pages = await self.clients.matchAll({ type: 'window', includeUncontrolled: true });
+    for (const page of pages) page.postMessage({ type: 'LEGA_PUSH_SUBSCRIPTION_CHANGED' });
+  })());
+});
+
 // Notifiche push: volutamente identiche a quelle già usate dalla Lega.
 self.addEventListener("push", (event) => {
   let data = {};
