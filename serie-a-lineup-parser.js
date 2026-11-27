@@ -53,7 +53,7 @@ export function parseLineups(raw){
       return {name,formation,starters,reserves};
     });
     if(teams.length!==2)throw Error('Partita incompleta');
-    const ballots=[...m.querySelectorAll('.ballots .ballot')].map(b=>[...b.querySelectorAll('.ballot-list li')].map(el=>({...player(el),pct:percentage(txt(el,'.percentage'))})));
+    const ballots=[...m.querySelectorAll('.ballots .ballot')].map(b=>[...b.querySelectorAll('.ballot-list li')].filter(el=>el.querySelector('a.player-name')).map(el=>({...player(el),pct:percentage(txt(el,'.percentage'))})));
     const statuses={};
     for(const [key,cls] of Object.entries({injured:'injureds',suspended:'suspendeds',cautioned:'cautioneds',doubt:'dubts'})){
       statuses[key]=[...m.querySelectorAll('.'+cls+' li')].filter(el=>el.querySelector('a.player-name')).map(player);
